@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.SqlServer;
@@ -18,7 +17,7 @@ public static class SqlServerHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddSqlServer(this IHostApplicationBuilder builder)
     {
@@ -39,7 +38,7 @@ public static class SqlServerHostApplicationBuilderExtensions
     /// An optional delegate to configure this connector.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddSqlServer(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         Action<ConnectorAddOptionsBuilder>? addAction)
@@ -50,8 +49,8 @@ public static class SqlServerHostApplicationBuilderExtensions
     internal static IHostApplicationBuilder AddSqlServer(this IHostApplicationBuilder builder, SqlServerPackageResolver packageResolver,
         Action<ConnectorConfigureOptionsBuilder>? configureAction = null, Action<ConnectorAddOptionsBuilder>? addAction = null)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         builder.Configuration.ConfigureSqlServer(packageResolver, configureAction);
         builder.Services.AddSqlServer(builder.Configuration, packageResolver, addAction);

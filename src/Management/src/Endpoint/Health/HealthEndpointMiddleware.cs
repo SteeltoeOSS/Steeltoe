@@ -7,9 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
@@ -23,7 +22,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
         : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
-        ArgumentGuard.NotNull(endpointOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(endpointOptionsMonitor);
 
         _endpointOptionsMonitor = endpointOptionsMonitor;
         _logger = loggerFactory.CreateLogger<HealthEndpointMiddleware>();
@@ -35,7 +34,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 
         if (!IsValidGroup(groupName))
         {
-            return new HealthEndpointResponse(null)
+            return new HealthEndpointResponse
             {
                 Exists = false
             };
@@ -52,7 +51,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
     /// </summary>
     private string GetRequestedHealthGroup(PathString requestPath)
     {
-        string[] requestComponents = requestPath.Value?.Split('/') ?? Array.Empty<string>();
+        string[] requestComponents = requestPath.Value?.Split('/') ?? [];
 
         if (requestComponents.Length > 0)
         {

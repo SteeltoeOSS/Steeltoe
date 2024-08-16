@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -14,18 +13,23 @@ public static class EndpointApplicationBuilderExtensions
     /// Add CloudFoundry Security Middleware.
     /// </summary>
     /// <param name="builder">
-    /// Your application builder.
+    /// The <see cref="IApplicationBuilder" /> to configure.
     /// </param>
-    public static void UseCloudFoundrySecurity(this IApplicationBuilder builder)
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IApplicationBuilder UseCloudFoundrySecurity(this IApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
-        if (builder.ApplicationServices.GetService<SecurityUtils>() == null)
+        if (builder.ApplicationServices.GetService<PermissionsProvider>() == null)
         {
             throw new InvalidOperationException(
                 $"Please call IServiceCollection.{nameof(CloudFoundrySecurityServiceCollectionExtensions.AddCloudFoundrySecurity)} first.");
         }
 
         builder.UseMiddleware<CloudFoundrySecurityMiddleware>();
+
+        return builder;
     }
 }

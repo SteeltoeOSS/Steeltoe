@@ -28,16 +28,25 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
     public DiagnosticsManager(IOptionsMonitor<MetricsObserverOptions> observerOptions, IEnumerable<IRuntimeDiagnosticSource> runtimeSources,
         IEnumerable<IDiagnosticObserver> observers, IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger)
     {
-        ArgumentGuard.NotNull(observerOptions);
-        ArgumentGuard.NotNull(runtimeSources);
-        ArgumentGuard.NotNull(observers);
-        ArgumentGuard.NotNull(eventListeners);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(observerOptions);
+        ArgumentNullException.ThrowIfNull(runtimeSources);
+        ArgumentNullException.ThrowIfNull(observers);
+        ArgumentNullException.ThrowIfNull(eventListeners);
+        ArgumentNullException.ThrowIfNull(logger);
+
+        IDiagnosticObserver[] observerArray = observers.ToArray();
+        ArgumentGuard.ElementsNotNull(observerArray);
+
+        List<IRuntimeDiagnosticSource> runtimeSourceList = runtimeSources.ToList();
+        ArgumentGuard.ElementsNotNull(runtimeSourceList);
+
+        List<EventListener> eventListenerList = eventListeners.ToList();
+        ArgumentGuard.ElementsNotNull(eventListenerList);
 
         _logger = logger;
         var filteredObservers = new List<IDiagnosticObserver>();
 
-        foreach (IDiagnosticObserver observer in observers)
+        foreach (IDiagnosticObserver observer in observerArray)
         {
             if (observerOptions.CurrentValue.IncludeObserver(observer.ObserverName))
             {
@@ -46,8 +55,8 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
         }
 
         _observers = filteredObservers;
-        _runtimeSources = runtimeSources.ToList();
-        _eventListeners = eventListeners.ToList();
+        _runtimeSources = runtimeSourceList;
+        _eventListeners = eventListenerList;
     }
 
     public void OnCompleted()
@@ -70,10 +79,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
 
     public void Start()
     {
-        if (_isDisposed)
-        {
-            throw new ObjectDisposedException(GetType().Name);
-        }
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
 
         if (Interlocked.CompareExchange(ref _started, 1, 0) == 0)
         {

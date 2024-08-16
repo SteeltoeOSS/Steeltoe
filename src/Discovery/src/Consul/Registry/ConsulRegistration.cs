@@ -3,11 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Text;
 using Consul;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Util;
@@ -19,7 +16,6 @@ namespace Steeltoe.Discovery.Consul.Registry;
 /// </summary>
 public sealed class ConsulRegistration : IServiceInstance
 {
-    private const char Separator = '-';
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
 
     internal AgentServiceRegistration InnerRegistration { get; }
@@ -60,8 +56,8 @@ public sealed class ConsulRegistration : IServiceInstance
     /// </param>
     internal ConsulRegistration(AgentServiceRegistration innerRegistration, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
     {
-        ArgumentGuard.NotNull(innerRegistration);
-        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(innerRegistration);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
 
         InnerRegistration = innerRegistration;
         _optionsMonitor = optionsMonitor;
@@ -80,27 +76,20 @@ public sealed class ConsulRegistration : IServiceInstance
     /// <param name="optionsMonitor">
     /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
-    /// <param name="applicationInfo">
-    /// Info about this app instance.
-    /// </param>
-    internal static ConsulRegistration Create(IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IApplicationInstanceInfo applicationInfo)
+    internal static ConsulRegistration Create(IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(applicationInfo);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
 
         ConsulDiscoveryOptions options = optionsMonitor.CurrentValue;
 
         var agentServiceRegistration = new AgentServiceRegistration
         {
-            ID = GetInstanceId(options, applicationInfo),
-            Address = options.HostName
+            ID = options.InstanceId,
+            Address = options.HostName,
+            Name = options.ServiceName,
+            Tags = CreateTags(options),
+            Meta = CreateMetadata(options)
         };
-
-        string appName = applicationInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.ConfigurationPrefix}:serviceName");
-
-        agentServiceRegistration.Name = NormalizeForConsul(appName);
-        agentServiceRegistration.Tags = CreateTags(options);
-        agentServiceRegistration.Meta = CreateMetadata(options);
 
         if (options.Port > 0)
         {
@@ -134,65 +123,6 @@ public sealed class ConsulRegistration : IServiceInstance
     private static string[] CreateTags(ConsulDiscoveryOptions options)
     {
         return options.Tags.ToArray();
-    }
-
-    private static string GetInstanceId(ConsulDiscoveryOptions options, IApplicationInstanceInfo applicationInfo)
-    {
-        if (string.IsNullOrEmpty(options.InstanceId))
-        {
-            return NormalizeForConsul(GetDefaultInstanceId(applicationInfo));
-        }
-
-        return NormalizeForConsul(options.InstanceId);
-    }
-
-    private static string GetDefaultInstanceId(IApplicationInstanceInfo applicationInfo)
-    {
-        string appName = applicationInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.ConfigurationPrefix}:serviceName");
-
-        string instanceId = applicationInfo.InstanceId;
-
-        if (string.IsNullOrEmpty(instanceId))
-        {
-            instanceId = Random.Shared.Next().ToString(CultureInfo.InvariantCulture);
-        }
-
-        return $"{appName}:{instanceId}";
-    }
-
-    internal static string NormalizeForConsul(string serviceId)
-    {
-        if (serviceId == null || !char.IsLetter(serviceId[0]) || !char.IsLetterOrDigit(serviceId[^1]))
-        {
-            throw new ArgumentException(
-                $"Consul service IDs must not be empty, must start with a letter, end with a letter or digit, and have as interior characters only letters, digits, and hyphen: {serviceId}",
-                nameof(serviceId));
-        }
-
-        var normalized = new StringBuilder();
-        char prev = default;
-
-        foreach (char ch in serviceId)
-        {
-            char toAppend = default;
-
-            if (char.IsLetterOrDigit(ch))
-            {
-                toAppend = ch;
-            }
-            else if (prev is default(char) or not Separator)
-            {
-                toAppend = Separator;
-            }
-
-            if (toAppend != default(char))
-            {
-                normalized.Append(toAppend);
-                prev = toAppend;
-            }
-        }
-
-        return normalized.ToString();
     }
 
     internal static AgentServiceCheck CreateCheck(int port, ConsulDiscoveryOptions options)

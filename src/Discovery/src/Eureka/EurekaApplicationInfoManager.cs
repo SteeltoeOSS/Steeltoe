@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
 
@@ -38,9 +37,9 @@ public sealed class EurekaApplicationInfoManager : IDisposable
     public EurekaApplicationInfoManager(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor,
         IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor, ILogger<EurekaApplicationInfoManager> logger)
     {
-        ArgumentGuard.NotNull(clientOptionsMonitor);
-        ArgumentGuard.NotNull(instanceOptionsMonitor);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(clientOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(instanceOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(logger);
 
         if (!clientOptionsMonitor.CurrentValue.Enabled)
         {

@@ -4,7 +4,6 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
@@ -17,7 +16,7 @@ internal sealed class ThreadDumpV2Converter : JsonConverter<IList<ThreadInfo>>
 
     public override void Write(Utf8JsonWriter writer, IList<ThreadInfo> value, JsonSerializerOptions options)
     {
-        ArgumentGuard.NotNull(writer);
+        ArgumentNullException.ThrowIfNull(writer);
 
         writer.WriteStartObject();
         writer.WritePropertyName("threads");

@@ -4,7 +4,6 @@
     <Description>Base package for using Steeltoe Service Discovery</Description>
     <PackageTags>service-discovery;service-registry;load-balancing;round-robin;httpclient;httpclientfactory</PackageTags>
     <IsPackable>true</IsPackable>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Placeholder;
 
@@ -19,7 +18,7 @@ public static class PlaceholderServiceCollectionExtensions
     /// a <see cref="IConfiguration" /> will return the newly created <see cref="IConfiguration" /> providing placeholder resolution.
     /// </summary>
     /// <param name="services">
-    /// The service container.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configuration">
     /// The configuration the placeholder resolver will wrap.
@@ -38,7 +37,7 @@ public static class PlaceholderServiceCollectionExtensions
     /// a <see cref="IConfiguration" /> will return the newly created <see cref="IConfiguration" /> providing placeholder resolution.
     /// </summary>
     /// <param name="services">
-    /// The service container.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configuration">
     /// The configuration the placeholder resolver will wrap.
@@ -51,9 +50,9 @@ public static class PlaceholderServiceCollectionExtensions
     /// </returns>
     public static IConfiguration ConfigurePlaceholderResolver(this IServiceCollection services, IConfiguration configuration, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         IConfiguration newConfiguration = configuration.AddPlaceholderResolver(loggerFactory);
         services.Replace(ServiceDescriptor.Singleton(typeof(IConfiguration), newConfiguration));

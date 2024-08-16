@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration;
 
@@ -13,7 +12,7 @@ internal abstract class PostProcessorConfigurationProvider : ConfigurationProvid
 
     protected PostProcessorConfigurationProvider(PostProcessorConfigurationSource source)
     {
-        ArgumentGuard.NotNull(source);
+        ArgumentNullException.ThrowIfNull(source);
 
         Source = source;
     }

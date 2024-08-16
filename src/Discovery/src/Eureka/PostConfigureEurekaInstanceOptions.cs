@@ -12,9 +12,9 @@ using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
 using Steeltoe.Discovery.Eureka.Configuration;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Info;
-using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -31,10 +31,10 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
     public PostConfigureEurekaInstanceOptions(IServiceProvider serviceProvider, IConfiguration configuration, IApplicationInstanceInfo appInfo,
         InetUtils inetUtils)
     {
-        ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(appInfo);
-        ArgumentGuard.NotNull(inetUtils);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(appInfo);
+        ArgumentNullException.ThrowIfNull(inetUtils);
 
         _serviceProvider = serviceProvider;
         _configuration = configuration;
@@ -44,7 +44,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
 
     public void PostConfigure(string? name, EurekaInstanceOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         SetRegistrationMethod(options);
         SetHostNameAndIpAddress(options);
@@ -69,7 +69,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
     {
         if (!options.IsForceHostNameMethod())
         {
-            string? firstAppUri = _appInfo.Uris?.FirstOrDefault();
+            string? firstAppUri = _appInfo.Uris.FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(firstAppUri))
             {
@@ -130,8 +130,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
     {
         if (string.IsNullOrWhiteSpace(options.AppName))
         {
-            string? springAppName = _appInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery);
-            options.AppName = !string.IsNullOrWhiteSpace(springAppName) ? springAppName : "UNKNOWN";
+            options.AppName = _appInfo.ApplicationName;
         }
     }
 
@@ -145,7 +144,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
     {
         if (options.IsGoRouterMethod())
         {
-            string? firstAppUri = _appInfo.Uris?.FirstOrDefault();
+            string? firstAppUri = _appInfo.Uris.FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(firstAppUri))
             {

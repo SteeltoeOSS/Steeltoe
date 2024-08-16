@@ -17,8 +17,9 @@ public sealed class EnvironmentResponse
 
     public EnvironmentResponse(IList<string> activeProfiles, IList<PropertySourceDescriptor> sources)
     {
-        ArgumentGuard.NotNull(activeProfiles);
-        ArgumentGuard.NotNull(sources);
+        ArgumentNullException.ThrowIfNull(activeProfiles);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(activeProfiles);
+        ArgumentNullException.ThrowIfNull(sources);
 
         ActiveProfiles = activeProfiles;
         PropertySources = sources;

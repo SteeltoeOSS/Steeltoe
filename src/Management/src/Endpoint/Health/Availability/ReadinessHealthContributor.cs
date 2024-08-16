@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Health.Availability;
@@ -21,7 +20,7 @@ public sealed class ReadinessHealthContributor : AvailabilityHealthContributor
             { ReadinessState.RefusingTraffic, HealthStatus.OutOfService }
         }, loggerFactory)
     {
-        ArgumentGuard.NotNull(availability);
+        ArgumentNullException.ThrowIfNull(availability);
 
         _availability = availability;
     }

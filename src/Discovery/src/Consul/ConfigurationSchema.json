@@ -235,9 +235,11 @@
           "type": "object",
           "properties": {
             "Name": {
-              "type": "string"
+              "type": "string",
+              "description": "Gets or sets the name of this application."
             }
-          }
+          },
+          "description": "Fallback configuration settings that describe this application."
         },
         "Cloud": {
           "type": "object",

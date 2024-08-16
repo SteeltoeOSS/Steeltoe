@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
@@ -18,9 +17,9 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
 
     public MetricsEndpointHandler(IOptionsMonitor<MetricsEndpointOptions> optionsMonitor, MetricsExporter exporter, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(exporter);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(exporter);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _optionsMonitor = optionsMonitor;
         _exporter = exporter;
@@ -65,7 +64,7 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
         if (tags.Any())
         {
             filtered = filtered.Where(sample =>
-                tags.All(tag => sample.Tags != null && sample.Tags.Any(sampleTag => tag.Key == sampleTag.Key && tag.Value == sampleTag.Value))).ToList();
+                tags.All(tag => sample.Tags != null && sample.Tags.Any(sampleTag => tag.Key == sampleTag.Key && tag.Value == sampleTag.Value))).ToArray();
         }
 
         static MetricSample SumAggregator(MetricSample current, MetricSample next)
@@ -80,46 +79,46 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
 
         try
         {
-            List<MetricSample> rateSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Rate).ToList();
+            MetricSample[] rateSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Rate).ToArray();
 
-            if (rateSamples.Any())
+            if (rateSamples.Length > 0)
             {
                 MetricSample sample = rateSamples.Aggregate(SumAggregator);
-                sampleList.Add(new MetricSample(MetricStatistic.Rate, sample.Value / rateSamples.Count, sample.Tags));
+                sampleList.Add(new MetricSample(MetricStatistic.Rate, sample.Value / rateSamples.Length, sample.Tags));
             }
 
-            List<MetricSample> valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Value).ToList();
+            MetricSample[] valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Value).ToArray();
 
-            if (valueSamples.Any())
+            if (valueSamples.Length > 0)
             {
                 MetricSample sample = valueSamples.Aggregate(SumAggregator);
-                sampleList.Add(new MetricSample(MetricStatistic.Value, sample.Value / valueSamples.Count, sample.Tags));
+                sampleList.Add(new MetricSample(MetricStatistic.Value, sample.Value / valueSamples.Length, sample.Tags));
             }
 
-            List<MetricSample> totalSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Total).ToList();
+            MetricSample[] totalSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Total).ToArray();
 
-            if (totalSamples.Any())
+            if (totalSamples.Length > 0)
             {
                 sampleList.Add(totalSamples.Aggregate(SumAggregator));
             }
 
-            List<MetricSample> totalTimeSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TotalTime).ToList();
+            MetricSample[] totalTimeSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TotalTime).ToArray();
 
-            if (totalTimeSamples.Any())
+            if (totalTimeSamples.Length > 0)
             {
                 sampleList.Add(totalTimeSamples.Aggregate(SumAggregator));
             }
 
-            List<MetricSample> countSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Count).ToList();
+            MetricSample[] countSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Count).ToArray();
 
-            if (countSamples.Any())
+            if (countSamples.Length > 0)
             {
                 sampleList.Add(countSamples.Aggregate(SumAggregator));
             }
 
-            List<MetricSample> maxSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Max).ToList();
+            MetricSample[] maxSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Max).ToArray();
 
-            if (maxSamples.Any())
+            if (maxSamples.Length > 0)
             {
                 MetricSample sample = maxSamples.Aggregate(MaxAggregator);
                 sampleList.Add(new MetricSample(MetricStatistic.Max, sample.Value, sample.Tags));

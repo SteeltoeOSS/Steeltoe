@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
@@ -17,7 +17,7 @@ internal sealed class ConfigureHeapDumpEndpointOptions : ConfigureEndpointOption
     public ConfigureHeapDumpEndpointOptions(IConfiguration configuration, ILogger<ConfigureHeapDumpEndpointOptions> logger)
         : base(configuration, ManagementInfoPrefix, "heapdump")
     {
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _logger = logger;
     }

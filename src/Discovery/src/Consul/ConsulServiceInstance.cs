@@ -4,7 +4,6 @@
 
 using System.Collections.ObjectModel;
 using Consul;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Consul.Util;
 
@@ -43,7 +42,7 @@ public sealed class ConsulServiceInstance : IServiceInstance
     /// </param>
     internal ConsulServiceInstance(ServiceEntry serviceEntry)
     {
-        ArgumentGuard.NotNull(serviceEntry);
+        ArgumentNullException.ThrowIfNull(serviceEntry);
 
         Host = ConsulServerUtils.FindHost(serviceEntry);
         Tags = serviceEntry.Service.Tags;

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration.Json;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
@@ -14,7 +13,7 @@ internal sealed class JsonStreamConfigurationProvider : JsonConfigurationProvide
     public JsonStreamConfigurationProvider(JsonStreamConfigurationSource source)
         : base(source)
     {
-        ArgumentGuard.NotNull(source);
+        ArgumentNullException.ThrowIfNull(source);
 
         _source = source;
     }

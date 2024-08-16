@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.DynamicTypeAccess;
@@ -23,8 +22,8 @@ internal sealed class ConnectorFactoryShim<TOptions> : Shim, IDisposable
 
     public static bool IsRegistered(Type connectionType, IServiceCollection services)
     {
-        ArgumentGuard.NotNull(connectionType);
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(connectionType);
+        ArgumentNullException.ThrowIfNull(services);
 
         TypeAccessor typeAccessor = MakeGenericTypeAccessor(connectionType);
         return services.Any(descriptor => descriptor.ServiceType == typeAccessor.Type);
@@ -33,8 +32,8 @@ internal sealed class ConnectorFactoryShim<TOptions> : Shim, IDisposable
     public static void Register(Type connectionType, IServiceCollection services, IReadOnlySet<string> serviceBindingNames,
         ConnectorCreateConnection createConnection, bool useSingletonConnection)
     {
-        ArgumentGuard.NotNull(connectionType);
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(connectionType);
+        ArgumentNullException.ThrowIfNull(services);
 
         TypeAccessor typeAccessor = MakeGenericTypeAccessor(connectionType);
 
@@ -44,8 +43,8 @@ internal sealed class ConnectorFactoryShim<TOptions> : Shim, IDisposable
 
     public static ConnectorFactoryShim<TOptions> FromServiceProvider(IServiceProvider serviceProvider, Type connectionType)
     {
-        ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNull(connectionType);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(connectionType);
 
         TypeAccessor typeAccessor = MakeGenericTypeAccessor(connectionType);
         object instance = serviceProvider.GetRequiredService(typeAccessor.Type);

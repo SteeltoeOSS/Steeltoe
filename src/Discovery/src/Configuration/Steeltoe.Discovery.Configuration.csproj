@@ -4,7 +4,6 @@
     <Description>Client for service discovery from application configuration</Description>
     <PackageTags>service-discovery;service-registry;configuration-based</PackageTags>
     <IsPackable>true</IsPackable>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

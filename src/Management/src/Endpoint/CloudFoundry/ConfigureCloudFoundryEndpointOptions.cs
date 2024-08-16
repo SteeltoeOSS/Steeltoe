@@ -3,8 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -21,7 +20,7 @@ internal sealed class ConfigureCloudFoundryEndpointOptions : ConfigureEndpointOp
 
     public override void Configure(CloudFoundryEndpointOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         base.Configure(options);
         options.ApplicationId = Configuration[VcapApplicationIdKey];

@@ -6,10 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Certificates;
-using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.Net;
@@ -27,9 +26,12 @@ public static class EurekaServiceCollectionExtensions
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddEurekaDiscoveryClient(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         if (services.All(descriptor => descriptor.ImplementationType != typeof(EurekaDiscoveryClient)))
         {
@@ -42,7 +44,7 @@ public static class EurekaServiceCollectionExtensions
 
     private static void ConfigureEurekaServices(IServiceCollection services)
     {
-        services.RegisterDefaultApplicationInstanceInfo();
+        services.AddApplicationInstanceInfo();
         services.TryAddSingleton<InetUtils>();
 
         ConfigureEurekaClientOptions(services);
@@ -51,7 +53,10 @@ public static class EurekaServiceCollectionExtensions
 
     private static void ConfigureEurekaClientOptions(IServiceCollection services)
     {
-        services.ConfigureReloadableOptions<EurekaClientOptions>(EurekaClientOptions.ConfigurationPrefix, (options, serviceProvider) =>
+        OptionsBuilder<EurekaClientOptions> optionsBuilder = services.AddOptions<EurekaClientOptions>();
+        optionsBuilder.BindConfiguration(EurekaClientOptions.ConfigurationPrefix);
+
+        optionsBuilder.Configure<IServiceProvider>((options, serviceProvider) =>
         {
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
@@ -68,8 +73,8 @@ public static class EurekaServiceCollectionExtensions
 
     private static void ConfigureEurekaInstanceOptions(IServiceCollection services)
     {
-        services.ConfigureReloadableOptions<EurekaInstanceOptions>(EurekaInstanceOptions.ConfigurationPrefix);
-        services.ConfigureReloadableOptions<InetOptions>(InetOptions.ConfigurationPrefix);
+        services.AddOptions<EurekaInstanceOptions>().BindConfiguration(EurekaInstanceOptions.ConfigurationPrefix);
+        services.AddOptions<InetOptions>().BindConfiguration(InetOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<EurekaInstanceOptions>, PostConfigureEurekaInstanceOptions>();
 
         DynamicPortAssignmentHostedService.Wire(services);
@@ -107,13 +112,6 @@ public static class EurekaServiceCollectionExtensions
             var handlerFactory = serviceProvider.GetRequiredService<HttpClientHandlerFactory>();
             HttpClientHandler handler = handlerFactory.Create();
 
-            var validateCertificatesHandler = serviceProvider.GetRequiredService<ValidateCertificatesHttpClientHandlerConfigurer<EurekaClientOptions>>();
-            validateCertificatesHandler.Configure(handler);
-
-            var clientCertificateConfigurer = serviceProvider.GetRequiredService<ClientCertificateHttpClientHandlerConfigurer>();
-            clientCertificateConfigurer.SetCertificateName("Eureka");
-            clientCertificateConfigurer.Configure(handler);
-
             var eurekaConfigurer = serviceProvider.GetRequiredService<EurekaHttpClientHandlerConfigurer>();
             eurekaConfigurer.Configure(handler);
 
@@ -128,8 +126,8 @@ public static class EurekaServiceCollectionExtensions
             var handlerFactory = serviceProvider.GetRequiredService<HttpClientHandlerFactory>();
             HttpClientHandler handler = handlerFactory.Create();
 
-            var validateCertificatesHandler = serviceProvider.GetRequiredService<ValidateCertificatesHttpClientHandlerConfigurer<EurekaClientOptions>>();
-            validateCertificatesHandler.Configure(handler);
+            var validateCertificatesConfigurer = serviceProvider.GetRequiredService<ValidateCertificatesHttpClientHandlerConfigurer<EurekaClientOptions>>();
+            validateCertificatesConfigurer.Configure(Options.DefaultName, handler);
 
             return handler;
         });

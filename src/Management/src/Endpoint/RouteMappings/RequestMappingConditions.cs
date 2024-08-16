@@ -30,12 +30,18 @@ public sealed class RequestMappingConditions
     public RequestMappingConditions(IList<string> patterns, IList<string> methods, IList<MediaTypeDescriptor> consumes, IList<MediaTypeDescriptor> produces,
         IList<string> headers, IList<string> @params)
     {
-        ArgumentGuard.NotNull(patterns);
-        ArgumentGuard.NotNull(methods);
-        ArgumentGuard.NotNull(consumes);
-        ArgumentGuard.NotNull(produces);
-        ArgumentGuard.NotNull(headers);
-        ArgumentGuard.NotNull(@params);
+        ArgumentNullException.ThrowIfNull(patterns);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(patterns);
+        ArgumentNullException.ThrowIfNull(methods);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(methods);
+        ArgumentNullException.ThrowIfNull(consumes);
+        ArgumentGuard.ElementsNotNull(consumes);
+        ArgumentNullException.ThrowIfNull(produces);
+        ArgumentGuard.ElementsNotNull(produces);
+        ArgumentNullException.ThrowIfNull(headers);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(headers);
+        ArgumentNullException.ThrowIfNull(@params);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(@params);
 
         Patterns = patterns;
         Methods = methods;

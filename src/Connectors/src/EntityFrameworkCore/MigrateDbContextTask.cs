@@ -28,8 +28,8 @@ public sealed class MigrateDbContextTask<TDbContext> : IApplicationTask
 
     public MigrateDbContextTask(TDbContext dbContext, ILogger<MigrateDbContextTask<TDbContext>> logger)
     {
-        ArgumentGuard.NotNull(dbContext);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(dbContext);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _dbContext = dbContext;
         _logger = logger;
@@ -38,11 +38,11 @@ public sealed class MigrateDbContextTask<TDbContext> : IApplicationTask
     public async Task RunAsync(CancellationToken cancellationToken)
     {
         bool isNewDatabase = false;
-        var migrations = new List<string>();
+        IList<string> migrations = Array.Empty<string>();
 
         try
         {
-            migrations = (await _dbContext.Database.GetPendingMigrationsAsync(cancellationToken)).ToList();
+            migrations = (await _dbContext.Database.GetPendingMigrationsAsync(cancellationToken)).ToArray();
         }
         catch
         {
@@ -55,7 +55,7 @@ public sealed class MigrateDbContextTask<TDbContext> : IApplicationTask
 
         if (isNewDatabase)
         {
-            migrations = (await _dbContext.Database.GetAppliedMigrationsAsync(cancellationToken)).ToList();
+            migrations = (await _dbContext.Database.GetAppliedMigrationsAsync(cancellationToken)).ToArray();
         }
 
         if (migrations.Count > 0)

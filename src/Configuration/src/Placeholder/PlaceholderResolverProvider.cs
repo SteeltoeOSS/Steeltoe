@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
 using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Configuration.Placeholder;
@@ -19,6 +18,7 @@ namespace Steeltoe.Configuration.Placeholder;
 /// </summary>
 internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider, IDisposable
 {
+    private readonly PropertyPlaceholderHelper _propertyPlaceholderHelper;
     private bool _isDisposed;
 
     public IList<IConfigurationProvider> Providers { get; } = new List<IConfigurationProvider>();
@@ -41,10 +41,13 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// </param>
     public PlaceholderResolverProvider(IConfigurationRoot root, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(root);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(root);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         Configuration = root;
+
+        ILogger<PropertyPlaceholderHelper> placeholderHelperLogger = loggerFactory.CreateLogger<PropertyPlaceholderHelper>();
+        _propertyPlaceholderHelper = new PropertyPlaceholderHelper(placeholderHelperLogger);
     }
 
     /// <summary>
@@ -59,10 +62,13 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// </param>
     public PlaceholderResolverProvider(IList<IConfigurationProvider> providers, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(providers);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(providers);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         Providers = providers;
+
+        ILogger<PropertyPlaceholderHelper> placeholderHelperLogger = loggerFactory.CreateLogger<PropertyPlaceholderHelper>();
+        _propertyPlaceholderHelper = new PropertyPlaceholderHelper(placeholderHelperLogger);
     }
 
     /// <summary>
@@ -77,13 +83,13 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// <returns>
     /// <c>true</c> if a value for the specified key was found, otherwise <c>false</c>.
     /// </returns>
-    public bool TryGet(string key, out string value)
+    public bool TryGet(string key, out string? value)
     {
-        ArgumentGuard.NotNull(key);
+        ArgumentException.ThrowIfNullOrEmpty(key);
         EnsureInitialized();
 
         string? originalValue = Configuration![key];
-        value = PropertyPlaceholderHelper.ResolvePlaceholders(originalValue, Configuration);
+        value = _propertyPlaceholderHelper.ResolvePlaceholders(originalValue, Configuration);
 
         if (value != originalValue && !ResolvedKeys.Contains(key))
         {
@@ -104,7 +110,7 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// </param>
     public void Set(string key, string? value)
     {
-        ArgumentGuard.NotNull(key);
+        ArgumentException.ThrowIfNullOrEmpty(key);
         EnsureInitialized();
 
         Configuration![key] = value;
@@ -159,10 +165,7 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
 
     private void EnsureInitialized()
     {
-        if (_isDisposed)
-        {
-            throw new ObjectDisposedException(nameof(PlaceholderResolverProvider));
-        }
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
 
         Configuration ??= new ConfigurationRoot(Providers);
     }

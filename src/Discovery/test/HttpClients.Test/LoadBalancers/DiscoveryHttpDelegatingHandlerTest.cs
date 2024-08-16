@@ -5,7 +5,6 @@
 using System.Data;
 using System.Net;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 using Steeltoe.Discovery.HttpClients.LoadBalancers;
 
 namespace Steeltoe.Discovery.HttpClients.Test.LoadBalancers;
@@ -157,8 +156,8 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
         public Task UpdateStatisticsAsync(Uri requestUri, Uri serviceInstanceUri, TimeSpan? responseTime, Exception? exception,
             CancellationToken cancellationToken)
         {
-            ArgumentGuard.NotNull(requestUri);
-            ArgumentGuard.NotNull(serviceInstanceUri);
+            ArgumentNullException.ThrowIfNull(requestUri);
+            ArgumentNullException.ThrowIfNull(serviceInstanceUri);
 
             Statistics.Add(new LoadBalancerStatistic(requestUri, serviceInstanceUri, responseTime, exception));
             return Task.CompletedTask;

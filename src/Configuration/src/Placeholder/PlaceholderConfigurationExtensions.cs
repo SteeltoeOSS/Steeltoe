@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Placeholder;
 
@@ -18,10 +17,10 @@ public static class PlaceholderConfigurationExtensions
     /// you wrap all applications' configuration sources with placeholder resolution.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddPlaceholderResolver(this IConfigurationBuilder builder)
     {
@@ -35,18 +34,18 @@ public static class PlaceholderConfigurationExtensions
     /// you wrap all applications' configuration sources with placeholder resolution.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddPlaceholderResolver(this IConfigurationBuilder builder, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         if (!builder.Sources.Any(source => source is PlaceholderResolverSource))
         {
@@ -97,8 +96,8 @@ public static class PlaceholderConfigurationExtensions
     /// </returns>
     public static IConfiguration AddPlaceholderResolver(this IConfiguration configuration, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         if (configuration is not IConfigurationRoot root)
         {
@@ -123,10 +122,10 @@ public static class PlaceholderConfigurationExtensions
     /// you wrap all applications' configuration sources with placeholder resolution.
     /// </summary>
     /// <param name="configurationManager">
-    /// The configuration manager.
+    /// The <see cref="ConfigurationManager" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="configurationManager" />.
+    /// The incoming <paramref name="configurationManager" /> so that additional calls can be chained.
     /// </returns>
     public static ConfigurationManager AddPlaceholderResolver(this ConfigurationManager configurationManager)
     {
@@ -140,18 +139,18 @@ public static class PlaceholderConfigurationExtensions
     /// you wrap all applications' configuration sources with placeholder resolution.
     /// </summary>
     /// <param name="configurationManager">
-    /// The configuration manager.
+    /// The <see cref="ConfigurationManager" /> to configure.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="configurationManager" />.
+    /// The incoming <paramref name="configurationManager" /> so that additional calls can be chained.
     /// </returns>
     public static ConfigurationManager AddPlaceholderResolver(this ConfigurationManager configurationManager, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(configurationManager);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(configurationManager);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         ((IConfigurationBuilder)configurationManager).AddPlaceholderResolver(loggerFactory);
 

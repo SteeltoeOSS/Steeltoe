@@ -9,15 +9,18 @@ namespace Steeltoe.Common.Discovery;
 /// <summary>
 /// Calls <see cref="IDiscoveryClient.ShutdownAsync" /> when the app is being stopped.
 /// </summary>
-public sealed class DiscoveryClientHostedService : IHostedService
+internal sealed class DiscoveryClientHostedService : IHostedService
 {
     private readonly ICollection<IDiscoveryClient> _discoveryClients;
 
     public DiscoveryClientHostedService(IEnumerable<IDiscoveryClient> discoveryClients)
     {
-        ArgumentGuard.NotNull(discoveryClients);
+        ArgumentNullException.ThrowIfNull(discoveryClients);
 
-        _discoveryClients = discoveryClients.ToArray();
+        IDiscoveryClient[] discoveryClientArray = discoveryClients.ToArray();
+        ArgumentGuard.ElementsNotNull(discoveryClientArray);
+
+        _discoveryClients = discoveryClientArray;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

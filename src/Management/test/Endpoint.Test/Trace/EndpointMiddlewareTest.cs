@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;

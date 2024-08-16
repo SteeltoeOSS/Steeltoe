@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Environment;
@@ -24,10 +23,10 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
     public EnvironmentEndpointHandler(IOptionsMonitor<EnvironmentEndpointOptions> optionsMonitor, IConfiguration configuration, IHostEnvironment environment,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(environment);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(environment);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _optionsMonitor = optionsMonitor;
         _configuration = configuration;
@@ -76,7 +75,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
     public PropertySourceDescriptor GetPropertySourceDescriptor(IConfigurationProvider provider)
     {
-        ArgumentGuard.NotNull(provider);
+        ArgumentNullException.ThrowIfNull(provider);
 
         var properties = new Dictionary<string, PropertyValueDescriptor>();
         string sourceName = GetPropertySourceName(provider);
@@ -100,7 +99,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
     public string GetPropertySourceName(IConfigurationProvider provider)
     {
-        ArgumentGuard.NotNull(provider);
+        ArgumentNullException.ThrowIfNull(provider);
 
         return provider is FileConfigurationProvider fileProvider ? $"{provider.GetType().Name}: [{fileProvider.Source.Path}]" : provider.GetType().Name;
     }

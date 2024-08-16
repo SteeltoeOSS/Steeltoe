@@ -6,7 +6,7 @@ using Consul;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Consul.Configuration;
 
 namespace Steeltoe.Discovery.Consul.Registry;
@@ -44,9 +44,9 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
     public ConsulServiceRegistry(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, TtlScheduler? scheduler,
         ILogger<ConsulServiceRegistry> logger)
     {
-        ArgumentGuard.NotNull(client);
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(client);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _client = client;
         _optionsMonitor = optionsMonitor;
@@ -65,7 +65,7 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
     /// </param>
     public async Task RegisterAsync(ConsulRegistration registration, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(registration);
+        ArgumentNullException.ThrowIfNull(registration);
 
         _logger.LogInformation("Registering service {ServiceId} with Consul.", registration.ServiceId);
 
@@ -101,7 +101,7 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
     /// </param>
     public async Task DeregisterAsync(ConsulRegistration registration, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(registration);
+        ArgumentNullException.ThrowIfNull(registration);
 
         try
         {
@@ -133,8 +133,8 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
     /// </param>
     public async Task SetStatusAsync(ConsulRegistration registration, string status, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(registration);
-        ArgumentGuard.NotNull(status);
+        ArgumentNullException.ThrowIfNull(registration);
+        ArgumentException.ThrowIfNullOrWhiteSpace(status);
 
         if (string.Equals(status, OutOfService, StringComparison.OrdinalIgnoreCase))
         {
@@ -161,7 +161,7 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
     /// </param>
     public async Task<string> GetStatusAsync(ConsulRegistration registration, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(registration);
+        ArgumentNullException.ThrowIfNull(registration);
 
         QueryResult<HealthCheck[]> queryResult = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default, cancellationToken);
 

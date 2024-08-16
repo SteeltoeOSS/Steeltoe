@@ -46,24 +46,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="$(PublicApiAnalyzersVersion)" PrivateAssets="All" />
   </ItemGroup>
 
   <Target Name="ValidatePackage" AfterTargets="BeforeBuild">
     <Error Text="The 'Description' property must be set for packable project '$(MSBuildProjectName)'." Condition="'$(Description)' == ''" />
     <Error Text="The 'PackageTags' property must be set for packable project '$(MSBuildProjectName)'." Condition="'$(PackageTags)' == ''" />
   </Target>
-
-  <ItemGroup Condition="!$(MSBuildProjectName.StartsWith('Steeltoe.Common'))">
-    <!--
-      Remove the condition above after public API review of Steeltoe.Common.
-    -->
-    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="$(PublicApiAnalyzersVersion)" PrivateAssets="All" />
-  </ItemGroup>
-
-  <PropertyGroup Condition="$(MSBuildProjectName.StartsWith('Steeltoe.Common'))">
-    <!--
-      Remove the condition above after public API review of Steeltoe.Common.
-    -->
-    <NoWarn>$(NoWarn);SA1401;S1168;S2360;S3900;S3956;S4004;S4023</NoWarn>
-  </PropertyGroup>
 </Project>

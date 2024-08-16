@@ -27,8 +27,8 @@ public sealed class CloudFoundryEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddInfoActuatorServices();
-            services.AddCloudFoundryActuatorServices();
+            services.AddInfoActuator();
+            services.AddCloudFoundryActuator();
         };
 
         var handler = testContext.GetRequiredService<ICloudFoundryEndpointHandler>();
@@ -50,7 +50,7 @@ public sealed class CloudFoundryEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddCloudFoundryActuatorServices();
+            services.AddCloudFoundryActuator();
         };
 
         var handler = testContext.GetRequiredService<ICloudFoundryEndpointHandler>();
@@ -70,8 +70,8 @@ public sealed class CloudFoundryEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddCloudFoundryActuatorServices();
-            services.AddInfoActuatorServices();
+            services.AddCloudFoundryActuator();
+            services.AddInfoActuator();
         };
 
         testContext.AdditionalConfiguration = configuration =>
@@ -100,8 +100,8 @@ public sealed class CloudFoundryEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddCloudFoundryActuatorServices();
-            services.AddInfoActuatorServices();
+            services.AddCloudFoundryActuator();
+            services.AddInfoActuator();
         };
 
         testContext.AdditionalConfiguration = configuration =>

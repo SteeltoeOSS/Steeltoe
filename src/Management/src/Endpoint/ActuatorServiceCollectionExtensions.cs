@@ -5,12 +5,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Health;
@@ -19,7 +19,6 @@ using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.ManagementPort;
 using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.RouteMappings;
 using Steeltoe.Management.Endpoint.Services;
@@ -31,20 +30,22 @@ namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorServiceCollectionExtensions
 {
-    public static void AddCommonActuatorServices(this IServiceCollection services)
+    public static IServiceCollection AddCommonActuatorServices(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddScoped<ActuatorEndpointMapper>();
 
         services.ConfigureOptionsWithChangeTokenSource<ManagementOptions, ConfigureManagementOptions>();
+
+        return services;
     }
 
     internal static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
         where TOptions : EndpointOptions
         where TConfigureOptions : class, IConfigureOptionsWithKey<TOptions>
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.ConfigureOptionsWithChangeTokenSource<TOptions, TConfigureOptions>();
 
@@ -56,23 +57,15 @@ public static class ActuatorServiceCollectionExtensions
         where TOptions : class
         where TConfigureOptions : class, IConfigureOptionsWithKey<TOptions>
     {
-        // Workaround for services.ConfigureOptions<TConfigureOptions>() registering multiple times,
-        // see https://github.com/dotnet/runtime/issues/42358.
-
         services.AddOptions();
-        services.TryAddTransient<IConfigureOptions<TOptions>, TConfigureOptions>();
+        services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<TOptions>, TConfigureOptions>());
 
-        services.AddSingleton<IOptionsChangeTokenSource<TOptions>>(provider =>
-        {
-            var configurer = (TConfigureOptions)provider.GetRequiredService<IConfigureOptions<TOptions>>();
-            var configuration = provider.GetRequiredService<IConfiguration>();
-            return new ConfigurationChangeTokenSource<TOptions>(configuration.GetSection(configurer.ConfigurationKey));
-        });
+        services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>, ConfigurationChangeTokenSource<TOptions>>();
     }
 
-    public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy)
+    public static IServiceCollection AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
-        services.AddAllActuators(MediaTypeVersion.V2, buildCorsPolicy);
+        return AddAllActuators(services, MediaTypeVersion.V2, buildCorsPolicy);
     }
 
     public static IServiceCollection AddAllActuators(this IServiceCollection services)
@@ -87,7 +80,7 @@ public static class ActuatorServiceCollectionExtensions
 
     public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddSteeltoeCors(buildCorsPolicy);
 
@@ -116,7 +109,7 @@ public static class ActuatorServiceCollectionExtensions
 
     private static void AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy = null)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddCors(setup =>
         {
@@ -147,9 +140,12 @@ public static class ActuatorServiceCollectionExtensions
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
     public static IEndpointConventionBuilder ActivateActuatorEndpoints(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         var actuatorConventionBuilder = new ActuatorConventionBuilder();
 

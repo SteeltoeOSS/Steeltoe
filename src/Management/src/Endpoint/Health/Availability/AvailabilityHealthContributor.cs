@@ -3,22 +3,21 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Health.Availability;
 
 public abstract class AvailabilityHealthContributor : IHealthContributor
 {
-    private readonly Dictionary<AvailabilityState, HealthStatus> _stateMappings;
+    private readonly IDictionary<AvailabilityState, HealthStatus> _stateMappings;
     private readonly ILogger _logger;
 
     public abstract string Id { get; }
 
-    protected AvailabilityHealthContributor(Dictionary<AvailabilityState, HealthStatus> stateMappings, ILoggerFactory loggerFactory)
+    protected AvailabilityHealthContributor(IDictionary<AvailabilityState, HealthStatus> stateMappings, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(stateMappings);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(stateMappings);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _stateMappings = stateMappings;
         _logger = loggerFactory.CreateLogger<AvailabilityHealthContributor>();

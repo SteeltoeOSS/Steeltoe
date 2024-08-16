@@ -14,9 +14,9 @@ public sealed class PlaceholderResolverProviderTest
     [Fact]
     public void Constructor_WithConfiguration()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var provider = new PlaceholderResolverProvider(configuration, NullLoggerFactory.Instance);
+        var provider = new PlaceholderResolverProvider(configurationRoot, NullLoggerFactory.Instance);
 
         Assert.NotNull(provider.Configuration);
         Assert.Empty(provider.Providers);
@@ -50,15 +50,15 @@ public sealed class PlaceholderResolverProviderTest
 
         var holder = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
 
-        Assert.False(holder.TryGet("nokey", out string val));
-        Assert.True(holder.TryGet("key1", out val));
-        Assert.Equal("value1", val);
-        Assert.True(holder.TryGet("key2", out val));
-        Assert.Equal("value1", val);
-        Assert.True(holder.TryGet("key3", out val));
-        Assert.Equal("notfound", val);
-        Assert.True(holder.TryGet("key4", out val));
-        Assert.Equal("${nokey}", val);
+        Assert.False(holder.TryGet("nokey", out string? value));
+        Assert.True(holder.TryGet("key1", out value));
+        Assert.Equal("value1", value);
+        Assert.True(holder.TryGet("key2", out value));
+        Assert.Equal("value1", value);
+        Assert.True(holder.TryGet("key3", out value));
+        Assert.Equal("notfound", value);
+        Assert.True(holder.TryGet("key4", out value));
+        Assert.Equal("${nokey}", value);
     }
 
     [Fact]
@@ -78,21 +78,21 @@ public sealed class PlaceholderResolverProviderTest
 
         var holder = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
 
-        Assert.False(holder.TryGet("nokey", out string val));
-        Assert.True(holder.TryGet("key1", out val));
-        Assert.Equal("value1", val);
-        Assert.True(holder.TryGet("key2", out val));
-        Assert.Equal("value1", val);
-        Assert.True(holder.TryGet("key3", out val));
-        Assert.Equal("notfound", val);
-        Assert.True(holder.TryGet("key4", out val));
-        Assert.Equal("${nokey}", val);
+        Assert.False(holder.TryGet("nokey", out string? value));
+        Assert.True(holder.TryGet("key1", out value));
+        Assert.Equal("value1", value);
+        Assert.True(holder.TryGet("key2", out value));
+        Assert.Equal("value1", value);
+        Assert.True(holder.TryGet("key3", out value));
+        Assert.Equal("notfound", value);
+        Assert.True(holder.TryGet("key4", out value));
+        Assert.Equal("${nokey}", value);
 
         holder.Set("nokey", "nokeyvalue");
-        Assert.True(holder.TryGet("key3", out val));
-        Assert.Equal("nokeyvalue", val);
-        Assert.True(holder.TryGet("key4", out val));
-        Assert.Equal("nokeyvalue", val);
+        Assert.True(holder.TryGet("key3", out value));
+        Assert.Equal("nokeyvalue", value);
+        Assert.True(holder.TryGet("key4", out value));
+        Assert.Equal("nokeyvalue", value);
     }
 
     [Fact]
@@ -142,8 +142,8 @@ public sealed class PlaceholderResolverProviderTest
         Assert.NotNull(token);
         Assert.False(token.HasChanged);
 
-        Assert.True(holder.TryGet("spring:cloud:config:name", out string val));
-        Assert.Equal("myName", val);
+        Assert.True(holder.TryGet("spring:cloud:config:name", out string? value));
+        Assert.Equal("myName", value);
 
         await File.WriteAllTextAsync(path, appsettings2);
 
@@ -152,8 +152,8 @@ public sealed class PlaceholderResolverProviderTest
         await Task.Delay(2000);
 
         Assert.True(token.HasChanged);
-        Assert.True(holder.TryGet("spring:cloud:config:name", out val));
-        Assert.Equal("newMyName", val);
+        Assert.True(holder.TryGet("spring:cloud:config:name", out value));
+        Assert.Equal("newMyName", value);
     }
 
     [Fact]
@@ -221,16 +221,16 @@ public sealed class PlaceholderResolverProviderTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var holder = new PlaceholderResolverProvider(configurationRoot, NullLoggerFactory.Instance);
-        Assert.True(holder.TryGet("spring:cloud:config:name", out string val));
-        Assert.Equal("myName", val);
+        Assert.True(holder.TryGet("spring:cloud:config:name", out string? value));
+        Assert.Equal("myName", value);
 
         await File.WriteAllTextAsync(path, appsettings2);
         await Task.Delay(1000); // There is a 250ms delay
 
         holder.Load();
 
-        Assert.True(holder.TryGet("spring:cloud:config:name", out val));
-        Assert.Equal("newMyName", val);
+        Assert.True(holder.TryGet("spring:cloud:config:name", out value));
+        Assert.Equal("newMyName", value);
     }
 
     [Fact]
@@ -305,10 +305,10 @@ public sealed class PlaceholderResolverProviderTest
     [Fact]
     public void ConstructorWithConfiguration_Dispose_DisposesChildren()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().Add(new DisposableConfigurationSource()).Build();
-        DisposableConfigurationProvider disposableConfigurationProvider = configuration.Providers.OfType<DisposableConfigurationProvider>().Single();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Add(new DisposableConfigurationSource()).Build();
+        DisposableConfigurationProvider disposableConfigurationProvider = configurationRoot.Providers.OfType<DisposableConfigurationProvider>().Single();
 
-        var placeholderResolverProvider = new PlaceholderResolverProvider(configuration, NullLoggerFactory.Instance);
+        var placeholderResolverProvider = new PlaceholderResolverProvider(configurationRoot, NullLoggerFactory.Instance);
 
         placeholderResolverProvider.Dispose();
 

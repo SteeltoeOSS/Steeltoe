@@ -22,7 +22,7 @@ public abstract class DynamicLoggerProvider : IDynamicLoggerProvider
     private LoggerFilter _defaultFilter;
 
     protected ILoggerProvider InnerLoggerProvider { get; }
-    protected IEnumerable<IDynamicMessageProcessor> MessageProcessors { get; }
+    protected ICollection<IDynamicMessageProcessor> MessageProcessors { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DynamicLoggerProvider" /> class.
@@ -39,21 +39,24 @@ public abstract class DynamicLoggerProvider : IDynamicLoggerProvider
     protected DynamicLoggerProvider(ILoggerProvider innerLoggerProvider, LoggerFilterConfiguration loggerFilterConfiguration,
         IEnumerable<IDynamicMessageProcessor> messageProcessors)
     {
-        ArgumentGuard.NotNull(innerLoggerProvider);
-        ArgumentGuard.NotNull(loggerFilterConfiguration);
-        ArgumentGuard.NotNull(messageProcessors);
+        ArgumentNullException.ThrowIfNull(innerLoggerProvider);
+        ArgumentNullException.ThrowIfNull(loggerFilterConfiguration);
+        ArgumentNullException.ThrowIfNull(messageProcessors);
+
+        IDynamicMessageProcessor[] messageProcessorArray = messageProcessors.ToArray();
+        ArgumentGuard.ElementsNotNull(messageProcessorArray);
 
         InnerLoggerProvider = innerLoggerProvider;
         _configurationMinLevels = loggerFilterConfiguration.ConfigurationMinLevels;
         _effectiveFiltersPerCategory = new ConcurrentDictionary<string, LoggerFilter>(loggerFilterConfiguration.EffectiveFilters, StringComparer.Ordinal);
         _defaultFilter = loggerFilterConfiguration.DefaultFilter;
-        MessageProcessors = messageProcessors;
+        MessageProcessors = messageProcessorArray;
     }
 
     /// <inheritdoc />
     public ILogger CreateLogger(string categoryName)
     {
-        ArgumentGuard.NotNullOrEmpty(categoryName);
+        ArgumentException.ThrowIfNullOrEmpty(categoryName);
 
         return _activeLoggersPerCategory.GetOrAdd(categoryName, CreateMessageProcessingLogger(categoryName));
     }
@@ -86,7 +89,7 @@ public abstract class DynamicLoggerProvider : IDynamicLoggerProvider
     /// <inheritdoc />
     public void SetLogLevel(string categoryName, LogLevel? minLevel)
     {
-        ArgumentGuard.NotNullOrEmpty(categoryName);
+        ArgumentException.ThrowIfNullOrEmpty(categoryName);
 
         LoggerFilter? filter = minLevel != null ? level => level >= minLevel : null;
 
@@ -171,7 +174,7 @@ public abstract class DynamicLoggerProvider : IDynamicLoggerProvider
 
     protected virtual MessageProcessingLogger CreateMessageProcessingLogger(string categoryName)
     {
-        ArgumentGuard.NotNullOrEmpty(categoryName);
+        ArgumentException.ThrowIfNullOrEmpty(categoryName);
 
         ILogger logger = InnerLoggerProvider.CreateLogger(categoryName);
         LoggerFilter filter = GetFilter(categoryName);
@@ -181,7 +184,7 @@ public abstract class DynamicLoggerProvider : IDynamicLoggerProvider
 
     protected LoggerFilter GetFilter(string categoryName)
     {
-        ArgumentGuard.NotNullOrEmpty(categoryName);
+        ArgumentException.ThrowIfNullOrEmpty(categoryName);
 
         foreach (string name in GetCategoryNameWithParents(categoryName))
         {

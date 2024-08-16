@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 
 namespace Steeltoe.Logging.DynamicLogger;
 
@@ -23,7 +22,7 @@ public sealed class DynamicConsoleLoggerProvider : DynamicLoggerProvider, ISuppo
 
     private static LoggerFilterConfiguration GetMinimumLevelsFromOptions(IOptionsMonitor<LoggerFilterOptions> filterOptionsMonitor)
     {
-        ArgumentGuard.NotNull(filterOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(filterOptionsMonitor);
 
         var effectiveFilters = new Dictionary<string, LoggerFilter>();
         var configurationMinLevels = new Dictionary<string, LogLevel>();
@@ -60,7 +59,7 @@ public sealed class DynamicConsoleLoggerProvider : DynamicLoggerProvider, ISuppo
 
     void ISupportExternalScope.SetScopeProvider(IExternalScopeProvider scopeProvider)
     {
-        ArgumentGuard.NotNull(scopeProvider);
+        ArgumentNullException.ThrowIfNull(scopeProvider);
 
         ((ConsoleLoggerProvider)InnerLoggerProvider).SetScopeProvider(scopeProvider);
     }

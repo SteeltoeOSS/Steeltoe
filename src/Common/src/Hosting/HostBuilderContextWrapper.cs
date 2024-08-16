@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -29,21 +27,21 @@ internal sealed class HostBuilderContextWrapper
 
     public static HostBuilderContextWrapper Wrap(HostBuilderContext context)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         return new HostBuilderContextWrapper(context.Configuration, context.HostingEnvironment, context);
     }
 
     public static HostBuilderContextWrapper Wrap(WebHostBuilderContext context)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         return new HostBuilderContextWrapper(context.Configuration, context.HostingEnvironment, context);
     }
 
     public static HostBuilderContextWrapper Wrap(IHostApplicationBuilder context)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         return new HostBuilderContextWrapper(context.Configuration, context.Environment, context);
     }

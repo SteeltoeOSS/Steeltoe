@@ -12,29 +12,30 @@ namespace Steeltoe.Management.Endpoint.Test.Trace;
 
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
-    private readonly Dictionary<string, string?> _appSettings = new()
-    {
-        ["management:endpoints:enabled"] = "false",
-        ["management:endpoints:path"] = "/cloudfoundryapplication",
-        ["management:endpoints:trace:enabled"] = "false"
-    };
-
     [Fact]
     public void AddTraceActuator_AddsCorrectServices()
     {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["management:endpoints:enabled"] = "false",
+            ["management:endpoints:path"] = "/cloudfoundryapplication",
+            ["management:endpoints:httpTrace:enabled"] = "false"
+        };
+
         var services = new ServiceCollection();
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(_appSettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        configurationBuilder.AddInMemoryCollection(appSettings);
+        IConfiguration configuration = configurationBuilder.Build();
 
         services.AddLogging();
-        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddSingleton(configuration);
 
         services.AddTraceActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var options = serviceProvider.GetService<IOptionsMonitor<TraceEndpointOptions>>();
-        Assert.NotNull(options);
+        var options = serviceProvider.GetRequiredService<IOptionsMonitor<TraceEndpointOptions>>();
+        Assert.False(options.CurrentValue.Enabled);
+
         var handler = serviceProvider.GetService<IHttpTraceEndpointHandler>();
         Assert.NotNull(handler);
 
@@ -47,19 +48,27 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     [Fact]
     public void AddTraceActuatorV1_AddsCorrectServices()
     {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["management:endpoints:enabled"] = "false",
+            ["management:endpoints:path"] = "/cloudfoundryapplication",
+            ["management:endpoints:trace:enabled"] = "false"
+        };
+
         var services = new ServiceCollection();
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(_appSettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        configurationBuilder.AddInMemoryCollection(appSettings);
+        IConfiguration configuration = configurationBuilder.Build();
 
         services.AddLogging();
-        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddSingleton(configuration);
 
         services.AddTraceActuator(MediaTypeVersion.V1);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var options = serviceProvider.GetService<IOptionsMonitor<TraceEndpointOptions>>();
-        Assert.NotNull(options);
+        var options = serviceProvider.GetRequiredService<IOptionsMonitor<TraceEndpointOptions>>();
+        Assert.False(options.Get("V1").Enabled);
+
         var handler = serviceProvider.GetService<IHttpTraceEndpointHandler>();
         Assert.NotNull(handler);
 

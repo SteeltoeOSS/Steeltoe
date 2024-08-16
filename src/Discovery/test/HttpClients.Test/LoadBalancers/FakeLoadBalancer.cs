@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using Steeltoe.Discovery.HttpClients.LoadBalancers;
 
 namespace Steeltoe.Discovery.HttpClients.Test.LoadBalancers;
@@ -16,7 +15,7 @@ internal sealed class FakeLoadBalancer : ILoadBalancer
 
     public Task<Uri> ResolveServiceInstanceAsync(Uri requestUri, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(requestUri);
+        ArgumentNullException.ThrowIfNull(requestUri);
 
         string replacementUri = requestUri.AbsoluteUri.Replace("replace-me", "some-resolved-host:1234", StringComparison.Ordinal);
         return Task.FromResult(new Uri(replacementUri));
@@ -24,8 +23,8 @@ internal sealed class FakeLoadBalancer : ILoadBalancer
 
     public Task UpdateStatisticsAsync(Uri requestUri, Uri serviceInstanceUri, TimeSpan? responseTime, Exception? exception, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(requestUri);
-        ArgumentGuard.NotNull(serviceInstanceUri);
+        ArgumentNullException.ThrowIfNull(requestUri);
+        ArgumentNullException.ThrowIfNull(serviceInstanceUri);
 
         Statistics.Add(new LoadBalancerStatistic(requestUri, serviceInstanceUri, responseTime, exception));
         return Task.CompletedTask;

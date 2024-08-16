@@ -4,7 +4,7 @@
 
 using Consul;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
+using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Discovery.Consul;
 
@@ -21,9 +21,9 @@ internal sealed class PeriodicHeartbeat : IAsyncDisposable
 
     public PeriodicHeartbeat(string serviceId, TimeSpan interval, IConsulClient client, ILogger<PeriodicHeartbeat> logger)
     {
-        ArgumentGuard.NotNull(serviceId);
-        ArgumentGuard.NotNull(client);
-        ArgumentGuard.NotNull(logger);
+        ArgumentException.ThrowIfNullOrWhiteSpace(serviceId);
+        ArgumentNullException.ThrowIfNull(client);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _serviceId = serviceId;
         Interval = interval;

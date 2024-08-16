@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 using Steeltoe.Configuration.Encryption.Decryption;
 
 namespace Steeltoe.Configuration.Encryption;
@@ -20,7 +19,7 @@ public static class EncryptionServiceCollectionExtensions
     /// a <see cref="IConfiguration" /> will return the newly created <see cref="IConfiguration" /> providing encryption resolution.
     /// </summary>
     /// <param name="services">
-    /// The service container.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configuration">
     /// The configuration the encryption resolver will wrap.
@@ -30,6 +29,9 @@ public static class EncryptionServiceCollectionExtensions
     /// </returns>
     public static IConfiguration ConfigureEncryptionResolver(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
+
         ITextDecryptor textDecryptor = ConfigServerEncryptionSettings.CreateTextDecryptor(configuration);
         return ConfigureEncryptionResolver(services, configuration, textDecryptor, NullLoggerFactory.Instance);
     }
@@ -40,7 +42,7 @@ public static class EncryptionServiceCollectionExtensions
     /// a <see cref="IConfiguration" /> will return the newly created <see cref="IConfiguration" /> providing encryption resolution.
     /// </summary>
     /// <param name="services">
-    /// The service container.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configuration">
     /// The configuration the encryption resolver will wrap.
@@ -62,7 +64,7 @@ public static class EncryptionServiceCollectionExtensions
     /// a <see cref="IConfiguration" /> will return the newly created <see cref="IConfiguration" /> providing encryption resolution.
     /// </summary>
     /// <param name="services">
-    /// The service container.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configuration">
     /// The configuration the encryption resolver will wrap.
@@ -79,10 +81,10 @@ public static class EncryptionServiceCollectionExtensions
     public static IConfiguration ConfigureEncryptionResolver(this IServiceCollection services, IConfiguration configuration, ITextDecryptor textDecryptor,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(loggerFactory);
-        ArgumentGuard.NotNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         IConfiguration newConfiguration = configuration.AddEncryptionResolver(textDecryptor, loggerFactory);
         services.Replace(ServiceDescriptor.Singleton(typeof(IConfiguration), newConfiguration));
@@ -97,7 +99,7 @@ public static class EncryptionServiceCollectionExtensions
     /// a <see cref="IConfiguration" /> will return the newly created <see cref="IConfiguration" /> providing encryption resolution.
     /// </summary>
     /// <param name="services">
-    /// The service container.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configuration">
     /// The configuration the encryption resolver will wrap.
@@ -116,7 +118,7 @@ public static class EncryptionServiceCollectionExtensions
     /// a <see cref="IConfiguration" /> will return the newly created <see cref="IConfiguration" /> providing encryption resolution.
     /// </summary>
     /// <param name="services">
-    /// The service container.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configuration">
     /// The configuration the encryption resolver will wrap.
@@ -130,9 +132,9 @@ public static class EncryptionServiceCollectionExtensions
     public static IConfiguration ConfigureConfigServerEncryptionResolver(this IServiceCollection services, IConfiguration configuration,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         ITextDecryptor textDecryptor = ConfigServerEncryptionSettings.CreateTextDecryptor(configuration);
 

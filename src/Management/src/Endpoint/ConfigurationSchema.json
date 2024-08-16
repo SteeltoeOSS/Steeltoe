@@ -682,7 +682,7 @@
             },
             "SslEnabled": {
               "type": "boolean",
-              "description": "Gets or sets a value indicating whether 'Steeltoe.Management.Endpoint.Options.ManagementOptions.Port' applies to HTTP or HTTPS requests."
+              "description": "Gets or sets a value indicating whether 'Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Port' applies to HTTP or HTTPS requests."
             },
             "Trace": {
               "type": "object",
@@ -836,9 +836,11 @@
           "type": "object",
           "properties": {
             "Name": {
-              "type": "string"
+              "type": "string",
+              "description": "Gets or sets the name of this application."
             }
-          }
+          },
+          "description": "Fallback configuration settings that describe this application."
         },
         "Boot": {
           "type": "object",

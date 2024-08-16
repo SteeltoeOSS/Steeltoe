@@ -82,7 +82,7 @@ jobs:
     displayName: Push changes
     condition: and(succeeded(), eq(variables['hasChangesToCommit'], 'True'))
     env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)  
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     inputs:
       targetType: 'inline'
       script: |
@@ -112,7 +112,7 @@ jobs:
           $statusMessage = "<samp>Code cleanup was canceled, no changes were pushed.</samp>"
         }
         elseif ($env:AGENT_JOBSTATUS -eq "Failed") {
-          $url = "$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)" 
+          $url = "$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)"
           $statusMessage = "<samp>Code cleanup failed to reformat and push changes.</samp><p>View details [here]($url).</p>"
         }
         else {

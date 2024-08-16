@@ -26,16 +26,16 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        IConfiguration configuration = configurationBuilder.Build();
 
         services.AddLogging(builder =>
         {
-            builder.AddConfiguration(configurationRoot);
+            builder.AddConfiguration(configuration);
             builder.AddDynamicConsole();
         });
 
         services.AddLoggersActuator();
-        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddSingleton(configuration);
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var handler = serviceProvider.GetService<ILoggersEndpointHandler>();

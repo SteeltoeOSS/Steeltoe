@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
 
 namespace Steeltoe.Logging.DynamicSerilog;
@@ -18,7 +17,7 @@ public static class SerilogHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddDynamicSerilog(this IHostApplicationBuilder builder)
     {
@@ -35,7 +34,7 @@ public static class SerilogHostApplicationBuilderExtensions
     /// Enables to configure Serilog from code instead of configuration.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddDynamicSerilog(this IHostApplicationBuilder builder,
         Action<IHostApplicationBuilder, LoggerConfiguration>? configureLogger)
@@ -53,7 +52,7 @@ public static class SerilogHostApplicationBuilderExtensions
     /// When set to <c>true</c>, does not remove existing logger providers.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddDynamicSerilog(this IHostApplicationBuilder builder, bool preserveDefaultConsole)
     {
@@ -73,12 +72,12 @@ public static class SerilogHostApplicationBuilderExtensions
     /// When set to <c>true</c>, does not remove existing logger providers.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddDynamicSerilog(this IHostApplicationBuilder builder,
         Action<IHostApplicationBuilder, LoggerConfiguration>? configureLogger, bool preserveDefaultConsole)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddDynamicSerilog(HostBuilderContextWrapper.WrapAction(configureLogger), preserveDefaultConsole);

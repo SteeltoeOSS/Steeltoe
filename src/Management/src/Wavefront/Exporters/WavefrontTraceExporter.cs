@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
-using Steeltoe.Common;
 using Wavefront.SDK.CSharp.Common;
 using Wavefront.SDK.CSharp.DirectIngestion;
 
@@ -25,8 +24,8 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
 
     public WavefrontTraceExporter(WavefrontExporterOptions options, ILogger<WavefrontTraceExporter> logger)
     {
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _options = options;
 

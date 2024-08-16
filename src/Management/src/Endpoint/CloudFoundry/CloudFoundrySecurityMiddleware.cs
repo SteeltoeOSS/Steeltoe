@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
@@ -21,49 +21,52 @@ internal sealed class CloudFoundrySecurityMiddleware
     private readonly ICollection<EndpointOptions> _endpointOptionsCollection;
     private readonly RequestDelegate? _next;
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
-    private readonly SecurityUtils _securityUtils;
+    private readonly PermissionsProvider _permissionsProvider;
 
     public CloudFoundrySecurityMiddleware(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor, IEnumerable<EndpointOptions> endpointOptionsCollection,
-        SecurityUtils securityUtils, ILogger<CloudFoundrySecurityMiddleware> logger, RequestDelegate? next)
+        PermissionsProvider permissionsProvider, ILogger<CloudFoundrySecurityMiddleware> logger, RequestDelegate? next)
     {
-        ArgumentGuard.NotNull(managementOptionsMonitor);
-        ArgumentGuard.NotNull(endpointOptionsMonitor);
-        ArgumentGuard.NotNull(endpointOptionsCollection);
-        ArgumentGuard.NotNull(securityUtils);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(endpointOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(endpointOptionsCollection);
+        ArgumentNullException.ThrowIfNull(permissionsProvider);
+        ArgumentNullException.ThrowIfNull(logger);
+
+        EndpointOptions[] endpointOptionsArray = endpointOptionsCollection.ToArray();
+        ArgumentGuard.ElementsNotNull(endpointOptionsArray);
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptionsMonitor = endpointOptionsMonitor;
-        _endpointOptionsCollection = endpointOptionsCollection.Where(options => options is not HypermediaEndpointOptions).ToList();
-        _securityUtils = securityUtils;
+        _endpointOptionsCollection = endpointOptionsArray.Where(options => options is not HypermediaEndpointOptions).ToArray();
+        _permissionsProvider = permissionsProvider;
         _logger = logger;
         _next = next;
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         _logger.LogDebug("InvokeAsync({RequestPath})", context.Request.Path.Value);
         CloudFoundryEndpointOptions endpointOptions = _endpointOptionsMonitor.CurrentValue;
 
         if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue) &&
-            SecurityUtils.IsCloudFoundryRequest(context.Request.Path))
+            PermissionsProvider.IsCloudFoundryRequest(context.Request.Path))
         {
             if (string.IsNullOrEmpty(endpointOptions.ApplicationId))
             {
                 _logger.LogCritical(
                     "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
 
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityUtils.ApplicationIdMissingMessage));
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.ApplicationIdMissingMessage));
 
                 return;
             }
 
             if (string.IsNullOrEmpty(endpointOptions.CloudFoundryApi))
             {
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityUtils.CloudfoundryApiMissingMessage));
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.CloudfoundryApiMissingMessage));
 
                 return;
             }
@@ -72,7 +75,7 @@ internal sealed class CloudFoundrySecurityMiddleware
 
             if (targetEndpointOptions == null)
             {
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityUtils.EndpointNotConfiguredMessage));
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.EndpointNotConfiguredMessage));
 
                 return;
             }
@@ -87,7 +90,7 @@ internal sealed class CloudFoundrySecurityMiddleware
 
             if (targetEndpointOptions.RequiredPermissions > givenPermissions.Permissions)
             {
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, SecurityUtils.AccessDeniedMessage));
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, PermissionsProvider.AccessDeniedMessage));
                 return;
             }
         }
@@ -100,13 +103,13 @@ internal sealed class CloudFoundrySecurityMiddleware
 
     internal string GetAccessToken(HttpRequest request)
     {
-        if (request.Headers.TryGetValue(SecurityUtils.AuthorizationHeader, out StringValues headerVal))
+        if (request.Headers.TryGetValue(PermissionsProvider.AuthorizationHeader, out StringValues headerVal))
         {
             string header = headerVal.ToString();
 
-            if (header.StartsWith(SecurityUtils.Bearer, StringComparison.OrdinalIgnoreCase))
+            if (header.StartsWith(PermissionsProvider.Bearer, StringComparison.OrdinalIgnoreCase))
             {
-                return header.Substring(SecurityUtils.Bearer.Length + 1);
+                return header.Substring(PermissionsProvider.Bearer.Length + 1);
             }
         }
 
@@ -116,7 +119,7 @@ internal sealed class CloudFoundrySecurityMiddleware
     internal Task<SecurityResult> GetPermissionsAsync(HttpContext context)
     {
         string accessToken = GetAccessToken(context.Request);
-        return _securityUtils.GetPermissionsAsync(accessToken, context.RequestAborted);
+        return _permissionsProvider.GetPermissionsAsync(accessToken, context.RequestAborted);
     }
 
     private EndpointOptions? FindTargetEndpoint(PathString requestPath)

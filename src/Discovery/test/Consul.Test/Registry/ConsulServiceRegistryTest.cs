@@ -3,10 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Consul;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Steeltoe.Common;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Registry;
@@ -26,13 +24,12 @@ public sealed class ConsulServiceRegistryTest
         await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
         await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "foobar" }
-        });
+        };
 
-        IConfiguration configuration = builder.Build();
-        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings, false);
         await registry.RegisterAsync(registration, CancellationToken.None);
 
         agentMoq.Verify(endpoint => endpoint.ServiceRegister(registration.InnerRegistration, default), Times.Once);
@@ -53,13 +50,12 @@ public sealed class ConsulServiceRegistryTest
         await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
         await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "foobar" }
-        });
+        };
 
-        IConfiguration configuration = builder.Build();
-        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings, false);
         await registry.RegisterAsync(registration, CancellationToken.None);
 
         agentMoq.Verify(endpoint => endpoint.ServiceRegister(registration.InnerRegistration, default), Times.Once);
@@ -83,13 +79,12 @@ public sealed class ConsulServiceRegistryTest
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
 
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "foobar" }
-        });
+        };
 
-        IConfiguration configuration = builder.Build();
-        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings, false);
 
         await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
         await Assert.ThrowsAsync<ArgumentException>(async () => await registry.SetStatusAsync(registration, string.Empty, CancellationToken.None));
@@ -105,13 +100,12 @@ public sealed class ConsulServiceRegistryTest
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
 
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "foobar" }
-        });
+        };
 
-        IConfiguration configuration = builder.Build();
-        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings, false);
 
         await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
         await registry.SetStatusAsync(registration, "Up", CancellationToken.None);
@@ -126,13 +120,12 @@ public sealed class ConsulServiceRegistryTest
     {
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
 
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "foobar" }
-        });
+        };
 
-        IConfiguration configuration = builder.Build();
-        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings, false);
 
         var queryResult = new QueryResult<HealthCheck[]>
         {

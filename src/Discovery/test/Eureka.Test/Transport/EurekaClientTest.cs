@@ -173,7 +173,7 @@ public sealed class EurekaClientTest
 
         var services = new ServiceCollection();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
-        services.AddOptions<EurekaClientOptions>();
+        services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
 
@@ -268,7 +268,7 @@ public sealed class EurekaClientTest
 
         var services = new ServiceCollection();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
-        services.AddOptions<EurekaClientOptions>();
+        services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
 
@@ -331,7 +331,7 @@ public sealed class EurekaClientTest
 
         var services = new ServiceCollection();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
-        services.AddOptions<EurekaClientOptions>();
+        services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
 
@@ -514,7 +514,7 @@ public sealed class EurekaClientTest
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        services.AddOptions<EurekaClientOptions>();
+        services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
 
@@ -535,7 +535,7 @@ public sealed class EurekaClientTest
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        services.AddOptions<EurekaClientOptions>();
+        services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
 
@@ -559,7 +559,7 @@ public sealed class EurekaClientTest
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        services.AddOptions<EurekaClientOptions>();
+        services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
 
@@ -599,7 +599,7 @@ public sealed class EurekaClientTest
 
         var services = new ServiceCollection();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
-        services.AddOptions<EurekaClientOptions>();
+        services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
 
@@ -631,7 +631,7 @@ public sealed class EurekaClientTest
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        services.AddOptions<EurekaClientOptions>();
+        services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
 
@@ -667,7 +667,7 @@ public sealed class EurekaClientTest
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        services.AddOptions<EurekaClientOptions>();
+        services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
 

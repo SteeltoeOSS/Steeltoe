@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
-using Steeltoe.Common.Configuration;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
@@ -58,7 +58,8 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddSingleton(inetUtilsMock.Object);
-        services.ConfigureReloadableOptions<ConsulDiscoveryOptions>(ConsulDiscoveryOptions.ConfigurationPrefix);
+        services.AddApplicationInstanceInfo();
+        services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -85,7 +86,8 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddSingleton(inetUtilsMock.Object);
-        services.ConfigureReloadableOptions<ConsulDiscoveryOptions>(ConsulDiscoveryOptions.ConfigurationPrefix);
+        services.AddApplicationInstanceInfo();
+        services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -113,7 +115,8 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         services.AddSingleton(configuration);
         services.AddLogging();
         services.AddSingleton<InetUtils>();
-        services.ConfigureReloadableOptions<ConsulDiscoveryOptions>(ConsulDiscoveryOptions.ConfigurationPrefix);
+        services.AddApplicationInstanceInfo();
+        services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -126,5 +129,17 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
 
         Assert.NotNull(options.HostName);
         Assert.InRange(noSlowReverseDnsQuery.ElapsedMilliseconds, 0, 1500); // testing with an actual reverse dns query results in around 5000 ms
+    }
+
+    [Fact]
+    public void NormalizeForConsul_ReturnsExpected()
+    {
+        Assert.Equal("abc1", PostConfigureConsulDiscoveryOptions.NormalizeForConsul("abc1", "name"));
+        Assert.Equal("ab-c1", PostConfigureConsulDiscoveryOptions.NormalizeForConsul("ab:c1", "name"));
+        Assert.Equal("ab-c1", PostConfigureConsulDiscoveryOptions.NormalizeForConsul("ab::c1", "name"));
+
+        Assert.Throws<InvalidOperationException>(() => PostConfigureConsulDiscoveryOptions.NormalizeForConsul("9abc", "name"));
+        Assert.Throws<InvalidOperationException>(() => PostConfigureConsulDiscoveryOptions.NormalizeForConsul(":abc", "name"));
+        Assert.Throws<InvalidOperationException>(() => PostConfigureConsulDiscoveryOptions.NormalizeForConsul("abc:", "name"));
     }
 }

@@ -4,25 +4,49 @@
 
 using Steeltoe.Common.HealthChecks;
 
-#pragma warning disable S4004 // Collection properties should be readonly
-
 namespace Steeltoe.Management.Endpoint.Health;
 
-public sealed class HealthEndpointResponse : HealthCheckResult
+public sealed class HealthEndpointResponse
 {
     /// <summary>
-    /// Gets or sets the list of available health groups.
+    /// Gets the status of the health check.
     /// </summary>
-    public IList<string> Groups { get; set; } = new List<string>();
+    public HealthStatus Status { get; init; }
 
-    public bool Exists { get; set; } = true;
+    /// <summary>
+    /// Gets a description of the health check result.
+    /// </summary>
+    public string? Description { get; init; }
 
-    public HealthEndpointResponse(HealthCheckResult? result)
+    /// <summary>
+    /// Gets details of the health check.
+    /// </summary>
+    public IDictionary<string, object> Details { get; } = new Dictionary<string, object>();
+
+    /// <summary>
+    /// Gets the list of available health groups.
+    /// </summary>
+    public IList<string> Groups { get; } = new List<string>();
+
+    /// <summary>
+    /// Gets a value indicating whether a health response exists.
+    /// </summary>
+    public bool Exists { get; init; } = true;
+
+    public HealthEndpointResponse()
     {
-        result ??= new HealthCheckResult();
+    }
 
-        Description = result.Description;
-        Details = result.Details;
+    public HealthEndpointResponse(HealthCheckResult result)
+    {
+        ArgumentNullException.ThrowIfNull(result);
+
         Status = result.Status;
+        Description = result.Description;
+
+        foreach ((string key, object value) in result.Details)
+        {
+            Details[key] = value;
+        }
     }
 }

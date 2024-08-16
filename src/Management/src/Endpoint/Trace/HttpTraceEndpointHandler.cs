@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
@@ -23,9 +22,9 @@ internal sealed class HttpTraceEndpointHandler : IHttpTraceEndpointHandler
 
     public HttpTraceEndpointHandler(IOptionsMonitor<TraceEndpointOptions> optionsMonitor, IHttpTraceRepository traceRepository, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(traceRepository);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(traceRepository);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _optionsMonitor = optionsMonitor;
         _traceRepository = traceRepository;

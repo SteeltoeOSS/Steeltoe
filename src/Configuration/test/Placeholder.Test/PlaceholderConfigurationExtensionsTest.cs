@@ -43,9 +43,9 @@ public sealed class PlaceholderConfigurationExtensionsTest
         var loggerFactory = new LoggerFactory();
 
         configurationBuilder.AddPlaceholderResolver(loggerFactory);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        PlaceholderResolverProvider? provider = configuration.Providers.OfType<PlaceholderResolverProvider>().SingleOrDefault();
+        PlaceholderResolverProvider? provider = configurationRoot.Providers.OfType<PlaceholderResolverProvider>().SingleOrDefault();
 
         Assert.NotNull(provider);
     }
@@ -249,21 +249,21 @@ public sealed class PlaceholderConfigurationExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(settings);
-        IConfigurationRoot config1 = builder.Build();
+        IConfigurationRoot configuration1 = builder.Build();
 
-        IConfiguration config2 = config1.AddPlaceholderResolver();
-        Assert.NotSame(config1, config2);
+        IConfiguration configuration2 = configuration1.AddPlaceholderResolver();
+        Assert.NotSame(configuration1, configuration2);
 
-        var root2 = (IConfigurationRoot)config2;
+        var root2 = (IConfigurationRoot)configuration2;
         Assert.Single(root2.Providers);
         IConfigurationProvider provider = root2.Providers.ToList()[0];
         Assert.IsType<PlaceholderResolverProvider>(provider);
 
-        Assert.Null(config2["nokey"]);
-        Assert.Equal("value1", config2["key1"]);
-        Assert.Equal("value1", config2["key2"]);
-        Assert.Equal("notfound", config2["key3"]);
-        Assert.Equal("${nokey}", config2["key4"]);
+        Assert.Null(configuration2["nokey"]);
+        Assert.Equal("value1", configuration2["key1"]);
+        Assert.Equal("value1", configuration2["key2"]);
+        Assert.Equal("notfound", configuration2["key3"]);
+        Assert.Equal("${nokey}", configuration2["key4"]);
     }
 
     [Fact]

@@ -29,7 +29,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
             testContext.AdditionalServices = (services, _) =>
             {
                 services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-                services.AddEnvironmentActuatorServices();
+                services.AddEnvironmentActuator();
             };
 
             testContext.AdditionalConfiguration = configuration =>
@@ -49,7 +49,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
             testContext.AdditionalServices = (services, _) =>
             {
                 services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-                services.AddEnvironmentActuatorServices();
+                services.AddEnvironmentActuator();
             };
 
             testContext.AdditionalConfiguration = configuration =>
@@ -92,7 +92,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvironmentActuatorServices();
+            services.AddEnvironmentActuator();
         };
 
         testContext.AdditionalConfiguration = configuration =>
@@ -144,7 +144,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvironmentActuatorServices();
+            services.AddEnvironmentActuator();
         };
 
         testContext.AdditionalConfiguration = configuration =>
@@ -184,7 +184,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvironmentActuatorServices();
+            services.AddEnvironmentActuator();
         };
 
         testContext.AdditionalConfiguration = configuration =>
@@ -222,7 +222,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvironmentActuatorServices();
+            services.AddEnvironmentActuator();
         };
 
         testContext.AdditionalConfiguration = configuration =>
@@ -270,7 +270,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvironmentActuatorServices();
+            services.AddEnvironmentActuator();
         };
 
         testContext.AdditionalConfiguration = configuration =>
@@ -311,7 +311,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvironmentActuatorServices();
+            services.AddEnvironmentActuator();
         };
 
         testContext.AdditionalConfiguration = configuration =>

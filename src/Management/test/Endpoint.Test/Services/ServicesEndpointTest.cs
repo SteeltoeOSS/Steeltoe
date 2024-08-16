@@ -108,7 +108,7 @@ public sealed class ServicesEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddServicesActuatorServices();
+            services.AddServicesActuator();
             registerService?.Invoke(services);
         };
 

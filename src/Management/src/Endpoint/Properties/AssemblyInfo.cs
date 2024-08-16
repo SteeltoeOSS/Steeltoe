@@ -4,9 +4,11 @@
 
 using System.Runtime.CompilerServices;
 using Aspire;
+using Steeltoe.Common.Configuration;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Health;
@@ -15,7 +17,6 @@ using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.RouteMappings;
 using Steeltoe.Management.Endpoint.Services;
@@ -24,7 +25,7 @@ using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
-[assembly: ConfigurationSchema("Spring:Application:Name", typeof(string))]
+[assembly: ConfigurationSchema("Spring:Application", typeof(SpringApplicationSettings))]
 [assembly: ConfigurationSchema("Spring:Boot:Admin:Client", typeof(SpringBootAdminClientOptions))]
 [assembly: ConfigurationSchema("Management:CloudFoundry:Enabled", typeof(bool))]
 [assembly: ConfigurationSchema("Management:Endpoints", typeof(ManagementOptions))]

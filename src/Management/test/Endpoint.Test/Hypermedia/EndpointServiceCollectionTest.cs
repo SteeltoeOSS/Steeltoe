@@ -22,10 +22,10 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        IConfiguration configuration = configurationBuilder.Build();
 
         services.AddLogging();
-        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddSingleton(configuration);
         services.AddHypermediaActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Encryption.Decryption;
 
@@ -13,8 +12,8 @@ internal static class ConfigurationSettingsHelper
 
     public static void Initialize(ConfigServerEncryptionSettings settings, IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(settings);
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(settings);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         IConfigurationSection configurationSection = configuration.GetSection(ConfigurationPrefix);
 

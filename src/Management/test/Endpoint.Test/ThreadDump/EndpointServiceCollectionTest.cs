@@ -25,17 +25,19 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        IConfiguration configuration = configurationBuilder.Build();
 
         services.AddLogging();
         services.AddThreadDumpActuator();
 
-        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddSingleton(configuration);
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var options = serviceProvider.GetService<IOptionsMonitor<ThreadDumpEndpointOptions>>();
-        Assert.NotNull(options);
+        var options = serviceProvider.GetRequiredService<IOptionsMonitor<ThreadDumpEndpointOptions>>();
+        Assert.False(options.CurrentValue.Enabled);
+
         var threadDumper = serviceProvider.GetService<EventPipeThreadDumper>();
         Assert.NotNull(threadDumper);
+
         var handler = serviceProvider.GetService<IThreadDumpEndpointHandler>();
         Assert.NotNull(handler);
     }

@@ -5,9 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
-using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -20,11 +18,11 @@ public static class ManagementHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddDbMigrationsActuator(this IHostApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddDbMigrationsActuator();
@@ -39,11 +37,11 @@ public static class ManagementHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddEnvironmentActuator(this IHostApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddEnvironmentActuator();
@@ -58,11 +56,11 @@ public static class ManagementHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddHealthActuator(this IHostApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddHealthActuator();
@@ -77,11 +75,11 @@ public static class ManagementHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddHeapDumpActuator(this IHostApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddHeapDumpActuator();
@@ -96,11 +94,11 @@ public static class ManagementHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddHypermediaActuator(this IHostApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddHypermediaActuator();
@@ -115,37 +113,14 @@ public static class ManagementHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddInfoActuator(this IHostApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddInfoActuator();
-
-        return builder;
-    }
-
-    /// <summary>
-    /// Adds the Info actuator to the application.
-    /// </summary>
-    /// <param name="builder">
-    /// The <see cref="IHostApplicationBuilder" /> to configure.
-    /// </param>
-    /// <param name="contributors">
-    /// Contributors to application information.
-    /// </param>
-    /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
-    /// </returns>
-    public static IHostApplicationBuilder AddInfoActuator(this IHostApplicationBuilder builder, params IInfoContributor[] contributors)
-    {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(contributors);
-
-        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
-        wrapper.AddInfoActuator(contributors);
 
         return builder;
     }
@@ -157,11 +132,11 @@ public static class ManagementHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddLoggersActuator(this IHostApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddLoggersActuator();
@@ -176,11 +151,11 @@ public static class ManagementHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddMappingsActuator(this IHostApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddMappingsActuator();
@@ -195,11 +170,11 @@ public static class ManagementHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddMetricsActuator(this IHostApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddMetricsActuator();
@@ -214,11 +189,11 @@ public static class ManagementHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddRefreshActuator(this IHostApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddRefreshActuator();
@@ -233,7 +208,7 @@ public static class ManagementHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddThreadDumpActuator(this IHostApplicationBuilder builder)
     {
@@ -250,11 +225,11 @@ public static class ManagementHostApplicationBuilderExtensions
     /// Specify the media type version to use in the response.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddThreadDumpActuator(this IHostApplicationBuilder builder, MediaTypeVersion mediaTypeVersion)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddThreadDumpActuator(mediaTypeVersion);
@@ -269,7 +244,7 @@ public static class ManagementHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddTraceActuator(this IHostApplicationBuilder builder)
     {
@@ -286,11 +261,11 @@ public static class ManagementHostApplicationBuilderExtensions
     /// Specify the media type version to use in the response.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddTraceActuator(this IHostApplicationBuilder builder, MediaTypeVersion mediaTypeVersion)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddTraceActuator(mediaTypeVersion);
@@ -305,11 +280,11 @@ public static class ManagementHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddServicesActuator(this IHostApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddServicesActuator();
@@ -324,11 +299,11 @@ public static class ManagementHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddCloudFoundryActuator(this IHostApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddCloudFoundryActuator();
@@ -343,7 +318,7 @@ public static class ManagementHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddAllActuators(this IHostApplicationBuilder builder)
     {
@@ -360,7 +335,7 @@ public static class ManagementHostApplicationBuilderExtensions
     /// <see cref="IEndpointConventionBuilder" />.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddAllActuators(this IHostApplicationBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints)
     {
@@ -383,12 +358,12 @@ public static class ManagementHostApplicationBuilderExtensions
     /// Customize the CORS policy.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddAllActuators(this IHostApplicationBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints,
         MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddAllActuators(configureEndpoints, mediaTypeVersion, buildCorsPolicy);

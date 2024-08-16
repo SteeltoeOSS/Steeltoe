@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 namespace Steeltoe.Common.DynamicTypeAccess;
 
 /// <summary>
@@ -17,7 +15,7 @@ internal sealed class InstanceAccessor : ReflectionAccessor
     public InstanceAccessor(TypeAccessor declaredTypeAccessor, object instance)
         : base(AssertNotNull(declaredTypeAccessor))
     {
-        ArgumentGuard.NotNull(instance);
+        ArgumentNullException.ThrowIfNull(instance);
 
         if (!declaredTypeAccessor.Type.IsInstanceOfType(instance))
         {
@@ -30,7 +28,7 @@ internal sealed class InstanceAccessor : ReflectionAccessor
 
     private static Type AssertNotNull(TypeAccessor declaredTypeAccessor)
     {
-        ArgumentGuard.NotNull(declaredTypeAccessor);
+        ArgumentNullException.ThrowIfNull(declaredTypeAccessor);
 
         return declaredTypeAccessor.Type;
     }

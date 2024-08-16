@@ -5,8 +5,10 @@
 using System.Runtime.CompilerServices;
 using Aspire;
 using Steeltoe.Common.Certificates;
+using Steeltoe.Common.Configuration;
 using Steeltoe.Configuration.ConfigServer;
 
+[assembly: ConfigurationSchema("Spring:Application", typeof(SpringApplicationSettings))]
 [assembly: ConfigurationSchema("Spring:Cloud:Config", typeof(ConfigServerClientOptions))]
 [assembly: ConfigurationSchema("Certificates:ConfigServer", typeof(CertificateSettings))]
 [assembly: LoggingCategories("Steeltoe", "Steeltoe.Configuration", "Steeltoe.Configuration.ConfigServer")]

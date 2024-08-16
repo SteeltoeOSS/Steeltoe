@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Info;
@@ -15,35 +16,41 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     [Fact]
     public void AddInfoActuator_AddsCorrectServices()
     {
+        IConfiguration configuration = new ConfigurationBuilder().Build();
+
         var services = new ServiceCollection();
-
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/management",
-            ["management:endpoints:info:enabled"] = "false",
-            ["management:endpoints:info:id"] = "infomanagement"
-        };
-
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddSingleton(configuration);
         services.AddLogging();
         services.AddInfoActuator();
-
-        IInfoContributor extra = new TestInfoContributor();
-        services.AddSingleton(extra);
+        services.AddInfoContributor<TestInfoContributor>();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IEnumerable<IInfoContributor> contributors = serviceProvider.GetServices<IInfoContributor>();
 
-        Assert.NotNull(contributors);
-        List<IInfoContributor> listOfContributors = contributors.ToList();
-        Assert.Equal(4, listOfContributors.Count);
-        Assert.Contains(listOfContributors, item => item is GitInfoContributor or AppSettingsInfoContributor or BuildInfoContributor or TestInfoContributor);
+        IInfoContributor[] contributors = serviceProvider.GetServices<IInfoContributor>().ToArray();
+        contributors.Should().HaveCount(4);
+        contributors.OfType<GitInfoContributor>().Should().NotBeEmpty();
+        contributors.OfType<AppSettingsInfoContributor>().Should().NotBeEmpty();
+        contributors.OfType<BuildInfoContributor>().Should().NotBeEmpty();
+        contributors.OfType<TestInfoContributor>().Should().NotBeEmpty();
 
-        var handler = serviceProvider.GetService<IInfoEndpointHandler>();
-        Assert.NotNull(handler);
+        Assert.NotNull(serviceProvider.GetService<IInfoEndpointHandler>());
+    }
+
+    [Fact]
+    public void AddInfoContributor_DoesNotAddTwice()
+    {
+        IConfiguration configuration = new ConfigurationBuilder().Build();
+
+        var services = new ServiceCollection();
+        services.AddSingleton(configuration);
+        services.AddInfoActuator();
+
+        services.RemoveAll<IInfoContributor>();
+        services.AddInfoContributor<TestInfoContributor>();
+        services.AddInfoContributor<TestInfoContributor>();
+
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        serviceProvider.GetServices<IInfoContributor>().OfType<TestInfoContributor>().Should().HaveCount(1);
     }
 }

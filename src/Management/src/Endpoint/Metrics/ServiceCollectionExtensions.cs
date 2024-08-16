@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics;
 using Steeltoe.Management.Endpoint.Middleware;
 
@@ -15,20 +14,20 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 /// <summary>
 /// Add services used by the Metrics actuator.
 /// </summary>
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Adds the services used by the Metrics actuator.
     /// </summary>
     /// <param name="services">
-    /// Reference to the service collection.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <returns>
-    /// A reference to the service collection.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddMetricsActuatorServices(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.ConfigureEndpointOptions<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>();
         services.TryAddSingleton<IMetricsEndpointHandler, MetricsEndpointHandler>();
@@ -61,7 +60,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddSteeltoeCollector(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         return services.AddSingleton(provider =>
         {

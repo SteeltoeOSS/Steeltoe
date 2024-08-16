@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
@@ -18,9 +17,9 @@ internal sealed class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
 
     public HeapDumpEndpointHandler(IOptionsMonitor<HeapDumpEndpointOptions> optionsMonitor, HeapDumper heapDumper, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(heapDumper);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(heapDumper);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _optionsMonitor = optionsMonitor;
         _heapDumper = heapDumper;

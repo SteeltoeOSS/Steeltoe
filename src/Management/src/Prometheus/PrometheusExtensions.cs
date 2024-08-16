@@ -6,10 +6,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Metrics;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Prometheus;
 
@@ -19,14 +18,14 @@ public static class PrometheusExtensions
     /// Adds the services used by the Prometheus actuator.
     /// </summary>
     /// <param name="services">
-    /// Reference to the service collection.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <returns>
-    /// A reference to the service collection.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddPrometheusActuator(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.ConfigureEndpointOptions<PrometheusEndpointOptions, ConfigurePrometheusEndpointOptions>();
 
@@ -41,7 +40,7 @@ public static class PrometheusExtensions
 
     public static IApplicationBuilder MapPrometheusActuator(this IApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         ManagementOptions? managementOptions = builder.ApplicationServices.GetService<IOptionsMonitor<ManagementOptions>>()?.CurrentValue;
 

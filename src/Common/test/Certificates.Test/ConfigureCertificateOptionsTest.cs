@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common.Configuration;
 using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Common.Certificates.Test;
@@ -31,12 +30,12 @@ public sealed class ConfigureCertificateOptionsTest
     [Fact]
     public void ConfigureCertificateOptions_BadPath_NoCertificate()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath", "doesnotexist.crt" }
         }).Build();
 
-        var configureOptions = new ConfigureCertificateOptions(configuration);
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot);
 
         var options = new CertificateOptions();
 
@@ -158,11 +157,11 @@ public sealed class ConfigureCertificateOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddCertificate(CertificateName, certificate1FilePath, privateKey1FilePath);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddLogging();
-        services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton<IConfiguration>(configurationRoot);
         services.ConfigureCertificateOptions(CertificateName);
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -170,14 +169,15 @@ public sealed class ConfigureCertificateOptionsTest
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);
 
-        IEnumerable<IOptionsChangeTokenSource<CertificateOptions>> tokenSources = serviceProvider.GetServices<IOptionsChangeTokenSource<CertificateOptions>>();
-        bool changeCalled = false;
-        IChangeToken changeToken = tokenSources.First().GetChangeToken();
+        IOptionsChangeTokenSource<CertificateOptions>[] tokenSources = serviceProvider.GetServices<IOptionsChangeTokenSource<CertificateOptions>>().ToArray();
+        tokenSources.OfType<FilePathInOptionsChangeTokenSource<CertificateOptions>>().Should().HaveCount(2);
+        IChangeToken changeToken = tokenSources.OfType<ConfigurationChangeTokenSource<CertificateOptions>>().Single().GetChangeToken();
 
+        bool changeCalled = false;
         _ = changeToken.RegisterChangeCallback(_ => changeCalled = true, "state");
-        configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:CertificateFilePath"] = certificate2FilePath;
-        configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:PrivateKeyFilePath"] = privateKey2FilePath;
-        configuration.Reload();
+        configurationRoot[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:CertificateFilePath"] = certificate2FilePath;
+        configurationRoot[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:PrivateKeyFilePath"] = privateKey2FilePath;
+        configurationRoot.Reload();
         optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(secondX509);
         changeCalled.Should().BeTrue("file path information changed");
 

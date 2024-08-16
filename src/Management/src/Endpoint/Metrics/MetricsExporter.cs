@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.Metrics;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
@@ -32,14 +31,14 @@ internal sealed class MetricsExporter
     /// </param>
     public MetricsExporter(MetricsExporterOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         _cacheDurationMilliseconds = options.CacheDurationMilliseconds;
     }
 
     public void SetCollect(Action collect)
     {
-        ArgumentGuard.NotNull(collect);
+        ArgumentNullException.ThrowIfNull(collect);
 
         _collect = collect;
     }
@@ -69,8 +68,8 @@ internal sealed class MetricsExporter
 
     internal void AddMetrics(Instrument instrument, LabeledAggregationStatistics stats)
     {
-        ArgumentGuard.NotNull(instrument);
-        ArgumentGuard.NotNull(stats);
+        ArgumentNullException.ThrowIfNull(instrument);
+        ArgumentNullException.ThrowIfNull(stats);
 
         UpdateAvailableTags(_availableTags, instrument.Name, stats.Labels);
 

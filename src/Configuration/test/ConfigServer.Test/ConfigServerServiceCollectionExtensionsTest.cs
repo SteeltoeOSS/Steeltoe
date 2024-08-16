@@ -20,15 +20,13 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddConfigServer(environment);
-        IConfigurationRoot configurationRoot = builder.Build();
-        services.AddSingleton<IConfiguration>(configurationRoot);
+        IConfiguration configuration = builder.Build();
+        services.AddSingleton(configuration);
         services.ConfigureConfigServerClientOptions();
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var service = serviceProvider.GetService<IOptions<ConfigServerClientOptions>>();
-        Assert.NotNull(service);
-        ConfigServerClientOptions options = service.Value;
-        Assert.NotNull(options);
-        TestHelper.VerifyDefaults(options);
+        var service = serviceProvider.GetRequiredService<IOptions<ConfigServerClientOptions>>();
+
+        TestHelper.VerifyDefaults(service.Value);
     }
 
     [Fact]
@@ -39,9 +37,10 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
         services.ConfigureConfigServerClientOptions();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var app = serviceProvider.GetService<IOptions<CloudFoundryApplicationOptions>>();
-        Assert.NotNull(app);
-        var service = serviceProvider.GetService<IOptions<CloudFoundryServicesOptions>>();
-        Assert.NotNull(service);
+        var app = serviceProvider.GetRequiredService<IOptions<CloudFoundryApplicationOptions>>();
+        Assert.NotNull(app.Value.ApplicationName);
+
+        var service = serviceProvider.GetRequiredService<IOptions<CloudFoundryServicesOptions>>();
+        Assert.Empty(service.Value.Services);
     }
 }

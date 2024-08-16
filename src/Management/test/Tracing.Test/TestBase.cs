@@ -6,6 +6,7 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Trace;
 using Steeltoe.Logging;
@@ -36,14 +37,16 @@ public class TestBase
     protected void ValidateServiceCollectionCommon(ServiceProvider serviceProvider)
     {
         // confirm Steeltoe types were registered
-        Assert.NotNull(serviceProvider.GetService<TracingOptions>());
+        TracingOptions tracingOptions = serviceProvider.GetRequiredService<IOptions<TracingOptions>>().Value;
+        tracingOptions.Name.Should().NotBeNull();
+
         Assert.IsType<TracingLogProcessor>(serviceProvider.GetRequiredService<IDynamicMessageProcessor>());
 
         // confirm OpenTelemetry types were registered
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
         Assert.NotNull(tracerProvider);
-        var hst = serviceProvider.GetService<IHostedService>();
-        Assert.NotNull(hst);
+        IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
+        Assert.Single(hostedServices, hostedService => hostedService.GetType().Name == "TelemetryHostedService");
     }
 
     protected void ValidateServiceCollectionBase(ServiceProvider serviceProvider)

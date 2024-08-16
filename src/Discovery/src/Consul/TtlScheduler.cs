@@ -7,7 +7,6 @@ using Consul;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Configuration;
 
 namespace Steeltoe.Discovery.Consul;
@@ -42,9 +41,9 @@ public sealed class TtlScheduler : IAsyncDisposable
     /// </param>
     public TtlScheduler(IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulClient client, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(client);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(client);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _optionsMonitor = optionsMonitor;
         _client = client;
@@ -69,7 +68,7 @@ public sealed class TtlScheduler : IAsyncDisposable
     /// </param>
     internal void Add(string instanceId)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(instanceId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
 
         ConsulHeartbeatOptions? heartbeatOptions = _optionsMonitor.CurrentValue.Heartbeat;
 
@@ -106,7 +105,7 @@ public sealed class TtlScheduler : IAsyncDisposable
     /// </param>
     internal async Task RemoveAsync(string instanceId)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(instanceId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
 
         if (ServiceHeartbeats.TryRemove(instanceId, out PeriodicHeartbeat? heartbeat))
         {

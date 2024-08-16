@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka.AppInfo;
@@ -23,8 +22,8 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
 
     public EurekaApplicationsHealthContributor(EurekaDiscoveryClient discoveryClient, IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor)
     {
-        ArgumentGuard.NotNull(discoveryClient);
-        ArgumentGuard.NotNull(clientOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(discoveryClient);
+        ArgumentNullException.ThrowIfNull(clientOptionsMonitor);
 
         _discoveryClient = discoveryClient;
         _clientOptionsMonitor = clientOptionsMonitor;
@@ -92,7 +91,7 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
             return configuredApplications;
         }
 
-        return _discoveryClient.Applications.RegisteredApplications.Select(app => app.Name).ToList();
+        return _discoveryClient.Applications.RegisteredApplications.Select(app => app.Name).ToArray();
     }
 
     internal IList<string>? GetApplicationsFromConfiguration()
@@ -103,7 +102,7 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
 
         if (monitoredApps is { Length: > 0 })
         {
-            return monitoredApps.ToList();
+            return monitoredApps.ToArray();
         }
 
         return null;

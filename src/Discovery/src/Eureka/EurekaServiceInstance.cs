@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka.AppInfo;
 
@@ -22,7 +21,7 @@ internal sealed class EurekaServiceInstance : IServiceInstance
 
     public EurekaServiceInstance(InstanceInfo instance)
     {
-        ArgumentGuard.NotNull(instance);
+        ArgumentNullException.ThrowIfNull(instance);
 
         ServiceId = instance.AppName;
         Host = instance.HostName;

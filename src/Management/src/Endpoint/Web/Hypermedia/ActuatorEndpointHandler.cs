@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
@@ -17,29 +17,32 @@ internal sealed class ActuatorEndpointHandler : IActuatorEndpointHandler
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IOptionsMonitor<HypermediaEndpointOptions> _endpointOptionsMonitor;
     private readonly ICollection<EndpointOptions> _endpointOptionsCollection;
-    private readonly ILogger<ActuatorEndpointHandler> _logger;
+    private readonly ILogger<HypermediaService> _hypermediaServiceLogger;
 
     public EndpointOptions Options => _endpointOptionsMonitor.CurrentValue;
 
     public ActuatorEndpointHandler(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         IOptionsMonitor<HypermediaEndpointOptions> endpointOptionsMonitor, IEnumerable<EndpointOptions> endpointOptionsCollection, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(managementOptionsMonitor);
-        ArgumentGuard.NotNull(endpointOptionsMonitor);
-        ArgumentGuard.NotNull(endpointOptionsCollection);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(endpointOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(endpointOptionsCollection);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
+
+        EndpointOptions[] endpointOptionsArray = endpointOptionsCollection.ToArray();
+        ArgumentGuard.ElementsNotNull(endpointOptionsArray);
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptionsMonitor = endpointOptionsMonitor;
-        _endpointOptionsCollection = endpointOptionsCollection.ToList();
-        _logger = loggerFactory.CreateLogger<ActuatorEndpointHandler>();
+        _endpointOptionsCollection = endpointOptionsArray;
+        _hypermediaServiceLogger = loggerFactory.CreateLogger<HypermediaService>();
     }
 
     public Task<Links> InvokeAsync(string baseUrl, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(baseUrl);
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseUrl);
 
-        var service = new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _endpointOptionsCollection, _logger);
+        var service = new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _endpointOptionsCollection, _hypermediaServiceLogger);
         Links result = service.Invoke(baseUrl);
         return Task.FromResult(result);
     }

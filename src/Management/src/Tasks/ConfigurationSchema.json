@@ -17,7 +17,9 @@
   "type": "object",
   "properties": {
     "RunTask": {
-      "type": "string"
+      "type": "string",
+      "description": "Gets or sets the name of the registered 'Steeltoe.Common.IApplicationTask' to run."
     }
-  }
+  },
+  "description": "Configuration settings for registered application tasks."
 }

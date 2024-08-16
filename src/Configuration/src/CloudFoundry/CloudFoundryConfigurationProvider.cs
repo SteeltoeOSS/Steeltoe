@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
@@ -15,7 +14,7 @@ internal sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
 
     public CloudFoundryConfigurationProvider(ICloudFoundrySettingsReader settingsReader)
     {
-        ArgumentGuard.NotNull(settingsReader);
+        ArgumentNullException.ThrowIfNull(settingsReader);
 
         _settingsReader = settingsReader;
     }

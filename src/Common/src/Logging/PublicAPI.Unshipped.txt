@@ -1,0 +1,6 @@
+#nullable enable
+static Steeltoe.Common.Logging.BootstrapLoggerFactory.Default.get -> Steeltoe.Common.Logging.IBootstrapLoggerFactory!
+Steeltoe.Common.Logging.BootstrapLoggerFactory
+Steeltoe.Common.Logging.IBootstrapLoggerFactory
+Steeltoe.Common.Logging.IBootstrapLoggerFactory.Update(Microsoft.Extensions.Configuration.IConfiguration! configuration) -> void
+Steeltoe.Common.Logging.IBootstrapLoggerFactory.Update(Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void

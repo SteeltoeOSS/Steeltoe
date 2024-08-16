@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration;
 
@@ -17,7 +16,7 @@ internal abstract class PostProcessorConfigurationSource
 
     public void RegisterPostProcessor(IConfigurationPostProcessor processor)
     {
-        ArgumentGuard.NotNull(processor);
+        ArgumentNullException.ThrowIfNull(processor);
 
         _postProcessors.Add(processor);
     }

@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
-
 namespace Steeltoe.Management.Info;
 
 public sealed class InfoBuilder : IInfoBuilder
@@ -17,7 +15,7 @@ public sealed class InfoBuilder : IInfoBuilder
 
     public IInfoBuilder WithInfo(string key, object value)
     {
-        ArgumentGuard.NotNullOrEmpty(key);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         _info[key] = value;
 
@@ -26,7 +24,7 @@ public sealed class InfoBuilder : IInfoBuilder
 
     public IInfoBuilder WithInfo(IDictionary<string, object> details)
     {
-        ArgumentGuard.NotNull(details);
+        ArgumentNullException.ThrowIfNull(details);
 
         foreach (KeyValuePair<string, object> pair in details)
         {

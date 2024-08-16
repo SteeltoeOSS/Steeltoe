@@ -5,9 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
-using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
-using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -20,11 +18,11 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddDbMigrationsActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddDbMigrationsActuator();
@@ -39,11 +37,11 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddEnvironmentActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddEnvironmentActuator();
@@ -58,11 +56,11 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddHealthActuator();
@@ -77,11 +75,11 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddHeapDumpActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddHeapDumpActuator();
@@ -96,11 +94,11 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddHypermediaActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddHypermediaActuator();
@@ -115,37 +113,14 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddInfoActuator();
-
-        return builder;
-    }
-
-    /// <summary>
-    /// Adds the Info actuator to the application.
-    /// </summary>
-    /// <param name="builder">
-    /// The <see cref="IWebHostBuilder" /> to configure.
-    /// </param>
-    /// <param name="contributors">
-    /// Contributors to application information.
-    /// </param>
-    /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
-    /// </returns>
-    public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder builder, params IInfoContributor[] contributors)
-    {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(contributors);
-
-        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
-        wrapper.AddInfoActuator(contributors);
 
         return builder;
     }
@@ -157,11 +132,11 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddLoggersActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddLoggersActuator();
@@ -176,11 +151,11 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddMappingsActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddMappingsActuator();
@@ -195,11 +170,11 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddMetricsActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddMetricsActuator();
@@ -214,11 +189,11 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddRefreshActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddRefreshActuator();
@@ -233,7 +208,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder builder)
     {
@@ -250,11 +225,11 @@ public static class ManagementWebHostBuilderExtensions
     /// Specify the media type version to use in the response.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder builder, MediaTypeVersion mediaTypeVersion)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddThreadDumpActuator(mediaTypeVersion);
@@ -269,7 +244,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder builder)
     {
@@ -286,11 +261,11 @@ public static class ManagementWebHostBuilderExtensions
     /// Specify the media type version to use in the response.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder builder, MediaTypeVersion mediaTypeVersion)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddTraceActuator(mediaTypeVersion);
@@ -305,11 +280,11 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddServicesActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddServicesActuator();
@@ -324,11 +299,11 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddCloudFoundryActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddCloudFoundryActuator();
@@ -343,7 +318,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddAllActuators(this IWebHostBuilder builder)
     {
@@ -360,7 +335,7 @@ public static class ManagementWebHostBuilderExtensions
     /// <see cref="IEndpointConventionBuilder" />.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddAllActuators(this IWebHostBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints)
     {
@@ -383,12 +358,12 @@ public static class ManagementWebHostBuilderExtensions
     /// Customize the CORS policy.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddAllActuators(this IWebHostBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints,
         MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddAllActuators(configureEndpoints, mediaTypeVersion, buildCorsPolicy);

@@ -4,7 +4,6 @@
     <Description>Configuration Provider for reading Cloud Foundry Environment Variables</Description>
     <PackageTags>configuration;CloudFoundry;vcap</PackageTags>
     <IsPackable>true</IsPackable>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

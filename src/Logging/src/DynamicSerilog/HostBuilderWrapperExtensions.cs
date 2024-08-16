@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Serilog;
-using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
 
 namespace Steeltoe.Logging.DynamicSerilog;
@@ -13,7 +12,7 @@ internal static class HostBuilderWrapperExtensions
     public static HostBuilderWrapper AddDynamicSerilog(this HostBuilderWrapper wrapper, Action<HostBuilderContextWrapper, LoggerConfiguration>? configureLogger,
         bool preserveDefaultConsole)
     {
-        ArgumentGuard.NotNull(wrapper);
+        ArgumentNullException.ThrowIfNull(wrapper);
 
         wrapper.ConfigureLogging((hostContext, loggingBuilder) =>
         {

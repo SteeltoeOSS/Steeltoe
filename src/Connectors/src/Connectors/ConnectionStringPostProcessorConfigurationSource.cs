@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Configuration;
 
 namespace Steeltoe.Connectors;
@@ -19,7 +18,7 @@ internal sealed class ConnectionStringPostProcessorConfigurationSource : PostPro
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         CaptureConfigurationBuilder(builder);
         return new ConnectionStringPostProcessorConfigurationProvider(this, _detectConfigurationChanges);

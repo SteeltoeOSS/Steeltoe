@@ -5,7 +5,6 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
@@ -35,7 +34,7 @@ internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
 
     public ClrRuntimeObserver(IOptionsMonitor<MetricsObserverOptions> options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         _options = options;
     }

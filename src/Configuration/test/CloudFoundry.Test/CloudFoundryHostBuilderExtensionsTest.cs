@@ -21,7 +21,7 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
         hostbuilder.AddCloudFoundryConfiguration();
         IHost host = hostbuilder.Build();
 
-        IApplicationInstanceInfo instanceInfo = host.Services.GetApplicationInstanceInfo();
+        var instanceInfo = host.Services.GetRequiredService<IApplicationInstanceInfo>();
         Assert.IsAssignableFrom<CloudFoundryApplicationOptions>(instanceInfo);
         var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
         Assert.Contains(configurationRoot.Providers, provider => provider is CloudFoundryConfigurationProvider);

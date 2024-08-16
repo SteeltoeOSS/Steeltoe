@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health.Availability;
 
 namespace Steeltoe.Management.Endpoint.Health;
@@ -15,11 +14,14 @@ public static class ServiceProviderExtensions
     /// Register events to trigger initial and shutting down values for Readiness and Liveness states of <see cref="ApplicationAvailability" />.
     /// </summary>
     /// <param name="serviceProvider">
-    /// <see cref="IServiceProvider" /> for your application.
+    /// The application's configured services.
     /// </param>
+    /// <returns>
+    /// The incoming <paramref name="serviceProvider" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceProvider InitializeAvailability(this IServiceProvider serviceProvider)
     {
-        ArgumentGuard.NotNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
 
         var availability = serviceProvider.GetService<ApplicationAvailability>();
 

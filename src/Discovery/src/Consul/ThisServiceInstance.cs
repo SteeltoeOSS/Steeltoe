@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 
@@ -33,7 +32,7 @@ internal sealed class ThisServiceInstance : IServiceInstance
 
     public ThisServiceInstance(ConsulRegistration registration)
     {
-        ArgumentGuard.NotNull(registration);
+        ArgumentNullException.ThrowIfNull(registration);
 
         ServiceId = registration.ServiceId;
         Host = registration.Host;

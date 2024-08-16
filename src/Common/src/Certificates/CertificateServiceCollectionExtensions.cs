@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Common.Certificates;
 
@@ -21,11 +20,15 @@ public static class CertificateServiceCollectionExtensions
     /// <param name="certificateName">
     /// Name of the certificate used in configuration and IOptions, or <see cref="string.Empty" /> for an unnamed certificate.
     /// </param>
-    public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, string? certificateName)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, string certificateName)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(certificateName);
 
-        string configurationKey = string.IsNullOrEmpty(certificateName)
+        string configurationKey = certificateName == string.Empty
             ? CertificateOptions.ConfigurationKeyPrefix
             : ConfigurationPath.Combine(CertificateOptions.ConfigurationKeyPrefix, certificateName);
 

@@ -4,8 +4,8 @@
 
 using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using Steeltoe.Common.CasingConventions;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.Redis.DynamicTypeAccess;
 
@@ -25,7 +25,7 @@ internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
 
     public RedisHealthContributor(string? connectionString, ILogger<RedisHealthContributor> logger)
     {
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _connectionString = connectionString;
         Host = GetHostNameFromConnectionString(connectionString);
@@ -44,7 +44,8 @@ internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
             ConnectionString = connectionString
         };
 
-        return (string)builder["host"]!;
+        string? hostName = (string?)builder["host"];
+        return hostName ?? string.Empty;
     }
 
     internal void SetConnectionMultiplexer(object connectionMultiplexer)

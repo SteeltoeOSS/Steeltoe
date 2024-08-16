@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Info;
 
@@ -13,50 +12,74 @@ namespace Steeltoe.Management.Endpoint.Info;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds components of the Info actuator to the D/I container.
+    /// Adds the info actuator to the service container.
     /// </summary>
     /// <param name="services">
-    /// Service collection to add info to.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    public static void AddInfoActuator(this IServiceCollection services)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddInfoActuator(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
-
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, GitInfoContributor>());
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, AppSettingsInfoContributor>());
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, BuildInfoContributor>());
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddCommonActuatorServices();
         services.AddInfoActuatorServices();
+
+        RegisterDefaultInfoContributors(services);
+
+        return services;
+    }
+
+    private static void RegisterDefaultInfoContributors(IServiceCollection services)
+    {
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, GitInfoContributor>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, AppSettingsInfoContributor>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, BuildInfoContributor>());
     }
 
     /// <summary>
-    /// Adds components of the info actuator to the D/I container.
+    /// Adds the specified <see cref="IInfoContributor" /> to the D/I container as a singleton service.
     /// </summary>
+    /// <typeparam name="T">
+    /// The type of info contributor to add.
+    /// </typeparam>
     /// <param name="services">
-    /// Service collection to add info to.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    /// <param name="contributors">
-    /// Contributors to application information.
-    /// </param>
-    public static void AddInfoActuator(this IServiceCollection services, params IInfoContributor[] contributors)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddInfoContributor<T>(this IServiceCollection services)
+        where T : class, IInfoContributor
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(contributors);
+        ArgumentNullException.ThrowIfNull(services);
 
-        AddContributors(services, contributors);
-        services.AddInfoActuator();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, T>());
+
+        return services;
     }
 
-    private static void AddContributors(IServiceCollection services, params IInfoContributor[] contributors)
+    /// <summary>
+    /// Adds the specified <see cref="IInfoContributor" /> to the D/I container as a singleton service.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="infoContributorType">
+    /// The type of the info contributor to add.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddInfoContributor(this IServiceCollection services, Type infoContributorType)
     {
-        var descriptors = new List<ServiceDescriptor>();
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(infoContributorType);
 
-        foreach (IInfoContributor instance in contributors)
-        {
-            descriptors.Add(ServiceDescriptor.Singleton(instance));
-        }
+        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IInfoContributor), infoContributorType));
 
-        services.TryAddEnumerable(descriptors);
+        return services;
     }
 }

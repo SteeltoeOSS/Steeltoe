@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration;
 
@@ -22,7 +21,7 @@ internal static class ConfigurationExtensions
     public static TProvider? FindConfigurationProvider<TProvider>(this IConfiguration configuration)
         where TProvider : class, IConfigurationProvider
     {
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         if (configuration is IConfigurationRoot root)
         {

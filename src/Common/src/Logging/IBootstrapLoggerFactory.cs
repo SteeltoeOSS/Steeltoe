@@ -9,7 +9,7 @@ namespace Steeltoe.Common.Logging;
 
 public interface IBootstrapLoggerFactory : ILoggerFactory
 {
-    void Update(IConfiguration value);
+    void Update(IConfiguration configuration);
 
-    void Update(ILoggerFactory value);
+    void Update(ILoggerFactory loggerFactory);
 }

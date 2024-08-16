@@ -34,7 +34,7 @@ public sealed class ApplicationInfoCollection
 
     internal ApplicationInfoCollection(IList<ApplicationInfo> apps)
     {
-        ArgumentGuard.NotNull(apps);
+        ArgumentNullException.ThrowIfNull(apps);
         ArgumentGuard.ElementsNotNull(apps);
 
         foreach (ApplicationInfo app in apps)
@@ -45,21 +45,21 @@ public sealed class ApplicationInfoCollection
 
     internal ApplicationInfo? GetRegisteredApplication(string appName)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(appName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(appName);
 
         return ApplicationMap.GetValueOrDefault(appName.ToUpperInvariant());
     }
 
     internal IReadOnlyList<InstanceInfo> GetInstancesBySecureVipAddress(string secureVipAddress)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(secureVipAddress);
+        ArgumentException.ThrowIfNullOrWhiteSpace(secureVipAddress);
 
         return GetByVipAddress(secureVipAddress, SecureVipInstanceMap);
     }
 
     internal IReadOnlyList<InstanceInfo> GetInstancesByVipAddress(string vipAddress)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(vipAddress);
+        ArgumentException.ThrowIfNullOrWhiteSpace(vipAddress);
 
         return GetByVipAddress(vipAddress, VipInstanceMap);
     }
@@ -72,7 +72,7 @@ public sealed class ApplicationInfoCollection
 
     internal void Add(ApplicationInfo app)
     {
-        ArgumentGuard.NotNull(app);
+        ArgumentNullException.ThrowIfNull(app);
 
         ApplicationMap.AddOrUpdate(app.Name.ToUpperInvariant(), app, (_, _) => app);
 
@@ -118,12 +118,12 @@ public sealed class ApplicationInfoCollection
             return [];
         }
 
-        return addresses.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToArray();
+        return addresses.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
     }
 
     internal void RemoveInstanceFromVip(InstanceInfo instance)
     {
-        ArgumentGuard.NotNull(instance);
+        ArgumentNullException.ThrowIfNull(instance);
 
         foreach (string vipAddress in ExpandVipAddresses(instance.VipAddress))
         {
@@ -157,7 +157,7 @@ public sealed class ApplicationInfoCollection
 
     internal void UpdateFromDelta(ApplicationInfoCollection delta)
     {
-        ArgumentGuard.NotNull(delta);
+        ArgumentNullException.ThrowIfNull(delta);
 
         foreach (ApplicationInfo app in delta.RegisteredApplications)
         {

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.Redis.DynamicTypeAccess;
@@ -22,8 +21,8 @@ internal sealed class RedisCacheShim : Shim
 
     public static RedisCacheShim CreateInstance(MicrosoftRedisPackageResolver packageResolver, RedisCacheOptionsShim redisCacheOptions)
     {
-        ArgumentGuard.NotNull(packageResolver);
-        ArgumentGuard.NotNull(redisCacheOptions);
+        ArgumentNullException.ThrowIfNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(redisCacheOptions);
 
         Type optionsWrapperType = typeof(OptionsWrapper<>).MakeGenericType(redisCacheOptions.DeclaredType);
         object optionsWrapperInstance = Activator.CreateInstance(optionsWrapperType, redisCacheOptions.Instance)!;

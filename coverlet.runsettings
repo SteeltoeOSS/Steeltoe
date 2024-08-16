@@ -4,7 +4,7 @@
     <DataCollectors>
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
-          <Format>opencover</Format>          
+          <Format>opencover</Format>
           <Exclude>[*.Test*]*,[*]Microsoft.Diagnostics*</Exclude>
           <Include>[Steeltoe.*]*</Include>
           <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>

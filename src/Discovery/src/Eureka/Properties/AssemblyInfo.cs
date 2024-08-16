@@ -5,12 +5,13 @@
 using System.Runtime.CompilerServices;
 using Aspire;
 using Steeltoe.Common.Certificates;
+using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Net;
+using Steeltoe.Discovery.Eureka;
 using Steeltoe.Discovery.Eureka.Configuration;
 
-[assembly: ConfigurationSchema("Spring:Application:Name", typeof(string))]
-[assembly: ConfigurationSchema("Spring:Cloud:Discovery:Enabled", typeof(bool))]
-[assembly: ConfigurationSchema("Spring:Cloud:Discovery:RegistrationMethod", typeof(string))]
+[assembly: ConfigurationSchema("Spring:Application", typeof(SpringApplicationSettings))]
+[assembly: ConfigurationSchema("Spring:Cloud:Discovery", typeof(SpringDiscoverySettings))]
 [assembly: ConfigurationSchema("Spring:Cloud:Inet", typeof(InetOptions))]
 [assembly: ConfigurationSchema("Certificates:Eureka", typeof(CertificateSettings))]
 [assembly: ConfigurationSchema("Eureka:Client", typeof(EurekaClientOptions))]

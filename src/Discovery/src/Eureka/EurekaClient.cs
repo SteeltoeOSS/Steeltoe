@@ -60,10 +60,10 @@ public sealed class EurekaClient
     public EurekaClient(IHttpClientFactory httpClientFactory, IOptionsMonitor<EurekaClientOptions> optionsMonitor,
         EurekaServiceUriStateManager eurekaServiceUriStateManager, ILogger<EurekaClient> logger)
     {
-        ArgumentGuard.NotNull(httpClientFactory);
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(eurekaServiceUriStateManager);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(httpClientFactory);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(eurekaServiceUriStateManager);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _httpClientFactory = httpClientFactory;
         _optionsMonitor = optionsMonitor;
@@ -85,7 +85,7 @@ public sealed class EurekaClient
     /// </exception>
     public async Task RegisterAsync(InstanceInfo instance, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(instance);
+        ArgumentNullException.ThrowIfNull(instance);
 
         if ((Platform.IsContainerized || Platform.IsCloudHosted) && string.Equals(instance.HostName, "localhost", StringComparison.OrdinalIgnoreCase))
         {
@@ -119,8 +119,8 @@ public sealed class EurekaClient
     /// </exception>
     public async Task DeregisterAsync(string appName, string instanceId, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(appName);
-        ArgumentGuard.NotNullOrWhiteSpace(instanceId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(appName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
 
         string path = $"apps/{WebUtility.UrlEncode(appName)}/{WebUtility.UrlEncode(instanceId)}";
         await ExecuteRequestAsync(HttpMethod.Delete, path, null, null, cancellationToken);
@@ -146,8 +146,8 @@ public sealed class EurekaClient
     /// </exception>
     public async Task HeartbeatAsync(string appName, string instanceId, DateTime? lastDirtyTimeUtc, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(appName);
-        ArgumentGuard.NotNullOrWhiteSpace(instanceId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(appName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
 
         // NOTES:
         // - The 'status' query string parameter is always ignored by Eureka Server.
@@ -212,7 +212,7 @@ public sealed class EurekaClient
     /// </exception>
     public Task<ApplicationInfoCollection> GetByVipAsync(string vipAddress, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(vipAddress);
+        ArgumentException.ThrowIfNullOrWhiteSpace(vipAddress);
 
         string path = $"vips/{WebUtility.UrlEncode(vipAddress)}";
         return GetApplicationsAtPathAsync(path, cancellationToken);

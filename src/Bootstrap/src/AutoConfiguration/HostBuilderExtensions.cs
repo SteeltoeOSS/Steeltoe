@@ -23,7 +23,7 @@ public static class HostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddSteeltoe(this IHostBuilder builder)
     {
@@ -40,7 +40,7 @@ public static class HostBuilderExtensions
     /// The set of assembly names to exclude from autoconfiguration. For ease of use, select from the constants in <see cref="SteeltoeAssemblyNames" />.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddSteeltoe(this IHostBuilder builder, IReadOnlySet<string> assemblyNamesToExclude)
     {
@@ -58,7 +58,7 @@ public static class HostBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddSteeltoe(this IHostBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -79,13 +79,14 @@ public static class HostBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddSteeltoe(this IHostBuilder builder, IReadOnlySet<string> assemblyNamesToExclude, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(assemblyNamesToExclude);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(assemblyNamesToExclude);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(assemblyNamesToExclude);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
 

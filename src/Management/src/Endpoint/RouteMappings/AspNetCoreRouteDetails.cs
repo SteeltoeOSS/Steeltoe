@@ -18,12 +18,17 @@ public sealed class AspNetCoreRouteDetails
     public AspNetCoreRouteDetails(string routeTemplate, IList<string> httpMethods, IList<string> consumes, IList<string> produces, IList<string> headers,
         IList<string> @params)
     {
-        ArgumentGuard.NotNull(routeTemplate);
-        ArgumentGuard.NotNull(httpMethods);
-        ArgumentGuard.NotNull(consumes);
-        ArgumentGuard.NotNull(produces);
-        ArgumentGuard.NotNull(headers);
-        ArgumentGuard.NotNull(@params);
+        ArgumentException.ThrowIfNullOrEmpty(routeTemplate);
+        ArgumentNullException.ThrowIfNull(httpMethods);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(httpMethods);
+        ArgumentNullException.ThrowIfNull(consumes);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(consumes);
+        ArgumentNullException.ThrowIfNull(produces);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(produces);
+        ArgumentNullException.ThrowIfNull(headers);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(headers);
+        ArgumentNullException.ThrowIfNull(@params);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(@params);
 
         RouteTemplate = routeTemplate;
         HttpMethods = httpMethods;

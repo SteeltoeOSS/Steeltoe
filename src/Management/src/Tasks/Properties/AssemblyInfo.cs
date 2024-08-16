@@ -4,8 +4,9 @@
 
 using System.Runtime.CompilerServices;
 using Aspire;
+using Steeltoe.Management.Tasks;
 
-[assembly: ConfigurationSchema("RunTask", typeof(string))]
+[assembly: ConfigurationSchema("", typeof(TaskSettings))]
 [assembly: LoggingCategories("Steeltoe", "Steeltoe.Management", "Steeltoe.Management.Tasks")]
 
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

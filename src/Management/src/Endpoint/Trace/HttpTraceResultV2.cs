@@ -14,7 +14,8 @@ public sealed class HttpTraceResultV2 : HttpTraceResult
 
     public HttpTraceResultV2(IList<HttpTrace> traces)
     {
-        ArgumentGuard.NotNull(traces);
+        ArgumentNullException.ThrowIfNull(traces);
+        ArgumentGuard.ElementsNotNull(traces);
 
         Traces = traces;
         CurrentVersion = MediaTypeVersion.V2;

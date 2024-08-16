@@ -7,7 +7,6 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
@@ -23,10 +22,10 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
     public DbMigrationsEndpointHandler(IOptionsMonitor<DbMigrationsEndpointOptions> optionsMonitor, IServiceProvider serviceProvider,
         IDatabaseMigrationScanner scanner, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNull(scanner);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(scanner);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _optionsMonitor = optionsMonitor;
         _serviceProvider = serviceProvider;
@@ -48,7 +47,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
             // @formatter:wrap_chained_method_calls chop_always
             // @formatter:wrap_after_property_in_chained_method_calls true
 
-            List<Type> knownDbContextTypes = _scanner.AssemblyToScan
+            Type[] knownDbContextTypes = _scanner.AssemblyToScan
                 .GetReferencedAssemblies()
                 .Select(Assembly.Load)
                 .SelectMany(assembly => assembly.DefinedTypes)
@@ -56,7 +55,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
                 .Where(type => !type.IsAbstract && type.AsType() != dbContextType && dbContextType.GetTypeInfo()
                     .IsAssignableFrom(type.AsType()))
                 .Select(typeInfo => typeInfo.AsType())
-                .ToList();
+                .ToArray();
 
             // @formatter:wrap_after_property_in_chained_method_calls restore
             // @formatter:wrap_chained_method_calls restore
@@ -94,9 +93,6 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 
     private static void AddRange<T>(IList<T> source, IEnumerable<T> items)
     {
-        ArgumentGuard.NotNull(source);
-        ArgumentGuard.NotNull(items);
-
         if (source is List<T> list)
         {
             list.AddRange(items);

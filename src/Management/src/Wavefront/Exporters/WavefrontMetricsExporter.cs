@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
-using Steeltoe.Common;
 using Wavefront.SDK.CSharp.DirectIngestion;
 using Wavefront.SDK.CSharp.Entities.Metrics;
 
@@ -22,8 +21,8 @@ public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
 
     public WavefrontMetricsExporter(WavefrontExporterOptions options, ILogger<WavefrontMetricsExporter> logger)
     {
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(logger);
 
         Options = options;
         _logger = logger;

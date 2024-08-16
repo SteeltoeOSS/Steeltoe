@@ -41,11 +41,12 @@ public sealed class DiscoveryHostBuilderExtensionsTest
         hostBuilder.ConfigureServices(services => services.AddEurekaDiscoveryClient());
 
         using IHost host = hostBuilder.Build();
-        IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
-        DiscoveryClientHostedService? hostedService = host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().FirstOrDefault();
 
+        IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         Assert.Single(discoveryClients);
         Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
+
+        DiscoveryClientHostedService? hostedService = host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().SingleOrDefault();
         Assert.NotNull(hostedService);
     }
 
@@ -71,12 +72,12 @@ public sealed class DiscoveryHostBuilderExtensionsTest
         hostBuilder.ConfigureServices(services => services.AddConsulDiscoveryClient());
 
         using IHost host = hostBuilder.Build();
-        IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
-        IHostedService? hostedService = host.Services.GetServices<IHostedService>().FirstOrDefault();
 
+        IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         Assert.Single(discoveryClients);
         Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
+
+        DiscoveryClientHostedService? hostedService = host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().SingleOrDefault();
         Assert.NotNull(hostedService);
-        Assert.IsType<DiscoveryClientHostedService>(hostedService);
     }
 }

@@ -19,19 +19,21 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/cloudfoundryapplication"
+            ["management:endpoints:path"] = "/cloudfoundryapplication",
+            ["management:endpoints:services:path"] = "/some"
         };
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        services.AddSingleton<IConfiguration>(configurationRoot);
+        IConfiguration configuration = configurationBuilder.Build();
+        services.AddSingleton(configuration);
         services.AddLogging();
         services.AddServicesActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var options = serviceProvider.GetService<IOptionsMonitor<ServicesEndpointOptions>>();
-        Assert.NotNull(options);
+        var options = serviceProvider.GetRequiredService<IOptionsMonitor<ServicesEndpointOptions>>();
+        Assert.Equal("/some", options.CurrentValue.Path);
+
         var handler = serviceProvider.GetService<IServicesEndpointHandler>();
         Assert.NotNull(handler);
     }

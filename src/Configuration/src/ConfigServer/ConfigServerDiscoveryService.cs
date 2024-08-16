@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
@@ -26,9 +27,9 @@ internal sealed class ConfigServerDiscoveryService
 
     public ConfigServerDiscoveryService(IConfiguration configuration, ConfigServerClientOptions options, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _configuration = configuration;
         _options = options;
@@ -44,14 +45,14 @@ internal sealed class ConfigServerDiscoveryService
         tempServices.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
         // force settings to make sure we don't register the app here
-        IConfigurationRoot tempConfiguration = new ConfigurationBuilder().AddConfiguration(_configuration).AddInMemoryCollection(new Dictionary<string, string?>
+        IConfiguration tempConfiguration = new ConfigurationBuilder().AddConfiguration(_configuration).AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "Eureka:Client:ShouldRegisterWithEureka", "false" },
             { "Eureka:Client:ShouldFetchRegistry", "true" },
             { "Consul:Discovery:Register", "false" }
         }).Build();
 
-        tempServices.AddSingleton<IConfiguration>(tempConfiguration);
+        tempServices.AddSingleton(tempConfiguration);
 
         if (AssemblyLoader.IsAssemblyLoaded("Steeltoe.Discovery.Configuration"))
         {
@@ -154,7 +155,7 @@ internal sealed class ConfigServerDiscoveryService
 
     internal async Task ProvideRuntimeReplacementsAsync(ICollection<IDiscoveryClient> discoveryClientsFromServiceProvider, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(discoveryClientsFromServiceProvider);
+        ArgumentNullException.ThrowIfNull(discoveryClientsFromServiceProvider);
 
         _logger.LogInformation("Replacing the IDiscoveryClient(s) built at startup with the ones for runtime");
 

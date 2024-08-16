@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Trace;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Wavefront.Exporters;
 
@@ -14,9 +13,9 @@ public static class WavefrontTraceExtensions
     public static TracerProviderBuilder AddWavefrontTraceExporter(this TracerProviderBuilder builder, WavefrontExporterOptions options,
         ILogger<WavefrontTraceExporter> logger)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(logger);
 
         var exporter = new WavefrontTraceExporter(options, logger);
 

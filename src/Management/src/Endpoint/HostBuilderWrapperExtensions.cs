@@ -20,7 +20,6 @@ using Steeltoe.Management.Endpoint.Services;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
-using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -67,12 +66,6 @@ internal static class HostBuilderWrapperExtensions
     public static void AddInfoActuator(this HostBuilderWrapper wrapper)
     {
         wrapper.ConfigureServices(services => services.AddInfoActuator());
-        RegisterActuatorEndpoints(wrapper, null);
-    }
-
-    public static void AddInfoActuator(this HostBuilderWrapper wrapper, IInfoContributor[] contributors)
-    {
-        wrapper.ConfigureServices(services => services.AddInfoActuator(contributors));
         RegisterActuatorEndpoints(wrapper, null);
     }
 

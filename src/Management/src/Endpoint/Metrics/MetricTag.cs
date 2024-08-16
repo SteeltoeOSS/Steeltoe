@@ -17,8 +17,9 @@ public sealed class MetricTag
 
     public MetricTag(string tag, ISet<string> values)
     {
-        ArgumentGuard.NotNull(tag);
-        ArgumentGuard.NotNull(values);
+        ArgumentException.ThrowIfNullOrEmpty(tag);
+        ArgumentNullException.ThrowIfNull(values);
+        ArgumentGuard.ElementsNotNull(values);
 
         Tag = tag;
         Values = values;

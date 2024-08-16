@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
-using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.Redis.DynamicTypeAccess;
@@ -35,7 +34,7 @@ internal sealed class RedisCacheOptionsShim : Shim
 
     public static RedisCacheOptionsShim CreateInstance(MicrosoftRedisPackageResolver packageResolver)
     {
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         InstanceAccessor instanceAccessor = packageResolver.RedisCacheOptionsClass.CreateInstance(null);
         return new RedisCacheOptionsShim(instanceAccessor);
@@ -44,7 +43,7 @@ internal sealed class RedisCacheOptionsShim : Shim
     // Return type: Func<Task<IConnectionMultiplexer>>
     public object CreateTaskLambdaForConnectionMultiplexerFactory(ConnectionMultiplexerInterfaceShim connectionMultiplexer)
     {
-        ArgumentGuard.NotNull(connectionMultiplexer);
+        ArgumentNullException.ThrowIfNull(connectionMultiplexer);
 
         MethodInfo assignMethod = GetType().GetMethod(nameof(AssignConnectionMultiplexerFactory), BindingFlags.Static | BindingFlags.NonPublic)!;
         MethodInfo assignGenericMethod = assignMethod.MakeGenericMethod(connectionMultiplexer.DeclaredType);

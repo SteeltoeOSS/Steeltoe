@@ -21,7 +21,7 @@ public sealed class AllActuatorsStartupFilter : IStartupFilter
 
     public AllActuatorsStartupFilter(ActuatorConventionBuilder conventionBuilder)
     {
-        ArgumentGuard.NotNull(conventionBuilder);
+        ArgumentNullException.ThrowIfNull(conventionBuilder);
 
         _conventionBuilder = conventionBuilder;
     }

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -23,7 +22,7 @@ internal sealed class OptionsMonitorWrapper<T> : IOptionsMonitor<T>
 
     public OptionsMonitorWrapper(T options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         CurrentValue = options;
     }

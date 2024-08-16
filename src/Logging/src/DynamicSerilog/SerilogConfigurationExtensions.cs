@@ -4,7 +4,6 @@
 
 using Serilog;
 using Serilog.Events;
-using Steeltoe.Common;
 
 namespace Steeltoe.Logging.DynamicSerilog;
 
@@ -16,8 +15,8 @@ internal static class SerilogConfigurationExtensions
     /// </summary>
     public static LoggerConfiguration ClearLevels(this LoggerConfiguration loggerConfiguration, MinimumLevel minimumLevel)
     {
-        ArgumentGuard.NotNull(loggerConfiguration);
-        ArgumentGuard.NotNull(minimumLevel);
+        ArgumentNullException.ThrowIfNull(loggerConfiguration);
+        ArgumentNullException.ThrowIfNull(minimumLevel);
 
         foreach (KeyValuePair<string, LogEventLevel> overrideLevel in minimumLevel.Override)
         {

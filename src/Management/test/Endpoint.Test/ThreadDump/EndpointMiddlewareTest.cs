@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.ThreadDump;
 
 namespace Steeltoe.Management.Endpoint.Test.ThreadDump;

@@ -6,8 +6,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.ManagementPort;
 
@@ -20,8 +19,8 @@ internal sealed class ManagementPortMiddleware
     public ManagementPortMiddleware(IOptionsMonitor<ManagementOptions> managementOptionsMonitor, RequestDelegate? next,
         ILogger<ManagementPortMiddleware> logger)
     {
-        ArgumentGuard.NotNull(managementOptionsMonitor);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _next = next;
@@ -30,7 +29,7 @@ internal sealed class ManagementPortMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         ManagementOptions managementOptions = _managementOptionsMonitor.CurrentValue;
         _logger.LogDebug("InvokeAsync({RequestPath}), OptionsPath: {OptionsPath}", context.Request.Path.Value, managementOptions.Path);

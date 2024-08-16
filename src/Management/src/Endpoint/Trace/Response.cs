@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
-
 namespace Steeltoe.Management.Endpoint.Trace;
 
 public sealed class Response
@@ -13,7 +11,7 @@ public sealed class Response
 
     public Response(int status, IDictionary<string, IList<string?>> headers)
     {
-        ArgumentGuard.NotNull(headers);
+        ArgumentNullException.ThrowIfNull(headers);
 
         Status = status;
         Headers = headers;

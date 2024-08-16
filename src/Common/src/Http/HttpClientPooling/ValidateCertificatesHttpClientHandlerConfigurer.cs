@@ -2,34 +2,44 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.Http.HttpClientPooling;
 
 /// <summary>
-/// Configures the primary <see cref="HttpClientHandler" /> for a named <see cref="HttpClient" /> by turning certification validation off, based on
-/// configuration.
+/// Configures the primary <see cref="HttpClientHandler" /> for a named <see cref="HttpClient" /> to turn off certification validation, based on
+/// configured options.
 /// </summary>
 /// <typeparam name="TOptions">
 /// The options type providing the configured value.
 /// </typeparam>
-internal sealed class ValidateCertificatesHttpClientHandlerConfigurer<TOptions> : IHttpClientHandlerConfigurer
+internal sealed class ValidateCertificatesHttpClientHandlerConfigurer<TOptions>
     where TOptions : IValidateCertificatesOptions
 {
     private readonly IOptionsMonitor<TOptions> _optionsMonitor;
 
     public ValidateCertificatesHttpClientHandlerConfigurer(IOptionsMonitor<TOptions> optionsMonitor)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
 
         _optionsMonitor = optionsMonitor;
     }
 
-    public void Configure(HttpClientHandler handler)
+    /// <summary>
+    /// Configures the specified <see cref="HttpClientHandler" /> from options with the specified name.
+    /// </summary>
+    /// <param name="name">
+    /// The name of the options in configuration, or an empty string to use default options.
+    /// </param>
+    /// <param name="handler">
+    /// The handler to configure.
+    /// </param>
+    public void Configure(string name, HttpClientHandler handler)
     {
-        TOptions options = _optionsMonitor.CurrentValue;
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(handler);
+
+        TOptions options = _optionsMonitor.Get(name);
 
         if (!options.ValidateCertificates)
         {

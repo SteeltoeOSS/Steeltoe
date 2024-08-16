@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using System.Collections.Immutable;
 using System.Reflection;
 
@@ -32,10 +30,10 @@ internal abstract class PackageResolver
 
     protected PackageResolver(IReadOnlyList<string> assemblyNames, IReadOnlyList<string> packageNames)
     {
-        ArgumentGuard.NotNull(assemblyNames);
-        ArgumentGuard.ElementsNotNullOrEmpty(assemblyNames);
-        ArgumentGuard.NotNull(packageNames);
-        ArgumentGuard.ElementsNotNullOrEmpty(packageNames);
+        ArgumentNullException.ThrowIfNull(assemblyNames);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(assemblyNames);
+        ArgumentNullException.ThrowIfNull(packageNames);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(packageNames);
 
         _assemblyNames = assemblyNames;
         _packageNames = packageNames;
@@ -74,8 +72,8 @@ internal abstract class PackageResolver
 
     protected TypeAccessor ResolveType(params string[] typeNames)
     {
-        ArgumentGuard.NotNull(typeNames);
-        ArgumentGuard.ElementsNotNullOrEmpty(typeNames);
+        ArgumentNullException.ThrowIfNull(typeNames);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(typeNames);
 
         List<Exception> exceptions = new();
 

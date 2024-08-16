@@ -4,8 +4,8 @@
 
 using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using Steeltoe.Common.CasingConventions;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
@@ -25,10 +25,10 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
     public MongoDbHealthContributor(string serviceName, IServiceProvider serviceProvider, MongoDbPackageResolver packageResolver,
         ILogger<MongoDbHealthContributor> logger)
     {
-        ArgumentGuard.NotNull(serviceName);
-        ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNull(packageResolver);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(serviceName);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(logger);
 
         ServiceName = serviceName;
         _clientFactory = new MongoClientInterfaceShimFactory(serviceName, serviceProvider, packageResolver);
@@ -91,9 +91,9 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
 
         public MongoClientInterfaceShimFactory(string serviceName, IServiceProvider serviceProvider, MongoDbPackageResolver packageResolver)
         {
-            ArgumentGuard.NotNull(serviceName);
-            ArgumentGuard.NotNull(serviceProvider);
-            ArgumentGuard.NotNull(packageResolver);
+            ArgumentNullException.ThrowIfNull(serviceName);
+            ArgumentNullException.ThrowIfNull(serviceProvider);
+            ArgumentNullException.ThrowIfNull(packageResolver);
 
             ConnectorFactoryShim<MongoDbOptions> connectorFactoryShim =
                 ConnectorFactoryShim<MongoDbOptions>.FromServiceProvider(serviceProvider, packageResolver.MongoClientInterface.Type);
@@ -120,7 +120,8 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
                 ConnectionString = connectionString
             };
 
-            return (string)builder["server"]!;
+            string? hostName = (string?)builder["server"];
+            return hostName ?? string.Empty;
         }
     }
 }

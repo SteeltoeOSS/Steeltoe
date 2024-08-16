@@ -409,7 +409,7 @@ public sealed class DynamicConsoleLoggerProviderTest
             configurationBuilder.AddInMemoryCollection(appSettings);
         }
 
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfiguration configuration = configurationBuilder.Build();
 
         var services = new ServiceCollection();
 

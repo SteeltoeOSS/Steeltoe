@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Consul;
-using Steeltoe.Common;
 
 namespace Steeltoe.Discovery.Consul.Util;
 
@@ -14,7 +13,7 @@ internal static class ConsulServerUtils
 {
     public static string FindHost(ServiceEntry healthService)
     {
-        ArgumentGuard.NotNull(healthService);
+        ArgumentNullException.ThrowIfNull(healthService);
 
         AgentService service = healthService.Service;
         Node node = healthService.Node;
@@ -34,7 +33,7 @@ internal static class ConsulServerUtils
 
     public static string FixIPv6Address(string address)
     {
-        ArgumentGuard.NotNull(address);
+        ArgumentException.ThrowIfNullOrWhiteSpace(address);
 
         if (IPAddress.TryParse(address, out IPAddress? parsed) && parsed.AddressFamily == AddressFamily.InterNetworkV6)
         {

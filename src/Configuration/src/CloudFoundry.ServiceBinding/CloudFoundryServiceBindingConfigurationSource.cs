@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 
@@ -13,14 +12,14 @@ internal sealed class CloudFoundryServiceBindingConfigurationSource : PostProces
 
     public CloudFoundryServiceBindingConfigurationSource(IServiceBindingsReader serviceBindingsReader)
     {
-        ArgumentGuard.NotNull(serviceBindingsReader);
+        ArgumentNullException.ThrowIfNull(serviceBindingsReader);
 
         _serviceBindingsReader = serviceBindingsReader;
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         CaptureConfigurationBuilder(builder);
         return new CloudFoundryServiceBindingConfigurationProvider(this, _serviceBindingsReader);

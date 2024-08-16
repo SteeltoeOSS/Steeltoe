@@ -26,8 +26,8 @@ public sealed class HypermediaEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddHypermediaActuatorServices();
-            services.AddInfoActuatorServices();
+            services.AddHypermediaActuator();
+            services.AddInfoActuator();
         };
 
         var handler = testContext.GetRequiredService<IActuatorEndpointHandler>();
@@ -49,7 +49,7 @@ public sealed class HypermediaEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddHypermediaActuatorServices();
+            services.AddHypermediaActuator();
         };
 
         var handler = testContext.GetRequiredService<IActuatorEndpointHandler>();
@@ -69,8 +69,8 @@ public sealed class HypermediaEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddHypermediaActuatorServices();
-            services.AddInfoActuatorServices();
+            services.AddHypermediaActuator();
+            services.AddInfoActuator();
         };
 
         testContext.AdditionalConfiguration = configuration =>
@@ -99,8 +99,8 @@ public sealed class HypermediaEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddHypermediaActuatorServices();
-            services.AddInfoActuatorServices();
+            services.AddHypermediaActuator();
+            services.AddInfoActuator();
         };
 
         testContext.AdditionalConfiguration = configuration =>

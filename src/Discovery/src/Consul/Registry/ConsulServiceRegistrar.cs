@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Consul.Configuration;
 
 namespace Steeltoe.Discovery.Consul.Registry;
@@ -52,10 +52,10 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
     public ConsulServiceRegistrar(ConsulServiceRegistry registry, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ConsulRegistration registration,
         ILogger<ConsulServiceRegistrar> logger)
     {
-        ArgumentGuard.NotNull(registry);
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(registration);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(registry);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(registration);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _registry = registry;
         _optionsMonitor = optionsMonitor;
@@ -114,7 +114,7 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
 
     private async Task DoWithRetryAsync(Func<CancellationToken, Task> retryable, ConsulRetryOptions options, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(retryable);
+        ArgumentNullException.ThrowIfNull(retryable);
 
         _logger.LogDebug("Starting retryable action.");
 

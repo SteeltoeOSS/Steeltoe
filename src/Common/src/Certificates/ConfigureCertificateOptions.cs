@@ -7,7 +7,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Common.Certificates;
 
@@ -20,7 +19,7 @@ internal sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certi
 
     public ConfigureCertificateOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         _configuration = configuration;
     }
@@ -32,7 +31,7 @@ internal sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certi
 
     public void Configure(string? name, CertificateOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         string? certificateFilePath = _configuration.GetValue<string>(GetConfigurationKey(name, "CertificateFilePath"));
 
@@ -47,10 +46,10 @@ internal sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certi
             ? X509Certificate2.CreateFromPemFile(certificateFilePath, privateKeyFilePath)
             : new X509Certificate2(certificateFilePath);
 
-        List<X509Certificate2> certChain = CertificateRegex.Matches(File.ReadAllText(certificateFilePath))
-            .Select(x => new X509Certificate2(Encoding.ASCII.GetBytes(x.Value))).ToList();
+        X509Certificate2[] certificateChain = CertificateRegex.Matches(File.ReadAllText(certificateFilePath))
+            .Select(x => new X509Certificate2(Encoding.ASCII.GetBytes(x.Value))).ToArray();
 
-        foreach (X509Certificate2 issuer in certChain.Skip(1))
+        foreach (X509Certificate2 issuer in certificateChain.Skip(1))
         {
             options.IssuerChain.Add(issuer);
         }

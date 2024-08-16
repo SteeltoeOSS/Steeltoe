@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
@@ -19,9 +18,9 @@ internal sealed class ThreadDumpEndpointHandler : IThreadDumpEndpointHandler
     public ThreadDumpEndpointHandler(IOptionsMonitor<ThreadDumpEndpointOptions> optionsMonitor, EventPipeThreadDumper threadDumper,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(threadDumper);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(threadDumper);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _optionsMonitor = optionsMonitor;
         _threadDumper = threadDumper;

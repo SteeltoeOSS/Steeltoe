@@ -17,7 +17,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.RouteMappings;
 
 namespace Steeltoe.Management.Endpoint.Test.RouteMappings;

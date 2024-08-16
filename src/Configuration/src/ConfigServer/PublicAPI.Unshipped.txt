@@ -16,7 +16,7 @@ static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.Add
 static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Hosting.IHostBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Configuration.ConfigServer.ConfigServerServiceCollectionExtensions.AddConfigServerHealthContributor(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Configuration.ConfigServer.ConfigServerServiceCollectionExtensions.AddConfigServerServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
+static Steeltoe.Configuration.ConfigServer.ConfigServerServiceCollectionExtensions.AddConfigServerServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Configuration.ConfigServer.ConfigServerServiceCollectionExtensions.ConfigureConfigServerClientOptions(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.ConfigEnvironment() -> void

@@ -9,8 +9,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint;
@@ -18,25 +18,28 @@ namespace Steeltoe.Management.Endpoint;
 internal sealed class ActuatorEndpointMapper
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
-    private readonly IList<IEndpointMiddleware> _middlewares;
+    private readonly ICollection<IEndpointMiddleware> _middlewares;
     private readonly ILogger<ActuatorEndpointMapper> _logger;
 
     public ActuatorEndpointMapper(IOptionsMonitor<ManagementOptions> managementOptionsMonitor, IEnumerable<IEndpointMiddleware> middlewares,
         ILogger<ActuatorEndpointMapper> logger)
     {
-        ArgumentGuard.NotNull(managementOptionsMonitor);
-        ArgumentGuard.NotNull(middlewares);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(middlewares);
+        ArgumentNullException.ThrowIfNull(logger);
+
+        IEndpointMiddleware[] middlewareArray = middlewares.ToArray();
+        ArgumentGuard.ElementsNotNull(middlewareArray);
 
         _managementOptionsMonitor = managementOptionsMonitor;
-        _middlewares = middlewares.ToList();
+        _middlewares = middlewareArray;
         _logger = logger;
     }
 
     public void Map(IEndpointRouteBuilder endpointRouteBuilder, ActuatorConventionBuilder conventionBuilder)
     {
-        ArgumentGuard.NotNull(endpointRouteBuilder);
-        ArgumentGuard.NotNull(conventionBuilder);
+        ArgumentNullException.ThrowIfNull(endpointRouteBuilder);
+        ArgumentNullException.ThrowIfNull(conventionBuilder);
 
         InnerMap(middleware => endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middleware.GetType()).Build(),
             (middleware, requestPath, pipeline) =>
@@ -48,7 +51,7 @@ internal sealed class ActuatorEndpointMapper
 
     public void Map(IRouteBuilder routeBuilder)
     {
-        ArgumentGuard.NotNull(routeBuilder);
+        ArgumentNullException.ThrowIfNull(routeBuilder);
 
         InnerMap(middleware => routeBuilder.ApplicationBuilder.UseMiddleware(middleware.GetType()).Build(), (middleware, requestPath, pipeline) =>
         {

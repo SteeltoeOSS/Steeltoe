@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -16,7 +15,7 @@ public sealed class HealthCheckHandlerProvider
 
     public HealthCheckHandlerProvider(IServiceProvider serviceProvider)
     {
-        ArgumentGuard.NotNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
 
         _serviceProvider = serviceProvider;
     }

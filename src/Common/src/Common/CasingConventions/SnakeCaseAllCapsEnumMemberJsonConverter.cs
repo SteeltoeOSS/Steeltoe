@@ -20,6 +20,8 @@ public sealed class SnakeCaseAllCapsEnumMemberJsonConverter : JsonConverterFacto
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert)
     {
+        ArgumentNullException.ThrowIfNull(typeToConvert);
+
         return typeToConvert.IsEnum;
     }
 
@@ -27,6 +29,6 @@ public sealed class SnakeCaseAllCapsEnumMemberJsonConverter : JsonConverterFacto
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
         Type converterType = typeof(SnakeCaseEnumConverter<>).MakeGenericType(typeToConvert);
-        return (JsonConverter)Activator.CreateInstance(converterType, SnakeCaseStyle.AllCaps);
+        return (JsonConverter)Activator.CreateInstance(converterType, SnakeCaseStyle.AllCaps)!;
     }
 }

@@ -3,12 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
-internal static class ConfigurationSettingsHelper
+internal sealed class ConfigurationSettingsHelper
 {
     private const string SpringApplicationPrefix = "spring:application";
     private const string VcapApplicationPrefix = "vcap:application";
@@ -16,11 +16,20 @@ internal static class ConfigurationSettingsHelper
     private const string VcapServicesConfigserver30Prefix = "vcap:services:p.config-server:0";
     private const string VcapServicesConfigserverAltPrefix = "vcap:services:config-server:0";
 
-    public static void Initialize(string sectionPrefix, ConfigServerClientOptions options, IConfiguration configuration)
+    private readonly ConfigurationValuesHelper _configurationValuesHelper;
+
+    public ConfigurationSettingsHelper(ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(sectionPrefix);
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
+
+        _configurationValuesHelper = new ConfigurationValuesHelper(loggerFactory);
+    }
+
+    public void Initialize(string sectionPrefix, ConfigServerClientOptions options, IConfiguration configuration)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(sectionPrefix);
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         IConfigurationSection configurationSection = configuration.GetSection(sectionPrefix);
 
@@ -56,42 +65,42 @@ internal static class ConfigurationSettingsHelper
         options.Uri = GetCloudFoundryUri(sectionPrefix, configuration, options.Uri);
     }
 
-    private static string? GetEnvironment(IConfigurationSection section, string? defaultValue)
+    private string? GetEnvironment(IConfigurationSection section, string? defaultValue)
     {
         return section.GetValue("env", string.IsNullOrEmpty(defaultValue) ? "Production" : defaultValue);
     }
 
-    private static bool GetCertificateValidation(IConfigurationSection section, bool defaultValue)
+    private bool GetCertificateValidation(IConfigurationSection section, bool defaultValue)
     {
         return section.GetValue("validateCertificates", defaultValue) && section.GetValue("validate_certificates", defaultValue);
     }
 
-    private static string GetClientSecret(string sectionPrefix, IConfiguration configuration)
+    private string? GetClientSecret(string sectionPrefix, IConfiguration configuration)
     {
-        return ConfigurationValuesHelper.GetSetting("credentials:client_secret", configuration, null, VcapServicesConfigserverPrefix,
+        return _configurationValuesHelper.GetSetting("credentials:client_secret", configuration, null, VcapServicesConfigserverPrefix,
             VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);
     }
 
-    private static string GetClientId(string sectionPrefix, IConfiguration configuration)
+    private string? GetClientId(string sectionPrefix, IConfiguration configuration)
     {
-        return ConfigurationValuesHelper.GetSetting("credentials:client_id", configuration, null, VcapServicesConfigserverPrefix,
+        return _configurationValuesHelper.GetSetting("credentials:client_id", configuration, null, VcapServicesConfigserverPrefix,
             VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);
     }
 
-    private static string GetAccessTokenUri(string sectionPrefix, IConfiguration configuration)
+    private string? GetAccessTokenUri(string sectionPrefix, IConfiguration configuration)
     {
-        return ConfigurationValuesHelper.GetSetting("credentials:access_token_uri", configuration, null, VcapServicesConfigserverPrefix,
+        return _configurationValuesHelper.GetSetting("credentials:access_token_uri", configuration, null, VcapServicesConfigserverPrefix,
             VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);
     }
 
-    private static string? GetApplicationName(string sectionPrefix, IConfiguration configuration, string? defaultValue)
+    private string? GetApplicationName(string sectionPrefix, IConfiguration configuration, string? defaultValue)
     {
-        return ConfigurationValuesHelper.GetSetting("name", configuration, defaultValue, sectionPrefix, SpringApplicationPrefix, VcapApplicationPrefix);
+        return _configurationValuesHelper.GetSetting("name", configuration, defaultValue, sectionPrefix, SpringApplicationPrefix, VcapApplicationPrefix);
     }
 
-    private static string? GetCloudFoundryUri(string sectionPrefix, IConfiguration configuration, string? defaultValue)
+    private string? GetCloudFoundryUri(string sectionPrefix, IConfiguration configuration, string? defaultValue)
     {
-        return ConfigurationValuesHelper.GetSetting("credentials:uri", configuration, defaultValue, sectionPrefix, VcapServicesConfigserverPrefix,
+        return _configurationValuesHelper.GetSetting("credentials:uri", configuration, defaultValue, sectionPrefix, VcapServicesConfigserverPrefix,
             VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix);
     }
 }

@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.Redis.DynamicTypeAccess;
@@ -30,7 +29,7 @@ public static class RedisServiceCollectionExtensions
     /// The <see cref="IConfiguration" /> to read application settings from.
     /// </param>
     /// <returns>
-    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
     {
@@ -53,7 +52,7 @@ public static class RedisServiceCollectionExtensions
     /// An optional delegate to configure this connector.
     /// </param>
     /// <returns>
-    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
     {
@@ -64,10 +63,10 @@ public static class RedisServiceCollectionExtensions
         StackExchangeRedisPackageResolver stackExchangeRedisPackageResolver, MicrosoftRedisPackageResolver microsoftRedisPackageResolver,
         Action<ConnectorAddOptionsBuilder>? addAction = null)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(stackExchangeRedisPackageResolver);
-        ArgumentGuard.NotNull(microsoftRedisPackageResolver);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(stackExchangeRedisPackageResolver);
+        ArgumentNullException.ThrowIfNull(microsoftRedisPackageResolver);
 
         if (!ConnectorFactoryShim<RedisOptions>.IsRegistered(stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type, services))
         {

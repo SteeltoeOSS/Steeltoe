@@ -5,7 +5,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
@@ -34,9 +33,9 @@ internal sealed class EurekaHealthCheckHandler : IHealthCheckHandler
     public EurekaHealthCheckHandler(IHealthAggregator healthAggregator, IOptionsMonitor<HealthCheckServiceOptions> healthOptionsMonitor,
         IServiceProvider serviceProvider)
     {
-        ArgumentGuard.NotNull(healthAggregator);
-        ArgumentGuard.NotNull(healthOptionsMonitor);
-        ArgumentGuard.NotNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(healthAggregator);
+        ArgumentNullException.ThrowIfNull(healthOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
 
         _healthAggregator = healthAggregator;
         _healthOptionsMonitor = healthOptionsMonitor;

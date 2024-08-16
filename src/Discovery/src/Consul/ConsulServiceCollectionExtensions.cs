@@ -6,9 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
-using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Net;
 using Steeltoe.Discovery.Consul.Configuration;
@@ -26,9 +25,12 @@ public static class ConsulServiceCollectionExtensions
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddConsulDiscoveryClient(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         ConfigureConsulServices(services);
         AddConsulServices(services);
@@ -38,22 +40,27 @@ public static class ConsulServiceCollectionExtensions
 
     private static void ConfigureConsulServices(IServiceCollection services)
     {
-        services.RegisterDefaultApplicationInstanceInfo();
+        services.AddApplicationInstanceInfo();
         services.TryAddSingleton<InetUtils>();
 
         ConfigureConsulOptions(services);
         ConfigureConsulDiscoveryOptions(services);
+
+        services.AddOptions<InetOptions>().BindConfiguration(InetOptions.ConfigurationPrefix);
     }
 
     private static void ConfigureConsulOptions(IServiceCollection services)
     {
-        services.ConfigureReloadableOptions<ConsulOptions>(ConsulOptions.ConfigurationPrefix);
+        services.AddOptions<ConsulOptions>().BindConfiguration(ConsulOptions.ConfigurationPrefix);
         services.AddSingleton<IValidateOptions<ConsulOptions>, ValidateConsulOptions>();
     }
 
     private static void ConfigureConsulDiscoveryOptions(IServiceCollection services)
     {
-        services.ConfigureReloadableOptions<ConsulDiscoveryOptions>(ConsulDiscoveryOptions.ConfigurationPrefix, (options, serviceProvider) =>
+        OptionsBuilder<ConsulDiscoveryOptions> optionsBuilder = services.AddOptions<ConsulDiscoveryOptions>();
+        optionsBuilder.BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
+
+        optionsBuilder.Configure<IServiceProvider>((options, serviceProvider) =>
         {
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
@@ -64,8 +71,6 @@ public static class ConsulServiceCollectionExtensions
                 options.Enabled = false;
             }
         });
-
-        services.ConfigureReloadableOptions<InetOptions>(InetOptions.ConfigurationPrefix);
 
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
     }
@@ -84,8 +89,7 @@ public static class ConsulServiceCollectionExtensions
         services.AddSingleton(serviceProvider =>
         {
             var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConsulDiscoveryOptions>>();
-            var instanceInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
-            return ConsulRegistration.Create(optionsMonitor, instanceInfo);
+            return ConsulRegistration.Create(optionsMonitor);
         });
 
         services.AddSingleton<ConsulServiceRegistrar>();

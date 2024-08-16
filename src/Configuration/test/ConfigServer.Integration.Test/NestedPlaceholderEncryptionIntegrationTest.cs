@@ -33,16 +33,16 @@ public sealed class NestedPlaceholderEncryptionIntegrationTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(settings);
-        IConfigurationRoot config1 = builder.Build();
+        IConfigurationRoot configuration1 = builder.Build();
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<PlaceholderBeforeEncryptionStartup>().UseConfiguration(config1);
+        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<PlaceholderBeforeEncryptionStartup>().UseConfiguration(configuration1);
 
         using var server = new TestServer(hostBuilder);
-        var config2 = server.Services.GetRequiredService<IConfiguration>();
-        Assert.NotSame(config1, config2);
+        var configuration2 = server.Services.GetRequiredService<IConfiguration>();
+        Assert.NotSame(configuration1, configuration2);
 
-        Assert.Equal("encrypt the world", config2["encrypted"]);
-        Assert.Equal("encrypt the world", config2["placeholder"]);
+        Assert.Equal("encrypt the world", configuration2["encrypted"]);
+        Assert.Equal("encrypt the world", configuration2["placeholder"]);
     }
 
     [Fact]
@@ -67,15 +67,15 @@ public sealed class NestedPlaceholderEncryptionIntegrationTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(settings);
-        IConfigurationRoot config1 = builder.Build();
+        IConfigurationRoot configuration1 = builder.Build();
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<EncryptionBeforePlaceholderStartup>().UseConfiguration(config1);
+        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<EncryptionBeforePlaceholderStartup>().UseConfiguration(configuration1);
 
         using var server = new TestServer(hostBuilder);
-        var config2 = server.Services.GetRequiredService<IConfiguration>();
-        Assert.NotSame(config1, config2);
+        var configuration2 = server.Services.GetRequiredService<IConfiguration>();
+        Assert.NotSame(configuration1, configuration2);
 
-        Assert.Equal("encrypt the world", config2["encrypted"]);
-        Assert.Equal("encrypt the world", config2["placeholder"]);
+        Assert.Equal("encrypt the world", configuration2["encrypted"]);
+        Assert.Equal("encrypt the world", configuration2["placeholder"]);
     }
 }

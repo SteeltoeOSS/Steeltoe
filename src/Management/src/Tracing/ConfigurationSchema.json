@@ -43,6 +43,10 @@
               "type": "integer",
               "description": "Gets or sets the maximum payload size in bytes. Default value: 4096."
             },
+            "Name": {
+              "type": "string",
+              "description": "Gets or sets the name of this application."
+            },
             "NeverSample": {
               "type": "boolean",
               "description": "Gets or sets a value indicating whether traces should NEVER be captured. Default value: false."
@@ -70,9 +74,11 @@
           "type": "object",
           "properties": {
             "Name": {
-              "type": "string"
+              "type": "string",
+              "description": "Gets or sets the name of this application."
             }
-          }
+          },
+          "description": "Fallback configuration settings that describe this application."
         }
       }
     }

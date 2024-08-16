@@ -50,7 +50,7 @@ public sealed class CapturingLoggerProvider : ILoggerProvider
     {
         lock (_lockObject)
         {
-            return _messages.ToList();
+            return _messages.ToArray();
         }
     }
 

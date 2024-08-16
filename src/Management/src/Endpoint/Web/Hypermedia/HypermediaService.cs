@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
@@ -15,15 +15,17 @@ internal sealed class HypermediaService
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly EndpointOptions _endpointOptions;
     private readonly ICollection<EndpointOptions> _endpointOptionsCollection;
-    private readonly ILogger _logger;
+    private readonly ILogger<HypermediaService> _logger;
 
     public HypermediaService(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        IOptionsMonitor<HypermediaEndpointOptions> hypermediaEndpointOptionsMonitor, ICollection<EndpointOptions> endpointOptionsCollection, ILogger logger)
+        IOptionsMonitor<HypermediaEndpointOptions> hypermediaEndpointOptionsMonitor, ICollection<EndpointOptions> endpointOptionsCollection,
+        ILogger<HypermediaService> logger)
     {
-        ArgumentGuard.NotNull(managementOptionsMonitor);
-        ArgumentGuard.NotNull(hypermediaEndpointOptionsMonitor);
-        ArgumentGuard.NotNull(endpointOptionsCollection);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(hypermediaEndpointOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(endpointOptionsCollection);
+        ArgumentGuard.ElementsNotNull(endpointOptionsCollection);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptions = hypermediaEndpointOptionsMonitor.CurrentValue;
@@ -32,12 +34,14 @@ internal sealed class HypermediaService
     }
 
     public HypermediaService(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        IOptionsMonitor<CloudFoundryEndpointOptions> cloudFoundryEndpointOptionsMonitor, ICollection<EndpointOptions> endpointOptionsCollection, ILogger logger)
+        IOptionsMonitor<CloudFoundryEndpointOptions> cloudFoundryEndpointOptionsMonitor, ICollection<EndpointOptions> endpointOptionsCollection,
+        ILogger<HypermediaService> logger)
     {
-        ArgumentGuard.NotNull(managementOptionsMonitor);
-        ArgumentGuard.NotNull(cloudFoundryEndpointOptionsMonitor);
-        ArgumentGuard.NotNull(endpointOptionsCollection);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(cloudFoundryEndpointOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(endpointOptionsCollection);
+        ArgumentGuard.ElementsNotNull(endpointOptionsCollection);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptions = cloudFoundryEndpointOptionsMonitor.CurrentValue;
@@ -47,7 +51,7 @@ internal sealed class HypermediaService
 
     public Links Invoke(string baseUrl)
     {
-        ArgumentGuard.NotNull(baseUrl);
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseUrl);
 
         var links = new Links();
 

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
@@ -15,7 +16,9 @@ public sealed class ConfigurationSettingsHelperTest
         var options = new ConfigServerClientOptions();
         IConfiguration configuration = new ConfigurationRoot(new List<IConfigurationProvider>());
 
-        ConfigurationSettingsHelper.Initialize(prefix, options, configuration);
+        var helper = new ConfigurationSettingsHelper(NullLoggerFactory.Instance);
+        helper.Initialize(prefix, options, configuration);
+
         TestHelper.VerifyDefaults(options);
     }
 }

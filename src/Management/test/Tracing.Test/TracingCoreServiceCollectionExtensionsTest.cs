@@ -29,12 +29,15 @@ public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
         IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
 
         ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider(true);
-        var hst = serviceProvider.GetService<IHostedService>();
-        Assert.NotNull(hst);
+
+        IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
+        Assert.Single(hostedServices, hostedService => hostedService.GetType().Name == "TelemetryHostedService");
+
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
         Assert.NotNull(tracerProvider);
 
-        Assert.NotNull(serviceProvider.GetService<IOptions<OtlpExporterOptions>>());
+        var otlpOptions = serviceProvider.GetRequiredService<IOptions<OtlpExporterOptions>>();
+        Assert.NotNull(otlpOptions.Value.Endpoint);
     }
 
     [Fact]

@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Serilog;
-using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
 
 namespace Steeltoe.Logging.DynamicSerilog;
@@ -18,7 +17,7 @@ public static class SerilogWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddDynamicSerilog(this IWebHostBuilder builder)
     {
@@ -35,7 +34,7 @@ public static class SerilogWebHostBuilderExtensions
     /// Enables to configure Serilog from code instead of configuration.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddDynamicSerilog(this IWebHostBuilder builder, Action<WebHostBuilderContext, LoggerConfiguration>? configureLogger)
     {
@@ -52,7 +51,7 @@ public static class SerilogWebHostBuilderExtensions
     /// When set to <c>true</c>, does not remove existing logger providers.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddDynamicSerilog(this IWebHostBuilder builder, bool preserveDefaultConsole)
     {
@@ -72,12 +71,12 @@ public static class SerilogWebHostBuilderExtensions
     /// When set to <c>true</c>, does not remove existing logger providers.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddDynamicSerilog(this IWebHostBuilder builder, Action<WebHostBuilderContext, LoggerConfiguration>? configureLogger,
         bool preserveDefaultConsole)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddDynamicSerilog(HostBuilderContextWrapper.WrapAction(configureLogger), preserveDefaultConsole);

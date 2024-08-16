@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.Redis;
 
@@ -20,7 +19,7 @@ public static class RedisHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddRedis(this IHostApplicationBuilder builder)
     {
@@ -43,12 +42,12 @@ public static class RedisHostApplicationBuilderExtensions
     /// An optional delegate to configure this connector.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddRedis(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         Action<ConnectorAddOptionsBuilder>? addAction)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         builder.Configuration.ConfigureRedis(configureAction);
         builder.Services.AddRedis(builder.Configuration, addAction);

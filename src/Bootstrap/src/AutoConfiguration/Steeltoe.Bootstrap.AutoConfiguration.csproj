@@ -4,7 +4,6 @@
     <Description>Package for automatically configuring Steeltoe packages that have separately been added to a project.</Description>
     <PackageTags>Autoconfiguration;automatic configuration;application bootstrapping</PackageTags>
     <IsPackable>true</IsPackable>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

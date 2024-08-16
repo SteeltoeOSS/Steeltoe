@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.SpringBoot;
 
@@ -22,11 +21,11 @@ internal sealed class SpringBootCommandLineProvider : ConfigurationProvider
     /// configuration keys originating from the <see cref="CommandLineConfigurationProvider" />.
     /// </summary>
     /// <param name="configuration">
-    /// The configuration.
+    /// The <see cref="IConfiguration" /> to read application settings from.
     /// </param>
     public SpringBootCommandLineProvider(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         _configuration = configuration;
     }

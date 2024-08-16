@@ -27,7 +27,7 @@ public sealed class TraceEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IHttpTraceRepository>(repository);
-            services.AddTraceActuatorServices(MediaTypeVersion.V1);
+            services.AddTraceActuator(MediaTypeVersion.V1);
         };
 
         var handler = testContext.GetRequiredService<IHttpTraceEndpointHandler>();

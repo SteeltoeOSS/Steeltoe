@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
@@ -22,8 +22,8 @@ internal sealed class ConfigureSpringBootAdminClientOptions : IConfigureOptionsW
 
     public ConfigureSpringBootAdminClientOptions(IConfiguration configuration, IApplicationInstanceInfo applicationInstanceInfo)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(applicationInstanceInfo);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(applicationInstanceInfo);
 
         _configuration = configuration;
         _applicationInstanceInfo = applicationInstanceInfo;
@@ -33,11 +33,10 @@ internal sealed class ConfigureSpringBootAdminClientOptions : IConfigureOptionsW
     {
         _configuration.GetSection(ManagementInfoPrefix).Bind(options);
 
-        // Require base path to be supplied directly, in the configuration, or in the app instance info
-        options.BasePath ??= GetBasePath() ?? _applicationInstanceInfo.Uris?.FirstOrDefault() ??
+        options.BasePath ??= GetBasePath() ??
             throw new InvalidOperationException($"Please set {ManagementInfoPrefix}:BasePath in order to register with Spring Boot Admin");
 
-        options.ApplicationName ??= _applicationInstanceInfo.GetApplicationNameInContext(SteeltoeComponent.Management);
+        options.ApplicationName ??= _applicationInstanceInfo.ApplicationName;
     }
 
     private string? GetBasePath()

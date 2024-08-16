@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Connectors.PostgreSql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.PostgreSql;
@@ -17,7 +16,7 @@ public static class PostgreSqlConfigurationBuilderExtensions
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <returns>
-    /// The <see cref="IConfigurationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder)
     {
@@ -34,7 +33,7 @@ public static class PostgreSqlConfigurationBuilderExtensions
     /// An optional delegate to configure this connector.
     /// </param>
     /// <returns>
-    /// The <see cref="IConfigurationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
@@ -44,8 +43,8 @@ public static class PostgreSqlConfigurationBuilderExtensions
     private static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder, PostgreSqlPackageResolver packageResolver,
         Action<ConnectorConfigureOptionsBuilder>? configureAction = null)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         ConnectorConfigurer.Configure(builder, configureAction, new PostgreSqlConnectionStringPostProcessor(packageResolver));
         return builder;

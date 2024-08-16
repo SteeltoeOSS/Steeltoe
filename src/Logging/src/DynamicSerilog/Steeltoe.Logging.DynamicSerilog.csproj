@@ -4,7 +4,6 @@
     <Description>Steeltoe library for enabling dynamic management of Serilog.</Description>
     <PackageTags>logging;dynamic-logging;serilog;log-management;monitoring</PackageTags>
     <IsPackable>true</IsPackable>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 
 /// <summary>
 /// Mocks out the Configuration.Binder.SourceGeneration project's DiagnosticDescriptors class.
-/// 
+///
 /// The real diagnostic descriptors can't be used because they use localized strings, which
 /// would require getting dotnet/runtime's "SR" generator working in this repo.
 /// </summary>

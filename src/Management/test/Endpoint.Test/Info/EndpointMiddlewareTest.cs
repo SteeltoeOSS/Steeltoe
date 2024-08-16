@@ -7,8 +7,8 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Info;
-using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Test.Info;
 

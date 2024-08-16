@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 
@@ -13,33 +12,38 @@ namespace Steeltoe.Management.Endpoint.Trace;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds components of the Trace actuator to the D/I container.
+    /// Adds the trace actuator to the service container.
     /// </summary>
     /// <param name="services">
-    /// Service collection to add trace to.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    public static void AddTraceActuator(this IServiceCollection services)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddTraceActuator(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
-
-        services.AddTraceActuator(MediaTypeVersion.V2);
+        return AddTraceActuator(services, MediaTypeVersion.V2);
     }
 
     /// <summary>
-    /// Adds components of the Trace actuator to the D/I container.
+    /// Adds the trace actuator to the service container.
     /// </summary>
     /// <param name="services">
-    /// Service collection to add trace to.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="version">
     /// <see cref="MediaTypeVersion" /> to use in responses.
     /// </param>
-    public static void AddTraceActuator(this IServiceCollection services, MediaTypeVersion version)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddTraceActuator(this IServiceCollection services, MediaTypeVersion version)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.AddHostedService<DiagnosticsService>();
+
         services.AddCommonActuatorServices();
         services.AddTraceActuatorServices(version);
 
@@ -61,5 +65,7 @@ public static class EndpointServiceCollectionExtensions
 
                 break;
         }
+
+        return services;
     }
 }

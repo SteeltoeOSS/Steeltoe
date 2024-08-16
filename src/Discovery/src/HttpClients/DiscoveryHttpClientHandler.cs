@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.HttpClients.LoadBalancers;
 
 namespace Steeltoe.Discovery.HttpClients;
@@ -22,7 +22,7 @@ public sealed class DiscoveryHttpClientHandler : HttpClientHandler
     /// </param>
     public DiscoveryHttpClientHandler(ILoadBalancer loadBalancer)
     {
-        ArgumentGuard.NotNull(loadBalancer);
+        ArgumentNullException.ThrowIfNull(loadBalancer);
 
         _loadBalancer = loadBalancer;
     }
@@ -30,7 +30,7 @@ public sealed class DiscoveryHttpClientHandler : HttpClientHandler
     /// <inheritdoc />
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(request);
+        ArgumentNullException.ThrowIfNull(request);
 
         Uri? requestUri = request.RequestUri;
         Uri? serviceInstanceUri = null;

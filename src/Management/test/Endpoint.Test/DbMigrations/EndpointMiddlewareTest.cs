@@ -13,8 +13,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Logging.DynamicLogger;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 

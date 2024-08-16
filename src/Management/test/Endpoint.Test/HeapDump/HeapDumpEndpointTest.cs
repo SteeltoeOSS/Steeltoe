@@ -33,7 +33,7 @@ public sealed class HeapDumpEndpointTest : BaseTest
 
             testContext.AdditionalServices = (services, _) =>
             {
-                services.AddHeapDumpActuatorServices();
+                services.AddHeapDumpActuator();
 
                 services.AddSingleton(sp => new HeapDumper(options, sp.GetRequiredService<ILogger<HeapDumper>>()));
             };
@@ -53,7 +53,7 @@ public sealed class HeapDumpEndpointTest : BaseTest
 
                 testContext.AdditionalServices = (services, _) =>
                 {
-                    services.AddHeapDumpActuatorServices();
+                    services.AddHeapDumpActuator();
 
                     services.AddSingleton(sp => new HeapDumper(options, sp.GetRequiredService<ILogger<HeapDumper>>()));
                 };

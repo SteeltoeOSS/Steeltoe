@@ -14,6 +14,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MySqlConnector;
 using Npgsql;
@@ -355,8 +356,12 @@ public sealed class HostBuilderExtensionsTest
     {
         var tracerProvider = hostWrapper.Services.GetRequiredService<TracerProvider>();
 
-        hostWrapper.Services.GetService<IHostedService>().Should().NotBeNull();
-        hostWrapper.Services.GetService<TracingOptions>().Should().NotBeNull();
+        IHostedService[] hostedServices = hostWrapper.Services.GetServices<IHostedService>().ToArray();
+        hostedServices.Should().ContainSingle(hostedService => hostedService.GetType().Name == "TelemetryHostedService");
+
+        var optionsMonitor = hostWrapper.Services.GetRequiredService<IOptionsMonitor<TracingOptions>>();
+        optionsMonitor.CurrentValue.Name.Should().NotBeNull();
+
         hostWrapper.Services.GetService<IDynamicMessageProcessor>().Should().NotBeNull();
 
         FieldInfo? instrumentationsField = tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -396,7 +401,7 @@ public sealed class HostBuilderExtensionsTest
             {
                 builder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
                 builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
-                builder.ConfigureServices(services => services.AddRouting().AddActionDescriptorCollectionProvider());
+                builder.ConfigureServices(services => services.AddRouting().AddActionDescriptorCollectionProviderMock());
                 builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
                 builder.UseTestServer();
 
@@ -411,7 +416,7 @@ public sealed class HostBuilderExtensionsTest
             IWebHostBuilder builder = WebHost.CreateDefaultBuilder();
             builder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
             builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
-            builder.ConfigureServices(services => services.AddActionDescriptorCollectionProvider());
+            builder.ConfigureServices(services => services.AddActionDescriptorCollectionProviderMock());
             builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
             builder.UseTestServer();
 
@@ -425,7 +430,7 @@ public sealed class HostBuilderExtensionsTest
             WebApplicationBuilder builder = WebApplication.CreateBuilder();
             builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
             builder.Configuration.AddInMemoryCollection(TestHelpers.FastTestsConfiguration);
-            builder.Services.AddActionDescriptorCollectionProvider();
+            builder.Services.AddActionDescriptorCollectionProviderMock();
             builder.WebHost.UseTestServer();
 
             builder.AddSteeltoe(assemblyNamesToExclude);

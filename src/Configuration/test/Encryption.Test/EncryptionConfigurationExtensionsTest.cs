@@ -45,9 +45,9 @@ public sealed class EncryptionConfigurationExtensionsTest
         var loggerFactory = new LoggerFactory();
 
         configurationBuilder.AddEncryptionResolver(_decryptorMock.Object, loggerFactory);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        EncryptionResolverProvider? provider = configuration.Providers.OfType<EncryptionResolverProvider>().SingleOrDefault();
+        EncryptionResolverProvider? provider = configurationRoot.Providers.OfType<EncryptionResolverProvider>().SingleOrDefault();
 
         Assert.NotNull(provider);
     }
@@ -86,19 +86,19 @@ public sealed class EncryptionConfigurationExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(settings);
-        IConfigurationRoot config1 = builder.Build();
+        IConfigurationRoot configuration1 = builder.Build();
 
-        IConfiguration config2 = config1.AddEncryptionResolver(_decryptorMock.Object);
-        Assert.NotSame(config1, config2);
+        IConfiguration configuration2 = configuration1.AddEncryptionResolver(_decryptorMock.Object);
+        Assert.NotSame(configuration1, configuration2);
 
-        var root2 = (IConfigurationRoot)config2;
+        var root2 = (IConfigurationRoot)configuration2;
         Assert.Single(root2.Providers);
         IConfigurationProvider provider = root2.Providers.ToList()[0];
         Assert.IsType<EncryptionResolverProvider>(provider);
 
-        Assert.Null(config2["nokey"]);
-        Assert.Equal("value1", config2["key1"]);
-        Assert.Equal("DECRYPTED", config2["key2"]);
+        Assert.Null(configuration2["nokey"]);
+        Assert.Equal("value1", configuration2["key1"]);
+        Assert.Equal("DECRYPTED", configuration2["key2"]);
 
         _decryptorMock.Verify(x => x.Decrypt("something"));
         _decryptorMock.VerifyNoOtherCalls();
@@ -117,19 +117,19 @@ public sealed class EncryptionConfigurationExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(settings);
-        IConfigurationRoot config1 = builder.Build();
+        IConfigurationRoot configuration1 = builder.Build();
 
-        IConfiguration config2 = config1.AddEncryptionResolver(_decryptorMock.Object);
-        Assert.NotSame(config1, config2);
+        IConfiguration configuration2 = configuration1.AddEncryptionResolver(_decryptorMock.Object);
+        Assert.NotSame(configuration1, configuration2);
 
-        var root2 = (IConfigurationRoot)config2;
+        var root2 = (IConfigurationRoot)configuration2;
         Assert.Single(root2.Providers);
         IConfigurationProvider provider = root2.Providers.ToList()[0];
         Assert.IsType<EncryptionResolverProvider>(provider);
 
-        Assert.Null(config2["nokey"]);
-        Assert.Equal("value1", config2["key1"]);
-        Assert.Equal("DECRYPTED", config2["key2"]);
+        Assert.Null(configuration2["nokey"]);
+        Assert.Equal("value1", configuration2["key1"]);
+        Assert.Equal("DECRYPTED", configuration2["key2"]);
 
         _decryptorMock.Verify(x => x.Decrypt("something", "keyalias"));
         _decryptorMock.VerifyNoOtherCalls();

@@ -36,9 +36,9 @@ public sealed class SerilogDynamicLoggingBuilderTest
             ["Serilog:MinimumLevel:Default"] = "Information"
         };
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton(configuration).AddLogging(builder =>
         {
             builder.AddDynamicSerilog();
         }).BuildServiceProvider(true);
@@ -57,9 +57,9 @@ public sealed class SerilogDynamicLoggingBuilderTest
     [Fact]
     public void DynamicLevelSetting_WorksWith_ConsoleFilters()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton(configuration).AddLogging(builder =>
         {
             builder.AddDynamicSerilog();
         }).BuildServiceProvider(true);
@@ -88,10 +88,10 @@ public sealed class SerilogDynamicLoggingBuilderTest
     [Fact]
     public void AddDynamicSerilogPreservesDefaultLoggerWhenTrue()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
         var serviceProvider = new ServiceCollection();
 
-        serviceProvider.AddSingleton<IConfiguration>(configuration).AddSingleton<ConsoleLoggerProvider>().AddLogging(builder =>
+        serviceProvider.AddSingleton(configuration).AddSingleton<ConsoleLoggerProvider>().AddLogging(builder =>
         {
             builder.AddDynamicSerilog(true);
         }).BuildServiceProvider(true);
@@ -102,9 +102,9 @@ public sealed class SerilogDynamicLoggingBuilderTest
     [Fact]
     public void AddDynamicConsole_AddsAllLoggerProviders()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton(configuration).AddLogging(builder =>
         {
             builder.AddDynamicSerilog();
         }).BuildServiceProvider(true);
@@ -121,9 +121,9 @@ public sealed class SerilogDynamicLoggingBuilderTest
     [Fact]
     public void AddDynamicConsole_AddsLoggerProvider_DisposeTwiceSucceeds()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton(configuration).AddLogging(builder =>
         {
             builder.AddDynamicSerilog();
         }).BuildServiceProvider(true);
@@ -139,9 +139,9 @@ public sealed class SerilogDynamicLoggingBuilderTest
     [Fact]
     public void AddDynamicConsole_WithConfigurationParam_AddsServices()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder => builder.AddDynamicSerilog())
+        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton(configuration).AddLogging(builder => builder.AddDynamicSerilog())
             .BuildServiceProvider(true);
 
         var dynamicLoggerProvider = serviceProvider.GetService<IDynamicLoggerProvider>();
@@ -158,9 +158,9 @@ public sealed class SerilogDynamicLoggingBuilderTest
     {
         using var console = new ConsoleOutputBorrower();
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddJsonFile("serilogSettings.json").Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("serilogSettings.json").Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration)
+        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton(configuration)
             .AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>().AddLogging(builder => builder.AddDynamicSerilog())
             .BuildServiceProvider(true);
 
@@ -178,9 +178,9 @@ public sealed class SerilogDynamicLoggingBuilderTest
     {
         using var console = new ConsoleOutputBorrower();
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddJsonFile("serilogSettings.json").Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("serilogSettings.json").Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton(configuration).AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicSerilog();

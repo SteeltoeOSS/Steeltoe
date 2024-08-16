@@ -21,11 +21,11 @@ public static class LoggingBuilderExtensions
     /// The <see cref="ILoggingBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="ILoggingBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static ILoggingBuilder AddDynamicConsole(this ILoggingBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         if (!IsDynamicLoggerProviderAlreadyRegistered(builder))
         {

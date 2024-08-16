@@ -4,7 +4,6 @@
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>annotations</Nullable>
     <!--
       CS1570: XML comment has badly formed XML. ignored because of runtime shared code
       CS1591: Missing XML comment for publicly visible type or member 'Type_or_Member'

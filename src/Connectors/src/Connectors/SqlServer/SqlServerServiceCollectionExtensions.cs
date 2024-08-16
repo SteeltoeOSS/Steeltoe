@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
@@ -28,7 +27,7 @@ public static class SqlServerServiceCollectionExtensions
     /// The <see cref="IConfiguration" /> to read application settings from.
     /// </param>
     /// <returns>
-    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddSqlServer(this IServiceCollection services, IConfiguration configuration)
     {
@@ -49,7 +48,7 @@ public static class SqlServerServiceCollectionExtensions
     /// An optional delegate to configure this connector.
     /// </param>
     /// <returns>
-    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddSqlServer(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
     {
@@ -59,9 +58,9 @@ public static class SqlServerServiceCollectionExtensions
     internal static IServiceCollection AddSqlServer(this IServiceCollection services, IConfiguration configuration, SqlServerPackageResolver packageResolver,
         Action<ConnectorAddOptionsBuilder>? addAction = null)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         if (!ConnectorFactoryShim<SqlServerOptions>.IsRegistered(packageResolver.SqlConnectionClass.Type, services))
         {

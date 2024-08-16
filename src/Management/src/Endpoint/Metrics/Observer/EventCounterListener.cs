@@ -8,7 +8,6 @@ using System.Diagnostics.Tracing;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
@@ -33,8 +32,8 @@ internal sealed class EventCounterListener : EventListener
 
     public EventCounterListener(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILogger<EventCounterListener> logger)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _optionsMonitor = optionsMonitor;
         _logger = logger;
@@ -61,7 +60,7 @@ internal sealed class EventCounterListener : EventListener
     /// </param>
     protected override void OnEventWritten(EventWrittenEventArgs eventData)
     {
-        ArgumentGuard.NotNull(eventData);
+        ArgumentNullException.ThrowIfNull(eventData);
 
         if (!_isInitialized)
         {
@@ -89,7 +88,7 @@ internal sealed class EventCounterListener : EventListener
 
     protected override void OnEventSourceCreated(EventSource eventSource)
     {
-        ArgumentGuard.NotNull(eventSource);
+        ArgumentNullException.ThrowIfNull(eventSource);
 
         if (EventSourceName.Equals(eventSource.Name, StringComparison.OrdinalIgnoreCase))
         {

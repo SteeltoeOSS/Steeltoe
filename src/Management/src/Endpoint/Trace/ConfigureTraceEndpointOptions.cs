@@ -4,8 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
@@ -19,14 +18,14 @@ internal sealed class ConfigureTraceEndpointOptions : ConfigureEndpointOptions<T
     public ConfigureTraceEndpointOptions(IConfiguration configuration)
         : base(configuration, ManagementInfoPrefix, "httptrace")
     {
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         _configuration = configuration;
     }
 
     public void Configure(string? name, TraceEndpointOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         if (name == TraceEndpointOptionNames.V2.ToString() || string.IsNullOrEmpty(name))
         {

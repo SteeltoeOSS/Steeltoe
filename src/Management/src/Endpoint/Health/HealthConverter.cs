@@ -4,7 +4,6 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Steeltoe.Common;
 using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.HealthChecks;
 
@@ -19,7 +18,7 @@ internal sealed class HealthConverter : JsonConverter<HealthEndpointResponse>
 
     public override void Write(Utf8JsonWriter writer, HealthEndpointResponse value, JsonSerializerOptions options)
     {
-        ArgumentGuard.NotNull(writer);
+        ArgumentNullException.ThrowIfNull(writer);
 
         writer.WriteStartObject();
         writer.WriteString("status", value.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
@@ -29,7 +28,7 @@ internal sealed class HealthConverter : JsonConverter<HealthEndpointResponse>
             writer.WriteString("description", value.Description);
         }
 
-        if (value.Details != null && value.Details.Count > 0)
+        if (value.Details.Count > 0)
         {
             writer.WritePropertyName("details");
             writer.WriteStartObject();

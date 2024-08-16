@@ -4,25 +4,29 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.RouteMappings;
 
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds components of the Mappings actuator to the D/I container.
+    /// Adds the route mappings actuator to the service container.
     /// </summary>
     /// <param name="services">
-    /// Service collection to add actuator to.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    public static void AddMappingsActuator(this IServiceCollection services)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddMappingsActuator(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddCommonActuatorServices();
         services.AddMappingsActuatorServices();
 
         services.TryAddSingleton<RouterMappings>();
+
+        return services;
     }
 }

@@ -4,7 +4,6 @@
 
 using System.Collections.ObjectModel;
 using System.Text.Json;
-using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
@@ -161,7 +160,7 @@ public sealed class InstanceInfo
         get => _metadata;
         init
         {
-            ArgumentGuard.NotNull(value);
+            ArgumentNullException.ThrowIfNull(value);
             _metadata = WithoutEmptyMetadataValues(value);
         }
     }
@@ -228,11 +227,11 @@ public sealed class InstanceInfo
     internal InstanceInfo(string instanceId, string appName, string hostName, string ipAddress, DataCenterInfo dataCenterInfo)
     {
         // These are required to register an instance to Eureka server, so they should always be available.
-        ArgumentGuard.NotNullOrWhiteSpace(instanceId);
-        ArgumentGuard.NotNullOrWhiteSpace(appName);
-        ArgumentGuard.NotNullOrWhiteSpace(hostName);
-        ArgumentGuard.NotNullOrWhiteSpace(ipAddress);
-        ArgumentGuard.NotNull(dataCenterInfo);
+        ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(appName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(hostName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(ipAddress);
+        ArgumentNullException.ThrowIfNull(dataCenterInfo);
 
         InstanceId = instanceId;
         AppName = appName;
@@ -269,7 +268,7 @@ public sealed class InstanceInfo
 
     internal static InstanceInfo FromConfiguration(EurekaInstanceOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         if (string.IsNullOrWhiteSpace(options.IPAddress))
         {
@@ -474,7 +473,7 @@ public sealed class InstanceInfo
 
     internal void DetectChanges(InstanceInfo previousInstance)
     {
-        ArgumentGuard.NotNull(previousInstance);
+        ArgumentNullException.ThrowIfNull(previousInstance);
 
         if (previousInstance.IsDirty)
         {
@@ -508,7 +507,7 @@ public sealed class InstanceInfo
 
     internal void ReplaceMetadata(IReadOnlyDictionary<string, string?> newMetadata)
     {
-        ArgumentGuard.NotNull(newMetadata);
+        ArgumentNullException.ThrowIfNull(newMetadata);
 
         newMetadata = WithoutEmptyMetadataValues(newMetadata);
         bool hasChanged = !ReferenceEquals(Metadata, newMetadata) && !Metadata.SequenceEqual(newMetadata);

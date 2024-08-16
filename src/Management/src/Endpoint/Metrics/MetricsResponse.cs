@@ -27,16 +27,19 @@ public sealed class MetricsResponse
 
     public MetricsResponse(ISet<string> names)
     {
-        ArgumentGuard.NotNull(names);
+        ArgumentNullException.ThrowIfNull(names);
+        ArgumentGuard.ElementsNotNullOrEmpty(names);
 
         Names = names;
     }
 
     public MetricsResponse(string name, IList<MetricSample> measurements, IList<MetricTag> availableTags)
     {
-        ArgumentGuard.NotNull(name);
-        ArgumentGuard.NotNull(measurements);
-        ArgumentGuard.NotNull(availableTags);
+        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentNullException.ThrowIfNull(measurements);
+        ArgumentGuard.ElementsNotNull(measurements);
+        ArgumentNullException.ThrowIfNull(availableTags);
+        ArgumentGuard.ElementsNotNull(availableTags);
 
         Name = name;
         Measurements = measurements;

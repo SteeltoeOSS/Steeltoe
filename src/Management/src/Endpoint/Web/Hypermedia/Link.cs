@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
-
 namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 public sealed class Link
@@ -14,7 +12,7 @@ public sealed class Link
 
     public Link(string href)
     {
-        ArgumentGuard.NotNull(href);
+        ArgumentException.ThrowIfNullOrEmpty(href);
 
         Href = href;
         Templated = href.Contains('{');

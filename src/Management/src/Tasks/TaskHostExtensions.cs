@@ -31,7 +31,7 @@ public static class TaskHostExtensions
     /// </param>
     public static async Task RunWithTasksAsync(this IWebHost host, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(host);
+        ArgumentNullException.ThrowIfNull(host);
 
         if (await FindAndRunTaskAsync(host.Services, cancellationToken))
         {
@@ -61,7 +61,7 @@ public static class TaskHostExtensions
     /// </param>
     public static async Task RunWithTasksAsync(this IHost host, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(host);
+        ArgumentNullException.ThrowIfNull(host);
 
         if (await FindAndRunTaskAsync(host.Services, cancellationToken))
         {

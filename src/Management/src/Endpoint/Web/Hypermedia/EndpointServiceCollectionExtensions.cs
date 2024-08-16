@@ -3,17 +3,27 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 public static class EndpointServiceCollectionExtensions
 {
-    public static void AddHypermediaActuator(this IServiceCollection services)
+    /// <summary>
+    /// Adds the hypermedia actuator to the service container.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddHypermediaActuator(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddCommonActuatorServices();
         services.AddHypermediaActuatorServices();
+
+        return services;
     }
 }

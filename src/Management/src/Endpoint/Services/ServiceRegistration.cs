@@ -6,7 +6,6 @@ using System.Collections.Immutable;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Services;
 
@@ -29,7 +28,7 @@ public sealed class ServiceRegistration
 
     public ServiceRegistration(ServiceDescriptor descriptor)
     {
-        ArgumentGuard.NotNull(descriptor);
+        ArgumentNullException.ThrowIfNull(descriptor);
 
         Name = descriptor.ServiceType.FullName!;
         Scope = descriptor.Lifetime.ToString();

@@ -26,13 +26,13 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        IConfiguration configuration = configurationBuilder.Build();
 
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddHealthActuator();
-        services.Configure<HealthCheckServiceOptions>(configurationRoot);
-        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.Configure<HealthCheckServiceOptions>(configuration);
+        services.AddSingleton(configuration);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         using IServiceScope scope = serviceProvider.CreateScope();
@@ -61,13 +61,13 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        IConfiguration configuration = configurationBuilder.Build();
 
         services.AddLogging();
-        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddSingleton(configuration);
         services.AddHealthActuator();
 
-        services.Configure<HealthCheckServiceOptions>(configurationRoot);
+        services.Configure<HealthCheckServiceOptions>(configuration);
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         using IServiceScope scope = serviceProvider.CreateScope();
 

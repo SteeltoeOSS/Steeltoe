@@ -8,9 +8,9 @@ assignees: ''
 ---
 
 ## Describe the bug
-A clear and concise description of the bug.  
+A clear and concise description of the bug.
 
-## Steps to reproduce 
+## Steps to reproduce
 Steps to reproduce the behavior:
 1.
 2.
@@ -20,9 +20,9 @@ A clear and concise description of what you expected to happen.
 
 ## Environment (please complete the following information):
  - Steeltoe Version [e.g. 2.3.0]
- - Platform: [e.g. Cloud Foundry, Azure, etc.) 
+ - Platform: [e.g. Cloud Foundry, Azure, etc.)
  - OS: [e.g. Windows, Linux, Mac OSX]
- - .NET Version [e.g. .NET Core 2.1.0, .NET Framework 4.7.1, etc.] 
+ - .NET Version [e.g. .NET Core 2.1.0, .NET Framework 4.7.1, etc.]
  - Any other library versions to note
 
 ## Screenshots

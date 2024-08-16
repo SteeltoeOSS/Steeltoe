@@ -66,7 +66,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
                             ""timeout"": 10000,
                             ""token"" : ""vaulttoken"",
                             ""tokenRenewRate"": 50000,
-                            ""disableTokenRenewal"": true,    
+                            ""disableTokenRenewal"": true,
                             ""tokenTtl"": 50000,
                             ""retry"": {
                                 ""enabled"":""false"",
@@ -95,7 +95,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.Options;
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
@@ -151,7 +151,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.Options;
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
         Assert.False(options.ValidateCertificates);
     }
@@ -187,7 +187,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
 
         Assert.NotNull(configServerProvider);
 
-        ConfigServerClientOptions options = configServerProvider.Options;
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
         Assert.False(options.ValidateCertificates);
     }
@@ -227,7 +227,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.Options;
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
@@ -271,7 +271,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.Options;
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
@@ -314,7 +314,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.Options;
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
@@ -373,7 +373,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.Options;
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
@@ -388,7 +388,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_WithCloudfoundryEnvironment_ConfiguresClientCorrectly()
     {
-        const string vcapApplication = @" 
+        const string vcapApplication = @"
                 {
                     ""vcap"": {
                         ""application"": {
@@ -443,7 +443,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
                 {
                     ""spring"": {
                         ""application"": {
-                            ""name"": ""${vcap:application:name?foobar}""   
+                            ""name"": ""${vcap:application:name?foobar}""
                         }
                     }
                 }";
@@ -472,7 +472,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
 
         Assert.NotNull(configServerProvider);
 
-        ConfigServerClientOptions options = configServerProvider.Options;
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
         Assert.True(options.Enabled);
         Assert.False(options.FailFast);
         Assert.Equal("https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com", options.Uri);
@@ -489,7 +489,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_WithCloudfoundryEnvironmentSCS3_ConfiguresClientCorrectly()
     {
-        const string vcapApplication = @" 
+        const string vcapApplication = @"
                 {
                     ""vcap"": {
                         ""application"": {
@@ -549,7 +549,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
                 {
                     ""spring"": {
                         ""application"": {
-                            ""name"": ""${vcap:application:name?foobar}""   
+                            ""name"": ""${vcap:application:name?foobar}""
                         }
                     }
                 }";
@@ -578,7 +578,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
 
         Assert.NotNull(configServerProvider);
 
-        ConfigServerClientOptions options = configServerProvider.Options;
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
         Assert.True(options.Enabled);
         Assert.False(options.FailFast);
         Assert.Equal("https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com", options.Uri);

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data.Common;
-using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MySql.DynamicTypeAccess;
@@ -19,7 +18,7 @@ internal sealed class MySqlConnectionStringBuilderShim : Shim
 
     public static MySqlConnectionStringBuilderShim CreateInstance(MySqlPackageResolver packageResolver)
     {
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         InstanceAccessor instanceAccessor = packageResolver.MySqlConnectionStringBuilderClass.CreateInstance(null);
         return new MySqlConnectionStringBuilderShim(instanceAccessor);

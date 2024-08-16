@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Common.Logging;
 
@@ -15,13 +14,14 @@ namespace Steeltoe.Configuration.CloudFoundry;
 public static class CloudFoundryHostBuilderExtensions
 {
     /// <summary>
-    /// Adds the Cloud Foundry configuration provider.
+    /// Adds the Cloud Foundry configuration provider. Registers <see cref="CloudFoundryApplicationOptions" /> and <see cref="CloudFoundryServicesOptions" />
+    /// for use with the options pattern.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder builder)
     {
@@ -29,7 +29,8 @@ public static class CloudFoundryHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Cloud Foundry configuration provider.
+    /// Adds the Cloud Foundry configuration provider. Registers <see cref="CloudFoundryApplicationOptions" /> and <see cref="CloudFoundryServicesOptions" />
+    /// for use with the options pattern.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IWebHostBuilder" /> to configure.
@@ -39,11 +40,11 @@ public static class CloudFoundryHostBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The <see cref="IWebHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder builder, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddCloudFoundryConfiguration(loggerFactory);
@@ -58,7 +59,7 @@ public static class CloudFoundryHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddCloudFoundryConfiguration(this IHostBuilder builder)
     {
@@ -66,7 +67,8 @@ public static class CloudFoundryHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Cloud Foundry configuration provider.
+    /// Adds the Cloud Foundry configuration provider. Registers <see cref="CloudFoundryApplicationOptions" /> and <see cref="CloudFoundryServicesOptions" />
+    /// for use with the options pattern.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IHostBuilder" /> to configure.
@@ -76,11 +78,11 @@ public static class CloudFoundryHostBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddCloudFoundryConfiguration(this IHostBuilder builder, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddCloudFoundryConfiguration(loggerFactory);
@@ -95,7 +97,7 @@ public static class CloudFoundryHostBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddCloudFoundryConfiguration(this IHostApplicationBuilder builder)
     {
@@ -103,7 +105,8 @@ public static class CloudFoundryHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Cloud Foundry configuration provider.
+    /// Adds the Cloud Foundry configuration provider. Registers <see cref="CloudFoundryApplicationOptions" /> and <see cref="CloudFoundryServicesOptions" />
+    /// for use with the options pattern.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IHostApplicationBuilder" /> to configure.
@@ -113,11 +116,11 @@ public static class CloudFoundryHostBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddCloudFoundryConfiguration(this IHostApplicationBuilder builder, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddCloudFoundryConfiguration(loggerFactory);

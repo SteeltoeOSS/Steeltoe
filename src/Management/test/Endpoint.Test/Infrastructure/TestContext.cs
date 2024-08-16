@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using Steeltoe.Common.TestResources;
 using Xunit.Abstractions;
 
@@ -72,7 +71,7 @@ internal sealed class TestContext : IDisposable
 
     public TestContext(ITestOutputHelper output)
     {
-        ArgumentGuard.NotNull(output);
+        ArgumentNullException.ThrowIfNull(output);
 
         _loggerProvider = new XunitLoggerProvider(output);
     }

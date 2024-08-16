@@ -20,7 +20,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
 {
     private readonly IOptionsMonitor<RouteMappingsEndpointOptions> _optionsMonitor;
     private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
-    private readonly IList<IApiDescriptionProvider> _apiDescriptionProviders;
+    private readonly ICollection<IApiDescriptionProvider> _apiDescriptionProviders;
     private readonly RouterMappings _routerMappings;
     private readonly ILogger<RouteMappingsEndpointHandler> _logger;
 
@@ -30,15 +30,18 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         IActionDescriptorCollectionProvider actionDescriptorCollectionProvider, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders,
         RouterMappings routerMappings, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(actionDescriptorCollectionProvider);
-        ArgumentGuard.NotNull(apiDescriptionProviders);
-        ArgumentGuard.NotNull(routerMappings);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(actionDescriptorCollectionProvider);
+        ArgumentNullException.ThrowIfNull(apiDescriptionProviders);
+        ArgumentNullException.ThrowIfNull(routerMappings);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
+
+        IApiDescriptionProvider[] apiDescriptionProviderArray = apiDescriptionProviders.ToArray();
+        ArgumentGuard.ElementsNotNull(apiDescriptionProviderArray);
 
         _optionsMonitor = optionsMonitor;
         _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
-        _apiDescriptionProviders = apiDescriptionProviders.ToList();
+        _apiDescriptionProviders = apiDescriptionProviderArray;
         _routerMappings = routerMappings;
         _logger = loggerFactory.CreateLogger<RouteMappingsEndpointHandler>();
     }
@@ -66,12 +69,13 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         {
             var descriptor = (ControllerActionDescriptor)description.ActionDescriptor;
             AspNetCoreRouteDetails details = GetRouteDetails(description);
-            mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName!, out IList<RouteMappingDescription>? descriptions);
+            string controllerTypeName = descriptor.ControllerTypeInfo.FullName!;
+            mappingDescriptions.TryGetValue(controllerTypeName, out IList<RouteMappingDescription>? descriptions);
 
             if (descriptions == null)
             {
                 descriptions = new List<RouteMappingDescription>();
-                mappingDescriptions.Add(descriptor.ControllerTypeInfo.FullName!, descriptions);
+                mappingDescriptions.Add(controllerTypeName, descriptions);
             }
 
             var routeMappingDescription = new RouteMappingDescription(descriptor.MethodInfo, details);
@@ -89,12 +93,13 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
                 }
 
                 AspNetCoreRouteDetails details = GetRouteDetails(descriptor);
-                mappingDescriptions.TryGetValue(controllerDescriptor.ControllerTypeInfo.FullName!, out IList<RouteMappingDescription>? descriptions);
+                string controllerTypeName = controllerDescriptor.ControllerTypeInfo.FullName!;
+                mappingDescriptions.TryGetValue(controllerTypeName, out IList<RouteMappingDescription>? descriptions);
 
                 if (descriptions == null)
                 {
                     descriptions = new List<RouteMappingDescription>();
-                    mappingDescriptions.Add(controllerDescriptor.ControllerTypeInfo.FullName!, descriptions);
+                    mappingDescriptions.Add(controllerTypeName, descriptions);
                 }
 
                 var routeMappingDescription = new RouteMappingDescription(controllerDescriptor.MethodInfo, details);
@@ -155,11 +160,10 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             routeTemplate = $"/{controllerDescriptor.ControllerName}/{controllerDescriptor.ActionName}";
         }
 
-        List<string> httpMethods = actionDescriptor.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToList() ??
-            new List<string>
-            {
-                RouteMappingDescription.AllHttpMethods
-            };
+        string[] httpMethods = actionDescriptor.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToArray() ??
+        [
+            RouteMappingDescription.AllHttpMethods
+        ];
 
         var consumes = new List<string>();
 

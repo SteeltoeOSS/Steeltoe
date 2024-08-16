@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
@@ -26,11 +25,11 @@ internal sealed class Application
 
     public Application(string name, Uri managementUrl, Uri healthUrl, Uri serviceUrl, IDictionary<string, object> metadata)
     {
-        ArgumentGuard.NotNull(name);
-        ArgumentGuard.NotNull(managementUrl);
-        ArgumentGuard.NotNull(healthUrl);
-        ArgumentGuard.NotNull(serviceUrl);
-        ArgumentGuard.NotNull(metadata);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentNullException.ThrowIfNull(managementUrl);
+        ArgumentNullException.ThrowIfNull(healthUrl);
+        ArgumentNullException.ThrowIfNull(serviceUrl);
+        ArgumentNullException.ThrowIfNull(metadata);
 
         Name = name;
         ManagementUrl = managementUrl;

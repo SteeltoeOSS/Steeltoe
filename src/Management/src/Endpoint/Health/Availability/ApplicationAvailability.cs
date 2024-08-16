@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Health.Availability;
 
@@ -20,7 +19,7 @@ public sealed class ApplicationAvailability
 
     public ApplicationAvailability(ILogger<ApplicationAvailability> logger)
     {
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _logger = logger;
     }

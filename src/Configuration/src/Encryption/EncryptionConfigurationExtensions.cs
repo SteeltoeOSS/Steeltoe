@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Encryption;
 
@@ -18,13 +17,13 @@ public static class EncryptionConfigurationExtensions
     /// all applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddEncryptionResolver(this IConfigurationBuilder builder, ITextDecryptor textDecryptor)
     {
@@ -38,7 +37,7 @@ public static class EncryptionConfigurationExtensions
     /// all applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
@@ -47,13 +46,13 @@ public static class EncryptionConfigurationExtensions
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddEncryptionResolver(this IConfigurationBuilder builder, ITextDecryptor textDecryptor, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(loggerFactory);
-        ArgumentGuard.NotNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         if (!builder.Sources.Any(source => source is EncryptionResolverSource))
         {
@@ -78,7 +77,7 @@ public static class EncryptionConfigurationExtensions
     /// sources.
     /// </summary>
     /// <param name="configuration">
-    /// The configuration to wrap.
+    /// The <see cref="IConfiguration" /> to wrap.
     /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
@@ -97,7 +96,7 @@ public static class EncryptionConfigurationExtensions
     /// sources.
     /// </summary>
     /// <param name="configuration">
-    /// The configuration to wrap.
+    /// The <see cref="IConfiguration" /> to wrap.
     /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
@@ -110,9 +109,9 @@ public static class EncryptionConfigurationExtensions
     /// </returns>
     public static IConfiguration AddEncryptionResolver(this IConfiguration configuration, ITextDecryptor textDecryptor, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(loggerFactory);
-        ArgumentGuard.NotNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         if (configuration is not IConfigurationRoot root)
         {
@@ -137,13 +136,13 @@ public static class EncryptionConfigurationExtensions
     /// all applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="configurationManager">
-    /// The configuration manager.
+    /// The <see cref="ConfigurationManager" /> to configure.
     /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="configurationManager" />.
+    /// The incoming <paramref name="configurationManager" /> so that additional calls can be chained.
     /// </returns>
     public static ConfigurationManager AddEncryptionResolver(this ConfigurationManager configurationManager, ITextDecryptor textDecryptor)
     {
@@ -157,7 +156,7 @@ public static class EncryptionConfigurationExtensions
     /// all applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="configurationManager">
-    /// The configuration manager.
+    /// The <see cref="ConfigurationManager" /> to configure.
     /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
@@ -166,14 +165,14 @@ public static class EncryptionConfigurationExtensions
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="configurationManager" />.
+    /// The incoming <paramref name="configurationManager" /> so that additional calls can be chained.
     /// </returns>
     public static ConfigurationManager AddEncryptionResolver(this ConfigurationManager configurationManager, ITextDecryptor textDecryptor,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(configurationManager);
-        ArgumentGuard.NotNull(loggerFactory);
-        ArgumentGuard.NotNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(configurationManager);
+        ArgumentNullException.ThrowIfNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         ((IConfigurationBuilder)configurationManager).AddEncryptionResolver(textDecryptor, loggerFactory);
 

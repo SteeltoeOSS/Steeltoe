@@ -5,7 +5,6 @@
 using System.Collections.Concurrent;
 using System.Net.Http.Headers;
 using Microsoft.IdentityModel.Tokens;
-using Steeltoe.Common;
 
 namespace Steeltoe.Security.Authentication.JwtBearer;
 
@@ -19,8 +18,8 @@ internal sealed class TokenKeyResolver
 
     public TokenKeyResolver(string authority, HttpClient httpClient)
     {
-        ArgumentGuard.NotNull(authority);
-        ArgumentGuard.NotNull(httpClient);
+        ArgumentException.ThrowIfNullOrWhiteSpace(authority);
+        ArgumentNullException.ThrowIfNull(httpClient);
 
         if (!authority.EndsWith('/'))
         {

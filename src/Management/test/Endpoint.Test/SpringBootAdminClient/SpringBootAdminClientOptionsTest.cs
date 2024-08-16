@@ -19,20 +19,6 @@ public sealed class SpringBootAdminClientOptionsTest : BaseTest
     }
 
     [Fact]
-    public void ConstructorUsesAppInfo()
-    {
-        var appsettings = new Dictionary<string, string?>
-        {
-            ["application:Uris:0"] = "http://somehost"
-        };
-
-        var options = GetOptionsFromSettings<SpringBootAdminClientOptions>(appsettings);
-
-        Assert.NotNull(options);
-        Assert.Equal("http://somehost", options.BasePath);
-    }
-
-    [Fact]
     public void Constructor_BindsConfiguration()
     {
         var appsettings = new Dictionary<string, string?>
@@ -43,8 +29,7 @@ public sealed class SpringBootAdminClientOptionsTest : BaseTest
             ["spring:boot:admin:client:url"] = "http://springbootadmin:9090",
             ["spring:boot:admin:client:metadata:user.name"] = "userName",
             ["spring:boot:admin:client:metadata:user.password"] = "userPassword",
-            ["spring:application:name"] = "MySteeltoeApplication",
-            ["ApplicationName"] = "OtherApplicationName"
+            ["spring:application:name"] = "MySteeltoeApplication"
         };
 
         var options = GetOptionsFromSettings<SpringBootAdminClientOptions>(appsettings);

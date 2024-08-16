@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Diagnostics;
@@ -16,8 +15,8 @@ internal sealed class DiagnosticsService : IHostedService
 
     public DiagnosticsService(IDiagnosticsManager observerManager, ILogger<DiagnosticsService> logger)
     {
-        ArgumentGuard.NotNull(observerManager);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(observerManager);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _logger = logger;
         _observerManager = observerManager;

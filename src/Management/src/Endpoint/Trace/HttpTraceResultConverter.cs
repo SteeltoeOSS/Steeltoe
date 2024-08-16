@@ -4,7 +4,6 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
@@ -17,7 +16,7 @@ internal sealed class HttpTraceResultConverter : JsonConverter<HttpTraceResult>
 
     public override void Write(Utf8JsonWriter writer, HttpTraceResult value, JsonSerializerOptions options)
     {
-        ArgumentGuard.NotNull(writer);
+        ArgumentNullException.ThrowIfNull(writer);
 
         if (value is HttpTraceResultV2 traceResultV2)
         {

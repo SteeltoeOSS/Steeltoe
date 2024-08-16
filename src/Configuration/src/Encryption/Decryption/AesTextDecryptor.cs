@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Encryption.Decryption;
 
@@ -30,9 +29,8 @@ internal sealed class AesTextDecryptor : ITextDecryptor
 
     public AesTextDecryptor(string key, string salt, bool strong)
     {
-        ArgumentGuard.NotNull(key);
-        ArgumentGuard.NotNull(salt);
-        ArgumentGuard.NotNull(strong);
+        ArgumentNullException.ThrowIfNull(key);
+        ArgumentNullException.ThrowIfNull(salt);
 
         _cipher = strong ? CipherUtilities.GetCipher("AES/GCM/NoPadding") : CipherUtilities.GetCipher("AES/CBC/PKCS5Padding");
 
@@ -66,7 +64,7 @@ internal sealed class AesTextDecryptor : ITextDecryptor
 
     public string Decrypt(byte[] fullCipher)
     {
-        ArgumentGuard.NotNull(fullCipher);
+        ArgumentNullException.ThrowIfNull(fullCipher);
 
         byte[] iv = new byte[IvSize / 8];
         byte[] cipherBytes = new byte[fullCipher.Length - iv.Length];

@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics;
@@ -99,11 +99,11 @@ public abstract class BaseTest : IDisposable
     {
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(settings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        IConfiguration configuration = configurationBuilder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(configurationRoot);
-        services.AddSingleton<IApplicationInstanceInfo>(new ApplicationInstanceInfo(configurationRoot, string.Empty));
+        services.AddSingleton(configuration);
+        services.AddApplicationInstanceInfo();
         services.ConfigureOptions(configureOptionsType);
         services.AddLogging();
 

@@ -5,7 +5,6 @@
     <Description>Abstractions used in Steeltoe Configuration libraries</Description>
     <PackageTags>abstractions;configuration</PackageTags>
     <IsPackable>true</IsPackable>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

@@ -20,7 +20,7 @@ internal sealed class FilePathInOptionsChangeTokenSource<T> : IOptionsChangeToke
 
     public FilePathInOptionsChangeTokenSource(string? optionName, string filePath)
     {
-        ArgumentGuard.NotNull(filePath);
+        ArgumentNullException.ThrowIfNull(filePath);
 
         Name = optionName ?? Options.DefaultName;
         _filePath = filePath;

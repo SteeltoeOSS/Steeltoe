@@ -3,23 +3,27 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds components of the Entity Framework actuator to the D/I container.
+    /// Adds the database migrations actuator to the service container.
     /// </summary>
     /// <param name="services">
-    /// Service collection to add actuator to.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    public static void AddDbMigrationsActuator(this IServiceCollection services)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddDbMigrationsActuator(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddCommonActuatorServices();
         services.AddDbMigrationsActuatorServices();
+
+        return services;
     }
 }

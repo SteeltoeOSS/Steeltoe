@@ -4,7 +4,6 @@
 
 using Consul;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Consul.Configuration;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
@@ -32,8 +31,8 @@ internal sealed class ConsulHealthContributor : IHealthContributor
     /// </param>
     public ConsulHealthContributor(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(client);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(client);
 
         _client = client;
         _optionsMonitor = optionsMonitor;

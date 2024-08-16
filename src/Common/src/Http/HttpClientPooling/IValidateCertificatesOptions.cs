@@ -7,7 +7,7 @@ namespace Steeltoe.Common.Http.HttpClientPooling;
 /// <summary>
 /// Indicates that an options type provides a boolean to turn off certificate validation.
 /// </summary>
-public interface IValidateCertificatesOptions
+internal interface IValidateCertificatesOptions
 {
     bool ValidateCertificates { get; set; }
 }

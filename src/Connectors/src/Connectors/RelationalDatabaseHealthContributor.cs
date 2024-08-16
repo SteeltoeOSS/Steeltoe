@@ -5,8 +5,8 @@
 using System.Data.Common;
 using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using Steeltoe.Common.CasingConventions;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Connectors;
@@ -22,8 +22,8 @@ internal sealed class RelationalDatabaseHealthContributor : IHealthContributor, 
 
     public RelationalDatabaseHealthContributor(DbConnection connection, string? host, ILogger<RelationalDatabaseHealthContributor> logger)
     {
-        ArgumentGuard.NotNull(connection);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(connection);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _connection = connection;
         Host = host ?? string.Empty;

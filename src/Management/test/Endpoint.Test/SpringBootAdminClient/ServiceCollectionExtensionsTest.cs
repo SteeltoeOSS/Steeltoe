@@ -14,17 +14,14 @@ public sealed class ServiceCollectionExtensionsTest
     [Fact]
     public void AddSpringBootAdminClient_AddsHostedService()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddCommandLine(new[]
-        {
-            "--urls=http://localhost"
-        }).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddCommandLine(["--urls=http://localhost"]).Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton(configuration);
         services.AddLogging();
         services.AddSpringBootAdminClient();
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        Assert.NotEmpty(serviceProvider.GetServices<IHostedService>().OfType<SpringBootAdminClientHostedService>());
+        Assert.Single(serviceProvider.GetServices<IHostedService>().OfType<SpringBootAdminClientHostedService>());
     }
 }

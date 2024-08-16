@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.HttpClients.LoadBalancers;
 
 namespace Steeltoe.Discovery.HttpClients;
@@ -27,7 +27,7 @@ public sealed class DiscoveryHttpDelegatingHandler<TLoadBalancer> : DelegatingHa
     /// </param>
     public DiscoveryHttpDelegatingHandler(IServiceProvider serviceProvider)
     {
-        ArgumentGuard.NotNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
 
         _serviceProvider = serviceProvider;
     }
@@ -35,7 +35,7 @@ public sealed class DiscoveryHttpDelegatingHandler<TLoadBalancer> : DelegatingHa
     /// <inheritdoc />
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(request);
+        ArgumentNullException.ThrowIfNull(request);
 
         // We can't inject the load balancer, because a user may configure to use service discovery for *all* HTTP clients.
         // That would result in EurekaDiscoveryClient trying to use this handler for sending requests to Eureka, resulting in an infinite loop.

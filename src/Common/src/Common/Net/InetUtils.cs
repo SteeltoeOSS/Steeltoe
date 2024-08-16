@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -13,6 +11,7 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.Net;
 
+// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 // Non-sealed because this type is mocked by tests.
 internal class InetUtils
 {
@@ -21,8 +20,8 @@ internal class InetUtils
 
     public InetUtils(IOptionsMonitor<InetOptions> optionsMonitor, ILogger<InetUtils> logger)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _optionsMonitor = optionsMonitor;
         _logger = logger;

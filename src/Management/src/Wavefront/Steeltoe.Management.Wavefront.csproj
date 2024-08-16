@@ -4,7 +4,6 @@
     <Description>Adds Wavefront support for Steeltoe management endpoints</Description>
     <PackageTags>actuators;management;monitoring;distributed tracing;metrics;wavefront</PackageTags>
     <IsPackable>true</IsPackable>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 
 namespace Steeltoe.Security.Authentication.JwtBearer;
 
@@ -16,14 +15,14 @@ internal sealed class PostConfigureJwtBearerOptions : IPostConfigureOptions<JwtB
 
     public PostConfigureJwtBearerOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         _configuration = configuration;
     }
 
     public void PostConfigure(string? name, JwtBearerOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         string? clientId = _configuration.GetValue<string>($"{BearerConfigurationKeyPrefix}:ClientId");
 

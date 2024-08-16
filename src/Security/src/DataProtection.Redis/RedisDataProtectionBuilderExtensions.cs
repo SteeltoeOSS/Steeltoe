@@ -9,7 +9,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Connectors;
 using Steeltoe.Connectors.Redis;
 
@@ -21,14 +20,14 @@ public static class RedisDataProtectionBuilderExtensions
     /// Configures the data protection system to persist keys in a Redis database, using the Steeltoe Connector for Redis.
     /// </summary>
     /// <param name="builder">
-    /// The builder instance to modify.
+    /// The <see cref="IDataProtectionBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// A reference to the <see cref="IDataProtectionBuilder" /> after this operation has completed.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IDataProtectionBuilder PersistKeysToRedis(this IDataProtectionBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         builder.Services.TryAddSingleton(provider =>
         {
@@ -38,12 +37,7 @@ public static class RedisDataProtectionBuilderExtensions
         });
 
         builder.Services.TryAddSingleton<IXmlRepository, CloudFoundryRedisXmlRepository>();
-
-        builder.Services.AddSingleton<IConfigureOptions<KeyManagementOptions>>(provider =>
-        {
-            return new ConfigureNamedOptions<KeyManagementOptions>(Options.DefaultName,
-                options => options.XmlRepository = provider.GetRequiredService<IXmlRepository>());
-        });
+        builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<KeyManagementOptions>, ConfigureKeyManagementOptions>());
 
         return builder;
     }

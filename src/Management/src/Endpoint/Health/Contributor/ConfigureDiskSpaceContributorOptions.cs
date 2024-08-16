@@ -3,8 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Health.Contributor;
 
@@ -17,14 +16,14 @@ internal sealed class ConfigureDiskSpaceContributorOptions : IConfigureOptionsWi
 
     public ConfigureDiskSpaceContributorOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         _configuration = configuration;
     }
 
     public void Configure(DiskSpaceContributorOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         _configuration.GetSection(ManagementInfoPrefix).Bind(options);
     }

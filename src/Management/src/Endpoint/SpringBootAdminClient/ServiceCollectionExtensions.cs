@@ -5,10 +5,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http.HttpClientPooling;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
@@ -18,21 +18,19 @@ public static class ServiceCollectionExtensions
     /// Register startup/shutdown interactions with Spring Boot Admin server.
     /// </summary>
     /// <param name="services">
-    /// Reference to the service collection.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <returns>
-    /// A reference to the service collection.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddSpringBootAdminClient(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
-        services.RegisterDefaultApplicationInstanceInfo();
+        services.AddApplicationInstanceInfo();
 
-        // Workaround for services.ConfigureOptions<ConfigureManagementOptions>() registering multiple times,
-        // see https://github.com/dotnet/runtime/issues/42358.
         services.AddOptions();
-        services.TryAddTransient<IConfigureOptions<ManagementOptions>, ConfigureManagementOptions>();
+        services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<ManagementOptions>, ConfigureManagementOptions>());
 
         services.ConfigureEndpointOptions<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
         services.ConfigureOptionsWithChangeTokenSource<SpringBootAdminClientOptions, ConfigureSpringBootAdminClientOptions>();
@@ -58,7 +56,7 @@ public static class ServiceCollectionExtensions
             var validateCertificatesHandler =
                 serviceProvider.GetRequiredService<ValidateCertificatesHttpClientHandlerConfigurer<SpringBootAdminClientOptions>>();
 
-            validateCertificatesHandler.Configure(handler);
+            validateCertificatesHandler.Configure(Options.DefaultName, handler);
 
             return handler;
         });

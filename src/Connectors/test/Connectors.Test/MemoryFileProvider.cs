@@ -7,7 +7,6 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.Test;
 
@@ -24,7 +23,7 @@ internal sealed class MemoryFileProvider : IFileProvider
 
     public void IncludeDirectory(string path)
     {
-        ArgumentGuard.NotNullOrEmpty(path);
+        ArgumentException.ThrowIfNullOrEmpty(path);
 
         IEnumerable<string> pathSegments = PathToSegments(path);
         _ = GetOrCreateDirectories(pathSegments);
@@ -32,8 +31,8 @@ internal sealed class MemoryFileProvider : IFileProvider
 
     public void IncludeFile(string path, string contents)
     {
-        ArgumentGuard.NotNullOrEmpty(path);
-        ArgumentGuard.NotNull(contents);
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        ArgumentNullException.ThrowIfNull(contents);
 
         byte[] bytes = Encoding.UTF8.GetBytes(contents);
         IncludeFile(path, bytes);
@@ -41,8 +40,8 @@ internal sealed class MemoryFileProvider : IFileProvider
 
     public void IncludeFile(string path, byte[] contents)
     {
-        ArgumentGuard.NotNullOrEmpty(path);
-        ArgumentGuard.NotNull(contents);
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        ArgumentNullException.ThrowIfNull(contents);
 
         string[] pathSegments = PathToSegments(path).ToArray();
         string[] parentDirectories = pathSegments[..^1];
@@ -78,8 +77,8 @@ internal sealed class MemoryFileProvider : IFileProvider
 
     public void ReplaceFile(string path, string contents)
     {
-        ArgumentGuard.NotNullOrEmpty(path);
-        ArgumentGuard.NotNull(contents);
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        ArgumentNullException.ThrowIfNull(contents);
 
         byte[] bytes = Encoding.UTF8.GetBytes(contents);
         ReplaceFile(path, bytes);
@@ -87,8 +86,8 @@ internal sealed class MemoryFileProvider : IFileProvider
 
     public void ReplaceFile(string path, byte[] contents)
     {
-        ArgumentGuard.NotNullOrEmpty(path);
-        ArgumentGuard.NotNull(contents);
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        ArgumentNullException.ThrowIfNull(contents);
 
         MemoryFileSystemEntry? entry = Find(path);
 
@@ -102,7 +101,7 @@ internal sealed class MemoryFileProvider : IFileProvider
 
     public IFileInfo GetFileInfo(string subpath)
     {
-        ArgumentGuard.NotNullOrEmpty(subpath);
+        ArgumentException.ThrowIfNullOrEmpty(subpath);
 
         MemoryFileSystemEntry? entry = Find(subpath);
 
@@ -116,7 +115,7 @@ internal sealed class MemoryFileProvider : IFileProvider
 
     public IDirectoryContents GetDirectoryContents(string subpath)
     {
-        ArgumentGuard.NotNullOrEmpty(subpath);
+        ArgumentException.ThrowIfNullOrEmpty(subpath);
 
         MemoryFileSystemEntry? entry = Find(subpath);
 
@@ -203,7 +202,7 @@ internal sealed class MemoryFileProvider : IFileProvider
 
         public void ReplaceContents(byte[] contents)
         {
-            ArgumentGuard.NotNull(contents);
+            ArgumentNullException.ThrowIfNull(contents);
 
             if (IsDirectory)
             {

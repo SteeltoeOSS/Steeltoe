@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 
 namespace Steeltoe.Security.Authentication.OpenIdConnect;
 
@@ -15,14 +14,17 @@ public static class OpenIdConnectAuthenticationBuilderExtensions
     /// <summary>
     /// Configures <see cref="OpenIdConnectOptions" /> for compatibility with UAA-based systems, including those found in Cloud Foundry.
     /// </summary>
-    /// <param name="authenticationBuilder">
+    /// <param name="builder">
     /// The <see cref="AuthenticationBuilder" /> to configure.
     /// </param>
-    public static AuthenticationBuilder ConfigureOpenIdConnectForCloudFoundry(this AuthenticationBuilder authenticationBuilder)
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static AuthenticationBuilder ConfigureOpenIdConnectForCloudFoundry(this AuthenticationBuilder builder)
     {
-        ArgumentGuard.NotNull(authenticationBuilder);
+        ArgumentNullException.ThrowIfNull(builder);
 
-        authenticationBuilder.Services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, PostConfigureOpenIdConnectOptions>();
-        return authenticationBuilder;
+        builder.Services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, PostConfigureOpenIdConnectOptions>();
+        return builder;
     }
 }

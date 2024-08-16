@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.DataProtection.StackExchangeRedis;
 using StackExchange.Redis;
-using Steeltoe.Common;
 using Steeltoe.Connectors;
 using Steeltoe.Connectors.Redis;
 
@@ -21,7 +20,7 @@ internal sealed class CloudFoundryRedisXmlRepository : RedisXmlRepository
 
     private static IDatabase GetDatabase(ConnectorFactory<RedisOptions, IConnectionMultiplexer> connectorFactory)
     {
-        ArgumentGuard.NotNull(connectorFactory);
+        ArgumentNullException.ThrowIfNull(connectorFactory);
 
         Connector<RedisOptions, IConnectionMultiplexer> connector = connectorFactory.Get();
         IConnectionMultiplexer connectionMultiplexer = connector.GetConnection();

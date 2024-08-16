@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
@@ -13,7 +11,7 @@ internal static class UriExtensions
 {
     public static string ToMaskedString(this Uri source)
     {
-        ArgumentGuard.NotNull(source);
+        ArgumentNullException.ThrowIfNull(source);
 
         string uris = source.ToString();
 
@@ -44,7 +42,7 @@ internal static class UriExtensions
 
     public static bool TryGetUsernamePassword(this Uri uri, [NotNullWhen(true)] out string? username, [NotNullWhen(true)] out string? password)
     {
-        ArgumentGuard.NotNull(uri);
+        ArgumentNullException.ThrowIfNull(uri);
 
         string userInfo = uri.GetComponents(UriComponents.UserInfo, UriFormat.UriEscaped);
 

@@ -16,7 +16,7 @@ $appSettings = Join-Path $currentDirectory 'appsettings.json'
 $nupkgs = Get-ChildItem $env:ArtifactDirectory/Steeltoe*.*nupkg -recurse | Select-Object -ExpandProperty FullName
 
 foreach ($nupkg in $nupkgs) {
-	./SignClient 'sign' -c $appSettings -i $nupkg -r $env:SignClientUser -s $env:SignClientSecret -n 'Steeltoe' -d 'Steeltoe' -u 'https://github.com/SteeltoeOSS' 
+	./SignClient 'sign' -c $appSettings -i $nupkg -r $env:SignClientUser -s $env:SignClientSecret -n 'Steeltoe' -d 'Steeltoe' -u 'https://github.com/SteeltoeOSS'
 }
 
 Write-Host "Sign-packages completed."

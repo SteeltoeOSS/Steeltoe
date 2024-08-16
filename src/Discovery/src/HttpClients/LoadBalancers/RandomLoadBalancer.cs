@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.HttpClients.LoadBalancers;
@@ -28,8 +27,8 @@ public sealed class RandomLoadBalancer : ILoadBalancer
     /// </param>
     public RandomLoadBalancer(ServiceInstancesResolver serviceInstancesResolver, ILogger<RandomLoadBalancer> logger)
     {
-        ArgumentGuard.NotNull(serviceInstancesResolver);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(serviceInstancesResolver);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _serviceInstancesResolver = serviceInstancesResolver;
         _logger = logger;
@@ -38,7 +37,7 @@ public sealed class RandomLoadBalancer : ILoadBalancer
     /// <inheritdoc />
     public async Task<Uri> ResolveServiceInstanceAsync(Uri requestUri, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(requestUri);
+        ArgumentNullException.ThrowIfNull(requestUri);
 
         string serviceName = requestUri.Host;
         _logger.LogTrace("Resolving service instance for '{ServiceName}'.", serviceName);

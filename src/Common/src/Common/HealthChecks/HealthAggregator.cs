@@ -2,11 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Steeltoe.Common.CasingConventions;
+using Steeltoe.Common.Extensions;
 using MicrosoftHealthCheckResult = Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult;
 using MicrosoftHealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
 using SteeltoeHealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
@@ -19,9 +18,9 @@ internal sealed class HealthAggregator : IHealthAggregator
     public async Task<SteeltoeHealthCheckResult> AggregateAsync(ICollection<IHealthContributor> contributors,
         ICollection<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(contributors);
-        ArgumentGuard.NotNull(healthCheckRegistrations);
-        ArgumentGuard.NotNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(contributors);
+        ArgumentNullException.ThrowIfNull(healthCheckRegistrations);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
 
         SteeltoeHealthCheckResult contributorsResult = await AggregateHealthContributorsAsync(contributors, cancellationToken);
 
@@ -34,8 +33,6 @@ internal sealed class HealthAggregator : IHealthAggregator
     private async Task<SteeltoeHealthCheckResult> AggregateHealthContributorsAsync(ICollection<IHealthContributor> contributors,
         CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(contributors);
-
         if (contributors.Count == 0)
         {
             return new SteeltoeHealthCheckResult();
@@ -43,11 +40,11 @@ internal sealed class HealthAggregator : IHealthAggregator
 
         var aggregatorResult = new SteeltoeHealthCheckResult();
         var healthChecks = new ConcurrentDictionary<string, SteeltoeHealthCheckResult>();
-        var keyList = new ConcurrentBag<string>();
+        var keys = new ConcurrentBag<string>();
 
         await Parallel.ForEachAsync(contributors, cancellationToken, async (contributor, _) =>
         {
-            string contributorId = GetKey(keyList, contributor.Id);
+            string contributorId = GetKey(keys, contributor.Id);
             SteeltoeHealthCheckResult? healthCheckResult;
 
             try
@@ -119,10 +116,12 @@ internal sealed class HealthAggregator : IHealthAggregator
             healthCheckResult.Status = status; // Only used for aggregate, doesn't get reported
             healthCheckResult.Description = result.Description;
 
-            healthCheckResult.Details = new Dictionary<string, object>(result.Data)
+            foreach ((string key, object value) in result.Data)
             {
-                { "status", status.ToSnakeCaseString(SnakeCaseStyle.AllCaps) }
-            };
+                healthCheckResult.Details[key] = value;
+            }
+
+            healthCheckResult.Details["status"] = status.ToSnakeCaseString(SnakeCaseStyle.AllCaps);
 
             if (result.Description != null)
             {
@@ -156,8 +155,6 @@ internal sealed class HealthAggregator : IHealthAggregator
 
     private static string GetKey(ConcurrentBag<string> keys, string key)
     {
-        ArgumentGuard.NotNull(keys);
-
         lock (keys)
         {
             // add the contributor with a -n appended to the id
@@ -175,9 +172,6 @@ internal sealed class HealthAggregator : IHealthAggregator
 
     private static SteeltoeHealthCheckResult AddChecksSetStatus(SteeltoeHealthCheckResult result, IDictionary<string, SteeltoeHealthCheckResult> healthChecks)
     {
-        ArgumentGuard.NotNull(result);
-        ArgumentGuard.NotNull(healthChecks);
-
         foreach (KeyValuePair<string, SteeltoeHealthCheckResult> healthCheck in healthChecks)
         {
             if (healthCheck.Value.Status > result.Status)

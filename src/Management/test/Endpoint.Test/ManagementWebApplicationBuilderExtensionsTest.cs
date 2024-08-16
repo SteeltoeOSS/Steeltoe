@@ -22,7 +22,6 @@ using Steeltoe.Management.Endpoint.Health.Availability;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Info;
-using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
@@ -173,7 +172,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddInfoActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
-        hostBuilder.AddInfoActuator(new AppSettingsInfoContributor(hostBuilder.Configuration));
+        hostBuilder.AddInfoActuator();
 
         await using WebApplication host = hostBuilder.Build();
 
@@ -223,7 +222,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddMappingsActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
-        hostBuilder.Services.AddActionDescriptorCollectionProvider();
+        hostBuilder.Services.AddActionDescriptorCollectionProviderMock();
         hostBuilder.AddMappingsActuator();
 
         await using WebApplication host = hostBuilder.Build();
@@ -336,7 +335,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddAllActuators_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
-        hostBuilder.Services.AddActionDescriptorCollectionProvider();
+        hostBuilder.Services.AddActionDescriptorCollectionProviderMock();
         hostBuilder.AddAllActuators();
 
         await using WebApplication host = hostBuilder.Build();
@@ -360,7 +359,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await using WebApplication host = GetTestWebAppWithSecureRouting(builder =>
         {
             builder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth"));
-            builder.Services.AddActionDescriptorCollectionProvider();
+            builder.Services.AddActionDescriptorCollectionProviderMock();
         });
 
         await host.StartAsync();
@@ -398,7 +397,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await using WebApplication host = GetTestWebAppWithSecureRouting(builder =>
         {
             builder.AddHypermediaActuator().AddInfoActuator().AddHealthActuator().AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).Services
-                .AddActionDescriptorCollectionProvider();
+                .AddActionDescriptorCollectionProviderMock();
         });
 
         await host.StartAsync();

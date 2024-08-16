@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.Http.HttpClientPooling;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
@@ -13,9 +13,9 @@ public static class CloudFoundrySecurityServiceCollectionExtensions
 {
     public static IServiceCollection AddCloudFoundrySecurity(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
-        services.AddSingleton<SecurityUtils>();
+        services.AddSingleton<PermissionsProvider>();
         ConfigureHttpClient(services);
 
         return services;
@@ -26,7 +26,7 @@ public static class CloudFoundrySecurityServiceCollectionExtensions
         services.TryAddSingleton<HttpClientHandlerFactory>();
         services.TryAddSingleton<ValidateCertificatesHttpClientHandlerConfigurer<CloudFoundryEndpointOptions>>();
 
-        IHttpClientBuilder httpClientBuilder = services.AddHttpClient(SecurityUtils.HttpClientName);
+        IHttpClientBuilder httpClientBuilder = services.AddHttpClient(PermissionsProvider.HttpClientName);
 
         httpClientBuilder.ConfigurePrimaryHttpMessageHandler(serviceProvider =>
         {
@@ -36,7 +36,7 @@ public static class CloudFoundrySecurityServiceCollectionExtensions
             var validateCertificatesHandler =
                 serviceProvider.GetRequiredService<ValidateCertificatesHttpClientHandlerConfigurer<CloudFoundryEndpointOptions>>();
 
-            validateCertificatesHandler.Configure(handler);
+            validateCertificatesHandler.Configure(Options.DefaultName, handler);
 
             return handler;
         });

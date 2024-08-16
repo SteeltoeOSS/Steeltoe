@@ -14,7 +14,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
@@ -331,9 +331,9 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         var services = new ServiceCollection();
         services.AddCloudFoundrySecurity();
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var securityUtils = serviceProvider.GetRequiredService<SecurityUtils>();
+        var permissionsProvider = serviceProvider.GetRequiredService<PermissionsProvider>();
 
-        var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, [], securityUtils,
+        var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, [], permissionsProvider,
             NullLogger<CloudFoundrySecurityMiddleware>.Instance, null);
 
         HttpContext context1 = CreateRequest("GET", "/");
@@ -355,9 +355,9 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         var services = new ServiceCollection();
         services.AddCloudFoundrySecurity();
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var securityUtils = serviceProvider.GetRequiredService<SecurityUtils>();
+        var permissionsProvider = serviceProvider.GetRequiredService<PermissionsProvider>();
 
-        var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, [], securityUtils,
+        var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, [], permissionsProvider,
             NullLogger<CloudFoundrySecurityMiddleware>.Instance, null);
 
         HttpContext context = CreateRequest("GET", "/");

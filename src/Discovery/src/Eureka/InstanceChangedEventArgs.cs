@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.AppInfo;
 
 namespace Steeltoe.Discovery.Eureka;
@@ -17,8 +16,8 @@ internal sealed class InstanceChangedEventArgs : EventArgs
 
     public InstanceChangedEventArgs(InstanceInfo newInstance, InstanceInfo previousInstance)
     {
-        ArgumentGuard.NotNull(newInstance);
-        ArgumentGuard.NotNull(previousInstance);
+        ArgumentNullException.ThrowIfNull(newInstance);
+        ArgumentNullException.ThrowIfNull(previousInstance);
 
         NewInstance = newInstance;
         PreviousInstance = previousInstance;

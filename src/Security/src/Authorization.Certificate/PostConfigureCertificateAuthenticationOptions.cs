@@ -7,9 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Certificates;
-using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
@@ -21,8 +19,8 @@ internal sealed class PostConfigureCertificateAuthenticationOptions : IPostConfi
     public PostConfigureCertificateAuthenticationOptions(IOptionsMonitor<CertificateOptions> certificateOptionsMonitor,
         ILogger<PostConfigureCertificateAuthenticationOptions> logger)
     {
-        ArgumentGuard.NotNull(certificateOptionsMonitor);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(certificateOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _certificateOptionsMonitor = certificateOptionsMonitor;
         _logger = logger;
@@ -30,7 +28,7 @@ internal sealed class PostConfigureCertificateAuthenticationOptions : IPostConfi
 
     public void PostConfigure(string? name, CertificateAuthenticationOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         CertificateOptions appInstanceIdentityOptions = _certificateOptionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
         options.ChainTrustValidationMode = X509ChainTrustMode.CustomRootTrust;

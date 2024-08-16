@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.Configuration;
@@ -19,7 +18,7 @@ public sealed class ConfigurationDiscoveryClient : IDiscoveryClient
 
     public ConfigurationDiscoveryClient(IOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
 
         _optionsMonitor = optionsMonitor;
     }
@@ -36,10 +35,10 @@ public sealed class ConfigurationDiscoveryClient : IDiscoveryClient
     /// <inheritdoc />
     public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(serviceId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(serviceId);
 
         IList<IServiceInstance> instances = _optionsMonitor.CurrentValue.Services.Where(instance =>
-            string.Equals(instance.ServiceId, serviceId, StringComparison.OrdinalIgnoreCase)).Cast<IServiceInstance>().ToList();
+            string.Equals(instance.ServiceId, serviceId, StringComparison.OrdinalIgnoreCase)).Cast<IServiceInstance>().ToArray();
 
         return Task.FromResult(instances);
     }

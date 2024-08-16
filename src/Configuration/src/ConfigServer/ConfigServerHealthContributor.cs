@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Configuration.ConfigServer;
@@ -20,8 +19,8 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 
     public ConfigServerHealthContributor(IConfiguration configuration, ILogger<ConfigServerHealthContributor> logger)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _logger = logger;
         Provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();
@@ -105,11 +104,11 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 
     internal bool IsEnabled()
     {
-        return Provider is { Options.Health.Enabled: true };
+        return Provider is { ClientOptions.Health.Enabled: true };
     }
 
     internal long GetTimeToLive()
     {
-        return Provider != null ? Provider.Options.Health.TimeToLive : long.MaxValue;
+        return Provider != null ? Provider.ClientOptions.Health.TimeToLive : long.MaxValue;
     }
 }

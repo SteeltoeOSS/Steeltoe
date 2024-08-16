@@ -39,8 +39,6 @@ internal static class ConfigurationKeyConverter
 
     private static IEnumerable<string> UniversalHierarchySplit(string source)
     {
-        ArgumentGuard.NotNull(source);
-
         var result = new List<string>();
 
         int segmentStart = 0;

@@ -6,9 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Certificates;
-using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
@@ -18,31 +16,37 @@ public static class CertificateHttpClientBuilderExtensions
     /// Binds certificate paths in configuration to <see cref="CertificateOptions" /> representing the application instance and attaches the certificate to
     /// outbound requests.
     /// </summary>
-    /// <param name="httpClientBuilder">
-    /// The <see cref="IHttpClientBuilder" /> to add a client certificate to.
+    /// <param name="builder">
+    /// The <see cref="IHttpClientBuilder" /> to configure an <see cref="HttpClient" /> for sending a client certificate.
     /// </param>
-    public static IHttpClientBuilder AddAppInstanceIdentityCertificate(this IHttpClientBuilder httpClientBuilder)
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IHttpClientBuilder AddAppInstanceIdentityCertificate(this IHttpClientBuilder builder)
     {
-        return AddClientCertificate(httpClientBuilder, CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
+        return AddClientCertificate(builder, CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
     }
 
     /// <summary>
     /// Binds certificate paths in configuration to <see cref="CertificateOptions" /> and attaches the certificate to outbound requests.
     /// </summary>
-    /// <param name="httpClientBuilder">
-    /// The <see cref="IHttpClientBuilder" /> to configure.
+    /// <param name="builder">
+    /// The <see cref="IHttpClientBuilder" /> to configure an <see cref="HttpClient" /> for sending a client certificate.
     /// </param>
     /// <param name="certificateName">
     /// The name of the certificate used in configuration.
     /// </param>
-    public static IHttpClientBuilder AddClientCertificate(this IHttpClientBuilder httpClientBuilder, string certificateName)
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IHttpClientBuilder AddClientCertificate(this IHttpClientBuilder builder, string certificateName)
     {
-        ArgumentGuard.NotNull(httpClientBuilder);
-        ArgumentGuard.NotNull(certificateName);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(certificateName);
 
-        httpClientBuilder.Services.ConfigureCertificateOptions(certificateName);
+        builder.Services.ConfigureCertificateOptions(certificateName);
 
-        httpClientBuilder.ConfigureHttpClient((serviceProvider, client) =>
+        builder.ConfigureHttpClient((serviceProvider, client) =>
         {
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
             ILogger logger = loggerFactory.CreateLogger(nameof(CertificateAuthorizationBuilderExtensions));
@@ -63,6 +67,6 @@ public static class CertificateHttpClientBuilderExtensions
             }
         });
 
-        return httpClientBuilder;
+        return builder;
     }
 }

@@ -8,8 +8,27 @@ namespace Steeltoe.Management.Endpoint.Test.Info;
 
 internal sealed class TestInfoContributor : IInfoContributor
 {
+    public bool Called { get; private set; }
+    public bool Throws { get; }
+
+    public TestInfoContributor()
+    {
+        Throws = false;
+    }
+
+    public TestInfoContributor(bool throws)
+    {
+        Throws = throws;
+    }
+
     public Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
     {
+        if (Throws)
+        {
+            throw new Exception();
+        }
+
+        Called = true;
         return Task.CompletedTask;
     }
 }

@@ -37,18 +37,16 @@ public sealed class CloudFoundryServiceCollectionExtensionsTest
             }
             """);
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCloudFoundry().Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundry().Build();
 
         var services = new ServiceCollection();
-        services.ConfigureCloudFoundryOptions(configurationRoot);
+        services.AddSingleton(configuration);
+        services.AddCloudFoundryOptions();
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var appOptions = serviceProvider.GetRequiredService<IOptions<CloudFoundryApplicationOptions>>();
-        Assert.NotNull(appOptions.Value);
         Assert.Equal("foo", appOptions.Value.ApplicationName);
+        Assert.Equal(16384, appOptions.Value.Limits?.FileDescriptor);
         Assert.Equal("playground", appOptions.Value.SpaceName);
-
-        var serviceOptions = serviceProvider.GetRequiredService<IOptions<CloudFoundryServicesOptions>>();
-        Assert.NotNull(serviceOptions.Value);
     }
 }

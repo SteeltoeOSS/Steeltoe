@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using Steeltoe.Connectors.PostgreSql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.PostgreSql;
@@ -15,7 +14,7 @@ internal sealed class PostgreSqlConnectionStringPostProcessor : ConnectionString
 
     public PostgreSqlConnectionStringPostProcessor(PostgreSqlPackageResolver packageResolver)
     {
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         _packageResolver = packageResolver;
     }

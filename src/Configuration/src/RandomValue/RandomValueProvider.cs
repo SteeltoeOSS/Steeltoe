@@ -6,7 +6,6 @@ using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.RandomValue;
 
@@ -29,8 +28,8 @@ internal sealed class RandomValueProvider : ConfigurationProvider
     /// </param>
     public RandomValueProvider(string prefix, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(prefix);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentException.ThrowIfNullOrEmpty(prefix);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _prefix = prefix;
         _logger = loggerFactory.CreateLogger<RandomValueProvider>();
@@ -51,7 +50,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
     /// </returns>
     public override bool TryGet(string key, out string? value)
     {
-        ArgumentGuard.NotNull(key);
+        ArgumentException.ThrowIfNullOrEmpty(key);
 
         value = null;
 

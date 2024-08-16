@@ -6,43 +6,40 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ContentNegotiation;
 
 internal static class ContentNegotiationExtensions
 {
-    internal static void HandleContentNegotiation(this HttpContext context, ILogger logger)
+    public static void HandleContentNegotiation(this HttpContext context, ILogger logger)
     {
-        ArgumentGuard.NotNull(context);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(logger);
 
-        SetContentType(context.Response.Headers, context.Request.Headers, logger);
+        SetContentType(context.Request.Headers, context.Response.Headers, logger);
     }
 
-    private static void SetContentType(IHeaderDictionary responseHeaders, IHeaderDictionary requestHeaders, ILogger logger,
+    private static void SetContentType(IHeaderDictionary requestHeaders, IHeaderDictionary responseHeaders, ILogger logger,
         MediaTypeVersion version = MediaTypeVersion.V2)
     {
         var headers = new RequestHeaders(requestHeaders);
-        List<string> acceptMediaTypes = headers.Accept.Select(header => header.MediaType.Value!).ToList();
+        string[] acceptMediaTypes = headers.Accept.Select(header => header.MediaType.Value!).ToArray();
 
         string contentType = ActuatorMediaTypes.GetContentHeaders(acceptMediaTypes, version);
-
         responseHeaders.Append("Content-Type", contentType);
 
-        LogContentType(logger, requestHeaders, contentType);
+        LogResponseContentTypeWithRequestHeaders(contentType, requestHeaders, logger);
     }
 
-    private static void LogContentType(ILogger logger, IHeaderDictionary requestHeaders, string contentType)
+    private static void LogResponseContentTypeWithRequestHeaders(string contentType, IHeaderDictionary requestHeaders, ILogger logger)
     {
-        logger.LogTrace("setting contentType to {Type}", contentType);
-        bool? logTrace = logger.IsEnabled(LogLevel.Trace);
-
-        if (logTrace.GetValueOrDefault())
+        if (logger.IsEnabled(LogLevel.Trace))
         {
+            logger.LogTrace("Setting Content-Type to {ContentType}", contentType);
+
             foreach (KeyValuePair<string, StringValues> header in requestHeaders)
             {
-                logger.LogTrace("Header: {Key} - {Value}", header.Key, header.Value);
+                logger.LogTrace("Request header: {Key} = {Value}", header.Key, header.Value);
             }
         }
     }
