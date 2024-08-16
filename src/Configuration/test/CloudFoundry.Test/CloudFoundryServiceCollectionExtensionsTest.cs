@@ -37,10 +37,10 @@ public sealed class CloudFoundryServiceCollectionExtensionsTest
             }
             """);
 
-        IConfiguration configurationRoot = new ConfigurationBuilder().AddCloudFoundry().Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundry().Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configurationRoot);
+        services.AddSingleton(configuration);
         services.AddCloudFoundryOptions();
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
