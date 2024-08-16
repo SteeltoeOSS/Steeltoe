@@ -164,6 +164,30 @@ public sealed class CertificateAuthorizationTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
+    [Fact]
+    public async Task CertificateAuth_AllowsCustomHeader()
+    {
+        var requestUri = new Uri("https://localhost/request");
+        WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
+        builder.Configuration.AddAppInstanceIdentityCertificate(Certificates.ServerOrgId, Certificates.ServerSpaceId);
+        builder.Services.AddAuthentication().AddCertificate();
+
+        builder.Services.AddAuthorizationBuilder().AddOrgAndSpacePolicies("a-custom-header")
+            .AddDefaultPolicy("sameOrgAndSpace", policyBuilder => policyBuilder.RequireSameOrg().RequireSameSpace());
+
+        await using WebApplication application = builder.Build();
+        application.UseCertificateAuthorization();
+        application.MapGet("/request", () => "response").RequireAuthorization();
+        await application.StartAsync();
+        var optionsMonitor = application.Services.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
+        X509Certificate2 certificate = optionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName).Certificate!;
+        using HttpClient httpClient = ClientWithCertificate(application.GetTestClient(), certificate, "a-custom-header");
+
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
     private HostBuilder GetHostBuilder()
     {
         var hostBuilder = new HostBuilder();
@@ -173,11 +197,11 @@ public sealed class CertificateAuthorizationTest
         return hostBuilder;
     }
 
-    private static HttpClient ClientWithCertificate(HttpClient httpClient, X509Certificate certificate)
+    private static HttpClient ClientWithCertificate(HttpClient httpClient, X509Certificate certificate, string certificateHeaderName = "X-Client-Cert")
     {
         byte[] bytes = certificate.GetRawCertData();
         string b64 = Convert.ToBase64String(bytes);
-        httpClient.DefaultRequestHeaders.Add("X-Client-Cert", b64);
+        httpClient.DefaultRequestHeaders.Add(certificateHeaderName, b64);
         return httpClient;
     }
 }

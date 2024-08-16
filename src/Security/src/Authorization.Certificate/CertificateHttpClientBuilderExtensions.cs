@@ -28,6 +28,24 @@ public static class CertificateHttpClientBuilderExtensions
     }
 
     /// <summary>
+    /// Binds certificate paths in configuration to <see cref="CertificateOptions" /> representing the application instance and attaches the certificate to
+    /// outbound requests.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IHttpClientBuilder" /> to configure an <see cref="HttpClient" /> for sending a client certificate.
+    /// </param>
+    /// <param name="certificateHeaderName">
+    /// The name of the HTTP header used to pass the certificate.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IHttpClientBuilder AddAppInstanceIdentityCertificate(this IHttpClientBuilder builder, string certificateHeaderName)
+    {
+        return AddClientCertificate(builder, CertificateConfigurationExtensions.AppInstanceIdentityCertificateName, certificateHeaderName);
+    }
+
+    /// <summary>
     /// Binds certificate paths in configuration to <see cref="CertificateOptions" /> and attaches the certificate to outbound requests.
     /// </summary>
     /// <param name="builder">
@@ -40,6 +58,26 @@ public static class CertificateHttpClientBuilderExtensions
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHttpClientBuilder AddClientCertificate(this IHttpClientBuilder builder, string certificateName)
+    {
+        return AddClientCertificate(builder, certificateName, "X-Client-Cert");
+    }
+
+    /// <summary>
+    /// Binds certificate paths in configuration to <see cref="CertificateOptions" /> and attaches the certificate to outbound requests.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IHttpClientBuilder" /> to configure an <see cref="HttpClient" /> for sending a client certificate.
+    /// </param>
+    /// <param name="certificateName">
+    /// The name of the certificate used in configuration.
+    /// </param>
+    /// <param name="certificateHeaderName">
+    /// The name of the HTTP header used to pass the certificate.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IHttpClientBuilder AddClientCertificate(this IHttpClientBuilder builder, string certificateName, string certificateHeaderName)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(certificateName);
@@ -56,10 +94,11 @@ public static class CertificateHttpClientBuilderExtensions
 
             if (certificate != null)
             {
-                logger.LogTrace("Adding certificate with subject {CertificateSubject} to outbound requests in header X-Client-Cert", certificate.Subject);
+                logger.LogTrace("Adding certificate with subject {CertificateSubject} to outbound requests in header {CertificateHeaderName}", certificate.Subject,
+                    certificateHeaderName);
 
                 string b64 = Convert.ToBase64String(certificate.Export(X509ContentType.Cert));
-                client.DefaultRequestHeaders.Add("X-Client-Cert", b64);
+                client.DefaultRequestHeaders.Add(certificateHeaderName, b64);
             }
             else
             {
