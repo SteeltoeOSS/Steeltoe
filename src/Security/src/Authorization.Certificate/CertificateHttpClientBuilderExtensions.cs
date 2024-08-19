@@ -94,8 +94,8 @@ public static class CertificateHttpClientBuilderExtensions
 
             if (certificate != null)
             {
-                logger.LogTrace("Adding certificate with subject {CertificateSubject} to outbound requests in header {CertificateHeaderName}", certificate.Subject,
-                    certificateHeaderName);
+                logger.LogTrace("Adding certificate with subject {CertificateSubject} to outbound requests in header {CertificateHeaderName}",
+                    certificate.Subject, certificateHeaderName);
 
                 string b64 = Convert.ToBase64String(certificate.Export(X509ContentType.Cert));
                 client.DefaultRequestHeaders.Add(certificateHeaderName, b64);
