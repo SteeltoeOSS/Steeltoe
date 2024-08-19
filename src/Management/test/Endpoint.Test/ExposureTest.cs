@@ -13,10 +13,31 @@ public sealed class ExposureTest : BaseTest
     {
         var options = GetOptionsFromSettings<ManagementOptions>();
 
-        Assert.NotNull(options.Exposure);
-        Assert.Contains("health", options.Exposure.Include);
-        Assert.Contains("info", options.Exposure.Include);
-        Assert.Empty(options.Exposure.Exclude);
+        options.Exposure.Include.Should().HaveCount(2);
+        options.Exposure.Include.Should().Contain("health");
+        options.Exposure.Include.Should().Contain("info");
+
+        options.Exposure.Exclude.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ExposureDoesNotBindToDefaultOptions()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["management:endpoints:exposure:include:0"] = "httptrace",
+            ["management:endpoints:exposure:include:1"] = "dbmigrations",
+            ["management:endpoints:exposure:exclude:0"] = "trace",
+            ["management:endpoints:exposure:exclude:1"] = "env"
+        };
+
+        var options = GetOptionsFromSettings<ManagementOptions>(appSettings);
+
+        options.Exposure.Include.Should().HaveCount(2);
+        options.Exposure.Include.Should().Contain("health");
+        options.Exposure.Include.Should().Contain("info");
+
+        options.Exposure.Exclude.Should().BeEmpty();
     }
 
     [Fact]
@@ -32,11 +53,13 @@ public sealed class ExposureTest : BaseTest
 
         var options = GetOptionsFromSettings<ManagementOptions>(appSettings);
 
-        Assert.NotNull(options.Exposure);
-        Assert.Contains("httptrace", options.Exposure.Include);
-        Assert.Contains("dbmigrations", options.Exposure.Include);
-        Assert.Contains("trace", options.Exposure.Exclude);
-        Assert.Contains("env", options.Exposure.Exclude);
+        options.Exposure.Include.Should().HaveCount(2);
+        options.Exposure.Include.Should().Contain("httptrace");
+        options.Exposure.Include.Should().Contain("dbmigrations");
+
+        options.Exposure.Exclude.Should().HaveCount(2);
+        options.Exposure.Exclude.Should().Contain("trace");
+        options.Exposure.Exclude.Should().Contain("env");
     }
 
     [Fact]
@@ -50,11 +73,41 @@ public sealed class ExposureTest : BaseTest
 
         var options = GetOptionsFromSettings<ManagementOptions>(appSettings);
 
-        Assert.NotNull(options.Exposure);
-        Assert.Contains("heapdump", options.Exposure.Include);
-        Assert.Contains("env", options.Exposure.Include);
-        Assert.Contains("dbmigrations", options.Exposure.Exclude);
-        Assert.Contains("info", options.Exposure.Exclude);
+        options.Exposure.Include.Should().HaveCount(2);
+        options.Exposure.Include.Should().Contain("heapdump");
+        options.Exposure.Include.Should().Contain("env");
+
+        options.Exposure.Exclude.Should().HaveCount(2);
+        options.Exposure.Exclude.Should().Contain("dbmigrations");
+        options.Exposure.Exclude.Should().Contain("info");
+    }
+
+    [Fact]
+    public void CombinesSteeltoeSettingsWithSpringSettings()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["management:endpoints:web:exposure:include"] = "heapdump, env",
+            ["management:endpoints:web:exposure:exclude"] = "dbmigrations, info",
+            ["management:endpoints:actuator:exposure:include:0"] = "httptrace",
+            ["management:endpoints:actuator:exposure:include:1"] = "dbmigrations",
+            ["management:endpoints:actuator:exposure:exclude:0"] = "trace",
+            ["management:endpoints:actuator:exposure:exclude:1"] = "env"
+        };
+
+        var options = GetOptionsFromSettings<ManagementOptions>(appSettings);
+
+        options.Exposure.Include.Should().HaveCount(4);
+        options.Exposure.Include.Should().Contain("heapdump");
+        options.Exposure.Include.Should().Contain("env");
+        options.Exposure.Include.Should().Contain("httptrace");
+        options.Exposure.Include.Should().Contain("dbmigrations");
+
+        options.Exposure.Exclude.Should().HaveCount(4);
+        options.Exposure.Exclude.Should().Contain("dbmigrations");
+        options.Exposure.Exclude.Should().Contain("info");
+        options.Exposure.Exclude.Should().Contain("trace");
+        options.Exposure.Exclude.Should().Contain("env");
     }
 
     [Fact]
@@ -62,13 +115,14 @@ public sealed class ExposureTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:web:exposure:include"] = "heapdump;env"
+            ["management:endpoints:web:exposure:include"] = ",,  ,heapdump;env"
         };
 
         var options = GetOptionsFromSettings<ManagementOptions>(appSettings);
 
-        Assert.NotNull(options.Exposure);
-        Assert.Contains("heapdump;env", options.Exposure.Include);
-        Assert.Empty(options.Exposure.Exclude);
+        options.Exposure.Include.Should().HaveCount(1);
+        options.Exposure.Include.Should().Contain("heapdump;env");
+
+        options.Exposure.Exclude.Should().BeEmpty();
     }
 }

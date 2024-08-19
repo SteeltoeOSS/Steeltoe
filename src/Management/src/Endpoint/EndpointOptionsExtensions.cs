@@ -32,7 +32,7 @@ internal static class EndpointOptionsExtensions
         ArgumentNullException.ThrowIfNull(endpointOptions);
         ArgumentNullException.ThrowIfNull(managementOptions);
 
-        if (!string.IsNullOrEmpty(endpointOptions.Id) && managementOptions.Exposure != null)
+        if (!string.IsNullOrEmpty(endpointOptions.Id))
         {
             if (managementOptions.Exposure.Exclude.Contains("*") || managementOptions.Exposure.Exclude.Contains(endpointOptions.Id))
             {

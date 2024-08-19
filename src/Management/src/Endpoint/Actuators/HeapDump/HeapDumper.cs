@@ -45,7 +45,7 @@ public sealed class HeapDumper
         {
             using var process = Process.GetCurrentProcess();
 
-            if (System.Environment.Version.Major == 3 || string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogInformation("Attempting to create a gcdump");
 
@@ -77,7 +77,7 @@ public sealed class HeapDumper
 
     private string CreateFileName()
     {
-        if (System.Environment.Version.Major == 3 || string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
+        if (string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
         {
             return $"gcdump-{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}-live.gcdump";
         }

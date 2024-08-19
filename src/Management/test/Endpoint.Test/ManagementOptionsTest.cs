@@ -41,9 +41,9 @@ public sealed class ManagementOptionsTest : BaseTest
     {
         var managementOptions = new ManagementOptions
         {
-            Exposure = new Exposure
+            Exposure =
             {
-                Exclude = new List<string>
+                Exclude =
                 {
                     "*"
                 }

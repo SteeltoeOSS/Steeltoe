@@ -37,14 +37,7 @@ internal static class ServiceCollectionExtensions
         services.TryAddSingleton(provider =>
         {
             MetricsEndpointOptions options = provider.GetRequiredService<IOptionsMonitor<MetricsEndpointOptions>>().CurrentValue;
-
-            return new MetricsExporterOptions
-            {
-                CacheDurationMilliseconds = options.CacheDurationMilliseconds,
-                MaxTimeSeries = options.MaxTimeSeries,
-                MaxHistograms = options.MaxHistograms,
-                IncludedMetrics = options.IncludedMetrics
-            };
+            return CreateMetricsExporterOptionsFrom(options);
         });
 
         services.TryAddSingleton(provider =>
@@ -56,6 +49,23 @@ internal static class ServiceCollectionExtensions
         services.AddSteeltoeCollector();
 
         return services;
+    }
+
+    private static MetricsExporterOptions CreateMetricsExporterOptionsFrom(MetricsEndpointOptions endpointOptions)
+    {
+        var exporterOptions = new MetricsExporterOptions
+        {
+            CacheDurationMilliseconds = endpointOptions.CacheDurationMilliseconds,
+            MaxTimeSeries = endpointOptions.MaxTimeSeries,
+            MaxHistograms = endpointOptions.MaxHistograms
+        };
+
+        foreach (string metric in endpointOptions.IncludedMetrics)
+        {
+            exporterOptions.IncludedMetrics.Add(metric);
+        }
+
+        return exporterOptions;
     }
 
     public static IServiceCollection AddSteeltoeCollector(this IServiceCollection services)
@@ -86,18 +96,15 @@ internal static class ServiceCollectionExtensions
             exporter.SetCollect(aggregationManager.Collect);
             aggregationManager.Include(SteeltoeMetrics.InstrumentationName); // Default to Steeltoe Metrics
 
-            if (exporterOptions.IncludedMetrics != null)
+            foreach (string filter in exporterOptions.IncludedMetrics)
             {
-                foreach (string filter in exporterOptions.IncludedMetrics)
-                {
-                    string[] filterParts = filter.Split(':');
+                string[] filterParts = filter.Split(':');
 
-                    if (filterParts.Length == 2)
-                    {
-                        string meter = filterParts[0];
-                        string instrument = filterParts[1];
-                        aggregationManager.Include(meter, instrument);
-                    }
+                if (filterParts.Length == 2)
+                {
+                    string meter = filterParts[0];
+                    string instrument = filterParts[1];
+                    aggregationManager.Include(meter, instrument);
                 }
             }
 

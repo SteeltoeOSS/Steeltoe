@@ -23,7 +23,7 @@ internal sealed class ConfigureCloudFoundryEndpointOptions : ConfigureEndpointOp
         ArgumentNullException.ThrowIfNull(options);
 
         base.Configure(options);
-        options.ApplicationId = Configuration[VcapApplicationIdKey];
-        options.CloudFoundryApi = Configuration[VcapApplicationCloudfoundryApiKey];
+        options.ApplicationId ??= Configuration[VcapApplicationIdKey];
+        options.Api ??= Configuration[VcapApplicationCloudfoundryApiKey];
     }
 }

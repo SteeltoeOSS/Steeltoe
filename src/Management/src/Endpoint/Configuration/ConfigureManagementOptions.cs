@@ -45,8 +45,6 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
 
         options.Path ??= DefaultPath;
 
-        options.Exposure ??= new Exposure();
-
         var configureExposure = new ConfigureExposure(_configuration);
         configureExposure.Configure(options.Exposure);
     }
@@ -87,13 +85,13 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
     private sealed class ConfigureExposure
     {
         private const string Prefix = "management:endpoints:actuator:exposure";
-        private const string SecondChancePrefix = "management:endpoints:web:exposure";
+        private const string SpringKeyPrefix = "management:endpoints:web:exposure";
 
-        private static readonly List<string> DefaultIncludes = new()
-        {
+        private static readonly List<string> DefaultIncludes =
+        [
             "health",
             "info"
-        };
+        ];
 
         private readonly IConfiguration _configuration;
 
@@ -108,25 +106,38 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
         {
             ArgumentNullException.ThrowIfNull(options);
 
-            _configuration.GetSection(Prefix).Bind(options);
+            IConfigurationSection springSection = _configuration.GetSection(SpringKeyPrefix);
 
-            IConfigurationSection secondSection = _configuration.GetSection(SecondChancePrefix);
-
-            if (secondSection.Exists())
+            if (springSection.Exists())
             {
-                options.Include = GetListFromConfigurationCsvString(secondSection, "include") ?? [];
-                options.Exclude = GetListFromConfigurationCsvString(secondSection, "exclude") ?? [];
+                List<string> springIncludes = GetListFromConfigurationCsvString(springSection, "include") ?? [];
+                ReplaceCollection(options.Include, springIncludes);
+
+                List<string> springExcludes = GetListFromConfigurationCsvString(springSection, "exclude") ?? [];
+                ReplaceCollection(options.Exclude, springExcludes);
             }
+
+            _configuration.GetSection(Prefix).Bind(options);
 
             if (options.Include.Count == 0 && options.Exclude.Count == 0)
             {
-                options.Include = DefaultIncludes;
+                ReplaceCollection(options.Include, DefaultIncludes);
             }
         }
 
         private static List<string>? GetListFromConfigurationCsvString(IConfigurationSection section, string key)
         {
-            return section.GetValue<string?>(key)?.Split(',').ToList();
+            return section.GetValue<string?>(key)?.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+        }
+
+        private static void ReplaceCollection(ICollection<string> source, IEnumerable<string> itemsToAdd)
+        {
+            source.Clear();
+
+            foreach (string item in itemsToAdd)
+            {
+                source.Add(item);
+            }
         }
     }
 }

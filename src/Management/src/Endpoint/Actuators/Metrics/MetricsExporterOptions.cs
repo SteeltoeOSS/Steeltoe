@@ -9,5 +9,5 @@ internal sealed class MetricsExporterOptions
     public int CacheDurationMilliseconds { get; set; }
     public int MaxTimeSeries { get; set; }
     public int MaxHistograms { get; set; }
-    public IList<string> IncludedMetrics { get; set; } = new List<string>();
+    public IList<string> IncludedMetrics { get; } = new List<string>();
 }

@@ -4,17 +4,31 @@
 
 using Steeltoe.Management.Configuration;
 
-#pragma warning disable S4004 // Collection properties should be readonly
-
 namespace Steeltoe.Management.Endpoint.Actuators.Metrics;
 
 public sealed class MetricsEndpointOptions : EndpointOptions
 {
+    /// <summary>
+    /// Gets or sets the duration in milliseconds that metrics are cached for. Default value: 500.
+    /// </summary>
     public int CacheDurationMilliseconds { get; set; } = 500;
-    public int MaxTimeSeries { get; set; } = 100;
-    public int MaxHistograms { get; set; } = 100;
-    public IList<string> IncludedMetrics { get; set; } = new List<string>();
 
+    /// <summary>
+    /// Gets or sets the maximum number of time series to return. Default value: 100.
+    /// </summary>
+    public int MaxTimeSeries { get; set; } = 100;
+
+    /// <summary>
+    /// Gets or sets the maximum number of histograms to return. Default value: 100.
+    /// </summary>
+    public int MaxHistograms { get; set; } = 100;
+
+    /// <summary>
+    /// Gets the names of metrics to include.
+    /// </summary>
+    public IList<string> IncludedMetrics { get; } = new List<string>();
+
+    /// <inheritdoc />
     public override bool RequiresExactMatch()
     {
         return false;

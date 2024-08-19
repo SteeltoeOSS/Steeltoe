@@ -12,7 +12,7 @@ namespace Steeltoe.Configuration.Encryption.Decryption;
 internal sealed class ConfigServerEncryptionSettings
 {
     /// <summary>
-    /// Gets or sets a value indicating whether encryption is enabled.
+    /// Gets or sets a value indicating whether encryption is enabled. Default value: false.
     /// </summary>
     public bool EncryptionEnabled { get; set; }
 

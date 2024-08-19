@@ -8,10 +8,17 @@ namespace Steeltoe.Management.Endpoint.Actuators.Refresh;
 
 public sealed class RefreshEndpointOptions : EndpointOptions
 {
-    public override IList<string> AllowedVerbs { get; set; } = new List<string>
-    {
-        "Post"
-    };
-
+    /// <summary>
+    /// Gets or sets a value indicating whether to return the configuration after refreshing. Default value: true.
+    /// </summary>
     public bool ReturnConfiguration { get; set; } = true;
+
+    /// <inheritdoc />
+    protected override IList<string> GetDefaultAllowedVerbs()
+    {
+        return new List<string>
+        {
+            "Post"
+        };
+    }
 }

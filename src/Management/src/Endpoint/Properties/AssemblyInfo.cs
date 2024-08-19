@@ -28,7 +28,6 @@ using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 [assembly: ConfigurationSchema("Spring:Boot:Admin:Client", typeof(SpringBootAdminClientOptions))]
 [assembly: ConfigurationSchema("Management:CloudFoundry:Enabled", typeof(bool))]
 [assembly: ConfigurationSchema("Management:Endpoints", typeof(ManagementOptions))]
-[assembly: ConfigurationSchema("Management:Endpoints:SslEnabled", typeof(bool))]
 [assembly: ConfigurationSchema("Management:Endpoints:CloudFoundry", typeof(CloudFoundryEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:DbMigrations", typeof(DbMigrationsEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Env", typeof(EnvironmentEndpointOptions))]

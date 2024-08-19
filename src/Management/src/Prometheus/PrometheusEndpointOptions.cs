@@ -8,6 +8,7 @@ namespace Steeltoe.Management.Prometheus;
 
 public sealed class PrometheusEndpointOptions : EndpointOptions
 {
+    /// <inheritdoc />
     public override bool RequiresExactMatch()
     {
         return false;

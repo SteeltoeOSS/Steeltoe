@@ -4,8 +4,6 @@
 
 using System.Text.Json;
 
-#pragma warning disable S4004 // Collection properties should be readonly
-
 namespace Steeltoe.Management.Endpoint.Configuration;
 
 /// <summary>
@@ -14,6 +12,16 @@ namespace Steeltoe.Management.Endpoint.Configuration;
 public sealed class ManagementOptions
 {
     internal bool IsCloudFoundryEnabled { get; set; }
+
+    /// <summary>
+    /// Gets which management endpoints are included and/or excluded.
+    /// </summary>
+    /// <remarks>
+    /// The property value is obtained from configuration keys management:endpoints:web:exposure (a comma-delimited list), falling back to
+    /// management:endpoints:actuator:exposure. So it does NOT bind from management:endpoints:exposure. This property is provided here internally to easily
+    /// read the settings.
+    /// </remarks>
+    internal Exposure Exposure { get; } = new();
 
     /// <summary>
     /// Gets or sets a value indicating whether management endpoints are enabled. Default value: true.
@@ -50,16 +58,11 @@ public sealed class ManagementOptions
     };
 
     /// <summary>
-    /// Gets or sets which management endpoints are included and/or excluded.
-    /// </summary>
-    public Exposure? Exposure { get; set; }
-
-    /// <summary>
-    /// Gets or sets a list of
+    /// Gets a list of
     /// <see href="https://docs.microsoft.com/dotnet/api/system.type.assemblyqualifiedname">
     /// assembly-qualified
     /// </see>
     /// custom JSON converters.
     /// </summary>
-    public IList<string> CustomJsonConverters { get; set; } = new List<string>();
+    public IList<string> CustomJsonConverters { get; } = new List<string>();
 }

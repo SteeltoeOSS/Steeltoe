@@ -60,7 +60,7 @@ internal sealed class PermissionsProvider
         }
 
         CloudFoundryEndpointOptions options = _optionsMonitor.CurrentValue;
-        string checkPermissionsUri = $"{options.CloudFoundryApi}/v2/apps/{options.ApplicationId}/permissions";
+        string checkPermissionsUri = $"{options.Api}/v2/apps/{options.ApplicationId}/permissions";
         var request = new HttpRequestMessage(HttpMethod.Get, new Uri(checkPermissionsUri, UriKind.RelativeOrAbsolute));
         var auth = new AuthenticationHeaderValue("bearer", accessToken);
         request.Headers.Authorization = auth;

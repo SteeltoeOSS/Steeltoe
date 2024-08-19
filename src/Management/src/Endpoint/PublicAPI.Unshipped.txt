@@ -10,14 +10,10 @@ override Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessHea
 override Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.RequiresExactMatch() -> bool
 override Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConverter.Read(ref System.Text.Json.Utf8JsonReader reader, System.Type! typeToConvert, System.Text.Json.JsonSerializerOptions! options) -> System.DateTime
 override Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConverter.Write(System.Text.Json.Utf8JsonWriter! writer, System.DateTime value, System.Text.Json.JsonSerializerOptions! options) -> void
-override Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersEndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string!>!
-override Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersEndpointOptions.AllowedVerbs.set -> void
 override Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersEndpointOptions.RequiresExactMatch() -> bool
 override Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersRequest.ToString() -> string!
 override Steeltoe.Management.Endpoint.Actuators.Metrics.MetricSample.ToString() -> string!
 override Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.RequiresExactMatch() -> bool
-override Steeltoe.Management.Endpoint.Actuators.Refresh.RefreshEndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string!>!
-override Steeltoe.Management.Endpoint.Actuators.Refresh.RefreshEndpointOptions.AllowedVerbs.set -> void
 override Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.ToString() -> string!
 static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState.Broken -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState!
 static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState.Correct -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState!
@@ -121,10 +117,10 @@ Steeltoe.Management.Endpoint.ActuatorConventionBuilder.Add(Microsoft.AspNetCore.
 Steeltoe.Management.Endpoint.ActuatorConventionBuilder.Add(System.Action<Microsoft.AspNetCore.Builder.EndpointBuilder!>! convention) -> void
 Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions
+Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.Api.get -> string?
+Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.Api.set -> void
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.ApplicationId.get -> string?
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.ApplicationId.set -> void
-Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.CloudFoundryApi.get -> string?
-Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.CloudFoundryApi.set -> void
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.CloudFoundryEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.ValidateCertificates.get -> bool
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.ValidateCertificates.set -> void
@@ -144,7 +140,6 @@ Steeltoe.Management.Endpoint.Actuators.Environment.EndpointServiceCollectionExte
 Steeltoe.Management.Endpoint.Actuators.Environment.EnvironmentEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Environment.EnvironmentEndpointOptions.EnvironmentEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Environment.EnvironmentEndpointOptions.KeysToSanitize.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Management.Endpoint.Actuators.Environment.EnvironmentEndpointOptions.KeysToSanitize.set -> void
 Steeltoe.Management.Endpoint.Actuators.Environment.EnvironmentResponse
 Steeltoe.Management.Endpoint.Actuators.Environment.EnvironmentResponse.ActiveProfiles.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.Actuators.Environment.EnvironmentResponse.EnvironmentResponse(System.Collections.Generic.IList<string!>! activeProfiles, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.Environment.PropertySourceDescriptor!>! sources) -> void
@@ -200,7 +195,6 @@ Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.Claim.get -> Steeltoe.Management.Endpoint.Actuators.Health.EndpointClaim?
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.Claim.set -> void
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.Groups.get -> System.Collections.Generic.IDictionary<string!, Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions!>!
-Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.Groups.set -> void
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.HealthEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.Role.get -> string?
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.Role.set -> void
@@ -305,7 +299,6 @@ Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.CacheDurationMilliseconds.get -> int
 Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.CacheDurationMilliseconds.set -> void
 Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.IncludedMetrics.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.IncludedMetrics.set -> void
 Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.MaxHistograms.get -> int
 Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.MaxHistograms.set -> void
 Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.MaxTimeSeries.get -> int
@@ -525,17 +518,12 @@ Steeltoe.Management.Endpoint.AllActuatorsStartupFilter.AllActuatorsStartupFilter
 Steeltoe.Management.Endpoint.AllActuatorsStartupFilter.Configure(System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>? next) -> System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>!
 Steeltoe.Management.Endpoint.Configuration.Exposure
 Steeltoe.Management.Endpoint.Configuration.Exposure.Exclude.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Management.Endpoint.Configuration.Exposure.Exclude.set -> void
 Steeltoe.Management.Endpoint.Configuration.Exposure.Exposure() -> void
 Steeltoe.Management.Endpoint.Configuration.Exposure.Include.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Management.Endpoint.Configuration.Exposure.Include.set -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.CustomJsonConverters.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Management.Endpoint.Configuration.ManagementOptions.CustomJsonConverters.set -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Enabled.get -> bool?
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Enabled.set -> void
-Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Exposure.get -> Steeltoe.Management.Endpoint.Configuration.Exposure?
-Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Exposure.set -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.ManagementOptions() -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Path.get -> string?
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Path.set -> void

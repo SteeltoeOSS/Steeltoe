@@ -8,5 +8,8 @@ namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
 public sealed class ThreadDumpEndpointOptions : EndpointOptions
 {
-    public int Duration { get; set; } = 10; // 10 ms
+    /// <summary>
+    /// Gets or sets the duration (in milliseconds) before signaling to stop the capture. Default value: 10.
+    /// </summary>
+    public int Duration { get; set; } = 10;
 }

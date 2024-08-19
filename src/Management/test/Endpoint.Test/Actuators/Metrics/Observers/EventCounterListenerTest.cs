@@ -85,10 +85,14 @@ public sealed class EventCounterListenerTest : BaseTest
 
         var options = new MetricsObserverOptions
         {
-            ExcludedMetrics = exclusions,
             EventCounterEvents = true,
             EventCounterIntervalSec = 1
         };
+
+        foreach (string exclusion in exclusions)
+        {
+            options.ExcludedMetrics.Add(exclusion);
+        }
 
         TestOptionsMonitor<MetricsObserverOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
@@ -125,13 +129,18 @@ public sealed class EventCounterListenerTest : BaseTest
             "cpu-usage"
         };
 
-        var optionsMonitor = TestOptionsMonitor.Create(new MetricsObserverOptions
+        var options = new MetricsObserverOptions
         {
-            IncludedMetrics = inclusions,
             EventCounterEvents = true,
             EventCounterIntervalSec = 1
-        });
+        };
 
+        foreach (string inclusion in inclusions)
+        {
+            options.IncludedMetrics.Add(inclusion);
+        }
+
+        TestOptionsMonitor<MetricsObserverOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
 
         var exporter = new MetricsExporter(_exporterOptions);

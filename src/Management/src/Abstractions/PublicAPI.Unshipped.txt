@@ -1,6 +1,7 @@
 #nullable enable
 abstract Steeltoe.Management.Diagnostics.DiagnosticObserver.ProcessEvent(string! eventName, object? value) -> void
 Steeltoe.Management.Configuration.EndpointOptions
+Steeltoe.Management.Configuration.EndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Configuration.EndpointOptions.EndpointOptions() -> void
 Steeltoe.Management.Configuration.EndpointOptions.RequiredPermissions.get -> Steeltoe.Management.Configuration.Permissions
 Steeltoe.Management.Configuration.EndpointOptions.RequiredPermissions.set -> void
@@ -33,7 +34,6 @@ Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterEvents.set ->
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterIntervalSec.get -> int?
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterIntervalSec.set -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.ExcludedMetrics.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.ExcludedMetrics.set -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.GCEvents.get -> bool
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.GCEvents.set -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.HttpClientCore.get -> bool
@@ -41,17 +41,14 @@ Steeltoe.Management.Diagnostics.MetricsObserverOptions.HttpClientCore.set -> voi
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.HttpClientDesktop.get -> bool
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.HttpClientDesktop.set -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.IncludedMetrics.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.IncludedMetrics.set -> void
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.IncludeObserver(string! name) -> bool
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.IngressIgnorePattern.get -> string?
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.IngressIgnorePattern.set -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.MetricsObserverOptions() -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.ThreadPoolEvents.get -> bool
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.ThreadPoolEvents.set -> void
-virtual Steeltoe.Management.Configuration.EndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string!>!
-virtual Steeltoe.Management.Configuration.EndpointOptions.AllowedVerbs.set -> void
 virtual Steeltoe.Management.Configuration.EndpointOptions.Enabled.get -> bool?
 virtual Steeltoe.Management.Configuration.EndpointOptions.Enabled.set -> void
+virtual Steeltoe.Management.Configuration.EndpointOptions.GetDefaultAllowedVerbs() -> System.Collections.Generic.IList<string!>!
 virtual Steeltoe.Management.Configuration.EndpointOptions.Id.get -> string?
 virtual Steeltoe.Management.Configuration.EndpointOptions.Id.set -> void
 virtual Steeltoe.Management.Configuration.EndpointOptions.Path.get -> string?

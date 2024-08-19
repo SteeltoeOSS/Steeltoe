@@ -65,7 +65,7 @@ internal sealed class CloudFoundrySecurityMiddleware
                 return;
             }
 
-            if (string.IsNullOrEmpty(endpointOptions.CloudFoundryApi))
+            if (string.IsNullOrEmpty(endpointOptions.Api))
             {
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.CloudfoundryApiMissingMessage));
 

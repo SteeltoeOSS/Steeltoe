@@ -8,12 +8,17 @@ namespace Steeltoe.Management.Endpoint.Actuators.Loggers;
 
 public sealed class LoggersEndpointOptions : EndpointOptions
 {
-    public override IList<string> AllowedVerbs { get; set; } = new List<string>
+    /// <inheritdoc />
+    protected override IList<string> GetDefaultAllowedVerbs()
     {
-        "Get",
-        "Post"
-    };
+        return new List<string>
+        {
+            "Get",
+            "Post"
+        };
+    }
 
+    /// <inheritdoc />
     public override bool RequiresExactMatch()
     {
         return false;

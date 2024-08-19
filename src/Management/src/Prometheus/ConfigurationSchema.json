@@ -29,16 +29,20 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
@@ -46,7 +50,8 @@
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
                 }
               }
             }

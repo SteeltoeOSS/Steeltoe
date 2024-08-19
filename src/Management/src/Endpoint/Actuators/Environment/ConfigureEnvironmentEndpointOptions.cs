@@ -36,7 +36,10 @@ internal sealed class ConfigureEnvironmentEndpointOptions : ConfigureEndpointOpt
         // See https://github.com/dotnet/extensions/issues/1341.
         if (options.KeysToSanitize.Count == 0)
         {
-            options.KeysToSanitize = DefaultKeysToSanitize;
+            foreach (string defaultKey in DefaultKeysToSanitize)
+            {
+                options.KeysToSanitize.Add(defaultKey);
+            }
         }
     }
 }

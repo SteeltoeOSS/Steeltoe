@@ -4,11 +4,12 @@
 
 using Steeltoe.Management.Configuration;
 
-#pragma warning disable S4004 // Collection properties should be readonly
-
 namespace Steeltoe.Management.Endpoint.Actuators.Environment;
 
 public sealed class EnvironmentEndpointOptions : EndpointOptions
 {
-    public IList<string> KeysToSanitize { get; set; } = new List<string>();
+    /// <summary>
+    /// Gets the list of keys to sanitize.
+    /// </summary>
+    public IList<string> KeysToSanitize { get; } = new List<string>();
 }

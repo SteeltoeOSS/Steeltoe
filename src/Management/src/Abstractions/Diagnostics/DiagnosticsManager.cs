@@ -48,7 +48,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
 
         foreach (IDiagnosticObserver observer in observerArray)
         {
-            if (observerOptions.CurrentValue.IncludeObserver(observer.ObserverName))
+            if (observerOptions.CurrentValue.IncludesObserver(observer.ObserverName))
             {
                 filteredObservers.Add(observer);
             }
