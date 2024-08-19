@@ -25,7 +25,7 @@ public sealed class ConfigServerClientOptionsTest
         services.ConfigureConfigServerClientOptions();
         var service = services.BuildServiceProvider(true).GetRequiredService<IOptions<ConfigServerClientOptions>>();
 
-        TestHelper.VerifyDefaults(service.Value);
+        TestHelper.VerifyDefaults(service.Value, TestHostEnvironmentFactory.TestAppName);
     }
 
     [Fact]
@@ -106,6 +106,6 @@ public sealed class ConfigServerClientOptionsTest
     {
         var options = new ConfigServerClientOptions();
 
-        TestHelper.VerifyDefaults(options);
+        TestHelper.VerifyDefaults(options, null);
     }
 }

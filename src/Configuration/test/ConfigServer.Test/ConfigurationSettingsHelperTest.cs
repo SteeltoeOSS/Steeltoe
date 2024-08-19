@@ -19,6 +19,6 @@ public sealed class ConfigurationSettingsHelperTest
         var helper = new ConfigurationSettingsHelper(NullLoggerFactory.Instance);
         helper.Initialize(prefix, options, configuration);
 
-        TestHelper.VerifyDefaults(options);
+        TestHelper.VerifyDefaults(options, null);
     }
 }

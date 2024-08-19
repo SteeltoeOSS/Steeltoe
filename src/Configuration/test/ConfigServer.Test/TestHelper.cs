@@ -2,13 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.TestResources;
-
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
 internal static class TestHelper
 {
-    public static void VerifyDefaults(ConfigServerClientOptions options)
+    public static void VerifyDefaults(ConfigServerClientOptions options, string? expectedAppName)
     {
         Assert.True(options.Enabled);
         Assert.False(options.FailFast);
@@ -30,12 +28,7 @@ internal static class TestHelper
         Assert.Equal("configserver", options.Discovery.ServiceId);
         Assert.True(options.Health.Enabled);
         Assert.Equal(300_000, options.Health.TimeToLive);
-
-        if (options.Name != null)
-        {
-            Assert.Equal(TestHostEnvironmentFactory.TestAppName, options.Name);
-        }
-
+        Assert.Equal(expectedAppName, options.Name);
         Assert.Null(options.Label);
         Assert.Null(options.Username);
         Assert.Null(options.Password);

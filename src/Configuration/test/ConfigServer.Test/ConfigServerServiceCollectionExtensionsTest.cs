@@ -26,7 +26,7 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var service = serviceProvider.GetRequiredService<IOptions<ConfigServerClientOptions>>();
 
-        TestHelper.VerifyDefaults(service.Value);
+        TestHelper.VerifyDefaults(service.Value, TestHostEnvironmentFactory.TestAppName);
     }
 
     [Fact]
