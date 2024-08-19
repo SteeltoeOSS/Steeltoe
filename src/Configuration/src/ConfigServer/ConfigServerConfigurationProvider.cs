@@ -245,8 +245,8 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 // Update configuration Data dictionary with any results
                 if (env != null)
                 {
-                    Logger.LogDebug("Located environment name: {Name}, profiles: {Profiles}, labels: {Label}, version: {Version}, state: {State}",
-                        env.Name, env.Profiles, env.Label, env.Version, env.State);
+                    Logger.LogDebug("Located environment name: {Name}, profiles: {Profiles}, labels: {Label}, version: {Version}, state: {State}", env.Name,
+                        env.Profiles, env.Label, env.Version, env.State);
 
                     if (updateDictionary)
                     {
