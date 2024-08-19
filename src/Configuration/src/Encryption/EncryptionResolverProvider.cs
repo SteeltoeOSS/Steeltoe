@@ -90,7 +90,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
     /// </returns>
     public bool TryGet(string key, out string? value)
     {
-        ArgumentException.ThrowIfNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNull(key);
         EnsureInitialized();
 
         string? originalValue = Configuration![key];

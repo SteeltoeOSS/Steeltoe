@@ -50,7 +50,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
     /// </returns>
     public override bool TryGet(string key, out string? value)
     {
-        ArgumentException.ThrowIfNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNull(key);
 
         value = null;
 
