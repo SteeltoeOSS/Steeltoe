@@ -47,17 +47,18 @@ public static class PlaceholderConfigurationExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        if (!builder.Sources.Any(source => source is PlaceholderResolverSource))
+        if (!builder.Sources.OfType<PlaceholderResolverSource>().Any())
         {
             if (builder is IConfigurationRoot configuration)
             {
-                builder.Add(new PlaceholderResolverSource(configuration, loggerFactory));
+                var source = new PlaceholderResolverSource(configuration, loggerFactory);
+                builder.Add(source);
             }
             else
             {
-                var resolver = new PlaceholderResolverSource(builder.Sources, loggerFactory);
+                var source = new PlaceholderResolverSource(builder.Sources, loggerFactory);
                 builder.Sources.Clear();
-                builder.Add(resolver);
+                builder.Add(source);
             }
         }
 

@@ -2,12 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.TestResources;
-using Steeltoe.Configuration.CloudFoundry;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
@@ -16,31 +14,18 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
     [Fact]
     public void ConfigureConfigServerClientOptions_ConfiguresConfigServerClientOptions_WithDefaults()
     {
-        var services = new ServiceCollection();
-        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
-
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddConfigServer(environment);
+        IConfigurationBuilder builder = new ConfigurationBuilder();
+        builder.AddConfigServer();
         IConfiguration configuration = builder.Build();
+
+        var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.ConfigureConfigServerClientOptions();
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var service = serviceProvider.GetRequiredService<IOptions<ConfigServerClientOptions>>();
 
-        TestHelper.VerifyDefaults(service.Value, TestHostEnvironmentFactory.TestAppName);
-    }
+        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
 
-    [Fact]
-    public void ConfigureConfigServerClientOptions_ConfiguresCloudFoundryOptions()
-    {
-        var services = new ServiceCollection();
-
-        services.ConfigureConfigServerClientOptions();
-
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var app = serviceProvider.GetRequiredService<IOptions<CloudFoundryApplicationOptions>>();
-        Assert.NotNull(app.Value.ApplicationName);
-
-        var service = serviceProvider.GetRequiredService<IOptions<CloudFoundryServicesOptions>>();
-        Assert.Empty(service.Value.Services);
+        string? expectedAppName = Assembly.GetEntryAssembly()!.GetName().Name;
+        TestHelper.VerifyDefaults(optionsMonitor.CurrentValue, expectedAppName);
     }
 }

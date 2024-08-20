@@ -5,18 +5,18 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.Internal;
 
-namespace Steeltoe.Common.TestResources;
+namespace Steeltoe.Management.Endpoint.Test;
 
 public static class TestHostEnvironmentFactory
 {
-    public const string TestAppName = "TestApp";
+    private const string TestAppName = "TestApp";
 
     public static IHostEnvironment Create()
     {
         return Create("Test");
     }
 
-    public static IHostEnvironment Create(string environmentName)
+    private static IHostEnvironment Create(string environmentName)
     {
         ArgumentNullException.ThrowIfNull(environmentName);
 

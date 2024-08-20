@@ -54,17 +54,18 @@ public static class EncryptionConfigurationExtensions
         ArgumentNullException.ThrowIfNull(textDecryptor);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        if (!builder.Sources.Any(source => source is EncryptionResolverSource))
+        if (!builder.Sources.OfType<EncryptionResolverSource>().Any())
         {
             if (builder is IConfigurationRoot configuration)
             {
-                builder.Add(new EncryptionResolverSource(configuration, textDecryptor, loggerFactory));
+                var source = new EncryptionResolverSource(configuration, textDecryptor, loggerFactory);
+                builder.Add(source);
             }
             else
             {
-                var resolver = new EncryptionResolverSource(builder.Sources, textDecryptor, loggerFactory);
+                var source = new EncryptionResolverSource(builder.Sources, textDecryptor, loggerFactory);
                 builder.Sources.Clear();
-                builder.Add(resolver);
+                builder.Add(source);
             }
         }
 

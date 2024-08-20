@@ -19,11 +19,11 @@
     "Encrypt": {
       "type": "object",
       "properties": {
-        "EncryptionEnabled": {
+        "Enabled": {
           "type": "boolean",
           "description": "Gets or sets a value indicating whether encryption is enabled. Default value: false."
         },
-        "EncryptionKey": {
+        "Key": {
           "type": "string",
           "description": "Gets or sets the key of the simple encryption."
         },

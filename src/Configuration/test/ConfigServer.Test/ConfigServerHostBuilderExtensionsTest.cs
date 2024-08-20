@@ -134,4 +134,138 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         FieldInfo refreshTimerField = provider.GetType().GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
         refreshTimerField.GetValue(provider).Should().BeNull();
     }
+
+    [Fact]
+    public async Task AddConfigServer_WebApplicationBuilder_TakesAppNameFromConfigServerConfiguration()
+    {
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
+
+        hostBuilder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["spring:cloud:config:enabled"] = "false",
+            ["spring:cloud:config:name"] = "myApp"
+        });
+
+        hostBuilder.AddConfigServer();
+
+        await using WebApplication host = hostBuilder.Build();
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
+
+        var provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();
+
+        provider.Should().NotBeNull();
+        provider!.ClientOptions.Name.Should().Be("myApp");
+    }
+
+    [Fact]
+    public async Task AddConfigServer_WebApplicationBuilder_TakesAppNameFromSpringConfiguration()
+    {
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
+
+        hostBuilder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["spring:cloud:config:enabled"] = "false",
+            ["spring:application:name"] = "myApp"
+        });
+
+        hostBuilder.AddConfigServer();
+
+        await using WebApplication host = hostBuilder.Build();
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
+
+        var provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();
+
+        provider.Should().NotBeNull();
+        provider!.ClientOptions.Name.Should().Be("myApp");
+    }
+
+    [Fact]
+    public async Task AddConfigServer_WebApplicationBuilder_TakesAppNameFromVcapApplicationConfiguration()
+    {
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
+
+        hostBuilder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["spring:cloud:config:enabled"] = "false",
+            ["vcap:application:application_name"] = "myApp"
+        });
+
+        hostBuilder.AddConfigServer();
+
+        await using WebApplication host = hostBuilder.Build();
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
+
+        var provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();
+
+        provider.Should().NotBeNull();
+        provider!.ClientOptions.Name.Should().Be("myApp");
+    }
+
+    [Fact]
+    public async Task AddConfigServer_WebApplicationBuilder_TakesAppNameFromHostingEnvironment()
+    {
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create(new WebApplicationOptions
+        {
+            ApplicationName = "myApp"
+        });
+
+        hostBuilder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["spring:cloud:config:enabled"] = "false"
+        });
+
+        hostBuilder.AddConfigServer();
+
+        await using WebApplication host = hostBuilder.Build();
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
+
+        var provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();
+
+        provider.Should().NotBeNull();
+        provider!.ClientOptions.Name.Should().Be("myApp");
+    }
+
+    [Fact]
+    public async Task AddConfigServer_WebApplicationBuilder_TakesEnvironmentNameFromConfigServerConfiguration()
+    {
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
+
+        hostBuilder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["spring:cloud:config:enabled"] = "false",
+            ["spring:cloud:config:env"] = "TestEnv"
+        });
+
+        hostBuilder.AddConfigServer();
+
+        await using WebApplication host = hostBuilder.Build();
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
+
+        var provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();
+
+        provider.Should().NotBeNull();
+        provider!.ClientOptions.Environment.Should().Be("TestEnv");
+    }
+
+    [Fact]
+    public async Task AddConfigServer_WebApplicationBuilder_TakesEnvironmentNameFromHostingEnvironment()
+    {
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
+
+        hostBuilder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["spring:cloud:config:enabled"] = "false"
+        });
+
+        hostBuilder.Environment.EnvironmentName = "TestEnv";
+        hostBuilder.AddConfigServer();
+
+        await using WebApplication host = hostBuilder.Build();
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
+
+        var provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();
+
+        provider.Should().NotBeNull();
+        provider!.ClientOptions.Environment.Should().Be("TestEnv");
+    }
 }

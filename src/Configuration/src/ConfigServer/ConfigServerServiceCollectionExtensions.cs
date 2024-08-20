@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Configuration.ConfigServer;
@@ -27,8 +28,8 @@ public static class ConfigServerServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddOptions<ConfigServerClientOptions>().Configure<IConfiguration>((options, configuration) =>
-            configuration.GetSection(ConfigServerClientOptions.ConfigurationPrefix).Bind(options));
+        services.AddOptions();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ConfigServerClientOptions>, ConfigureConfigServerClientOptions>());
 
         return services;
     }

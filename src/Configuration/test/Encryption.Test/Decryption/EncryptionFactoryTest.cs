@@ -20,8 +20,8 @@ public sealed class EncryptionFactoryTest
     {
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings
         {
-            EncryptionEnabled = true,
-            EncryptionKey = "something"
+            Enabled = true,
+            Key = "something"
         };
 
         Assert.IsType<AesTextDecryptor>(EncryptionFactory.CreateEncryptor(configServerEncryptionSettings));
@@ -32,7 +32,7 @@ public sealed class EncryptionFactoryTest
     {
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings
         {
-            EncryptionEnabled = true,
+            Enabled = true,
             KeyStore =
             {
                 Location = "./Decryption/server.jks",
@@ -49,7 +49,7 @@ public sealed class EncryptionFactoryTest
     {
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings
         {
-            EncryptionEnabled = true,
+            Enabled = true,
             KeyStore =
             {
                 Password = "letmein",
@@ -65,7 +65,7 @@ public sealed class EncryptionFactoryTest
     {
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings
         {
-            EncryptionEnabled = true,
+            Enabled = true,
             KeyStore =
             {
                 Location = "./Decryption/server.jks",
@@ -81,7 +81,7 @@ public sealed class EncryptionFactoryTest
     {
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings
         {
-            EncryptionEnabled = true,
+            Enabled = true,
             KeyStore =
             {
                 Location = "./Decryption/server.jks",
@@ -97,8 +97,8 @@ public sealed class EncryptionFactoryTest
     {
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings
         {
-            EncryptionEnabled = true,
-            EncryptionKey = "something",
+            Enabled = true,
+            Key = "something",
             KeyStore =
             {
                 Location = "./Decryption/server.jks",
@@ -115,7 +115,7 @@ public sealed class EncryptionFactoryTest
     {
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings
         {
-            EncryptionEnabled = true
+            Enabled = true
         };
 
         Assert.Throws<DecryptionException>(() => EncryptionFactory.CreateEncryptor(configServerEncryptionSettings));

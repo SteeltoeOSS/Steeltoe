@@ -16,14 +16,6 @@ internal static class ConfigurationSettingsHelper
         ArgumentNullException.ThrowIfNull(configuration);
 
         IConfigurationSection configurationSection = configuration.GetSection(ConfigurationPrefix);
-
-        settings.EncryptionEnabled = configurationSection.GetValue("enabled", settings.EncryptionEnabled);
-        settings.Rsa.Strong = configurationSection.GetValue("rsa:strong", settings.Rsa.Strong);
-        settings.Rsa.Salt = configurationSection.GetValue("rsa:salt", settings.Rsa.Salt);
-        settings.Rsa.Algorithm = configurationSection.GetValue("rsa:algorithm", settings.Rsa.Algorithm);
-        settings.KeyStore.Location = configurationSection.GetValue("keyStore:location", settings.KeyStore.Location);
-        settings.KeyStore.Password = configurationSection.GetValue("keyStore:password", settings.KeyStore.Password);
-        settings.KeyStore.Alias = configurationSection.GetValue("keyStore:alias", settings.KeyStore.Alias);
-        settings.EncryptionKey = configurationSection.GetValue("key", settings.EncryptionKey);
+        configurationSection.Bind(settings);
     }
 }

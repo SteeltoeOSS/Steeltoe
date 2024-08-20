@@ -29,7 +29,7 @@ public static class CloudFoundryServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddOptions<CloudFoundryServicesOptions>().BindConfiguration("vcap");
-        services.AddOptions<CloudFoundryApplicationOptions>().BindConfiguration("vcap:application");
+        services.AddOptions<CloudFoundryApplicationOptions>().BindConfiguration(CloudFoundryApplicationOptions.ConfigurationPrefix);
 
         services.Replace(ServiceDescriptor.Singleton<IApplicationInstanceInfo>(serviceProvider =>
         {

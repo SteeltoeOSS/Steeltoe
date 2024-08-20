@@ -10,13 +10,13 @@ internal static class EncryptionFactory
     {
         ITextDecryptor decryptor = new NoopDecryptor();
 
-        if (settings.EncryptionEnabled)
+        if (settings.Enabled)
         {
             EnsureValidEncryptionSettings(settings);
 
-            if (!string.IsNullOrEmpty(settings.EncryptionKey))
+            if (!string.IsNullOrEmpty(settings.Key))
             {
-                return new AesTextDecryptor(settings.EncryptionKey);
+                return new AesTextDecryptor(settings.Key);
             }
 
             if (settings is { KeyStore: { Location: not null, Password: not null, Alias: not null }, Rsa: { Salt: not null, Algorithm: not null } })
@@ -33,7 +33,7 @@ internal static class EncryptionFactory
 
     private static void EnsureValidEncryptionSettings(ConfigServerEncryptionSettings settings)
     {
-        bool hasKeySettings = !string.IsNullOrEmpty(settings.EncryptionKey);
+        bool hasKeySettings = !string.IsNullOrEmpty(settings.Key);
 
         bool hasKeyStoreSettings = !string.IsNullOrEmpty(settings.KeyStore.Location) && !string.IsNullOrEmpty(settings.KeyStore.Password) &&
             !string.IsNullOrEmpty(settings.KeyStore.Alias);

@@ -122,9 +122,9 @@
     </PropertyGroup>
 
     <Warning Condition="'$(CurrentConfigurationSchemaFileContent)' != '$(GeneratedConfigurationSchemaFileContent)' And '$(Configuration)' == 'Debug'"
-           Text="ConfigurationSchema.json is out of date. Run 'dotnet build --no-incremental /p:UpdateConfigurationSchema=true' to update it." />
+           Text="ConfigurationSchema.json in project $(MSBuildProjectName) is out of date. Run 'dotnet build --no-incremental /p:UpdateConfigurationSchema=true' to update it." />
     <Error Condition="'$(CurrentConfigurationSchemaFileContent)' != '$(GeneratedConfigurationSchemaFileContent)' And '$(Configuration)' != 'Debug'"
-           Text="ConfigurationSchema.json is out of date. Run 'dotnet build --no-incremental /p:UpdateConfigurationSchema=true' to update it." />
+           Text="ConfigurationSchema.json in project $(MSBuildProjectName) is out of date. Run 'dotnet build --no-incremental /p:UpdateConfigurationSchema=true' to update it." />
   </Target>
 
 </Project>

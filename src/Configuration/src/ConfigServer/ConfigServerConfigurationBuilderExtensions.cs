@@ -2,9 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Configuration.CloudFoundry;
@@ -18,101 +16,73 @@ namespace Steeltoe.Configuration.ConfigServer;
 /// </summary>
 public static class ConfigServerConfigurationBuilderExtensions
 {
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder)
+    /// <summary>
+    /// Adds a configuration source for Config Server to the <see cref="ConfigurationBuilder" />.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder builder)
     {
-        return AddConfigServer(configurationBuilder, NullLoggerFactory.Instance);
+        return AddConfigServer(builder, NullLoggerFactory.Instance);
     }
 
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, ILoggerFactory loggerFactory)
+    /// <summary>
+    /// Adds a configuration source for Config Server to the <see cref="ConfigurationBuilder" />.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder builder, ILoggerFactory loggerFactory)
     {
-        return AddConfigServer(configurationBuilder, "Production", loggerFactory);
+        var options = new ConfigServerClientOptions();
+
+        return AddConfigServer(builder, options, loggerFactory);
     }
 
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string? environment)
+    /// <summary>
+    /// Adds a configuration source for Config Server to the <see cref="ConfigurationBuilder" />.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
+    /// </param>
+    /// <param name="options">
+    /// Enables to configure Config Server from code.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder builder, ConfigServerClientOptions options, ILoggerFactory loggerFactory)
     {
-        return AddConfigServer(configurationBuilder, environment, NullLoggerFactory.Instance);
-    }
-
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string? environment, ILoggerFactory loggerFactory)
-    {
-        string? applicationName = Assembly.GetEntryAssembly()?.GetName().Name;
-        return AddConfigServer(configurationBuilder, environment, applicationName, loggerFactory);
-    }
-
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string? environment, string? applicationName)
-    {
-        return AddConfigServer(configurationBuilder, environment, applicationName, NullLoggerFactory.Instance);
-    }
-
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string? environment, string? applicationName,
-        ILoggerFactory loggerFactory)
-    {
-        var options = new ConfigServerClientOptions
-        {
-            Name = applicationName ?? Assembly.GetEntryAssembly()?.GetName().Name,
-            Environment = environment ?? "Production"
-        };
-
-        return AddConfigServer(configurationBuilder, options, loggerFactory);
-    }
-
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, ConfigServerClientOptions options)
-    {
-        return AddConfigServer(configurationBuilder, options, NullLoggerFactory.Instance);
-    }
-
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostEnvironment environment)
-    {
-        return AddConfigServer(configurationBuilder, environment, NullLoggerFactory.Instance);
-    }
-
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostEnvironment environment,
-        ILoggerFactory loggerFactory)
-    {
-        ArgumentNullException.ThrowIfNull(environment);
-
-        var options = new ConfigServerClientOptions
-        {
-            Name = environment.ApplicationName,
-            Environment = environment.EnvironmentName
-        };
-
-        return AddConfigServer(configurationBuilder, options, loggerFactory);
-    }
-
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, ConfigServerClientOptions options,
-        ILoggerFactory loggerFactory)
-    {
-        ArgumentNullException.ThrowIfNull(configurationBuilder);
+        ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        if (configurationBuilder.Sources.All(source => source is not CloudFoundryConfigurationSource))
+        if (!builder.Sources.OfType<ConfigServerConfigurationSource>().Any())
         {
-            configurationBuilder.AddCloudFoundry();
+            builder.AddCloudFoundry();
+            builder.AddKubernetesServiceBindings();
+            builder.AddPlaceholderResolver(loggerFactory);
+
+            ConfigServerConfigurationSource source = builder is IConfiguration configuration
+                ? new ConfigServerConfigurationSource(options, configuration, loggerFactory)
+                : new ConfigServerConfigurationSource(options, builder.Sources, builder.Properties, loggerFactory);
+
+            builder.Add(source);
         }
 
-        if (configurationBuilder.Sources.All(source => source is not KubernetesServiceBindingConfigurationSource))
-        {
-            configurationBuilder.AddKubernetesServiceBindings();
-        }
-
-        if (configurationBuilder.Sources.All(source => source is not PlaceholderResolverSource))
-        {
-            configurationBuilder.AddPlaceholderResolver(loggerFactory);
-        }
-
-        if (configurationBuilder is IConfiguration configuration)
-        {
-            var source = new ConfigServerConfigurationSource(options, configuration, loggerFactory);
-            configurationBuilder.Add(source);
-        }
-        else
-        {
-            var source = new ConfigServerConfigurationSource(options, configurationBuilder.Sources, configurationBuilder.Properties, loggerFactory);
-            configurationBuilder.Add(source);
-        }
-
-        return configurationBuilder;
+        return builder;
     }
 }

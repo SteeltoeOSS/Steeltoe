@@ -12,21 +12,24 @@ public static class TestWebApplicationBuilderFactory
 {
     public static WebApplicationBuilder Create()
     {
-        WebApplicationBuilder builder = WebApplication.CreateEmptyBuilder(new WebApplicationOptions());
-        ConfigureBuilder(builder, true);
-
-        return builder;
+        return Create(new WebApplicationOptions());
     }
 
     public static WebApplicationBuilder Create(string[] args)
     {
         ArgumentNullException.ThrowIfNull(args);
 
-        WebApplicationBuilder builder = WebApplication.CreateEmptyBuilder(new WebApplicationOptions
+        var options = new WebApplicationOptions
         {
             Args = args
-        });
+        };
 
+        return Create(options);
+    }
+
+    public static WebApplicationBuilder Create(WebApplicationOptions options)
+    {
+        WebApplicationBuilder builder = WebApplication.CreateEmptyBuilder(options);
         ConfigureBuilder(builder, true);
 
         return builder;

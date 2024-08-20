@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Common.TestResources.IO;
@@ -20,10 +19,9 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_AddsConfigServerProviderToProvidersList()
     {
-        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(_quickTests);
-        IHostEnvironment environment = TestHostEnvironmentFactory.Create();
-
-        configurationBuilder.AddConfigServer(environment);
+        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(_quickTests);
+        configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
@@ -34,69 +32,70 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_WithLoggerFactorySucceeds()
     {
-        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(_quickTests);
-        var loggerFactory = new LoggerFactory();
-        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
+        CapturingLoggerProvider loggerProvider = new();
+        var loggerFactory = new LoggerFactory([loggerProvider]);
 
-        configurationBuilder.AddConfigServer(environment, loggerFactory);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(_quickTests);
+        configurationBuilder.AddConfigServer(loggerFactory);
+        _ = configurationBuilder.Build();
 
-        Assert.NotNull(configServerProvider);
-        Assert.NotNull(configServerProvider.Logger);
+        IList<string> logMessages = loggerProvider.GetAll();
+
+        logMessages.Should().Contain(
+            "INFO Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationProvider: Fetching configuration from server at: http://localhost:8888/");
     }
 
     [Fact]
     public void AddConfigServer_JsonAppSettingsConfiguresClient()
     {
-        const string appsettings = @"
-                {
-                    ""spring"": {
-                        ""application"": {
-                            ""name"": ""myName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""uri"": ""https://user:password@foo.com:9999"",
-                            ""enabled"": false,
-                            ""failFast"": false,
-                            ""label"": ""myLabel"",
-                            ""username"": ""myUsername"",
-                            ""password"": ""myPassword"",
-                            ""timeout"": 10000,
-                            ""token"" : ""vaulttoken"",
-                            ""tokenRenewRate"": 50000,
-                            ""disableTokenRenewal"": true,
-                            ""tokenTtl"": 50000,
-                            ""retry"": {
-                                ""enabled"":""false"",
-                                ""initialInterval"":55555,
-                                ""maxInterval"": 55555,
-                                ""multiplier"": 5.5,
-                                ""maxAttempts"": 55555
-                            }
-                        }
-                      }
+        const string appsettings = """
+            {
+              "spring": {
+                "application": {
+                  "name": "myName"
+                },
+                "cloud": {
+                  "config": {
+                    "uri": "https://user:password@foo.com:9999",
+                    "enabled": false,
+                    "failFast": false,
+                    "label": "myLabel",
+                    "username": "myUsername",
+                    "password": "myPassword",
+                    "timeout": 10000,
+                    "token": "vaulttoken",
+                    "tokenRenewRate": 50000,
+                    "disableTokenRenewal": true,
+                    "tokenTtl": 50000,
+                    "retry": {
+                      "enabled": "false",
+                      "initialInterval": 55555,
+                      "maxInterval": 55555,
+                      "multiplier": 5.5,
+                      "maxAttempts": 55555
                     }
-                }";
+                  }
+                }
+              }
+            }
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
-
-        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
         configurationBuilder.AddJsonFile(fileName);
-
-        configurationBuilder.AddConfigServer(environment);
+        configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
+
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
-
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
         Assert.Equal("https://user:password@foo.com:9999", options.Uri);
@@ -123,112 +122,107 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_ValidateCertificates_DisablesCertValidation()
     {
-        const string appsettings = @"
-                {
-                    ""spring"": {
-                      ""cloud"": {
-                        ""config"": {
-                            ""validateCertificates"": false,
-                            ""timeout"": 0
-                        }
-                      }
-                    }
-                }";
+        const string appsettings = """
+            {
+              "spring": {
+                "cloud": {
+                  "config": {
+                    "validateCertificates": false,
+                    "timeout": 0
+                  }
+                }
+              }
+            }
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
-
-        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
         configurationBuilder.AddJsonFile(fileName);
-
-        configurationBuilder.AddConfigServer(environment);
+        configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
-
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
         Assert.False(options.ValidateCertificates);
     }
 
     [Fact]
     public void AddConfigServer_Validate_Certificates_DisablesCertValidation()
     {
-        const string appsettings = @"
-                {
-                    ""spring"": {
-                      ""cloud"": {
-                        ""config"": {
-                            ""validate_certificates"": false,
-                            ""timeout"": 0
-                        }
-                      }
-                    }
-                }";
+        const string appsettings = """
+            {
+              "spring": {
+                "cloud": {
+                  "config": {
+                    "validate_certificates": false,
+                    "timeout": 0
+                  }
+                }
+              }
+            }
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
-
-        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
         configurationBuilder.AddJsonFile(fileName);
-
-        configurationBuilder.AddConfigServer(environment);
+        configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
-
         Assert.False(options.ValidateCertificates);
     }
 
     [Fact]
     public void AddConfigServer_XmlAppSettingsConfiguresClient()
     {
-        const string appsettings = @"
-<settings>
-    <spring>
-      <cloud>
-        <config>
-            <uri>https://foo.com:9999</uri>
-            <enabled>false</enabled>
-            <failFast>false</failFast>
-            <label>myLabel</label>
-            <name>myName</name>
-            <username>myUsername</username>
-            <password>myPassword</password>
-        </config>
-      </cloud>
-    </spring>
-</settings>";
+        const string appsettings = """
+            <settings>
+            	<spring>
+            		<cloud>
+            			<config>
+            				<uri>https://foo.com:9999</uri>
+            				<enabled>false</enabled>
+            				<failFast>false</failFast>
+            				<label>myLabel</label>
+            				<name>myName</name>
+            				<username>myUsername</username>
+            				<password>myPassword</password>
+            			</config>
+            		</cloud>
+            	</spring>
+            </settings>
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
-
-        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
         configurationBuilder.AddXmlFile(fileName);
-
-        configurationBuilder.AddConfigServer(environment);
+        configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
+
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
-
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
         Assert.Equal("https://foo.com:9999", options.Uri);
@@ -245,34 +239,32 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_IniAppSettingsConfiguresClient()
     {
-        const string appsettings = @"
-[spring:cloud:config]
-    uri=https://foo.com:9999
-    enabled=false
-    failFast=false
-    label=myLabel
-    name=myName
-    username=myUsername
-    password=myPassword
-";
+        const string appsettings = """
+            [spring:cloud:config]
+                uri=https://foo.com:9999
+                enabled=false
+                failFast=false
+                label=myLabel
+                name=myName
+                username=myUsername
+                password=myPassword
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
-
-        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
         configurationBuilder.AddIniFile(fileName);
-
-        configurationBuilder.AddConfigServer(environment);
+        configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
+
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
-
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
         Assert.Equal("https://foo.com:9999", options.Uri);
@@ -305,17 +297,14 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         ];
 
         var configurationBuilder = new ConfigurationBuilder();
-        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
         configurationBuilder.AddCommandLine(appsettings);
-
-        configurationBuilder.AddConfigServer(environment);
+        configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
-
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
         Assert.Equal("https://foo.com:9999", options.Uri);
@@ -332,49 +321,48 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_HandlesPlaceHolders()
     {
-        const string appsettings = @"
-                {
-                    ""foo"": {
-                        ""bar"": {
-                            ""name"": ""testName""
-                        },
-                    },
-                    ""spring"": {
-                        ""application"": {
-                            ""name"": ""myName""
-                        },
-                      ""cloud"": {
-                        ""config"": {
-                            ""uri"": ""https://user:password@foo.com:9999"",
-                            ""enabled"": false,
-                            ""failFast"": false,
-                            ""name"": ""${foo:bar:name?foobar}"",
-                            ""label"": ""myLabel"",
-                            ""username"": ""myUsername"",
-                            ""password"": ""myPassword""
-                        }
-                      }
-                    }
-                }";
+        const string appsettings = """
+            {
+              "foo": {
+                "bar": {
+                  "name": "testName"
+                }
+              },
+              "spring": {
+                "application": {
+                  "name": "myName"
+                },
+                "cloud": {
+                  "config": {
+                    "uri": "https://user:password@foo.com:9999",
+                    "enabled": false,
+                    "failFast": false,
+                    "name": "${foo:bar:name?foobar}",
+                    "label": "myLabel",
+                    "username": "myUsername",
+                    "password": "myPassword"
+                  }
+                }
+              }
+            }
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
 
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
-
-        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
         configurationBuilder.AddJsonFile(fileName);
-
-        configurationBuilder.AddConfigServer(environment);
+        configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
+
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
-
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
         Assert.Equal("https://user:password@foo.com:9999", options.Uri);
@@ -388,65 +376,70 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_WithCloudfoundryEnvironment_ConfiguresClientCorrectly()
     {
-        const string vcapApplication = @"
-                {
-                    ""vcap"": {
-                        ""application"": {
-                          ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
-                          ""application_name"": ""my-app"",
-                          ""application_uris"": [
-                            ""my-app.10.244.0.34.xip.io""
-                          ],
-                          ""application_version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"",
-                          ""limits"": {
-                            ""disk"": 1024,
-                            ""fds"": 16384,
-                            ""mem"": 256
-                          },
-                          ""name"": ""my-app"",
-                          ""space_id"": ""06450c72-4669-4dc6-8096-45f9777db68a"",
-                          ""space_name"": ""my-space"",
-                          ""uris"": [
-                            ""my-app.10.244.0.34.xip.io"",
-                            ""my-app2.10.244.0.34.xip.io""
-                          ],
-                          ""users"": null,
-                          ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
-                        }
-                    }
-                }";
+        const string vcapApplication = """
+            {
+              "vcap": {
+                "application": {
+                  "application_id": "fa05c1a9-0fc1-4fbd-bae1-139850dec7a3",
+                  "application_name": "my-app",
+                  "application_uris": [
+                    "my-app.10.244.0.34.xip.io"
+                  ],
+                  "application_version": "fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca",
+                  "limits": {
+                    "disk": 1024,
+                    "fds": 16384,
+                    "mem": 256
+                  },
+                  "name": "my-app",
+                  "space_id": "06450c72-4669-4dc6-8096-45f9777db68a",
+                  "space_name": "my-space",
+                  "uris": [
+                    "my-app.10.244.0.34.xip.io",
+                    "my-app2.10.244.0.34.xip.io"
+                  ],
+                  "users": null,
+                  "version": "fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"
+                }
+              }
+            }
+            """;
 
-        const string vcapServices = @"
-                {
-                    ""vcap"": {
-                        ""services"": {
-                            ""p-config-server"": [{
-                                ""credentials"": {
-                                    ""access_token_uri"": ""https://p-spring-cloud-services.uaa.wise.com/oauth/token"",
-                                    ""client_id"": ""p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef"",
-                                    ""client_secret"": ""e8KF1hXvAnGd"",
-                                    ""uri"": ""https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com""
-                                },
-                                ""label"": ""p-config-server"",
-                                ""name"": ""My Config Server"",
-                                ""plan"": ""standard"",
-                                ""tags"": [
-                                    ""configuration"",
-                                    ""spring-cloud""
-                                ]
-                            }]
-                        }
+        const string vcapServices = """
+            {
+              "vcap": {
+                "services": {
+                  "p-config-server": [
+                    {
+                      "credentials": {
+                        "access_token_uri": "https://p-spring-cloud-services.uaa.wise.com/oauth/token",
+                        "client_id": "p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef",
+                        "client_secret": "e8KF1hXvAnGd",
+                        "uri": "https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com"
+                      },
+                      "label": "p-config-server",
+                      "name": "My Config Server",
+                      "plan": "standard",
+                      "tags": [
+                        "configuration",
+                        "spring-cloud"
+                      ]
                     }
-                }";
+                  ]
+                }
+              }
+            }
+            """;
 
-        const string appsettings = @"
-                {
-                    ""spring"": {
-                        ""application"": {
-                            ""name"": ""${vcap:application:name?foobar}""
-                        }
-                    }
-                }";
+        const string appsettings = """
+            {
+              "spring": {
+                "application": {
+                  "name": "${vcap:application:name?foobar}"
+                }
+              }
+            }
+            """;
 
         using var sandbox = new Sandbox();
         string appsettingsPath = sandbox.CreateFile("appsettings.json", appsettings);
@@ -458,18 +451,15 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         string vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcapServices);
         string vcapServicesFileName = Path.GetFileName(vcapServicesPath);
 
-        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
-
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(sandbox.FullPath);
         configurationBuilder.AddJsonFile(appSettingsFileName);
         configurationBuilder.AddJsonFile(vcapAppFileName);
         configurationBuilder.AddJsonFile(vcapServicesFileName);
-
-        configurationBuilder.AddConfigServer(environment);
+        configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
@@ -489,70 +479,75 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_WithCloudfoundryEnvironmentSCS3_ConfiguresClientCorrectly()
     {
-        const string vcapApplication = @"
-                {
-                    ""vcap"": {
-                        ""application"": {
-                            ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
-                            ""application_name"": ""my-app"",
-                            ""application_uris"": [
-                                ""my-app.10.244.0.34.xip.io""
-                            ],
-                            ""application_version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"",
-                            ""limits"": {
-                                ""disk"": 1024,
-                                ""fds"": 16384,
-                                ""mem"": 256
-                            },
-                            ""name"": ""my-app"",
-                            ""space_id"": ""06450c72-4669-4dc6-8096-45f9777db68a"",
-                            ""space_name"": ""my-space"",
-                            ""uris"": [
-                                ""my-app.10.244.0.34.xip.io"",
-                                ""my-app2.10.244.0.34.xip.io""
-                            ],
-                            ""users"": null,
-                            ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
-                        }
-                    }
-                }";
+        const string vcapApplication = """
+            {
+              "vcap": {
+                "application": {
+                  "application_id": "fa05c1a9-0fc1-4fbd-bae1-139850dec7a3",
+                  "application_name": "my-app",
+                  "application_uris": [
+                    "my-app.10.244.0.34.xip.io"
+                  ],
+                  "application_version": "fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca",
+                  "limits": {
+                    "disk": 1024,
+                    "fds": 16384,
+                    "mem": 256
+                  },
+                  "name": "my-app",
+                  "space_id": "06450c72-4669-4dc6-8096-45f9777db68a",
+                  "space_name": "my-space",
+                  "uris": [
+                    "my-app.10.244.0.34.xip.io",
+                    "my-app2.10.244.0.34.xip.io"
+                  ],
+                  "users": null,
+                  "version": "fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"
+                }
+              }
+            }
+            """;
 
-        const string vcapServices = @"
-                {
-                    ""vcap"": {
-                        ""services"": {
-                            ""p.config-server"": [{
-                                ""binding_name"":"""",
-                                ""credentials"": {
-                                     ""client_secret"":""e8KF1hXvAnGd"",
-                                     ""uri"":""https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com"",
-                                     ""client_id"":""config-client-ea5e13c2-def2-4a3b-b80c-38e690ec284f"",
-                                     ""access_token_uri"":""https://p-spring-cloud-services.uaa.wise.com/oauth/token""
-                                },
-                                ""instance_name"": ""myConfigServer"",
-                                ""label"": ""p.config-server"",
-                                ""name"": ""myConfigServer"",
-                                ""plan"": ""standard"",
-                                ""provider"": null,
-                                ""syslog_drain_url"": null,
-                                ""tags"": [
-                                    ""configuration"",
-                                    ""spring-cloud""
-                                ],
-                                ""volume_mounts"": []
-                            }]
-                         }
+        const string vcapServices = """
+            {
+              "vcap": {
+                "services": {
+                  "p.config-server": [
+                    {
+                      "binding_name": "",
+                      "credentials": {
+                        "client_secret": "e8KF1hXvAnGd",
+                        "uri": "https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com",
+                        "client_id": "config-client-ea5e13c2-def2-4a3b-b80c-38e690ec284f",
+                        "access_token_uri": "https://p-spring-cloud-services.uaa.wise.com/oauth/token"
+                      },
+                      "instance_name": "myConfigServer",
+                      "label": "p.config-server",
+                      "name": "myConfigServer",
+                      "plan": "standard",
+                      "provider": null,
+                      "syslog_drain_url": null,
+                      "tags": [
+                        "configuration",
+                        "spring-cloud"
+                      ],
+                      "volume_mounts": []
                     }
-                }";
+                  ]
+                }
+              }
+            }
+            """;
 
-        const string appsettings = @"
-                {
-                    ""spring"": {
-                        ""application"": {
-                            ""name"": ""${vcap:application:name?foobar}""
-                        }
-                    }
-                }";
+        const string appsettings = """
+            {
+              "spring": {
+                "application": {
+                  "name": "${vcap:application:name?foobar}"
+                }
+              }
+            }
+            """;
 
         using var sandbox = new Sandbox();
         string appSettingsPath = sandbox.CreateFile("appsettings.json", appsettings);
@@ -564,18 +559,15 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         string vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcapServices);
         string vcapServicesFileName = Path.GetFileName(vcapServicesPath);
 
-        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
-
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(sandbox.FullPath);
         configurationBuilder.AddJsonFile(appSettingsFileName);
         configurationBuilder.AddJsonFile(vcapAppFileName);
         configurationBuilder.AddJsonFile(vcapServicesFileName);
-
-        configurationBuilder.AddConfigServer(environment);
+        configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;

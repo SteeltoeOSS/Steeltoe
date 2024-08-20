@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
-
 namespace Steeltoe.Configuration.ConfigServer;
 
 /// <summary>
@@ -34,6 +32,5 @@ public sealed class ConfigServerRetryOptions
     /// <summary>
     /// Gets or sets the max number of retries the client will attempt. Default value: 6.
     /// </summary>
-    [ConfigurationKeyName("Attempts")]
     public int MaxAttempts { get; set; } = 6;
 }

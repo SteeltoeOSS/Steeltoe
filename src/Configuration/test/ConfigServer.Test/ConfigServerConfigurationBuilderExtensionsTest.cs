@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Common.TestResources.IO;
 using Steeltoe.Configuration.CloudFoundry;
@@ -124,15 +125,15 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             ["Certificates:ConfigServer:PrivateKeyFilePath"] = "instance.key"
         };
 
-        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
-
         var options = new ConfigServerClientOptions
         {
             Timeout = 10
         };
 
-        configurationBuilder.AddConfigServer(options);
-        configurationBuilder.Build();
+        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appSettings);
+        configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
+        _ = configurationBuilder.Build();
 
         var source = configurationBuilder.FindConfigurationSource<ConfigServerConfigurationSource>();
         Assert.NotNull(source);
@@ -148,15 +149,15 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             ["Certificates:PrivateKeyFilePath"] = "instance.key"
         };
 
-        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
-
         var options = new ConfigServerClientOptions
         {
             Timeout = 10
         };
 
-        configurationBuilder.AddConfigServer(options);
-        configurationBuilder.Build();
+        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appSettings);
+        configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
+        _ = configurationBuilder.Build();
 
         var source = configurationBuilder.FindConfigurationSource<ConfigServerConfigurationSource>();
         Assert.NotNull(source);
@@ -167,9 +168,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     public void AddConfigServer_AddsConfigServerSourceToList()
     {
         var configurationBuilder = new ConfigurationBuilder();
-        var options = new ConfigServerClientOptions();
-
-        configurationBuilder.AddConfigServer(options);
+        configurationBuilder.AddConfigServer();
 
         ConfigServerConfigurationSource? configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
         Assert.NotNull(configServerSource);
@@ -178,16 +177,17 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_WithLoggerFactorySucceeds()
     {
-        var configurationBuilder = new ConfigurationBuilder();
-        var loggerFactory = new LoggerFactory();
-        var options = new ConfigServerClientOptions();
+        CapturingLoggerProvider loggerProvider = new();
+        var loggerFactory = new LoggerFactory([loggerProvider]);
 
-        configurationBuilder.AddConfigServer(options, loggerFactory);
+        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddConfigServer(loggerFactory);
+        _ = configurationBuilder.Build();
 
-        ConfigServerConfigurationSource? configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
+        IList<string> logMessages = loggerProvider.GetAll();
 
-        Assert.NotNull(configServerSource);
-        Assert.NotNull(configServerSource.LoggerFactory);
+        logMessages.Should().Contain(
+            "INFO Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationProvider: Fetching configuration from server at: http://localhost:8888/");
     }
 
     [Fact]
@@ -226,20 +226,17 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         string path = sandbox.CreateFile("appsettings.json", appsettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
-
-        var clientOptions = new ConfigServerClientOptions();
         configurationBuilder.AddJsonFile(fileName);
-
-        configurationBuilder.AddConfigServer(clientOptions);
+        configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
-
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
         Assert.Equal("https://user:password@foo.com:9999", options.Uri);
@@ -282,20 +279,17 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         string path = sandbox.CreateFile("appsettings.json", appsettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
-
-        var clientOptions = new ConfigServerClientOptions();
         configurationBuilder.AddXmlFile(fileName);
-
-        configurationBuilder.AddConfigServer(clientOptions);
+        configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
-
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
         Assert.Equal("https://foo.com:9999", options.Uri);
@@ -324,20 +318,17 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         string path = sandbox.CreateFile("appsettings.json", appsettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
-
-        var clientOptions = new ConfigServerClientOptions();
         configurationBuilder.AddIniFile(fileName);
-
-        configurationBuilder.AddConfigServer(clientOptions);
+        configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
-
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
         Assert.Equal("https://foo.com:9999", options.Uri);
@@ -367,16 +358,14 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         ];
 
         var configurationBuilder = new ConfigurationBuilder();
-        var clientOptions = new ConfigServerClientOptions();
         configurationBuilder.AddCommandLine(appsettings);
-
-        configurationBuilder.AddConfigServer(clientOptions);
+        configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
+
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
-
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
         Assert.Equal("https://foo.com:9999", options.Uri);
@@ -421,20 +410,17 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
-
-        var clientOptions = new ConfigServerClientOptions();
         configurationBuilder.AddJsonFile(fileName);
-
-        configurationBuilder.AddConfigServer(clientOptions);
+        configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
-
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
         Assert.Equal("https://user:password@foo.com:9999", options.Uri);
@@ -454,8 +440,6 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", VcapApplication);
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
 
-        var configurationBuilder = new ConfigurationBuilder();
-
         var options = new ConfigServerClientOptions
         {
             Uri = "https://uri-from-settings",
@@ -467,15 +451,17 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             Enabled = false
         };
 
-        configurationBuilder.AddEnvironmentVariables().AddConfigServer(options);
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddEnvironmentVariables();
+        configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
-        Assert.NotNull(configServerProvider);
-        Assert.IsType<ConfigServerConfigurationProvider>(configServerProvider);
+        ConfigServerConfigurationProvider? provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
-        Assert.NotEqual("https://uri-from-settings", configServerProvider.ClientOptions.Uri);
-        Assert.Equal("https://uri-from-vcap-services", configServerProvider.ClientOptions.Uri);
+        Assert.NotNull(provider);
+        Assert.IsType<ConfigServerConfigurationProvider>(provider);
+        Assert.NotEqual("https://uri-from-settings", provider.ClientOptions.Uri);
+        Assert.Equal("https://uri-from-vcap-services", provider.ClientOptions.Uri);
     }
 
     [Fact]
@@ -495,9 +481,10 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             }
         };
 
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddConfigServer(options);
+        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        IConfigurationRoot configurationRoot = builder.Build();
         ConfigServerConfigurationProvider? provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         Assert.NotNull(provider);
@@ -512,7 +499,6 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     public void AddConfigServer_AddsCloudFoundryConfigurationSource()
     {
         var configurationBuilder = new ConfigurationBuilder();
-
         configurationBuilder.AddConfigServer();
 
         var source = configurationBuilder.FindConfigurationSource<CloudFoundryConfigurationSource>();
@@ -523,7 +509,6 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     public void AddConfigServer_Only_AddsOneCloudFoundryConfigurationSource()
     {
         var configurationBuilder = new ConfigurationBuilder();
-
         configurationBuilder.AddCloudFoundry(new OtherCloudFoundrySettingsReader());
         configurationBuilder.AddConfigServer();
 
