@@ -4,7 +4,6 @@
 
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -40,14 +39,7 @@ public sealed class CertificateHttpClientBuilderExtensionsTest
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", "not empty");
         using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
-        IHostBuilder builder = GetHostBuilder(customCertificateHeader);
-
-        builder.ConfigureServices(services => services.PostConfigure<CertificateForwardingOptions>(option =>
-        {
-            option.CertificateHeader = customCertificateHeader;
-        }));
-
-        using IHost host = await builder.StartAsync();
+        using IHost host = await GetHostBuilder(customCertificateHeader).StartAsync();
         var factory = host.Services.GetRequiredService<IHttpClientFactory>();
         HttpClient client = factory.CreateClient("test");
 
