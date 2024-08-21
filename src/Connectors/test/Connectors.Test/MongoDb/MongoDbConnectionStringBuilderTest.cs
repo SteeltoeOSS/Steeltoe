@@ -13,14 +13,13 @@ public sealed class MongoDbConnectionStringBuilderTest
     {
         var builder = new MongoDbConnectionStringBuilder
         {
-            ConnectionString = "mongodb://localhost:999?some=other"
+            ConnectionString = "mongodb://localhost:999?some=other",
+            ["port"] = 123,
+            ["username"] = "me@host.com",
+            ["password"] = "some \"secret\" value",
+            ["authenticationDatabase"] = "my db",
+            ["something else"] = "another value"
         };
-
-        builder["port"] = 123;
-        builder["username"] = "me@host.com";
-        builder["password"] = "some \"secret\" value";
-        builder["authenticationDatabase"] = "my db";
-        builder["something else"] = "another value";
 
         builder.ConnectionString.Should().Be(
             "mongodb://me%40host.com:some%20%22secret%22%20value@localhost:123/my%20db?some=other&something%20else=another%20value");

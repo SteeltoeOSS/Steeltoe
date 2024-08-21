@@ -13,14 +13,13 @@ public sealed class RabbitMQConnectionStringBuilderTest
     {
         var builder = new RabbitMQConnectionStringBuilder
         {
-            ConnectionString = "amqps://localhost:999/virtual-host-1"
+            ConnectionString = "amqps://localhost:999/virtual-host-1",
+            ["useTls"] = false,
+            ["port"] = 123,
+            ["username"] = "me@host.com",
+            ["password"] = "some \"secret\" value",
+            ["virtualHost"] = "my virtual= host"
         };
-
-        builder["useTls"] = false;
-        builder["port"] = 123;
-        builder["username"] = "me@host.com";
-        builder["password"] = "some \"secret\" value";
-        builder["virtualHost"] = "my virtual= host";
 
         builder.ConnectionString.Should().Be("amqp://me%40host.com:some%20%22secret%22%20value@localhost:123/my%20virtual%3D%20host");
         builder["URL"].Should().Be(builder.ConnectionString);
