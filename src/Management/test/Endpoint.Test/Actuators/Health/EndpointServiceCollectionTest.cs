@@ -88,8 +88,8 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     public async Task AddHealthContributors_AddsNoDuplicates()
     {
         var services = new ServiceCollection();
-        services.AddHealthContributor<HealthTestContributor>();
-        services.AddHealthContributor<HealthTestContributor>();
+        services.AddHealthContributor<TestHealthContributor>();
+        services.AddHealthContributor<TestHealthContributor>();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         using IServiceScope scope = serviceProvider.CreateScope();

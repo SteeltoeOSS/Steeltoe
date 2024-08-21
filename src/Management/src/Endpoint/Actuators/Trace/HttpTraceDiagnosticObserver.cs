@@ -11,18 +11,12 @@ using Microsoft.Extensions.Primitives;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Trace;
 
-internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
+internal sealed class HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> optionsMonitor, ILoggerFactory loggerFactory)
+    : TraceDiagnosticObserver(optionsMonitor, loggerFactory)
 {
-    private readonly IOptionsMonitor<TraceEndpointOptions> _optionsMonitor;
-    private readonly ILogger<HttpTraceDiagnosticObserver> _logger;
+    private readonly IOptionsMonitor<TraceEndpointOptions> _optionsMonitor = optionsMonitor;
+    private readonly ILogger<HttpTraceDiagnosticObserver> _logger = loggerFactory.CreateLogger<HttpTraceDiagnosticObserver>();
     private readonly ConcurrentQueue<HttpTrace> _queue = new();
-
-    public HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> optionsMonitor, ILoggerFactory loggerFactory)
-        : base(optionsMonitor, loggerFactory)
-    {
-        _optionsMonitor = optionsMonitor;
-        _logger = loggerFactory.CreateLogger<HttpTraceDiagnosticObserver>();
-    }
 
     public override HttpTraceResult GetTraces()
     {

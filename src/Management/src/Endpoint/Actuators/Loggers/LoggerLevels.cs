@@ -7,19 +7,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Loggers;
 
-public sealed class LoggerLevels
+public sealed class LoggerLevels(LogLevel? configured, LogLevel effective)
 {
     [JsonPropertyName("configuredLevel")]
-    public string? ConfiguredLevel { get; }
+    public string? ConfiguredLevel { get; } = configured.HasValue ? LogLevelToString(configured.Value) : null;
 
     [JsonPropertyName("effectiveLevel")]
-    public string EffectiveLevel { get; }
-
-    public LoggerLevels(LogLevel? configured, LogLevel effective)
-    {
-        ConfiguredLevel = configured.HasValue ? LogLevelToString(configured.Value) : null;
-        EffectiveLevel = LogLevelToString(effective);
-    }
+    public string EffectiveLevel { get; } = LogLevelToString(effective);
 
     internal static string LogLevelToString(LogLevel level)
     {

@@ -13,6 +13,8 @@ internal sealed class DirectoryServiceBindingsReader : IServiceBindingsReader
 
     public DirectoryServiceBindingsReader(string rootDirectory)
     {
+        ArgumentException.ThrowIfNullOrEmpty(rootDirectory);
+
         _rootDirectory = rootDirectory;
     }
 

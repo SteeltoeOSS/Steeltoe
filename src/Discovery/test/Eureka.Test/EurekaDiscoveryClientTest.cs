@@ -701,16 +701,11 @@ public sealed class EurekaDiscoveryClientTest
         }
     }
 
-    private sealed class TestHealthCheckHandler : IHealthCheckHandler
+    private sealed class TestHealthCheckHandler(InstanceStatus status) : IHealthCheckHandler
     {
-        private readonly InstanceStatus _status;
+        private readonly InstanceStatus _status = status;
 
         public bool Awaited { get; private set; }
-
-        public TestHealthCheckHandler(InstanceStatus status)
-        {
-            _status = status;
-        }
 
         public async Task<InstanceStatus> GetStatusAsync(bool hasFirstHeartbeatCompleted, CancellationToken cancellationToken)
         {

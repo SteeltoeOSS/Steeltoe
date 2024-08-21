@@ -10,14 +10,10 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Refresh;
 
-internal sealed class RefreshEndpointMiddleware : EndpointMiddleware<object?, IList<string>>
+internal sealed class RefreshEndpointMiddleware(
+    IRefreshEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
+    : EndpointMiddleware<object?, IList<string>>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    public RefreshEndpointMiddleware(IRefreshEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
-    {
-    }
-
     protected override async Task<IList<string>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(null, cancellationToken);

@@ -10,16 +10,11 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
-internal sealed class ThreadDumpEndpointMiddleware : EndpointMiddleware<object?, IList<ThreadInfo>>
+internal sealed class ThreadDumpEndpointMiddleware(
+    IThreadDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
+    : EndpointMiddleware<object?, IList<ThreadInfo>>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    private readonly ILogger<ThreadDumpEndpointMiddleware> _logger;
-
-    public ThreadDumpEndpointMiddleware(IThreadDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
-    {
-        _logger = loggerFactory.CreateLogger<ThreadDumpEndpointMiddleware>();
-    }
+    private readonly ILogger<ThreadDumpEndpointMiddleware> _logger = loggerFactory.CreateLogger<ThreadDumpEndpointMiddleware>();
 
     protected override async Task<IList<ThreadInfo>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {

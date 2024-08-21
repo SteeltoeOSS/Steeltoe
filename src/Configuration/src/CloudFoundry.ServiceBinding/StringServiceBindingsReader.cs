@@ -4,14 +4,9 @@
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 
-internal sealed class StringServiceBindingsReader : IServiceBindingsReader
+internal sealed class StringServiceBindingsReader(string? json) : IServiceBindingsReader
 {
-    private readonly string? _json;
-
-    public StringServiceBindingsReader(string? json)
-    {
-        _json = json;
-    }
+    private readonly string? _json = json;
 
     public string? GetServiceBindingsJson()
     {

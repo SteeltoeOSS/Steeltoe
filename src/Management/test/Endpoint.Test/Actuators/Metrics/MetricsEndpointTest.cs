@@ -12,18 +12,18 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Metrics;
 
 public sealed class MetricsEndpointTest : BaseTest
 {
-    private readonly ITestOutputHelper _output;
+    private readonly ITestOutputHelper _testOutputHelper;
 
-    public MetricsEndpointTest(ITestOutputHelper output)
+    public MetricsEndpointTest(ITestOutputHelper testOutputHelper)
     {
-        _output = output;
+        _testOutputHelper = testOutputHelper;
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
     }
 
     [Fact]
     public async Task Invoke_WithNullMetricsRequest_ReturnsExpected()
     {
-        using (var testContext = new TestContext(_output))
+        using (var testContext = new TestContext(_testOutputHelper))
         {
             testContext.AdditionalServices = (services, _) =>
             {
@@ -57,7 +57,7 @@ public sealed class MetricsEndpointTest : BaseTest
             }
         }
 
-        using (var testContext = new TestContext(_output))
+        using (var testContext = new TestContext(_testOutputHelper))
         {
             testContext.AdditionalServices = (services, _) =>
             {
@@ -89,7 +89,7 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_WithMetricsRequest_ReturnsExpected()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -150,7 +150,7 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_WithMetricsRequest_ReturnsExpected_IncludesAdditionalInstruments()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalConfiguration = configuration =>
         {
@@ -225,7 +225,7 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task GetMetricSamples_ReturnsExpectedCounter()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -259,7 +259,7 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task GetAvailableTags_ReturnsExpected()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -337,7 +337,7 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task GetMetricMeasurements_ReturnsExpected()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -516,7 +516,7 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task GetMetric_ReturnsExpected()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {

@@ -69,11 +69,11 @@ internal sealed class TestContext : IDisposable
         }
     }
 
-    public TestContext(ITestOutputHelper output)
+    public TestContext(ITestOutputHelper testOutputHelper)
     {
-        ArgumentNullException.ThrowIfNull(output);
+        ArgumentNullException.ThrowIfNull(testOutputHelper);
 
-        _loggerProvider = new XunitLoggerProvider(output);
+        _loggerProvider = new XunitLoggerProvider(testOutputHelper);
     }
 
     public T GetRequiredService<T>()

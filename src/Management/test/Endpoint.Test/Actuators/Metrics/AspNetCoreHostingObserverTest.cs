@@ -93,13 +93,8 @@ public sealed class AspNetCoreHostingObserverTest : BaseTest
         return context;
     }
 
-    private sealed class ExceptionHandlerFeature : IExceptionHandlerFeature
+    private sealed class ExceptionHandlerFeature(Exception error) : IExceptionHandlerFeature
     {
-        public Exception Error { get; }
-
-        public ExceptionHandlerFeature(Exception error)
-        {
-            Error = error;
-        }
+        public Exception Error { get; } = error;
     }
 }

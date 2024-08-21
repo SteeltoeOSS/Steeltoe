@@ -6,14 +6,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Info.Contributors;
 
-internal abstract class ConfigurationContributor
+internal abstract class ConfigurationContributor(IConfiguration? configuration)
 {
-    protected IConfiguration? Configuration { get; set; }
-
-    protected ConfigurationContributor(IConfiguration? configuration)
-    {
-        Configuration = configuration;
-    }
+    protected IConfiguration? Configuration { get; set; } = configuration;
 
     protected void Contribute(IInfoBuilder builder, string prefix, bool keepPrefix)
     {

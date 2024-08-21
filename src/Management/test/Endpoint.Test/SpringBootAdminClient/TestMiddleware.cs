@@ -18,7 +18,7 @@ public sealed class TestMiddleware : IMiddleware
         "metadata"
     }.ToHashSet();
 
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context, RequestDelegate? next)
     {
         if (context.Request.Path.Value?.EndsWith("instances", StringComparison.Ordinal) == true)
         {

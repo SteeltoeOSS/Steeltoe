@@ -10,14 +10,10 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+internal sealed class TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> optionsMonitor, ILoggerFactory logger, UrlEncoder encoder)
+    : AuthenticationHandler<AuthenticationSchemeOptions>(optionsMonitor, logger, encoder)
 {
     public const string AuthenticationScheme = "TestScheme";
-
-    public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> optionsMonitor, ILoggerFactory logger, UrlEncoder encoder)
-        : base(optionsMonitor, logger, encoder)
-    {
-    }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {

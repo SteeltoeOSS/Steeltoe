@@ -1386,16 +1386,10 @@ public sealed class ConfigServerConfigurationProviderTest
         return Convert.ToBase64String(Encoding.ASCII.GetBytes($"{user}:{password}"));
     }
 
-    private sealed class SlowHttpClientHandler : HttpClientHandler
+    private sealed class SlowHttpClientHandler(TimeSpan sleepTime, HttpResponseMessage responseMessage) : HttpClientHandler
     {
-        private readonly TimeSpan _sleepTime;
-        private readonly HttpResponseMessage _responseMessage;
-
-        public SlowHttpClientHandler(TimeSpan sleepTime, HttpResponseMessage responseMessage)
-        {
-            _sleepTime = sleepTime;
-            _responseMessage = responseMessage;
-        }
+        private readonly TimeSpan _sleepTime = sleepTime;
+        private readonly HttpResponseMessage _responseMessage = responseMessage;
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -1404,24 +1398,14 @@ public sealed class ConfigServerConfigurationProviderTest
         }
     }
 
-    private sealed class TestServiceInstance : IServiceInstance
+    private sealed class TestServiceInstance(string serviceId, Uri uri, IReadOnlyDictionary<string, string?> metadata) : IServiceInstance
     {
-        public string ServiceId { get; }
-        public string Host { get; }
-        public int Port { get; }
-        public bool IsSecure { get; }
-        public Uri Uri { get; }
-        public IReadOnlyDictionary<string, string?> Metadata { get; }
-
-        public TestServiceInstance(string serviceId, Uri uri, IReadOnlyDictionary<string, string?> metadata)
-        {
-            ServiceId = serviceId;
-            Host = uri.Host;
-            Port = uri.Port;
-            IsSecure = uri.Scheme == Uri.UriSchemeHttps;
-            Uri = uri;
-            Metadata = metadata;
-        }
+        public string ServiceId { get; } = serviceId;
+        public string Host { get; } = uri.Host;
+        public int Port { get; } = uri.Port;
+        public bool IsSecure { get; } = uri.Scheme == Uri.UriSchemeHttps;
+        public Uri Uri { get; } = uri;
+        public IReadOnlyDictionary<string, string?> Metadata { get; } = metadata;
     }
 
     private sealed class TestOptions

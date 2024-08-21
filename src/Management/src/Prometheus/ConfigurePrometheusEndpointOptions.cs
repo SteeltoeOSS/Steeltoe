@@ -7,12 +7,8 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Prometheus;
 
-internal sealed class ConfigurePrometheusEndpointOptions : ConfigureEndpointOptions<PrometheusEndpointOptions>
+internal sealed class ConfigurePrometheusEndpointOptions(IConfiguration configuration)
+    : ConfigureEndpointOptions<PrometheusEndpointOptions>(configuration, ManagementInfoPrefix, "prometheus")
 {
     private const string ManagementInfoPrefix = "management:endpoints:prometheus";
-
-    public ConfigurePrometheusEndpointOptions(IConfiguration configuration)
-        : base(configuration, ManagementInfoPrefix, "prometheus")
-    {
-    }
 }

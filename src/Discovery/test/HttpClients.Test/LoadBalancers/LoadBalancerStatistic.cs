@@ -13,6 +13,9 @@ internal sealed class LoadBalancerStatistic
 
     public LoadBalancerStatistic(Uri requestUri, Uri serviceInstanceUri, TimeSpan? responseTime, Exception? exception)
     {
+        ArgumentNullException.ThrowIfNull(requestUri);
+        ArgumentNullException.ThrowIfNull(serviceInstanceUri);
+
         RequestUri = requestUri;
         ServiceInstanceUri = serviceInstanceUri;
         ResponseTime = responseTime;

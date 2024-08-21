@@ -10,14 +10,10 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Environment;
 
-internal sealed class EnvironmentEndpointMiddleware : EndpointMiddleware<object?, EnvironmentResponse>
+internal sealed class EnvironmentEndpointMiddleware(
+    IEnvironmentEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
+    : EndpointMiddleware<object?, EnvironmentResponse>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    public EnvironmentEndpointMiddleware(IEnvironmentEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
-    {
-    }
-
     protected override async Task<EnvironmentResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(null, context.RequestAborted);

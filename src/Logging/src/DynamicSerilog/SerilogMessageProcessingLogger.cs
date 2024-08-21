@@ -6,13 +6,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Logging.DynamicSerilog;
 
-public sealed class SerilogMessageProcessingLogger : MessageProcessingLogger
+public sealed class SerilogMessageProcessingLogger(ILogger innerLogger, LoggerFilter filter, IEnumerable<IDynamicMessageProcessor> messageProcessors)
+    : MessageProcessingLogger(innerLogger, filter, messageProcessors)
 {
-    public SerilogMessageProcessingLogger(ILogger innerLogger, LoggerFilter filter, IEnumerable<IDynamicMessageProcessor> messageProcessors)
-        : base(innerLogger, filter, messageProcessors)
-    {
-    }
-
     /// <inheritdoc />
     public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {

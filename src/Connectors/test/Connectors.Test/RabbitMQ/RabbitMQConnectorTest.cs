@@ -444,9 +444,9 @@ public sealed class RabbitMQConnectorTest
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
 
-    private sealed class FakeConnection : IConnection
+    private sealed class FakeConnection(string? connectionString) : IConnection
     {
-        public string? ConnectionString { get; }
+        public string? ConnectionString { get; } = connectionString;
 
         public int LocalPort => throw new NotImplementedException();
         public int RemotePort => throw new NotImplementedException();
@@ -485,11 +485,6 @@ public sealed class RabbitMQConnectorTest
         {
             add => throw new NotImplementedException();
             remove => throw new NotImplementedException();
-        }
-
-        public FakeConnection(string? connectionString)
-        {
-            ConnectionString = connectionString;
         }
 
         public void Dispose()

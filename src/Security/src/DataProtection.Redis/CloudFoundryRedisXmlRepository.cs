@@ -9,14 +9,10 @@ using Steeltoe.Connectors.Redis;
 
 namespace Steeltoe.Security.DataProtection.Redis;
 
-internal sealed class CloudFoundryRedisXmlRepository : RedisXmlRepository
+internal sealed class CloudFoundryRedisXmlRepository(ConnectorFactory<RedisOptions, IConnectionMultiplexer> connectorFactory)
+    : RedisXmlRepository(() => GetDatabase(connectorFactory), DataProtectionKey)
 {
     private static readonly RedisKey DataProtectionKey = "Steeltoe-DataProtection-Key";
-
-    public CloudFoundryRedisXmlRepository(ConnectorFactory<RedisOptions, IConnectionMultiplexer> connectorFactory)
-        : base(() => GetDatabase(connectorFactory), DataProtectionKey)
-    {
-    }
 
     private static IDatabase GetDatabase(ConnectorFactory<RedisOptions, IConnectionMultiplexer> connectorFactory)
     {

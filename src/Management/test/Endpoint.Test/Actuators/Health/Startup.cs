@@ -20,6 +20,8 @@ public sealed class Startup
 
     public Startup(IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         _configuration = configuration;
     }
 

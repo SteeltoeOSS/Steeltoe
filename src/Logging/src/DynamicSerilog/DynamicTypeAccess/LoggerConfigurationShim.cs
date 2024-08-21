@@ -9,14 +9,9 @@ using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Logging.DynamicSerilog.DynamicTypeAccess;
 
-internal sealed class LoggerConfigurationShim : Shim
+internal sealed class LoggerConfigurationShim(object instance) : Shim(new InstanceAccessor(new TypeAccessor(typeof(LoggerConfiguration)), instance))
 {
     public LogEventLevel MinimumLevel => InstanceAccessor.GetPrivateFieldValue<LogEventLevel>("_minimumLevel");
 
     public Dictionary<string, LoggingLevelSwitch> Overrides => InstanceAccessor.GetPrivateFieldValue<Dictionary<string, LoggingLevelSwitch>>("_overrides");
-
-    public LoggerConfigurationShim(object instance)
-        : base(new InstanceAccessor(new TypeAccessor(typeof(LoggerConfiguration)), instance))
-    {
-    }
 }

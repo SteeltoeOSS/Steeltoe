@@ -14,6 +14,8 @@ internal sealed class TestServerStartup
 
     public TestServerStartup(IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         _configuration = configuration;
     }
 

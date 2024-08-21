@@ -7,12 +7,8 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Loggers;
 
-internal sealed class ConfigureLoggersEndpointOptions : ConfigureEndpointOptions<LoggersEndpointOptions>
+internal sealed class ConfigureLoggersEndpointOptions(IConfiguration configuration)
+    : ConfigureEndpointOptions<LoggersEndpointOptions>(configuration, ManagementInfoPrefix, "loggers")
 {
     private const string ManagementInfoPrefix = "management:endpoints:loggers";
-
-    public ConfigureLoggersEndpointOptions(IConfiguration configuration)
-        : base(configuration, ManagementInfoPrefix, "loggers")
-    {
-    }
 }

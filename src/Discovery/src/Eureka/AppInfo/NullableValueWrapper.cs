@@ -7,15 +7,10 @@ namespace Steeltoe.Discovery.Eureka.AppInfo;
 /// <summary>
 /// Wraps a nullable value type, so it can be declared as volatile (prevents stale reads).
 /// </summary>
-internal sealed class NullableValueWrapper<T>
+internal sealed class NullableValueWrapper<T>(T? value)
     where T : struct
 {
-    public T? Value { get; }
-
-    public NullableValueWrapper(T? value)
-    {
-        Value = value;
-    }
+    public T? Value { get; } = value;
 
     public override string ToString()
     {

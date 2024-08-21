@@ -16,16 +16,11 @@ namespace Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 /// Used in conjunction with <see cref="CloudFoundryEndpointHandler" /> to generate hypermedia list of links to all endpoints activated in the
 /// application.
 /// </summary>
-internal sealed class CloudFoundryEndpointMiddleware : EndpointMiddleware<string, Links>
+internal sealed class CloudFoundryEndpointMiddleware(
+    ICloudFoundryEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
+    : EndpointMiddleware<string, Links>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    private readonly ILogger _logger;
-
-    public CloudFoundryEndpointMiddleware(ICloudFoundryEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
-    {
-        _logger = loggerFactory.CreateLogger<CloudFoundryEndpointMiddleware>();
-    }
+    private readonly ILogger _logger = loggerFactory.CreateLogger<CloudFoundryEndpointMiddleware>();
 
     protected override async Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {

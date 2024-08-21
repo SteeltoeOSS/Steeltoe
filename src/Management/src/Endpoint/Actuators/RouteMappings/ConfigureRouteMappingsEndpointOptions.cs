@@ -7,12 +7,8 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 
-internal sealed class ConfigureRouteMappingsEndpointOptions : ConfigureEndpointOptions<RouteMappingsEndpointOptions>
+internal sealed class ConfigureRouteMappingsEndpointOptions(IConfiguration configuration)
+    : ConfigureEndpointOptions<RouteMappingsEndpointOptions>(configuration, ManagementInfoPrefix, "mappings")
 {
     private const string ManagementInfoPrefix = "management:endpoints:mappings";
-
-    public ConfigureRouteMappingsEndpointOptions(IConfiguration configuration)
-        : base(configuration, ManagementInfoPrefix, "mappings")
-    {
-    }
 }

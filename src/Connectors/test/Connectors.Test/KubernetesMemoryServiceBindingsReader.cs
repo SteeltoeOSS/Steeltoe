@@ -7,14 +7,9 @@ using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
 namespace Steeltoe.Connectors.Test;
 
-internal sealed class KubernetesMemoryServiceBindingsReader : IServiceBindingsReader
+internal sealed class KubernetesMemoryServiceBindingsReader(MemoryFileProvider? fileProvider) : IServiceBindingsReader
 {
-    private readonly MemoryFileProvider? _fileProvider;
-
-    public KubernetesMemoryServiceBindingsReader(MemoryFileProvider? fileProvider)
-    {
-        _fileProvider = fileProvider;
-    }
+    private readonly MemoryFileProvider? _fileProvider = fileProvider;
 
     public IFileProvider? GetRootDirectory()
     {

@@ -6,14 +6,10 @@ using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.Redis.DynamicTypeAccess;
 
-internal sealed class ConnectionMultiplexerShim : Shim, IDisposable
+internal sealed class ConnectionMultiplexerShim(StackExchangeRedisPackageResolver packageResolver, object instance)
+    : Shim(new InstanceAccessor(packageResolver.ConnectionMultiplexerClass, instance)), IDisposable
 {
     public override IDisposable Instance => (IDisposable)base.Instance;
-
-    public ConnectionMultiplexerShim(StackExchangeRedisPackageResolver packageResolver, object instance)
-        : base(new InstanceAccessor(packageResolver.ConnectionMultiplexerClass, instance))
-    {
-    }
 
     public static ConnectionMultiplexerInterfaceShim Connect(StackExchangeRedisPackageResolver packageResolver, string? configuration)
     {

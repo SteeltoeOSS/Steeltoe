@@ -12,16 +12,11 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Metrics;
 
-internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequest?, MetricsResponse?>
+internal sealed class MetricsEndpointMiddleware(
+    IMetricsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
+    : EndpointMiddleware<MetricsRequest?, MetricsResponse?>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    private readonly ILogger<MetricsEndpointMiddleware> _logger;
-
-    public MetricsEndpointMiddleware(IMetricsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
-    {
-        _logger = loggerFactory.CreateLogger<MetricsEndpointMiddleware>();
-    }
+    private readonly ILogger<MetricsEndpointMiddleware> _logger = loggerFactory.CreateLogger<MetricsEndpointMiddleware>();
 
     protected override async Task<MetricsResponse?> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {

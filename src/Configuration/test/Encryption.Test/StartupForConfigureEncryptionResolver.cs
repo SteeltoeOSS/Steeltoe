@@ -15,6 +15,8 @@ public sealed class StartupForConfigureEncryptionResolver
 
     public StartupForConfigureEncryptionResolver(IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         _configuration = configuration;
     }
 

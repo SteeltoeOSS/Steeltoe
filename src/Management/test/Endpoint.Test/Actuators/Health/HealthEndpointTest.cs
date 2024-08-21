@@ -16,21 +16,16 @@ using MicrosoftHealth = Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Health;
 
-public sealed class HealthEndpointTest : BaseTest
+public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : BaseTest
 {
     private static readonly IServiceProvider EmptyServiceProvider = new ServiceCollection().BuildServiceProvider(true);
     private readonly IHealthAggregator _aggregator = new HealthAggregator();
-    private readonly ITestOutputHelper _output;
-
-    public HealthEndpointTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
+    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
     [Fact]
     public async Task Invoke_NoContributors_ReturnsExpectedHealth()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -53,13 +48,13 @@ public sealed class HealthEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_CallsAllContributors()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         var contributors = new List<IHealthContributor>
         {
-            new HealthTestContributor("h1"),
-            new HealthTestContributor("h2"),
-            new HealthTestContributor("h3")
+            new TestHealthContributor("h1"),
+            new TestHealthContributor("h2"),
+            new TestHealthContributor("h3")
         };
 
         testContext.AdditionalServices = (services, _) =>
@@ -73,7 +68,7 @@ public sealed class HealthEndpointTest : BaseTest
         HealthEndpointRequest healthRequest = GetHealthRequest();
         await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
-        foreach (HealthTestContributor testContributor in contributors.Cast<HealthTestContributor>())
+        foreach (TestHealthContributor testContributor in contributors.Cast<TestHealthContributor>())
         {
             Assert.True(testContributor.Called);
         }
@@ -82,7 +77,7 @@ public sealed class HealthEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_HandlesCancellation_Throws()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         var contributors = new List<IHealthContributor>
         {
@@ -110,13 +105,13 @@ public sealed class HealthEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_HandlesExceptions_ReturnsExpectedHealth()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         var contributors = new List<IHealthContributor>
         {
-            new HealthTestContributor("h1"),
-            new HealthTestContributor("h2", true),
-            new HealthTestContributor("h3", true)
+            new TestHealthContributor("h1"),
+            new TestHealthContributor("h2", true),
+            new TestHealthContributor("h3", true)
         };
 
         testContext.AdditionalServices = (services, _) =>
@@ -131,7 +126,7 @@ public sealed class HealthEndpointTest : BaseTest
         HealthEndpointRequest healthRequest = GetHealthRequest();
         HealthEndpointResponse info = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
-        foreach (HealthTestContributor testContributor in contributors.Cast<HealthTestContributor>())
+        foreach (TestHealthContributor testContributor in contributors.Cast<TestHealthContributor>())
         {
             if (testContributor.Throws)
             {
@@ -149,7 +144,7 @@ public sealed class HealthEndpointTest : BaseTest
     [Fact]
     public void GetStatusCode_ReturnsExpected()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         var contributors = new List<IHealthContributor>
         {
@@ -189,7 +184,7 @@ public sealed class HealthEndpointTest : BaseTest
     [Fact]
     public async Task InvokeWithLivenessGroupReturnsGroupResults()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
         var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
 
         var contributors = new List<IHealthContributor>
@@ -220,7 +215,7 @@ public sealed class HealthEndpointTest : BaseTest
     [Fact]
     public async Task InvokeWithReadinessGroupReturnsGroupResults()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
         var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
 
         var contributors = new List<IHealthContributor>
@@ -282,7 +277,7 @@ public sealed class HealthEndpointTest : BaseTest
     [Fact]
     public async Task InvokeWithInvalidGroupReturnsAllContributors()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         var contributors = new List<IHealthContributor>
         {

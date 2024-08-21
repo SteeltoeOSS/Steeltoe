@@ -8,14 +8,9 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Refresh;
 
-public sealed class RefreshEndpointTest : BaseTest
+public sealed class RefreshEndpointTest(ITestOutputHelper testOutputHelper) : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    public RefreshEndpointTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
+    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
     [Fact]
     public async Task Invoke_ReturnsExpected()
@@ -30,7 +25,7 @@ public sealed class RefreshEndpointTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {

@@ -7,12 +7,8 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Metrics;
 
-internal sealed class ConfigureMetricsEndpointOptions : ConfigureEndpointOptions<MetricsEndpointOptions>
+internal sealed class ConfigureMetricsEndpointOptions(IConfiguration configuration)
+    : ConfigureEndpointOptions<MetricsEndpointOptions>(configuration, ManagementInfoPrefix, "metrics")
 {
     private const string ManagementInfoPrefix = "management:endpoints:metrics";
-
-    public ConfigureMetricsEndpointOptions(IConfiguration configuration)
-        : base(configuration, ManagementInfoPrefix, "metrics")
-    {
-    }
 }

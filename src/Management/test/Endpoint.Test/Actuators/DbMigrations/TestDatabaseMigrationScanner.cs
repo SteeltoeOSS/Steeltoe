@@ -17,7 +17,7 @@ internal sealed class TestDatabaseMigrationScanner : IDatabaseMigrationScanner
     {
         if (ThrowOnGetPendingMigrations)
         {
-            throw new SomeDbException("database doesn't exist");
+            throw new TestDbException("database doesn't exist");
         }
 
         return new[]
@@ -42,11 +42,5 @@ internal sealed class TestDatabaseMigrationScanner : IDatabaseMigrationScanner
         };
     }
 
-    private sealed class SomeDbException : DbException
-    {
-        public SomeDbException(string message)
-            : base(message)
-        {
-        }
-    }
+    private sealed class TestDbException(string message) : DbException(message);
 }

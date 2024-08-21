@@ -40,33 +40,21 @@ public sealed class XunitLoggerProvider : ILoggerProvider
     {
         ArgumentNullException.ThrowIfNull(categoryName);
 
-        return new XunitLogger(_testOutputHelper, categoryName, _filter);
+        return new XunitLogger(this, categoryName);
     }
 
     public void Dispose()
     {
     }
 
-    private sealed class XunitLogger : ILogger
+    private sealed class XunitLogger(XunitLoggerProvider owner, string categoryName) : ILogger
     {
-        private readonly ITestOutputHelper _output;
-        private readonly string _categoryName;
-        private readonly Func<string, LogLevel, bool> _filter;
-
-        public XunitLogger(ITestOutputHelper output, string categoryName, Func<string, LogLevel, bool> filter)
-        {
-            ArgumentNullException.ThrowIfNull(output);
-            ArgumentException.ThrowIfNullOrEmpty(categoryName);
-            ArgumentNullException.ThrowIfNull(filter);
-
-            _output = output;
-            _categoryName = categoryName;
-            _filter = filter;
-        }
+        private readonly XunitLoggerProvider _owner = owner;
+        private readonly string _categoryName = categoryName;
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            return _filter(_categoryName, logLevel);
+            return _owner._filter(_categoryName, logLevel);
         }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
@@ -74,7 +62,7 @@ public sealed class XunitLoggerProvider : ILoggerProvider
             if (IsEnabled(logLevel))
             {
                 string message = $"{FormatLevel(logLevel)} {_categoryName}: {formatter(state, exception)}";
-                _output.WriteLine(message);
+                _owner._testOutputHelper.WriteLine(message);
             }
         }
 

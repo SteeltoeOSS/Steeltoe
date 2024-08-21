@@ -11,19 +11,14 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Loggers;
 
-public sealed class LoggersEndpointTest : BaseTest
+public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    public LoggersEndpointTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
+    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
     [Fact]
     public async Task GetLoggerConfiguration_CallsProvider()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -43,7 +38,7 @@ public sealed class LoggersEndpointTest : BaseTest
     [Fact]
     public async Task GetLoggerConfiguration_ReturnsExpected()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -75,7 +70,7 @@ public sealed class LoggersEndpointTest : BaseTest
     [Fact]
     public async Task SetLogLevel_CallsProvider()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -100,7 +95,7 @@ public sealed class LoggersEndpointTest : BaseTest
     [Fact]
     public async Task SetLogLevel_ReturnsExpected()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {

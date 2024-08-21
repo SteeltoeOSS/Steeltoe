@@ -6,10 +6,4 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Steeltoe.Connectors.EntityFrameworkCore.Test;
 
-internal sealed class GoodDbContext : DbContext
-{
-    public GoodDbContext(DbContextOptions<GoodDbContext> options)
-        : base(options)
-    {
-    }
-}
+internal sealed class GoodDbContext(DbContextOptions<GoodDbContext> options) : DbContext(options);

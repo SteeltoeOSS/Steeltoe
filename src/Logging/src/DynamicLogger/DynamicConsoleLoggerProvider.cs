@@ -12,14 +12,11 @@ namespace Steeltoe.Logging.DynamicLogger;
 /// Implements <see cref="DynamicLoggerProvider" /> for logging to the console.
 /// </summary>
 [ProviderAlias("Dynamic")]
-public sealed class DynamicConsoleLoggerProvider : DynamicLoggerProvider, ISupportExternalScope
+public sealed class DynamicConsoleLoggerProvider(
+    IOptionsMonitor<LoggerFilterOptions> filterOptionsMonitor, ConsoleLoggerProvider consoleLoggerProvider,
+    IEnumerable<IDynamicMessageProcessor> messageProcessors)
+    : DynamicLoggerProvider(consoleLoggerProvider, GetMinimumLevelsFromOptions(filterOptionsMonitor), messageProcessors), ISupportExternalScope
 {
-    public DynamicConsoleLoggerProvider(IOptionsMonitor<LoggerFilterOptions> filterOptionsMonitor, ConsoleLoggerProvider consoleLoggerProvider,
-        IEnumerable<IDynamicMessageProcessor> messageProcessors)
-        : base(consoleLoggerProvider, GetMinimumLevelsFromOptions(filterOptionsMonitor), messageProcessors)
-    {
-    }
-
     private static LoggerFilterConfiguration GetMinimumLevelsFromOptions(IOptionsMonitor<LoggerFilterOptions> filterOptionsMonitor)
     {
         ArgumentNullException.ThrowIfNull(filterOptionsMonitor);

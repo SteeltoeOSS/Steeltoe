@@ -8,14 +8,10 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health;
 
-internal sealed class ConfigureHealthEndpointOptions : ConfigureEndpointOptions<HealthEndpointOptions>
+internal sealed class ConfigureHealthEndpointOptions(IConfiguration configuration)
+    : ConfigureEndpointOptions<HealthEndpointOptions>(configuration, HealthOptionsPrefix, "health")
 {
     private const string HealthOptionsPrefix = "management:endpoints:health";
-
-    public ConfigureHealthEndpointOptions(IConfiguration configuration)
-        : base(configuration, HealthOptionsPrefix, "health")
-    {
-    }
 
     public override void Configure(HealthEndpointOptions options)
     {

@@ -16,6 +16,8 @@ public sealed class PlaceholderBeforeEncryptionStartup
 
     public PlaceholderBeforeEncryptionStartup(IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         _configuration = configuration;
     }
 

@@ -6,14 +6,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
-internal sealed class TestConfigServerConfigurationSource : IConfigurationSource
+internal sealed class TestConfigServerConfigurationSource(IConfigurationProvider provider) : IConfigurationSource
 {
-    private readonly IConfigurationProvider _provider;
-
-    public TestConfigServerConfigurationSource(IConfigurationProvider provider)
-    {
-        _provider = provider;
-    }
+    private readonly IConfigurationProvider _provider = provider;
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
