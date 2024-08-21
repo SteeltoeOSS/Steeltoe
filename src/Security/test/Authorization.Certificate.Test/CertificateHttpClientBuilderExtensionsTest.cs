@@ -46,7 +46,7 @@ public sealed class CertificateHttpClientBuilderExtensionsTest
         client.Should().NotBeNull();
         client.DefaultRequestHeaders.Contains(customCertificateHeader).Should().BeTrue();
         string certificateHeader = client.DefaultRequestHeaders.GetValues(customCertificateHeader).First();
-        certificateHeader.Should().BeEquivalentTo(Convert.ToBase64String(certificateBytes));
+        certificateHeader.Should().Be(Convert.ToBase64String(certificateBytes));
     }
 
     private static IHostBuilder GetHostBuilder(string? certificateHeaderName = null)
