@@ -31,11 +31,40 @@ public sealed class CertificateHttpClientBuilderExtensionsTest
         certificateHeader.Should().BeEquivalentTo(Convert.ToBase64String(certificateBytes));
     }
 
-    private static IHostBuilder GetHostBuilder()
+    [Fact]
+    public async Task AddCertificateAuthorizationClient_AllowsCustomHeader()
+    {
+        const string customCertificateHeader = "my-arbitrary-header";
+        byte[] certificateBytes = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key").Export(X509ContentType.Cert);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", "not empty");
+        using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
+        using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
+        using IHost host = await GetHostBuilder(customCertificateHeader).StartAsync();
+        var factory = host.Services.GetRequiredService<IHttpClientFactory>();
+        HttpClient client = factory.CreateClient("test");
+
+        client.Should().NotBeNull();
+        client.DefaultRequestHeaders.Contains(customCertificateHeader).Should().BeTrue();
+        string certificateHeader = client.DefaultRequestHeaders.GetValues(customCertificateHeader).First();
+        certificateHeader.Should().Be(Convert.ToBase64String(certificateBytes));
+    }
+
+    private static IHostBuilder GetHostBuilder(string? certificateHeaderName = null)
     {
         var hostBuilder = new HostBuilder();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate());
-        hostBuilder.ConfigureServices(services => services.AddHttpClient("test").AddAppInstanceIdentityCertificate());
+
+        hostBuilder.ConfigureServices(services =>
+        {
+            if (certificateHeaderName == null)
+            {
+                services.AddHttpClient("test").AddAppInstanceIdentityCertificate();
+            }
+            else
+            {
+                services.AddHttpClient("test").AddAppInstanceIdentityCertificate(certificateHeaderName);
+            }
+        });
 
         hostBuilder.ConfigureWebHost(webBuilder =>
         {

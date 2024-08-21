@@ -30,12 +30,40 @@ public static class CertificateAuthorizationBuilderExtensions
     /// </returns>
     public static AuthorizationBuilder AddOrgAndSpacePolicies(this AuthorizationBuilder builder)
     {
+        return AddOrgAndSpacePolicies(builder, null);
+    }
+
+    /// <summary>
+    /// Defines policies that verify the space/org in the incoming client certificate matches the space/org of the local application instance identity
+    /// certificate in configuration.
+    /// <para>
+    /// Secure your endpoints with the included authorization policies by referencing <see cref="CertificateAuthorizationPolicies" />.
+    /// </para>
+    /// <para>
+    /// This method also configures certificate forwarding.
+    /// </para>
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="AuthorizationBuilder" /> to configure.
+    /// </param>
+    /// <param name="certificateHeaderName">
+    /// The name of the HTTP header used to pass the certificate.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static AuthorizationBuilder AddOrgAndSpacePolicies(this AuthorizationBuilder builder, string? certificateHeaderName)
+    {
         ArgumentNullException.ThrowIfNull(builder);
 
         builder.Services.ConfigureCertificateOptions(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
 
-        builder.Services.AddCertificateForwarding(_ =>
+        builder.Services.AddCertificateForwarding(options =>
         {
+            if (certificateHeaderName != null)
+            {
+                options.CertificateHeader = certificateHeaderName;
+            }
         });
 
         builder.Services.AddSingleton<IPostConfigureOptions<CertificateAuthenticationOptions>, PostConfigureCertificateAuthenticationOptions>();
