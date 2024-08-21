@@ -6,6 +6,4 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.DbMigrations;
 
-public sealed class DbMigrationsEndpointOptions : EndpointOptions
-{
-}
+public sealed class DbMigrationsEndpointOptions : EndpointOptions;

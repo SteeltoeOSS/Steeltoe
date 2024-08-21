@@ -9,6 +9,4 @@ namespace Steeltoe.Security.Authorization.Certificate;
 /// <summary>
 /// Client certificates must originate in the same space as the authorizing application.
 /// </summary>
-public sealed class SameSpaceRequirement : IAuthorizationRequirement
-{
-}
+public sealed class SameSpaceRequirement : IAuthorizationRequirement;

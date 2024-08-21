@@ -4,6 +4,4 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
-public interface IThreadDumpEndpointHandler : IEndpointHandler<object?, IList<ThreadInfo>>
-{
-}
+public interface IThreadDumpEndpointHandler : IEndpointHandler<object?, IList<ThreadInfo>>;

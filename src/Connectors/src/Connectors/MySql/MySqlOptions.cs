@@ -5,6 +5,4 @@
 namespace Steeltoe.Connectors.MySql;
 
 /// <inheritdoc />
-public sealed class MySqlOptions : ConnectionStringOptions
-{
-}
+public sealed class MySqlOptions : ConnectionStringOptions;

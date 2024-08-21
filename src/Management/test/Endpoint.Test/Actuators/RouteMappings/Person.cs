@@ -4,6 +4,4 @@
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.RouteMappings;
 
-public sealed class Person
-{
-}
+public sealed class Person;

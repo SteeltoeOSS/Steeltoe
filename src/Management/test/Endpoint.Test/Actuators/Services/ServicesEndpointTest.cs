@@ -120,11 +120,7 @@ public sealed class ServicesEndpointTest : BaseTest
         return registration!;
     }
 
-    private interface IExampleService
-    {
-    }
+    private interface IExampleService;
 
-    internal sealed class ExampleService : IExampleService
-    {
-    }
+    internal sealed class ExampleService : IExampleService;
 }

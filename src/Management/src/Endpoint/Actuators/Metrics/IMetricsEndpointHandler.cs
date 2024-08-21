@@ -4,6 +4,4 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.Metrics;
 
-public interface IMetricsEndpointHandler : IEndpointHandler<MetricsRequest?, MetricsResponse?>
-{
-}
+public interface IMetricsEndpointHandler : IEndpointHandler<MetricsRequest?, MetricsResponse?>;

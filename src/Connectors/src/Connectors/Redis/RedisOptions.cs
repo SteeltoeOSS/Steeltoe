@@ -5,6 +5,4 @@
 namespace Steeltoe.Connectors.Redis;
 
 /// <inheritdoc />
-public sealed class RedisOptions : ConnectionStringOptions
-{
-}
+public sealed class RedisOptions : ConnectionStringOptions;

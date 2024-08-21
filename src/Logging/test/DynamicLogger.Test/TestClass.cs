@@ -6,6 +6,4 @@
 
 namespace A.B.C.D;
 
-internal sealed class TestClass
-{
-}
+internal sealed class TestClass;

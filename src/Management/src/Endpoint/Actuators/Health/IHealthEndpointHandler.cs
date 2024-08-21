@@ -4,6 +4,4 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health;
 
-public interface IHealthEndpointHandler : IEndpointHandler<HealthEndpointRequest, HealthEndpointResponse>
-{
-}
+public interface IHealthEndpointHandler : IEndpointHandler<HealthEndpointRequest, HealthEndpointResponse>;

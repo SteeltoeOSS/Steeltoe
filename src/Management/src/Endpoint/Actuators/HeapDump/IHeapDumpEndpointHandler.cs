@@ -4,6 +4,4 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
-public interface IHeapDumpEndpointHandler : IEndpointHandler<object?, string?>
-{
-}
+public interface IHeapDumpEndpointHandler : IEndpointHandler<object?, string?>;
