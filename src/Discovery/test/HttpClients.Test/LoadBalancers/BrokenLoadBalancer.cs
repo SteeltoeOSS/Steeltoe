@@ -2,23 +2,24 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Data;
 using Steeltoe.Discovery.HttpClients.LoadBalancers;
 
 namespace Steeltoe.Discovery.HttpClients.Test.LoadBalancers;
 
 /// <summary>
-/// A fake load balancer that only resolves requests for "replace-me" to "some-resolved-host:1234".
+/// A load balancer that always throws an exception.
 /// </summary>
-internal sealed class FakeLoadBalancer : ILoadBalancer
+internal sealed class BrokenLoadBalancer : ILoadBalancer
 {
     internal IList<LoadBalancerStatistic> Statistics { get; } = [];
 
+    /// <summary>
+    /// Throws an exception when you try to resolve service instances.
+    /// </summary>
     public Task<Uri> ResolveServiceInstanceAsync(Uri requestUri, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(requestUri);
-
-        string replacementUri = requestUri.AbsoluteUri.Replace("replace-me", "some-resolved-host:1234", StringComparison.Ordinal);
-        return Task.FromResult(new Uri(replacementUri));
+        throw new DataException("(╯°□°）╯︵ ┻━┻");
     }
 
     public Task UpdateStatisticsAsync(Uri requestUri, Uri serviceInstanceUri, TimeSpan? responseTime, Exception? exception, CancellationToken cancellationToken)
