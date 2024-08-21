@@ -35,12 +35,7 @@ internal sealed class RabbitMQConnectionStringBuilder : IConnectionStringBuilder
                 return ConnectionString;
             }
 
-            if (_settings.TryGetValue(keyword, out string? value))
-            {
-                return value;
-            }
-
-            return null;
+            return _settings.GetValueOrDefault(keyword);
         }
         set
         {
