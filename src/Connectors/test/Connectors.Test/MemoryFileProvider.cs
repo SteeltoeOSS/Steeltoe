@@ -119,7 +119,7 @@ internal sealed class MemoryFileProvider : IFileProvider
 
         MemoryFileSystemEntry? entry = Find(subpath);
 
-        if (entry == null || !entry.IsDirectory)
+        if (entry is not { IsDirectory: true })
         {
             return NotFoundDirectoryContents.Singleton;
         }
