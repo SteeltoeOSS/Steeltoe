@@ -27,7 +27,7 @@ public sealed class HealthEndpointOptionsTest : BaseTest
         var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:health:enabled"] = "true",
-            ["management:endpoints:health:requiredPermissions"] = "NONE",
+            ["management:endpoints:health:requiredPermissions"] = "FULL",
             ["management:endpoints:health:groups:custom:include"] = "diskSpace",
             ["management:endpoints:health:groups:lIveness:include"] = "diskSpace",
             ["management:endpoints:health:groups:rEadinEss:include"] = "diskSpace"
@@ -38,7 +38,7 @@ public sealed class HealthEndpointOptionsTest : BaseTest
         Assert.True(options.Enabled);
         Assert.Equal("health", options.Id);
         Assert.Equal("health", options.Path);
-        Assert.Equal(Permissions.None, options.RequiredPermissions);
+        Assert.Equal(Permissions.Full, options.RequiredPermissions);
         Assert.Equal(3, options.Groups.Count);
         Assert.True(options.Groups.ContainsKey("custom"));
         Assert.True(options.Groups.ContainsKey("liveness"));

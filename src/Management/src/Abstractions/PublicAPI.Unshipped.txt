@@ -6,10 +6,9 @@ Steeltoe.Management.Configuration.EndpointOptions.EndpointOptions() -> void
 Steeltoe.Management.Configuration.EndpointOptions.RequiredPermissions.get -> Steeltoe.Management.Configuration.Permissions
 Steeltoe.Management.Configuration.EndpointOptions.RequiredPermissions.set -> void
 Steeltoe.Management.Configuration.Permissions
-Steeltoe.Management.Configuration.Permissions.Full = 3 -> Steeltoe.Management.Configuration.Permissions
-Steeltoe.Management.Configuration.Permissions.None = 1 -> Steeltoe.Management.Configuration.Permissions
-Steeltoe.Management.Configuration.Permissions.Restricted = 2 -> Steeltoe.Management.Configuration.Permissions
-Steeltoe.Management.Configuration.Permissions.Undefined = 0 -> Steeltoe.Management.Configuration.Permissions
+Steeltoe.Management.Configuration.Permissions.Full = 2 -> Steeltoe.Management.Configuration.Permissions
+Steeltoe.Management.Configuration.Permissions.None = 0 -> Steeltoe.Management.Configuration.Permissions
+Steeltoe.Management.Configuration.Permissions.Restricted = 1 -> Steeltoe.Management.Configuration.Permissions
 Steeltoe.Management.Diagnostics.DiagnosticObserver
 Steeltoe.Management.Diagnostics.DiagnosticObserver.DiagnosticObserver(string! name, string! listenerName, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
 Steeltoe.Management.Diagnostics.DiagnosticObserver.Dispose() -> void

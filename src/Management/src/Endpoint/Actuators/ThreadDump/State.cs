@@ -5,6 +5,8 @@
 using System.Text.Json.Serialization;
 using Steeltoe.Common.CasingConventions;
 
+#pragma warning disable SA1602 // Enumeration items should be documented
+
 namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
 [JsonConverter(typeof(SnakeCaseAllCapsEnumMemberJsonConverter))]

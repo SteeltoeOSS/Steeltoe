@@ -74,12 +74,11 @@
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -115,12 +114,11 @@
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 },
                 "ValidateCertificates": {
                   "type": "boolean",
@@ -159,12 +157,11 @@
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -196,12 +193,11 @@
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -240,12 +236,11 @@
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -313,12 +308,11 @@
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 },
                 "Role": {
                   "type": "string"
@@ -328,7 +322,8 @@
                     "Always",
                     "Never",
                     "WhenAuthorized"
-                  ]
+                  ],
+                  "description": "Represents the level of detail to include in the health endpoint response."
                 }
               }
             },
@@ -360,12 +355,11 @@
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -426,12 +420,11 @@
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -459,12 +452,11 @@
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -492,12 +484,11 @@
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -525,12 +516,11 @@
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -577,12 +567,11 @@
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -618,12 +607,11 @@
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 },
                 "ReturnConfiguration": {
                   "type": "boolean",
@@ -740,12 +728,11 @@
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -810,12 +797,11 @@
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint. Default value: Undefined."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },

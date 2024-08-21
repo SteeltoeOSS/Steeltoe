@@ -36,7 +36,7 @@ internal abstract class ConfigureEndpointOptions<T> : IConfigureOptionsWithKey<T
 
         options.Id ??= _id;
 
-        if (options.RequiredPermissions == Permissions.Undefined)
+        if (!Enum.IsDefined(options.RequiredPermissions))
         {
             options.RequiredPermissions = Permissions.Restricted;
         }
