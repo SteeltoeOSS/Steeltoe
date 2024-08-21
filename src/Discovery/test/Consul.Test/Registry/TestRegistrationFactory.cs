@@ -34,7 +34,7 @@ internal static class TestRegistrationFactory
             services.AddApplicationInstanceInfo();
         }
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var appInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
 
         var options = new ConsulDiscoveryOptions();

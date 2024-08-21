@@ -87,7 +87,7 @@ public sealed class TracingOptionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddApplicationInstanceInfo();
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var appInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
         var configurer = new ConfigureTracingOptions(configuration, appInfo);

@@ -43,7 +43,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         IList<string> logMessages = loggerProvider.GetAll();
 
         logMessages.Should().Contain(
-            "INFO Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationProvider: Fetching configuration from server at: http://localhost:8888/");
+            "DBUG Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationProvider: Fetching configuration from server at: http://localhost:8888/");
     }
 
     [Fact]

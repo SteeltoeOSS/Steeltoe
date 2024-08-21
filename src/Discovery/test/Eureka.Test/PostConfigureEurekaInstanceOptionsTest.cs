@@ -23,13 +23,13 @@ namespace Steeltoe.Discovery.Eureka.Test;
 public sealed class PostConfigureEurekaInstanceOptionsTest
 {
     [Fact]
-    public void Applies_defaults_when_not_configured()
+    public async Task Applies_defaults_when_not_configured()
     {
         string? hostName = DnsTools.ResolveHostName();
         string? ipAddress = DnsTools.ResolveHostAddress(hostName!);
         string appName = Assembly.GetEntryAssembly()!.GetName().Name!;
 
-        using ServiceProvider serviceProvider = BuildTestServiceProvider(null);
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(null);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
 
@@ -63,7 +63,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     }
 
     [Fact]
-    public void Preserves_explicit_configuration()
+    public async Task Preserves_explicit_configuration()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -96,7 +96,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
             ["eureka:instance:UseNetworkInterfaces"] = "true"
         };
 
-        using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
 
@@ -131,7 +131,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     }
 
     [Fact]
-    public void Sets_configuration_from_spring()
+    public async Task Sets_configuration_from_spring()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -139,7 +139,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
             ["spring:application:name"] = "myapp"
         };
 
-        using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
 
@@ -150,7 +150,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     }
 
     [Fact]
-    public void Does_not_override_explicit_settings_with_spring_settings()
+    public async Task Does_not_override_explicit_settings_with_spring_settings()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -160,7 +160,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
             ["eureka:instance:AppName"] = "explicit-app-name"
         };
 
-        using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
 
@@ -171,12 +171,12 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     }
 
     [Fact]
-    public void Does_not_use_network_interfaces_by_default()
+    public async Task Does_not_use_network_interfaces_by_default()
     {
         var inetUtilsMock = new Mock<InetUtils>(new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
         inetUtilsMock.Setup(inetUtils => inetUtils.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254"));
 
-        using ServiceProvider serviceProvider = BuildTestServiceProvider(null, services => services.AddSingleton(inetUtilsMock.Object));
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(null, services => services.AddSingleton(inetUtilsMock.Object));
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
 
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
@@ -186,7 +186,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     }
 
     [Fact]
-    public void Can_use_network_interfaces()
+    public async Task Can_use_network_interfaces()
     {
         var inetUtilsMock = new Mock<InetUtils>(new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
         inetUtilsMock.Setup(inetUtils => inetUtils.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254"));
@@ -196,7 +196,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
             ["eureka:instance:UseNetworkInterfaces"] = "true"
         };
 
-        using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings, services => services.AddSingleton(inetUtilsMock.Object));
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings, services => services.AddSingleton(inetUtilsMock.Object));
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
 
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
@@ -206,7 +206,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     }
 
     [Fact]
-    public void Can_use_network_interfaces_without_reverse_DNS_on_IP()
+    public async Task Can_use_network_interfaces_without_reverse_DNS_on_IP()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -214,7 +214,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
             ["spring:cloud:inet:SkipReverseDnsLookup"] = "true"
         };
 
-        using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
 
         var noSlowReverseDnsQuery = new Stopwatch();
@@ -229,7 +229,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     }
 
     [Fact]
-    public void Sets_hostname_to_IP_address()
+    public async Task Sets_hostname_to_IP_address()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -237,7 +237,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
             ["eureka:instance:preferIpAddress"] = "true"
         };
 
-        using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
 
@@ -246,14 +246,14 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     }
 
     [Fact]
-    public void Finds_ports_from_urls()
+    public async Task Finds_ports_from_urls()
     {
         var appSettings = new Dictionary<string, string?>
         {
             ["urls"] = "http://myapp:1233"
         };
 
-        using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
 
@@ -263,14 +263,14 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     }
 
     [Fact]
-    public void Picks_first_from_multiple_urls()
+    public async Task Picks_first_from_multiple_urls()
     {
         var appSettings = new Dictionary<string, string?>
         {
             ["urls"] = "https://myapp:1234;http://0.0.0.0:1233;http://::7777;http://*:8888;https://ignored:9999"
         };
 
-        using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
 
@@ -281,14 +281,14 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     }
 
     [Fact]
-    public void Handles_plus_in_urls()
+    public async Task Handles_plus_in_urls()
     {
         var appSettings = new Dictionary<string, string?>
         {
             ["urls"] = "https://+:443;http://+:80"
         };
 
-        using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
 
@@ -299,7 +299,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     }
 
     [Fact]
-    public void Adds_random_number_to_instance_ID_when_ports_are_zero()
+    public async Task Adds_random_number_to_instance_ID_when_ports_are_zero()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -311,7 +311,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
             ["eureka:instance:SecurePortEnabled"] = "true"
         };
 
-        using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
 
@@ -324,9 +324,9 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     }
 
     [Fact]
-    public void Sets_paths_from_actuators()
+    public async Task Sets_paths_from_actuators()
     {
-        using ServiceProvider serviceProvider = BuildTestServiceProvider(null, services => services.AddAllActuators());
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(null, services => services.AddAllActuators());
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
 

@@ -51,7 +51,7 @@ public sealed class PermissionsProviderTest : BaseTest
 
         var services = new ServiceCollection();
         services.AddCloudFoundrySecurity();
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
 
         return new PermissionsProvider(optionsMonitor, httpClientFactory, NullLogger<PermissionsProvider>.Instance);

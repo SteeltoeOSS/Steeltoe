@@ -12,7 +12,7 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 public sealed class ConfigServerServiceCollectionExtensionsTest
 {
     [Fact]
-    public void ConfigureConfigServerClientOptions_ConfiguresConfigServerClientOptions_WithDefaults()
+    public async Task ConfigureConfigServerClientOptions_ConfiguresConfigServerClientOptions_WithDefaults()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder();
         builder.AddConfigServer();
@@ -22,7 +22,7 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
         services.AddSingleton(configuration);
         services.ConfigureConfigServerClientOptions();
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
 
         string? expectedAppName = Assembly.GetEntryAssembly()!.GetName().Name;

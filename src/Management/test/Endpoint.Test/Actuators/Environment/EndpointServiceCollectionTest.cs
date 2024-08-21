@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Environment;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Environment;
@@ -13,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Environment;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddEnvironmentActuator_AddsCorrectServices()
+    public async Task AddEnvironmentActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
         services.AddSingleton(TestHostEnvironmentFactory.Create());
@@ -28,11 +27,12 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfiguration configuration = configurationBuilder.Build();
+
         services.AddSingleton(configuration);
         services.AddLogging();
         services.AddEnvironmentActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<EnvironmentEndpointOptions>>();
         Assert.Equal("/some", options.CurrentValue.Path);
 

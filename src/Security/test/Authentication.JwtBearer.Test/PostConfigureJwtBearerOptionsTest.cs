@@ -35,7 +35,7 @@ public sealed class PostConfigureJwtBearerOptionsTest
     }
 
     [Fact]
-    public void PostConfigure_ConfiguresForCloudFoundry()
+    public async Task PostConfigure_ConfiguresForCloudFoundry()
     {
         const string vcapServices = """
             {
@@ -64,12 +64,12 @@ public sealed class PostConfigureJwtBearerOptionsTest
 
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
         IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings().Build();
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton(configuration);
-        serviceCollection.AddAuthentication().AddJwtBearer().ConfigureJwtBearerForCloudFoundry();
-        serviceCollection.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+        var services = new ServiceCollection();
+        services.AddSingleton(configuration);
+        services.AddAuthentication().AddJwtBearer().ConfigureJwtBearerForCloudFoundry();
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 
-        using ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<JwtBearerOptions>>();
         JwtBearerOptions options = optionsMonitor.Get(JwtBearerDefaults.AuthenticationScheme);
 

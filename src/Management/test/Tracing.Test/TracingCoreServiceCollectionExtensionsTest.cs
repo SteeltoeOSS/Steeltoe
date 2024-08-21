@@ -13,22 +13,22 @@ namespace Steeltoe.Management.Tracing.Test;
 public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
 {
     [Fact]
-    public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
+    public async Task AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
     {
         IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
 
-        ServiceProvider serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider(true);
 
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceContainerCore(serviceProvider);
     }
 
     [Fact]
-    public void AddDistributedTracingAspNetCore_WiresIncludedExporters()
+    public async Task AddDistributedTracingAspNetCore_WiresIncludedExporters()
     {
         IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
 
-        ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider(true);
 
         IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
         Assert.Single(hostedServices, hostedService => hostedService.GetType().Name == "TelemetryHostedService");
@@ -41,7 +41,7 @@ public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
     }
 
     [Fact]
-    public void AddDistributedTracingAspNetCore_WiresWavefrontExporters()
+    public async Task AddDistributedTracingAspNetCore_WiresWavefrontExporters()
     {
         IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string?>
         {
@@ -49,7 +49,7 @@ public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
             { "management:metrics:export:wavefront:apiToken", "fakeSecret" }
         }));
 
-        ServiceProvider serviceProvider = services.AddLogging().AddDistributedTracing(null).BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.AddLogging().AddDistributedTracing(null).BuildServiceProvider(true);
 
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
         Assert.NotNull(tracerProvider);

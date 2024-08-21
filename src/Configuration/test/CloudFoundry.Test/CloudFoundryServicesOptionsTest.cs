@@ -12,14 +12,14 @@ namespace Steeltoe.Configuration.CloudFoundry.Test;
 public sealed class CloudFoundryServicesOptionsTest
 {
     [Fact]
-    public void NoVcapServicesConfiguration()
+    public async Task NoVcapServicesConfiguration()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddCloudFoundryOptions();
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryServicesOptions>>();
         CloudFoundryServicesOptions options = optionsMonitor.CurrentValue;
@@ -28,7 +28,7 @@ public sealed class CloudFoundryServicesOptionsTest
     }
 
     [Fact]
-    public void SingleServiceConfiguration()
+    public async Task SingleServiceConfiguration()
     {
         const string vcapServicesJson = """
             {
@@ -56,7 +56,7 @@ public sealed class CloudFoundryServicesOptionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddCloudFoundryOptions();
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryServicesOptions>>();
         CloudFoundryServicesOptions options = optionsMonitor.CurrentValue;
@@ -80,7 +80,7 @@ public sealed class CloudFoundryServicesOptionsTest
     }
 
     [Fact]
-    public void ComplexSingleServiceConfiguration()
+    public async Task ComplexSingleServiceConfiguration()
     {
         const string vcapServicesJson = """
             {
@@ -153,7 +153,7 @@ public sealed class CloudFoundryServicesOptionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddCloudFoundryOptions();
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryServicesOptions>>();
         CloudFoundryServicesOptions options = optionsMonitor.CurrentValue;
@@ -187,7 +187,7 @@ public sealed class CloudFoundryServicesOptionsTest
     }
 
     [Fact]
-    public void MultipleServicesConfiguration()
+    public async Task MultipleServicesConfiguration()
     {
         const string vcapServicesJson = """
             {
@@ -231,7 +231,7 @@ public sealed class CloudFoundryServicesOptionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddCloudFoundryOptions();
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryServicesOptions>>();
         CloudFoundryServicesOptions options = optionsMonitor.CurrentValue;
@@ -274,7 +274,7 @@ public sealed class CloudFoundryServicesOptionsTest
     }
 
     [Fact]
-    public void MultipleServicesOfSameTypeConfiguration()
+    public async Task MultipleServicesOfSameTypeConfiguration()
     {
         const string vcapServicesJson = """
             {
@@ -321,7 +321,7 @@ public sealed class CloudFoundryServicesOptionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddCloudFoundryOptions();
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryServicesOptions>>();
         CloudFoundryServicesOptions options = optionsMonitor.CurrentValue;

@@ -18,8 +18,8 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Health;
 
 public sealed class HealthEndpointTest : BaseTest
 {
+    private static readonly IServiceProvider EmptyServiceProvider = new ServiceCollection().BuildServiceProvider(true);
     private readonly IHealthAggregator _aggregator = new HealthAggregator();
-    private readonly ServiceProvider _provider = new ServiceCollection().BuildServiceProvider(true);
     private readonly ITestOutputHelper _output;
 
     public HealthEndpointTest(ITestOutputHelper output)
@@ -265,7 +265,7 @@ public sealed class HealthEndpointTest : BaseTest
 
         IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
 
-        var handler = new HealthEndpointHandler(options, _aggregator, contributors, ServiceProviderWithMicrosoftHealth(), _provider,
+        var handler = new HealthEndpointHandler(options, _aggregator, contributors, ServiceProviderWithMicrosoftHealth(), EmptyServiceProvider,
             NullLoggerFactory.Instance);
 
         appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
@@ -328,7 +328,7 @@ public sealed class HealthEndpointTest : BaseTest
             new UpContributor()
         };
 
-        var handler = new HealthEndpointHandler(options, new HealthAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider,
+        var handler = new HealthEndpointHandler(options, new HealthAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), EmptyServiceProvider,
             NullLoggerFactory.Instance);
 
         var healthRequest = new HealthEndpointRequest("msft", true);
@@ -351,6 +351,7 @@ public sealed class HealthEndpointTest : BaseTest
         var services = new ServiceCollection();
         services.AddHealthChecks().AddPrivateMemoryHealthCheck(133_824_512).AddWorkingSetHealthCheck(133_824_512);
 
-        return services.BuildServiceProvider(true).GetRequiredService<IOptionsMonitor<MicrosoftHealth.HealthCheckServiceOptions>>();
+        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        return serviceProvider.GetRequiredService<IOptionsMonitor<MicrosoftHealth.HealthCheckServiceOptions>>();
     }
 }

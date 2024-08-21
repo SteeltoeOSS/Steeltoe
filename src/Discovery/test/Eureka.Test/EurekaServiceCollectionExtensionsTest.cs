@@ -20,7 +20,7 @@ namespace Steeltoe.Discovery.Eureka.Test;
 public sealed class EurekaServiceCollectionExtensionsTest
 {
     [Fact]
-    public void AddEurekaDiscoveryClient_NoExceptionWithoutManagementOptions()
+    public async Task AddEurekaDiscoveryClient_NoExceptionWithoutManagementOptions()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
@@ -29,7 +29,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
         services.AddSingleton<IServer, TestServer>();
         services.AddEurekaDiscoveryClient();
 
-        ServiceProvider provider = services.BuildServiceProvider(true);
+        await using ServiceProvider provider = services.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.Equal("/health", options.Value.HealthCheckUrlPath);
@@ -37,7 +37,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddEurekaDiscoveryClient_UsesManagementOptions()
+    public async Task AddEurekaDiscoveryClient_UsesManagementOptions()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -52,7 +52,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
         services.AddAllActuators();
         services.AddEurekaDiscoveryClient();
 
-        ServiceProvider provider = services.BuildServiceProvider(true);
+        await using ServiceProvider provider = services.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.Equal("/actuator/non-default", options.Value.HealthCheckUrlPath);
@@ -61,7 +61,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
 
     [Fact]
     [Trait("Category", "SkipOnMacOS")]
-    public void AddEurekaDiscoveryClient_UsesServerTimeout()
+    public async Task AddEurekaDiscoveryClient_UsesServerTimeout()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -76,7 +76,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
         services.AddSingleton<IServer, TestServer>();
         services.AddEurekaDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var timer = new Stopwatch();
         timer.Start();
@@ -89,7 +89,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddEurekaDiscoveryClient_IgnoresCloudFoundryManagementOptions()
+    public async Task AddEurekaDiscoveryClient_IgnoresCloudFoundryManagementOptions()
     {
         const string vcapServices = """
             {
@@ -156,7 +156,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
         services.AddAllActuators();
         services.AddEurekaDiscoveryClient();
 
-        ServiceProvider provider = services.BuildServiceProvider(true);
+        await using ServiceProvider provider = services.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.Equal("/actuator/non-default", options.Value.HealthCheckUrlPath);
@@ -164,7 +164,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddEurekaDiscoveryClient_DoesNotOverrideUserPathSettings()
+    public async Task AddEurekaDiscoveryClient_DoesNotOverrideUserPathSettings()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -180,7 +180,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
         services.AddAllActuators();
         services.AddEurekaDiscoveryClient();
 
-        ServiceProvider provider = services.BuildServiceProvider(true);
+        await using ServiceProvider provider = services.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.Equal("/customHealth", options.Value.HealthCheckUrlPath);
@@ -188,7 +188,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddEurekaDiscoveryClient_DoesNotRegisterEurekaDiscoveryClientMultipleTimes()
+    public async Task AddEurekaDiscoveryClient_DoesNotRegisterEurekaDiscoveryClientMultipleTimes()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -203,7 +203,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
         services.AddEurekaDiscoveryClient();
         services.AddEurekaDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         serviceProvider.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>().Should().HaveCount(1);
         serviceProvider.GetServices<EurekaDiscoveryClient>().Should().HaveCount(1);
@@ -211,7 +211,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddEurekaDiscoveryClient_RegistersHostedService()
+    public async Task AddEurekaDiscoveryClient_RegistersHostedService()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -225,7 +225,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
         services.AddSingleton<IServer, TestServer>();
         services.AddEurekaDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
         hostedServices.OfType<DiscoveryClientHostedService>().Should().HaveCount(1);

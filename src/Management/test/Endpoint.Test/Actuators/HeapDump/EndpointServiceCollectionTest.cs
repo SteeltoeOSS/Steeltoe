@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddHeapDumpActuator_AddsCorrectServices()
+    public async Task AddHeapDumpActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
@@ -31,7 +31,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddSingleton(configuration);
         services.AddHeapDumpActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var heapDumper = serviceProvider.GetService<HeapDumper>();
         Assert.NotNull(heapDumper);
         var handler = serviceProvider.GetService<IHeapDumpEndpointHandler>();

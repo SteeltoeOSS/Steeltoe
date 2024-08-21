@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Services;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddServicesActuator_AddsCorrectServices()
+    public async Task AddServicesActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
@@ -30,7 +30,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddLogging();
         services.AddServicesActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<ServicesEndpointOptions>>();
         Assert.Equal("/some", options.CurrentValue.Path);
 

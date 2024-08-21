@@ -37,12 +37,12 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<DbMigrationsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<DbMigrationsEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(AppSettings);
 
-        var container = new ServiceCollection();
-        container.AddScoped<MockDbContext>();
+        var services = new ServiceCollection();
+        services.AddScoped<MockDbContext>();
 
-        var handler = new DbMigrationsEndpointHandler(endpointOptionsMonitor, container.BuildServiceProvider(true), new TestDatabaseMigrationScanner(),
-            NullLoggerFactory.Instance);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
+        var handler = new DbMigrationsEndpointHandler(endpointOptionsMonitor, serviceProvider, new TestDatabaseMigrationScanner(), NullLoggerFactory.Instance);
         var middleware = new DbMigrationsEndpointMiddleware(handler, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/dbmigrations");

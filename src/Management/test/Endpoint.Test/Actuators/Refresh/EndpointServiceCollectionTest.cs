@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Refresh;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddRefreshActuator_AddsCorrectServices()
+    public async Task AddRefreshActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
@@ -30,7 +30,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddLogging();
         services.AddRefreshActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<RefreshEndpointOptions>>();
         Assert.Equal("/some", options.CurrentValue.Path);
 

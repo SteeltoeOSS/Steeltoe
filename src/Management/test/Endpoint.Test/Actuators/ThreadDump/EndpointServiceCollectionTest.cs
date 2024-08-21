@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.ThreadDump;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddThreadDumpActuator_AddsCorrectServices()
+    public async Task AddThreadDumpActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
@@ -31,7 +31,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddThreadDumpActuator();
 
         services.AddSingleton(configuration);
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<ThreadDumpEndpointOptions>>();
         Assert.False(options.CurrentValue.Enabled);
 

@@ -48,7 +48,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
     }
 
     [Fact]
-    public void DoesNotUseNetworkInterfacesByDefault()
+    public async Task DoesNotUseNetworkInterfacesByDefault()
     {
         var inetUtilsMock = new Mock<InetUtils>(new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
         inetUtilsMock.Setup(inetUtils => inetUtils.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254")).Verifiable();
@@ -62,7 +62,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConsulDiscoveryOptions>>();
 
         _ = optionsMonitor.CurrentValue;
@@ -71,7 +71,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
     }
 
     [Fact]
-    public void CanUseNetworkInterfaces()
+    public async Task CanUseNetworkInterfaces()
     {
         var inetUtilsMock = new Mock<InetUtils>(new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
         inetUtilsMock.Setup(inetUtils => inetUtils.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254")).Verifiable();
@@ -90,7 +90,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConsulDiscoveryOptions>>();
 
         ConsulDiscoveryOptions options = optionsMonitor.CurrentValue;
@@ -101,7 +101,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
     }
 
     [Fact]
-    public void CanUseNetworkInterfacesWithoutReverseDnsOnIP()
+    public async Task CanUseNetworkInterfacesWithoutReverseDnsOnIP()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -119,7 +119,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConsulDiscoveryOptions>>();
 
         var noSlowReverseDnsQuery = new Stopwatch();

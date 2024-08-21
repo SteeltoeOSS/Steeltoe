@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.DbMigrations;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddEntityFrameworkCoreActuator_AddsCorrectServices()
+    public async Task AddEntityFrameworkCoreActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
@@ -25,12 +25,12 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfiguration configuration = configurationBuilder.Build();
+
         services.AddSingleton(configuration);
         services.AddLogging();
-
         services.AddDbMigrationsActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<DbMigrationsEndpointOptions>>();
         options.CurrentValue.Id.Should().Be("dbmigrations");
         var handler = serviceProvider.GetService<IDbMigrationsEndpointHandler>();

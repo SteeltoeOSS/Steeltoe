@@ -107,7 +107,7 @@ public abstract class BaseTest : IDisposable
         services.ConfigureOptions(configureOptionsType);
         services.AddLogging();
 
-        ServiceProvider provider = services.BuildServiceProvider(true);
+        using ServiceProvider provider = services.BuildServiceProvider(true);
         return provider.GetRequiredService<IOptionsMonitor<TOptions>>();
     }
 

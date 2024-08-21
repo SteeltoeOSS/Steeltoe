@@ -16,7 +16,7 @@ namespace Steeltoe.Discovery.Consul.Test;
 public sealed class ConsulServiceCollectionExtensionsTest
 {
     [Fact]
-    public void AddConsulDiscoveryClient_UsesConsul()
+    public async Task AddConsulDiscoveryClient_UsesConsul()
     {
         Dictionary<string, string?> appsettings = new()
         {
@@ -36,7 +36,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
         services.AddLogging();
         services.AddConsulDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
 
         Assert.Single(discoveryClients);
@@ -45,7 +45,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void ClientEnabledByDefault()
+    public async Task ClientEnabledByDefault()
     {
         var services = new ServiceCollection();
         services.AddLogging();
@@ -53,14 +53,14 @@ public sealed class ConsulServiceCollectionExtensionsTest
 
         services.AddConsulDiscoveryClient();
 
-        ServiceProvider provider = services.BuildServiceProvider(true);
+        await using ServiceProvider provider = services.BuildServiceProvider(true);
         var clientOptions = provider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);
     }
 
     [Fact]
-    public void ClientDisabledBySpringCloudDiscoveryEnabledFalse()
+    public async Task ClientDisabledBySpringCloudDiscoveryEnabledFalse()
     {
         var services = new ServiceCollection();
         services.AddLogging();
@@ -73,14 +73,14 @@ public sealed class ConsulServiceCollectionExtensionsTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddConsulDiscoveryClient();
 
-        ServiceProvider provider = services.BuildServiceProvider(true);
+        await using ServiceProvider provider = services.BuildServiceProvider(true);
         var clientOptions = provider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
 
         Assert.False(clientOptions.Value.Enabled);
     }
 
     [Fact]
-    public void ClientFavorsConsulDiscoveryEnabled()
+    public async Task ClientFavorsConsulDiscoveryEnabled()
     {
         var services = new ServiceCollection();
         services.AddLogging();
@@ -95,14 +95,14 @@ public sealed class ConsulServiceCollectionExtensionsTest
 
         services.AddConsulDiscoveryClient();
 
-        ServiceProvider provider = services.BuildServiceProvider(true);
+        await using ServiceProvider provider = services.BuildServiceProvider(true);
         var clientOptions = provider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);
     }
 
     [Fact]
-    public void DoesNotRegisterConsulDiscoveryClientMultipleTimes()
+    public async Task DoesNotRegisterConsulDiscoveryClientMultipleTimes()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -118,7 +118,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
         services.AddConsulDiscoveryClient();
         services.AddConsulDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         serviceProvider.GetServices<IDiscoveryClient>().OfType<ConsulDiscoveryClient>().Should().HaveCount(1);
         serviceProvider.GetServices<ConsulDiscoveryClient>().Should().BeEmpty();
@@ -126,7 +126,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void RegistersHostedService()
+    public async Task RegistersHostedService()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -140,14 +140,14 @@ public sealed class ConsulServiceCollectionExtensionsTest
         services.AddLogging();
         services.AddConsulDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
         hostedServices.OfType<DiscoveryClientHostedService>().Should().HaveCount(1);
     }
 
     [Fact]
-    public void ConsulOptionsValidation_FailsWhenRunningInCloudWithLocalhost()
+    public async Task ConsulOptionsValidation_FailsWhenRunningInCloudWithLocalhost()
     {
         using var scope = new EnvironmentVariableScope("DOTNET_RUNNING_IN_CONTAINER", "true");
 
@@ -156,7 +156,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddConsulDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var consulOptions = serviceProvider.GetRequiredService<IOptions<ConsulOptions>>();
 
         Action action = () => _ = consulOptions.Value;

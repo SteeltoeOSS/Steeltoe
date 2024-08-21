@@ -25,7 +25,7 @@ public sealed class LoggingBuilderExtensionsTest
     };
 
     [Fact]
-    public void OnlyApplicableFilters_AreApplied()
+    public async Task OnlyApplicableFilters_AreApplied()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -35,12 +35,15 @@ public sealed class LoggingBuilderExtensionsTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
+        var services = new ServiceCollection();
+
+        services.AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider(true);
+        });
 
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var logger = serviceProvider.GetRequiredService<ILogger<TestClass>>();
 
         logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
@@ -53,16 +56,19 @@ public sealed class LoggingBuilderExtensionsTest
     }
 
     [Fact]
-    public void DynamicLevelSetting_WorksWith_ConsoleFilters()
+    public async Task DynamicLevelSetting_WorksWith_ConsoleFilters()
     {
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
+        IServiceCollection services = new ServiceCollection();
+
+        services.AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider(true);
+        });
 
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var logger = serviceProvider.GetRequiredService<ILogger<TestClass>>();
 
         logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
@@ -87,16 +93,19 @@ public sealed class LoggingBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddConsole_Works_WithAddConfiguration()
+    public async Task AddConsole_Works_WithAddConfiguration()
     {
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
+        IServiceCollection services = new ServiceCollection();
+
+        services.AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddConsole();
-        }).BuildServiceProvider(true);
+        });
 
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var logger = serviceProvider.GetRequiredService<ILogger<LoggingBuilderExtensionsTest>>();
 
         logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
@@ -109,16 +118,19 @@ public sealed class LoggingBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddDynamicConsole_Works_WithAddConfiguration()
+    public async Task AddDynamicConsole_Works_WithAddConfiguration()
     {
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
+        IServiceCollection services = new ServiceCollection();
+
+        services.AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider(true);
+        });
 
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var logger = serviceProvider.GetRequiredService<ILogger<LoggingBuilderExtensionsTest>>();
 
         logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
@@ -131,16 +143,19 @@ public sealed class LoggingBuilderExtensionsTest
     }
 
     [Fact]
-    public void DynamicLevelSetting_ParameterlessAddDynamic_NotBrokenByAddConfiguration()
+    public async Task DynamicLevelSetting_ParameterlessAddDynamic_NotBrokenByAddConfiguration()
     {
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
+        IServiceCollection services = new ServiceCollection();
+
+        services.AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider(true);
+        });
 
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var logger = serviceProvider.GetRequiredService<ILogger<LoggingBuilderExtensionsTest>>();
 
         logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
@@ -171,11 +186,16 @@ public sealed class LoggingBuilderExtensionsTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>().AddLogging(builder =>
+        IServiceCollection services = new ServiceCollection();
+        services.AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>();
+
+        services.AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider(true);
+        });
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var logger = serviceProvider.GetRequiredService<ILogger<LoggingBuilderExtensionsTest>>();
         logger.LogInformation("This is a test");
@@ -187,15 +207,19 @@ public sealed class LoggingBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddDynamicConsole_AddsAllLoggerProviders()
+    public async Task AddDynamicConsole_AddsAllLoggerProviders()
     {
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
+        IServiceCollection services = new ServiceCollection();
+
+        services.AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider(true);
+        });
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var dynamicLoggerProvider = serviceProvider.GetService<IDynamicLoggerProvider>();
         dynamicLoggerProvider.Should().NotBeNull();
@@ -210,12 +234,15 @@ public sealed class LoggingBuilderExtensionsTest
     {
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
+        IServiceCollection services = new ServiceCollection();
+
+        services.AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider(true);
+        });
 
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var dynamicLoggerProvider = serviceProvider.GetRequiredService<IDynamicLoggerProvider>();
 
         serviceProvider.Dispose();
@@ -225,31 +252,38 @@ public sealed class LoggingBuilderExtensionsTest
     }
 
     [Fact]
-    public void DynamicLevelSetting_ParameterlessAddDynamic_AddsConsoleOptions()
+    public async Task DynamicLevelSetting_ParameterlessAddDynamic_AddsConsoleOptions()
     {
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
+        IServiceCollection services = new ServiceCollection();
+
+        services.AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider(true);
+        });
 
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var formatterOptions = serviceProvider.GetRequiredService<IOptions<SimpleConsoleFormatterOptions>>();
 
         formatterOptions.Value.ColorBehavior.Should().Be(LoggerColorBehavior.Disabled);
     }
 
     [Fact]
-    public void AddDynamicConsole_DoesNotSetColorLocal()
+    public async Task AddDynamicConsole_DoesNotSetColorLocal()
     {
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>()).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
+        IServiceCollection services = new ServiceCollection();
+
+        services.AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider(true);
+        });
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         using IServiceScope scope = serviceProvider.CreateScope();
         var formatterOptions = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<SimpleConsoleFormatterOptions>>();
@@ -258,18 +292,21 @@ public sealed class LoggingBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddDynamicConsole_DisablesColorOnPivotalPlatform()
+    public async Task AddDynamicConsole_DisablesColorOnPivotalPlatform()
     {
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "not empty");
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>()).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
+        IServiceCollection services = new ServiceCollection();
+
+        services.AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider(true);
+        });
 
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var formatterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<SimpleConsoleFormatterOptions>>();
 
         formatterOptions.CurrentValue.ColorBehavior.Should().Be(LoggerColorBehavior.Disabled);
@@ -285,11 +322,15 @@ public sealed class LoggingBuilderExtensionsTest
             ["Logging:Console:DisableColors"] = "true"
         }).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
+        IServiceCollection services = new ServiceCollection();
+
+        services.AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider(true);
+        });
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         using var console = new ConsoleOutputBorrower();
         var logger = serviceProvider.GetRequiredService<ILogger<LoggingBuilderExtensionsTest>>();
@@ -308,10 +349,12 @@ public sealed class LoggingBuilderExtensionsTest
         string log = console.ToString();
 
         // Casting to object as workaround, see https://github.com/fluentassertions/fluentassertions/issues/2339.
-        ((object)log).Should().BeEquivalentTo($@"fail: {typeof(LoggingBuilderExtensionsTest).FullName}[0]
-      => Outer Scope => InnerScopeKey=InnerScopeValue
-      Something bad.
-", options => options.Using(IgnoreLineEndingsComparer.Instance));
+        ((object)log).Should().BeEquivalentTo($"""
+            fail: {typeof(LoggingBuilderExtensionsTest).FullName}[0]
+                  => Outer Scope => InnerScopeKey=InnerScopeValue
+                  Something bad.
+
+            """, options => options.Using(IgnoreLineEndingsComparer.Instance));
     }
 
     [Fact]
@@ -325,11 +368,15 @@ public sealed class LoggingBuilderExtensionsTest
             ["Logging:Console:FormatterOptions:ColorBehavior"] = "Disabled"
         }).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
+        IServiceCollection services = new ServiceCollection();
+
+        services.AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider(true);
+        });
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         using var console = new ConsoleOutputBorrower();
         var logger = serviceProvider.GetRequiredService<ILogger<LoggingBuilderExtensionsTest>>();
@@ -348,10 +395,12 @@ public sealed class LoggingBuilderExtensionsTest
         string log = console.ToString();
 
         // Casting to object as workaround, see https://github.com/fluentassertions/fluentassertions/issues/2339.
-        ((object)log).Should().BeEquivalentTo($@"fail: {typeof(LoggingBuilderExtensionsTest).FullName}[0]
-      => Outer Scope => InnerScopeKey=InnerScopeValue
-      Something bad.
-", options => options.Using(IgnoreLineEndingsComparer.Instance));
+        ((object)log).Should().BeEquivalentTo($"""
+            fail: {typeof(LoggingBuilderExtensionsTest).FullName}[0]
+                  => Outer Scope => InnerScopeKey=InnerScopeValue
+                  Something bad.
+
+            """, options => options.Using(IgnoreLineEndingsComparer.Instance));
     }
 
     private sealed class TestDynamicMessageProcessor : IDynamicMessageProcessor

@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Test;
 public sealed class ConfigureOptionsTest
 {
     [Fact]
-    public void Does_not_register_options_configurer_multiple_times()
+    public async Task Does_not_register_options_configurer_multiple_times()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
@@ -24,7 +24,7 @@ public sealed class ConfigureOptionsTest
         services.AddInfoActuator();
         services.AddEnvironmentActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IConfigureOptions<ManagementOptions>[] configurers = serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>().ToArray();
         configurers.Should().HaveCount(1);
@@ -34,7 +34,7 @@ public sealed class ConfigureOptionsTest
     }
 
     [Fact]
-    public void Can_register_additional_options_configurer_upfront()
+    public async Task Can_register_additional_options_configurer_upfront()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
@@ -44,7 +44,7 @@ public sealed class ConfigureOptionsTest
         services.AddTransient<IConfigureOptions<ManagementOptions>, CustomManagementOptionsConfigurer>();
         services.AddInfoActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IConfigureOptions<ManagementOptions>[] configurers = serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>().ToArray();
         configurers.Should().HaveCount(2);
@@ -56,7 +56,7 @@ public sealed class ConfigureOptionsTest
     }
 
     [Fact]
-    public void Can_register_additional_options_configurer_afterwards()
+    public async Task Can_register_additional_options_configurer_afterwards()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
@@ -66,7 +66,7 @@ public sealed class ConfigureOptionsTest
         services.AddInfoActuator();
         services.AddTransient<IConfigureOptions<ManagementOptions>, CustomManagementOptionsConfigurer>();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IConfigureOptions<ManagementOptions>[] configurers = serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>().ToArray();
         configurers.Should().HaveCount(2);

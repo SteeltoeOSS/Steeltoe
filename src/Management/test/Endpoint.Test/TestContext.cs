@@ -17,7 +17,7 @@ internal sealed class TestContext : IDisposable
 {
     private readonly XunitLoggerProvider _loggerProvider;
     private readonly IServiceCollection _serviceCollection = new ServiceCollection();
-    private IServiceProvider? _serviceProvider;
+    private ServiceProvider? _serviceProvider;
     private IConfigurationRoot? _configurationRoot;
 
     private IServiceProvider ServiceProvider
@@ -97,5 +97,6 @@ internal sealed class TestContext : IDisposable
     public void Dispose()
     {
         _loggerProvider.Dispose();
+        _serviceProvider?.Dispose();
     }
 }

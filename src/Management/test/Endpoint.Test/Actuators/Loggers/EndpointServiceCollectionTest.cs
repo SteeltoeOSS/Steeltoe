@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Loggers;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddLoggersActuator_AddsCorrectServices()
+    public async Task AddLoggersActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
@@ -36,7 +36,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         services.AddLoggersActuator();
         services.AddSingleton(configuration);
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var handler = serviceProvider.GetService<ILoggersEndpointHandler>();
         Assert.NotNull(handler);

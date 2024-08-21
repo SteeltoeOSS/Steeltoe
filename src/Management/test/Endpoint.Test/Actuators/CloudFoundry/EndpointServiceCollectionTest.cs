@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddCloudFoundryActuator_AddsCorrectServices()
+    public async Task AddCloudFoundryActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
@@ -31,7 +31,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddLogging();
         services.AddCloudFoundryActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
         Assert.Equal(string.Empty, options.CurrentValue.Id);
         var handler = serviceProvider.GetService<ICloudFoundryEndpointHandler>();

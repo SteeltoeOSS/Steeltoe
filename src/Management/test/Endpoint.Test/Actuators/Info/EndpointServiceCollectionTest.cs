@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Info;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddInfoActuator_AddsCorrectServices()
+    public async Task AddInfoActuator_AddsCorrectServices()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
@@ -23,7 +23,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddInfoActuator();
         services.AddInfoContributor<TestInfoContributor>();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IInfoContributor[] contributors = serviceProvider.GetServices<IInfoContributor>().ToArray();
         contributors.Should().HaveCount(4);
@@ -36,7 +36,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     }
 
     [Fact]
-    public void AddInfoContributor_DoesNotAddTwice()
+    public async Task AddInfoContributor_DoesNotAddTwice()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
@@ -48,7 +48,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddInfoContributor<TestInfoContributor>();
         services.AddInfoContributor<TestInfoContributor>();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         serviceProvider.GetServices<IInfoContributor>().OfType<TestInfoContributor>().Should().HaveCount(1);
     }

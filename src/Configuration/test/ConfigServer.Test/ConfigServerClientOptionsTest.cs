@@ -21,7 +21,7 @@ public sealed class ConfigServerClientOptionsTest
     }
 
     [Fact]
-    public void ConfigureConfigServerClientOptions_WithDefaults()
+    public async Task ConfigureConfigServerClientOptions_WithDefaults()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder();
         builder.AddConfigServer();
@@ -31,14 +31,15 @@ public sealed class ConfigServerClientOptionsTest
         services.AddSingleton(configuration);
         services.ConfigureConfigServerClientOptions();
 
-        var optionsMonitor = services.BuildServiceProvider(true).GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
 
         string? expectedAppName = Assembly.GetEntryAssembly()!.GetName().Name;
         TestHelper.VerifyDefaults(optionsMonitor.CurrentValue, expectedAppName);
     }
 
     [Fact]
-    public void ConfigureConfigServerClientOptions_WithValues()
+    public async Task ConfigureConfigServerClientOptions_WithValues()
     {
         IServiceCollection services = new ServiceCollection().AddOptions();
 
@@ -76,7 +77,8 @@ public sealed class ConfigServerClientOptionsTest
         services.AddSingleton(configuration);
 
         services.ConfigureConfigServerClientOptions();
-        var service = services.BuildServiceProvider(true).GetRequiredService<IOptions<ConfigServerClientOptions>>();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var service = serviceProvider.GetRequiredService<IOptions<ConfigServerClientOptions>>();
 
         ConfigServerClientOptions options = service.Value;
 

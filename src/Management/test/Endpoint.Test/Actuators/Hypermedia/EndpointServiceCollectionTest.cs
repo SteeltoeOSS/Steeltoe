@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Hypermedia;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddHyperMediaActuator_AddsCorrectServices()
+    public async Task AddHyperMediaActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
@@ -28,7 +28,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddSingleton(configuration);
         services.AddHypermediaActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var handler = serviceProvider.GetService<IActuatorEndpointHandler>();
         Assert.NotNull(handler);
     }

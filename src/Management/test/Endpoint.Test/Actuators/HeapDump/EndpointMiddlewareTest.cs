@@ -38,9 +38,11 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<HeapDumpEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions>(AppSettings);
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>(AppSettings);
 
-        IServiceCollection serviceCollection = new ServiceCollection();
-        serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
-        var loggerFactory = serviceCollection.BuildServiceProvider(true).GetRequiredService<ILoggerFactory>();
+        IServiceCollection services = new ServiceCollection();
+        services.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
         ILogger<HeapDumper> logger1 = loggerFactory.CreateLogger<HeapDumper>();
 

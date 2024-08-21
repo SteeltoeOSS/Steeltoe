@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Trace;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddTraceActuator_AddsCorrectServices()
+    public async Task AddTraceActuator_AddsCorrectServices()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -32,7 +32,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         services.AddTraceActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<TraceEndpointOptions>>();
         Assert.False(options.CurrentValue.Enabled);
 
@@ -46,7 +46,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     }
 
     [Fact]
-    public void AddTraceActuatorV1_AddsCorrectServices()
+    public async Task AddTraceActuatorV1_AddsCorrectServices()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -65,7 +65,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         services.AddTraceActuator(MediaTypeVersion.V1);
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<TraceEndpointOptions>>();
         Assert.False(options.Get("V1").Enabled);
 

@@ -324,14 +324,14 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public void GetAccessToken_ReturnsExpected()
+    public async Task GetAccessToken_ReturnsExpected()
     {
         IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
         var services = new ServiceCollection();
         services.AddCloudFoundrySecurity();
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var permissionsProvider = serviceProvider.GetRequiredService<PermissionsProvider>();
 
         var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, [], permissionsProvider,
@@ -355,7 +355,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         var services = new ServiceCollection();
         services.AddCloudFoundrySecurity();
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var permissionsProvider = serviceProvider.GetRequiredService<PermissionsProvider>();
 
         var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, [], permissionsProvider,

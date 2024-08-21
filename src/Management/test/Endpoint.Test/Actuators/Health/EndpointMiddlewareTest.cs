@@ -210,8 +210,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         builder.ConfigureServices(services =>
         {
-            services.BuildServiceProvider(true).GetServices<HealthEndpointHandler>();
-            services.BuildServiceProvider(true).GetServices<IEndpointHandler<HealthEndpointRequest, HealthEndpointResponse>>();
+            using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+            serviceProvider.GetServices<HealthEndpointHandler>();
+            serviceProvider.GetServices<IEndpointHandler<HealthEndpointRequest, HealthEndpointResponse>>();
         });
 
         using var server = new TestServer(builder);

@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Metrics;
 public sealed class EndpointServiceCollectionExtensionsTest : BaseTest
 {
     [Fact]
-    public void AddMetricsActuator_AddsCorrectServices()
+    public async Task AddMetricsActuator_AddsCorrectServices()
     {
         var builder = new ConfigurationBuilder();
         IConfiguration configuration = builder.Build();
@@ -25,7 +25,7 @@ public sealed class EndpointServiceCollectionExtensionsTest : BaseTest
         services.AddSingleton(configuration);
         services.AddMetricsActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         serviceProvider.GetService<IDiagnosticsManager>().Should().NotBeNull();
         serviceProvider.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Should().HaveCount(1);

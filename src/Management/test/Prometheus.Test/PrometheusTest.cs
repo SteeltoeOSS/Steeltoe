@@ -10,12 +10,12 @@ namespace Steeltoe.Management.Prometheus.Test;
 public sealed class PrometheusTest
 {
     [Fact]
-    public void AddPrometheusActuator_SetsUpRequiredServices()
+    public async Task AddPrometheusActuator_SetsUpRequiredServices()
     {
         var services = new ServiceCollection();
         services.AddPrometheusActuator();
 
-        using ServiceProvider provider = services.BuildServiceProvider(true);
+        await using ServiceProvider provider = services.BuildServiceProvider(true);
         var optionsMonitor = provider.GetRequiredService<IOptionsMonitor<PrometheusEndpointOptions>>();
 
         optionsMonitor.CurrentValue.Path.Should().Be("prometheus");
