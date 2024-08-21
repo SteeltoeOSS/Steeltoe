@@ -196,18 +196,18 @@ public sealed class ConfigServerConfigurationProviderTest
         {
             Name = "testname",
             Label = "testlabel",
-            Profiles = new List<string>
+            Profiles =
             {
                 "Production"
             },
             Version = "testversion",
             State = "teststate",
-            PropertySources = new List<PropertySource>
+            PropertySources =
             {
-                new()
+                new PropertySource
                 {
                     Name = "source",
-                    Source = new Dictionary<string, object>
+                    Source =
                     {
                         { "key1", "value1" },
                         { "key2", 10 }

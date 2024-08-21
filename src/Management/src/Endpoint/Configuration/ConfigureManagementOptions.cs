@@ -61,7 +61,7 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
             options.SerializerOptions.Converters.Add(converterInstance);
         }
 
-        if (!options.SerializerOptions.Converters.Any(converter => converter is JsonStringEnumConverter))
+        if (!options.SerializerOptions.Converters.OfType<JsonStringEnumConverter>().Any())
         {
             options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
         }
@@ -71,12 +71,12 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
             options.SerializerOptions.Converters.Add(new HealthConverter());
         }
 
-        if (!options.SerializerOptions.Converters.Any(converter => converter is HttpTraceResultConverter))
+        if (!options.SerializerOptions.Converters.OfType<HttpTraceResultConverter>().Any())
         {
             options.SerializerOptions.Converters.Add(new HttpTraceResultConverter());
         }
 
-        if (!options.SerializerOptions.Converters.Any(converter => converter is ServiceRegistrationsJsonConverter))
+        if (!options.SerializerOptions.Converters.OfType<ServiceRegistrationsJsonConverter>().Any())
         {
             options.SerializerOptions.Converters.Add(new ServiceRegistrationsJsonConverter());
         }

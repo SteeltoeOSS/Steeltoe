@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net.Http.Json;
-using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -56,9 +55,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        JsonSerializerOptions options = GetSerializerOptions();
-        options.PropertyNameCaseInsensitive = true;
-        var links = await client.GetFromJsonAsync<Links>("http://localhost/cloudfoundryapplication", options);
+        var links = await client.GetFromJsonAsync<Links>("http://localhost/cloudfoundryapplication", SerializerOptions);
         Assert.NotNull(links);
         Assert.True(links.Entries.ContainsKey("self"));
         Assert.Equal("http://localhost/cloudfoundryapplication", links.Entries["self"].Href);

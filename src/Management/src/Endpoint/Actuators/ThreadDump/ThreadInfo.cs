@@ -4,8 +4,6 @@
 
 using System.Text.Json.Serialization;
 
-#pragma warning disable S4004 // Collection properties should be readonly
-
 namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
 public sealed class ThreadInfo
@@ -35,7 +33,7 @@ public sealed class ThreadInfo
     public string? LockOwnerName { get; set; }
 
     [JsonPropertyName("stackTrace")]
-    public IList<StackTraceElement> StackTrace { get; set; } = new List<StackTraceElement>();
+    public IList<StackTraceElement> StackTrace { get; } = new List<StackTraceElement>();
 
     [JsonPropertyName("threadId")]
     public long ThreadId { get; set; }

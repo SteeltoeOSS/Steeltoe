@@ -18,9 +18,7 @@ Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Label.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Name.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Name.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Profiles.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Profiles.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.PropertySources.get -> System.Collections.Generic.IList<Steeltoe.Configuration.ConfigServer.PropertySource!>!
-Steeltoe.Configuration.ConfigServer.ConfigEnvironment.PropertySources.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.State.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.State.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Version.get -> string?
@@ -104,4 +102,3 @@ Steeltoe.Configuration.ConfigServer.PropertySource.Name.get -> string?
 Steeltoe.Configuration.ConfigServer.PropertySource.Name.set -> void
 Steeltoe.Configuration.ConfigServer.PropertySource.PropertySource() -> void
 Steeltoe.Configuration.ConfigServer.PropertySource.Source.get -> System.Collections.Generic.IDictionary<string!, object!>!
-Steeltoe.Configuration.ConfigServer.PropertySource.Source.set -> void

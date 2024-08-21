@@ -44,7 +44,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         HttpClient client = server.CreateClient();
 
         var dictionary = await client.GetFromJsonAsync<Dictionary<string, Dictionary<string, JsonElement>>>("http://localhost/management/infomanagement",
-            GetSerializerOptions());
+            SerializerOptions);
 
         Assert.NotNull(dictionary);
 

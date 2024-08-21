@@ -16,6 +16,17 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public abstract class BaseTest : IDisposable
 {
+    protected JsonSerializerOptions SerializerOptions { get; } = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
+        Converters =
+        {
+            new HealthConverter()
+        }
+    };
+
     public void Dispose()
     {
         Dispose(true);
@@ -28,19 +39,7 @@ public abstract class BaseTest : IDisposable
 
     protected string Serialize<T>(T value)
     {
-        return JsonSerializer.Serialize(value, GetSerializerOptions());
-    }
-
-    protected JsonSerializerOptions GetSerializerOptions()
-    {
-        var options = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-
-        options.Converters.Add(new HealthConverter());
-        return options;
+        return JsonSerializer.Serialize(value, SerializerOptions);
     }
 
     internal AggregationManager GetTestMetrics(MetricsExporter exporter)

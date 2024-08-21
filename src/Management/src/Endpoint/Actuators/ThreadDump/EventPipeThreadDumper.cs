@@ -151,9 +151,15 @@ public sealed class EventPipeThreadDumper
                         ThreadName = $"Thread-{threadId}",
                         ThreadState = State.Runnable,
                         IsInNative = false,
-                        IsSuspended = false,
-                        StackTrace = GetStackTrace(threadId, samples[0], stackSource, symbolReader)
+                        IsSuspended = false
                     };
+
+                    List<StackTraceElement> stackTrace = GetStackTrace(threadId, samples[0], stackSource, symbolReader);
+
+                    foreach (StackTraceElement stackFrame in stackTrace)
+                    {
+                        threadInfo.StackTrace.Add(stackFrame);
+                    }
 
                     threadInfo.ThreadState = GetThreadState(threadInfo.StackTrace);
                     threadInfo.IsInNative = IsThreadInNative(threadInfo.StackTrace);

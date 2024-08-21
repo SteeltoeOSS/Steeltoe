@@ -49,7 +49,8 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     internal static JsonSerializerOptions SerializerOptions { get; } = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        PropertyNameCaseInsensitive = true
+        PropertyNameCaseInsensitive = true,
+        PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate
     };
 
     internal IDictionary<string, string?> Properties => Data;

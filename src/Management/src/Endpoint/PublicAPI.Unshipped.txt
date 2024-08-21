@@ -246,7 +246,6 @@ Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Link(string! href) -> voi
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Templated.get -> bool
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Links
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Links.Entries.get -> System.Collections.Generic.IDictionary<string!, Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link!>!
-Steeltoe.Management.Endpoint.Actuators.Hypermedia.Links.Entries.set -> void
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Links.Links() -> void
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Links.Type.get -> string!
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Links.Type.set -> void
@@ -436,7 +435,6 @@ Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.LockOwnerId.set -> 
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.LockOwnerName.get -> string?
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.LockOwnerName.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.StackTrace.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement!>!
-Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.StackTrace.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.ThreadId.get -> long
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.ThreadId.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.ThreadInfo() -> void

@@ -4,8 +4,6 @@
 
 using System.Text.Json.Serialization;
 
-#pragma warning disable S4004 // Collection properties should be readonly
-
 namespace Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 
 /// <summary>
@@ -19,8 +17,8 @@ public sealed class Links
     public string Type { get; set; } = "steeltoe";
 
     /// <summary>
-    /// Gets or sets the list of links contained in this collection.
+    /// Gets the list of links contained in this collection.
     /// </summary>
     [JsonPropertyName("_links")]
-    public IDictionary<string, Link> Entries { get; set; } = new Dictionary<string, Link>();
+    public IDictionary<string, Link> Entries { get; } = new Dictionary<string, Link>();
 }

@@ -41,7 +41,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
         client.DefaultRequestHeaders.Add("X-Forwarded-Proto", xForwarded);
-        var links = await client.GetFromJsonAsync<Links>($"{requestUriString}/actuator");
+        var links = await client.GetFromJsonAsync<Links>($"{requestUriString}/actuator", SerializerOptions);
         Assert.NotNull(links);
         Assert.True(links.Entries.ContainsKey("self"));
         Assert.Equal($"{calculatedHost}/actuator", links.Entries["self"].Href);
