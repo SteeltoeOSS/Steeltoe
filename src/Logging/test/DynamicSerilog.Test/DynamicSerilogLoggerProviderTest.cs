@@ -273,11 +273,11 @@ public sealed class DynamicSerilogLoggerProviderTest
 
         string logged = console.ToString();
 
-        logged.Should().Contain(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}");
+        logged.Should().Contain("""A.B.C.D.TestClass: {A=1, Application="Sample"}""");
         logged.Should().Contain("Carries property A = 1");
-        logged.Should().Contain(@"A.B.C.D.TestClass: {B=1, A=2, Application=""Sample""}");
+        logged.Should().Contain("""A.B.C.D.TestClass: {B=1, A=2, Application="Sample"}""");
         logged.Should().Contain("Carries A = 2 and B = 1");
-        logged.Should().Contain(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}");
+        logged.Should().Contain("""A.B.C.D.TestClass: {A=1, Application="Sample"}""");
         logged.Should().Contain("Carries property A = 1, again");
         logged.Should().MatchRegex(new Regex(@"ThreadId:<\d+>"));
     }
@@ -299,7 +299,7 @@ public sealed class DynamicSerilogLoggerProviderTest
 
         string logged = console.ToString();
 
-        logged.Should().Contain("Info {\"Info1\": \"information1\", \"Info2\": \"information2\"}");
+        logged.Should().Contain("""Info {"Info1": "information1", "Info2": "information2"}""");
     }
 
     [Fact]

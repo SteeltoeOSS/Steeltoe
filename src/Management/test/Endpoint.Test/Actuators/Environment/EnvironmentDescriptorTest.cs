@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Environment;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Environment;
@@ -40,8 +41,25 @@ public sealed class EnvironmentDescriptorTest : BaseTest
         var environmentDescriptor = new EnvironmentResponse(profiles, propertySourceDescriptors);
         string result = Serialize(environmentDescriptor);
 
-        Assert.Equal(
-            "{\"activeProfiles\":[\"foobar\"],\"propertySources\":[{\"name\":\"name\",\"properties\":{\"key1\":{\"value\":\"value\"},\"key2\":{\"value\":false}}}]}",
-            result);
+        result.Should().BeJson("""
+            {
+              "activeProfiles": [
+                "foobar"
+              ],
+              "propertySources": [
+                {
+                  "name": "name",
+                  "properties": {
+                    "key1": {
+                      "value": "value"
+                    },
+                    "key2": {
+                      "value": false
+                    }
+                  }
+                }
+              ]
+            }
+            """);
     }
 }

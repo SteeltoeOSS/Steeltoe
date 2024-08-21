@@ -43,28 +43,29 @@ public sealed class ConfigServerClientOptionsTest
     {
         IServiceCollection services = new ServiceCollection().AddOptions();
 
-        const string appsettings = @"
-                {
-                    ""spring"": {
-                      ""application"": {
-                        ""name"": ""foo""
-                      },
-                      ""cloud"": {
-                        ""config"": {
-                            ""uri"": ""http://localhost:8888"",
-                            ""env"": ""development"",
-                            ""headers"" : {
-                                ""foo"":""bar"",
-                                ""bar"":""foo""
-                            },
-                            ""health"": {
-                                ""enabled"": true
-                            },
-                            ""failfast"": ""true""
-                        }
-                      }
-                    }
-                }";
+        const string appsettings = """
+            {
+              "spring": {
+                "application": {
+                  "name": "foo"
+                },
+                "cloud": {
+                  "config": {
+                    "uri": "http://localhost:8888",
+                    "env": "development",
+                    "headers": {
+                      "foo": "bar",
+                      "bar": "foo"
+                    },
+                    "health": {
+                      "enabled": true
+                    },
+                    "failfast": "true"
+                  }
+                }
+              }
+            }
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);

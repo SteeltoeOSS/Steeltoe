@@ -157,7 +157,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         using var reader = new StreamReader(httpContext.Response.Body, Encoding.UTF8);
 
         string response = await reader.ReadToEndAsync();
-        response.Should().StartWith("{\"contexts\":{\"application\":{\"beans\":{");
+        response.Should().StartWith("""{"contexts":{"application":{"beans":{""");
     }
 
     private static HttpContext CreateHttpContextForRequest(string method, string path)

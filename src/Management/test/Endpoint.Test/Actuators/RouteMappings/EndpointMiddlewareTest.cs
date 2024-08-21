@@ -78,8 +78,20 @@ public sealed class EndpointMiddlewareTest : BaseTest
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string? json = await reader.ReadLineAsync();
-        const string expected = "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"dispatcherServlet\":[]}}}}}";
-        Assert.Equal(expected, json);
+
+        json.Should().BeJson("""
+            {
+              "contexts": {
+                "application": {
+                  "mappings": {
+                    "dispatcherServlets": {
+                      "dispatcherServlet": []
+                    }
+                  }
+                }
+              }
+            }
+            """);
     }
 
     [Fact]
@@ -104,15 +116,64 @@ public sealed class EndpointMiddlewareTest : BaseTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         string json = await response.Content.ReadAsStringAsync();
 
-        string expected = $"{{\"contexts\":{{\"application\":{{\"mappings\":{{\"dispatcherServlets\":{{\"{typeof(HomeController).FullName}\":" +
-            $"[{{\"handler\":\"{typeof(Person).FullName} Index()\",\"predicate\":\"{{[/Home/Index],methods=[GET],produces=[text/plain || " +
-            "application/json || text/json],consumes=[text/plain || application/json || text/json]}\",\"details\":{\"requestMappingConditions\":" +
-            "{\"patterns\":[\"/Home/Index\"],\"methods\":[\"GET\"],\"consumes\":[{\"mediaType\":\"text/plain\",\"negated\":false}," +
-            "{\"mediaType\":\"application/json\",\"negated\":false},{\"mediaType\":\"text/json\",\"negated\":false}],\"produces\":" +
-            "[{\"mediaType\":\"text/plain\",\"negated\":false},{\"mediaType\":\"application/json\",\"negated\":false}," +
-            "{\"mediaType\":\"text/json\",\"negated\":false}],\"headers\":[],\"params\":[]}}}]}}}}}";
-
-        Assert.Equal(expected, json);
+        json.Should().BeJson($$"""
+            {
+              "contexts": {
+                "application": {
+                  "mappings": {
+                    "dispatcherServlets": {
+                      "{{typeof(HomeController).FullName}}": [
+                        {
+                          "handler": "{{typeof(Person).FullName}} Index()",
+                          "predicate": "{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json],consumes=[text/plain || application/json || text/json]}",
+                          "details": {
+                            "requestMappingConditions": {
+                              "patterns": [
+                                "/Home/Index"
+                              ],
+                              "methods": [
+                                "GET"
+                              ],
+                              "consumes": [
+                                {
+                                  "mediaType": "text/plain",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "application/json",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "text/json",
+                                  "negated": false
+                                }
+                              ],
+                              "produces": [
+                                {
+                                  "mediaType": "text/plain",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "application/json",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "text/json",
+                                  "negated": false
+                                }
+                              ],
+                              "headers": [],
+                              "params": []
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+            """);
     }
 
     [Fact]
@@ -138,72 +199,74 @@ public sealed class EndpointMiddlewareTest : BaseTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         string json = await response.Content.ReadAsStringAsync();
 
-        json.Should().BeJson($@"{{
-  ""contexts"": {{
-    ""application"": {{
-      ""mappings"": {{
-        ""dispatcherServlets"": {{
-          ""{typeof(HomeController).FullName}"": [
-            {{
-              ""handler"": ""{typeof(Person).FullName} Index()"",
-              ""predicate"": ""{{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json],consumes=[text/plain || application/json || text/json]}}"",
-              ""details"": {{
-                ""requestMappingConditions"": {{
-                  ""patterns"": [
-                    ""/Home/Index""
-                  ],
-                  ""methods"": [
-                    ""GET""
-                  ],
-                  ""consumes"": [
-                    {{
-                      ""mediaType"": ""text/plain"",
-                      ""negated"": false
-                    }},
-                    {{
-                      ""mediaType"": ""application/json"",
-                      ""negated"": false
-                    }},
-                    {{
-                      ""mediaType"": ""text/json"",
-                      ""negated"": false
-                    }}
-                  ],
-                  ""produces"": [
-                    {{
-                      ""mediaType"": ""text/plain"",
-                      ""negated"": false
-                    }},
-                    {{
-                      ""mediaType"": ""application/json"",
-                      ""negated"": false
-                    }},
-                    {{
-                      ""mediaType"": ""text/json"",
-                      ""negated"": false
-                    }}
-                  ],
-                  ""headers"": [],
-                  ""params"": []
-                }}
-              }}
-            }}
-          ],
-          ""CoreRouteHandler"": [
-            {{
-              ""handler"": ""CoreRouteHandler"",
-              ""predicate"": ""{{[{{controller=Home}}/{{action=Index}}/{{id?}}],methods=[GET || PUT || POST || DELETE || HEAD || OPTIONS]}}""
-            }},
-            {{
-              ""handler"": ""CoreRouteHandler"",
-              ""predicate"": ""{{[/actuator/mappings],methods=[Get]}}""
-            }}
-          ]
-        }}
-      }}
-    }}
-  }}
-}}");
+        json.Should().BeJson($$"""
+            {
+              "contexts": {
+                "application": {
+                  "mappings": {
+                    "dispatcherServlets": {
+                      "{{typeof(HomeController).FullName}}": [
+                        {
+                          "handler": "{{typeof(Person).FullName}} Index()",
+                          "predicate": "{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json],consumes=[text/plain || application/json || text/json]}",
+                          "details": {
+                            "requestMappingConditions": {
+                              "patterns": [
+                                "/Home/Index"
+                              ],
+                              "methods": [
+                                "GET"
+                              ],
+                              "consumes": [
+                                {
+                                  "mediaType": "text/plain",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "application/json",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "text/json",
+                                  "negated": false
+                                }
+                              ],
+                              "produces": [
+                                {
+                                  "mediaType": "text/plain",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "application/json",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "text/json",
+                                  "negated": false
+                                }
+                              ],
+                              "headers": [],
+                              "params": []
+                            }
+                          }
+                        }
+                      ],
+                      "CoreRouteHandler": [
+                        {
+                          "handler": "CoreRouteHandler",
+                          "predicate": "{[{controller=Home}/{action=Index}/{id?}],methods=[GET || PUT || POST || DELETE || HEAD || OPTIONS]}"
+                        },
+                        {
+                          "handler": "CoreRouteHandler",
+                          "predicate": "{[/actuator/mappings],methods=[Get]}"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+            """);
     }
 
     private HttpContext CreateRequest(string method, string path)

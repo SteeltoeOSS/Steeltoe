@@ -28,7 +28,7 @@ public sealed class TestMiddleware : IMiddleware
             bool isValid = dictionary != null && KeyNames.All(dictionary.ContainsKey);
 
             // Registration response
-            await context.Response.WriteAsync(isValid ? "{\"Id\":\"1234567\"}" : "{\"SerializationError: invalid keys in Application object.\"}");
+            await context.Response.WriteAsync(isValid ? """{"Id":"1234567"}""" : """{"SerializationError: invalid keys in Application object."}""");
         }
         else
         {

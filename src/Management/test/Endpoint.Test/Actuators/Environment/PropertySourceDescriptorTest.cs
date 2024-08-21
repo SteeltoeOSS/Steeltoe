@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Environment;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Environment;
@@ -33,6 +34,19 @@ public sealed class PropertySourceDescriptorTest : BaseTest
 
         var descriptor = new PropertySourceDescriptor("name", properties);
         string result = Serialize(descriptor);
-        Assert.Equal("{\"name\":\"name\",\"properties\":{\"key1\":{\"value\":\"value\"},\"key2\":{\"value\":false}}}", result);
+
+        result.Should().BeJson("""
+            {
+              "name": "name",
+              "properties": {
+                "key1": {
+                  "value": "value"
+                },
+                "key2": {
+                  "value": false
+                }
+              }
+            }
+            """);
     }
 }

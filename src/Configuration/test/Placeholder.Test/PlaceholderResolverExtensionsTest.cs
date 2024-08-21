@@ -49,33 +49,35 @@ public sealed class PlaceholderResolverExtensionsTest
     [Fact]
     public void AddPlaceholderResolver_WebHostBuilder_WrapsApplicationsConfiguration()
     {
-        const string appsettingsJson = @"
-                {
-                    ""spring"": {
-                        ""json"": {
-                            ""name"": ""myName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""name"" : ""${spring:xml:name?noname}"",
-                        }
-                      }
-                    }
-                }";
+        const string appsettingsJson = """
+            {
+              "spring": {
+                "json": {
+                  "name": "myName"
+                },
+                "cloud": {
+                  "config": {
+                    "name": "${spring:xml:name?noname}"
+                  }
+                }
+              }
+            }
+            """;
 
-        const string appsettingsXml = @"
-                <settings>
-                    <spring>
-                        <xml>
-                            <name>${spring:ini:name?noName}</name>
-                        </xml>
-                    </spring>
-                </settings>";
+        const string appsettingsXml = """
+            <settings>
+            	<spring>
+            		<xml>
+            			<name>${spring:ini:name?noName}</name>
+            		</xml>
+            	</spring>
+            </settings>
+            """;
 
-        const string appsettingsIni = @"
-[spring:ini]
-    name=${spring:line:name?noName}
-";
+        const string appsettingsIni = """
+            [spring:ini]
+                name=${spring:line:name?noName}
+            """;
 
         string[] appsettingsLine = ["--spring:line:name=${spring:json:name?noName}"];
 
@@ -107,28 +109,30 @@ public sealed class PlaceholderResolverExtensionsTest
     [Fact]
     public void AddPlaceholderResolver_HostBuilder_WrapsApplicationsConfiguration()
     {
-        const string appsettingsJson = @"
-                {
-                    ""spring"": {
-                        ""json"": {
-                            ""name"": ""myName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""name"" : ""${spring:xml:name?noname}"",
-                        }
-                      }
-                    }
-                }";
+        const string appsettingsJson = """
+            {
+              "spring": {
+                "json": {
+                  "name": "myName"
+                },
+                "cloud": {
+                  "config": {
+                    "name": "${spring:xml:name?noname}"
+                  }
+                }
+              }
+            }
+            """;
 
-        const string appsettingsXml = @"
-                <settings>
-                    <spring>
-                        <xml>
-                            <name>${spring:json:name?noName}</name>
-                        </xml>
-                    </spring>
-                </settings>";
+        const string appsettingsXml = """
+            <settings>
+            	<spring>
+            		<xml>
+            			<name>${spring:json:name?noName}</name>
+            		</xml>
+            	</spring>
+            </settings>
+            """;
 
         using var sandbox = new Sandbox();
         string jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
@@ -155,28 +159,30 @@ public sealed class PlaceholderResolverExtensionsTest
     [Fact]
     public async Task AddPlaceholderResolverViaWebApplicationBuilderWorks()
     {
-        const string appsettingsJson = @"
+        const string appsettingsJson = """
             {
-                ""spring"": {
-                    ""json"": {
-                        ""name"": ""myName""
+              "spring": {
+                "json": {
+                  "name": "myName"
                 },
-                  ""cloud"": {
-                    ""config"": {
-                        ""name"" : ""${spring:xml:name?noname}"",
-                    }
+                "cloud": {
+                  "config": {
+                    "name": "${spring:xml:name?noname}"
                   }
                 }
-            }";
+              }
+            }
+            """;
 
-        const string appsettingsXml = @"
+        const string appsettingsXml = """
             <settings>
-                <spring>
-                    <xml>
-                        <name>${spring:json:name?noName}</name>
-                    </xml>
-                </spring>
-            </settings>";
+            	<spring>
+            		<xml>
+            			<name>${spring:json:name?noName}</name>
+            		</xml>
+            	</spring>
+            </settings>
+            """;
 
         using var sandbox = new Sandbox();
         string jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);

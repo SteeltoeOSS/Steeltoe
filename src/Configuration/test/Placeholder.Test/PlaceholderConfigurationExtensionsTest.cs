@@ -53,19 +53,20 @@ public sealed class PlaceholderConfigurationExtensionsTest
     [Fact]
     public void AddPlaceholderResolver_JsonAppSettingsResolvesPlaceholders()
     {
-        const string appsettings = @"
-                {
-                    ""spring"": {
-                        ""bar"": {
-                            ""name"": ""myName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""name"" : ""${spring:bar:name?noname}"",
-                        }
-                      }
-                    }
-                }";
+        const string appsettings = """
+            {
+              "spring": {
+                "bar": {
+                  "name": "myName"
+                },
+                "cloud": {
+                  "config": {
+                    "name": "${spring:bar:name?noname}"
+                  }
+                }
+              }
+            }
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
@@ -85,19 +86,20 @@ public sealed class PlaceholderConfigurationExtensionsTest
     [Fact]
     public void AddPlaceholderResolver_XmlAppSettingsResolvesPlaceholders()
     {
-        const string appsettings = @"
-<settings>
-    <spring>
-        <bar>
-            <name>myName</name>
-        </bar>
-      <cloud>
-        <config>
-            <name>${spring:bar:name?noName}</name>
-        </config>
-      </cloud>
-    </spring>
-</settings>";
+        const string appsettings = """
+            <settings>
+            	<spring>
+            		<bar>
+            			<name>myName</name>
+            		</bar>
+            		<cloud>
+            			<config>
+            				<name>${spring:bar:name?noName}</name>
+            			</config>
+            		</cloud>
+            	</spring>
+            </settings>
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
@@ -117,12 +119,12 @@ public sealed class PlaceholderConfigurationExtensionsTest
     [Fact]
     public void AddPlaceholderResolver_IniAppSettingsResolvesPlaceholders()
     {
-        const string appsettings = @"
-[spring:bar]
-    name=myName
-[spring:cloud:config]
-    name=${spring:bar:name?noName}
-";
+        const string appsettings = """
+            [spring:bar]
+                name=myName
+            [spring:cloud:config]
+                name=${spring:bar:name?noName}
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
@@ -160,33 +162,35 @@ public sealed class PlaceholderConfigurationExtensionsTest
     [Fact]
     public void AddPlaceholderResolver_HandlesRecursivePlaceHolders()
     {
-        const string appsettingsJson = @"
-                {
-                    ""spring"": {
-                        ""json"": {
-                            ""name"": ""myName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""name"" : ""${spring:xml:name?noname}"",
-                        }
-                      }
-                    }
-                }";
+        const string appsettingsJson = """
+            {
+              "spring": {
+                "json": {
+                  "name": "myName"
+                },
+                "cloud": {
+                  "config": {
+                    "name": "${spring:xml:name?noname}"
+                  }
+                }
+              }
+            }
+            """;
 
-        const string appsettingsXml = @"
-<settings>
-    <spring>
-        <xml>
-            <name>${spring:ini:name?noName}</name>
-        </xml>
-    </spring>
-</settings>";
+        const string appsettingsXml = """
+            <settings>
+            	<spring>
+            		<xml>
+            			<name>${spring:ini:name?noName}</name>
+            		</xml>
+            	</spring>
+            </settings>
+            """;
 
-        const string appsettingsIni = @"
-[spring:ini]
-    name=${spring:line:name?noName}
-";
+        const string appsettingsIni = """
+            [spring:ini]
+                name=${spring:line:name?noName}
+            """;
 
         string[] appsettingsLine = ["--spring:line:name=${spring:json:name?noName}"];
 

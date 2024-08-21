@@ -33,7 +33,7 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
-        handler.Mock.Expect(HttpMethod.Post, "http://springbootadmin:9090/instances").Respond("application/json", "{\"Id\":\"1234567\"}");
+        handler.Mock.Expect(HttpMethod.Post, "http://springbootadmin:9090/instances").Respond("application/json", """{"Id":"1234567"}""");
         handler.Mock.Expect(HttpMethod.Delete, "http://springbootadmin:9090/instances/1234567").Respond(_ => new HttpResponseMessage(HttpStatusCode.NoContent));
 
         await using WebApplication app = builder.Build();

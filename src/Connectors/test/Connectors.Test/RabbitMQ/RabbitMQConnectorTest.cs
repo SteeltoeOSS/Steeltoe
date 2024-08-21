@@ -18,168 +18,172 @@ namespace Steeltoe.Connectors.Test.RabbitMQ;
 
 public sealed class RabbitMQConnectorTest
 {
-    private const string MultiVcapServicesJson = @"{
-  ""p.rabbitmq"": [
-    {
-      ""label"": ""p.rabbitmq"",
-      ""provider"": null,
-      ""plan"": ""single-node"",
-      ""name"": ""myRabbitMQServiceOne"",
-      ""tags"": [
-        ""rabbitmq""
-      ],
-      ""instance_guid"": ""377d9d72-e951-4a1c-82e8-99c3c4933368"",
-      ""instance_name"": ""myRabbitMQServiceOne"",
-      ""binding_guid"": ""d2fd2c9d-ef84-406b-8401-f2ffacaafda6"",
-      ""binding_name"": null,
-      ""credentials"": {
-        ""dashboard_url"": ""https://rmq-377d9d72-e951-4a1c-82e8-99c3c4933368.sys.benicia.cf-app.com"",
-        ""hostname"": ""q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh"",
-        ""hostnames"": [
-          ""q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh""
-        ],
-        ""http_api_uri"": ""https://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@rmq-377d9d72-e951-4a1c-82e8-99c3c4933368.sys.benicia.cf-app.com/api/"",
-        ""http_api_uris"": [
-          ""https://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@rmq-377d9d72-e951-4a1c-82e8-99c3c4933368.sys.benicia.cf-app.com/api/""
-        ],
-        ""password"": ""AqntL6IwehKOGssE51psrJYd"",
-        ""protocols"": {
-          ""amqp"": {
-            ""host"": ""q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh"",
-            ""hosts"": [
-              ""q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh""
-            ],
-            ""password"": ""AqntL6IwehKOGssE51psrJYd"",
-            ""port"": 5672,
-            ""ssl"": false,
-            ""uri"": ""amqp://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh/377d9d72-e951-4a1c-82e8-99c3c4933368"",
-            ""uris"": [
-              ""amqp://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh/377d9d72-e951-4a1c-82e8-99c3c4933368""
-            ],
-            ""username"": ""d2fd2c9d-ef84-406b-8401-f2ffacaafda6"",
-            ""vhost"": ""377d9d72-e951-4a1c-82e8-99c3c4933368""
-          }
-        },
-        ""ssl"": false,
-        ""uri"": ""amqp://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh/377d9d72-e951-4a1c-82e8-99c3c4933368"",
-        ""uris"": [
-          ""amqp://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh/377d9d72-e951-4a1c-82e8-99c3c4933368""
-        ],
-        ""username"": ""d2fd2c9d-ef84-406b-8401-f2ffacaafda6"",
-        ""vhost"": ""377d9d72-e951-4a1c-82e8-99c3c4933368""
-      },
-      ""syslog_drain_url"": null,
-      ""volume_mounts"": []
-    },
-    {
-      ""label"": ""p.rabbitmq"",
-      ""provider"": null,
-      ""plan"": ""single-node"",
-      ""name"": ""myRabbitMQServiceTwo"",
-      ""tags"": [
-        ""rabbitmq""
-      ],
-      ""instance_guid"": ""eda94023-757e-4ef4-9315-dcba2e96efb5"",
-      ""instance_name"": ""myRabbitMQServiceTwo"",
-      ""binding_guid"": ""799815ea-9f6d-40e3-9317-7cc8ca43552f"",
-      ""binding_name"": null,
-      ""credentials"": {
-        ""dashboard_url"": ""https://rmq-eda94023-757e-4ef4-9315-dcba2e96efb5.sys.benicia.cf-app.com"",
-        ""hostname"": ""q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh"",
-        ""hostnames"": [
-          ""q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh""
-        ],
-        ""http_api_uri"": ""https://799815ea-9f6d-40e3-9317-7cc8ca43552f:mw2cCEufc9biidCBA_lYILxc@rmq-eda94023-757e-4ef4-9315-dcba2e96efb5.sys.benicia.cf-app.com/api/"",
-        ""http_api_uris"": [
-          ""https://799815ea-9f6d-40e3-9317-7cc8ca43552f:mw2cCEufc9biidCBA_lYILxc@rmq-eda94023-757e-4ef4-9315-dcba2e96efb5.sys.benicia.cf-app.com/api/""
-        ],
-        ""password"": ""mw2cCEufc9biidCBA_lYILxc"",
-        ""protocols"": {
-          ""amqp"": {
-            ""host"": ""q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh"",
-            ""hosts"": [
-              ""q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh""
-            ],
-            ""password"": ""mw2cCEufc9biidCBA_lYILxc"",
-            ""port"": 5672,
-            ""ssl"": false,
-            ""uri"": ""amqp://799815ea-9f6d-40e3-9317-7cc8ca43552f:mw2cCEufc9biidCBA_lYILxc@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh/eda94023-757e-4ef4-9315-dcba2e96efb5"",
-            ""uris"": [
-              ""amqp://799815ea-9f6d-40e3-9317-7cc8ca43552f:mw2cCEufc9biidCBA_lYILxc@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh/eda94023-757e-4ef4-9315-dcba2e96efb5""
-            ],
-            ""username"": ""799815ea-9f6d-40e3-9317-7cc8ca43552f"",
-            ""vhost"": ""eda94023-757e-4ef4-9315-dcba2e96efb5""
-          }
-        },
-        ""ssl"": false,
-        ""uri"": ""amqp://799815ea-9f6d-40e3-9317-7cc8ca43552f:mw2cCEufc9biidCBA_lYILxc@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh/eda94023-757e-4ef4-9315-dcba2e96efb5"",
-        ""uris"": [
-          ""amqp://799815ea-9f6d-40e3-9317-7cc8ca43552f:mw2cCEufc9biidCBA_lYILxc@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh/eda94023-757e-4ef4-9315-dcba2e96efb5""
-        ],
-        ""username"": ""799815ea-9f6d-40e3-9317-7cc8ca43552f"",
-        ""vhost"": ""eda94023-757e-4ef4-9315-dcba2e96efb5""
-      },
-      ""syslog_drain_url"": null,
-      ""volume_mounts"": []
-    }
-  ]
-}";
+    private const string MultiVcapServicesJson = """
+        {
+          "p.rabbitmq": [
+            {
+              "label": "p.rabbitmq",
+              "provider": null,
+              "plan": "single-node",
+              "name": "myRabbitMQServiceOne",
+              "tags": [
+                "rabbitmq"
+              ],
+              "instance_guid": "377d9d72-e951-4a1c-82e8-99c3c4933368",
+              "instance_name": "myRabbitMQServiceOne",
+              "binding_guid": "d2fd2c9d-ef84-406b-8401-f2ffacaafda6",
+              "binding_name": null,
+              "credentials": {
+                "dashboard_url": "https://rmq-377d9d72-e951-4a1c-82e8-99c3c4933368.sys.benicia.cf-app.com",
+                "hostname": "q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh",
+                "hostnames": [
+                  "q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh"
+                ],
+                "http_api_uri": "https://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@rmq-377d9d72-e951-4a1c-82e8-99c3c4933368.sys.benicia.cf-app.com/api/",
+                "http_api_uris": [
+                  "https://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@rmq-377d9d72-e951-4a1c-82e8-99c3c4933368.sys.benicia.cf-app.com/api/"
+                ],
+                "password": "AqntL6IwehKOGssE51psrJYd",
+                "protocols": {
+                  "amqp": {
+                    "host": "q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh",
+                    "hosts": [
+                      "q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh"
+                    ],
+                    "password": "AqntL6IwehKOGssE51psrJYd",
+                    "port": 5672,
+                    "ssl": false,
+                    "uri": "amqp://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh/377d9d72-e951-4a1c-82e8-99c3c4933368",
+                    "uris": [
+                      "amqp://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh/377d9d72-e951-4a1c-82e8-99c3c4933368"
+                    ],
+                    "username": "d2fd2c9d-ef84-406b-8401-f2ffacaafda6",
+                    "vhost": "377d9d72-e951-4a1c-82e8-99c3c4933368"
+                  }
+                },
+                "ssl": false,
+                "uri": "amqp://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh/377d9d72-e951-4a1c-82e8-99c3c4933368",
+                "uris": [
+                  "amqp://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh/377d9d72-e951-4a1c-82e8-99c3c4933368"
+                ],
+                "username": "d2fd2c9d-ef84-406b-8401-f2ffacaafda6",
+                "vhost": "377d9d72-e951-4a1c-82e8-99c3c4933368"
+              },
+              "syslog_drain_url": null,
+              "volume_mounts": []
+            },
+            {
+              "label": "p.rabbitmq",
+              "provider": null,
+              "plan": "single-node",
+              "name": "myRabbitMQServiceTwo",
+              "tags": [
+                "rabbitmq"
+              ],
+              "instance_guid": "eda94023-757e-4ef4-9315-dcba2e96efb5",
+              "instance_name": "myRabbitMQServiceTwo",
+              "binding_guid": "799815ea-9f6d-40e3-9317-7cc8ca43552f",
+              "binding_name": null,
+              "credentials": {
+                "dashboard_url": "https://rmq-eda94023-757e-4ef4-9315-dcba2e96efb5.sys.benicia.cf-app.com",
+                "hostname": "q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh",
+                "hostnames": [
+                  "q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh"
+                ],
+                "http_api_uri": "https://799815ea-9f6d-40e3-9317-7cc8ca43552f:mw2cCEufc9biidCBA_lYILxc@rmq-eda94023-757e-4ef4-9315-dcba2e96efb5.sys.benicia.cf-app.com/api/",
+                "http_api_uris": [
+                  "https://799815ea-9f6d-40e3-9317-7cc8ca43552f:mw2cCEufc9biidCBA_lYILxc@rmq-eda94023-757e-4ef4-9315-dcba2e96efb5.sys.benicia.cf-app.com/api/"
+                ],
+                "password": "mw2cCEufc9biidCBA_lYILxc",
+                "protocols": {
+                  "amqp": {
+                    "host": "q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh",
+                    "hosts": [
+                      "q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh"
+                    ],
+                    "password": "mw2cCEufc9biidCBA_lYILxc",
+                    "port": 5672,
+                    "ssl": false,
+                    "uri": "amqp://799815ea-9f6d-40e3-9317-7cc8ca43552f:mw2cCEufc9biidCBA_lYILxc@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh/eda94023-757e-4ef4-9315-dcba2e96efb5",
+                    "uris": [
+                      "amqp://799815ea-9f6d-40e3-9317-7cc8ca43552f:mw2cCEufc9biidCBA_lYILxc@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh/eda94023-757e-4ef4-9315-dcba2e96efb5"
+                    ],
+                    "username": "799815ea-9f6d-40e3-9317-7cc8ca43552f",
+                    "vhost": "eda94023-757e-4ef4-9315-dcba2e96efb5"
+                  }
+                },
+                "ssl": false,
+                "uri": "amqp://799815ea-9f6d-40e3-9317-7cc8ca43552f:mw2cCEufc9biidCBA_lYILxc@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh/eda94023-757e-4ef4-9315-dcba2e96efb5",
+                "uris": [
+                  "amqp://799815ea-9f6d-40e3-9317-7cc8ca43552f:mw2cCEufc9biidCBA_lYILxc@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh/eda94023-757e-4ef4-9315-dcba2e96efb5"
+                ],
+                "username": "799815ea-9f6d-40e3-9317-7cc8ca43552f",
+                "vhost": "eda94023-757e-4ef4-9315-dcba2e96efb5"
+              },
+              "syslog_drain_url": null,
+              "volume_mounts": []
+            }
+          ]
+        }
+        """;
 
-    private const string SingleVcapServicesJson = @"{
-  ""p.rabbitmq"": [
-    {
-      ""label"": ""p.rabbitmq"",
-      ""provider"": null,
-      ""plan"": ""single-node"",
-      ""name"": ""myRabbitMQService"",
-      ""tags"": [
-        ""rabbitmq""
-      ],
-      ""instance_guid"": ""e73ca795-53a8-4ba1-9a38-45424ad28248"",
-      ""instance_name"": ""myRabbitMQService"",
-      ""binding_guid"": ""0a1ad792-8937-4770-8868-542f5f14126f"",
-      ""binding_name"": null,
-      ""credentials"": {
-        ""dashboard_url"": ""https://rmq-e73ca795-53a8-4ba1-9a38-45424ad28248.sys.cotati.cf-app.com"",
-        ""hostname"": ""q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh"",
-        ""hostnames"": [
-          ""q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh""
-        ],
-        ""http_api_uri"": ""https://0a1ad792-8937-4770-8868-542f5f14126f:b2Npj1K_eZOrD-fyoewg46rA@rmq-e73ca795-53a8-4ba1-9a38-45424ad28248.sys.cotati.cf-app.com/api/"",
-        ""http_api_uris"": [
-          ""https://0a1ad792-8937-4770-8868-542f5f14126f:b2Npj1K_eZOrD-fyoewg46rA@rmq-e73ca795-53a8-4ba1-9a38-45424ad28248.sys.cotati.cf-app.com/api/""
-        ],
-        ""password"": ""b2Npj1K_eZOrD-fyoewg46rA"",
-        ""protocols"": {
-          ""amqp"": {
-            ""host"": ""q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh"",
-            ""hosts"": [
-              ""q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh""
-            ],
-            ""password"": ""b2Npj1K_eZOrD-fyoewg46rA"",
-            ""port"": 5672,
-            ""ssl"": false,
-            ""uri"": ""amqp://0a1ad792-8937-4770-8868-542f5f14126f:b2Npj1K_eZOrD-fyoewg46rA@q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh/e73ca795-53a8-4ba1-9a38-45424ad28248"",
-            ""uris"": [
-              ""amqp://0a1ad792-8937-4770-8868-542f5f14126f:b2Npj1K_eZOrD-fyoewg46rA@q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh/e73ca795-53a8-4ba1-9a38-45424ad28248""
-            ],
-            ""username"": ""0a1ad792-8937-4770-8868-542f5f14126f"",
-            ""vhost"": ""e73ca795-53a8-4ba1-9a38-45424ad28248""
-          }
-        },
-        ""ssl"": false,
-        ""uri"": ""amqp://0a1ad792-8937-4770-8868-542f5f14126f:b2Npj1K_eZOrD-fyoewg46rA@q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh/e73ca795-53a8-4ba1-9a38-45424ad28248"",
-        ""uris"": [
-          ""amqp://0a1ad792-8937-4770-8868-542f5f14126f:b2Npj1K_eZOrD-fyoewg46rA@q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh/e73ca795-53a8-4ba1-9a38-45424ad28248""
-        ],
-        ""username"": ""0a1ad792-8937-4770-8868-542f5f14126f"",
-        ""vhost"": ""e73ca795-53a8-4ba1-9a38-45424ad28248""
-      },
-      ""syslog_drain_url"": null,
-      ""volume_mounts"": []
-    }
-  ]
-}";
+    private const string SingleVcapServicesJson = """
+        {
+          "p.rabbitmq": [
+            {
+              "label": "p.rabbitmq",
+              "provider": null,
+              "plan": "single-node",
+              "name": "myRabbitMQService",
+              "tags": [
+                "rabbitmq"
+              ],
+              "instance_guid": "e73ca795-53a8-4ba1-9a38-45424ad28248",
+              "instance_name": "myRabbitMQService",
+              "binding_guid": "0a1ad792-8937-4770-8868-542f5f14126f",
+              "binding_name": null,
+              "credentials": {
+                "dashboard_url": "https://rmq-e73ca795-53a8-4ba1-9a38-45424ad28248.sys.cotati.cf-app.com",
+                "hostname": "q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh",
+                "hostnames": [
+                  "q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh"
+                ],
+                "http_api_uri": "https://0a1ad792-8937-4770-8868-542f5f14126f:b2Npj1K_eZOrD-fyoewg46rA@rmq-e73ca795-53a8-4ba1-9a38-45424ad28248.sys.cotati.cf-app.com/api/",
+                "http_api_uris": [
+                  "https://0a1ad792-8937-4770-8868-542f5f14126f:b2Npj1K_eZOrD-fyoewg46rA@rmq-e73ca795-53a8-4ba1-9a38-45424ad28248.sys.cotati.cf-app.com/api/"
+                ],
+                "password": "b2Npj1K_eZOrD-fyoewg46rA",
+                "protocols": {
+                  "amqp": {
+                    "host": "q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh",
+                    "hosts": [
+                      "q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh"
+                    ],
+                    "password": "b2Npj1K_eZOrD-fyoewg46rA",
+                    "port": 5672,
+                    "ssl": false,
+                    "uri": "amqp://0a1ad792-8937-4770-8868-542f5f14126f:b2Npj1K_eZOrD-fyoewg46rA@q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh/e73ca795-53a8-4ba1-9a38-45424ad28248",
+                    "uris": [
+                      "amqp://0a1ad792-8937-4770-8868-542f5f14126f:b2Npj1K_eZOrD-fyoewg46rA@q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh/e73ca795-53a8-4ba1-9a38-45424ad28248"
+                    ],
+                    "username": "0a1ad792-8937-4770-8868-542f5f14126f",
+                    "vhost": "e73ca795-53a8-4ba1-9a38-45424ad28248"
+                  }
+                },
+                "ssl": false,
+                "uri": "amqp://0a1ad792-8937-4770-8868-542f5f14126f:b2Npj1K_eZOrD-fyoewg46rA@q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh/e73ca795-53a8-4ba1-9a38-45424ad28248",
+                "uris": [
+                  "amqp://0a1ad792-8937-4770-8868-542f5f14126f:b2Npj1K_eZOrD-fyoewg46rA@q-s0.rabbitmq-server.cotati-services-subnet.service-instance-e73ca795-53a8-4ba1-9a38-45424ad28248.bosh/e73ca795-53a8-4ba1-9a38-45424ad28248"
+                ],
+                "username": "0a1ad792-8937-4770-8868-542f5f14126f",
+                "vhost": "e73ca795-53a8-4ba1-9a38-45424ad28248"
+              },
+              "syslog_drain_url": null,
+              "volume_mounts": []
+            }
+          ]
+        }
+        """;
 
     [Fact]
     public async Task Binds_options_without_service_bindings()

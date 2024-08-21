@@ -5,6 +5,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Health;
@@ -26,7 +27,12 @@ public sealed class HealthTest : BaseTest
     {
         var health = new HealthEndpointResponse();
         string json = Serialize(health);
-        Assert.Equal("{\"status\":\"UNKNOWN\"}", json);
+
+        json.Should().BeJson("""
+            {
+              "status": "UNKNOWN"
+            }
+            """);
     }
 
     [Fact]
@@ -46,9 +52,21 @@ public sealed class HealthTest : BaseTest
 
         string json = Serialize(health);
 
-        Assert.Equal(
-            "{\"status\":\"OUT_OF_SERVICE\",\"description\":\"Test\",\"details\":{\"item1\":{\"stringProperty\":\"TestData\",\"intProperty\":100,\"boolProperty\":true},\"item2\":\"String\",\"item3\":false}}",
-            json);
+        json.Should().BeJson("""
+            {
+              "status": "OUT_OF_SERVICE",
+              "description": "Test",
+              "details": {
+                "item1": {
+                  "stringProperty": "TestData",
+                  "intProperty": 100,
+                  "boolProperty": true
+                },
+                "item2": "String",
+                "item3": false
+              }
+            }
+            """);
     }
 
     private string Serialize(HealthEndpointResponse result)

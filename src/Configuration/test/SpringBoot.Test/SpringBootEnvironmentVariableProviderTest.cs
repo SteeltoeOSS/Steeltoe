@@ -11,8 +11,11 @@ public sealed class SpringBootEnvironmentVariableProviderTest
     [Fact]
     public void TryGet_Flat()
     {
-        var provider = new SpringBootEnvironmentVariableProvider(
-            "{\"management.metrics.tags.application.type\":\"${spring.cloud.dataflow.stream.app.type:unknown}\"}");
+        var provider = new SpringBootEnvironmentVariableProvider("""
+            {
+              "management.metrics.tags.application.type": "${spring.cloud.dataflow.stream.app.type:unknown}"
+            }
+            """);
 
         provider.Load();
         provider.TryGet("management:metrics:tags:application:type", out string? value);
@@ -24,16 +27,18 @@ public sealed class SpringBootEnvironmentVariableProviderTest
     [Fact]
     public void TryGet_Tree()
     {
-        const string configString = @"{
-                    ""a.b.c"": {
-                                    ""e.f"": {
-                                            ""g"":""h"",
-                                            ""i.j"":""k""
-                                            }
-                                },
-                    ""l.m.n"": ""o"",
-                    ""p"": null
-                }";
+        const string configString = """
+            {
+              "a.b.c": {
+                "e.f": {
+                  "g": "h",
+                  "i.j": "k"
+                }
+              },
+              "l.m.n": "o",
+              "p": null
+            }
+            """;
 
         var provider = new SpringBootEnvironmentVariableProvider(configString);
 
@@ -49,7 +54,7 @@ public sealed class SpringBootEnvironmentVariableProviderTest
     [Fact]
     public void Provider_Throws_For_Malformed()
     {
-        var provider = new SpringBootEnvironmentVariableProvider("{\"a\":}");
+        var provider = new SpringBootEnvironmentVariableProvider("""{"a":}""");
 
         Assert.ThrowsAny<JsonException>(() => provider.Load());
     }

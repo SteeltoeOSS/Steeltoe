@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Metrics;
@@ -49,8 +50,24 @@ public sealed class MetricsResponseTest : BaseTest
         var response = new MetricsResponse("foo.bar", samples, tags);
         string result = Serialize(response);
 
-        Assert.Equal(
-            "{\"name\":\"foo.bar\",\"measurements\":[{\"statistic\":\"TOTAL_TIME\",\"value\":100.1}],\"availableTags\":[{\"tag\":\"tag\",\"values\":[\"tagValue\"]}]}",
-            result);
+        result.Should().BeJson("""
+            {
+              "name": "foo.bar",
+              "measurements": [
+                {
+                  "statistic": "TOTAL_TIME",
+                  "value": 100.1
+                }
+              ],
+              "availableTags": [
+                {
+                  "tag": "tag",
+                  "values": [
+                    "tagValue"
+                  ]
+                }
+              ]
+            }
+            """);
     }
 }
