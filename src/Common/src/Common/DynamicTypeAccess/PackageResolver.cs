@@ -75,7 +75,7 @@ internal abstract class PackageResolver
         ArgumentNullException.ThrowIfNull(typeNames);
         ArgumentGuard.ElementsNotNullOrWhiteSpace(typeNames);
 
-        List<Exception> exceptions = new();
+        List<Exception> exceptions = [];
 
         // A type can be moved to a different assembly in a future NuGet version, so probe all combinations to be resilient against that.
         foreach (string assemblyName in _assemblyNames)

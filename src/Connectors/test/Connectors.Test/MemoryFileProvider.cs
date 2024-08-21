@@ -13,10 +13,10 @@ namespace Steeltoe.Connectors.Test;
 internal sealed class MemoryFileProvider : IFileProvider
 {
     private static readonly char[] DirectorySeparators =
-    {
+    [
         Path.DirectorySeparatorChar,
         Path.AltDirectorySeparatorChar
-    };
+    ];
 
     private readonly MemoryFileSystemEntry _root = MemoryFileSystemEntry.CreateDirectory("file-system-root");
     private ConfigurationReloadToken _changeToken = new();

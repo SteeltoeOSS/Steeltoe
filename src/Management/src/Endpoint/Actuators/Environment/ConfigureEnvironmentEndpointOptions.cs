@@ -12,14 +12,14 @@ internal sealed class ConfigureEnvironmentEndpointOptions : ConfigureEndpointOpt
     private const string ManagementInfoPrefix = "management:endpoints:env";
 
     private static readonly string[] DefaultKeysToSanitize =
-    {
+    [
         "password",
         "secret",
         "key",
         "token",
         ".*credentials.*",
         "vcap_services"
-    };
+    ];
 
     public ConfigureEnvironmentEndpointOptions(IConfiguration configuration)
         : base(configuration, ManagementInfoPrefix, "env")

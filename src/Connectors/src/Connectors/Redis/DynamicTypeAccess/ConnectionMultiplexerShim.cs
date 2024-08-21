@@ -19,11 +19,10 @@ internal sealed class ConnectionMultiplexerShim : Shim, IDisposable
     {
         ArgumentNullException.ThrowIfNull(packageResolver);
 
-        object instance = packageResolver.ConnectionMultiplexerClass.InvokeMethodOverload("Connect", true, new[]
-        {
+        object instance = packageResolver.ConnectionMultiplexerClass.InvokeMethodOverload("Connect", true, [
             typeof(string),
             typeof(TextWriter)
-        }, configuration, null)!;
+        ], configuration, null)!;
 
         return new ConnectionMultiplexerInterfaceShim(packageResolver, instance);
     }
@@ -32,11 +31,10 @@ internal sealed class ConnectionMultiplexerShim : Shim, IDisposable
     {
         ArgumentNullException.ThrowIfNull(packageResolver);
 
-        var task = (Task)packageResolver.ConnectionMultiplexerClass.InvokeMethodOverload("ConnectAsync", true, new[]
-        {
+        var task = (Task)packageResolver.ConnectionMultiplexerClass.InvokeMethodOverload("ConnectAsync", true, [
             typeof(string),
             typeof(TextWriter)
-        }, configuration, null)!;
+        ], configuration, null)!;
 
         await task;
 

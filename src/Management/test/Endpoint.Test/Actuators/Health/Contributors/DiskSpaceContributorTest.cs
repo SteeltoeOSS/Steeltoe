@@ -86,17 +86,17 @@ public sealed class DiskSpaceContributorTest : BaseTest
         }
 
         DriveInfo[] systemDrives = OperatingSystem.IsWindows()
-            ? new[]
-            {
+            ?
+            [
                 new DriveInfo("C:\\"),
                 new DriveInfo("D:\\")
-            }
-            : new[]
-            {
+            ]
+            :
+            [
                 new DriveInfo("/"),
                 new DriveInfo("/dev"),
                 new DriveInfo("/dev/shm")
-            };
+            ];
 
         DriveInfo? drive = DiskSpaceContributor.FindVolume(path, systemDrives);
 

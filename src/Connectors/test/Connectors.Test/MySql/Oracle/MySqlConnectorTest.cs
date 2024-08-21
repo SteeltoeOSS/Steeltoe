@@ -329,7 +329,7 @@ public sealed class MySqlConnectorTest
 
     private static IEnumerable<string> ExtractConnectionStringParameters(string? connectionString)
     {
-        List<string> entries = new();
+        List<string> entries = [];
 
         if (connectionString != null)
         {

@@ -81,7 +81,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         var properties = new Dictionary<string, PropertyValueDescriptor>();
         string sourceName = GetPropertySourceName(provider);
 
-        foreach (string key in GetFullKeyNames(provider, null, new HashSet<string>()))
+        foreach (string key in GetFullKeyNames(provider, null, []))
         {
             if (provider.TryGet(key, out string? value))
             {
@@ -107,7 +107,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
     private HashSet<string> GetFullKeyNames(IConfigurationProvider provider, string? rootKey, HashSet<string> initialKeys)
     {
-        foreach (string key in provider.GetChildKeys(Enumerable.Empty<string>(), rootKey).Distinct(StringComparer.OrdinalIgnoreCase))
+        foreach (string key in provider.GetChildKeys([], rootKey).Distinct(StringComparer.OrdinalIgnoreCase))
         {
             string surrogateKey = key;
 

@@ -10,14 +10,14 @@ namespace Steeltoe.Management.Endpoint.Actuators.Environment;
 internal sealed class Sanitizer
 {
     private readonly char[] _regexCharacters =
-    {
+    [
         '*',
         '$',
         '^',
         '+'
-    };
+    ];
 
-    private readonly List<Regex> _matchers = new();
+    private readonly List<Regex> _matchers = [];
 
     public Sanitizer(ICollection<string> keysToSanitize)
     {

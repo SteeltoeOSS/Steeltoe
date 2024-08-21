@@ -15,10 +15,7 @@ internal sealed class MongoClientInterfaceShim : Shim
 
     public async Task<IDisposable> ListDatabaseNamesAsync(CancellationToken cancellationToken)
     {
-        var task = (Task)InstanceAccessor.InvokeMethodOverload("ListDatabaseNamesAsync", true, new[]
-        {
-            typeof(CancellationToken)
-        }, cancellationToken)!;
+        var task = (Task)InstanceAccessor.InvokeMethodOverload("ListDatabaseNamesAsync", true, [typeof(CancellationToken)], cancellationToken)!;
 
         await task;
 

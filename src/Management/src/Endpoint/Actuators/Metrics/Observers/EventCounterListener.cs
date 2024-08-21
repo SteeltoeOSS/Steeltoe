@@ -28,7 +28,7 @@ internal sealed class EventCounterListener : EventListener
     private readonly ConcurrentDictionary<string, double> _lastDoubleValue = new();
     private readonly ConcurrentDictionary<string, long> _lastLongValue = new();
 
-    private readonly ConcurrentBag<EventSource> _eventSources = new();
+    private readonly ConcurrentBag<EventSource> _eventSources = [];
 
     public EventCounterListener(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILogger<EventCounterListener> logger)
     {

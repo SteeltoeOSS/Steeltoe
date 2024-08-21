@@ -49,9 +49,6 @@ internal sealed class DatabaseMigrationScanner : IDatabaseMigrationScanner
 
         object? dbFacade = GetDatabaseMethod.Invoke(dbContext, null);
 
-        return (IEnumerable<string>)method.Invoke(null, new[]
-        {
-            dbFacade
-        })!;
+        return (IEnumerable<string>)method.Invoke(null, [dbFacade])!;
     }
 }

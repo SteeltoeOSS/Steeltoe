@@ -22,7 +22,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     [Fact]
     public void Create_CreatesLoggerWithCorrectFilters()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
         var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
@@ -40,7 +40,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     [Fact]
     public void GetLoggerConfigurations_ReturnsExpected()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
         var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
@@ -60,7 +60,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     [Fact]
     public void GetLoggerConfigurations_UsesMinLevelInformationByDefault()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
         var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
@@ -75,7 +75,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     [Fact]
     public void GetLoggerConfigurations_ReturnsExpectedAfterSetLogLevel()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
         var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
@@ -106,7 +106,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     [Fact]
     public void SetLogLevel_UpdatesLogger()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
         var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
@@ -137,7 +137,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void SetLogLevel_UpdatesNamespaceDescendants()
     {
         // arrange (A* should log at Information)
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
 
         // act I: with original setup
         ILogger childLogger = provider.CreateLogger("A.B.C");
@@ -176,7 +176,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void SetLogLevel_CanResetToDefault()
     {
         // arrange (A* should log at Information)
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
 
         // act I: with original setup
         ILogger firstLogger = provider.CreateLogger("A.B.C");
@@ -214,7 +214,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     [Fact]
     public void SetLogLevel_WorksOnDefault()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
         var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
@@ -230,7 +230,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     [Fact]
     public void ResetLogLevel_WorksOnDefault()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
         var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
@@ -251,7 +251,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void Logger_LogsWithEnrichers()
     {
         using var console = new ConsoleOutputBorrower();
-        var provider = new DynamicSerilogLoggerProvider(GetConfigurationFromFile(), Enumerable.Empty<IDynamicMessageProcessor>());
+        var provider = new DynamicSerilogLoggerProvider(GetConfigurationFromFile(), []);
         var factory = new LoggerFactory();
         factory.AddProvider(provider);
         ILogger logger = factory.CreateLogger(typeof(TestClass));
@@ -286,7 +286,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void Logger_LogsWithDestructuring()
     {
         using var console = new ConsoleOutputBorrower();
-        var provider = new DynamicSerilogLoggerProvider(GetConfigurationFromFile(), Enumerable.Empty<IDynamicMessageProcessor>());
+        var provider = new DynamicSerilogLoggerProvider(GetConfigurationFromFile(), []);
         var factory = new LoggerFactory();
         factory.AddProvider(provider);
         ILogger logger = factory.CreateLogger(typeof(TestClass));
@@ -306,7 +306,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void Logger_LogsAtConfiguredSetting()
     {
         using var console = new ConsoleOutputBorrower();
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
         var factory = new LoggerFactory();
         factory.AddProvider(provider);
         ILogger logger = factory.CreateLogger(typeof(TestClass));

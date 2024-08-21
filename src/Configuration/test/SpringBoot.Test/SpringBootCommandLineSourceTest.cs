@@ -11,7 +11,7 @@ public sealed class SpringBootCommandLineSourceTest
     [Fact]
     public void Constructors__InitializesDefaults()
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCommandLine(Array.Empty<string>()).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCommandLine([]).Build();
 
         var source = new SpringBootCommandLineSource(configurationRoot);
         Assert.Equal(configurationRoot, source.Configuration);
@@ -20,7 +20,7 @@ public sealed class SpringBootCommandLineSourceTest
     [Fact]
     public void Build__ReturnsProvider()
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCommandLine(Array.Empty<string>()).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCommandLine([]).Build();
 
         var source = new SpringBootCommandLineSource(configurationRoot);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());

@@ -60,10 +60,7 @@ internal sealed class ConnectorFactoryShim<TOptions> : Shim, IDisposable
 
     public ConnectorShim<TOptions> Get(string serviceBindingName)
     {
-        object instance = InstanceAccessor.InvokeMethodOverload(nameof(ConnectorFactory<TOptions, object>.Get), true, new[]
-        {
-            typeof(string)
-        }, serviceBindingName)!;
+        object instance = InstanceAccessor.InvokeMethodOverload(nameof(ConnectorFactory<TOptions, object>.Get), true, [typeof(string)], serviceBindingName)!;
 
         return new ConnectorShim<TOptions>(_connectionType, instance);
     }

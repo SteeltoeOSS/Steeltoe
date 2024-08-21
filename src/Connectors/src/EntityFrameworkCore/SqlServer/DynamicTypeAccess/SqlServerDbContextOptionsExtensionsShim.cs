@@ -18,20 +18,18 @@ internal static class SqlServerDbContextOptionsExtensionsShim
         if (string.IsNullOrWhiteSpace(connectionString))
         {
             // The overload that takes a connectionString parameter throws when it is null, empty or whitespace.
-            _ = packageResolver.SqlServerDbContextOptionsExtensionsClass.InvokeMethodOverload("UseSqlServer", true, new[]
-            {
+            _ = packageResolver.SqlServerDbContextOptionsExtensionsClass.InvokeMethodOverload("UseSqlServer", true, [
                 typeof(DbContextOptionsBuilder),
                 sqlServerOptionsActionType
-            }, optionsBuilder, sqlServerOptionsAction);
+            ], optionsBuilder, sqlServerOptionsAction);
         }
         else
         {
-            _ = packageResolver.SqlServerDbContextOptionsExtensionsClass.InvokeMethodOverload("UseSqlServer", true, new[]
-            {
+            _ = packageResolver.SqlServerDbContextOptionsExtensionsClass.InvokeMethodOverload("UseSqlServer", true, [
                 typeof(DbContextOptionsBuilder),
                 typeof(string),
                 sqlServerOptionsActionType
-            }, optionsBuilder, connectionString, sqlServerOptionsAction);
+            ], optionsBuilder, connectionString, sqlServerOptionsAction);
         }
     }
 }

@@ -19,7 +19,7 @@ public sealed class EventCounterListenerTest : BaseTest
     };
 
     private readonly string[] _metrics =
-    {
+    [
         "System.Runtime.alloc-rate",
         "System.Runtime.gen-2-gc-count",
         "System.Runtime.threadpool-completed-items-count",
@@ -39,7 +39,7 @@ public sealed class EventCounterListenerTest : BaseTest
         "System.Runtime.active-timer-count",
         "System.Runtime.loh-size",
         "System.Runtime.working-set"
-    };
+    ];
 
     [Fact]
     public async Task EventCounterListenerGetsMetricsTest()

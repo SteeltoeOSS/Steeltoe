@@ -17,10 +17,7 @@ internal sealed class ServerVersionShim : Shim
     {
         ArgumentNullException.ThrowIfNull(packageResolver);
 
-        object instance = packageResolver.ServerVersionClass.InvokeMethodOverload("AutoDetect", true, new[]
-        {
-            typeof(string)
-        }, connectionString)!;
+        object instance = packageResolver.ServerVersionClass.InvokeMethodOverload("AutoDetect", true, [typeof(string)], connectionString)!;
 
         return new ServerVersionShim(packageResolver, instance);
     }

@@ -18,22 +18,20 @@ internal static class NpgsqlDbContextOptionsBuilderExtensionsShim
             // The overload that takes a connectionString parameter throws when it is null, empty or whitespace.
             Type npgsqlOptionsActionType = typeof(Action<>).MakeGenericType(packageResolver.NpgsqlDbContextOptionsBuilderClass.Type);
 
-            _ = packageResolver.NpgsqlDbContextOptionsBuilderExtensionsClass.InvokeMethodOverload("UseNpgsql", true, new[]
-            {
+            _ = packageResolver.NpgsqlDbContextOptionsBuilderExtensionsClass.InvokeMethodOverload("UseNpgsql", true, [
                 typeof(DbContextOptionsBuilder),
                 npgsqlOptionsActionType
-            }, optionsBuilder, npgsqlOptionsAction);
+            ], optionsBuilder, npgsqlOptionsAction);
         }
         else
         {
             Type npgsqlOptionsActionType = typeof(Action<>).MakeGenericType(packageResolver.NpgsqlDbContextOptionsBuilderClass.Type);
 
-            _ = packageResolver.NpgsqlDbContextOptionsBuilderExtensionsClass.InvokeMethodOverload("UseNpgsql", true, new[]
-            {
+            _ = packageResolver.NpgsqlDbContextOptionsBuilderExtensionsClass.InvokeMethodOverload("UseNpgsql", true, [
                 typeof(DbContextOptionsBuilder),
                 typeof(string),
                 npgsqlOptionsActionType
-            }, optionsBuilder, connectionString, npgsqlOptionsAction);
+            ], optionsBuilder, connectionString, npgsqlOptionsAction);
         }
     }
 }

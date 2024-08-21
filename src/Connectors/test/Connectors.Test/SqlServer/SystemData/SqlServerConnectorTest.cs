@@ -318,7 +318,7 @@ public sealed class SqlServerConnectorTest
 
     private static IEnumerable<string> ExtractConnectionStringParameters(string? connectionString)
     {
-        List<string> entries = new();
+        List<string> entries = [];
 
         if (connectionString != null)
         {

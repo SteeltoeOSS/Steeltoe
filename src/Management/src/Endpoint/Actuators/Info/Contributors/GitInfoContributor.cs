@@ -13,10 +13,7 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
     private const string GitSettingsPrefix = "git";
     private const string GitPropertiesFileName = "git.properties";
 
-    private static readonly List<string> DatetimeInputKeys = new()
-    {
-        "time"
-    };
+    private static readonly List<string> DatetimeInputKeys = ["time"];
 
     private readonly string _propertiesPath;
     private readonly ILogger _logger;

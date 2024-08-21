@@ -728,7 +728,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
     private static IEnumerable<string> ExtractConnectionStringParameters(string? connectionString)
     {
-        List<string> entries = new();
+        List<string> entries = [];
 
         if (connectionString != null)
         {

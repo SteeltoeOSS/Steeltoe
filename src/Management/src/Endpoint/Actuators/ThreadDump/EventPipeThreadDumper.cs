@@ -134,10 +134,7 @@ public sealed class EventPipeThreadDumper
                     }
                     else
                     {
-                        samplesForThread[threadId] = new List<StackSourceSample>
-                        {
-                            sample
-                        };
+                        samplesForThread[threadId] = [sample];
                     }
                 });
 
