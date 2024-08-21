@@ -34,8 +34,4 @@ internal sealed class TestLogProvider : IDynamicLoggerProvider
         Category = categoryName;
         MinLevel = minLevel ?? LogLevel.None;
     }
-
-    public void SetScopeProvider(IExternalScopeProvider scopeProvider)
-    {
-    }
 }
