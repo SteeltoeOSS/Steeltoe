@@ -12,7 +12,7 @@ namespace Steeltoe.Discovery.HttpClients.Test.LoadBalancers;
 public sealed class DiscoveryHttpClientBuilderExtensionsTest
 {
     [Fact]
-    public void AddServiceDiscovery_WithRandomLoadBalancer_AddsRandomLoadBalancerToServices()
+    public async Task AddServiceDiscovery_WithRandomLoadBalancer_AddsRandomLoadBalancerToServices()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
@@ -22,7 +22,7 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
 
         services.AddHttpClient("test").AddServiceDiscovery<RandomLoadBalancer>();
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         ServiceDescriptor? serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType == typeof(RandomLoadBalancer));
 
         Assert.Single(serviceProvider.GetServices<RandomLoadBalancer>());
@@ -32,7 +32,7 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddServiceDiscovery_WithAddRoundRobinLoadBalancer_AddsRoundRobinLoadBalancerToServices()
+    public async Task AddServiceDiscovery_WithAddRoundRobinLoadBalancer_AddsRoundRobinLoadBalancerToServices()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
@@ -42,7 +42,7 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
 
         services.AddHttpClient("test").AddServiceDiscovery<RoundRobinLoadBalancer>();
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         ServiceDescriptor? serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType == typeof(RoundRobinLoadBalancer));
 
         Assert.Single(serviceProvider.GetServices<RoundRobinLoadBalancer>());
@@ -52,7 +52,7 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddServiceDiscovery_WithoutLoadBalancer_AddsRandomLoadBalancerToServices()
+    public async Task AddServiceDiscovery_WithoutLoadBalancer_AddsRandomLoadBalancerToServices()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
@@ -61,7 +61,7 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
         services.AddConfigurationDiscoveryClient();
         services.AddHttpClient("test").AddServiceDiscovery();
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         ServiceDescriptor? serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType == typeof(RandomLoadBalancer));
 
         Assert.Single(serviceProvider.GetServices<RandomLoadBalancer>());
@@ -71,24 +71,24 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddLoadBalancerT_DoesNotAddT_ToServices()
+    public async Task AddLoadBalancerT_DoesNotAddT_ToServices()
     {
         var services = new ServiceCollection();
         services.AddHttpClient("test").AddServiceDiscovery<FakeLoadBalancer>();
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         Assert.Empty(serviceProvider.GetServices<FakeLoadBalancer>());
     }
 
     [Fact]
-    public void AddLoadBalancerT_CanBeUsedWithAnHttpClient()
+    public async Task AddLoadBalancerT_CanBeUsedWithAnHttpClient()
     {
         var services = new ServiceCollection();
         services.AddSingleton(typeof(FakeLoadBalancer));
         services.AddHttpClient("test").AddServiceDiscovery<FakeLoadBalancer>();
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var factory = serviceProvider.GetRequiredService<IHttpClientFactory>();
         using HttpClient client = factory.CreateClient("test");
 
@@ -96,7 +96,7 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
     }
 
     [Fact]
-    public void CanAddMultipleLoadBalancers()
+    public async Task CanAddMultipleLoadBalancers()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
@@ -112,7 +112,7 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
         services.AddHttpClient("testFake").AddServiceDiscovery<FakeLoadBalancer>();
         services.AddHttpClient("testFake2").AddServiceDiscovery<FakeLoadBalancer>();
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var factory = serviceProvider.GetRequiredService<IHttpClientFactory>();
 
         using HttpClient randomLbClient = factory.CreateClient("testRandom");

@@ -64,7 +64,7 @@ public sealed class ConfigServerHostedServiceTest
     public async Task ServiceConstructsAndOperatesWithConfigurationManager()
     {
         var configurationManager = new ConfigurationManager();
-        configurationManager.AddInMemoryCollection(TestHelpers.FastTestsConfiguration);
+        configurationManager.Add(FastTestConfigurations.ConfigServer);
         configurationManager.AddConfigServer();
         var service = new ConfigServerHostedService(configurationManager, []);
 

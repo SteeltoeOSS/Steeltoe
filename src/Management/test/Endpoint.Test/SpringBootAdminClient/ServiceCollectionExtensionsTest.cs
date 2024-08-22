@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 public sealed class ServiceCollectionExtensionsTest
 {
     [Fact]
-    public void AddSpringBootAdminClient_AddsHostedService()
+    public async Task AddSpringBootAdminClient_AddsHostedService()
     {
         IConfiguration configuration = new ConfigurationBuilder().AddCommandLine(["--urls=http://localhost"]).Build();
 
@@ -20,7 +20,7 @@ public sealed class ServiceCollectionExtensionsTest
         services.AddSingleton(configuration);
         services.AddLogging();
         services.AddSpringBootAdminClient();
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         Assert.Single(serviceProvider.GetServices<IHostedService>().OfType<SpringBootAdminClientHostedService>());
     }

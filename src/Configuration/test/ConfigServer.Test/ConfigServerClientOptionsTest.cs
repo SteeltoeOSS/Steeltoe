@@ -2,11 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.TestResources;
 using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
@@ -14,22 +13,33 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 public sealed class ConfigServerClientOptionsTest
 {
     [Fact]
-    public void ConfigureConfigServerClientOptions_WithDefaults()
+    public void DefaultConstructor_InitializedWithDefaults()
     {
-        IServiceCollection services = new ServiceCollection().AddOptions();
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
+        var options = new ConfigServerClientOptions();
 
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddConfigServer(environment);
-        services.AddSingleton<IConfiguration>(_ => builder.Build());
-
-        services.ConfigureConfigServerClientOptions();
-        var service = services.BuildServiceProvider(true).GetRequiredService<IOptions<ConfigServerClientOptions>>();
-
-        TestHelper.VerifyDefaults(service.Value);
+        TestHelper.VerifyDefaults(options, null);
     }
 
     [Fact]
-    public void ConfigureConfigServerClientOptions_WithValues()
+    public async Task ConfigureConfigServerClientOptions_WithDefaults()
+    {
+        IConfigurationBuilder builder = new ConfigurationBuilder();
+        builder.AddConfigServer();
+        IConfiguration configuration = builder.Build();
+
+        IServiceCollection services = new ServiceCollection();
+        services.AddSingleton(configuration);
+        services.ConfigureConfigServerClientOptions();
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
+
+        string? expectedAppName = Assembly.GetEntryAssembly()!.GetName().Name;
+        TestHelper.VerifyDefaults(optionsMonitor.CurrentValue, expectedAppName);
+    }
+
+    [Fact]
+    public async Task ConfigureConfigServerClientOptions_WithValues()
     {
         IServiceCollection services = new ServiceCollection().AddOptions();
 
@@ -67,7 +77,8 @@ public sealed class ConfigServerClientOptionsTest
         services.AddSingleton(configuration);
 
         services.ConfigureConfigServerClientOptions();
-        var service = services.BuildServiceProvider(true).GetRequiredService<IOptions<ConfigServerClientOptions>>();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var service = serviceProvider.GetRequiredService<IOptions<ConfigServerClientOptions>>();
 
         ConfigServerClientOptions options = service.Value;
 
@@ -91,7 +102,7 @@ public sealed class ConfigServerClientOptionsTest
         Assert.Equal("configserver", options.Discovery.ServiceId);
         Assert.True(options.Health.Enabled);
         Assert.Equal(300_000, options.Health.TimeToLive);
-        Assert.Null(options.Name);
+        Assert.Equal("foo", options.Name);
         Assert.Null(options.Label);
         Assert.Null(options.Username);
         Assert.Null(options.Password);
@@ -99,13 +110,5 @@ public sealed class ConfigServerClientOptionsTest
         Assert.NotNull(options.Headers);
         Assert.Equal("foo", options.Headers["bar"]);
         Assert.Equal("bar", options.Headers["foo"]);
-    }
-
-    [Fact]
-    public void DefaultConstructor_InitializedWithDefaults()
-    {
-        var options = new ConfigServerClientOptions();
-
-        TestHelper.VerifyDefaults(options);
     }
 }

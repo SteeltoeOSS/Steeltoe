@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Connectors.EntityFrameworkCore.MySql.DynamicTypeAccess;
 using Steeltoe.Connectors.MySql;
 using Steeltoe.Connectors.MySql.DynamicTypeAccess;
@@ -19,8 +19,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
     [Fact]
     public async Task Registers_connection_string_for_default_service_binding()
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -45,8 +44,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
     [Fact]
     public async Task Registers_connection_string_for_named_service_binding()
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {

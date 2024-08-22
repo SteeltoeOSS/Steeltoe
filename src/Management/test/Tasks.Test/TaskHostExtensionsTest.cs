@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -21,8 +21,7 @@ public sealed class TaskHostExtensionsTest
         const string taskName = "SingletonTest";
         string[] args = [$"RunTask={taskName}"];
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
 
         builder.Services.AddSingleton<TaskApplicationState>();
         builder.Services.AddTask<TestApplicationTask>(taskName, ServiceLifetime.Singleton);
@@ -41,8 +40,7 @@ public sealed class TaskHostExtensionsTest
         const string taskName = "ScopedTest";
         string[] args = [$"RunTask={taskName}"];
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
 
         builder.Services.AddSingleton<TaskApplicationState>();
         builder.Services.AddTask<TestApplicationTask>(taskName);
@@ -61,8 +59,7 @@ public sealed class TaskHostExtensionsTest
         const string taskName = "TransientTest";
         string[] args = [$"RunTask={taskName}"];
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
 
         builder.Services.AddSingleton<TaskApplicationState>();
         builder.Services.AddTask<TestApplicationTask>(taskName, ServiceLifetime.Transient);
@@ -81,8 +78,7 @@ public sealed class TaskHostExtensionsTest
         const string taskName = "InstanceTest";
         string[] args = [$"RunTask={taskName}"];
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
 
         var sharedState = new TaskApplicationState();
         var applicationTask = new TestApplicationTask(sharedState);
@@ -102,8 +98,7 @@ public sealed class TaskHostExtensionsTest
         const string taskName = "InlineTest";
         string[] args = [$"RunTask={taskName}"];
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
 
         bool hasExecuted = false;
         builder.Services.AddScoped<TestDependentService>();
@@ -131,8 +126,7 @@ public sealed class TaskHostExtensionsTest
         const string taskName = "FactoryTest";
         string[] args = [$"RunTask={taskName}"];
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
 
         builder.Services.AddScoped<TestDependentService>();
         builder.Services.AddSingleton<TaskApplicationState>();
@@ -160,8 +154,7 @@ public sealed class TaskHostExtensionsTest
     {
         string[] args = ["RunTask=DoesNotExist"];
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
 
         var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
         builder.Services.AddLogging(options => options.AddProvider(capturingLoggerProvider));
@@ -183,8 +176,7 @@ public sealed class TaskHostExtensionsTest
         const string taskName = "ThrowTest";
         string[] args = [$"RunTask={taskName}"];
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
 
         builder.Services.AddSingleton<TaskApplicationState>();
         builder.Services.AddTask<ThrowingApplicationTask>(taskName);
@@ -202,8 +194,7 @@ public sealed class TaskHostExtensionsTest
         const string taskName = "DisposeTest";
         string[] args = [$"RunTask={taskName}"];
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
 
         builder.Services.AddTask(taskName, async (_, _) =>
         {
@@ -225,9 +216,8 @@ public sealed class TaskHostExtensionsTest
         const string taskName = "ScopedTest";
         string[] args = [$"RunTask={taskName}"];
 
-        IWebHostBuilder builder = WebHost.CreateDefaultBuilder(args);
-        builder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
-        builder.Configure(HostingHelpers.EmptyAction);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddCommandLine(args));
 
         builder.ConfigureServices(services =>
         {
@@ -249,8 +239,8 @@ public sealed class TaskHostExtensionsTest
         const string taskName = "ScopedTest";
         string[] args = [$"RunTask={taskName}"];
 
-        IHostBuilder builder = Host.CreateDefaultBuilder(args);
-        builder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        IHostBuilder builder = TestHostBuilderFactory.Create();
+        builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddCommandLine(args));
 
         builder.ConfigureServices(services =>
         {

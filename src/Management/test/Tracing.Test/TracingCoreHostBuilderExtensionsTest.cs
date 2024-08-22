@@ -9,11 +9,11 @@ namespace Steeltoe.Management.Tracing.Test;
 public sealed class TracingCoreHostBuilderExtensionsTest : TestBase
 {
     [Fact]
-    public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
+    public async Task AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
     {
         IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
 
-        ServiceProvider serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider(true);
 
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceContainerCore(serviceProvider);

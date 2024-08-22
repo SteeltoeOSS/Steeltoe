@@ -4,8 +4,8 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.ThreadDump;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
+using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
+using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
@@ -13,7 +13,6 @@ public sealed class ThreadDumpStartup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddRouting();
         services.AddHypermediaActuator();
         services.AddThreadDumpActuator();
     }

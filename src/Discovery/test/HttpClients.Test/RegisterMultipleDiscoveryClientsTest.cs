@@ -5,7 +5,6 @@
 using System.Net;
 using Consul;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -129,8 +128,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             ["Certificates:Eureka:PrivateKeyFilePath"] = "instance.key"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
 
         builder.Services.AddOptions();
@@ -163,8 +161,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             ["Certificates:PrivateKeyFilePath"] = "instance.key"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
 
         builder.Services.AddOptions();
@@ -551,8 +548,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", vcapApplication);
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundry();
         builder.Configuration.AddCloudFoundryServiceBindings();
 
@@ -626,8 +622,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         string username = WebUtility.UrlEncode("u$er?N@me");
         string password = WebUtility.UrlEncode(":p@ssw0rd=");
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {

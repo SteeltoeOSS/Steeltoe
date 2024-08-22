@@ -37,10 +37,12 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "Exposure": {
                   "type": "object",
@@ -49,29 +51,34 @@
                       "type": "array",
                       "items": {
                         "type": "string"
-                      }
+                      },
+                      "description": "Gets the IDs of the actuators to exclude. Takes precedence over included entries."
                     },
                     "Include": {
                       "type": "array",
                       "items": {
                         "type": "string"
-                      }
+                      },
+                      "description": "Gets the IDs of the actuators to include. Excluded entries take precedence."
                     }
-                  }
+                  },
+                  "description": "Indicates which actuators are exposed."
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -82,33 +89,40 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "ApplicationId": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the GUID identifying the app."
                 },
                 "CloudFoundryApi": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the location of the Cloud Controller API for the Cloud Foundry deployment where the app runs."
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 },
                 "ValidateCertificates": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to validate certificates. Default value: true."
                 }
               }
             },
@@ -117,7 +131,7 @@
               "items": {
                 "type": "string"
               },
-              "description": "Gets or sets a list of assembly-qualified custom JSON converters."
+              "description": "Gets a list of assembly-qualified custom JSON converters."
             },
             "DbMigrations": {
               "type": "object",
@@ -126,24 +140,28 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -154,27 +172,32 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "Duration": {
-                  "type": "integer"
+                  "type": "integer",
+                  "description": "Gets or sets the duration (in milliseconds) before signaling to stop the capture. Default value: 10."
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -189,50 +212,37 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "KeysToSanitize": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of keys to sanitize."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
-            },
-            "Exposure": {
-              "type": "object",
-              "properties": {
-                "Exclude": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "Include": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "description": "Gets or sets which management endpoints are included and/or excluded."
             },
             "Health": {
               "type": "object",
@@ -241,7 +251,8 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "Claim": {
                   "type": "object",
@@ -258,18 +269,22 @@
                   "type": "object",
                   "properties": {
                     "Enabled": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "Gets or sets a value indicating whether to enable the disk space contributor. Default value: true."
                     },
                     "Path": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Gets or sets the path to check for available disk space. Default value: \".\"."
                     },
                     "Threshold": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Gets or sets the disk space, in bytes, that is considered low. Default value: 10 MB."
                     }
                   }
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "Groups": {
                   "type": "object",
@@ -284,18 +299,20 @@
                   }
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 },
                 "Role": {
                   "type": "string"
@@ -305,7 +322,8 @@
                     "Always",
                     "Never",
                     "WhenAuthorized"
-                  ]
+                  ],
+                  "description": "Represents the level of detail to include in the health endpoint response."
                 }
               }
             },
@@ -316,27 +334,32 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "HeapDumpType": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the type of dump to create. Possible values: GcDump, Normal, WithHeap, Triage, Full. Default value: Full."
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -377,27 +400,31 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "Capacity": {
                   "type": "integer"
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -408,24 +435,28 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -436,24 +467,28 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -464,24 +499,28 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -492,39 +531,47 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "CacheDurationMilliseconds": {
-                  "type": "integer"
+                  "type": "integer",
+                  "description": "Gets or sets the duration in milliseconds that metrics are cached for. Default value: 500."
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "IncludedMetrics": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the names of metrics to include."
                 },
                 "MaxHistograms": {
-                  "type": "integer"
+                  "type": "integer",
+                  "description": "Gets or sets the maximum number of histograms to return. Default value: 100."
                 },
                 "MaxTimeSeries": {
-                  "type": "integer"
+                  "type": "integer",
+                  "description": "Gets or sets the maximum number of time series to return. Default value: 100."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -543,27 +590,32 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 },
                 "ReturnConfiguration": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to return the configuration after refreshing. Default value: true."
                 }
               }
             },
@@ -659,24 +711,28 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -721,27 +777,31 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
                 },
                 "Capacity": {
                   "type": "integer"
                 },
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
                 "Id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
                 },
                 "Path": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
                 },
                 "RequiredPermissions": {
                   "enum": [
-                    "Undefined",
                     "None",
                     "Restricted",
                     "Full"
-                  ]
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 }
               }
             },
@@ -759,15 +819,18 @@
                       "type": "array",
                       "items": {
                         "type": "string"
-                      }
+                      },
+                      "description": "Gets the IDs of the actuators to exclude. Takes precedence over included entries."
                     },
                     "Include": {
                       "type": "array",
                       "items": {
                         "type": "string"
-                      }
+                      },
+                      "description": "Gets the IDs of the actuators to include. Excluded entries take precedence."
                     }
-                  }
+                  },
+                  "description": "Indicates which actuators are exposed."
                 }
               }
             }
@@ -781,47 +844,54 @@
               "type": "object",
               "properties": {
                 "AspNetCoreHosting": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to enable the Steeltoe ASP.NET Core hosting observer (HTTP server metrics). Default value: true."
                 },
                 "EgressIgnorePattern": {
                   "type": "string",
                   "description": "Gets or sets a regex pattern for requests leaving this application where metrics should not be captured."
                 },
                 "EventCounterEvents": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to enable metrics for EventCounter events. Default value: false."
                 },
                 "EventCounterIntervalSec": {
-                  "type": "integer"
+                  "type": "integer",
+                  "description": "Gets or sets how often to export, in seconds, when 'Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterEvents' is set to true. Default value: 1."
                 },
                 "ExcludedMetrics": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "Gets or sets a list of metrics that should not be captured. Entries in 'Steeltoe.Management.Diagnostics.MetricsObserverOptions.IncludedMetrics' take precedence in case of conflict."
+                  "description": "Gets a list of metrics that should not be captured. Entries in 'Steeltoe.Management.Diagnostics.MetricsObserverOptions.IncludedMetrics' take precedence in case of conflict."
                 },
                 "GCEvents": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to enable metrics for CLR garbage collection. Default value: true."
                 },
                 "HttpClientCore": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to enable the Steeltoe HttpClient observer for ASP.NET Core. Default value: false."
                 },
                 "HttpClientDesktop": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to enable the Steeltoe HttpClient observer for desktop apps. Default value: false."
                 },
                 "IncludedMetrics": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "Gets or sets a list of metrics that should be captured. This takes precedence over 'Steeltoe.Management.Diagnostics.MetricsObserverOptions.ExcludedMetrics' in case of conflict."
+                  "description": "Gets a list of metrics that should be captured. This takes precedence over 'Steeltoe.Management.Diagnostics.MetricsObserverOptions.ExcludedMetrics' in case of conflict."
                 },
                 "IngressIgnorePattern": {
                   "type": "string",
                   "description": "Gets or sets a regex pattern for requests coming into this application where metrics should not be captured."
                 },
                 "ThreadPoolEvents": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to enable metrics for CLR thread pool events. Default value: true."
                 }
               }
             }
@@ -861,7 +931,7 @@
                     },
                     "ConnectionTimeoutMs": {
                       "type": "integer",
-                      "description": "Gets or sets the connection timeout (in milliseconds) for interactions with SBA."
+                      "description": "Gets or sets the connection timeout (in milliseconds) for interactions with SBA. Default value: 100_000."
                     },
                     "Metadata": {
                       "type": "object",
@@ -875,7 +945,7 @@
                     },
                     "ValidateCertificates": {
                       "type": "boolean",
-                      "description": "Gets or sets a value indicating whether SBA certificates should be validated."
+                      "description": "Gets or sets a value indicating whether SBA certificates should be validated. Default value: true."
                     }
                   }
                 }

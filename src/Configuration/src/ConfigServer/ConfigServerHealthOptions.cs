@@ -10,12 +10,12 @@ namespace Steeltoe.Configuration.ConfigServer;
 public sealed class ConfigServerHealthOptions
 {
     /// <summary>
-    /// Gets or sets a value indicating whether health check is enabled. Default value: true.
+    /// Gets or sets a value indicating whether health checks are enabled. Default value: true.
     /// </summary>
     public bool Enabled { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value for the health check cache time-to-live. Default value: 300_000 (5 minutes).
+    /// Gets or sets the health check cache time-to-live, in milliseconds. Default value: 300_000 (5 minutes).
     /// </summary>
     public long TimeToLive { get; set; } = 300_000;
 }

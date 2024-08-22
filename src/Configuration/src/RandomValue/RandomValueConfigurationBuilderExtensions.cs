@@ -78,13 +78,16 @@ public static class RandomValueConfigurationBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        if (prefix != null && !prefix.EndsWith(':'))
+        if (!builder.Sources.OfType<RandomValueSource>().Any())
         {
-            prefix += ':';
-        }
+            if (prefix != null && !prefix.EndsWith(':'))
+            {
+                prefix += ':';
+            }
 
-        var source = new RandomValueSource(prefix, loggerFactory);
-        builder.Add(source);
+            var source = new RandomValueSource(prefix, loggerFactory);
+            builder.Add(source);
+        }
 
         return builder;
     }

@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Configuration;
-using Steeltoe.Management.Endpoint.Info;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -41,9 +41,9 @@ public sealed class ManagementOptionsTest : BaseTest
     {
         var managementOptions = new ManagementOptions
         {
-            Exposure = new Exposure
+            Exposure =
             {
-                Exclude = new List<string>
+                Exclude =
                 {
                     "*"
                 }

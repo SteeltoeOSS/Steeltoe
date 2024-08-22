@@ -8,14 +8,25 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Extensions;
-using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics;
+using Steeltoe.Management.Endpoint.Actuators.Health;
+using Steeltoe.Management.Endpoint.Actuators.Metrics;
+using Steeltoe.Management.Endpoint.Actuators.Metrics.SystemDiagnosticsMetrics;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
 public abstract class BaseTest : IDisposable
 {
+    protected JsonSerializerOptions SerializerOptions { get; } = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
+        Converters =
+        {
+            new HealthConverter()
+        }
+    };
+
     public void Dispose()
     {
         Dispose(true);
@@ -28,19 +39,7 @@ public abstract class BaseTest : IDisposable
 
     protected string Serialize<T>(T value)
     {
-        return JsonSerializer.Serialize(value, GetSerializerOptions());
-    }
-
-    protected JsonSerializerOptions GetSerializerOptions()
-    {
-        var options = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-
-        options.Converters.Add(new HealthConverter());
-        return options;
+        return JsonSerializer.Serialize(value, SerializerOptions);
     }
 
     internal AggregationManager GetTestMetrics(MetricsExporter exporter)
@@ -107,7 +106,7 @@ public abstract class BaseTest : IDisposable
         services.ConfigureOptions(configureOptionsType);
         services.AddLogging();
 
-        ServiceProvider provider = services.BuildServiceProvider(true);
+        using ServiceProvider provider = services.BuildServiceProvider(true);
         return provider.GetRequiredService<IOptionsMonitor<TOptions>>();
     }
 

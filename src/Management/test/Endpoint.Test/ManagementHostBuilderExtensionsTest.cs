@@ -15,33 +15,31 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Logging.DynamicSerilog;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.Environment;
-using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Health.Availability;
-using Steeltoe.Management.Endpoint.Health.Contributor;
-using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Info;
-using Steeltoe.Management.Endpoint.Loggers;
+using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
+using Steeltoe.Management.Endpoint.Actuators.DbMigrations;
+using Steeltoe.Management.Endpoint.Actuators.Environment;
+using Steeltoe.Management.Endpoint.Actuators.Health;
+using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
+using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
+using Steeltoe.Management.Endpoint.Actuators.HeapDump;
+using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
+using Steeltoe.Management.Endpoint.Actuators.Info;
+using Steeltoe.Management.Endpoint.Actuators.Loggers;
+using Steeltoe.Management.Endpoint.Actuators.Metrics;
+using Steeltoe.Management.Endpoint.Actuators.Refresh;
+using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
+using Steeltoe.Management.Endpoint.Actuators.Services;
+using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
+using Steeltoe.Management.Endpoint.Actuators.Trace;
 using Steeltoe.Management.Endpoint.ManagementPort;
-using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.Endpoint.Refresh;
-using Steeltoe.Management.Endpoint.RouteMappings;
-using Steeltoe.Management.Endpoint.Services;
-using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
-using Steeltoe.Management.Endpoint.Test.Info;
-using Steeltoe.Management.Endpoint.ThreadDump;
-using Steeltoe.Management.Endpoint.Trace;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
-using Steeltoe.Management.Info;
+using Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
+using Steeltoe.Management.Endpoint.Test.Actuators.Info;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
 public sealed class ManagementHostBuilderExtensionsTest
 {
-    private readonly Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer()
-        .ConfigureServices(services => services.AddRouting().AddActionDescriptorCollectionProviderMock())
+    private readonly Action<IWebHostBuilder> _testServerWithAllActuatorsExposed = builder => builder.UseTestServer()
         .Configure(applicationBuilder => applicationBuilder.UseRouting()).ConfigureAppConfiguration(configurationBuilder =>
             configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?>
             {
@@ -50,9 +48,6 @@ public sealed class ManagementHostBuilderExtensionsTest
 
     private readonly Action<IWebHostBuilder> _testServerWithSecureRouting = builder => builder.UseTestServer().ConfigureServices(services =>
     {
-        services.AddRouting();
-        services.AddActionDescriptorCollectionProviderMock();
-
         services.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
             TestAuthHandler.AuthenticationScheme, _ =>
             {
@@ -64,9 +59,9 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public void AddDbMigrationsActuator_IHostBuilder()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
-        IHost host = hostBuilder.AddDbMigrationsActuator().Build();
+        using IHost host = hostBuilder.AddDbMigrationsActuator().Build();
         var handler = host.Services.GetService<IDbMigrationsEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -78,7 +73,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddDbMigrationsActuator_IHostBuilder_IStartupFilterFires()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
         using IHost host = await hostBuilder.AddDbMigrationsActuator().StartAsync();
 
@@ -90,9 +85,9 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public void AddEnvironmentActuator_IHostBuilder()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
-        IHost host = hostBuilder.AddEnvironmentActuator().Build();
+        using IHost host = hostBuilder.AddEnvironmentActuator().Build();
         IEnumerable<IEnvironmentEndpointHandler> handlers = host.Services.GetServices<IEnvironmentEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -104,7 +99,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddEnvironmentActuator_IHostBuilder_IStartupFilterFires()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
         using IHost host = await hostBuilder.AddEnvironmentActuator().StartAsync();
 
@@ -114,17 +109,20 @@ public sealed class ManagementHostBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddHealthActuator_IHostBuilder()
+    public async Task AddHealthActuator_IHostBuilder()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
         hostBuilder.AddHealthActuator();
-        IHost host = hostBuilder.Build();
+        using IHost host = hostBuilder.Build();
 
-        host.Services.GetService<IHealthEndpointHandler>().Should().NotBeNull();
         host.Services.GetServices<IStartupFilter>().OfType<AllActuatorsStartupFilter>().Should().HaveCount(1);
         host.Services.GetService<IHealthAggregator>().Should().NotBeNull();
 
-        IHealthContributor[] healthContributors = host.Services.GetServices<IHealthContributor>().ToArray();
+        await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
+
+        scope.ServiceProvider.GetService<IHealthEndpointHandler>().Should().NotBeNull();
+
+        IHealthContributor[] healthContributors = scope.ServiceProvider.GetServices<IHealthContributor>().ToArray();
         healthContributors.Should().HaveCount(3);
         healthContributors.Should().ContainSingle(contributor => contributor is DiskSpaceContributor);
         healthContributors.Should().ContainSingle(contributor => contributor is LivenessHealthContributor);
@@ -132,24 +130,27 @@ public sealed class ManagementHostBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddHealthActuator_IHostBuilder_WithContributor()
+    public async Task AddHealthActuator_IHostBuilder_WithContributor()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
         hostBuilder.AddHealthActuator();
         hostBuilder.ConfigureServices(services => services.AddHealthContributor<DownContributor>());
-        IHost host = hostBuilder.Build();
+        using IHost host = hostBuilder.Build();
 
-        host.Services.GetService<IHealthEndpointHandler>().Should().NotBeNull();
         host.Services.GetServices<IStartupFilter>().OfType<AllActuatorsStartupFilter>().Should().HaveCount(1);
         host.Services.GetService<IHealthAggregator>().Should().NotBeNull();
 
-        host.Services.GetServices<IHealthContributor>().OfType<DownContributor>().Should().HaveCount(1);
+        await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
+
+        scope.ServiceProvider.GetService<IHealthEndpointHandler>().Should().NotBeNull();
+
+        scope.ServiceProvider.GetServices<IHealthContributor>().OfType<DownContributor>().Should().HaveCount(1);
     }
 
     [Fact]
     public async Task AddHealthActuator_IHostBuilder_IStartupFilterFires()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
         using IHost host = await hostBuilder.AddHealthActuator().StartAsync();
 
@@ -161,7 +162,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddHealthActuator_IHostBuilder_IStartupFilterFireRegistersAvailabilityEvents()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
         // start the server, get a client
         using IHost host = await hostBuilder.AddHealthActuator().StartAsync();
@@ -187,9 +188,9 @@ public sealed class ManagementHostBuilderExtensionsTest
     {
         if (Platform.IsWindows)
         {
-            var hostBuilder = new HostBuilder();
+            IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
-            IHost host = hostBuilder.AddHeapDumpActuator().Build();
+            using IHost host = hostBuilder.AddHeapDumpActuator().Build();
             IEnumerable<IHeapDumpEndpointHandler> handlers = host.Services.GetServices<IHeapDumpEndpointHandler>();
             IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -204,7 +205,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     {
         if (Platform.IsWindows)
         {
-            IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+            IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
             using IHost host = await hostBuilder.AddHeapDumpActuator().StartAsync();
 
@@ -217,9 +218,9 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public void AddHypermediaActuator_IHostBuilder()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
-        IHost host = hostBuilder.AddHypermediaActuator().Build();
+        using IHost host = hostBuilder.AddHypermediaActuator().Build();
         IEnumerable<IActuatorEndpointHandler> handlers = host.Services.GetServices<IActuatorEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -231,7 +232,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddHypermediaActuator_IHostBuilder_IStartupFilterFires()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
         using IHost host = await hostBuilder.AddHypermediaActuator().StartAsync();
 
@@ -243,7 +244,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public void AddInfoActuator_IHostBuilder()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
         hostBuilder.AddInfoActuator();
         using IHost host = hostBuilder.Build();
 
@@ -254,7 +255,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public void AddInfoActuator_IHostBuilder_WithExtraContributor()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
         hostBuilder.AddInfoActuator();
         hostBuilder.ConfigureServices(services => services.AddInfoContributor<TestInfoContributor>());
         using IHost host = hostBuilder.Build();
@@ -267,7 +268,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddInfoActuator_IHostBuilder_IStartupFilterFires()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
         using IHost host = await hostBuilder.AddInfoActuator().StartAsync();
 
@@ -279,9 +280,9 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public void AddLoggersActuator_IHostBuilder()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
-        IHost host = hostBuilder.AddLoggersActuator().Build();
+        using IHost host = hostBuilder.AddLoggersActuator().Build();
         IEnumerable<ILoggersEndpointHandler> handlers = host.Services.GetServices<ILoggersEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -293,7 +294,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddLoggersActuator_IHostBuilder_IStartupFilterFires()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
         using IHost host = await hostBuilder.AddLoggersActuator().StartAsync();
 
@@ -306,8 +307,8 @@ public sealed class ManagementHostBuilderExtensionsTest
     public async Task AddLoggers_IHostBuilder_MultipleLoggersScenarios()
     {
         // Add Serilog + DynamicConsole = runs OK
-        IHostBuilder hostBuilder = new HostBuilder().AddDynamicSerilog().ConfigureLogging(builder => builder.AddDynamicConsole())
-            .ConfigureWebHost(_testServerWithRouting);
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().AddDynamicSerilog().ConfigureLogging(builder => builder.AddDynamicConsole())
+            .ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
         using IHost host = await hostBuilder.AddLoggersActuator().StartAsync();
 
@@ -316,7 +317,8 @@ public sealed class ManagementHostBuilderExtensionsTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         // Add DynamicConsole + Serilog = throws exception
-        hostBuilder = new HostBuilder().ConfigureLogging(builder => builder.AddDynamicConsole()).AddDynamicSerilog().ConfigureWebHost(_testServerWithRouting);
+        hostBuilder = TestHostBuilderFactory.Create().ConfigureLogging(builder => builder.AddDynamicConsole()).AddDynamicSerilog()
+            .ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () => await hostBuilder.AddLoggersActuator().StartAsync());
 
@@ -326,9 +328,9 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public void AddMappingsActuator_IHostBuilder()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
-        IHost host = hostBuilder.AddMappingsActuator().Build();
+        using IHost host = hostBuilder.AddMappingsActuator().Build();
 
         var mappings = host.Services.GetRequiredService<RouterMappings>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
@@ -341,7 +343,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddMappingsActuator_IHostBuilder_IStartupFilterFires()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
         using IHost host = await hostBuilder.AddMappingsActuator().StartAsync();
 
@@ -353,9 +355,9 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public void AddMetricsActuator_IHostBuilder()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
-        IHost host = hostBuilder.AddMetricsActuator().Build();
+        using IHost host = hostBuilder.AddMetricsActuator().Build();
         var handler = host.Services.GetService<IMetricsEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -367,7 +369,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddMetricsActuator_IHostBuilder_IStartupFilterFires()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
         using IHost host = await hostBuilder.AddMetricsActuator().StartAsync();
 
@@ -379,9 +381,9 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public void AddRefreshActuator_IHostBuilder()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
-        IHost host = hostBuilder.AddRefreshActuator().Build();
+        using IHost host = hostBuilder.AddRefreshActuator().Build();
         IEnumerable<IRefreshEndpointHandler> handlers = host.Services.GetServices<IRefreshEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -393,7 +395,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddRefreshActuator_IHostBuilder_IStartupFilterFires()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
         using IHost host = await hostBuilder.AddRefreshActuator().StartAsync();
 
@@ -407,9 +409,9 @@ public sealed class ManagementHostBuilderExtensionsTest
     {
         if (Platform.IsWindows)
         {
-            var hostBuilder = new HostBuilder();
+            IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
-            IHost host = hostBuilder.AddThreadDumpActuator().Build();
+            using IHost host = hostBuilder.AddThreadDumpActuator().Build();
             IEnumerable<IThreadDumpEndpointHandler> handlers = host.Services.GetServices<IThreadDumpEndpointHandler>();
             IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -424,7 +426,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     {
         if (Platform.IsWindows)
         {
-            IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+            IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
             using IHost host = await hostBuilder.AddThreadDumpActuator().StartAsync();
 
@@ -437,9 +439,9 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public void AddTraceActuator_IHostBuilder()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
-        IHost host = hostBuilder.AddTraceActuator().Build();
+        using IHost host = hostBuilder.AddTraceActuator().Build();
         IEnumerable<IHttpTraceEndpointHandler> handlers = host.Services.GetServices<IHttpTraceEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -451,7 +453,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddTraceActuator_IHostBuilder_IStartupFilterFires()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
         using IHost host = await hostBuilder.AddTraceActuator().StartAsync();
 
@@ -463,9 +465,9 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public void AddServicesActuator_IHostBuilder()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
-        IHost host = hostBuilder.AddServicesActuator().Build();
+        using IHost host = hostBuilder.AddServicesActuator().Build();
         IEnumerable<IServicesEndpointHandler> handlers = host.Services.GetServices<IServicesEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -477,7 +479,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddServicesActuator_IHostBuilder_IStartupFilterFires()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
         using IHost host = await hostBuilder.AddServicesActuator().StartAsync();
 
@@ -489,9 +491,9 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public void AddCloudFoundryActuator_IHostBuilder()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
-        IHost host = hostBuilder.AddCloudFoundryActuator().Build();
+        using IHost host = hostBuilder.AddCloudFoundryActuator().Build();
         var handler = host.Services.GetService<ICloudFoundryEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -503,7 +505,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddAllActuators_IHostBuilder_IStartupFilterFires()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithAllActuatorsExposed);
 
         using IHost host = await hostBuilder.AddAllActuators().StartAsync();
         HttpClient client = host.GetTestServer().CreateClient();
@@ -519,7 +521,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddAllActuatorsWithConventions_IHostBuilder_IStartupFilterFires()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithSecureRouting);
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithSecureRouting);
 
         using IHost host = await hostBuilder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).StartAsync();
         HttpClient client = host.GetTestServer().CreateClient();
@@ -535,9 +537,9 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public void AddAllActuators_IHostBuilder()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
-        IHost host = hostBuilder.AddAllActuators().Build();
+        using IHost host = hostBuilder.AddAllActuators().Build();
         IEnumerable<IActuatorEndpointHandler> handlers = host.Services.GetServices<IActuatorEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -549,7 +551,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddSeveralActuators_IHostBuilder_NoConflict()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithSecureRouting).AddHypermediaActuator().AddInfoActuator()
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithSecureRouting).AddHypermediaActuator().AddInfoActuator()
             .AddHealthActuator().AddAllActuators(ep => ep.RequireAuthorization("TestAuth"));
 
         using IHost host = await hostBuilder.StartAsync();
@@ -571,7 +573,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddSeveralActuators_IHostBuilder_PrefersEndpointConfiguration()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithSecureRouting)
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(_testServerWithSecureRouting)
             .ConfigureServices(services => services.ActivateActuatorEndpoints().RequireAuthorization("TestAuth"))
 
             // each of these will try to add their own AllActuatorsStartupFilter but should no-op in favor of the above

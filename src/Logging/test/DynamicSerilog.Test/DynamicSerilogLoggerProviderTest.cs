@@ -412,7 +412,7 @@ public sealed class DynamicSerilogLoggerProviderTest
 
         var serilogOptions = new SerilogOptions();
         serilogOptions.SetSerilogOptions(configuration);
-        return new TestOptionsMonitor<SerilogOptions>(serilogOptions);
+        return TestOptionsMonitor.Create(serilogOptions);
     }
 
     private IOptionsMonitor<SerilogOptions> GetConfigurationFromFile()
@@ -421,6 +421,6 @@ public sealed class DynamicSerilogLoggerProviderTest
         IConfiguration configuration = builder.Build();
         var serilogOptions = new SerilogOptions();
         serilogOptions.SetSerilogOptions(configuration);
-        return new TestOptionsMonitor<SerilogOptions>(serilogOptions);
+        return TestOptionsMonitor.Create(serilogOptions);
     }
 }

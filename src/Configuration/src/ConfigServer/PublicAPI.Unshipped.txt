@@ -1,14 +1,7 @@
 #nullable enable
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, Microsoft.Extensions.Hosting.IHostEnvironment! environment) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, Microsoft.Extensions.Hosting.IHostEnvironment! environment, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, Steeltoe.Configuration.ConfigServer.ConfigServerClientOptions! options) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, Steeltoe.Configuration.ConfigServer.ConfigServerClientOptions! options, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, string? environment) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, string? environment, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, string? environment, string? applicationName) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, string? environment, string? applicationName, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Steeltoe.Configuration.ConfigServer.ConfigServerClientOptions! options, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
 static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
@@ -25,9 +18,7 @@ Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Label.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Name.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Name.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Profiles.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Profiles.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.PropertySources.get -> System.Collections.Generic.IList<Steeltoe.Configuration.ConfigServer.PropertySource!>!
-Steeltoe.Configuration.ConfigServer.ConfigEnvironment.PropertySources.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.State.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.State.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Version.get -> string?
@@ -74,6 +65,8 @@ Steeltoe.Configuration.ConfigServer.ConfigServerClientOptions.Username.get -> st
 Steeltoe.Configuration.ConfigServer.ConfigServerClientOptions.Username.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientOptions.ValidateCertificates.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientOptions.ValidateCertificates.set -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerClientOptions.ValidateCertificatesAlt.get -> bool
+Steeltoe.Configuration.ConfigServer.ConfigServerClientOptions.ValidateCertificatesAlt.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions
 Steeltoe.Configuration.ConfigServer.ConfigServerDiscoveryOptions
 Steeltoe.Configuration.ConfigServer.ConfigServerDiscoveryOptions.ConfigServerDiscoveryOptions() -> void
@@ -109,4 +102,3 @@ Steeltoe.Configuration.ConfigServer.PropertySource.Name.get -> string?
 Steeltoe.Configuration.ConfigServer.PropertySource.Name.set -> void
 Steeltoe.Configuration.ConfigServer.PropertySource.PropertySource() -> void
 Steeltoe.Configuration.ConfigServer.PropertySource.Source.get -> System.Collections.Generic.IDictionary<string!, object!>!
-Steeltoe.Configuration.ConfigServer.PropertySource.Source.set -> void

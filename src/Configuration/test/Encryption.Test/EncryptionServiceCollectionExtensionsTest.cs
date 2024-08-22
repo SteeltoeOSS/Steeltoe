@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Configuration.Encryption.Test;
 
@@ -25,7 +26,7 @@ public sealed class EncryptionServiceCollectionExtensionsTest
         builder.AddInMemoryCollection(settings);
         IConfigurationRoot configuration1 = builder.Build();
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<StartupForConfigureEncryptionResolver>().UseConfiguration(configuration1);
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create().UseStartup<StartupForConfigureEncryptionResolver>().UseConfiguration(configuration1);
 
         using var server = new TestServer(hostBuilder);
         var configuration2 = server.Services.GetRequiredService<IConfiguration>();

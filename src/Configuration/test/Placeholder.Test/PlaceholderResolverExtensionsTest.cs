@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Configuration.Placeholder.Test;
@@ -29,7 +30,7 @@ public sealed class PlaceholderResolverExtensionsTest
         builder.AddInMemoryCollection(settings);
         IConfigurationRoot configuration1 = builder.Build();
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder();
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.UseStartup<TestServerStartup>();
         hostBuilder.UseConfiguration(configuration1);
         hostBuilder.ConfigureServices((context, services) => services.ConfigurePlaceholderResolver(context.Configuration));
@@ -88,7 +89,7 @@ public sealed class PlaceholderResolverExtensionsTest
 
         string directory = Path.GetDirectoryName(jsonPath)!;
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().ConfigureAppConfiguration(configurationBuilder =>
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create().UseStartup<TestServerStartup>().ConfigureAppConfiguration(configurationBuilder =>
         {
             configurationBuilder.SetBasePath(directory);
             configurationBuilder.AddJsonFile(jsonFileName);
@@ -136,21 +137,23 @@ public sealed class PlaceholderResolverExtensionsTest
         string xmlFileName = Path.GetFileName(xmlPath);
         string directory = Path.GetDirectoryName(jsonPath)!;
 
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(configure => configure.UseTestServer()).ConfigureAppConfiguration(configurationBuilder =>
-        {
-            configurationBuilder.SetBasePath(directory);
-            configurationBuilder.AddJsonFile(jsonFileName);
-            configurationBuilder.AddXmlFile(xmlFileName);
-            configurationBuilder.AddPlaceholderResolver();
-        });
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureWebHost(configure => configure.UseTestServer()).ConfigureAppConfiguration(
+            configurationBuilder =>
+            {
+                configurationBuilder.SetBasePath(directory);
+                configurationBuilder.AddJsonFile(jsonFileName);
+                configurationBuilder.AddXmlFile(xmlFileName);
+                configurationBuilder.AddPlaceholderResolver();
+            });
 
-        using TestServer server = hostBuilder.Build().GetTestServer();
+        using IHost host = hostBuilder.Build();
+        using TestServer server = host.GetTestServer();
         var configuration = server.Services.GetRequiredService<IConfiguration>();
         Assert.Equal("myName", configuration["spring:cloud:config:name"]);
     }
 
     [Fact]
-    public void AddPlaceholderResolverViaWebApplicationBuilderWorks()
+    public async Task AddPlaceholderResolverViaWebApplicationBuilderWorks()
     {
         const string appsettingsJson = @"
             {
@@ -182,14 +185,13 @@ public sealed class PlaceholderResolverExtensionsTest
         string xmlFileName = Path.GetFileName(xmlPath);
         string directory = Path.GetDirectoryName(jsonPath)!;
 
-        WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
-        hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
         hostBuilder.Configuration.SetBasePath(directory);
         hostBuilder.Configuration.AddJsonFile(jsonFileName);
         hostBuilder.Configuration.AddXmlFile(xmlFileName);
         hostBuilder.Configuration.AddPlaceholderResolver();
 
-        using WebApplication server = hostBuilder.Build();
+        await using WebApplication server = hostBuilder.Build();
         var configuration = server.Services.GetRequiredService<IConfiguration>();
         Assert.Equal("myName", configuration["spring:cloud:config:name"]);
     }

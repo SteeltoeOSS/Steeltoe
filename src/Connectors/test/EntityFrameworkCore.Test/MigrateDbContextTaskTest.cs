@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Tasks;
 
 namespace Steeltoe.Connectors.EntityFrameworkCore.Test;
@@ -19,13 +19,12 @@ public sealed class MigrateDbContextTaskTest
         const string taskName = MigrateDbContextTask<TestMigrateDbContext>.Name;
         string[] args = [$"RunTask={taskName}"];
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
 
         builder.Services.AddDbContext<TestMigrateDbContext>(options => options.UseSqlite("Data Source=Test.db"));
         builder.Services.AddTask<MigrateDbContextTask<TestMigrateDbContext>>(taskName);
 
-        WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
 
         await app.RunWithTasksAsync(CancellationToken.None);
 

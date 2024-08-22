@@ -178,7 +178,7 @@ public sealed class ContentNegotiationTest
         using var scope = new EnvironmentVariableScope(name, "some"); // Allow routing to /cloudfoundryapplication
 
         // arrange a server and client
-        IWebHostBuilder builder = new WebHostBuilder().UseStartupForEndpoint(endpointName)
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartupForEndpoint(endpointName)
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>
                 {

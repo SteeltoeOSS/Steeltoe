@@ -13,9 +13,7 @@ public sealed class ConfigServerDiscoveryServiceTest
     [Fact]
     public void ConfigServerDiscoveryService_FindsNoDiscoveryClients()
     {
-        var appSettings = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration);
-
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer).Build();
         var options = new ConfigServerClientOptions();
 
         var service = new ConfigServerDiscoveryService(configuration, options, NullLoggerFactory.Instance);

@@ -19,7 +19,7 @@ public sealed class EurekaServiceUriStateManagerTest
             EurekaServerServiceUrls = "bad//uri"
         };
 
-        var manager = new EurekaServiceUriStateManager(new TestOptionsMonitor<EurekaClientOptions>(options), NullLogger<EurekaServiceUriStateManager>.Instance);
+        var manager = new EurekaServiceUriStateManager(TestOptionsMonitor.Create(options), NullLogger<EurekaServiceUriStateManager>.Instance);
 
         Action action = () => _ = manager.GetSnapshot();
 
@@ -34,7 +34,7 @@ public sealed class EurekaServiceUriStateManagerTest
             EurekaServerServiceUrls = "https://one,https://two,https://three"
         };
 
-        var manager = new EurekaServiceUriStateManager(new TestOptionsMonitor<EurekaClientOptions>(options), NullLogger<EurekaServiceUriStateManager>.Instance);
+        var manager = new EurekaServiceUriStateManager(TestOptionsMonitor.Create(options), NullLogger<EurekaServiceUriStateManager>.Instance);
 
         EurekaServiceUriStateManager.ServiceUrisSnapshot snapshot = manager.GetSnapshot();
 
@@ -54,7 +54,7 @@ public sealed class EurekaServiceUriStateManagerTest
             EurekaServerServiceUrls = "https://one,https://two,https://three"
         };
 
-        var manager = new EurekaServiceUriStateManager(new TestOptionsMonitor<EurekaClientOptions>(options), NullLogger<EurekaServiceUriStateManager>.Instance);
+        var manager = new EurekaServiceUriStateManager(TestOptionsMonitor.Create(options), NullLogger<EurekaServiceUriStateManager>.Instance);
         manager.MarkWorkingServiceUri(new Uri("https://three"));
 
         EurekaServiceUriStateManager.ServiceUrisSnapshot snapshot = manager.GetSnapshot();
@@ -70,7 +70,7 @@ public sealed class EurekaServiceUriStateManagerTest
             EurekaServerServiceUrls = "https://one,https://two,https://three"
         };
 
-        var manager = new EurekaServiceUriStateManager(new TestOptionsMonitor<EurekaClientOptions>(options), NullLogger<EurekaServiceUriStateManager>.Instance);
+        var manager = new EurekaServiceUriStateManager(TestOptionsMonitor.Create(options), NullLogger<EurekaServiceUriStateManager>.Instance);
         manager.MarkFailingServiceUri(new Uri("https://two"));
 
         EurekaServiceUriStateManager.ServiceUrisSnapshot snapshot = manager.GetSnapshot();
@@ -90,7 +90,7 @@ public sealed class EurekaServiceUriStateManagerTest
             EurekaServerServiceUrls = "https://one,https://two,https://three"
         };
 
-        var manager = new EurekaServiceUriStateManager(new TestOptionsMonitor<EurekaClientOptions>(options), NullLogger<EurekaServiceUriStateManager>.Instance);
+        var manager = new EurekaServiceUriStateManager(TestOptionsMonitor.Create(options), NullLogger<EurekaServiceUriStateManager>.Instance);
         manager.MarkWorkingServiceUri(new Uri("https://two"));
 
         options.EurekaServerServiceUrls = "https://one,https://three";
@@ -112,7 +112,7 @@ public sealed class EurekaServiceUriStateManagerTest
             EurekaServerServiceUrls = "https://one,https://two,https://three"
         };
 
-        var manager = new EurekaServiceUriStateManager(new TestOptionsMonitor<EurekaClientOptions>(options), NullLogger<EurekaServiceUriStateManager>.Instance);
+        var manager = new EurekaServiceUriStateManager(TestOptionsMonitor.Create(options), NullLogger<EurekaServiceUriStateManager>.Instance);
         manager.MarkWorkingServiceUri(new Uri("https://two"));
         manager.MarkFailingServiceUri(new Uri("https://two"));
 
@@ -133,7 +133,7 @@ public sealed class EurekaServiceUriStateManagerTest
             EurekaServerServiceUrls = "https://one,https://two,https://three"
         };
 
-        var manager = new EurekaServiceUriStateManager(new TestOptionsMonitor<EurekaClientOptions>(options), NullLogger<EurekaServiceUriStateManager>.Instance);
+        var manager = new EurekaServiceUriStateManager(TestOptionsMonitor.Create(options), NullLogger<EurekaServiceUriStateManager>.Instance);
         manager.MarkFailingServiceUri(new Uri("https://two"));
         manager.MarkWorkingServiceUri(new Uri("https://two"));
 
@@ -154,7 +154,7 @@ public sealed class EurekaServiceUriStateManagerTest
             EurekaServerServiceUrls = "https://one,https://two,https://three"
         };
 
-        var manager = new EurekaServiceUriStateManager(new TestOptionsMonitor<EurekaClientOptions>(options), NullLogger<EurekaServiceUriStateManager>.Instance);
+        var manager = new EurekaServiceUriStateManager(TestOptionsMonitor.Create(options), NullLogger<EurekaServiceUriStateManager>.Instance);
 
         EurekaServiceUriStateManager.ServiceUrisSnapshot snapshot = manager.GetSnapshot();
 
@@ -176,7 +176,7 @@ public sealed class EurekaServiceUriStateManagerTest
             EurekaServerServiceUrls = "https://one,https://two,https://three"
         };
 
-        var manager = new EurekaServiceUriStateManager(new TestOptionsMonitor<EurekaClientOptions>(options), NullLogger<EurekaServiceUriStateManager>.Instance);
+        var manager = new EurekaServiceUriStateManager(TestOptionsMonitor.Create(options), NullLogger<EurekaServiceUriStateManager>.Instance);
 
         EurekaServiceUriStateManager.ServiceUrisSnapshot snapshot = manager.GetSnapshot();
 
@@ -198,7 +198,7 @@ public sealed class EurekaServiceUriStateManagerTest
             EurekaServerServiceUrls = "https://one,https://two,https://three,https://four"
         };
 
-        var manager = new EurekaServiceUriStateManager(new TestOptionsMonitor<EurekaClientOptions>(options), NullLogger<EurekaServiceUriStateManager>.Instance);
+        var manager = new EurekaServiceUriStateManager(TestOptionsMonitor.Create(options), NullLogger<EurekaServiceUriStateManager>.Instance);
         manager.MarkFailingServiceUri(new Uri("https://one"));
         manager.MarkFailingServiceUri(new Uri("https://two"));
         manager.MarkFailingServiceUri(new Uri("https://three"));
@@ -222,7 +222,7 @@ public sealed class EurekaServiceUriStateManagerTest
             EurekaServerServiceUrls = "https://one , https://two , , https://three"
         };
 
-        var manager = new EurekaServiceUriStateManager(new TestOptionsMonitor<EurekaClientOptions>(options), NullLogger<EurekaServiceUriStateManager>.Instance);
+        var manager = new EurekaServiceUriStateManager(TestOptionsMonitor.Create(options), NullLogger<EurekaServiceUriStateManager>.Instance);
 
         EurekaServiceUriStateManager.ServiceUrisSnapshot snapshot = manager.GetSnapshot();
 

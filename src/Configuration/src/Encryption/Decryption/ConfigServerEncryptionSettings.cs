@@ -12,9 +12,9 @@ namespace Steeltoe.Configuration.Encryption.Decryption;
 internal sealed class ConfigServerEncryptionSettings
 {
     /// <summary>
-    /// Gets or sets a value indicating whether encryption is enabled.
+    /// Gets or sets a value indicating whether encryption is enabled. Default value: false.
     /// </summary>
-    public bool EncryptionEnabled { get; set; }
+    public bool Enabled { get; set; }
 
     /// <summary>
     /// Gets the settings related to RSA encryption.
@@ -30,7 +30,7 @@ internal sealed class ConfigServerEncryptionSettings
     /// <summary>
     /// Gets or sets the key of the simple encryption.
     /// </summary>
-    public string? EncryptionKey { get; set; }
+    public string? Key { get; set; }
 
     public static ITextDecryptor CreateTextDecryptor(IConfiguration configuration)
     {

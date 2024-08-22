@@ -30,11 +30,15 @@ public sealed class CapturingLoggerProvider : ILoggerProvider
 
     public CapturingLoggerProvider(Func<string, LogLevel, bool> filter)
     {
+        ArgumentNullException.ThrowIfNull(filter);
+
         _filter = filter;
     }
 
     public ILogger CreateLogger(string categoryName)
     {
+        ArgumentNullException.ThrowIfNull(categoryName);
+
         return new CapturingLogger(this, categoryName, _filter);
     }
 

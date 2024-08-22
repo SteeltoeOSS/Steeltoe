@@ -12,7 +12,7 @@ namespace Steeltoe.Configuration.CloudFoundry.Test;
 public sealed class CloudFoundryServiceCollectionExtensionsTest
 {
     [Fact]
-    public void ConfigureCloudFoundryOptions_ConfiguresCloudFoundryOptions()
+    public async Task ConfigureCloudFoundryOptions_ConfiguresCloudFoundryOptions()
     {
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", """
             {
@@ -42,7 +42,7 @@ public sealed class CloudFoundryServiceCollectionExtensionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddCloudFoundryOptions();
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var appOptions = serviceProvider.GetRequiredService<IOptions<CloudFoundryApplicationOptions>>();
         Assert.Equal("foo", appOptions.Value.ApplicationName);

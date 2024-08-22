@@ -4,8 +4,8 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.Info;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
+using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
+using Steeltoe.Management.Endpoint.Actuators.Info;
 
 namespace Steeltoe.Management.Endpoint.Test.Security;
 
@@ -13,7 +13,6 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddRouting();
         services.AddHypermediaActuator();
         services.AddInfoActuator();
     }

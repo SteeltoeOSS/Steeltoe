@@ -34,9 +34,8 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
     [Fact]
     public void AddEurekaDiscoveryClient_IWebHostBuilder_AddsServiceDiscovery_Eureka()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder();
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.UseTestServer();
-        hostBuilder.Configure(HostingHelpers.EmptyAction);
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
 
         hostBuilder.ConfigureServices(services => services.AddEurekaDiscoveryClient());
@@ -53,8 +52,7 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
     [Fact]
     public void AddConsulDiscoveryClient_IWebHostBuilder_AddsServiceDiscovery_Consul()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder();
-        hostBuilder.Configure(HostingHelpers.EmptyAction);
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ConsulSettings));
 
         hostBuilder.ConfigureServices(services => services.AddConsulDiscoveryClient());

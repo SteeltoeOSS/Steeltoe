@@ -26,7 +26,7 @@ public sealed class ApplicationInstanceInfoTest
     }
 
     [Fact]
-    public void ReadsApplicationConfiguration()
+    public async Task ReadsApplicationConfiguration()
     {
         const string configJson = """
             {
@@ -50,7 +50,7 @@ public sealed class ApplicationInstanceInfoTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddApplicationInstanceInfo();
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var options = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
 
@@ -79,7 +79,7 @@ public sealed class ApplicationInstanceInfoTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddApplicationInstanceInfo();
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         return serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
     }

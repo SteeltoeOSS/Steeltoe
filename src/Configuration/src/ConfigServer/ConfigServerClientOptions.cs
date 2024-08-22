@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.ComponentModel;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Certificates;
 using Steeltoe.Common.Http.HttpClientPooling;
@@ -79,8 +80,18 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     /// <summary>
     /// Gets or sets a value indicating whether the provider validates server certificates. Default value: true.
     /// </summary>
-    [ConfigurationKeyName("Validate_Certificates")]
     public bool ValidateCertificates { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the provider validates server certificates. Default value: true.
+    /// </summary>
+    [ConfigurationKeyName("Validate_Certificates")]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public bool ValidateCertificatesAlt
+    {
+        get => ValidateCertificates;
+        set => ValidateCertificates = value;
+    }
 
     /// <summary>
     /// Gets retry settings.
@@ -100,19 +111,16 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     /// <summary>
     /// Gets or sets the address used by the provider to obtain a OAuth Access Token.
     /// </summary>
-    [ConfigurationKeyName("Access_Token_Uri")]
     public string? AccessTokenUri { get; set; }
 
     /// <summary>
     /// Gets or sets the client secret used by the provider to obtain a OAuth Access Token.
     /// </summary>
-    [ConfigurationKeyName("Client_Secret")]
     public string? ClientSecret { get; set; }
 
     /// <summary>
     /// Gets or sets the client ID used by the provider to obtain a OAuth Access Token.
     /// </summary>
-    [ConfigurationKeyName("Client_Id")]
     public string? ClientId { get; set; }
 
     /// <summary>

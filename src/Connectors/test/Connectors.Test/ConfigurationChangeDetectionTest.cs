@@ -18,8 +18,7 @@ public sealed class ConfigurationChangeDetectionTest
     [Fact]
     public async Task Applies_local_configuration_changes_using_WebApplicationBuilder()
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
         const string fileName = "appsettings.json";
 
@@ -94,8 +93,7 @@ public sealed class ConfigurationChangeDetectionTest
     [Fact]
     public void Applies_local_configuration_changes_using_WebHostBuilder()
     {
-        var builder = new WebHostBuilder();
-        builder.Configure(HostingHelpers.EmptyAction);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
 
         const string fileName = "appsettings.json";
 
@@ -174,7 +172,7 @@ public sealed class ConfigurationChangeDetectionTest
     [Fact]
     public void Applies_local_configuration_changes_using_HostBuilder()
     {
-        var builder = new HostBuilder();
+        IHostBuilder builder = TestHostBuilderFactory.Create();
 
         const string fileName = "appsettings.json";
 

@@ -4,11 +4,8 @@
 
 namespace Steeltoe.Configuration.ConfigServer;
 
-// https://github.com/dotnet/runtime/issues/30258
-#pragma warning disable S4004 // Collection properties should be readonly
-
 public sealed class PropertySource
 {
     public string? Name { get; set; }
-    public IDictionary<string, object> Source { get; set; } = new Dictionary<string, object>();
+    public IDictionary<string, object> Source { get; } = new Dictionary<string, object>();
 }

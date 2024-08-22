@@ -6,30 +6,28 @@ using System.Runtime.CompilerServices;
 using Aspire;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
+using Steeltoe.Management.Endpoint.Actuators.DbMigrations;
+using Steeltoe.Management.Endpoint.Actuators.Environment;
+using Steeltoe.Management.Endpoint.Actuators.Health;
+using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
+using Steeltoe.Management.Endpoint.Actuators.HeapDump;
+using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
+using Steeltoe.Management.Endpoint.Actuators.Info;
+using Steeltoe.Management.Endpoint.Actuators.Loggers;
+using Steeltoe.Management.Endpoint.Actuators.Metrics;
+using Steeltoe.Management.Endpoint.Actuators.Refresh;
+using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
+using Steeltoe.Management.Endpoint.Actuators.Services;
+using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
+using Steeltoe.Management.Endpoint.Actuators.Trace;
 using Steeltoe.Management.Endpoint.Configuration;
-using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.Environment;
-using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Health.Contributor;
-using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Info;
-using Steeltoe.Management.Endpoint.Loggers;
-using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.Endpoint.Refresh;
-using Steeltoe.Management.Endpoint.RouteMappings;
-using Steeltoe.Management.Endpoint.Services;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
-using Steeltoe.Management.Endpoint.ThreadDump;
-using Steeltoe.Management.Endpoint.Trace;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 [assembly: ConfigurationSchema("Spring:Application", typeof(SpringApplicationSettings))]
 [assembly: ConfigurationSchema("Spring:Boot:Admin:Client", typeof(SpringBootAdminClientOptions))]
 [assembly: ConfigurationSchema("Management:CloudFoundry:Enabled", typeof(bool))]
 [assembly: ConfigurationSchema("Management:Endpoints", typeof(ManagementOptions))]
-[assembly: ConfigurationSchema("Management:Endpoints:SslEnabled", typeof(bool))]
 [assembly: ConfigurationSchema("Management:Endpoints:CloudFoundry", typeof(CloudFoundryEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:DbMigrations", typeof(DbMigrationsEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Env", typeof(EnvironmentEndpointOptions))]

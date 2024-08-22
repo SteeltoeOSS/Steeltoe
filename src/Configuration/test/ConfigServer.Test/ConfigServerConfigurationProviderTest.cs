@@ -5,13 +5,12 @@
 using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
+using System.Reflection;
 using System.Text;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.Discovery;
@@ -27,22 +26,13 @@ public sealed class ConfigServerConfigurationProviderTest
     };
 
     [Fact]
-    public void SettingsConstructor_WithLoggerFactorySucceeds()
-    {
-        var loggerFactory = new LoggerFactory();
-        var options = new ConfigServerClientOptions();
-
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, loggerFactory);
-        Assert.NotNull(provider.Logger);
-    }
-
-    [Fact]
     public void DefaultConstructor_InitializedWithDefaultSettings()
     {
         var options = new ConfigServerClientOptions();
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        TestHelper.VerifyDefaults(provider.ClientOptions);
+        string? expectedAppName = Assembly.GetEntryAssembly()!.GetName().Name;
+        TestHelper.VerifyDefaults(provider.ClientOptions, expectedAppName);
     }
 
     [Fact]
@@ -53,7 +43,8 @@ public sealed class ConfigServerConfigurationProviderTest
         var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
         using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
-        TestHelper.VerifyDefaults(provider.ClientOptions);
+        string? expectedAppName = Assembly.GetEntryAssembly()!.GetName().Name;
+        TestHelper.VerifyDefaults(provider.ClientOptions, expectedAppName);
     }
 
     [Fact]
@@ -205,18 +196,18 @@ public sealed class ConfigServerConfigurationProviderTest
         {
             Name = "testname",
             Label = "testlabel",
-            Profiles = new List<string>
+            Profiles =
             {
                 "Production"
             },
             Version = "testversion",
             State = "teststate",
-            PropertySources = new List<PropertySource>
+            PropertySources =
             {
-                new()
+                new PropertySource
                 {
                     Name = "source",
-                    Source = new Dictionary<string, object>
+                    Source =
                     {
                         { "key1", "value1" },
                         { "key2", 10 }
@@ -279,7 +270,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.ReturnStatus = [500];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment("testing");
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -297,12 +288,11 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task RemoteLoadAsync_ConfigServerReturnsLessThanBadRequest()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus = [204];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -322,23 +312,23 @@ public sealed class ConfigServerConfigurationProviderTest
     public async Task Create_WithPollingTimer()
     {
         // Arrange
-        const string environment = @"
-                {
-                    ""name"": ""testname"",
-                    ""profiles"": [""Production""],
-                    ""label"": ""testlabel"",
-                    ""version"": ""testversion"",
-                    ""propertySources"": [
+        const string environment = """
+            {
+              "name": "testname",
+              "profiles": [
+                "Production"
+              ],
+              "label": "testlabel",
+              "version": "testversion",
+              "propertySources": []
+            }
+            """;
 
-                    ]
-                }";
-
-        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
         TestConfigServerStartup.Label = "testlabel";
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -365,23 +355,25 @@ public sealed class ConfigServerConfigurationProviderTest
     public async Task Create_FailFastEnabledAndExceptionThrownDuringPolling_DoesNotCrash()
     {
         // Arrange
-        const string environment = @"
-                {
-                    ""name"": ""testname"",
-                    ""profiles"": [""Production""],
-                    ""label"": ""testlabel"",
-                    ""version"": ""testversion"",
-                    ""propertySources"": []
-                }";
+        const string environment = """
+            {
+              "name": "testname",
+              "profiles": [
+                "Production"
+              ],
+              "label": "testlabel",
+              "version": "testversion",
+              "propertySources": []
+            }
+            """;
 
-        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
 
         // Initial requests succeed, but later requests return 400 status code so that an exception is thrown during polling
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 2).Concat(Enumerable.Repeat(400, 100)).ToArray();
         TestConfigServerStartup.Label = "testlabel";
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -412,21 +404,23 @@ public sealed class ConfigServerConfigurationProviderTest
     public void Create_WithNonZeroPollingIntervalAndClientDisabled_PollingDisabled()
     {
         // Arrange
-        const string environment = @"
-                {
-                    ""name"": ""testname"",
-                    ""profiles"": [""Production""],
-                    ""label"": ""testlabel"",
-                    ""version"": ""testversion"",
-                    ""propertySources"": []
-                }";
+        const string environment = """
+            {
+              "name": "testname",
+              "profiles": [
+                "Production"
+              ],
+              "label": "testlabel",
+              "version": "testversion",
+              "propertySources": []
+            }
+            """;
 
-        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
         TestConfigServerStartup.Label = "testlabel";
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -451,24 +445,26 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task DoLoad_MultipleLabels_ChecksAllLabels()
     {
-        const string environment = @"
+        const string environment = """
+            {
+              "name": "testname",
+              "profiles": [
+                "Production"
+              ],
+              "label": "testlabel",
+              "version": "testversion",
+              "propertySources": [
                 {
-                    ""name"": ""testname"",
-                    ""profiles"": [""Production""],
-                    ""label"": ""testlabel"",
-                    ""version"": ""testversion"",
-                    ""propertySources"": [
-                        {
-                            ""name"": ""source"",
-                            ""source"": {
-                                ""key1"": ""value1"",
-                                ""key2"": 10
-                            }
-                        }
-                    ]
-                }";
+                  "name": "source",
+                  "source": {
+                    "key1": "value1",
+                    "key2": 10
+                  }
+                }
+              ]
+            }
+            """;
 
-        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
 
@@ -479,7 +475,7 @@ public sealed class ConfigServerConfigurationProviderTest
         ];
 
         TestConfigServerStartup.Label = "testlabel";
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -499,27 +495,29 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task RemoteLoadAsync_ConfigServerReturnsGood()
     {
-        const string environment = @"
+        const string environment = """
+            {
+              "name": "testname",
+              "profiles": [
+                "Production"
+              ],
+              "label": "testlabel",
+              "version": "testversion",
+              "propertySources": [
                 {
-                    ""name"": ""testname"",
-                    ""profiles"": [""Production""],
-                    ""label"": ""testlabel"",
-                    ""version"": ""testversion"",
-                    ""propertySources"": [
-                        {
-                            ""name"": ""source"",
-                            ""source"": {
-                                ""key1"": ""value1"",
-                                ""key2"": 10
-                            }
-                        }
-                    ]
-                }";
+                  "name": "source",
+                  "source": {
+                    "key1": "value1",
+                    "key2": 10
+                  }
+                }
+              ]
+            }
+            """;
 
-        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -549,7 +547,6 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsGreaterThanEqualBadRequest_StopsChecking()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus =
@@ -558,7 +555,7 @@ public sealed class ConfigServerConfigurationProviderTest
             200
         ];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -577,7 +574,6 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsNotFoundStatus_DoesNotContinueChecking()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus =
@@ -586,7 +582,7 @@ public sealed class ConfigServerConfigurationProviderTest
             200
         ];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -605,12 +601,11 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_ConfigServerReturnsNotFoundStatus()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus = [404];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -622,18 +617,17 @@ public sealed class ConfigServerConfigurationProviderTest
         await provider.LoadInternalAsync(true, CancellationToken.None);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
-        Assert.Equal(26, provider.Properties.Count);
+        Assert.Equal(27, provider.Properties.Count);
     }
 
     [Fact]
     public async Task Load_ConfigServerReturnsNotFoundStatus_FailFastEnabled()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus = [404];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -652,8 +646,7 @@ public sealed class ConfigServerConfigurationProviderTest
         ConfigServerClientOptions options = _commonOptions;
         options.FailFast = true;
         options.Uri = "http://localhost:8888,http://localhost:8888";
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -675,12 +668,11 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_ConfigServerReturnsBadStatus_FailFastEnabled()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus = [500];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -696,7 +688,6 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsBadStatus_StopsChecking_FailFastEnabled()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus =
@@ -706,7 +697,7 @@ public sealed class ConfigServerConfigurationProviderTest
             500
         ];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -724,7 +715,6 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_ConfigServerReturnsBadStatus_FailFastEnabled_RetryEnabled()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus =
@@ -737,7 +727,7 @@ public sealed class ConfigServerConfigurationProviderTest
             500
         ];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -764,27 +754,29 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_ChangesDataDictionary()
     {
-        const string environment = @"
+        const string environment = """
+            {
+              "name": "testname",
+              "profiles": [
+                "Production"
+              ],
+              "label": "testlabel",
+              "version": "testversion",
+              "propertySources": [
                 {
-                    ""name"": ""testname"",
-                    ""profiles"": [""Production""],
-                    ""label"": ""testlabel"",
-                    ""version"": ""testversion"",
-                    ""propertySources"": [
-                        {
-                            ""name"": ""source"",
-                            ""source"": {
-                                ""key1"": ""value1"",
-                                ""key2"": 10
-                            }
-                        }
-                    ]
-                }";
+                  "name": "source",
+                  "source": {
+                    "key1": "value1",
+                    "key2": 10
+                  }
+                }
+              ]
+            }
+            """;
 
-        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -806,29 +798,31 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void ReLoad_DataDictionary_With_New_Configurations()
     {
-        const string environment = @"
-                    {
-                        ""name"": ""testname"",
-                        ""profiles"": [""Production""],
-                        ""label"": ""testlabel"",
-                        ""version"": ""testversion"",
-                        ""propertySources"": [
-                            {
-                                ""name"": ""source"",
-                                ""source"": {
-                                            ""featureToggles.ShowModule[0]"": ""FT1"",
-                                            ""featureToggles.ShowModule[1]"": ""FT2"",
-                                            ""featureToggles.ShowModule[2]"": ""FT3"",
-                                            ""enableSettings"":""true""
-                                    }
-                            }
-                        ]
-                    }";
+        const string environment = """
+            {
+              "name": "testname",
+              "profiles": [
+                "Production"
+              ],
+              "label": "testlabel",
+              "version": "testversion",
+              "propertySources": [
+                {
+                  "name": "source",
+                  "source": {
+                    "featureToggles.ShowModule[0]": "FT1",
+                    "featureToggles.ShowModule[1]": "FT2",
+                    "featureToggles.ShowModule[2]": "FT3",
+                    "enableSettings": "true"
+                  }
+                }
+              ]
+            }
+            """;
 
-        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -850,21 +844,24 @@ public sealed class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.Reset();
 
-        TestConfigServerStartup.Response = @"
-                {
-                    ""name"": ""testname"",
-                    ""profiles"": [""Production""],
-                    ""label"": ""testlabel"",
-                    ""version"": ""testversion"",
-                    ""propertySources"": [
-                        {
-                            ""name"": ""source"",
-                            ""source"": {
-                                ""featureToggles.ShowModule[0]"": ""none""
-                            }
-                        }
-                    ]
-                }";
+        TestConfigServerStartup.Response = """
+        {
+          "name": "testname",
+          "profiles": [
+            "Production"
+          ],
+          "label": "testlabel",
+          "version": "testversion",
+          "propertySources": [
+            {
+              "name": "source",
+              "source": {
+                "featureToggles.ShowModule[0]": "none"
+              }
+            }
+          ]
+        }
+        """;
 
         provider.Load();
         Assert.True(provider.TryGet("featureToggles:ShowModule:0", out value));
@@ -879,77 +876,86 @@ public sealed class ConfigServerConfigurationProviderTest
     {
         var options = new ConfigServerClientOptions
         {
-            AccessTokenUri = "https://foo.bar/",
-            ClientId = "client_id",
-            ClientSecret = "client_secret",
-            Enabled = true,
+            Enabled = false,
+            FailFast = true,
             Environment = "environment",
-            FailFast = false,
             Label = "label",
             Name = "name",
-            Password = "password",
             Uri = "https://foo.bar/",
             Username = "username",
+            Password = "password",
+            Token = "vaultToken",
+            Timeout = 75_000,
+            PollingInterval = TimeSpan.FromSeconds(35.5),
             ValidateCertificates = false,
-            Token = "vaulttoken",
-            TokenRenewRate = 1,
+            AccessTokenUri = "https://token.server.com/",
+            ClientSecret = "client_secret",
+            ClientId = "client_id",
             TokenTtl = 2,
+            TokenRenewRate = 1,
+            DisableTokenRenewal = true,
             Retry =
             {
-                Multiplier = 1.1
+                Enabled = true,
+                InitialInterval = 8,
+                MaxInterval = 16,
+                Multiplier = 1.1,
+                MaxAttempts = 7
+            },
+            Discovery =
+            {
+                Enabled = true,
+                ServiceId = "my-config-server"
+            },
+            Health =
+            {
+                Enabled = false,
+                TimeToLive = 9
+            },
+            Headers =
+            {
+                ["headerName1"] = "headerValue1",
+                ["headerName2"] = "headerValue2"
             }
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
-        CultureInfo? initialCulture = GetAndSetCurrentCulture(new CultureInfo("ru-RU"));
+        provider.AddConfigServerClientOptions();
 
-        try
+        AssertDataValue("spring:cloud:config:enabled", "False");
+        AssertDataValue("spring:cloud:config:failFast", "True");
+        AssertDataValue("spring:cloud:config:env", "environment");
+        AssertDataValue("spring:cloud:config:label", "label");
+        AssertDataValue("spring:cloud:config:name", "name");
+        AssertDataValue("spring:cloud:config:uri", "https://foo.bar/");
+        AssertDataValue("spring:cloud:config:username", "username");
+        AssertDataValue("spring:cloud:config:password", "password");
+        AssertDataValue("spring:cloud:config:token", "vaultToken");
+        AssertDataValue("spring:cloud:config:timeout", "75000");
+        AssertDataValue("spring:cloud:config:pollingInterval", "00:00:35.5000000");
+        AssertDataValue("spring:cloud:config:validateCertificates", "False");
+        AssertDataValue("spring:cloud:config:accessTokenUri", "https://token.server.com/");
+        AssertDataValue("spring:cloud:config:clientSecret", "client_secret");
+        AssertDataValue("spring:cloud:config:clientId", "client_id");
+        AssertDataValue("spring:cloud:config:tokenTtl", "2");
+        AssertDataValue("spring:cloud:config:tokenRenewRate", "1");
+        AssertDataValue("spring:cloud:config:disableTokenRenewal", "True");
+        AssertDataValue("spring:cloud:config:retry:enabled", "True");
+        AssertDataValue("spring:cloud:config:retry:initialInterval", "8");
+        AssertDataValue("spring:cloud:config:retry:maxInterval", "16");
+        AssertDataValue("spring:cloud:config:retry:multiplier", "1.1");
+        AssertDataValue("spring:cloud:config:retry:maxAttempts", "7");
+        AssertDataValue("spring:cloud:config:discovery:enabled", "True");
+        AssertDataValue("spring:cloud:config:discovery:serviceId", "my-config-server");
+        AssertDataValue("spring:cloud:config:health:enabled", "False");
+        AssertDataValue("spring:cloud:config:health:timeToLive", "9");
+        AssertDataValue("spring:cloud:config:headers:headerName1", "headerValue1");
+        AssertDataValue("spring:cloud:config:headers:headerName2", "headerValue2");
+
+        void AssertDataValue(string key, string expected)
         {
-            provider.AddConfigServerClientOptions();
-
-            Assert.True(provider.TryGet("spring:cloud:config:access_token_uri", out string? value));
-            Assert.Equal("https://foo.bar/", value);
-            Assert.True(provider.TryGet("spring:cloud:config:client_id", out value));
-            Assert.Equal("client_id", value);
-            Assert.True(provider.TryGet("spring:cloud:config:client_secret", out value));
-            Assert.Equal("client_secret", value);
-            Assert.True(provider.TryGet("spring:cloud:config:env", out value));
-            Assert.Equal("environment", value);
-            Assert.True(provider.TryGet("spring:cloud:config:label", out value));
-            Assert.Equal("label", value);
-            Assert.True(provider.TryGet("spring:cloud:config:name", out value));
-            Assert.Equal("name", value);
-            Assert.True(provider.TryGet("spring:cloud:config:password", out value));
-            Assert.Equal("password", value);
-            Assert.True(provider.TryGet("spring:cloud:config:uri", out value));
-            Assert.Equal("https://foo.bar/", value);
-            Assert.True(provider.TryGet("spring:cloud:config:username", out value));
-            Assert.Equal("username", value);
-
-            Assert.True(provider.TryGet("spring:cloud:config:enabled", out value));
-            Assert.Equal("True", value);
-            Assert.True(provider.TryGet("spring:cloud:config:failFast", out value));
-            Assert.Equal("False", value);
-            Assert.True(provider.TryGet("spring:cloud:config:validate_certificates", out value));
-            Assert.Equal("False", value);
-            Assert.True(provider.TryGet("spring:cloud:config:token", out value));
-            Assert.Equal("vaulttoken", value);
-            Assert.True(provider.TryGet("spring:cloud:config:timeout", out value));
-            Assert.Equal("60000", value);
-            Assert.True(provider.TryGet("spring:cloud:config:tokenRenewRate", out value));
-            Assert.Equal("1", value);
-            Assert.True(provider.TryGet("spring:cloud:config:tokenTtl", out value));
-            Assert.Equal("2", value);
-            Assert.True(provider.TryGet("spring:cloud:config:discovery:enabled", out value));
-            Assert.Equal("False", value);
-            Assert.True(provider.TryGet("spring:cloud:config:discovery:serviceId", out value));
-            Assert.Equal("configserver", value);
-            Assert.True(provider.TryGet("spring:cloud:config:retry:multiplier", out value));
-            Assert.Equal("1.1", value);
-        }
-        finally
-        {
-            GetAndSetCurrentCulture(initialCulture);
+            provider.TryGet(key, out string? value).Should().BeTrue();
+            value.Should().Be(expected);
         }
     }
 
@@ -1312,27 +1318,30 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void Reload_And_Bind_Without_Throwing_Exception()
     {
-        const string environment = @"
+        const string environment = """
+            {
+              "name": "testname",
+              "profiles": [
+                "Production"
+              ],
+              "label": "testlabel",
+              "version": "testversion",
+              "propertySources": [
                 {
-                    ""name"": ""testname"",
-                    ""profiles"": [""Production""],
-                    ""label"": ""testlabel"",
-                    ""version"": ""testversion"",
-                    ""propertySources"": [
-                        {
-                            ""name"": ""source"",
-                            ""source"": {
-                                ""name"": ""my-app"",
-                                ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
-                            }
-                        }
-                    ]
-                }";
+                  "name": "source",
+                  "source": {
+                    "name": "my-app",
+                    "version": "fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"
+                  }
+                }
+              ]
+            }
+            """;
 
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        IHostEnvironment hostingEnvironment = HostingHelpers.GetHostingEnvironment();
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostingEnvironment.EnvironmentName);
+
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
 
         ConfigServerClientOptions clientOptions = _commonOptions;
 
@@ -1370,13 +1379,6 @@ public sealed class ConfigServerConfigurationProviderTest
         Assert.NotNull(testOptions);
         Assert.Equal("my-app", testOptions.Name);
         Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", testOptions.Version);
-    }
-
-    private static CultureInfo? GetAndSetCurrentCulture(CultureInfo? newCulture)
-    {
-        var oldCulture = CultureInfo.DefaultThreadCurrentCulture;
-        CultureInfo.DefaultThreadCurrentCulture = newCulture;
-        return oldCulture;
     }
 
     private static string GetEncodedUserPassword(string user, string password)

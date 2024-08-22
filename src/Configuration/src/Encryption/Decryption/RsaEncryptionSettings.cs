@@ -30,7 +30,7 @@ internal sealed class RsaEncryptionSettings
     public string? Salt { get; set; } = DefaultSalt;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the strong encryption flag is enabled.
+    /// Gets or sets a value indicating whether strong encryption is enabled. Default value: false.
     /// </summary>
     public bool Strong { get; set; }
 }

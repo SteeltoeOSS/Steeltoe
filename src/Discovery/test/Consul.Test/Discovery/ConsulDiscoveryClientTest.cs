@@ -61,7 +61,7 @@ public sealed class ConsulDiscoveryClientTest
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Health).Returns(healthMoq.Object);
 
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(options);
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, null, NullLogger<ConsulDiscoveryClient>.Instance);
 
         var serviceInstances = new List<IServiceInstance>();
@@ -193,7 +193,7 @@ public sealed class ConsulDiscoveryClientTest
         healthMoq.Setup(h => h.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, default))
             .Returns(Task.FromResult(queryResult2));
 
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(options);
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, null, NullLogger<ConsulDiscoveryClient>.Instance);
         IList<IServiceInstance> serviceInstances = await discoveryClient.GetAllInstancesAsync(QueryOptions.Default, CancellationToken.None);
 

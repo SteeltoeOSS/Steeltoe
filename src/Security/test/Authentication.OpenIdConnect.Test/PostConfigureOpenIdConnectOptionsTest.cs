@@ -14,7 +14,7 @@ namespace Steeltoe.Security.Authentication.OpenIdConnect.Test;
 public sealed class PostConfigureOpenIdConnectOptionsTest
 {
     [Fact]
-    public void PostConfigure_AddsClientIdToValidAudiences()
+    public async Task PostConfigure_AddsClientIdToValidAudiences()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -23,11 +23,11 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton(configuration);
-        serviceCollection.AddAuthentication().AddOpenIdConnect();
+        var services = new ServiceCollection();
+        services.AddSingleton(configuration);
+        services.AddAuthentication().AddOpenIdConnect();
 
-        using ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>();
         OpenIdConnectOptions options = optionsMonitor.Get(OpenIdConnectDefaults.AuthenticationScheme);
 
@@ -39,7 +39,7 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
     }
 
     [Fact]
-    public void PostConfigure_ConfiguresForCloudFoundry()
+    public async Task PostConfigure_ConfiguresForCloudFoundry()
     {
         const string vcapServices = """
             {
@@ -68,12 +68,12 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
 
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
         IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings().Build();
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton(configuration);
+        var services = new ServiceCollection();
+        services.AddSingleton(configuration);
 
-        serviceCollection.AddAuthentication().AddOpenIdConnect().ConfigureOpenIdConnectForCloudFoundry();
+        services.AddAuthentication().AddOpenIdConnect().ConfigureOpenIdConnectForCloudFoundry();
 
-        using ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>();
         OpenIdConnectOptions options = optionsMonitor.Get(OpenIdConnectDefaults.AuthenticationScheme);
 

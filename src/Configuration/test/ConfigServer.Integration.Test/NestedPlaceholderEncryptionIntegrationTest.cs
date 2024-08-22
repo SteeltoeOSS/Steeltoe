@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Configuration.ConfigServer.Integration.Test;
 
@@ -35,7 +36,7 @@ public sealed class NestedPlaceholderEncryptionIntegrationTest
         builder.AddInMemoryCollection(settings);
         IConfigurationRoot configuration1 = builder.Build();
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<PlaceholderBeforeEncryptionStartup>().UseConfiguration(configuration1);
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create().UseStartup<PlaceholderBeforeEncryptionStartup>().UseConfiguration(configuration1);
 
         using var server = new TestServer(hostBuilder);
         var configuration2 = server.Services.GetRequiredService<IConfiguration>();
@@ -69,7 +70,7 @@ public sealed class NestedPlaceholderEncryptionIntegrationTest
         builder.AddInMemoryCollection(settings);
         IConfigurationRoot configuration1 = builder.Build();
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<EncryptionBeforePlaceholderStartup>().UseConfiguration(configuration1);
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create().UseStartup<EncryptionBeforePlaceholderStartup>().UseConfiguration(configuration1);
 
         using var server = new TestServer(hostBuilder);
         var configuration2 = server.Services.GetRequiredService<IConfiguration>();

@@ -13,23 +13,26 @@ namespace Steeltoe.Management.Tracing.Test;
 public sealed class TracingBaseServiceCollectionExtensionsTest : TestBase
 {
     [Fact]
-    public void AddDistributedTracing_ConfiguresExpectedDefaults()
+    public async Task AddDistributedTracing_ConfiguresExpectedDefaults()
     {
-        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration());
+        IServiceCollection services = new ServiceCollection();
+        services.AddSingleton(GetConfiguration());
         services.AddLogging();
-
-        ServiceProvider serviceProvider = services.AddDistributedTracing().BuildServiceProvider(true);
+        services.AddDistributedTracing();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceCollectionBase(serviceProvider);
     }
 
     [Fact]
-    public void AddDistributedTracing_WiresIncludedExporters()
+    public async Task AddDistributedTracing_WiresIncludedExporters()
     {
-        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
-
-        ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider(true);
+        IServiceCollection services = new ServiceCollection();
+        services.AddSingleton(GetConfiguration());
+        services.AddLogging();
+        services.AddDistributedTracing(null);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
         Assert.Single(hostedServices, hostedService => hostedService.GetType().Name == "TelemetryHostedService");
@@ -45,35 +48,44 @@ public sealed class TracingBaseServiceCollectionExtensionsTest : TestBase
     }
 
     [Fact]
-    public void AddDistributedTracing_ConfiguresSamplers()
+    public async Task AddDistributedTracing_ConfiguresSamplers_AlwaysSample()
     {
-        // test AlwaysOn
-        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string?>
+        IServiceCollection services = new ServiceCollection();
+
+        services.AddSingleton(GetConfiguration(new Dictionary<string, string?>
         {
             { "Management:Tracing:AlwaysSample", "true" }
         }));
 
         services.AddLogging();
-        ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider(true);
+        services.AddDistributedTracing(null);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
         Assert.Single(hostedServices, hostedService => hostedService.GetType().Name == "TelemetryHostedService");
 
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
         Assert.NotNull(tracerProvider);
+    }
 
-        // test AlwaysOff
-        services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string?>
+    [Fact]
+    public async Task AddDistributedTracing_ConfiguresSamplers_NeverSample()
+    {
+        IServiceCollection services = new ServiceCollection();
+
+        services.AddSingleton(GetConfiguration(new Dictionary<string, string?>
         {
             { "Management:Tracing:NeverSample", "true" }
         }));
 
-        serviceProvider = services.AddLogging().AddDistributedTracing(null).BuildServiceProvider(true);
+        services.AddLogging();
+        services.AddDistributedTracing(null);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
+        IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
         Assert.Single(hostedServices, hostedService => hostedService.GetType().Name == "TelemetryHostedService");
 
-        tracerProvider = serviceProvider.GetService<TracerProvider>();
+        var tracerProvider = serviceProvider.GetService<TracerProvider>();
         Assert.NotNull(tracerProvider);
     }
 }

@@ -32,13 +32,13 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
     };
 
     [Fact]
-    public void AddEurekaDiscoveryClient_WebApplicationBuilder_AddsServiceDiscovery_Eureka()
+    public async Task AddEurekaDiscoveryClient_WebApplicationBuilder_AddsServiceDiscovery_Eureka()
     {
-        WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(EurekaSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        using WebApplication host = builder.Build();
+        await using WebApplication host = builder.Build();
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
 
         Assert.Single(discoveryClients);
@@ -47,13 +47,13 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddConsulDiscoveryClient_WebApplicationBuilder_AddsServiceDiscovery_Consul()
+    public async Task AddConsulDiscoveryClient_WebApplicationBuilder_AddsServiceDiscovery_Consul()
     {
-        WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(ConsulSettings);
         builder.Services.AddConsulDiscoveryClient();
 
-        using WebApplication host = builder.Build();
+        await using WebApplication host = builder.Build();
 
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         Assert.Single(discoveryClients);
@@ -65,7 +65,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
     [Trait("Category", "SkipOnMacOS")]
     public async Task AddEurekaDiscoveryClient_WorksWithGlobalServiceDiscovery()
     {
-        WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(EurekaSettings);
 
         builder.Services.AddEurekaDiscoveryClient();

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint;
@@ -31,7 +32,7 @@ internal static class EndpointOptionsExtensions
         ArgumentNullException.ThrowIfNull(endpointOptions);
         ArgumentNullException.ThrowIfNull(managementOptions);
 
-        if (!string.IsNullOrEmpty(endpointOptions.Id) && managementOptions.Exposure != null)
+        if (!string.IsNullOrEmpty(endpointOptions.Id))
         {
             if (managementOptions.Exposure.Exclude.Contains("*") || managementOptions.Exposure.Exclude.Contains(endpointOptions.Id))
             {

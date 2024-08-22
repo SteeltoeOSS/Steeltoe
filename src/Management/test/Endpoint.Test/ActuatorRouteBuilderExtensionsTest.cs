@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
+using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -25,7 +26,9 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         {
             IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "actuators.read"));
 
-            return hostBuilder.Build().Services.GetServices<EndpointOptions>().Select(options => new object[]
+            using IHost host = hostBuilder.Build();
+
+            return host.Services.GetServices<EndpointOptions>().Select(options => new object[]
             {
                 options
             });
@@ -55,11 +58,9 @@ public sealed class ActuatorRouteBuilderExtensionsTest
             { "management:endpoints:actuator:exposure:include:0", "*" }
         };
 
-        return new HostBuilder().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices(services =>
+        return TestHostBuilderFactory.Create().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices(services =>
         {
             services.AddAllActuators();
-            services.AddRouting();
-            services.AddActionDescriptorCollectionProviderMock();
 
             services.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.AuthenticationScheme, _ =>

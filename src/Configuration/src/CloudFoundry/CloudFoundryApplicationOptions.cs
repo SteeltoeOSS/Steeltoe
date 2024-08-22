@@ -11,6 +11,9 @@ public sealed class CloudFoundryApplicationOptions : IApplicationInstanceInfo
 {
     // See https://docs.cloudfoundry.org/devguide/deploy-apps/environment-variable.html#VCAP-APPLICATION
 
+    internal const string ConfigurationPrefix = "vcap:application";
+    internal const string DefaultApplicationName = "unknown";
+
     /// <summary>
     /// Gets or sets the GUID identifying the app.
     /// </summary>
@@ -21,7 +24,7 @@ public sealed class CloudFoundryApplicationOptions : IApplicationInstanceInfo
     /// Gets or sets the name assigned to the app when it was pushed.
     /// </summary>
     [ConfigurationKeyName("application_name")]
-    public string ApplicationName { get; set; } = "unknown";
+    public string ApplicationName { get; set; } = DefaultApplicationName;
 
     /// <summary>
     /// Gets the URIs assigned to the app.

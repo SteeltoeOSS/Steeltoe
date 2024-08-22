@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Configuration;
 
@@ -35,7 +36,7 @@ internal abstract class ConfigureEndpointOptions<T> : IConfigureOptionsWithKey<T
 
         options.Id ??= _id;
 
-        if (options.RequiredPermissions == Permissions.Undefined)
+        if (!Enum.IsDefined(options.RequiredPermissions))
         {
             options.RequiredPermissions = Permissions.Restricted;
         }

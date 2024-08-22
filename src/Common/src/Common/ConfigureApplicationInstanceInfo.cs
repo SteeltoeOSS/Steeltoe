@@ -23,6 +23,13 @@ internal sealed class ConfigureApplicationInstanceInfo : IConfigureOptions<Appli
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        options.ApplicationName ??= _configuration.GetValue<string>("spring:application:name") ?? Assembly.GetEntryAssembly()!.GetName().Name;
+        options.ApplicationName ??= _configuration.GetValue<string>("spring:application:name") ??
+            GetAspNetApplicationName() ?? Assembly.GetEntryAssembly()!.GetName().Name;
+    }
+
+    private string? GetAspNetApplicationName()
+    {
+        // When using UseStartup<T>() on the host builder, ASP.NET sets the below key to point to the assembly containing T.
+        return _configuration.GetValue<string>("applicationName");
     }
 }

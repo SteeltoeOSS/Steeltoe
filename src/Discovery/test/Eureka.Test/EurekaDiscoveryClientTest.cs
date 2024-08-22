@@ -4,7 +4,6 @@
 
 using System.Net;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
@@ -143,8 +142,7 @@ public sealed class EurekaDiscoveryClientTest
             ["Eureka:Instance:AppName"] = "demo"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
@@ -185,8 +183,7 @@ public sealed class EurekaDiscoveryClientTest
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
@@ -208,8 +205,7 @@ public sealed class EurekaDiscoveryClientTest
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
@@ -244,8 +240,7 @@ public sealed class EurekaDiscoveryClientTest
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
@@ -292,8 +287,7 @@ public sealed class EurekaDiscoveryClientTest
             ["Eureka:Instance:AppName"] = "FOO"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
@@ -322,8 +316,7 @@ public sealed class EurekaDiscoveryClientTest
             ["Eureka:Instance:AppName"] = "FOO"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
@@ -351,8 +344,7 @@ public sealed class EurekaDiscoveryClientTest
             ["Eureka:Instance:InstanceId"] = "localhost:foo"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
@@ -385,8 +377,7 @@ public sealed class EurekaDiscoveryClientTest
             ["Eureka:Instance:InstanceId"] = "localhost:foo"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
@@ -418,8 +409,7 @@ public sealed class EurekaDiscoveryClientTest
             ["Eureka:Instance:InstanceId"] = "localhost:foo"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
@@ -445,8 +435,7 @@ public sealed class EurekaDiscoveryClientTest
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
@@ -513,8 +502,7 @@ public sealed class EurekaDiscoveryClientTest
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
@@ -574,8 +562,7 @@ public sealed class EurekaDiscoveryClientTest
 
         var myHandler = new TestHealthCheckHandler(InstanceStatus.Down);
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddSingleton<IHealthCheckHandler>(myHandler);
         builder.Services.AddEurekaDiscoveryClient();
@@ -604,8 +591,7 @@ public sealed class EurekaDiscoveryClientTest
 
         var myHandler = new TestHealthCheckHandler(InstanceStatus.Down);
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddSingleton<IHealthCheckHandler>(myHandler);
         builder.Services.AddEurekaDiscoveryClient();
@@ -634,8 +620,7 @@ public sealed class EurekaDiscoveryClientTest
             ["Eureka:Instance:AppName"] = "FOO"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
         builder.Services.AddTransient(_ => extraHeadersHandler);
@@ -670,8 +655,7 @@ public sealed class EurekaDiscoveryClientTest
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 

@@ -61,7 +61,7 @@ public sealed class ConfigurationDiscoveryClientTest
             }
         };
 
-        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
+        TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var client = new ConfigurationDiscoveryClient(optionsMonitor);
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);
@@ -91,7 +91,7 @@ public sealed class ConfigurationDiscoveryClientTest
             }
         };
 
-        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
+        TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var client = new ConfigurationDiscoveryClient(optionsMonitor);
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);
@@ -133,7 +133,7 @@ public sealed class ConfigurationDiscoveryClientTest
         services.AddSingleton(configuration);
         services.AddConfigurationDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         // by getting the client, we're confirming that the options are also available in the container
         IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
@@ -152,7 +152,7 @@ public sealed class ConfigurationDiscoveryClientTest
     }
 
     [Fact]
-    public void DoesNotRegisterConfigurationDiscoveryClientMultipleTimes()
+    public async Task DoesNotRegisterConfigurationDiscoveryClientMultipleTimes()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
@@ -162,7 +162,7 @@ public sealed class ConfigurationDiscoveryClientTest
         services.AddConfigurationDiscoveryClient();
         services.AddConfigurationDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
         discoveryClients.OfType<ConfigurationDiscoveryClient>().Should().HaveCount(1);
@@ -172,7 +172,7 @@ public sealed class ConfigurationDiscoveryClientTest
     }
 
     [Fact]
-    public void RegistersHostedService()
+    public async Task RegistersHostedService()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
@@ -181,7 +181,7 @@ public sealed class ConfigurationDiscoveryClientTest
 
         services.AddConfigurationDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
         hostedServices.OfType<DiscoveryClientHostedService>().Should().HaveCount(1);

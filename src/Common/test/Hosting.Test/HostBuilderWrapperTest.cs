@@ -15,7 +15,7 @@ namespace Steeltoe.Common.Hosting.Test;
 public sealed class HostBuilderWrapperTest
 {
     [Fact]
-    public void WebApplicationBuilder_Wraps()
+    public async Task WebApplicationBuilder_Wraps()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -24,8 +24,7 @@ public sealed class HostBuilderWrapperTest
 
         var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());
@@ -34,7 +33,7 @@ public sealed class HostBuilderWrapperTest
         wrapper.ConfigureWebHost(hostBuilder => hostBuilder.UseUrls("http://*:8888"));
         wrapper.ConfigureServices((contextWrapper, _) => contextWrapper.HostEnvironment.ApplicationName = "TestApp");
 
-        WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
 
         app.Services.GetService<InjectableType>().Should().NotBeNull();
         app.Configuration.GetValue<string>("foo").Should().Be("bar");
@@ -60,8 +59,7 @@ public sealed class HostBuilderWrapperTest
 
         var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
-        IWebHostBuilder builder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
-        builder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());
@@ -70,7 +68,7 @@ public sealed class HostBuilderWrapperTest
         wrapper.ConfigureWebHost(hostBuilder => hostBuilder.UseUrls("http://*:8888"));
         wrapper.ConfigureServices((contextWrapper, _) => contextWrapper.HostEnvironment.ApplicationName = "TestApp");
 
-        IWebHost app = builder.Build();
+        using IWebHost app = builder.Build();
 
         app.Services.GetService<InjectableType>().Should().NotBeNull();
         var configuration = app.Services.GetRequiredService<IConfiguration>();
@@ -98,8 +96,7 @@ public sealed class HostBuilderWrapperTest
 
         var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
-        IHostBuilder builder = new HostBuilder();
-        builder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        IHostBuilder builder = TestHostBuilderFactory.Create();
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());
@@ -108,7 +105,7 @@ public sealed class HostBuilderWrapperTest
         wrapper.ConfigureWebHost(hostBuilder => hostBuilder.UseUrls("http://*:8888"));
         wrapper.ConfigureServices((contextWrapper, _) => contextWrapper.HostEnvironment.ApplicationName = "TestApp");
 
-        IHost app = builder.Build();
+        using IHost app = builder.Build();
 
         app.Services.GetService<InjectableType>().Should().NotBeNull();
         var configuration = app.Services.GetRequiredService<IConfiguration>();

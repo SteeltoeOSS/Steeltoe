@@ -18,7 +18,7 @@ public sealed class RoundRobinLoadBalancerTest
     public async Task ResolveServiceInstanceAsync_ResolvesAndIncrementsServiceIndex()
     {
         ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
-        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
+        TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var client = new ConfigurationDiscoveryClient(optionsMonitor);
         var resolver = new ServiceInstancesResolver([client], NullLogger<ServiceInstancesResolver>.Instance);
         var loadBalancer = new RoundRobinLoadBalancer(resolver, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
@@ -48,7 +48,7 @@ public sealed class RoundRobinLoadBalancerTest
     public async Task ResolveServiceInstanceAsync_ResolvesAndIncrementsServiceIndex_WithDistributedCache()
     {
         ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
-        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
+        TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var client = new ConfigurationDiscoveryClient(optionsMonitor);
         var resolver = new ServiceInstancesResolver([client], NullLogger<ServiceInstancesResolver>.Instance);
         IDistributedCache distributedCache = GetCache();
@@ -116,7 +116,7 @@ public sealed class RoundRobinLoadBalancerTest
     public async Task ResolveServiceInstanceAsync_SkipsOverThrowingDiscoveryClients()
     {
         ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
-        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
+        TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
 
         IDiscoveryClient[] clients =
         [
@@ -135,7 +135,7 @@ public sealed class RoundRobinLoadBalancerTest
     public async Task ResolveServiceInstanceAsync_CachesInstances()
     {
         ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
-        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
+        TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var client = new ConfigurationDiscoveryClient(optionsMonitor);
         IDistributedCache distributedCache = GetCache();
         var resolver = new ServiceInstancesResolver([client], distributedCache, null, NullLogger<ServiceInstancesResolver>.Instance);
@@ -234,7 +234,7 @@ public sealed class RoundRobinLoadBalancerTest
         var services = new ServiceCollection();
         services.AddDistributedMemoryCache();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         return serviceProvider.GetRequiredService<IDistributedCache>();
     }
 

@@ -38,6 +38,8 @@ public sealed class XunitLoggerProvider : ILoggerProvider
 
     public ILogger CreateLogger(string categoryName)
     {
+        ArgumentNullException.ThrowIfNull(categoryName);
+
         return new XunitLogger(_testOutputHelper, categoryName, _filter);
     }
 

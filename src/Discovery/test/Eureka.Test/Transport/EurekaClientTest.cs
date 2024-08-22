@@ -697,4 +697,24 @@ public sealed class EurekaClientTest
         app.Instances[0].IPAddress.Should().Be("192.168.56.1");
         app.Instances[0].Status.Should().Be(InstanceStatus.Up);
     }
+
+    private sealed class TestHttpClientFactory(HttpClient? httpClient) : IHttpClientFactory, IDisposable
+    {
+        private readonly HttpClient _httpClient = httpClient ?? new HttpClient();
+
+        public TestHttpClientFactory()
+            : this(null)
+        {
+        }
+
+        public HttpClient CreateClient(string name)
+        {
+            return _httpClient;
+        }
+
+        public void Dispose()
+        {
+            _httpClient.Dispose();
+        }
+    }
 }

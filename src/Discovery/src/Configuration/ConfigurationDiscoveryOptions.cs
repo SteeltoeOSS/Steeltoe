@@ -13,5 +13,8 @@ public sealed class ConfigurationDiscoveryOptions
 {
     internal const string ConfigurationPrefix = "discovery";
 
+    /// <summary>
+    /// Gets the list of service instances.
+    /// </summary>
     public IList<ConfigurationServiceInstance> Services { get; } = new List<ConfigurationServiceInstance>();
 }

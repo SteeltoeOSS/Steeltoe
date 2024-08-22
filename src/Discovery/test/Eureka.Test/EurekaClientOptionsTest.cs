@@ -132,7 +132,7 @@ public sealed class EurekaClientOptionsTest
     }
 
     [Fact]
-    public void Client_EnabledByDefault()
+    public async Task Client_EnabledByDefault()
     {
         var services = new ServiceCollection();
         services.AddEurekaDiscoveryClient();
@@ -144,14 +144,14 @@ public sealed class EurekaClientOptionsTest
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);
     }
 
     [Fact]
-    public void ClientDisabledBySpringCloudDiscovery_EnabledFalse()
+    public async Task ClientDisabledBySpringCloudDiscovery_EnabledFalse()
     {
         var services = new ServiceCollection();
         services.AddEurekaDiscoveryClient();
@@ -164,14 +164,14 @@ public sealed class EurekaClientOptionsTest
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Assert.False(clientOptions.Value.Enabled);
     }
 
     [Fact]
-    public void ClientOptionsValidation_SucceedsWhenEurekaIsTurnedOff()
+    public async Task ClientOptionsValidation_SucceedsWhenEurekaIsTurnedOff()
     {
         using var scope = new EnvironmentVariableScope("DOTNET_RUNNING_IN_CONTAINER", "true");
 
@@ -184,7 +184,7 @@ public sealed class EurekaClientOptionsTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddEurekaDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Action action = () => _ = clientOptions.Value;
@@ -193,7 +193,7 @@ public sealed class EurekaClientOptionsTest
     }
 
     [Fact]
-    public void ClientOptionsValidation_FailsWhenServiceUrlIsNotProvided()
+    public async Task ClientOptionsValidation_FailsWhenServiceUrlIsNotProvided()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -204,7 +204,7 @@ public sealed class EurekaClientOptionsTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddEurekaDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Action action = () => _ = clientOptions.Value;
@@ -213,7 +213,7 @@ public sealed class EurekaClientOptionsTest
     }
 
     [Fact]
-    public void ClientOptionsValidation_FailsWhenServiceUrlsAreInvalid()
+    public async Task ClientOptionsValidation_FailsWhenServiceUrlsAreInvalid()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -224,7 +224,7 @@ public sealed class EurekaClientOptionsTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddEurekaDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Action action = () => _ = clientOptions.Value;
@@ -235,7 +235,7 @@ public sealed class EurekaClientOptionsTest
     }
 
     [Fact]
-    public void ClientOptionsValidation_FailsWhenRunningInCloudWithLocalhost()
+    public async Task ClientOptionsValidation_FailsWhenRunningInCloudWithLocalhost()
     {
         using var scope = new EnvironmentVariableScope("DOTNET_RUNNING_IN_CONTAINER", "true");
 
@@ -243,7 +243,7 @@ public sealed class EurekaClientOptionsTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddEurekaDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Action action = () => _ = clientOptions.Value;
@@ -254,7 +254,7 @@ public sealed class EurekaClientOptionsTest
     }
 
     [Fact]
-    public void Client_FavorsEurekaClientEnabled()
+    public async Task Client_FavorsEurekaClientEnabled()
     {
         var services = new ServiceCollection();
         services.AddEurekaDiscoveryClient();
@@ -268,7 +268,7 @@ public sealed class EurekaClientOptionsTest
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);
