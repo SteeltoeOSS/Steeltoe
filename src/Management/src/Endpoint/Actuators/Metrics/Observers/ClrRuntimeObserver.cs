@@ -69,7 +69,8 @@ internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
 
     private double GetUpTime()
     {
-        TimeSpan diff = DateTime.UtcNow - Process.GetCurrentProcess().StartTime.ToUniversalTime();
+        using var process = Process.GetCurrentProcess();
+        TimeSpan diff = DateTime.UtcNow - process.StartTime.ToUniversalTime();
         return diff.TotalSeconds;
     }
 
