@@ -67,7 +67,7 @@ public sealed class ActuatorRouteBuilderExtensionsTest
                 {
                 });
 
-            services.AddAuthorization(options => options.AddPolicy("TestAuth", policyAction)); // setup Auth based on test Case
+            services.AddAuthorizationBuilder().AddPolicy("TestAuth", policyAction);
             services.AddServerSideBlazor();
         }).ConfigureWebHost(builder =>
         {

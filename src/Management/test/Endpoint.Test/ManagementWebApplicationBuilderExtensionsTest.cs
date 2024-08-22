@@ -451,7 +451,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
             {
             });
 
-        builder.Services.AddAuthorization(options => options.AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read")));
+        builder.Services.AddAuthorizationBuilder().AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read"));
 
         WebApplication app = builder.Build();
         app.UseRouting().UseAuthentication().UseAuthorization();
