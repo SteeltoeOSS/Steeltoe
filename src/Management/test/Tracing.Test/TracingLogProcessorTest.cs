@@ -45,8 +45,8 @@ public sealed class TracingLogProcessorTest
         string result = processor.Process("InputLogMessage");
 
         Assert.Contains("InputLogMessage", result, StringComparison.Ordinal);
-        Assert.Contains("[", result, StringComparison.Ordinal);
-        Assert.Contains("]", result, StringComparison.Ordinal);
+        Assert.Contains('[', result);
+        Assert.Contains(']', result);
         Assert.Contains(span.Context.TraceId.ToHexString(), result, StringComparison.Ordinal);
         Assert.Contains(span.Context.SpanId.ToHexString(), result, StringComparison.Ordinal);
         Assert.Contains("foobar", result, StringComparison.Ordinal);
@@ -56,8 +56,8 @@ public sealed class TracingLogProcessorTest
         result = processor.Process("InputLogMessage2");
 
         Assert.Contains("InputLogMessage2", result, StringComparison.Ordinal);
-        Assert.Contains("[", result, StringComparison.Ordinal);
-        Assert.Contains("]", result, StringComparison.Ordinal);
+        Assert.Contains('[', result);
+        Assert.Contains(']', result);
         Assert.Contains(childSpan.Context.TraceId.ToHexString(), result, StringComparison.Ordinal);
         Assert.Contains(childSpan.Context.SpanId.ToHexString(), result, StringComparison.Ordinal);
 
@@ -82,8 +82,8 @@ public sealed class TracingLogProcessorTest
         string result = processor.Process("InputLogMessage");
 
         Assert.Contains("InputLogMessage", result, StringComparison.Ordinal);
-        Assert.Contains("[", result, StringComparison.Ordinal);
-        Assert.Contains("]", result, StringComparison.Ordinal);
+        Assert.Contains('[', result);
+        Assert.Contains(']', result);
 
         string full = span.Context.TraceId.ToHexString();
         string shorty = full.Substring(full.Length - 16, 16);
