@@ -104,13 +104,13 @@ internal sealed class CloudFoundrySecurityMiddleware
 
     internal string GetAccessToken(HttpRequest request)
     {
-        if (request.Headers.TryGetValue(PermissionsProvider.AuthorizationHeader, out StringValues headerVal))
+        if (request.Headers.TryGetValue(PermissionsProvider.AuthorizationHeaderName, out StringValues headerVal))
         {
             string header = headerVal.ToString();
 
-            if (header.StartsWith(PermissionsProvider.Bearer, StringComparison.OrdinalIgnoreCase))
+            if (header.StartsWith(PermissionsProvider.BearerHeaderNamePrefix, StringComparison.OrdinalIgnoreCase))
             {
-                return header.Substring(PermissionsProvider.Bearer.Length + 1);
+                return header[PermissionsProvider.BearerHeaderNamePrefix.Length..];
             }
         }
 

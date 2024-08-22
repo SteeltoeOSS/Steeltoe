@@ -140,8 +140,8 @@ internal sealed class PropertyPlaceholderHelper
 
                     if (separatorIndex != -1)
                     {
-                        string actualPlaceholder = placeholder.Substring(0, separatorIndex);
-                        string defaultValue = placeholder.Substring(separatorIndex + Separator.Length);
+                        string actualPlaceholder = placeholder[..separatorIndex];
+                        string defaultValue = placeholder[(separatorIndex + Separator.Length)..];
                         propertyValue = configuration[actualPlaceholder] ?? defaultValue;
                     }
                     else if (useEmptyStringIfNotFound)

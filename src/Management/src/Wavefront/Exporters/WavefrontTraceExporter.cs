@@ -18,6 +18,8 @@ namespace Steeltoe.Management.Wavefront.Exporters;
 /// </summary>
 public sealed class WavefrontTraceExporter : BaseExporter<Activity>
 {
+    private static readonly int ProxyLength = "proxy".Length;
+
     private readonly ILogger<WavefrontTraceExporter> _logger;
     private readonly WavefrontDirectIngestionClient _wavefrontSender;
     private readonly WavefrontExporterOptions _options;
@@ -39,7 +41,7 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
 
         if (uri.StartsWith("proxy://", StringComparison.Ordinal))
         {
-            uri = $"http{uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
+            uri = $"http{uri[ProxyLength..]}"; // Proxy reporting is now http on newer proxies.
         }
         else
         {

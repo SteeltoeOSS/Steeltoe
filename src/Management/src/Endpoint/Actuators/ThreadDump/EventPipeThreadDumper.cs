@@ -288,8 +288,8 @@ public sealed class EventPipeThreadDumper
 
         ParseClassName(remaining, out remaining, out className);
 
-        int extIndex = remaining.IndexOf('.');
-        assemblyName = extIndex > 0 ? remaining.Substring(0, extIndex) : remaining;
+        int dotIndex = remaining.IndexOf('.');
+        assemblyName = dotIndex > 0 ? remaining[..dotIndex] : remaining;
 
         return true;
     }
@@ -305,8 +305,8 @@ public sealed class EventPipeThreadDumper
         }
         else
         {
-            remaining = input.Substring(0, classStartIndex);
-            className = input.Substring(classStartIndex + 1);
+            remaining = input[..classStartIndex];
+            className = input[(classStartIndex + 1)..];
         }
     }
 
@@ -316,8 +316,8 @@ public sealed class EventPipeThreadDumper
 
         if (methodStartIndex > 0)
         {
-            remaining = input.Substring(0, methodStartIndex);
-            methodName = input.Substring(methodStartIndex + 1);
+            remaining = input[..methodStartIndex];
+            methodName = input[(methodStartIndex + 1)..];
             return true;
         }
 
@@ -331,8 +331,8 @@ public sealed class EventPipeThreadDumper
 
         if (paramStartIndex > 0)
         {
-            remaining = input.Substring(0, paramStartIndex);
-            parameters = input.Substring(paramStartIndex);
+            remaining = input[..paramStartIndex];
+            parameters = input[paramStartIndex..];
             return true;
         }
 

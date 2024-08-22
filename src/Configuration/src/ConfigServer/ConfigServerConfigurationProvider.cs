@@ -351,7 +351,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 {
                     if (uri.EndsWith('/') && path.StartsWith('/'))
                     {
-                        uri = uri.Substring(0, uri.Length - 1);
+                        uri = uri[..^1];
                     }
 
                     uri += path;

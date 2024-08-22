@@ -154,7 +154,7 @@ public sealed class EventCounterListenerTest : BaseTest
         {
             List<KeyValuePair<string, IList<MetricSample>>> summary = metricSamples.Where(pair => pair.Key == metric).ToList();
 
-            if (inclusions.Contains(metric.Substring("System.Runtime.".Length)))
+            if (inclusions.Contains(metric["System.Runtime.".Length..]))
             {
                 Assert.True(summary.Count > 0, $"Expected metrics for {metric}");
             }
