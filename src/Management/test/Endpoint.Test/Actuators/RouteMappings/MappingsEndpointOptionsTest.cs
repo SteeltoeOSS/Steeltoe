@@ -15,6 +15,6 @@ public sealed class MappingsEndpointOptionsTest : BaseTest
         var options = GetOptionsFromSettings<RouteMappingsEndpointOptions>();
         Assert.Null(options.Enabled);
         Assert.Equal("mappings", options.Id);
-        Assert.Equal(Permissions.Restricted, options.RequiredPermissions);
+        Assert.Equal(EndpointPermissions.Restricted, options.RequiredPermissions);
     }
 }

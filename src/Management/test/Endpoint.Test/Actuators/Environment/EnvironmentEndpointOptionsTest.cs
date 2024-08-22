@@ -25,6 +25,6 @@ public sealed class EnvironmentEndpointOptionsTest : BaseTest
             "vcap_services"
         }, options.KeysToSanitize);
 
-        Assert.Equal(Permissions.Restricted, options.RequiredPermissions);
+        Assert.Equal(EndpointPermissions.Restricted, options.RequiredPermissions);
     }
 }

@@ -43,16 +43,16 @@ internal sealed class HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointO
         string requestUri = GetRequestUri(context.Request);
         Dictionary<string, IList<string?>> requestHeaders = GetHeaders(context.Request.Headers);
 
-        var request = new Request(context.Request.Method, requestUri, requestHeaders, remoteAddress);
+        var request = new TraceRequest(context.Request.Method, requestUri, requestHeaders, remoteAddress);
 
         Dictionary<string, IList<string?>> responseHeaders = GetHeaders(context.Response.Headers);
-        var response = new Response(context.Response.StatusCode, responseHeaders);
+        var response = new TraceResponse(context.Response.StatusCode, responseHeaders);
 
         string? userName = GetUserPrincipal(context);
-        Principal? principal = userName == null ? null : new Principal(userName);
+        TracePrincipal? principal = userName == null ? null : new TracePrincipal(userName);
 
         string? sessionId = GetSessionId(context);
-        Session? session = sessionId == null ? null : new Session(sessionId);
+        TraceSession? session = sessionId == null ? null : new TraceSession(sessionId);
 
         long timestamp = GetJavaTime(DateTime.UtcNow.Ticks);
 

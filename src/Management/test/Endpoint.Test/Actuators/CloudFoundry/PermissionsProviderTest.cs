@@ -41,8 +41,8 @@ public sealed class PermissionsProviderTest : BaseTest
         };
 
         response.Content = JsonContent.Create(permissions);
-        Permissions result = await permissionsProvider.GetPermissionsAsync(response, CancellationToken.None);
-        Assert.Equal(Permissions.Full, result);
+        EndpointPermissions result = await permissionsProvider.GetPermissionsAsync(response, CancellationToken.None);
+        Assert.Equal(EndpointPermissions.Full, result);
     }
 
     private static PermissionsProvider GetPermissionsProvider()

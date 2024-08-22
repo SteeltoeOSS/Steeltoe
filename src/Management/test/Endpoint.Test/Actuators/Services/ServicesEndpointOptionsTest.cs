@@ -15,6 +15,6 @@ public sealed class ServicesEndpointOptionsTest : BaseTest
         var options = GetOptionsFromSettings<ServicesEndpointOptions>();
         Assert.Null(options.Enabled);
         Assert.Equal("beans", options.Id);
-        Assert.Equal(Permissions.Restricted, options.RequiredPermissions);
+        Assert.Equal(EndpointPermissions.Restricted, options.RequiredPermissions);
     }
 }

@@ -4,11 +4,11 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.Trace;
 
-public sealed class Principal
+public sealed class TracePrincipal
 {
     public string Name { get; }
 
-    public Principal(string name)
+    public TracePrincipal(string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 

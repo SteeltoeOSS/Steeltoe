@@ -4,12 +4,12 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.Trace;
 
-public sealed class Response
+public sealed class TraceResponse
 {
     public int Status { get; }
     public IDictionary<string, IList<string?>> Headers { get; }
 
-    public Response(int status, IDictionary<string, IList<string?>> headers)
+    public TraceResponse(int status, IDictionary<string, IList<string?>> headers)
     {
         ArgumentNullException.ThrowIfNull(headers);
 

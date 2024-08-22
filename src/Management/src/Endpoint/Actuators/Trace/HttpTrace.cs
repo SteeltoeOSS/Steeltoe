@@ -7,13 +7,13 @@ namespace Steeltoe.Management.Endpoint.Actuators.Trace;
 public sealed class HttpTrace
 {
     public long Timestamp { get; }
-    public Principal? Principal { get; }
-    public Session? Session { get; }
-    public Request Request { get; }
-    public Response Response { get; }
+    public TracePrincipal? Principal { get; }
+    public TraceSession? Session { get; }
+    public TraceRequest Request { get; }
+    public TraceResponse Response { get; }
     public long TimeTaken { get; }
 
-    public HttpTrace(Request request, Response response, long timestamp, Principal? principal, Session? session, double timeTaken)
+    public HttpTrace(TraceRequest request, TraceResponse response, long timestamp, TracePrincipal? principal, TraceSession? session, double timeTaken)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(response);

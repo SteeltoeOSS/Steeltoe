@@ -81,7 +81,7 @@ internal sealed class PermissionsProvider
                     : new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
             }
 
-            Permissions permissions = await GetPermissionsAsync(response, cancellationToken);
+            EndpointPermissions permissions = await GetPermissionsAsync(response, cancellationToken);
             return new SecurityResult(permissions);
         }
         catch (Exception exception) when (!exception.IsCancellation())
@@ -92,12 +92,12 @@ internal sealed class PermissionsProvider
         }
     }
 
-    public async Task<Permissions> GetPermissionsAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+    public async Task<EndpointPermissions> GetPermissionsAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(response);
 
         string json = string.Empty;
-        var permissions = Permissions.None;
+        var permissions = EndpointPermissions.None;
 
         try
         {
@@ -110,7 +110,7 @@ internal sealed class PermissionsProvider
             if (result != null && result.TryGetValue(ReadSensitiveDataJsonPropertyName, out JsonElement permissionElement))
             {
                 bool enabled = JsonSerializer.Deserialize<bool>(permissionElement.GetRawText());
-                permissions = enabled ? Permissions.Full : Permissions.Restricted;
+                permissions = enabled ? EndpointPermissions.Full : EndpointPermissions.Restricted;
             }
         }
         catch (Exception exception) when (!exception.IsCancellation())

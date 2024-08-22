@@ -448,11 +448,11 @@ Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.get -> l
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.set -> void
 Steeltoe.Management.Endpoint.Actuators.Trace.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.HttpTrace(Steeltoe.Management.Endpoint.Actuators.Trace.Request! request, Steeltoe.Management.Endpoint.Actuators.Trace.Response! response, long timestamp, Steeltoe.Management.Endpoint.Actuators.Trace.Principal? principal, Steeltoe.Management.Endpoint.Actuators.Trace.Session? session, double timeTaken) -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.Principal.get -> Steeltoe.Management.Endpoint.Actuators.Trace.Principal?
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.Request.get -> Steeltoe.Management.Endpoint.Actuators.Trace.Request!
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.Response.get -> Steeltoe.Management.Endpoint.Actuators.Trace.Response!
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.Session.get -> Steeltoe.Management.Endpoint.Actuators.Trace.Session?
+Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.HttpTrace(Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest! request, Steeltoe.Management.Endpoint.Actuators.Trace.TraceResponse! response, long timestamp, Steeltoe.Management.Endpoint.Actuators.Trace.TracePrincipal? principal, Steeltoe.Management.Endpoint.Actuators.Trace.TraceSession? session, double timeTaken) -> void
+Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.Principal.get -> Steeltoe.Management.Endpoint.Actuators.Trace.TracePrincipal?
+Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.Request.get -> Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest!
+Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.Response.get -> Steeltoe.Management.Endpoint.Actuators.Trace.TraceResponse!
+Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.Session.get -> Steeltoe.Management.Endpoint.Actuators.Trace.TraceSession?
 Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.Timestamp.get -> long
 Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.TimeTaken.get -> long
 Steeltoe.Management.Endpoint.Actuators.Trace.HttpTraceResult
@@ -466,22 +466,6 @@ Steeltoe.Management.Endpoint.Actuators.Trace.HttpTraceResultV2.Traces.get -> Sys
 Steeltoe.Management.Endpoint.Actuators.Trace.IHttpTraceEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.Trace.IHttpTraceRepository
 Steeltoe.Management.Endpoint.Actuators.Trace.IHttpTraceRepository.GetTraces() -> Steeltoe.Management.Endpoint.Actuators.Trace.HttpTraceResult!
-Steeltoe.Management.Endpoint.Actuators.Trace.Principal
-Steeltoe.Management.Endpoint.Actuators.Trace.Principal.Name.get -> string!
-Steeltoe.Management.Endpoint.Actuators.Trace.Principal.Principal(string! name) -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.Request
-Steeltoe.Management.Endpoint.Actuators.Trace.Request.Headers.get -> System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<string?>!>!
-Steeltoe.Management.Endpoint.Actuators.Trace.Request.Method.get -> string!
-Steeltoe.Management.Endpoint.Actuators.Trace.Request.RemoteAddress.get -> string?
-Steeltoe.Management.Endpoint.Actuators.Trace.Request.Request(string! method, string! uri, System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<string?>!>! headers, string? remoteAddress) -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.Request.Uri.get -> string!
-Steeltoe.Management.Endpoint.Actuators.Trace.Response
-Steeltoe.Management.Endpoint.Actuators.Trace.Response.Headers.get -> System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<string?>!>!
-Steeltoe.Management.Endpoint.Actuators.Trace.Response.Response(int status, System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<string?>!>! headers) -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.Response.Status.get -> int
-Steeltoe.Management.Endpoint.Actuators.Trace.Session
-Steeltoe.Management.Endpoint.Actuators.Trace.Session.Id.get -> string!
-Steeltoe.Management.Endpoint.Actuators.Trace.Session.Session(string! id) -> void
 Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddAuthType.get -> bool
 Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddAuthType.set -> void
@@ -506,10 +490,26 @@ Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddUserPrincip
 Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.Capacity.get -> int
 Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.Capacity.set -> void
 Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.TraceEndpointOptions() -> void
+Steeltoe.Management.Endpoint.Actuators.Trace.TracePrincipal
+Steeltoe.Management.Endpoint.Actuators.Trace.TracePrincipal.Name.get -> string!
+Steeltoe.Management.Endpoint.Actuators.Trace.TracePrincipal.TracePrincipal(string! name) -> void
+Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest
+Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest.Headers.get -> System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<string?>!>!
+Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest.Method.get -> string!
+Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest.RemoteAddress.get -> string?
+Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest.TraceRequest(string! method, string! uri, System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<string?>!>! headers, string? remoteAddress) -> void
+Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest.Uri.get -> string!
+Steeltoe.Management.Endpoint.Actuators.Trace.TraceResponse
+Steeltoe.Management.Endpoint.Actuators.Trace.TraceResponse.Headers.get -> System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<string?>!>!
+Steeltoe.Management.Endpoint.Actuators.Trace.TraceResponse.Status.get -> int
+Steeltoe.Management.Endpoint.Actuators.Trace.TraceResponse.TraceResponse(int status, System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<string?>!>! headers) -> void
 Steeltoe.Management.Endpoint.Actuators.Trace.TraceResult
 Steeltoe.Management.Endpoint.Actuators.Trace.TraceResult.Info.get -> System.Collections.Generic.IDictionary<string!, object?>!
 Steeltoe.Management.Endpoint.Actuators.Trace.TraceResult.TimeStamp.get -> long
 Steeltoe.Management.Endpoint.Actuators.Trace.TraceResult.TraceResult(long timestamp, System.Collections.Generic.IDictionary<string!, object?>! info) -> void
+Steeltoe.Management.Endpoint.Actuators.Trace.TraceSession
+Steeltoe.Management.Endpoint.Actuators.Trace.TraceSession.Id.get -> string!
+Steeltoe.Management.Endpoint.Actuators.Trace.TraceSession.TraceSession(string! id) -> void
 Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions
 Steeltoe.Management.Endpoint.AllActuatorsStartupFilter
 Steeltoe.Management.Endpoint.AllActuatorsStartupFilter.AllActuatorsStartupFilter(Steeltoe.Management.Endpoint.ActuatorConventionBuilder! conventionBuilder) -> void
