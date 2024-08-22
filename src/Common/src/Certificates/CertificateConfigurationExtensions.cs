@@ -35,7 +35,7 @@ public static class CertificateConfigurationExtensions
         ArgumentNullException.ThrowIfNull(certificateName);
         ArgumentException.ThrowIfNullOrEmpty(certificateFilePath);
 
-        string keyPrefix = certificateName == string.Empty
+        string keyPrefix = certificateName.Length == 0
             ? $"{CertificateOptions.ConfigurationKeyPrefix}{ConfigurationPath.KeyDelimiter}"
             : $"{CertificateOptions.ConfigurationKeyPrefix}{ConfigurationPath.KeyDelimiter}{certificateName}{ConfigurationPath.KeyDelimiter}";
 

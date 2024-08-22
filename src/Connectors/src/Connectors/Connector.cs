@@ -127,7 +127,7 @@ public sealed class Connector<TOptions, TConnection> : IDisposable
 
         if (connection == null)
         {
-            throw new InvalidOperationException(_serviceBindingName == string.Empty
+            throw new InvalidOperationException(_serviceBindingName.Length == 0
                 ? "Failed to create connection for default service binding."
                 : $"Failed to create connection for service binding '{_serviceBindingName}'.");
         }
