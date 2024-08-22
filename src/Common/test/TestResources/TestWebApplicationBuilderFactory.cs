@@ -10,11 +10,17 @@ namespace Steeltoe.Common.TestResources;
 
 public static class TestWebApplicationBuilderFactory
 {
+    /// <summary>
+    /// Creates an empty builder with activated test server.
+    /// </summary>
     public static WebApplicationBuilder Create()
     {
         return Create(new WebApplicationOptions());
     }
 
+    /// <summary>
+    /// Creates an empty builder with activated test server using the specified command-line arguments.
+    /// </summary>
     public static WebApplicationBuilder Create(string[] args)
     {
         ArgumentNullException.ThrowIfNull(args);
@@ -27,6 +33,9 @@ public static class TestWebApplicationBuilderFactory
         return Create(options);
     }
 
+    /// <summary>
+    /// Creates an empty builder with activated test server using the specified options.
+    /// </summary>
     public static WebApplicationBuilder Create(WebApplicationOptions options)
     {
         WebApplicationBuilder builder = WebApplication.CreateEmptyBuilder(options);
@@ -35,13 +44,23 @@ public static class TestWebApplicationBuilderFactory
         return builder;
     }
 
-    // CAUTION: This method creates a full-blown host builder. Prefer to use an empty one instead, to verify all dependencies are registered.
+    /// <summary>
+    /// Creates a default builder with activated test server.
+    /// <para>
+    /// CAUTION: This method creates a full-blown host builder. Prefer to use an empty one instead, to verify all dependencies are registered.
+    /// </para>
+    /// </summary>
     public static WebApplicationBuilder CreateDefault()
     {
         return CreateDefault(true);
     }
 
-    // CAUTION: This method creates a full-blown host builder. Prefer to use an empty one instead, to verify all dependencies are registered.
+    /// <summary>
+    /// Creates a default builder, optionally with activated test server.
+    /// <para>
+    /// CAUTION: This method creates a full-blown host builder. Prefer to use an empty one instead, to verify all dependencies are registered.
+    /// </para>
+    /// </summary>
     public static WebApplicationBuilder CreateDefault(bool useTestServer)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
