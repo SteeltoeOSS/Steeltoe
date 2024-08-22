@@ -41,9 +41,9 @@ public sealed class SerilogOptions
 
             string? minLevelText = section.GetValue<string>("MinimumLevel");
 
-            if (!string.IsNullOrEmpty(minLevelText))
+            if (Enum.TryParse(minLevelText, out LogEventLevel level))
             {
-                Enum.TryParse(minLevelText, out defaultLevel);
+                defaultLevel = level;
             }
 
             MinimumLevel = new MinimumLevel
