@@ -63,7 +63,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
 
         if (eventName == StopEventName)
         {
-            _logger.LogTrace("HandleStopEvent start {Thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent start {Thread}", System.Environment.CurrentManagedThreadId);
 
             var context = GetPropertyOrDefault<HttpContext>(value, "HttpContext");
 
@@ -72,7 +72,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
                 HandleStopEvent(current, context);
             }
 
-            _logger.LogTrace("HandleStopEvent finish {Thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent finish {Thread}", System.Environment.CurrentManagedThreadId);
         }
     }
 

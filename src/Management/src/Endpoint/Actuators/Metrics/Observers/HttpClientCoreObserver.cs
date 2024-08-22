@@ -68,21 +68,21 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
 
         if (eventName == StopEventName)
         {
-            _logger.LogTrace("HandleStopEvent start {Thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent start {Thread}", System.Environment.CurrentManagedThreadId);
 
             var response = GetPropertyOrDefault<HttpResponseMessage>(value, "Response");
             var requestStatus = GetPropertyOrDefault<TaskStatus>(value, "RequestTaskStatus");
             HandleStopEvent(current, request, response, requestStatus);
 
-            _logger.LogTrace("HandleStopEvent finished {Thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent finished {Thread}", System.Environment.CurrentManagedThreadId);
         }
         else if (eventName == ExceptionEvent)
         {
-            _logger.LogTrace("HandleExceptionEvent start {Thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleExceptionEvent start {Thread}", System.Environment.CurrentManagedThreadId);
 
             HandleExceptionEvent(current, request);
 
-            _logger.LogTrace("HandleExceptionEvent finished {Thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleExceptionEvent finished {Thread}", System.Environment.CurrentManagedThreadId);
         }
     }
 

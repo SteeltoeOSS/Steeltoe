@@ -69,7 +69,7 @@ internal sealed class HttpClientDesktopObserver : MetricsObserver
 
         if (eventName == StopEventName)
         {
-            _logger.LogTrace("HandleStopEvent start {Thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent start {Thread}", System.Environment.CurrentManagedThreadId);
 
             var response = GetPropertyOrDefault<HttpWebResponse>(value, "Response");
 
@@ -78,17 +78,17 @@ internal sealed class HttpClientDesktopObserver : MetricsObserver
                 HandleStopEvent(current, request, response.StatusCode);
             }
 
-            _logger.LogTrace("HandleStopEvent finished {Thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent finished {Thread}", System.Environment.CurrentManagedThreadId);
         }
         else if (eventName == StopExEventName)
         {
-            _logger.LogTrace("HandleStopEventEx start {Thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEventEx start {Thread}", System.Environment.CurrentManagedThreadId);
 
             var statusCode = GetPropertyOrDefault<HttpStatusCode>(value, "StatusCode");
 
             HandleStopEvent(current, request, statusCode);
 
-            _logger.LogTrace("HandleStopEventEx finished {Thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEventEx finished {Thread}", System.Environment.CurrentManagedThreadId);
         }
     }
 
