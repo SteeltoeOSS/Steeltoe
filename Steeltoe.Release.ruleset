@@ -6,6 +6,10 @@
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
     <Rule Id="IDE0161" Action="Warning" />
   </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.NetAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.CSharp.NetAnalyzers">
+    <Rule Id="CA1865" Action="Warning" />
+    <Rule Id="CA1866" Action="Warning" />
+  </Rules>
   <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
     <Rule Id="S100" Action="Warning" />
     <Rule Id="S106" Action="Warning" />
@@ -89,6 +93,7 @@
     <Rule Id="S6507" Action="Warning" />
     <Rule Id="S6513" Action="Warning" />
     <Rule Id="S6563" Action="Warning" />
+    <Rule Id="S6610" Action="None" />
     <Rule Id="S6797" Action="None" />
     <Rule Id="S6798" Action="None" />
     <Rule Id="S6800" Action="None" />
