@@ -124,7 +124,7 @@ public sealed class EventPipeThreadDumper
 
                     const string template = "Thread (";
                     string threadFrame = stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false);
-                    int threadId = int.Parse(threadFrame.Substring(template.Length, threadFrame.Length - (template.Length + 1)), CultureInfo.InvariantCulture);
+                    int threadId = int.Parse(threadFrame.AsSpan(template.Length, threadFrame.Length - (template.Length + 1)), CultureInfo.InvariantCulture);
 
                     if (samplesForThread.TryGetValue(threadId, out List<StackSourceSample>? samples))
                     {
