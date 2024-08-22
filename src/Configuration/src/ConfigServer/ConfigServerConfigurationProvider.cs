@@ -295,7 +295,8 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         return null;
     }
 
-    private static bool AreDictionariesEqual<TKey, TValue>(IDictionary<TKey, TValue> first, IDictionary<TKey, TValue> second)
+    private static bool AreDictionariesEqual<TKey, TValue>(IDictionary<TKey, TValue> first, Dictionary<TKey, TValue> second)
+        where TKey : notnull
     {
         return first.Count == second.Count && first.Keys.All(firstKey =>
             second.ContainsKey(firstKey) && EqualityComparer<TValue>.Default.Equals(first[firstKey], second[firstKey]));

@@ -129,7 +129,7 @@ internal sealed class MemoryFileProvider : IFileProvider
 
     private MemoryFileSystemEntry? Find(string path)
     {
-        IEnumerable<string> pathSegments = PathToSegments(path);
+        string[] pathSegments = PathToSegments(path);
         MemoryFileSystemEntry current = _root;
 
         foreach (string segment in pathSegments)
@@ -145,7 +145,7 @@ internal sealed class MemoryFileProvider : IFileProvider
         return current;
     }
 
-    private static IEnumerable<string> PathToSegments(string path)
+    private static string[] PathToSegments(string path)
     {
         return path.TrimEnd(DirectorySeparators).Split(DirectorySeparators, StringSplitOptions.RemoveEmptyEntries);
     }
@@ -172,7 +172,7 @@ internal sealed class MemoryFileProvider : IFileProvider
         public long Length => _fileContents?.Length ?? -1;
         public DateTimeOffset LastModified => default;
 
-        public IDictionary<string, MemoryFileSystemEntry> Children { get; } = new Dictionary<string, MemoryFileSystemEntry>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, MemoryFileSystemEntry> Children { get; } = new(StringComparer.OrdinalIgnoreCase);
 
         private MemoryFileSystemEntry(string name, byte[]? fileContents)
         {

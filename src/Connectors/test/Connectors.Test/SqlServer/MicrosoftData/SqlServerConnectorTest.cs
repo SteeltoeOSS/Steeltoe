@@ -320,7 +320,7 @@ public sealed class SqlServerConnectorTest
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
 
-    private static IEnumerable<string> ExtractConnectionStringParameters(string? connectionString)
+    private static List<string> ExtractConnectionStringParameters(string? connectionString)
     {
         List<string> entries = [];
 

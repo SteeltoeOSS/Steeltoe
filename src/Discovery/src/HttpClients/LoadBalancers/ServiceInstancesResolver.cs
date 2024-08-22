@@ -16,7 +16,7 @@ namespace Steeltoe.Discovery.HttpClients.LoadBalancers;
 /// </summary>
 public sealed class ServiceInstancesResolver
 {
-    private readonly IList<IDiscoveryClient> _discoveryClients;
+    private readonly IDiscoveryClient[] _discoveryClients;
     private readonly IDistributedCache? _distributedCache;
     private readonly DistributedCacheEntryOptions _cacheEntryOptions;
     private readonly ILogger<ServiceInstancesResolver> _logger;
@@ -64,7 +64,7 @@ public sealed class ServiceInstancesResolver
         _cacheEntryOptions = cacheEntryOptions ?? new DistributedCacheEntryOptions();
         _logger = logger;
 
-        if (_discoveryClients.Count == 0)
+        if (_discoveryClients.Length == 0)
         {
             _logger.LogWarning("No discovery clients are registered.");
         }
@@ -79,7 +79,7 @@ public sealed class ServiceInstancesResolver
         if (_distributedCache != null)
         {
             byte[]? cacheValue = await _distributedCache.GetAsync(cacheKey, cancellationToken);
-            IList<IServiceInstance>? instancesFromCache = FromCacheValue(cacheValue);
+            List<IServiceInstance>? instancesFromCache = FromCacheValue(cacheValue);
 
             if (instancesFromCache != null)
             {
@@ -112,7 +112,7 @@ public sealed class ServiceInstancesResolver
         return instances;
     }
 
-    private static IList<IServiceInstance>? FromCacheValue(byte[]? cacheValue)
+    private static List<IServiceInstance>? FromCacheValue(byte[]? cacheValue)
     {
         if (cacheValue is { Length: > 0 })
         {

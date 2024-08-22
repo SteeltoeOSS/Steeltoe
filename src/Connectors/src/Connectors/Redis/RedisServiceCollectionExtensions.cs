@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.Redis.DynamicTypeAccess;
 
@@ -102,7 +101,7 @@ public static class RedisServiceCollectionExtensions
         return services;
     }
 
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName)
+    private static RedisHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName)
     {
         // Not using the Steeltoe ConnectorFactory here, because obtaining a connection throws when Redis is down at application startup.
 

@@ -11,7 +11,7 @@ namespace Steeltoe.Configuration.Encryption.Test;
 public sealed class StartupForConfigureEncryptionResolver
 {
     private readonly IConfiguration _configuration;
-    private readonly ITextDecryptor _textDecryptor = new TextDecryptorForTest();
+    private readonly TextDecryptorForTest _textDecryptor = new();
 
     public StartupForConfigureEncryptionResolver(IConfiguration configuration)
     {

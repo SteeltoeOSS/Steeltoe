@@ -19,7 +19,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_AddsConfigServerProviderToProvidersList()
     {
-        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(_quickTests);
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
@@ -35,7 +35,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         CapturingLoggerProvider loggerProvider = new();
         var loggerFactory = new LoggerFactory([loggerProvider]);
 
-        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(_quickTests);
         configurationBuilder.AddConfigServer(loggerFactory);
         _ = configurationBuilder.Build();

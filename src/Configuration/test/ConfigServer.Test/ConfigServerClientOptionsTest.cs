@@ -23,7 +23,7 @@ public sealed class ConfigServerClientOptionsTest
     [Fact]
     public async Task ConfigureConfigServerClientOptions_WithDefaults()
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder();
+        var builder = new ConfigurationBuilder();
         builder.AddConfigServer();
         IConfiguration configuration = builder.Build();
 

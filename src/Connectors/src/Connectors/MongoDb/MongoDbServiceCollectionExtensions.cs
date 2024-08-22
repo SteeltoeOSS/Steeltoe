@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
 
@@ -83,7 +82,7 @@ public static class MongoDbServiceCollectionExtensions
         return services;
     }
 
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
+    private static MongoDbHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
         MongoDbPackageResolver packageResolver)
     {
         var logger = serviceProvider.GetRequiredService<ILogger<MongoDbHealthContributor>>();

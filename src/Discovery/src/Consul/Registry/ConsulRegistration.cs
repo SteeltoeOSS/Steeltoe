@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.ObjectModel;
 using Consul;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Discovery;
@@ -67,7 +66,7 @@ public sealed class ConsulRegistration : IServiceInstance
         Host = innerRegistration.Address;
         Port = innerRegistration.Port;
         Tags = innerRegistration.Tags;
-        Metadata = new ReadOnlyDictionary<string, string?>(innerRegistration.Meta);
+        Metadata = innerRegistration.Meta.AsReadOnly();
     }
 
     /// <summary>
@@ -100,7 +99,7 @@ public sealed class ConsulRegistration : IServiceInstance
         return new ConsulRegistration(agentServiceRegistration, optionsMonitor);
     }
 
-    private static IDictionary<string, string> CreateMetadata(ConsulDiscoveryOptions options)
+    private static Dictionary<string, string> CreateMetadata(ConsulDiscoveryOptions options)
     {
         Dictionary<string, string> metadata = options.Metadata.ToDictionary(pair => pair.Key, pair => pair.Value);
 

@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.Info;
 internal sealed class InfoEndpointHandler : IInfoEndpointHandler
 {
     private readonly IOptionsMonitor<InfoEndpointOptions> _optionsMonitor;
-    private readonly IList<IInfoContributor> _contributors;
+    private readonly IInfoContributor[] _contributors;
     private readonly ILogger<InfoEndpointHandler> _logger;
 
     public EndpointOptions Options => _optionsMonitor.CurrentValue;
@@ -34,7 +34,7 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
 
     public async Task<IDictionary<string, object>> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
-        IInfoBuilder builder = new InfoBuilder();
+        var builder = new InfoBuilder();
 
         foreach (IInfoContributor contributor in _contributors)
         {

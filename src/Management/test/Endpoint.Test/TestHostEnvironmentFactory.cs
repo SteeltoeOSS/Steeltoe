@@ -16,7 +16,7 @@ public static class TestHostEnvironmentFactory
         return Create("Test");
     }
 
-    private static IHostEnvironment Create(string environmentName)
+    private static HostingEnvironment Create(string environmentName)
     {
         ArgumentNullException.ThrowIfNull(environmentName);
 

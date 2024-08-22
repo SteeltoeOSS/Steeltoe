@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint;
 internal sealed class ActuatorEndpointMapper
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
-    private readonly ICollection<IEndpointMiddleware> _middlewares;
+    private readonly IEndpointMiddleware[] _middlewares;
     private readonly ILogger<ActuatorEndpointMapper> _logger;
 
     public ActuatorEndpointMapper(IOptionsMonitor<ManagementOptions> managementOptionsMonitor, IEnumerable<IEndpointMiddleware> middlewares,

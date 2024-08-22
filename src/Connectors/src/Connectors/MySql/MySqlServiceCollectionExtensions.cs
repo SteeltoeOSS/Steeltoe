@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 
@@ -84,7 +83,8 @@ public static class MySqlServiceCollectionExtensions
         return services;
     }
 
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName, MySqlPackageResolver packageResolver)
+    private static RelationalDatabaseHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
+        MySqlPackageResolver packageResolver)
     {
         ConnectorFactoryShim<MySqlOptions> connectorFactoryShim =
             ConnectorFactoryShim<MySqlOptions>.FromServiceProvider(serviceProvider, packageResolver.MySqlConnectionClass.Type);

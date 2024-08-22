@@ -315,7 +315,7 @@ public sealed class InstanceInfo
             HealthCheckUrl = MakeUrl(options.HostName, nullableSecurePort, nullableNonSecurePort, options.HealthCheckUrlPath, options.HealthCheckUrl),
             SecureHealthCheckUrl = MakeUrl(options.HostName, nullableSecurePort, null, options.HealthCheckUrlPath, options.SecureHealthCheckUrl),
             LeaseInfo = LeaseInfo.FromConfiguration(options),
-            Metadata = new ReadOnlyDictionary<string, string?>(options.MetadataMap),
+            Metadata = options.MetadataMap.AsReadOnly(),
             AutoScalingGroupName = options.AutoScalingGroupName,
             IsDirty = true
         };
@@ -418,14 +418,14 @@ public sealed class InstanceInfo
         };
     }
 
-    private static IReadOnlyDictionary<string, string?> GetMetaDataFromJson(IDictionary<string, string?>? jsonMetaData)
+    private static ReadOnlyDictionary<string, string?> GetMetaDataFromJson(IDictionary<string, string?>? jsonMetaData)
     {
         if (jsonMetaData == null || (jsonMetaData.TryGetValue("@class", out string? value) && value == "java.util.Collections$EmptyMap"))
         {
             return EmptyMetadata;
         }
 
-        return new ReadOnlyDictionary<string, string?>(jsonMetaData);
+        return jsonMetaData.AsReadOnly();
     }
 
     private static string? GetInstanceIdFromJson(JsonInstanceInfo jsonInstance)
@@ -541,7 +541,7 @@ public sealed class InstanceInfo
         }
     }
 
-    private static IReadOnlyDictionary<string, string?> WithoutEmptyMetadataValues(IReadOnlyDictionary<string, string?> source)
+    private static ReadOnlyDictionary<string, string?> WithoutEmptyMetadataValues(IReadOnlyDictionary<string, string?> source)
     {
         if (source.Count > 0)
         {
@@ -549,7 +549,7 @@ public sealed class InstanceInfo
 
             if (pruned.Count > 0)
             {
-                return new ReadOnlyDictionary<string, string?>(pruned);
+                return pruned.AsReadOnly();
             }
         }
 

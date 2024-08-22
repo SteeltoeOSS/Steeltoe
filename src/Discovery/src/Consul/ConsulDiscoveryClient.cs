@@ -24,7 +24,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     private readonly IConsulClient _client;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
     private readonly ConsulServiceRegistrar? _registrar;
-    private readonly IServiceInstance? _thisServiceInstance;
+    private readonly ThisServiceInstance? _thisServiceInstance;
 
     /// <inheritdoc />
     public string Description => "A discovery client for HashiCorp Consul.";

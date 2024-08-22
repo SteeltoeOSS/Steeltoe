@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.Services;
 internal sealed class ServicesEndpointHandler : IServicesEndpointHandler
 {
     private readonly IOptionsMonitor<ServicesEndpointOptions> _optionsMonitor;
-    private readonly Lazy<IList<ServiceRegistration>> _lazyServiceRegistrations;
+    private readonly Lazy<ServiceRegistration[]> _lazyServiceRegistrations;
 
     public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
@@ -21,16 +21,16 @@ internal sealed class ServicesEndpointHandler : IServicesEndpointHandler
         ArgumentNullException.ThrowIfNull(services);
 
         _optionsMonitor = optionsMonitor;
-        _lazyServiceRegistrations = new Lazy<IList<ServiceRegistration>>(() => ConvertToRegistrations(services), LazyThreadSafetyMode.PublicationOnly);
+        _lazyServiceRegistrations = new Lazy<ServiceRegistration[]>(() => ConvertToRegistrations(services), LazyThreadSafetyMode.PublicationOnly);
     }
 
-    private static IList<ServiceRegistration> ConvertToRegistrations(IServiceCollection services)
+    private static ServiceRegistration[] ConvertToRegistrations(IServiceCollection services)
     {
         return services.Select(descriptor => new ServiceRegistration(descriptor)).ToArray();
     }
 
     public Task<IList<ServiceRegistration>> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
-        return Task.FromResult(_lazyServiceRegistrations.Value);
+        return Task.FromResult<IList<ServiceRegistration>>(_lazyServiceRegistrations.Value);
     }
 }

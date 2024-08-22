@@ -19,7 +19,7 @@ internal sealed class CloudFoundrySecurityMiddleware
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _endpointOptionsMonitor;
-    private readonly ICollection<EndpointOptions> _endpointOptionsCollection;
+    private readonly EndpointOptions[] _endpointOptionsArray;
     private readonly RequestDelegate? _next;
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
     private readonly PermissionsProvider _permissionsProvider;
@@ -39,7 +39,7 @@ internal sealed class CloudFoundrySecurityMiddleware
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptionsMonitor = endpointOptionsMonitor;
-        _endpointOptionsCollection = endpointOptionsArray.Where(options => options is not HypermediaEndpointOptions).ToArray();
+        _endpointOptionsArray = endpointOptionsArray.Where(options => options is not HypermediaEndpointOptions).ToArray();
         _permissionsProvider = permissionsProvider;
         _logger = logger;
         _next = next;
@@ -125,7 +125,7 @@ internal sealed class CloudFoundrySecurityMiddleware
 
     private EndpointOptions? FindTargetEndpoint(PathString requestPath)
     {
-        foreach (EndpointOptions endpointOptions in _endpointOptionsCollection)
+        foreach (EndpointOptions endpointOptions in _endpointOptionsArray)
         {
             string basePath = ConfigureManagementOptions.DefaultCloudFoundryPath;
 

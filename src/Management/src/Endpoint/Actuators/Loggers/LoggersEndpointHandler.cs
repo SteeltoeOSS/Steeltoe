@@ -47,23 +47,23 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
 
         _logger.LogDebug("Invoke({Request})", SecurityUtilities.SanitizeInput(request.ToString()));
 
-        IDictionary<string, object> result;
+        Dictionary<string, object> logLevels;
 
         if (request.Type == LoggersRequestType.Get)
         {
-            result = GetLogLevels();
+            logLevels = GetLogLevels();
         }
         else
         {
             SetLogLevel(request.Name!, request.Level);
-            result = new Dictionary<string, object>();
+            logLevels = new Dictionary<string, object>();
         }
 
-        var response = new LoggersResponse(result, false);
+        var response = new LoggersResponse(logLevels, false);
         return Task.FromResult(response);
     }
 
-    private IDictionary<string, object> GetLogLevels()
+    private Dictionary<string, object> GetLogLevels()
     {
         var result = new Dictionary<string, object>
         {

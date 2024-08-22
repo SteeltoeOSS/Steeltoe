@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using A.B.C.D;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Serilog.Context;
 using Steeltoe.Common.TestResources;
 
@@ -394,7 +393,7 @@ public sealed class DynamicSerilogLoggerProviderTest
         logger.LogTrace("Trace message");
     }
 
-    private IOptionsMonitor<SerilogOptions> GetConfiguration()
+    private TestOptionsMonitor<SerilogOptions> GetConfiguration()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -415,7 +414,7 @@ public sealed class DynamicSerilogLoggerProviderTest
         return TestOptionsMonitor.Create(serilogOptions);
     }
 
-    private IOptionsMonitor<SerilogOptions> GetConfigurationFromFile()
+    private TestOptionsMonitor<SerilogOptions> GetConfigurationFromFile()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("serilogSettings.json");
         IConfiguration configuration = builder.Build();

@@ -49,7 +49,7 @@ public sealed class ServiceRegistration
             return ImmutableHashSet<string>.Empty;
         }
 
-        var dependencies = new HashSet<string>();
+        HashSet<string> dependencies = [];
         ConstructorInfo[] constructors = descriptor.ImplementationType.GetConstructors();
 
         ConstructorInfo? preferredConstructor = Array.Find(constructors,
@@ -70,7 +70,7 @@ public sealed class ServiceRegistration
         return dependencies;
     }
 
-    private static void IncludeParametersFrom(ConstructorInfo constructor, ISet<string> dependencies)
+    private static void IncludeParametersFrom(ConstructorInfo constructor, HashSet<string> dependencies)
     {
         foreach (ParameterInfo parameter in constructor.GetParameters())
         {

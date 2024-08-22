@@ -18,7 +18,7 @@ public sealed class EurekaServiceUriStateManager
     private readonly ILogger<EurekaServiceUriStateManager> _logger;
 
     private readonly object _lockObject = new();
-    private readonly ISet<Uri> _failedServiceUris = new HashSet<Uri>();
+    private readonly HashSet<Uri> _failedServiceUris = [];
     private Uri? _lastWorkingServiceUri;
 
     public EurekaServiceUriStateManager(IOptionsMonitor<EurekaClientOptions> optionsMonitor, ILogger<EurekaServiceUriStateManager> logger)
@@ -41,9 +41,9 @@ public sealed class EurekaServiceUriStateManager
         return new ServiceUrisSnapshot(this);
     }
 
-    private IList<Uri> GetAvailableServiceUris()
+    private Uri[] GetAvailableServiceUris()
     {
-        ISet<Uri> availableServiceUris = GetConfiguredServiceUris();
+        HashSet<Uri> availableServiceUris = GetConfiguredServiceUris();
 
         lock (_lockObject)
         {
@@ -83,7 +83,7 @@ public sealed class EurekaServiceUriStateManager
         return availableServiceUris.ToArray();
     }
 
-    private ISet<Uri> GetConfiguredServiceUris()
+    private HashSet<Uri> GetConfiguredServiceUris()
     {
         string serviceUrls = _optionsMonitor.CurrentValue.EurekaServerServiceUrls ?? string.Empty;
         return serviceUrls.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(EnsureTrailingSlash).ToHashSet();
@@ -132,7 +132,7 @@ public sealed class EurekaServiceUriStateManager
     /// </summary>
     internal sealed class ServiceUrisSnapshot
     {
-        private readonly IList<Uri> _availableUris;
+        private readonly Uri[] _availableUris;
         private int _nextIndex;
 
         internal ServiceUrisSnapshot(EurekaServiceUriStateManager owner)
@@ -142,7 +142,7 @@ public sealed class EurekaServiceUriStateManager
 
         public Uri GetNextServiceUri()
         {
-            if (_nextIndex >= _availableUris.Count)
+            if (_nextIndex >= _availableUris.Length)
             {
                 throw new EurekaTransportException("Failed to execute request on all known Eureka servers.");
             }

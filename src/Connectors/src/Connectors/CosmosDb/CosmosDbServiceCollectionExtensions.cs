@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.CosmosDb.DynamicTypeAccess;
 using Steeltoe.Connectors.DynamicTypeAccess;
 
@@ -86,7 +85,7 @@ public static class CosmosDbServiceCollectionExtensions
         return services;
     }
 
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
+    private static CosmosDbHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
         CosmosDbPackageResolver packageResolver)
     {
         var logger = serviceProvider.GetRequiredService<ILogger<CosmosDbHealthContributor>>();

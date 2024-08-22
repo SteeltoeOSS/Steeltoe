@@ -72,7 +72,7 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
         _loaded = true;
     }
 
-    private static Stream GetStream(string json)
+    private static MemoryStream GetStream(string json)
     {
         var stream = new MemoryStream();
 

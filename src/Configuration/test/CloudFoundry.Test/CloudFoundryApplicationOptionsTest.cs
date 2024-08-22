@@ -72,7 +72,7 @@ public sealed class CloudFoundryApplicationOptionsTest
         using var ipScope = new EnvironmentVariableScope("CF_INSTANCE_IP", "1.2.3.4");
         using var internalIpScope = new EnvironmentVariableScope("CF_INSTANCE_INTERNAL_IP", "5.6.7.8");
 
-        IConfigurationBuilder builder = new ConfigurationBuilder();
+        var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfiguration configuration = builder.Build();
 

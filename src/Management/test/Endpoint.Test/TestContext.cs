@@ -16,7 +16,7 @@ namespace Steeltoe.Management.Endpoint.Test;
 internal sealed class TestContext : IDisposable
 {
     private readonly XunitLoggerProvider _loggerProvider;
-    private readonly IServiceCollection _serviceCollection = new ServiceCollection();
+    private readonly ServiceCollection _serviceCollection = [];
     private ServiceProvider? _serviceProvider;
     private IConfigurationRoot? _configurationRoot;
 

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using Steeltoe.Common.Discovery;
 
@@ -17,7 +16,7 @@ namespace Steeltoe.Discovery.Configuration;
 public sealed class ConfigurationServiceInstance : IServiceInstance
 {
     /// <inheritdoc />
-    IReadOnlyDictionary<string, string?> IServiceInstance.Metadata => new ReadOnlyDictionary<string, string?>(Metadata);
+    IReadOnlyDictionary<string, string?> IServiceInstance.Metadata => Metadata.AsReadOnly();
 
     /// <inheritdoc />
     [Required]

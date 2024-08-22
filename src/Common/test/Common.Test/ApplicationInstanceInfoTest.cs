@@ -72,7 +72,7 @@ public sealed class ApplicationInstanceInfoTest
 
     private IApplicationInstanceInfo FromConfiguration(IDictionary<string, string?> appSettings)
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder();
+        var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         IConfiguration configuration = builder.Build();
 

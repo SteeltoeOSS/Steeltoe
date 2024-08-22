@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Discovery;
 /// </summary>
 internal sealed class DiscoveryClientHostedService : IHostedService
 {
-    private readonly ICollection<IDiscoveryClient> _discoveryClients;
+    private readonly IDiscoveryClient[] _discoveryClients;
 
     public DiscoveryClientHostedService(IEnumerable<IDiscoveryClient> discoveryClients)
     {

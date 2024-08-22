@@ -19,7 +19,6 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Health;
 public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : BaseTest
 {
     private static readonly IServiceProvider EmptyServiceProvider = new ServiceCollection().BuildServiceProvider(true);
-    private readonly IHealthAggregator _aggregator = new HealthAggregator();
     private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
     [Fact]
@@ -260,7 +259,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
 
-        var handler = new HealthEndpointHandler(options, _aggregator, contributors, ServiceProviderWithMicrosoftHealth(), EmptyServiceProvider,
+        var handler = new HealthEndpointHandler(options, new HealthAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), EmptyServiceProvider,
             NullLoggerFactory.Instance);
 
         appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);

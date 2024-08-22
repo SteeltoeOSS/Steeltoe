@@ -50,14 +50,14 @@ public sealed class ApplicationInfoCollection
         return ApplicationMap.GetValueOrDefault(appName.ToUpperInvariant());
     }
 
-    internal IReadOnlyList<InstanceInfo> GetInstancesBySecureVipAddress(string secureVipAddress)
+    internal List<InstanceInfo> GetInstancesBySecureVipAddress(string secureVipAddress)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(secureVipAddress);
 
         return GetByVipAddress(secureVipAddress, SecureVipInstanceMap);
     }
 
-    internal IReadOnlyList<InstanceInfo> GetInstancesByVipAddress(string vipAddress)
+    internal List<InstanceInfo> GetInstancesByVipAddress(string vipAddress)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(vipAddress);
 
@@ -111,7 +111,7 @@ public sealed class ApplicationInfoCollection
         }
     }
 
-    private static ICollection<string> ExpandVipAddresses(string? addresses)
+    private static string[] ExpandVipAddresses(string? addresses)
     {
         if (string.IsNullOrWhiteSpace(addresses))
         {
@@ -246,9 +246,9 @@ public sealed class ApplicationInfoCollection
         return apps;
     }
 
-    private IReadOnlyList<InstanceInfo> GetByVipAddress(string name, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dictionary)
+    private List<InstanceInfo> GetByVipAddress(string name, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dictionary)
     {
-        var result = new List<InstanceInfo>();
+        List<InstanceInfo> result = [];
 
         if (dictionary.TryGetValue(name.ToUpperInvariant(), out ConcurrentDictionary<string, InstanceInfo>? instances))
         {

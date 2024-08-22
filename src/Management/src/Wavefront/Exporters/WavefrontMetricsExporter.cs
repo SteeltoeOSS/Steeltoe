@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Wavefront.SDK.CSharp.DirectIngestion;
-using Wavefront.SDK.CSharp.Entities.Metrics;
 
 #pragma warning disable S4040 // Strings should be normalized to uppercase
 
@@ -17,7 +16,7 @@ public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
     private static readonly int ProxyLength = "proxy".Length;
 
     private readonly ILogger<WavefrontMetricsExporter> _logger;
-    private readonly IWavefrontMetricSender _wavefrontSender;
+    private readonly WavefrontDirectIngestionClient _wavefrontSender;
 
     internal WavefrontExporterOptions Options { get; }
 

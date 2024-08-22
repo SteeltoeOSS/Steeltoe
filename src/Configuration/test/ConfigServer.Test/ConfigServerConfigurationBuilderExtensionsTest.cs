@@ -130,7 +130,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             Timeout = 10
         };
 
-        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
         configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
         _ = configurationBuilder.Build();
@@ -154,7 +154,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             Timeout = 10
         };
 
-        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
         configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
         _ = configurationBuilder.Build();
@@ -180,7 +180,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         CapturingLoggerProvider loggerProvider = new();
         var loggerFactory = new LoggerFactory([loggerProvider]);
 
-        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddConfigServer(loggerFactory);
         _ = configurationBuilder.Build();
 
@@ -481,7 +481,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             }
         };
 
-        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 

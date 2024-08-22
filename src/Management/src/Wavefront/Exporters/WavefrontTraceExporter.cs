@@ -87,7 +87,7 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
         return ExportResult.Success;
     }
 
-    private IList<KeyValuePair<string, string?>> GetTags(IEnumerable<KeyValuePair<string, string?>> inputTags)
+    private List<KeyValuePair<string, string?>> GetTags(IEnumerable<KeyValuePair<string, string?>> inputTags)
     {
         List<KeyValuePair<string, string?>> tags = inputTags.ToList();
 

@@ -39,13 +39,13 @@ internal sealed class CloudFoundryServiceBindingConfigurationProvider : PostProc
 
     private static IConfigurationRoot BuildConfiguration(string json)
     {
-        using Stream stream = GetStream(json);
+        using MemoryStream stream = GetStream(json);
         var builder = new ConfigurationBuilder();
         builder.Add(new JsonStreamConfigurationSource(stream));
         return builder.Build();
     }
 
-    private static Stream GetStream(string json)
+    private static MemoryStream GetStream(string json)
     {
         var stream = new MemoryStream();
 

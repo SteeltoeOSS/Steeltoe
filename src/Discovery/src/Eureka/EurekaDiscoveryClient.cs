@@ -147,7 +147,8 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(vipAddress);
 
-        return secure ? Applications.GetInstancesBySecureVipAddress(vipAddress) : Applications.GetInstancesByVipAddress(vipAddress);
+        List<InstanceInfo> instances = secure ? Applications.GetInstancesBySecureVipAddress(vipAddress) : Applications.GetInstancesByVipAddress(vipAddress);
+        return instances.AsReadOnly();
     }
 
     /// <inheritdoc />
@@ -498,7 +499,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     /// <inheritdoc />
     public Task<ISet<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
-        ISet<string> names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        HashSet<string> names = new(StringComparer.OrdinalIgnoreCase);
 
         foreach (ApplicationInfo app in Applications.RegisteredApplications)
         {
@@ -508,7 +509,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             }
         }
 
-        return Task.FromResult(names);
+        return Task.FromResult<ISet<string>>(names);
     }
 
     /// <inheritdoc />

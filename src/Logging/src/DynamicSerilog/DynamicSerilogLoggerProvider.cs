@@ -41,7 +41,7 @@ public sealed class DynamicSerilogLoggerProvider(IOptionsMonitor<SerilogOptions>
         return new SerilogMessageProcessingLogger(logger, filter, MessageProcessors);
     }
 
-    private static ILoggerProvider CreateSerilogLogger(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor)
+    private static SerilogLoggerProvider CreateSerilogLogger(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor)
     {
         ArgumentNullException.ThrowIfNull(serilogOptionsMonitor);
 
