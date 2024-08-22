@@ -209,7 +209,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.xml", appsettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
@@ -251,7 +251,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.ini", appsettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
