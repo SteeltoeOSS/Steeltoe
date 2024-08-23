@@ -134,7 +134,7 @@ public sealed class SerilogDynamicLoggingBuilderTest
 
         serviceProvider.Dispose();
 
-        Action action = () => dynamicLoggerProvider.Dispose();
+        Action action = dynamicLoggerProvider.Dispose;
         action.Should().NotThrow();
     }
 

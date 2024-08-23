@@ -56,6 +56,6 @@ public sealed class SpringBootEnvironmentVariableProviderTest
     {
         var provider = new SpringBootEnvironmentVariableProvider("""{"a":}""");
 
-        Assert.ThrowsAny<JsonException>(() => provider.Load());
+        Assert.ThrowsAny<JsonException>(provider.Load);
     }
 }
