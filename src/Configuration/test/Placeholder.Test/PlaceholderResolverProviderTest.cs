@@ -49,8 +49,8 @@ public sealed class PlaceholderResolverProviderTest
 
         var holder = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
 
-        Assert.False(holder.TryGet("nokey", out string? value));
-        Assert.True(holder.TryGet("key1", out value));
+        Assert.False(holder.TryGet("nokey", out _));
+        Assert.True(holder.TryGet("key1", out string? value));
         Assert.Equal("value1", value);
         Assert.True(holder.TryGet("key2", out value));
         Assert.Equal("value1", value);
@@ -77,8 +77,8 @@ public sealed class PlaceholderResolverProviderTest
 
         var holder = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
 
-        Assert.False(holder.TryGet("nokey", out string? value));
-        Assert.True(holder.TryGet("key1", out value));
+        Assert.False(holder.TryGet("nokey", out _));
+        Assert.True(holder.TryGet("key1", out string? value));
         Assert.Equal("value1", value);
         Assert.True(holder.TryGet("key2", out value));
         Assert.Equal("value1", value);
