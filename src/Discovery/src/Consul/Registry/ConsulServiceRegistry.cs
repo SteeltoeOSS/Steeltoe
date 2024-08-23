@@ -113,7 +113,7 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
             _logger.LogInformation("Deregistering service {InstanceId} with Consul.", registration.InstanceId);
             await _client.Agent.ServiceDeregister(registration.InstanceId, cancellationToken);
         }
-        catch (Exception exception)when (!exception.IsCancellation())
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             _logger.LogError(exception, "Error deregistering service {ServiceId} with Consul.", registration.ServiceId);
         }

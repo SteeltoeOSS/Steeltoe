@@ -151,7 +151,7 @@ public sealed class CosmosDbHealthContributorTest
 
     private static ServiceProvider CreateServiceProvider(string serviceName, string connectionString, CosmosClient cosmosClient)
     {
-        var serviceNames = (HashSet<string>) [serviceName];
+        HashSet<string> serviceNames = [serviceName];
 
         var services = new ServiceCollection();
         services.AddOptions<CosmosDbOptions>(serviceName).Configure(dbOptions => dbOptions.ConnectionString = connectionString);

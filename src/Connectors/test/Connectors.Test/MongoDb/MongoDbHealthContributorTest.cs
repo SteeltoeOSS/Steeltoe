@@ -121,7 +121,7 @@ public sealed class MongoDbHealthContributorTest
 
     private ServiceProvider CreateServiceProvider(string serviceName, string connectionString, IMongoClient mongoClient)
     {
-        var serviceNames = (HashSet<string>) [serviceName];
+        HashSet<string> serviceNames = [serviceName];
 
         var services = new ServiceCollection();
         services.AddOptions<MongoDbOptions>(serviceName).Configure(dbOptions => dbOptions.ConnectionString = connectionString);
