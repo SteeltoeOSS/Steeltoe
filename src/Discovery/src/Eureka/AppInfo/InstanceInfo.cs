@@ -113,7 +113,7 @@ public sealed class InstanceInfo
     {
         get
         {
-            if (OverriddenStatus != null && OverriddenStatus != InstanceStatus.Unknown)
+            if (OverriddenStatus is not null and not InstanceStatus.Unknown)
             {
                 return OverriddenStatus.Value;
             }
