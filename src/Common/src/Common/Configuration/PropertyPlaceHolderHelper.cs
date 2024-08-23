@@ -252,6 +252,6 @@ internal sealed class PropertyPlaceholderHelper
 
     private static string Substring(StringBuilder builder, int start, int end)
     {
-        return builder.ToString().Substring(start, end - start);
+        return builder.ToString()[start..end];
     }
 }

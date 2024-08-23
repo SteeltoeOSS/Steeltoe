@@ -160,7 +160,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
 
             if (type.Length > startIndex)
             {
-                return type.Substring(startIndex, type.Length - 1 - startIndex);
+                return type[startIndex..^1];
             }
         }
 
