@@ -45,6 +45,6 @@ internal sealed class PostConfigureJwtBearerOptions : IPostConfigureOptions<JwtB
         options.TokenValidationParameters.ValidIssuer = $"{options.Authority}/oauth/token";
 
         var keyResolver = new TokenKeyResolver(options.Authority, options.Backchannel);
-        options.TokenValidationParameters.IssuerSigningKeyResolver = keyResolver.ResolveSigningKey;
+        options.TokenValidationParameters.IssuerSigningKeyResolver = (_, _, keyId, _) => keyResolver.ResolveSigningKey(keyId);
     }
 }
