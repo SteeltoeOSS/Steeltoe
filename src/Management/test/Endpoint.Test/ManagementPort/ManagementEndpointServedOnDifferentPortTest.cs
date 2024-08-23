@@ -21,7 +21,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
     [Fact]
     public async Task AspNetDefaultPort_NoManagementPortConfigured_BothAccessibleOnSamePort()
     {
-        await using WebApplication app = await CreateAppAsync(new Dictionary<string, string?>());
+        await using WebApplication app = await CreateAppAsync([]);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -307,7 +307,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         using var httpScope = new EnvironmentVariableScope("HTTP_PORTS", appHttpPort);
         using var httpsScope = new EnvironmentVariableScope("HTTPS_PORTS", appHttpsPort);
 
-        await using WebApplication app = await CreateAppAsync(new Dictionary<string, string?>());
+        await using WebApplication app = await CreateAppAsync([]);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -472,7 +472,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         const string appHttpPort = "6000";
         const string appHttpsPort = "7000";
 
-        await using WebApplication app = await CreateAppAsync(new Dictionary<string, string?>(), app =>
+        await using WebApplication app = await CreateAppAsync([], app =>
         {
             app.Urls.Add($"http://localhost:{appHttpPort}");
             app.Urls.Add($"https://*:{appHttpsPort}");

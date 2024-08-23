@@ -14,7 +14,7 @@ namespace Steeltoe.Common.Logging;
 /// </summary>
 internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
 {
-    private readonly Dictionary<string, BootstrapLoggerInstance> _loggersByCategoryName = new();
+    private readonly Dictionary<string, BootstrapLoggerInstance> _loggersByCategoryName = [];
     private readonly object _lock = new();
     private readonly Action<ILoggingBuilder, IConfiguration> _bootstrapLoggingBuilder;
 

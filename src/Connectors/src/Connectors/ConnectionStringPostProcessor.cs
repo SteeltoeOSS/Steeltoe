@@ -91,7 +91,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
     private Dictionary<string, BindingInfo> GetBindingsByName(IConfiguration configuration)
     {
-        Dictionary<string, BindingInfo> bindingsByName = new();
+        Dictionary<string, BindingInfo> bindingsByName = [];
 
         foreach (IConfigurationSection clientBinding in GetBindingSections(configuration, ClientBindingsConfigurationKey))
         {

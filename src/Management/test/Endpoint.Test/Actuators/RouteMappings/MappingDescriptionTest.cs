@@ -12,16 +12,8 @@ public sealed class MappingDescriptionTest : BaseTest
     [Fact]
     public void Constructor_SetsValues()
     {
-        var httpMethods = new List<string>
-        {
-            "GET"
-        };
-
-        var contentTypes = new List<string>
-        {
-            "application/json"
-        };
-
+        List<string> httpMethods = ["GET"];
+        List<string> contentTypes = ["application/json"];
         var routeDetails = new AspNetCoreRouteDetails("/Home/Index", httpMethods, contentTypes, contentTypes, Array.Empty<string>(), Array.Empty<string>());
 
         var mapDesc = new RouteMappingDescription("foobar", routeDetails);
@@ -34,16 +26,8 @@ public sealed class MappingDescriptionTest : BaseTest
     [Fact]
     public void JsonSerialization_ReturnsExpected()
     {
-        var httpMethods = new List<string>
-        {
-            "GET"
-        };
-
-        var contentTypes = new List<string>
-        {
-            "application/json"
-        };
-
+        List<string> httpMethods = ["GET"];
+        List<string> contentTypes = ["application/json"];
         var routeDetails = new AspNetCoreRouteDetails("/Home/Index", httpMethods, contentTypes, contentTypes, Array.Empty<string>(), Array.Empty<string>());
 
         var mapDesc = new RouteMappingDescription("foobar", routeDetails);

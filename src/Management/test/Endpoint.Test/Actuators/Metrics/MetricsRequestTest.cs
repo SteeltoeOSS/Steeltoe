@@ -11,7 +11,7 @@ public sealed class MetricsRequestTest : BaseTest
     [Fact]
     public void Constructor_SetsValues()
     {
-        var tags = new List<KeyValuePair<string, string>>();
+        List<KeyValuePair<string, string>> tags = [];
         var request = new MetricsRequest("foo.bar", tags);
         Assert.Equal("foo.bar", request.MetricName);
         Assert.Same(tags, request.Tags);

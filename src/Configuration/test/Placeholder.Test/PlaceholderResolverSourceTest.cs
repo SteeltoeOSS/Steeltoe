@@ -15,11 +15,7 @@ public sealed class PlaceholderResolverSourceTest
     public void Constructors_InitializesProperties()
     {
         var memorySource = new MemoryConfigurationSource();
-
-        var sources = new List<IConfigurationSource>
-        {
-            memorySource
-        };
+        List<IConfigurationSource> sources = [memorySource];
 
         var factory = new LoggerFactory();
 
@@ -35,11 +31,7 @@ public sealed class PlaceholderResolverSourceTest
     public void Build_ReturnsProvider()
     {
         var memorySource = new MemoryConfigurationSource();
-
-        IList<IConfigurationSource> sources = new List<IConfigurationSource>
-        {
-            memorySource
-        };
+        List<IConfigurationSource> sources = [memorySource];
 
         var placeholderSource = new PlaceholderResolverSource(sources, NullLoggerFactory.Instance);
         IConfigurationProvider provider = placeholderSource.Build(new ConfigurationBuilder());

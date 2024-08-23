@@ -18,155 +18,54 @@ public sealed class ContentNegotiationTest
         ["management:endpoints:actuator:exposure:include:0"] = "*"
     };
 
-    public static IEnumerable<object[]> EndpointMiddlewareContentNegotiationTestCases
+    public static TheoryData<EndpointName, string, string[], string> EndpointMiddlewareContentNegotiationTestCases
     {
         get
         {
-            var endpoints = new[]
-            {
-                new
-                {
-                    Name = EndpointName.Hypermedia,
-                    Path = "http://localhost/actuator"
-                },
-                new
-                {
-                    Name = EndpointName.Cloudfoundry,
-                    Path = "http://localhost/cloudfoundryapplication"
-                },
-                new
-                {
-                    Name = EndpointName.Info,
-                    Path = "http://localhost/actuator/info"
-                },
-                new
-                {
-                    Name = EndpointName.Metrics,
-                    Path = "http://localhost/actuator/metrics"
-                },
-                new
-                {
-                    Name = EndpointName.Loggers,
-                    Path = "http://localhost/actuator/loggers"
-                },
-                new
-                {
-                    Name = EndpointName.Health,
-                    Path = "http://localhost/actuator/health"
-                },
-                new
-                {
-                    Name = EndpointName.Trace,
-                    Path = "http://localhost/actuator/httptrace"
-                },
-                new
-                {
-                    Name = EndpointName.Environment,
-                    Path = "http://localhost/actuator/env"
-                },
-                new
-                {
-                    Name = EndpointName.Mappings,
-                    Path = "http://localhost/actuator/mappings"
-                },
-                new
-                {
-                    Name = EndpointName.Refresh,
-                    Path = "http://localhost/actuator/refresh"
-                }
-            };
+            List<(EndpointName Name, string Path)> endpoints =
+            [
+                (EndpointName.Hypermedia, "http://localhost/actuator"),
+                (EndpointName.Cloudfoundry, "http://localhost/cloudfoundryapplication"),
+                (EndpointName.Info, "http://localhost/actuator/info"),
+                (EndpointName.Metrics, "http://localhost/actuator/metrics"),
+                (EndpointName.Loggers, "http://localhost/actuator/loggers"),
+                (EndpointName.Health, "http://localhost/actuator/health"),
+                (EndpointName.Trace, "http://localhost/actuator/httptrace"),
+                (EndpointName.Environment, "http://localhost/actuator/env"),
+                (EndpointName.Mappings, "http://localhost/actuator/mappings"),
+                (EndpointName.Refresh, "http://localhost/actuator/refresh")
+            ];
 
-            var negotiations = new[]
-            {
-                new
-                {
-                    version = MediaTypeVersion.V2,
-                    Accepts = new[]
-                    {
-                        ActuatorMediaTypes.AppJson
-                    },
-                    ContentType = ActuatorMediaTypes.AppJson,
-                    name = "AcceptAppJson_ReturnsAppJson"
-                },
-                new
-                {
-                    version = MediaTypeVersion.V2,
-                    Accepts = new[]
-                    {
-                        "foo"
-                    },
-                    ContentType = ActuatorMediaTypes.AppJson,
-                    name = "AcceptInvalid_ReturnsAppJson"
-                },
-                new
-                {
-                    version = MediaTypeVersion.V2,
-                    Accepts = new[]
-                    {
-                        ActuatorMediaTypes.V1Json
-                    },
-                    ContentType = ActuatorMediaTypes.AppJson,
-                    name = "AcceptV1_ReturnsAppJson_WhenV2Configured"
-                },
-                new
-                {
-                    version = MediaTypeVersion.V2,
-                    Accepts = new[]
-                    {
-                        ActuatorMediaTypes.V2Json
-                    },
-                    ContentType = ActuatorMediaTypes.V2Json,
-                    name = "AcceptV2_ReturnsV2_WhenV2Configured"
-                },
-                new
-                {
-                    version = MediaTypeVersion.V2,
-                    Accepts = new[]
-                    {
-                        ActuatorMediaTypes.Any
-                    },
-                    ContentType = ActuatorMediaTypes.V2Json,
-                    name = "AcceptANY_ReturnsV2_WhenV2Configured"
-                },
-                new
-                {
-                    version = MediaTypeVersion.V2,
-                    Accepts = new[]
-                    {
-                        ActuatorMediaTypes.AppJson,
-                        ActuatorMediaTypes.V1Json,
-                        ActuatorMediaTypes.V2Json
-                    },
-                    ContentType = ActuatorMediaTypes.V2Json,
-                    name = "AcceptAllPossibleAscOrdered_ReturnsV2_WhenV2Configured"
-                },
-                new
-                {
-                    version = MediaTypeVersion.V2,
-                    Accepts = new[]
-                    {
-                        ActuatorMediaTypes.V2Json,
-                        ActuatorMediaTypes.V1Json,
-                        ActuatorMediaTypes.AppJson
-                    },
-                    ContentType = ActuatorMediaTypes.V2Json,
-                    name = "AcceptAllPossibleDescOrdered_ReturnsV2_WhenV2Configured"
-                }
-            };
+            List<(MediaTypeVersion Version, string[] Accepts, string ContentType, string Name)> negotiations =
+            [
+                (MediaTypeVersion.V2, [ActuatorMediaTypes.AppJson], ActuatorMediaTypes.AppJson, "AcceptAppJson_ReturnsAppJson"),
+                (MediaTypeVersion.V2, ["foo"], ActuatorMediaTypes.AppJson, "AcceptInvalid_ReturnsAppJson"),
+                (MediaTypeVersion.V2, [ActuatorMediaTypes.V1Json], ActuatorMediaTypes.AppJson, "AcceptV1_ReturnsAppJson_WhenV2Configured"),
+                (MediaTypeVersion.V2, [ActuatorMediaTypes.V2Json], ActuatorMediaTypes.V2Json, "AcceptV2_ReturnsV2_WhenV2Configured"),
+                (MediaTypeVersion.V2, [ActuatorMediaTypes.Any], ActuatorMediaTypes.V2Json, "AcceptANY_ReturnsV2_WhenV2Configured"),
+                (MediaTypeVersion.V2, [
+                    ActuatorMediaTypes.AppJson,
+                    ActuatorMediaTypes.V1Json,
+                    ActuatorMediaTypes.V2Json
+                ], ActuatorMediaTypes.V2Json, "AcceptAllPossibleAscOrdered_ReturnsV2_WhenV2Configured"),
+                (MediaTypeVersion.V2, [
+                    ActuatorMediaTypes.V2Json,
+                    ActuatorMediaTypes.V1Json,
+                    ActuatorMediaTypes.AppJson
+                ], ActuatorMediaTypes.V2Json, "AcceptAllPossibleDescOrdered_ReturnsV2_WhenV2Configured")
+            ];
 
-            foreach (var endpoint in endpoints)
+            var theoryData = new TheoryData<EndpointName, string, string[], string>();
+
+            foreach ((EndpointName name, string path) in endpoints)
             {
-                foreach (var negotiation in negotiations)
+                foreach ((_, string[] accepts, string contentType, _) in negotiations)
                 {
-                    yield return
-                    [
-                        endpoint.Name,
-                        endpoint.Path,
-                        negotiation.Accepts,
-                        negotiation.ContentType
-                    ];
+                    theoryData.Add(name, path, accepts, contentType);
                 }
             }
+
+            return theoryData;
         }
     }
 

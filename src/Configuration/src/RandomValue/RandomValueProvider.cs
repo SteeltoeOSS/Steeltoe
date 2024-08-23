@@ -97,11 +97,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
 
         if (string.IsNullOrEmpty(parentPath))
         {
-            var list = new List<string>
-            {
-                _prefix[..^1]
-            };
-
+            List<string> list = [_prefix[..^1]];
             keys = keys.Concat(list);
         }
 

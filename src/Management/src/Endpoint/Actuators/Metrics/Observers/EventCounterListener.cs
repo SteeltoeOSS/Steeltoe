@@ -20,7 +20,7 @@ internal sealed class EventCounterListener : EventListener
     private readonly ILogger<EventCounterListener> _logger;
     private readonly bool _isInitialized;
 
-    private readonly Dictionary<string, string?> _refreshInterval = new();
+    private readonly Dictionary<string, string?> _refreshInterval = [];
 
     private readonly ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new();
     private readonly ConcurrentDictionary<string, ObservableGauge<long>> _longMeasureMetrics = new();
@@ -139,7 +139,7 @@ internal sealed class EventCounterListener : EventListener
         double? doubleValue = null;
         long? longValue = null;
         string counterName = string.Empty;
-        var labelSet = new List<KeyValuePair<string, object?>>();
+        List<KeyValuePair<string, object?>> labelSet = [];
         string? counterDisplayUnit = null;
         string? counterDisplayName = null;
 

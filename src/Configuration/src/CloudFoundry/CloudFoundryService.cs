@@ -29,5 +29,5 @@ public sealed class CloudFoundryService
     /// <summary>
     /// Gets the subtree of credentials. Each entry is either a single string value or a dictionary.
     /// </summary>
-    public CloudFoundryCredentials Credentials { get; } = new();
+    public CloudFoundryCredentials Credentials { get; } = [];
 }

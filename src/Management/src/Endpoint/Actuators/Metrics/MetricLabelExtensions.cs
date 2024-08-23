@@ -10,6 +10,6 @@ internal static class MetricLabelExtensions
     {
         ArgumentNullException.ThrowIfNull(keyValuePairs);
 
-        return new ReadOnlySpan<KeyValuePair<string, object?>>(keyValuePairs.ToArray());
+        return keyValuePairs.ToArray();
     }
 }

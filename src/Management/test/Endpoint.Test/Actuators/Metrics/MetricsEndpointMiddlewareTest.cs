@@ -269,7 +269,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
 
         for (int index = 0; index < 10; index++)
         {
-            counter.Add(index, new ReadOnlySpan<KeyValuePair<string, object?>>(labels.ToArray()));
+            counter.Add(index, labels.ToArray());
         }
     }
 }

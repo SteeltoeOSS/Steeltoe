@@ -67,7 +67,7 @@ public sealed class AspNetCoreHostingObserverTest : BaseTest
         context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
         context.Response.StatusCode = 404;
 
-        List<KeyValuePair<string, object?>> tagContext = observer.GetLabelSets(context).ToList();
+        List<KeyValuePair<string, object?>> tagContext = [.. observer.GetLabelSets(context)];
 
         Assert.Contains(KeyValuePair.Create("exception", (object?)"Exception"), tagContext);
         Assert.Contains(KeyValuePair.Create("uri", (object?)"/foobar"), tagContext);

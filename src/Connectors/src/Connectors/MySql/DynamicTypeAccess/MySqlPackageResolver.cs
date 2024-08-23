@@ -17,15 +17,13 @@ internal sealed class MySqlPackageResolver : PackageResolver
     internal static readonly MySqlPackageResolver MySqlConnectorOnly = new(MySqlConnector.AssemblyName, MySqlConnector.PackageName);
     internal static readonly MySqlPackageResolver OracleOnly = new(Oracle.AssemblyName, Oracle.PackageName);
 
-    public static readonly MySqlPackageResolver Default = new(new[]
-    {
+    public static readonly MySqlPackageResolver Default = new([
         MySqlConnector.AssemblyName,
         Oracle.AssemblyName
-    }, new[]
-    {
+    ], [
         MySqlConnector.PackageName,
         Oracle.PackageName
-    });
+    ]);
 
     public TypeAccessor MySqlConnectionStringBuilderClass =>
         ResolveType("MySqlConnector.MySqlConnectionStringBuilder", "MySql.Data.MySqlClient.MySqlConnectionStringBuilder");

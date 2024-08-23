@@ -32,7 +32,7 @@ internal abstract class ConfigurationContributor(IConfiguration? configuration)
 
             if (keepPrefix)
             {
-                dictionary = new Dictionary<string, object>();
+                dictionary = [];
                 result[prefix] = dictionary;
             }
 

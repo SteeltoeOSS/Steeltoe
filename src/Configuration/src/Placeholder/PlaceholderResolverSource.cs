@@ -76,7 +76,7 @@ internal sealed class PlaceholderResolverSource : IConfigurationSource
             return new PlaceholderResolverProvider(configurationView, LoggerFactory);
         }
 
-        var providers = new List<IConfigurationProvider>();
+        List<IConfigurationProvider> providers = [];
 
         if (Sources != null)
         {

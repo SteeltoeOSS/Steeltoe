@@ -684,7 +684,7 @@ public sealed class EurekaDiscoveryClientTest
 
     private sealed class ExtraRequestHeadersDelegatingHandler : DelegatingHandler
     {
-        public Dictionary<string, string> ExtraRequestHeaders { get; } = new();
+        public Dictionary<string, string> ExtraRequestHeaders { get; } = [];
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {

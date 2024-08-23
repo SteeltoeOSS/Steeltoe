@@ -56,7 +56,7 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
         else
         {
             SetLogLevel(request.Name!, request.Level);
-            logLevels = new Dictionary<string, object>();
+            logLevels = [];
         }
 
         var response = new LoggersResponse(logLevels, false);

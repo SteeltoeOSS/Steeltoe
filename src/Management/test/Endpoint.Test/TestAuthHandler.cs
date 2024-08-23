@@ -17,10 +17,10 @@ internal sealed class TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOption
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var ticket = new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(new[]
-        {
-            new Claim("scope", "actuators.read")
-        })), AuthenticationScheme);
+        var claim = new Claim("scope", "actuators.read");
+        var identity = new ClaimsIdentity([claim]);
+        var principal = new ClaimsPrincipal(identity);
+        var ticket = new AuthenticationTicket(principal, AuthenticationScheme);
 
         return Task.FromResult(AuthenticateResult.Success(ticket));
     }

@@ -10,7 +10,7 @@ internal static class ConfigurationDictionaryExtensions
 {
     public static IEnumerable<string> Filter(this IDictionary<string, string?> configurationData, string keyPrefix, string keySuffix, string keyValue)
     {
-        var results = new List<string>();
+        List<string> results = [];
 
         foreach ((string key, string? value) in configurationData)
         {

@@ -25,8 +25,7 @@ public sealed class PlaceholderResolverProviderTest
     [Fact]
     public void Constructor_WithProviders()
     {
-        var providers = new List<IConfigurationProvider>();
-
+        List<IConfigurationProvider> providers = [];
         var provider = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
 
         Assert.Null(provider.Configuration);

@@ -18,7 +18,7 @@ public class TestBase
 {
     protected IConfiguration GetConfiguration()
     {
-        return GetConfiguration(new Dictionary<string, string?>());
+        return GetConfiguration([]);
     }
 
     protected IConfiguration GetConfiguration(Dictionary<string, string?> moreSettings)

@@ -22,12 +22,12 @@ public sealed class ApplicationInfoTest
     [Fact]
     public void InstancesConstructor_InitializedCorrectly()
     {
-        var infos = new List<InstanceInfo>
-        {
+        List<InstanceInfo> infos =
+        [
             new InstanceInfoBuilder().WithId("1").Build(),
             new InstanceInfoBuilder().WithId("2").Build(),
             new InstanceInfoBuilder().WithId("2").Build() // Note duplicate
-        };
+        ];
 
         var app = new ApplicationInfo("foobar", infos);
 

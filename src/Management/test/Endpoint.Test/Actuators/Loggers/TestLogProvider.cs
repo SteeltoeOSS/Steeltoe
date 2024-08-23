@@ -26,7 +26,7 @@ internal sealed class TestLogProvider : IDynamicLoggerProvider
     public ICollection<DynamicLoggerConfiguration> GetLoggerConfigurations()
     {
         GetLoggerConfigurationsCalled = true;
-        return new List<DynamicLoggerConfiguration>();
+        return [];
     }
 
     public void SetLogLevel(string categoryName, LogLevel? minLevel)

@@ -71,7 +71,7 @@ public abstract class BaseTest : IDisposable
 
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>()
     {
-        return GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(new Dictionary<string, string?>());
+        return GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>([]);
     }
 
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(Dictionary<string, string?> settings)
@@ -112,7 +112,7 @@ public abstract class BaseTest : IDisposable
 
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>()
     {
-        return GetOptionsMonitorFromSettings<TOptions>(new Dictionary<string, string?>());
+        return GetOptionsMonitorFromSettings<TOptions>([]);
     }
 
     protected static TOptions GetOptionsFromSettings<TOptions, TConfigureOptions>()

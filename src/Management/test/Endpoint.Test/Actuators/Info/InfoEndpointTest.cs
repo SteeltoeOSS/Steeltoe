@@ -36,12 +36,12 @@ public sealed class InfoEndpointTest(ITestOutputHelper testOutputHelper) : BaseT
     {
         using var testContext = new TestContext(_testOutputHelper);
 
-        var contributors = new List<IInfoContributor>
-        {
+        List<IInfoContributor> contributors =
+        [
             new TestInfoContributor(),
             new TestInfoContributor(),
             new TestInfoContributor()
-        };
+        ];
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -65,12 +65,12 @@ public sealed class InfoEndpointTest(ITestOutputHelper testOutputHelper) : BaseT
     {
         using var testContext = new TestContext(_testOutputHelper);
 
-        var contributors = new List<IInfoContributor>
-        {
+        List<IInfoContributor> contributors =
+        [
             new TestInfoContributor(),
             new TestInfoContributor(true),
             new TestInfoContributor()
-        };
+        ];
 
         testContext.AdditionalServices = (services, _) =>
         {

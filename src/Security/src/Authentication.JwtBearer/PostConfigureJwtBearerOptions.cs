@@ -28,10 +28,11 @@ internal sealed class PostConfigureJwtBearerOptions : IPostConfigureOptions<JwtB
 
         if (!string.IsNullOrEmpty(clientId) && options.TokenValidationParameters.ValidAudiences?.Contains(clientId) != true)
         {
-            var audiences = new List<string>(options.TokenValidationParameters.ValidAudiences ?? [])
-            {
+            string[] audiences =
+            [
+                ..options.TokenValidationParameters.ValidAudiences ?? [],
                 clientId
-            };
+            ];
 
             options.TokenValidationParameters.ValidAudiences = audiences;
         }

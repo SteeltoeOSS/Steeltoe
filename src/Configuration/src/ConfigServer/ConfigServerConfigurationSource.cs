@@ -11,8 +11,8 @@ namespace Steeltoe.Configuration.ConfigServer;
 
 internal sealed class ConfigServerConfigurationSource : IConfigurationSource
 {
-    internal IList<IConfigurationSource> Sources { get; } = new List<IConfigurationSource>();
-    internal IDictionary<string, object> Properties { get; } = new Dictionary<string, object>();
+    internal List<IConfigurationSource> Sources { get; } = [];
+    internal Dictionary<string, object> Properties { get; } = [];
 
     /// <summary>
     /// Gets the default settings the Config Server client uses to contact the Config Server.
@@ -76,7 +76,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
         ArgumentNullException.ThrowIfNull(sources);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        Sources = new List<IConfigurationSource>(sources);
+        Sources = sources.ToList();
 
         if (properties != null)
         {

@@ -58,18 +58,14 @@ public sealed class EventPipeThreadDumper
     /// </returns>
     public async Task<IList<ThreadInfo>> DumpThreadsAsync(CancellationToken cancellationToken)
     {
-        var results = new List<ThreadInfo>();
+        List<ThreadInfo> results = [];
 
         try
         {
             _logger.LogDebug("Starting thread dump");
 
             var client = new DiagnosticsClient(System.Environment.ProcessId);
-
-            var providers = new List<EventPipeProvider>
-            {
-                new("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)
-            };
+            List<EventPipeProvider> providers = [new EventPipeProvider("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)];
 
             using EventPipeSession session = client.StartEventPipeSession(providers);
             await DumpThreadsAsync(session, results, cancellationToken);
@@ -203,8 +199,7 @@ public sealed class EventPipeThreadDumper
     {
         _logger.LogDebug("Processing thread with ID: {Thread}", threadId);
 
-        var result = new List<StackTraceElement>();
-
+        List<StackTraceElement> result = [];
         StackSourceCallStackIndex stackIndex = stackSourceSample.StackIndex;
 
         while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith("Thread (", StringComparison.Ordinal))

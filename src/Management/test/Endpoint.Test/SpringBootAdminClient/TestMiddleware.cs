@@ -9,14 +9,14 @@ namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
 public sealed class TestMiddleware : IMiddleware
 {
-    private static readonly ISet<string> KeyNames = new[]
-    {
+    private static readonly HashSet<string> KeyNames =
+    [
         "name",
         "healthUrl",
         "managementUrl",
         "serviceUrl",
         "metadata"
-    }.ToHashSet();
+    ];
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate? next)
     {

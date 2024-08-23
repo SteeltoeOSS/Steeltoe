@@ -89,7 +89,7 @@ internal sealed class LoggersEndpointMiddleware(
             _logger.LogError(exception, "Exception deserializing loggers endpoint request.");
         }
 
-        return new Dictionary<string, string>();
+        return [];
     }
 
     protected override async Task WriteResponseAsync(LoggersResponse result, HttpContext context, CancellationToken cancellationToken)

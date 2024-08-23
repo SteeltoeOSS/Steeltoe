@@ -38,10 +38,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
     public Task<EnvironmentResponse> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
-        IList<string> activeProfiles = new List<string>
-        {
-            _environment.EnvironmentName
-        };
+        List<string> activeProfiles = [_environment.EnvironmentName];
 
         _logger.LogTrace("Fetching property sources");
         IList<PropertySourceDescriptor> propertySources = GetPropertySources();
@@ -52,7 +49,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
     internal IList<PropertySourceDescriptor> GetPropertySources()
     {
-        var results = new List<PropertySourceDescriptor>();
+        List<PropertySourceDescriptor> results = [];
 
         if (_configuration is IConfigurationRoot root)
         {

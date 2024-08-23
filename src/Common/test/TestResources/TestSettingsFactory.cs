@@ -11,7 +11,7 @@ public static class TestSettingsFactory
 {
     public static IDictionary<string, string?> Get(FastTestConfigurations configurations)
     {
-        Dictionary<string, string?> settings = new();
+        Dictionary<string, string?> settings = [];
 
         if (configurations.HasFlag(FastTestConfigurations.ConfigServer))
         {

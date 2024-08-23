@@ -44,7 +44,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
         ArgumentGuard.ElementsNotNull(eventListenerList);
 
         _logger = logger;
-        var filteredObservers = new List<IDiagnosticObserver>();
+        List<IDiagnosticObserver> filteredObservers = [];
 
         foreach (IDiagnosticObserver observer in observerArray)
         {

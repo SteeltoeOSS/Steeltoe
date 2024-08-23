@@ -49,12 +49,12 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     {
         using var testContext = new TestContext(_testOutputHelper);
 
-        var contributors = new List<IHealthContributor>
-        {
+        List<IHealthContributor> contributors =
+        [
             new TestHealthContributor("h1"),
             new TestHealthContributor("h2"),
             new TestHealthContributor("h3")
-        };
+        ];
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -78,10 +78,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     {
         using var testContext = new TestContext(_testOutputHelper);
 
-        var contributors = new List<IHealthContributor>
-        {
-            new UpContributor(5000)
-        };
+        List<IHealthContributor> contributors = [new UpContributor(5000)];
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -106,12 +103,12 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     {
         using var testContext = new TestContext(_testOutputHelper);
 
-        var contributors = new List<IHealthContributor>
-        {
+        List<IHealthContributor> contributors =
+        [
             new TestHealthContributor("h1"),
             new TestHealthContributor("h2", true),
             new TestHealthContributor("h3", true)
-        };
+        ];
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -145,10 +142,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     {
         using var testContext = new TestContext(_testOutputHelper);
 
-        var contributors = new List<IHealthContributor>
-        {
-            new DiskSpaceContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>())
-        };
+        List<IHealthContributor> contributors = [new DiskSpaceContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>())];
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -186,11 +180,11 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         using var testContext = new TestContext(_testOutputHelper);
         var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
 
-        var contributors = new List<IHealthContributor>
-        {
+        List<IHealthContributor> contributors =
+        [
             new DiskSpaceContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>()),
             new LivenessHealthContributor(appAvailability, NullLoggerFactory.Instance)
-        };
+        ];
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -217,13 +211,13 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         using var testContext = new TestContext(_testOutputHelper);
         var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
 
-        var contributors = new List<IHealthContributor>
-        {
+        List<IHealthContributor> contributors =
+        [
             new UnknownContributor(),
             new DisabledContributor(),
             new UpContributor(),
             new ReadinessHealthContributor(appAvailability, NullLoggerFactory.Instance)
-        };
+        ];
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -249,13 +243,13 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     {
         var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
 
-        var contributors = new List<IHealthContributor>
-        {
+        List<IHealthContributor> contributors =
+        [
             new UnknownContributor(),
             new DisabledContributor(),
             new UpContributor(),
             new ReadinessHealthContributor(appAvailability, NullLoggerFactory.Instance)
-        };
+        ];
 
         IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
 
@@ -278,14 +272,14 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     {
         using var testContext = new TestContext(_testOutputHelper);
 
-        var contributors = new List<IHealthContributor>
-        {
+        List<IHealthContributor> contributors =
+        [
             new DiskSpaceContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>()),
             new OutOfServiceContributor(),
             new UnknownContributor(),
             new DisabledContributor(),
             new UpContributor()
-        };
+        ];
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -315,12 +309,12 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
             Include = "up,privatememory"
         });
 
-        var contributors = new List<IHealthContributor>
-        {
+        List<IHealthContributor> contributors =
+        [
             new UnknownContributor(),
             new DisabledContributor(),
             new UpContributor()
-        };
+        ];
 
         var handler = new HealthEndpointHandler(options, new HealthAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), EmptyServiceProvider,
             NullLoggerFactory.Instance);

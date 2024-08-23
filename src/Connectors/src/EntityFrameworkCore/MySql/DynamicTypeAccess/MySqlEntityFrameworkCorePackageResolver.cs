@@ -14,33 +14,26 @@ internal sealed class MySqlEntityFrameworkCorePackageResolver : PackageResolver
     private const string PomeloPackageName = "Pomelo.EntityFrameworkCore.MySql";
     private const string OraclePackageName = "MySql.EntityFrameworkCore";
 
-    private static readonly IReadOnlyList<string> PomeloAssemblyNames = new[]
-    {
+    private static readonly List<string> PomeloAssemblyNames =
+    [
         "Pomelo.EntityFrameworkCore.MySql",
         "MySqlConnector"
-    };
+    ];
 
-    private static readonly IReadOnlyList<string> OracleAssemblyNames = new[]
-    {
+    private static readonly List<string> OracleAssemblyNames =
+    [
         "MySql.EntityFrameworkCore",
         "MySql.Data"
-    };
+    ];
 
-    public static readonly MySqlEntityFrameworkCorePackageResolver Default = new(PomeloAssemblyNames.Concat(OracleAssemblyNames).ToArray(), new[]
-    {
+    public static readonly MySqlEntityFrameworkCorePackageResolver Default = new(PomeloAssemblyNames.Concat(OracleAssemblyNames).ToArray(), [
         PomeloPackageName,
         OraclePackageName
-    });
+    ]);
 
-    internal static readonly MySqlEntityFrameworkCorePackageResolver PomeloOnly = new(PomeloAssemblyNames, new[]
-    {
-        PomeloPackageName
-    });
+    internal static readonly MySqlEntityFrameworkCorePackageResolver PomeloOnly = new(PomeloAssemblyNames, [PomeloPackageName]);
 
-    internal static readonly MySqlEntityFrameworkCorePackageResolver OracleOnly = new(OracleAssemblyNames, new[]
-    {
-        OraclePackageName
-    });
+    internal static readonly MySqlEntityFrameworkCorePackageResolver OracleOnly = new(OracleAssemblyNames, [OraclePackageName]);
 
     public TypeAccessor MySqlDbContextOptionsExtensionsClass =>
         ResolveType("Microsoft.EntityFrameworkCore.MySqlDbContextOptionsBuilderExtensions", "Microsoft.EntityFrameworkCore.MySQLDbContextOptionsExtensions");

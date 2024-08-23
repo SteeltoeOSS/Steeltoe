@@ -88,7 +88,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
         ArgumentException.ThrowIfNullOrWhiteSpace(serviceId);
         ArgumentNullException.ThrowIfNull(queryOptions);
 
-        var instances = new List<IServiceInstance>();
+        List<IServiceInstance> instances = [];
         ConsulDiscoveryOptions options = _optionsMonitor.CurrentValue;
 
         if (options.Enabled)
@@ -115,7 +115,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     {
         ArgumentNullException.ThrowIfNull(queryOptions);
 
-        var instances = new List<IServiceInstance>();
+        List<IServiceInstance> instances = [];
         ConsulDiscoveryOptions options = _optionsMonitor.CurrentValue;
 
         if (options.Enabled)

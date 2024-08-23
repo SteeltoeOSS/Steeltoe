@@ -63,10 +63,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         mockActionDescriptorCollectionProvider.Setup(provider => provider.ActionDescriptors)
             .Returns(new ActionDescriptorCollection(Array.Empty<ActionDescriptor>(), 0));
 
-        var mockApiDescriptionProviders = new List<IApiDescriptionProvider>
-        {
-            new Mock<IApiDescriptionProvider>().Object
-        };
+        List<IApiDescriptionProvider> mockApiDescriptionProviders = [new Mock<IApiDescriptionProvider>().Object];
 
         var handler = new RouteMappingsEndpointHandler(endpointOptionsMonitor, mockActionDescriptorCollectionProvider.Object, mockApiDescriptionProviders,
             routerMappings, NullLoggerFactory.Instance);

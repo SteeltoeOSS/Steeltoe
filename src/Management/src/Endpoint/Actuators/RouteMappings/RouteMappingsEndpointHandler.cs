@@ -64,7 +64,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
 
     private Dictionary<string, IList<RouteMappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)
     {
-        Dictionary<string, IList<RouteMappingDescription>> mappingDescriptions = new();
+        Dictionary<string, IList<RouteMappingDescription>> mappingDescriptions = [];
 
         foreach (ApiDescription description in apiContext.Results)
         {
@@ -137,14 +137,14 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             }
         }
 
-        var produces = new List<string>();
+        List<string> produces = [];
 
         foreach (ApiResponseType responseType in description.SupportedResponseTypes)
         {
             produces.AddRange(responseType.ApiResponseFormats.Select(format => format.MediaType));
         }
 
-        return new AspNetCoreRouteDetails(routeTemplate, httpMethods, consumes, produces, new List<string>(), new List<string>());
+        return new AspNetCoreRouteDetails(routeTemplate, httpMethods, consumes, produces, Array.Empty<string>(), Array.Empty<string>());
     }
 
     private AspNetCoreRouteDetails GetRouteDetails(ActionDescriptor actionDescriptor)
@@ -166,7 +166,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             RouteMappingDescription.AllHttpMethods
         ];
 
-        var consumes = new List<string>();
+        List<string> consumes = [];
 
         foreach (ConsumesAttribute attribute in actionDescriptor.FilterDescriptors.Where(descriptor => descriptor.Filter is ConsumesAttribute)
             .Select(descriptor => (ConsumesAttribute)descriptor.Filter))
@@ -174,7 +174,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             consumes.AddRange(attribute.ContentTypes);
         }
 
-        var produces = new List<string>();
+        List<string> produces = [];
 
         foreach (ProducesAttribute attribute in actionDescriptor.FilterDescriptors.Where(descriptor => descriptor.Filter is ProducesAttribute)
             .Select(descriptor => (ProducesAttribute)descriptor.Filter))
@@ -182,7 +182,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             produces.AddRange(attribute.ContentTypes);
         }
 
-        return new AspNetCoreRouteDetails(routeTemplate, httpMethods, consumes, produces, new List<string>(), new List<string>());
+        return new AspNetCoreRouteDetails(routeTemplate, httpMethods, consumes, produces, Array.Empty<string>(), Array.Empty<string>());
     }
 
     private AspNetCoreRouteDetails GetRouteDetails(Route route)
@@ -190,7 +190,8 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         string routeRouteTemplate = route.RouteTemplate ?? string.Empty;
         IList<string> httpMethods = GetHttpMethods(route);
 
-        return new AspNetCoreRouteDetails(routeRouteTemplate, httpMethods, new List<string>(), new List<string>(), new List<string>(), new List<string>());
+        return new AspNetCoreRouteDetails(routeRouteTemplate, httpMethods, Array.Empty<string>(), Array.Empty<string>(), Array.Empty<string>(),
+            Array.Empty<string>());
     }
 
     private void AddRouteMappingsDescriptions(Dictionary<string, IList<RouteMappingDescription>> dictionary)
@@ -228,7 +229,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             return methodConstraint.AllowedMethods;
         }
 
-        return new List<string>();
+        return Array.Empty<string>();
     }
 
     private ApiDescriptionProviderContext GetApiDescriptions(IReadOnlyList<ActionDescriptor> actionDescriptors)

@@ -14,14 +14,14 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new MySqlKubernetesPostProcessor();
 
-        var secrets = new[]
-        {
+        Tuple<string, string>[] secrets =
+        [
             Tuple.Create("host", "test-host"),
             Tuple.Create("port", "test-port"),
             Tuple.Create("database", "test-database"),
             Tuple.Create("username", "test-username"),
             Tuple.Create("password", "test-password")
-        };
+        ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, MySqlKubernetesPostProcessor.BindingType, secrets);
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
@@ -41,14 +41,14 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new PostgreSqlKubernetesPostProcessor();
 
-        var secrets = new[]
-        {
+        Tuple<string, string>[] secrets =
+        [
             Tuple.Create("host", "test-host"),
             Tuple.Create("port", "test-port"),
             Tuple.Create("database", "test-database"),
             Tuple.Create("username", "test-username"),
             Tuple.Create("password", "test-password")
-        };
+        ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, PostgreSqlKubernetesPostProcessor.BindingType, secrets);
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
@@ -68,14 +68,14 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new MongoDbKubernetesPostProcessor();
 
-        var secrets = new[]
-        {
+        Tuple<string, string>[] secrets =
+        [
             Tuple.Create("host", "test-host"),
             Tuple.Create("port", "test-port"),
             Tuple.Create("database", "test-database"),
             Tuple.Create("username", "test-username"),
             Tuple.Create("password", "test-password")
-        };
+        ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, MongoDbKubernetesPostProcessor.BindingType, secrets);
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
@@ -96,14 +96,14 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new RabbitMQKubernetesPostProcessor();
 
-        var secrets = new[]
-        {
+        Tuple<string, string>[] secrets =
+        [
             Tuple.Create("host", "test-host"),
             Tuple.Create("port", "test-port"),
             Tuple.Create("username", "test-username"),
             Tuple.Create("password", "test-password"),
             Tuple.Create("virtual-host", "test-virtual-host")
-        };
+        ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, RabbitMQKubernetesPostProcessor.BindingType, secrets);
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
@@ -123,15 +123,15 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new RedisKubernetesPostProcessor();
 
-        var secrets = new[]
-        {
+        Tuple<string, string>[] secrets =
+        [
             Tuple.Create("host", "test-host"),
             Tuple.Create("port", "test-port"),
             Tuple.Create("ssl", "test-ssl"),
             Tuple.Create("password", "test-password"),
             Tuple.Create("database", "test-database"),
             Tuple.Create("client-name", "test-client-name")
-        };
+        ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, RedisKubernetesPostProcessor.BindingType, secrets);
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
@@ -152,15 +152,15 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new ApplicationConfigurationServicePostProcessor();
 
-        var secrets = new[]
-        {
+        Tuple<string, string>[] secrets =
+        [
             Tuple.Create("provider", "acs"),
             Tuple.Create("random", "data"),
             Tuple.Create("from", "some-source"),
             Tuple.Create("secret", "password"),
             Tuple.Create("secret.one", "password1"),
             Tuple.Create("secret__two", "password2")
-        };
+        ];
 
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestBindingName, ApplicationConfigurationServicePostProcessor.BindingType, secrets);

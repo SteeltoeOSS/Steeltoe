@@ -67,7 +67,7 @@ public sealed class SerilogOptions
 
         var shim = new LoggerConfigurationShim(loggerConfiguration);
 
-        Dictionary<string, LogEventLevel> overrideLevels = new();
+        Dictionary<string, LogEventLevel> overrideLevels = [];
 
         foreach (KeyValuePair<string, LoggingLevelSwitch> overrideSwitch in shim.Overrides)
         {

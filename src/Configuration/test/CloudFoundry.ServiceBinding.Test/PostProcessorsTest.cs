@@ -14,14 +14,14 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new MySqlCloudFoundryPostProcessor();
 
-        var secrets = new[]
-        {
+        Tuple<string, string>[] secrets =
+        [
             Tuple.Create("credentials:hostname", "test-host"),
             Tuple.Create("credentials:port", "test-port"),
             Tuple.Create("credentials:name", "test-database"),
             Tuple.Create("credentials:username", "test-username"),
             Tuple.Create("credentials:password", "test-password")
-        };
+        ];
 
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [MySqlCloudFoundryPostProcessor.BindingType], null, secrets);
@@ -43,8 +43,8 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new PostgreSqlCloudFoundryPostProcessor();
 
-        var secrets = new[]
-        {
+        Tuple<string, string>[] secrets =
+        [
             Tuple.Create("credentials:hostname", "test-host"),
             Tuple.Create("credentials:port", "test-port"),
             Tuple.Create("credentials:name", "test-database"),
@@ -53,7 +53,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("credentials:sslcert", "test-ssl-cert"),
             Tuple.Create("credentials:sslkey", "test-ssl-key"),
             Tuple.Create("credentials:sslrootcert", "test-ssl-root-cert")
-        };
+        ];
 
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [PostgreSqlCloudFoundryPostProcessor.BindingType], null, secrets);
@@ -78,15 +78,15 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new RabbitMQCloudFoundryPostProcessor();
 
-        var secrets = new[]
-        {
+        Tuple<string, string>[] secrets =
+        [
             Tuple.Create("credentials:ssl", "false"),
             Tuple.Create("credentials:protocols:amqp:host", "test-host"),
             Tuple.Create("credentials:protocols:amqp:port", "test-port"),
             Tuple.Create("credentials:protocols:amqp:username", "test-username"),
             Tuple.Create("credentials:protocols:amqp:password", "test-password"),
             Tuple.Create("credentials:protocols:amqp:vhost", "test-vhost")
-        };
+        ];
 
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [RabbitMQCloudFoundryPostProcessor.BindingType], null, secrets);
@@ -109,12 +109,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new RedisCloudFoundryPostProcessor();
 
-        var secrets = new[]
-        {
+        Tuple<string, string>[] secrets =
+        [
             Tuple.Create("credentials:host", "test-host"),
             Tuple.Create("credentials:port", "test-port"),
             Tuple.Create("credentials:password", "test-password")
-        };
+        ];
 
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [RedisCloudFoundryPostProcessor.BindingType], null, secrets);
@@ -134,12 +134,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new RedisCloudFoundryPostProcessor();
 
-        var secrets = new[]
-        {
+        Tuple<string, string>[] secrets =
+        [
             Tuple.Create("credentials:host", "test-host"),
             Tuple.Create("credentials:tls_port", "test-port"),
             Tuple.Create("credentials:password", "test-password")
-        };
+        ];
 
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [RedisCloudFoundryPostProcessor.BindingType], null, secrets);
@@ -160,14 +160,14 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new SqlServerCloudFoundryPostProcessor();
 
-        var secrets = new[]
-        {
+        Tuple<string, string>[] secrets =
+        [
             Tuple.Create("credentials:hostname", "test-host"),
             Tuple.Create("credentials:port", "test-port"),
             Tuple.Create("credentials:name", "test-database"),
             Tuple.Create("credentials:username", "test-username"),
             Tuple.Create("credentials:password", "test-password")
-        };
+        ];
 
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [SqlServerCloudFoundryPostProcessor.BindingType], null, secrets);
@@ -188,10 +188,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new MongoDbCloudFoundryPostProcessor();
 
-        var secrets = new[]
-        {
-            Tuple.Create("credentials:uri", "mongodb://localhost:27017/auth-db?appname=sample")
-        };
+        Tuple<string, string>[] secrets = [Tuple.Create("credentials:uri", "mongodb://localhost:27017/auth-db?appname=sample")];
 
         Dictionary<string, string?> configurationData =
             GetConfigurationData("csb-azure-mongodb", TestBindingName, [MongoDbCloudFoundryPostProcessor.BindingType], null, secrets);
@@ -210,12 +207,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new CosmosDbCloudFoundryPostProcessor();
 
-        var secrets = new[]
-        {
+        Tuple<string, string>[] secrets =
+        [
             Tuple.Create("credentials:cosmosdb_host_endpoint", "test-endpoint"),
             Tuple.Create("credentials:cosmosdb_master_key", "test-key"),
             Tuple.Create("credentials:cosmosdb_database_id", "test-database")
-        };
+        ];
 
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [CosmosDbCloudFoundryPostProcessor.BindingType], null, secrets);
@@ -235,13 +232,13 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new EurekaCloudFoundryPostProcessor(NullLogger<EurekaCloudFoundryPostProcessor>.Instance);
 
-        var secrets = new[]
-        {
+        Tuple<string, string>[] secrets =
+        [
             Tuple.Create("credentials:uri", "test-uri"),
             Tuple.Create("credentials:client_id", "test-client-id"),
             Tuple.Create("credentials:client_secret", "test-client-secret"),
             Tuple.Create("credentials:access_token_uri", "test-access-token-uri")
-        };
+        ];
 
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [EurekaCloudFoundryPostProcessor.BindingType], null, secrets);
@@ -263,12 +260,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new IdentityCloudFoundryPostProcessor(NullLogger<IdentityCloudFoundryPostProcessor>.Instance);
 
-        var secrets = new[]
-        {
+        Tuple<string, string>[] secrets =
+        [
             Tuple.Create("credentials:auth_domain", "test-domain"),
             Tuple.Create("credentials:client_id", "test-id"),
             Tuple.Create("credentials:client_secret", "test-secret")
-        };
+        ];
 
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [], IdentityCloudFoundryPostProcessor.BindingType, secrets);

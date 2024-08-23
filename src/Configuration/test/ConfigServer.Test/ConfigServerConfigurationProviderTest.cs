@@ -1277,11 +1277,11 @@ public sealed class ConfigServerConfigurationProviderTest
             { "configPath", "configPath" }
         };
 
-        var instances = new List<IServiceInstance>
-        {
+        List<IServiceInstance> instances =
+        [
             new TestServiceInstance("i1", new Uri("https://foo.bar:8888/"), metadata1),
             new TestServiceInstance("i2", new Uri("https://foo.bar.baz:9999/"), metadata2)
-        };
+        ];
 
         provider.UpdateSettingsFromDiscovery(instances, options);
         Assert.Equal("secondUser", options.Username);

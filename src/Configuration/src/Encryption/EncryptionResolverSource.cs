@@ -87,7 +87,7 @@ internal sealed class EncryptionResolverSource : IConfigurationSource
             return new EncryptionResolverProvider(configurationView, _textDecryptor, LoggerFactory);
         }
 
-        var providers = new List<IConfigurationProvider>();
+        List<IConfigurationProvider> providers = [];
 
         if (Sources != null)
         {

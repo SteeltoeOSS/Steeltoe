@@ -64,7 +64,7 @@ public sealed class ConsulDiscoveryClientTest
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, null, NullLogger<ConsulDiscoveryClient>.Instance);
 
-        var serviceInstances = new List<IServiceInstance>();
+        List<IServiceInstance> serviceInstances = [];
         await discoveryClient.AddInstancesToListAsync(serviceInstances, "ServiceId", QueryOptions.Default, optionsMonitor.CurrentValue, CancellationToken.None);
         Assert.Equal(2, serviceInstances.Count);
 

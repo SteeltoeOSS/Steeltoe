@@ -151,7 +151,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
             Name = name ?? throw new ArgumentException("Binding has no name and is not a valid binding");
             Path = path ?? throw new ArgumentException("Binding has no path and is not a valid binding");
 
-            _secrets = new Dictionary<string, string?>();
+            _secrets = [];
 
             string? type = null;
             string? provider = null;
@@ -216,7 +216,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
 
     internal sealed class ServiceBindings
     {
-        public IList<ServiceBinding> Bindings { get; } = new List<ServiceBinding>();
+        public List<ServiceBinding> Bindings { get; } = [];
 
         public ServiceBindings(IFileProvider? fileProvider)
         {

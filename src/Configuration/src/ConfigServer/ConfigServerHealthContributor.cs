@@ -67,7 +67,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
         _logger.LogDebug("Config Server health check returning UP");
 
         health.Status = HealthStatus.Up;
-        var names = new List<string?>();
+        List<string?> names = [];
 
         foreach (PropertySource source in sources)
         {

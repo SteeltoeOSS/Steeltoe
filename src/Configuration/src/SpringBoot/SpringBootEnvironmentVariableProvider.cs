@@ -55,9 +55,8 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
         {
             Source.Stream = GetStream(json);
             base.Load();
-            var keys = new List<string>(Data.Keys);
 
-            foreach (string key in keys)
+            foreach (string key in Data.Keys.ToArray())
             {
                 string? value = Data[key];
 

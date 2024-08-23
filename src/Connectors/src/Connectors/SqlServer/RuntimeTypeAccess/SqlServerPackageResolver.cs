@@ -17,15 +17,13 @@ internal sealed class SqlServerPackageResolver : PackageResolver
     internal static readonly SqlServerPackageResolver MicrosoftDataOnly = new(MicrosoftData.AssemblyName, MicrosoftData.PackageName);
     internal static readonly SqlServerPackageResolver SystemDataOnly = new(SystemData.AssemblyName, SystemData.PackageName);
 
-    public static readonly SqlServerPackageResolver Default = new(new[]
-    {
+    public static readonly SqlServerPackageResolver Default = new([
         MicrosoftData.AssemblyName,
         SystemData.AssemblyName
-    }, new[]
-    {
+    ], [
         MicrosoftData.PackageName,
         SystemData.PackageName
-    });
+    ]);
 
     public TypeAccessor SqlConnectionStringBuilderClass =>
         ResolveType("Microsoft.Data.SqlClient.SqlConnectionStringBuilder", "System.Data.SqlClient.SqlConnectionStringBuilder");

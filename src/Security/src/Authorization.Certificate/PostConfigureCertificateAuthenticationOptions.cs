@@ -59,7 +59,7 @@ internal sealed class PostConfigureCertificateAuthenticationOptions : IPostConfi
                     return Task.CompletedTask;
                 }
 
-                var claims = new List<Claim>(context.Principal.Claims);
+                List<Claim> claims = context.Principal.Claims.ToList();
 
                 if (ApplicationInstanceCertificate.TryParse(context.ClientCertificate.Subject, out ApplicationInstanceCertificate? clientCertificate))
                 {

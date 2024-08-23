@@ -62,7 +62,7 @@ internal sealed class MetricsEndpointMiddleware(
 
     internal IList<KeyValuePair<string, string>> ParseTags(IQueryCollection query)
     {
-        var results = new List<KeyValuePair<string, string>>();
+        List<KeyValuePair<string, string>> results = [];
 
         foreach (KeyValuePair<string, StringValues> parameter in query)
         {

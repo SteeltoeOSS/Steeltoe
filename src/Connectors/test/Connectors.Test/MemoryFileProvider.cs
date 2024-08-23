@@ -43,7 +43,7 @@ internal sealed class MemoryFileProvider : IFileProvider
         ArgumentException.ThrowIfNullOrEmpty(path);
         ArgumentNullException.ThrowIfNull(contents);
 
-        string[] pathSegments = PathToSegments(path).ToArray();
+        string[] pathSegments = [.. PathToSegments(path)];
         string[] parentDirectories = pathSegments[..^1];
         string fileName = pathSegments[^1];
 

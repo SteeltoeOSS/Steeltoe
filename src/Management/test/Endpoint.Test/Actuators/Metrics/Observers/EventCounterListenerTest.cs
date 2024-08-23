@@ -75,13 +75,13 @@ public sealed class EventCounterListenerTest : BaseTest
     {
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
-        var exclusions = new List<string>
-        {
+        List<string> exclusions =
+        [
             "alloc-rate",
             "threadpool-completed-items-count",
             "gen-1-gc-count",
             "gen-1-size"
-        };
+        ];
 
         var options = new MetricsObserverOptions
         {
@@ -124,10 +124,7 @@ public sealed class EventCounterListenerTest : BaseTest
     {
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
-        var inclusions = new List<string>
-        {
-            "cpu-usage"
-        };
+        List<string> inclusions = ["cpu-usage"];
 
         var options = new MetricsObserverOptions
         {
