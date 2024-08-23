@@ -71,7 +71,7 @@ internal sealed class EventCounterListener : EventListener
         {
             if (string.Equals(eventData.EventName, EventName, StringComparison.OrdinalIgnoreCase) && eventData.Payload != null)
             {
-                foreach (IDictionary<string, object?>? payload in eventData.Payload)
+                foreach (IDictionary<string, object?>? payload in eventData.Payload.Cast<IDictionary<string, object?>?>())
                 {
                     if (payload != null)
                     {
