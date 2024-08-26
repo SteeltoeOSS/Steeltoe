@@ -1,13 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="Steeltoe Release" Description="Code quality rules for Steeltoe release builds" ToolsVersion="17.0">
-  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.CodeStyle" RuleNamespace="Microsoft.CodeAnalysis.CSharp.CodeStyle">
-    <Rule Id="IDE0058" Action="None" />
-    <Rule Id="IDE0161" Action="Warning" />
-  </Rules>
-  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
-    <Rule Id="IDE0058" Action="None" />
-    <Rule Id="IDE0161" Action="Warning" />
-  </Rules>
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.NetAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.CSharp.NetAnalyzers">
     <Rule Id="CA1865" Action="Warning" />
     <Rule Id="CA1866" Action="Warning" />
