@@ -9,22 +9,23 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Environment;
 
 public sealed class EnvironmentEndpointOptionsTest : BaseTest
 {
+    private static readonly string[] DefaultKeysToSanitize =
+    [
+        "password",
+        "secret",
+        "key",
+        "token",
+        ".*credentials.*",
+        "vcap_services"
+    ];
+
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
         EnvironmentEndpointOptions options = GetOptionsFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();
+
         Assert.Equal("env", options.Id);
-
-        Assert.Equal(new[]
-        {
-            "password",
-            "secret",
-            "key",
-            "token",
-            ".*credentials.*",
-            "vcap_services"
-        }, options.KeysToSanitize);
-
+        Assert.Equal(DefaultKeysToSanitize, options.KeysToSanitize);
         Assert.Equal(EndpointPermissions.Restricted, options.RequiredPermissions);
     }
 }

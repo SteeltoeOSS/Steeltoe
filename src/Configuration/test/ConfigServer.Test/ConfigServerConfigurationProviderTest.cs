@@ -241,10 +241,7 @@ public sealed class ConfigServerConfigurationProviderTest
         var options = new ConfigServerClientOptions();
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<UriFormatException>(async () => await provider.RemoteLoadAsync(new[]
-        {
-            "foobar\\foobar\\"
-        }, null, CancellationToken.None));
+        await Assert.ThrowsAsync<UriFormatException>(async () => await provider.RemoteLoadAsync([@"foobar\foobar\"], null, CancellationToken.None));
     }
 
     [Fact]
