@@ -349,7 +349,8 @@ public sealed class EventPipeThreadDumper
 
         if (moduleFile == null)
         {
-            _logger.LogTrace("GetSourceLine: Could not find moduleFile {0:x}.", log.CodeAddresses.Address(codeAddressIndex));
+            string hexAddress = log.CodeAddresses.Address(codeAddressIndex).ToString("X", CultureInfo.InvariantCulture);
+            _logger.LogTrace("GetSourceLine: Could not find moduleFile {HexAddress}.", hexAddress);
             return null;
         }
 
@@ -357,7 +358,8 @@ public sealed class EventPipeThreadDumper
 
         if (methodIndex == MethodIndex.Invalid)
         {
-            _logger.LogTrace("GetSourceLine: Could not find method for {0:x}", log.CodeAddresses.Address(codeAddressIndex));
+            string hexAddress = log.CodeAddresses.Address(codeAddressIndex).ToString("X", CultureInfo.InvariantCulture);
+            _logger.LogTrace("GetSourceLine: Could not find method for {HexAddress}", hexAddress);
             return null;
         }
 
@@ -365,7 +367,8 @@ public sealed class EventPipeThreadDumper
 
         if (methodToken == 0)
         {
-            _logger.LogTrace("GetSourceLine: Could not find method for {0:x}", log.CodeAddresses.Address(codeAddressIndex));
+            string hexAddress = log.CodeAddresses.Address(codeAddressIndex).ToString("X", CultureInfo.InvariantCulture);
+            _logger.LogTrace("GetSourceLine: Could not find method for {HexAddress}", hexAddress);
             return null;
         }
 
