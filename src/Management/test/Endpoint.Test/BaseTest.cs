@@ -16,7 +16,7 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public abstract class BaseTest : IDisposable
 {
-    protected JsonSerializerOptions SerializerOptions { get; } = new()
+    protected static JsonSerializerOptions SerializerOptions { get; } = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,

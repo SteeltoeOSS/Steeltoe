@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Health;
@@ -26,7 +25,7 @@ public sealed class HealthTest : BaseTest
     public void Serialize_Default_ReturnsExpected()
     {
         var health = new HealthEndpointResponse();
-        string json = Serialize(health);
+        string json = JsonSerializer.Serialize(health, SerializerOptions);
 
         json.Should().BeJson("""
             {
@@ -50,7 +49,7 @@ public sealed class HealthTest : BaseTest
             }
         };
 
-        string json = Serialize(health);
+        string json = JsonSerializer.Serialize(health, SerializerOptions);
 
         json.Should().BeJson("""
             {
@@ -67,18 +66,5 @@ public sealed class HealthTest : BaseTest
               }
             }
             """);
-    }
-
-    private string Serialize(HealthEndpointResponse result)
-    {
-        var options = new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-
-        options.Converters.Add(new HealthConverter());
-
-        return JsonSerializer.Serialize(result, options);
     }
 }
