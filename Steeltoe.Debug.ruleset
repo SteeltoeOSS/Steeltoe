@@ -16,6 +16,7 @@
   <Rules AnalyzerId="Microsoft.CodeAnalysis.NetAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.NetAnalyzers">
     <Rule Id="CA1018" Action="Warning" />
     <Rule Id="CA1068" Action="Warning" />
+    <Rule Id="CA1305" Action="None" />
     <Rule Id="CA1724" Action="Warning" />
     <Rule Id="CA1806" Action="Warning" />
     <Rule Id="CA1820" Action="Warning" />
