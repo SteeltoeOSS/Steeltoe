@@ -3,9 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using System.Runtime.InteropServices;
-
-#pragma warning disable S3874 // "out" and "ref" parameters should not be used
 
 namespace Steeltoe.Common.Net;
 
