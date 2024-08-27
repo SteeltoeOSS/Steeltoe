@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="Steeltoe Release" Description="Code quality rules for Steeltoe release builds" ToolsVersion="17.0">
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.NetAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.CSharp.NetAnalyzers">
     <Rule Id="CA1865" Action="Warning" />
@@ -23,6 +23,7 @@
     <Rule Id="S100" Action="Warning" />
     <Rule Id="S106" Action="Warning" />
     <Rule Id="S1067" Action="Warning" />
+    <Rule Id="S107" Action="Warning" />
     <Rule Id="S1075" Action="None" />
     <Rule Id="S110" Action="Warning" />
     <Rule Id="S1104" Action="None" />
