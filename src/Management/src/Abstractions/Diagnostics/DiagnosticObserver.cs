@@ -68,15 +68,15 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
     {
     }
 
-    public virtual void OnNext(KeyValuePair<string, object?> @event)
+    public virtual void OnNext(KeyValuePair<string, object?> value)
     {
         try
         {
-            ProcessEvent(@event.Key, @event.Value);
+            ProcessEvent(value.Key, value.Value);
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Failed to process event {Id}", @event.Key);
+            _logger.LogError(exception, "Failed to process event {Id}", value.Key);
         }
     }
 
