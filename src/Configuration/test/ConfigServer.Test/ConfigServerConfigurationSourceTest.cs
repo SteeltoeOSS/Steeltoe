@@ -19,7 +19,7 @@ public sealed class ConfigServerConfigurationSourceTest
 
         List<IConfigurationSource> sources = [memSource];
 
-        ILoggerFactory factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
 
         var source = new ConfigServerConfigurationSource(options, sources, new Dictionary<string, object>
         {

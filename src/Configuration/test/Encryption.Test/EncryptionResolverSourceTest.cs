@@ -20,7 +20,7 @@ public sealed class EncryptionResolverSourceTest
         var memorySource = new MemoryConfigurationSource();
         List<IConfigurationSource> sources = [memorySource];
 
-        var factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
 
         var encryptionSource = new EncryptionResolverSource(sources, _decryptorMock.Object, factory);
         Assert.Equal(factory, encryptionSource.LoggerFactory);

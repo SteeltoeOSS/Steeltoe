@@ -17,7 +17,7 @@ public sealed class PlaceholderResolverSourceTest
         var memorySource = new MemoryConfigurationSource();
         List<IConfigurationSource> sources = [memorySource];
 
-        var factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
 
         var placeholderSource = new PlaceholderResolverSource(sources, factory);
         Assert.Equal(factory, placeholderSource.LoggerFactory);

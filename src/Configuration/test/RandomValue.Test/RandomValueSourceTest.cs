@@ -13,7 +13,7 @@ public sealed class RandomValueSourceTest
     [Fact]
     public void Constructors_InitializesDefaults()
     {
-        ILoggerFactory factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
 
         var source = new RandomValueSource(factory);
         Assert.Equal(factory, source.LoggerFactory);

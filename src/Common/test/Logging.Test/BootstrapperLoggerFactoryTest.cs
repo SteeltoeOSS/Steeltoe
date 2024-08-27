@@ -61,7 +61,7 @@ public sealed class BootstrapperLoggerFactoryTest
         var newLogProvider = new Mock<ILoggerProvider>();
         var newMockLogger = new Mock<ILogger>();
         newLogProvider.Setup(provider => provider.CreateLogger(It.IsAny<string>())).Returns(() => newMockLogger.Object);
-        ILoggerFactory newLoggerFactory = LoggerFactory.Create(builder => builder.Services.AddSingleton(newLogProvider));
+        using ILoggerFactory newLoggerFactory = LoggerFactory.Create(builder => builder.Services.AddSingleton(newLogProvider));
 
         sut.Update(newLoggerFactory);
         logger.LogInformation("Test3");

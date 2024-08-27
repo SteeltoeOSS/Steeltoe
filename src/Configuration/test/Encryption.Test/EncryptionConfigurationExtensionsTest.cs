@@ -42,7 +42,7 @@ public sealed class EncryptionConfigurationExtensionsTest
     public void AddEncryptionResolver_CreatesProvider()
     {
         var configurationBuilder = new ConfigurationBuilder();
-        var loggerFactory = new LoggerFactory();
+        using var loggerFactory = new LoggerFactory();
 
         configurationBuilder.AddEncryptionResolver(_decryptorMock.Object, loggerFactory);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();

@@ -40,7 +40,7 @@ public sealed class PlaceholderConfigurationExtensionsTest
     public void AddPlaceholderResolver_CreatesProvider()
     {
         var configurationBuilder = new ConfigurationBuilder();
-        var loggerFactory = new LoggerFactory();
+        using var loggerFactory = new LoggerFactory();
 
         configurationBuilder.AddPlaceholderResolver(loggerFactory);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();

@@ -33,7 +33,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     public void AddConfigServer_WithLoggerFactorySucceeds()
     {
         CapturingLoggerProvider loggerProvider = new();
-        var loggerFactory = new LoggerFactory([loggerProvider]);
+        using var loggerFactory = new LoggerFactory([loggerProvider]);
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(_quickTests);

@@ -22,7 +22,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void Create_CreatesLoggerWithCorrectFilters()
     {
         var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
-        var factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
         ILogger logger = factory.CreateLogger(typeof(TestClass));
@@ -40,7 +40,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void GetLoggerConfigurations_ReturnsExpected()
     {
         var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
-        var factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
         _ = factory.CreateLogger(typeof(TestClass));
@@ -60,7 +60,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void GetLoggerConfigurations_UsesMinLevelInformationByDefault()
     {
         var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
-        var factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
         _ = factory.CreateLogger(typeof(TestClass));
@@ -75,7 +75,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void GetLoggerConfigurations_ReturnsExpectedAfterSetLogLevel()
     {
         var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
-        var factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
         factory.CreateLogger(typeof(TestClass));
@@ -106,7 +106,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void SetLogLevel_UpdatesLogger()
     {
         var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
-        var factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
         ILogger logger = factory.CreateLogger(typeof(TestClass));
@@ -214,7 +214,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void SetLogLevel_WorksOnDefault()
     {
         var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
-        var factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
         string[] originalConfiguration = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
@@ -230,7 +230,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void ResetLogLevel_WorksOnDefault()
     {
         var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
-        var factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
         string[] originalConfiguration = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
@@ -251,7 +251,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     {
         using var console = new ConsoleOutputBorrower();
         var provider = new DynamicSerilogLoggerProvider(GetConfigurationFromFile(), []);
-        var factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
         ILogger logger = factory.CreateLogger(typeof(TestClass));
 
@@ -286,7 +286,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     {
         using var console = new ConsoleOutputBorrower();
         var provider = new DynamicSerilogLoggerProvider(GetConfigurationFromFile(), []);
-        var factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
         ILogger logger = factory.CreateLogger(typeof(TestClass));
 
@@ -306,7 +306,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     {
         using var console = new ConsoleOutputBorrower();
         var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
-        var factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
         ILogger logger = factory.CreateLogger(typeof(TestClass));
 
