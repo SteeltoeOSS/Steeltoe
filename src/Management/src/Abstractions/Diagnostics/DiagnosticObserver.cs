@@ -64,7 +64,9 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
     {
     }
 
+#pragma warning disable CA1716 // Identifiers should not match keywords
     public virtual void OnError(Exception error)
+#pragma warning restore CA1716 // Identifiers should not match keywords
     {
     }
 

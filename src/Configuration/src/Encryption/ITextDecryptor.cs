@@ -8,5 +8,7 @@ public interface ITextDecryptor
 {
     string Decrypt(string fullCipher);
 
+#pragma warning disable CA1716 // Identifiers should not match keywords
     string Decrypt(string fullCipher, string alias);
+#pragma warning restore CA1716 // Identifiers should not match keywords
 }
