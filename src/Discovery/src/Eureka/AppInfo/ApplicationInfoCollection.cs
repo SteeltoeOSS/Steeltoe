@@ -147,7 +147,7 @@ public sealed class ApplicationInfoCollection
             {
                 _ = instances.TryRemove(instance.InstanceId, out _);
 
-                if (instances.Count == 0)
+                if (instances.IsEmpty)
                 {
                     _ = dictionary.TryRemove(addressUpper, out _);
                 }
