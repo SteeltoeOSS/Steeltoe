@@ -17,9 +17,9 @@ Steeltoe.Discovery.Eureka.AppInfo.ApplicationInfo.Instances.get -> System.Collec
 Steeltoe.Discovery.Eureka.AppInfo.ApplicationInfo.Name.get -> string!
 Steeltoe.Discovery.Eureka.AppInfo.ApplicationInfoCollection
 Steeltoe.Discovery.Eureka.AppInfo.ApplicationInfoCollection.AppsHashCode.get -> string?
-Steeltoe.Discovery.Eureka.AppInfo.ApplicationInfoCollection.RegisteredApplications.get -> System.Collections.Generic.IReadOnlyList<Steeltoe.Discovery.Eureka.AppInfo.ApplicationInfo!>!
+Steeltoe.Discovery.Eureka.AppInfo.ApplicationInfoCollection.Count.get -> int
+Steeltoe.Discovery.Eureka.AppInfo.ApplicationInfoCollection.GetEnumerator() -> System.Collections.Generic.IEnumerator<Steeltoe.Discovery.Eureka.AppInfo.ApplicationInfo!>!
 Steeltoe.Discovery.Eureka.AppInfo.ApplicationInfoCollection.ReturnUpInstancesOnly.get -> bool
-Steeltoe.Discovery.Eureka.AppInfo.ApplicationInfoCollection.ReturnUpInstancesOnly.set -> void
 Steeltoe.Discovery.Eureka.AppInfo.ApplicationInfoCollection.Version.get -> long?
 Steeltoe.Discovery.Eureka.AppInfo.DataCenterName
 Steeltoe.Discovery.Eureka.AppInfo.DataCenterName.Amazon = 1 -> Steeltoe.Discovery.Eureka.AppInfo.DataCenterName

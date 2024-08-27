@@ -42,9 +42,11 @@ public sealed class ApplicationInfoCollectionTest
         app2.Add(new InstanceInfoBuilder().WithId("id1").Build());
         app2.Add(new InstanceInfoBuilder().WithId("id2").Build());
 
-        var apps = new ApplicationInfoCollection();
-        apps.Add(app1);
-        apps.Add(app2);
+        ApplicationInfoCollection apps =
+        [
+            app1,
+            app2
+        ];
 
         Assert.NotNull(apps.ApplicationMap);
         Assert.Equal(2, apps.ApplicationMap.Count);
@@ -115,9 +117,11 @@ public sealed class ApplicationInfoCollectionTest
         app2.Add(new InstanceInfoBuilder().WithId("id1").WithVipAddress("vapp2").WithSecureVipAddress("svapp2").Build());
         app2.Add(new InstanceInfoBuilder().WithId("id2").WithVipAddress("vapp2").WithSecureVipAddress("svapp2").Build());
 
-        var apps = new ApplicationInfoCollection();
-        apps.Add(app1);
-        apps.Add(app2);
+        ApplicationInfoCollection apps =
+        [
+            app1,
+            app2
+        ];
 
         Assert.NotNull(apps.VipInstanceMap);
         Assert.Equal(2, apps.VipInstanceMap.Count);
@@ -148,11 +152,9 @@ public sealed class ApplicationInfoCollectionTest
             ])
         ]);
 
-        IReadOnlyList<ApplicationInfo> registered = apps.RegisteredApplications;
-        Assert.NotNull(registered);
-        Assert.Equal(2, registered.Count);
-        Assert.True(registered[0].Name is "app1" or "app2");
-        Assert.True(registered[1].Name is "app1" or "app2");
+        Assert.Equal(2, apps.Count);
+        Assert.True(apps.ElementAt(0).Name is "app1" or "app2");
+        Assert.True(apps.ElementAt(0).Name is "app1" or "app2");
     }
 
     [Fact]

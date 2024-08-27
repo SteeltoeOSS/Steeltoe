@@ -323,7 +323,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
 
             bool requireFullFetch = doFullUpdate || !string.IsNullOrWhiteSpace(clientOptions.RegistryRefreshSingleVipAddress) ||
-                clientOptions.IsFetchDeltaDisabled || _remoteApps.RegisteredApplications.Count == 0;
+                clientOptions.IsFetchDeltaDisabled || _remoteApps.Count == 0;
 
             ApplicationInfoCollection fetched =
                 requireFullFetch ? await FetchFullRegistryAsync(cancellationToken) : await FetchRegistryDeltaAsync(cancellationToken);
@@ -373,7 +373,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             ? await _eurekaClient.GetApplicationsAsync(cancellationToken)
             : await _eurekaClient.GetByVipAsync(clientOptions.RegistryRefreshSingleVipAddress, cancellationToken);
 
-        _logger.LogDebug("Full registry fetch succeeded with {Count} applications.", applications.RegisteredApplications.Count);
+        _logger.LogDebug("Full registry fetch succeeded with {Count} applications.", applications.Count);
         return applications;
     }
 
@@ -405,7 +405,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             return await FetchFullRegistryAsync(cancellationToken);
         }
 
-        _logger.LogDebug("Registry delta fetch succeeded with {Count} changes.", delta.RegisteredApplications.Count);
+        _logger.LogDebug("Registry delta fetch succeeded with {Count} changes.", delta.Count);
         _remoteApps.AppsHashCode = delta.AppsHashCode;
         return _remoteApps;
     }
@@ -504,7 +504,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     {
         HashSet<string> names = new(StringComparer.OrdinalIgnoreCase);
 
-        foreach (ApplicationInfo app in Applications.RegisteredApplications)
+        foreach (ApplicationInfo app in Applications)
         {
             if (app.Instances.Count != 0)
             {

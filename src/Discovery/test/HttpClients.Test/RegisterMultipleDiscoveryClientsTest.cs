@@ -579,7 +579,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         handler.Mock.VerifyNoOutstandingExpectation();
 
         Assert.NotNull(apps);
-        apps.RegisteredApplications.Should().HaveCount(1);
+        apps.Should().HaveCount(1);
     }
 
     [Fact]
@@ -649,7 +649,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         handler.Mock.VerifyNoOutstandingExpectation();
 
         Assert.NotNull(apps);
-        apps.RegisteredApplications.Should().HaveCount(1);
+        apps.Should().HaveCount(1);
     }
 
     [Fact]
