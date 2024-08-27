@@ -123,10 +123,10 @@ public sealed class WindowsNetworkFileShare : IDisposable
         {
             if (ErrorMessageLookupTable.TryGetValue(errorNumber, out string? errorMessage))
             {
-                throw new ExternalException($"Failed to {operation} with error {errorNumber}: {errorMessage}.");
+                throw new IOException($"Failed to {operation} with error {errorNumber}: {errorMessage}.");
             }
 
-            throw new ExternalException($"Failed to {operation} with error {errorNumber}.");
+            throw new IOException($"Failed to {operation} with error {errorNumber}.");
         }
     }
 }

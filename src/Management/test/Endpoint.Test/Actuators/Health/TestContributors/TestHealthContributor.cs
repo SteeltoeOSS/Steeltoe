@@ -18,7 +18,7 @@ internal sealed class TestHealthContributor(string id = "Test", bool throws = fa
 
         if (Throws)
         {
-            throw new Exception();
+            throw new InvalidOperationException();
         }
 
         Called = true;

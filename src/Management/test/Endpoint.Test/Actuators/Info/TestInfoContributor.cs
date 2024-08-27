@@ -20,7 +20,7 @@ internal sealed class TestInfoContributor(bool throws) : IInfoContributor
     {
         if (Throws)
         {
-            throw new Exception();
+            throw new InvalidOperationException();
         }
 
         Called = true;

@@ -62,7 +62,7 @@ public sealed class HeapDumpEndpointTest(ITestOutputHelper testOutputHelper) : B
         }
         else if (Platform.IsWindows || Platform.IsLinux)
         {
-            throw new Exception();
+            throw new PlatformNotSupportedException();
         }
     }
 }

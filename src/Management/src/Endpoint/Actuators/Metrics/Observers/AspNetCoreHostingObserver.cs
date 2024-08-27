@@ -98,18 +98,18 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
 
         string uri = context.Request.Path.ToString();
         string statusCode = context.Response.StatusCode.ToString(CultureInfo.InvariantCulture);
-        string exception = GetException(context);
+        string exceptionTypeName = GetExceptionTypeName(context);
 
         return new Dictionary<string, object?>
         {
             { UriTagKey, uri },
             { StatusTagKey, statusCode },
-            { ExceptionTagKey, exception },
+            { ExceptionTagKey, exceptionTypeName },
             { MethodTagKey, context.Request.Method }
         };
     }
 
-    internal string GetException(HttpContext context)
+    internal string GetExceptionTypeName(HttpContext context)
     {
         var exception = context.Features.Get<IExceptionHandlerFeature>();
 
