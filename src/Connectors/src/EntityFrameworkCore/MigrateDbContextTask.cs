@@ -60,12 +60,8 @@ public sealed class MigrateDbContextTask<TDbContext> : IApplicationTask
 
         if (migrations.Count > 0)
         {
-            _logger.LogInformation("The following migrations have been successfully applied:");
-
-            foreach (string migration in migrations)
-            {
-                _logger.LogInformation(migration);
-            }
+            string migrationNames = string.Join(", ", migrations);
+            _logger.LogInformation("The following migrations have been successfully applied: {MigrationNames}.", migrationNames);
         }
         else
         {
