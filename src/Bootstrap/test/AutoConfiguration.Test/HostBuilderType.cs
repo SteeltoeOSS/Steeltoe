@@ -7,17 +7,17 @@ namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
 public enum HostBuilderType
 {
     /// <summary>
-    /// <see cref="Microsoft.Extensions.Hosting.IHost" />
+    /// See <see cref="Microsoft.Extensions.Hosting.IHost" />.
     /// </summary>
     Host,
 
     /// <summary>
-    /// <see cref="Microsoft.AspNetCore.Hosting.IWebHost" />
+    /// See <see cref="Microsoft.AspNetCore.Hosting.IWebHost" />.
     /// </summary>
     WebHost,
 
     /// <summary>
-    /// <see cref="Microsoft.AspNetCore.Builder.WebApplication" />
+    /// See <see cref="Microsoft.AspNetCore.Builder.WebApplication" />.
     /// </summary>
     WebApplication
 }

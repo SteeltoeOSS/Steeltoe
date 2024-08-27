@@ -21,6 +21,9 @@ public static class TestWebApplicationBuilderFactory
     /// <summary>
     /// Creates an empty builder with activated test server using the specified command-line arguments.
     /// </summary>
+    /// <param name="args">
+    /// The command-line arguments.
+    /// </param>
     public static WebApplicationBuilder Create(string[] args)
     {
         ArgumentNullException.ThrowIfNull(args);
@@ -36,6 +39,9 @@ public static class TestWebApplicationBuilderFactory
     /// <summary>
     /// Creates an empty builder with activated test server using the specified options.
     /// </summary>
+    /// <param name="options">
+    /// Options to construct the builder.
+    /// </param>
     public static WebApplicationBuilder Create(WebApplicationOptions options)
     {
         WebApplicationBuilder builder = WebApplication.CreateEmptyBuilder(options);
@@ -61,6 +67,9 @@ public static class TestWebApplicationBuilderFactory
     /// CAUTION: This method creates a full-blown host builder. Prefer to use an empty one instead, to verify all dependencies are registered.
     /// </para>
     /// </summary>
+    /// <param name="useTestServer">
+    /// Indicates whether to use <see cref="TestServer" />.
+    /// </param>
     public static WebApplicationBuilder CreateDefault(bool useTestServer)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
