@@ -55,7 +55,7 @@ public sealed class ContentNegotiationTest
                 ], ActuatorMediaTypes.V2Json, "AcceptAllPossibleDescOrdered_ReturnsV2_WhenV2Configured")
             ];
 
-            var theoryData = new TheoryData<EndpointName, string, string[], string>();
+            TheoryData<EndpointName, string, string[], string> theoryData = [];
 
             foreach ((EndpointName name, string path) in endpoints)
             {
