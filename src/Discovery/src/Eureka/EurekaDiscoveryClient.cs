@@ -10,6 +10,9 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 
+// Justification: See the doc-comments on IDiscoveryClient.ShutdownAsync.
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
+
 namespace Steeltoe.Discovery.Eureka;
 
 /// <summary>
