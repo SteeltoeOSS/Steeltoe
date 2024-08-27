@@ -316,7 +316,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     {
         IServiceInstance[] instances = (await configServerDiscoveryService.GetConfigServerInstancesAsync(cancellationToken)).ToArray();
 
-        if (!instances.Any())
+        if (instances.Length == 0)
         {
             if (ClientOptions.FailFast)
             {

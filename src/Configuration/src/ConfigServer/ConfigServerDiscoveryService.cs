@@ -130,7 +130,7 @@ internal sealed class ConfigServerDiscoveryService
                 }
             }
 
-            if (!_options.Retry.Enabled || instances.Any())
+            if (!_options.Retry.Enabled || instances.Count > 0)
             {
                 break;
             }
