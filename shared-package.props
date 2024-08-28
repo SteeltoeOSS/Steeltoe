@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Authors>Steeltoe,VMware</Authors>
+    <Authors>Broadcom</Authors>
     <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageIcon>icon.png</PackageIcon>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
