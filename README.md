@@ -6,7 +6,7 @@
 
 Are you looking to create .NET microservices? Modernizing existing applications? Moving apps to containers? Steeltoe can help you!
 
-[Steeltoe](https://steeltoe.io) is an open source project that provides a collection of libraries that helps users build production-grade cloud-native applications using externalized configuration, service discovery, distributed tracing, application management, and more.
+[Steeltoe](https://steeltoe.io) is an open-source project providing a library collection that helps users build production-grade cloud-native applications using externalized configuration, database connectors, service discovery, logging and distributed tracing, application management, security, and more.
 
 We have also built several tools to get you started:
 
@@ -23,9 +23,9 @@ See our [website](https://steeltoe.io) for lots of information, blogs, documenta
 
 For community support, we recommend our [Steeltoe OSS Slack](https://slack.steeltoe.io) channels or [StackOverflow](https://stackoverflow.com/questions/tagged/steeltoe)
 
-For production support, we recommend you reach out to [VMware Tanzu Support](https://tanzu.vmware.com/support)
+For production support, we recommend you reach out to [Broadcom Support](https://support.broadcom.com/)
 
-Other questions or feedback [open an issue](https://github.com/SteeltoeOSS/Steeltoe/issues/new?assignees=&labels=Type%2Fquestion&template=question.md&title=%5BQUESTION%5D+)
+Other questions or feedback [open an issue](https://github.com/SteeltoeOSS/Steeltoe/issues/new/choose)
 
 ### Conduct
 
