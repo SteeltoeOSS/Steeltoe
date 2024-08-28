@@ -243,7 +243,7 @@ public sealed class ApplicationInfoCollectionTest
             app2
         ]);
 
-        IReadOnlyList<InstanceInfo> result = apps.GetInstancesBySecureVipAddress("svapp1");
+        List<InstanceInfo> result = apps.GetInstancesBySecureVipAddress("svapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -279,7 +279,7 @@ public sealed class ApplicationInfoCollectionTest
             app2
         ]);
 
-        IReadOnlyList<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
+        List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -332,7 +332,7 @@ public sealed class ApplicationInfoCollectionTest
         Assert.NotNull(registered.Instances);
         Assert.Equal(2, registered.Instances.Count);
 
-        IReadOnlyList<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
+        List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -398,7 +398,7 @@ public sealed class ApplicationInfoCollectionTest
         Assert.NotNull(registered.Instances);
         Assert.Single(registered.Instances);
 
-        IReadOnlyList<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
+        List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -463,7 +463,7 @@ public sealed class ApplicationInfoCollectionTest
         Assert.NotNull(registered.Instances);
         Assert.Equal(3, registered.Instances.Count);
 
-        IReadOnlyList<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
+        List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -531,7 +531,7 @@ public sealed class ApplicationInfoCollectionTest
             Assert.Equal(InstanceStatus.Up, instance.Status);
         }
 
-        IReadOnlyList<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
+        List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -598,7 +598,7 @@ public sealed class ApplicationInfoCollectionTest
             Assert.Equal(InstanceStatus.Up, instance.Status);
         }
 
-        IReadOnlyList<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
+        List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);

@@ -456,7 +456,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// <param name="data">
     /// The client settings to add.
     /// </param>
-    private void AddConfigServerClientOptions(IDictionary<string, string?> data)
+    private void AddConfigServerClientOptions(Dictionary<string, string?> data)
     {
         data["spring:cloud:config:enabled"] = ClientOptions.Enabled.ToString(CultureInfo.InvariantCulture);
         data["spring:cloud:config:failFast"] = ClientOptions.FailFast.ToString(CultureInfo.InvariantCulture);
@@ -613,7 +613,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// <param name="data">
     /// The dictionary to add the property source to.
     /// </param>
-    private void AddPropertySource(PropertySource? source, IDictionary<string, string?> data)
+    private void AddPropertySource(PropertySource? source, Dictionary<string, string?> data)
     {
         ArgumentNullException.ThrowIfNull(data);
 

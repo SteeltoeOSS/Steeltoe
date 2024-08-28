@@ -523,13 +523,13 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         IReadOnlyList<InstanceInfo> nonSecureInstances = GetInstancesByVipAddress(serviceId, false);
         IReadOnlyList<InstanceInfo> secureInstances = GetInstancesByVipAddress(serviceId, true);
 
-        InstanceInfo[] instances = secureInstances.Concat(nonSecureInstances).DistinctBy(instance => instance.InstanceId).ToArray();
-        IList<IServiceInstance> serviceInstances = instances.Select(instance => new EurekaServiceInstance(instance)).Cast<IServiceInstance>().ToArray();
+        IEnumerable<InstanceInfo> instances = secureInstances.Concat(nonSecureInstances).DistinctBy(instance => instance.InstanceId);
+        IServiceInstance[] serviceInstances = instances.Select(instance => new EurekaServiceInstance(instance)).Cast<IServiceInstance>().ToArray();
 
-        _logger.LogDebug("Returning {Count} service instances: {ServiceInstances}", serviceInstances.Count,
+        _logger.LogDebug("Returning {Count} service instances: {ServiceInstances}", serviceInstances.Length,
             string.Join(", ", serviceInstances.Select(instance => $"{instance.ServiceId}={instance.Uri}")));
 
-        return Task.FromResult(serviceInstances);
+        return Task.FromResult<IList<IServiceInstance>>(serviceInstances);
     }
 
     /// <inheritdoc />

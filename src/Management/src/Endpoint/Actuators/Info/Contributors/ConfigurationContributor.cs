@@ -42,7 +42,7 @@ internal abstract class ConfigurationContributor(IConfiguration? configuration)
         return result;
     }
 
-    private void AddChildren(IDictionary<string, object> dictionary, IEnumerable<IConfigurationSection> sections)
+    private void AddChildren(Dictionary<string, object> dictionary, IEnumerable<IConfigurationSection> sections)
     {
         foreach (IConfigurationSection section in sections)
         {
