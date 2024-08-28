@@ -121,9 +121,9 @@ public sealed class PlaceholderConfigurationExtensionsTest
     {
         const string appsettings = """
             [spring:bar]
-                name=myName
+            name=myName
             [spring:cloud:config]
-                name=${spring:bar:name?noName}
+            name=${spring:bar:name?noName}
             """;
 
         using var sandbox = new Sandbox();
@@ -189,7 +189,7 @@ public sealed class PlaceholderConfigurationExtensionsTest
 
         const string appsettingsIni = """
             [spring:ini]
-                name=${spring:line:name?noName}
+            name=${spring:line:name?noName}
             """;
 
         string[] appsettingsLine = ["--spring:line:name=${spring:json:name?noName}"];
