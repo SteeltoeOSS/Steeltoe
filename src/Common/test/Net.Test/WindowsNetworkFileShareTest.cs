@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using System.Runtime.InteropServices;
 
 namespace Steeltoe.Common.Net.Test;
 
@@ -13,17 +12,17 @@ public sealed class WindowsNetworkFileShareTest
     public void GetErrorForKnownNumber_ReturnsKnownError()
     {
         Action action = () => WindowsNetworkFileShare.ThrowForNonZeroResult(5, "execute");
-        action.Should().ThrowExactly<ExternalException>().WithMessage("*Error: Access Denied*");
+        action.Should().ThrowExactly<IOException>().WithMessage("*Error: Access Denied*");
 
         action = () => WindowsNetworkFileShare.ThrowForNonZeroResult(1222, "execute");
-        action.Should().ThrowExactly<ExternalException>().WithMessage("*Error: No Network*");
+        action.Should().ThrowExactly<IOException>().WithMessage("*Error: No Network*");
     }
 
     [Fact]
     public void GetErrorForUnknownNumber_ReturnsUnKnownError()
     {
         Action action = () => WindowsNetworkFileShare.ThrowForNonZeroResult(9999, "execute");
-        action.Should().ThrowExactly<ExternalException>().WithMessage("Failed to execute with error 9999.");
+        action.Should().ThrowExactly<IOException>().WithMessage("Failed to execute with error 9999.");
     }
 
     [Fact]
@@ -55,8 +54,7 @@ public sealed class WindowsNetworkFileShareTest
     {
         var router = new FakeMultipleProviderRouter(false);
 
-        var exception = Assert.Throws<ExternalException>(() =>
-            new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), router));
+        var exception = Assert.Throws<IOException>(() => new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), router));
 
         Assert.Equal("Failed to connect to network share with error 1200: Error: Bad Device.", exception.Message);
     }

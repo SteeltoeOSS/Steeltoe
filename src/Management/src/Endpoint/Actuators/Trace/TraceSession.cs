@@ -4,11 +4,11 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.Trace;
 
-public sealed class Session
+public sealed class TraceSession
 {
     public string Id { get; }
 
-    public Session(string id)
+    public TraceSession(string id)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
 

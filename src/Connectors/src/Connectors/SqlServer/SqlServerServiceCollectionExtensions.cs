@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 
@@ -84,7 +83,7 @@ public static class SqlServerServiceCollectionExtensions
         return services;
     }
 
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
+    private static RelationalDatabaseHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
         SqlServerPackageResolver packageResolver)
     {
         ConnectorFactoryShim<SqlServerOptions> connectorFactoryShim =

@@ -5,6 +5,4 @@
 namespace Steeltoe.Connectors.SqlServer;
 
 /// <inheritdoc />
-public sealed class SqlServerOptions : ConnectionStringOptions
-{
-}
+public sealed class SqlServerOptions : ConnectionStringOptions;

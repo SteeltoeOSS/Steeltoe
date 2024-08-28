@@ -13,10 +13,10 @@ namespace Steeltoe.Connectors.Test;
 internal sealed class MemoryFileProvider : IFileProvider
 {
     private static readonly char[] DirectorySeparators =
-    {
+    [
         Path.DirectorySeparatorChar,
         Path.AltDirectorySeparatorChar
-    };
+    ];
 
     private readonly MemoryFileSystemEntry _root = MemoryFileSystemEntry.CreateDirectory("file-system-root");
     private ConfigurationReloadToken _changeToken = new();
@@ -43,7 +43,7 @@ internal sealed class MemoryFileProvider : IFileProvider
         ArgumentException.ThrowIfNullOrEmpty(path);
         ArgumentNullException.ThrowIfNull(contents);
 
-        string[] pathSegments = PathToSegments(path).ToArray();
+        string[] pathSegments = [.. PathToSegments(path)];
         string[] parentDirectories = pathSegments[..^1];
         string fileName = pathSegments[^1];
 
@@ -119,7 +119,7 @@ internal sealed class MemoryFileProvider : IFileProvider
 
         MemoryFileSystemEntry? entry = Find(subpath);
 
-        if (entry == null || !entry.IsDirectory)
+        if (entry is not { IsDirectory: true })
         {
             return NotFoundDirectoryContents.Singleton;
         }
@@ -129,7 +129,7 @@ internal sealed class MemoryFileProvider : IFileProvider
 
     private MemoryFileSystemEntry? Find(string path)
     {
-        IEnumerable<string> pathSegments = PathToSegments(path);
+        string[] pathSegments = PathToSegments(path);
         MemoryFileSystemEntry current = _root;
 
         foreach (string segment in pathSegments)
@@ -145,7 +145,7 @@ internal sealed class MemoryFileProvider : IFileProvider
         return current;
     }
 
-    private static IEnumerable<string> PathToSegments(string path)
+    private static string[] PathToSegments(string path)
     {
         return path.TrimEnd(DirectorySeparators).Split(DirectorySeparators, StringSplitOptions.RemoveEmptyEntries);
     }
@@ -172,7 +172,7 @@ internal sealed class MemoryFileProvider : IFileProvider
         public long Length => _fileContents?.Length ?? -1;
         public DateTimeOffset LastModified => default;
 
-        public IDictionary<string, MemoryFileSystemEntry> Children { get; } = new Dictionary<string, MemoryFileSystemEntry>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, MemoryFileSystemEntry> Children { get; } = new(StringComparer.OrdinalIgnoreCase);
 
         private MemoryFileSystemEntry(string name, byte[]? fileContents)
         {

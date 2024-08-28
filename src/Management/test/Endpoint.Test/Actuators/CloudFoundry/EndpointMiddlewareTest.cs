@@ -77,9 +77,21 @@ public sealed class EndpointMiddlewareTest : BaseTest
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication"));
         string json = await response.Content.ReadAsStringAsync();
 
-        Assert.Equal(
-            "{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\",\"templated\":false}}}",
-            json);
+        json.Should().BeJson("""
+            {
+              "type": "steeltoe",
+              "_links": {
+                "info": {
+                  "href": "http://localhost/cloudfoundryapplication/info",
+                  "templated": false
+                },
+                "self": {
+                  "href": "http://localhost/cloudfoundryapplication",
+                  "templated": false
+                }
+              }
+            }
+            """);
     }
 
     [Fact]

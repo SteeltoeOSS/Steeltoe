@@ -9,14 +9,9 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.DbMigrations;
 
-public sealed class DbMigrationsEndpointTest : BaseTest
+public sealed class DbMigrationsEndpointTest(ITestOutputHelper testOutputHelper) : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    public DbMigrationsEndpointTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
+    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
     [Fact]
     public void DbMigrationsEndpoint_MigrationReflectionTargets_NotNull()
@@ -43,7 +38,7 @@ public sealed class DbMigrationsEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_WhenExistingDatabase_ReturnsExpected()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -64,7 +59,7 @@ public sealed class DbMigrationsEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_NonExistingDatabase_ReturnsExpected()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         var migrationScanner = new TestDatabaseMigrationScanner
         {
@@ -90,7 +85,7 @@ public sealed class DbMigrationsEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_NoDbContextRegistered_ReturnsExpected()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {

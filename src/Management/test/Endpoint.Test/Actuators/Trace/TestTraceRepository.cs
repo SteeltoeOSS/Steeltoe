@@ -13,6 +13,6 @@ internal sealed class TestTraceRepository : IHttpTraceRepository
     public HttpTraceResult GetTraces()
     {
         GetTracesCalled = true;
-        return new HttpTraceResultV1(new List<TraceResult>());
+        return new HttpTraceResultV1(Array.Empty<TraceResult>());
     }
 }

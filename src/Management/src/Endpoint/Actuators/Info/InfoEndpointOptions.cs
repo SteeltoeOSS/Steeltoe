@@ -6,6 +6,4 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Info;
 
-public sealed class InfoEndpointOptions : EndpointOptions
-{
-}
+public sealed class InfoEndpointOptions : EndpointOptions;

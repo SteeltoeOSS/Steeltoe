@@ -7,12 +7,8 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.DbMigrations;
 
-internal sealed class ConfigureDbMigrationsEndpointOptions : ConfigureEndpointOptions<DbMigrationsEndpointOptions>
+internal sealed class ConfigureDbMigrationsEndpointOptions(IConfiguration configuration)
+    : ConfigureEndpointOptions<DbMigrationsEndpointOptions>(configuration, ManagementInfoPrefix, "dbmigrations")
 {
     private const string ManagementInfoPrefix = "management:endpoints:dbmigrations";
-
-    public ConfigureDbMigrationsEndpointOptions(IConfiguration configuration)
-        : base(configuration, ManagementInfoPrefix, "dbmigrations")
-    {
-    }
 }

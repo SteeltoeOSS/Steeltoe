@@ -7,14 +7,9 @@ using Steeltoe.Configuration;
 
 namespace Steeltoe.Connectors;
 
-internal sealed class ConnectionStringPostProcessorConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
+internal sealed class ConnectionStringPostProcessorConfigurationSource(bool detectConfigurationChanges) : PostProcessorConfigurationSource, IConfigurationSource
 {
-    private readonly bool _detectConfigurationChanges;
-
-    public ConnectionStringPostProcessorConfigurationSource(bool detectConfigurationChanges)
-    {
-        _detectConfigurationChanges = detectConfigurationChanges;
-    }
+    private readonly bool _detectConfigurationChanges = detectConfigurationChanges;
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {

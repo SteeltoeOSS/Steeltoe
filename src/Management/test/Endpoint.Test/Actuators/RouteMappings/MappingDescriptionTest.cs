@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.RouteMappings;
@@ -11,16 +12,8 @@ public sealed class MappingDescriptionTest : BaseTest
     [Fact]
     public void Constructor_SetsValues()
     {
-        var httpMethods = new List<string>
-        {
-            "GET"
-        };
-
-        var contentTypes = new List<string>
-        {
-            "application/json"
-        };
-
+        List<string> httpMethods = ["GET"];
+        List<string> contentTypes = ["application/json"];
         var routeDetails = new AspNetCoreRouteDetails("/Home/Index", httpMethods, contentTypes, contentTypes, Array.Empty<string>(), Array.Empty<string>());
 
         var mapDesc = new RouteMappingDescription("foobar", routeDetails);
@@ -33,23 +26,19 @@ public sealed class MappingDescriptionTest : BaseTest
     [Fact]
     public void JsonSerialization_ReturnsExpected()
     {
-        var httpMethods = new List<string>
-        {
-            "GET"
-        };
-
-        var contentTypes = new List<string>
-        {
-            "application/json"
-        };
-
+        List<string> httpMethods = ["GET"];
+        List<string> contentTypes = ["application/json"];
         var routeDetails = new AspNetCoreRouteDetails("/Home/Index", httpMethods, contentTypes, contentTypes, Array.Empty<string>(), Array.Empty<string>());
 
         var mapDesc = new RouteMappingDescription("foobar", routeDetails);
 
         string result = Serialize(mapDesc);
 
-        Assert.Equal("{\"handler\":\"foobar\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[application/json],consumes=[application/json]}\"}",
-            result);
+        result.Should().BeJson("""
+            {
+              "handler": "foobar",
+              "predicate": "{[/Home/Index],methods=[GET],produces=[application/json],consumes=[application/json]}"
+            }
+            """);
     }
 }

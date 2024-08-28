@@ -6,13 +6,9 @@ using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.Redis.DynamicTypeAccess;
 
-internal sealed class DatabaseInterfaceShim : Shim
+internal sealed class DatabaseInterfaceShim(StackExchangeRedisPackageResolver packageResolver, object instance)
+    : Shim(new InstanceAccessor(packageResolver.DatabaseInterface, instance))
 {
-    public DatabaseInterfaceShim(StackExchangeRedisPackageResolver packageResolver, object instance)
-        : base(new InstanceAccessor(packageResolver.DatabaseInterface, instance))
-    {
-    }
-
     public async Task<TimeSpan> PingAsync()
     {
         InstanceAccessor runtimeInstanceAccessor = InstanceAccessor.AsRuntimeType();

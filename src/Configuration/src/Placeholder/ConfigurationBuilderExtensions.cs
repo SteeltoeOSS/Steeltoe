@@ -63,7 +63,7 @@ internal static class ConfigurationBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        var sources = new List<TSource>();
+        List<TSource> sources = [];
         AddConfigurationSources(builder.Sources, sources);
         return sources;
     }

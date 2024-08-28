@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.RabbitMQ.DynamicTypeAccess;
 
@@ -87,7 +86,7 @@ public static class RabbitMQServiceCollectionExtensions
         return services;
     }
 
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
+    private static RabbitMQHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
         RabbitMQPackageResolver packageResolver)
     {
         // Not using the Steeltoe ConnectorFactory here, because obtaining a connection throws when RabbitMQ is down at application startup.

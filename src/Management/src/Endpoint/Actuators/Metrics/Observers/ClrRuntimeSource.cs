@@ -27,13 +27,13 @@ internal static class ClrRuntimeSource
         return new ThreadMetrics(availWorkerThreads, availCompPortThreads, maxWorkerThreads, maxCompPortThreads);
     }
 
-    public record struct HeapMetrics(long TotalMemory, IList<long> CollectionCounts)
+    public readonly record struct HeapMetrics(long TotalMemory, IList<long> CollectionCounts)
     {
         public readonly long TotalMemory = TotalMemory;
         public readonly IList<long> CollectionCounts = CollectionCounts;
     }
 
-    public record struct ThreadMetrics(
+    public readonly record struct ThreadMetrics(
         long AvailableThreadPoolWorkers, long AvailableThreadCompletionPort, long MaxThreadPoolWorkers, long MaxThreadCompletionPort)
     {
         public readonly long AvailableThreadPoolWorkers = AvailableThreadPoolWorkers;

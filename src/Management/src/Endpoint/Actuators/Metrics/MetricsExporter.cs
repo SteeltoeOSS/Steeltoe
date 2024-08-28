@@ -12,7 +12,6 @@ namespace Steeltoe.Management.Endpoint.Actuators.Metrics;
 /// </summary>
 internal sealed class MetricsExporter
 {
-    // ReSharper disable once CollectionNeverUpdated.Local
     private readonly MetricsCollection<IList<MetricSample>> _metricSamples = new();
     private readonly MetricsCollection<IList<MetricTag>> _availableTags = new();
 

@@ -4,6 +4,4 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.DbMigrations;
 
-public interface IDbMigrationsEndpointHandler : IEndpointHandler<object?, Dictionary<string, DbMigrationsDescriptor>>
-{
-}
+public interface IDbMigrationsEndpointHandler : IEndpointHandler<object?, Dictionary<string, DbMigrationsDescriptor>>;

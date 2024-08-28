@@ -253,7 +253,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
     private object? GetHeaderValue(StringValues values)
     {
-        var result = new List<string?>();
+        List<string?> result = [];
 
         foreach (string? value in values)
         {

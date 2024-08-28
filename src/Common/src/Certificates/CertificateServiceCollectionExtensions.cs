@@ -28,7 +28,7 @@ public static class CertificateServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(certificateName);
 
-        string configurationKey = certificateName == string.Empty
+        string configurationKey = certificateName.Length == 0
             ? CertificateOptions.ConfigurationKeyPrefix
             : ConfigurationPath.Combine(CertificateOptions.ConfigurationKeyPrefix, certificateName);
 

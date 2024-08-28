@@ -17,36 +17,21 @@ internal sealed class TestDatabaseMigrationScanner : IDatabaseMigrationScanner
     {
         if (ThrowOnGetPendingMigrations)
         {
-            throw new SomeDbException("database doesn't exist");
+            throw new TestDbException("database doesn't exist");
         }
 
-        return new[]
-        {
-            "pending"
-        };
+        return ["pending"];
     }
 
     public IEnumerable<string> GetAppliedMigrations(object context)
     {
-        return new[]
-        {
-            "applied"
-        };
+        return ["applied"];
     }
 
     public IEnumerable<string> GetMigrations(object context)
     {
-        return new[]
-        {
-            "migration"
-        };
+        return ["migration"];
     }
 
-    private sealed class SomeDbException : DbException
-    {
-        public SomeDbException(string message)
-            : base(message)
-        {
-        }
-    }
+    private sealed class TestDbException(string message) : DbException(message);
 }

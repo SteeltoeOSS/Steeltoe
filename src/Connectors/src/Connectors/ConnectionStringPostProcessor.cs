@@ -31,7 +31,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
     {
         IConfigurationRoot parentConfiguration = provider.Source.GetParentConfiguration();
 
-        IDictionary<string, BindingInfo> bindingsByName = GetBindingsByName(parentConfiguration);
+        Dictionary<string, BindingInfo> bindingsByName = GetBindingsByName(parentConfiguration);
 
         if (ShouldSetDefault(bindingsByName))
         {
@@ -62,7 +62,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
         }
     }
 
-    private static bool ShouldSetDefault(IDictionary<string, BindingInfo> bindingsByName)
+    private static bool ShouldSetDefault(Dictionary<string, BindingInfo> bindingsByName)
     {
         if (bindingsByName.Count == 1)
         {
@@ -89,9 +89,9 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
         return false;
     }
 
-    private IDictionary<string, BindingInfo> GetBindingsByName(IConfiguration configuration)
+    private Dictionary<string, BindingInfo> GetBindingsByName(IConfiguration configuration)
     {
-        Dictionary<string, BindingInfo> bindingsByName = new();
+        Dictionary<string, BindingInfo> bindingsByName = [];
 
         foreach (IConfigurationSection clientBinding in GetBindingSections(configuration, ClientBindingsConfigurationKey))
         {

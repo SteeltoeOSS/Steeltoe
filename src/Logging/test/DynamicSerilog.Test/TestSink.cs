@@ -10,7 +10,7 @@ namespace Steeltoe.Logging.DynamicSerilog.Test;
 internal sealed class TestSink : ILogEventSink
 {
     private static TestSink? _currentSink;
-    private readonly List<string> _logs = new();
+    private readonly List<string> _logs = [];
 
     internal static TestSink GetCurrentSink(bool createNew = false)
     {

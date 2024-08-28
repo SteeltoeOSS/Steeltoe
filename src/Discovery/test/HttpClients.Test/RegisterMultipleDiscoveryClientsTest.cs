@@ -440,7 +440,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", env2);
 
         var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
-        var loggerFactory = new LoggerFactory([capturingLoggerProvider]);
+        using var loggerFactory = new LoggerFactory([capturingLoggerProvider]);
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddCloudFoundryServiceBindings(_ => false, new EnvironmentServiceBindingsReader(), loggerFactory);
@@ -579,7 +579,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         handler.Mock.VerifyNoOutstandingExpectation();
 
         Assert.NotNull(apps);
-        apps.RegisteredApplications.Should().HaveCount(1);
+        apps.Should().HaveCount(1);
     }
 
     [Fact]
@@ -649,7 +649,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         handler.Mock.VerifyNoOutstandingExpectation();
 
         Assert.NotNull(apps);
-        apps.RegisteredApplications.Should().HaveCount(1);
+        apps.Should().HaveCount(1);
     }
 
     [Fact]

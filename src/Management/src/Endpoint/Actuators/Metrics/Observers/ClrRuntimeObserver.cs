@@ -29,8 +29,9 @@ internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
         { "kind", "completionPort" }
     };
 
-    private readonly ClrRuntimeSource.HeapMetrics _previous = default;
     private readonly IOptionsMonitor<MetricsObserverOptions> _options;
+
+    private ClrRuntimeSource.HeapMetrics? _previous;
 
     public ClrRuntimeObserver(IOptionsMonitor<MetricsObserverOptions> options)
     {
@@ -47,9 +48,9 @@ internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
         {
             long count = metrics.CollectionCounts[index];
 
-            if (_previous.CollectionCounts != null && index < _previous.CollectionCounts.Count && _previous.CollectionCounts[index] <= count)
+            if (_previous != null && index < _previous.Value.CollectionCounts.Count && _previous.Value.CollectionCounts[index] <= count)
             {
-                count -= _previous.CollectionCounts[index];
+                count -= _previous.Value.CollectionCounts[index];
             }
 
             var tags = new Dictionary<string, object?>
@@ -58,6 +59,7 @@ internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
             };
 
             yield return new Measurement<long>(count, tags.AsReadonlySpan());
+            _previous = metrics;
         }
     }
 
@@ -69,7 +71,8 @@ internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
 
     private double GetUpTime()
     {
-        TimeSpan diff = DateTime.UtcNow - Process.GetCurrentProcess().StartTime.ToUniversalTime();
+        using var process = Process.GetCurrentProcess();
+        TimeSpan diff = DateTime.UtcNow - process.StartTime.ToUniversalTime();
         return diff.TotalSeconds;
     }
 

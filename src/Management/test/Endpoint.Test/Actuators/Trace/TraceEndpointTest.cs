@@ -8,19 +8,14 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Trace;
 
-public sealed class TraceEndpointTest : BaseTest
+public sealed class TraceEndpointTest(ITestOutputHelper testOutputHelper) : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    public TraceEndpointTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
+    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
     [Fact]
     public async Task TraceEndpointHandler_CallsTraceRepo()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
         var repository = new TestTraceRepository();
 
         testContext.AdditionalServices = (services, _) =>

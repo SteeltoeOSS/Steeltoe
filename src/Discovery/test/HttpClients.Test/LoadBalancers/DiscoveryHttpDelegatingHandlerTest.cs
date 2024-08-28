@@ -5,7 +5,6 @@
 using System.Data;
 using System.Net;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Discovery.HttpClients.LoadBalancers;
 
 namespace Steeltoe.Discovery.HttpClients.Test.LoadBalancers;
 
@@ -135,32 +134,6 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
             var responseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError);
             responseMessage.Headers.Add("requestUri", request.RequestUri?.AbsoluteUri);
             return Task.FromResult(responseMessage);
-        }
-    }
-
-    /// <summary>
-    /// A load balancer that always throws an exception.
-    /// </summary>
-    private sealed class BrokenLoadBalancer : ILoadBalancer
-    {
-        internal IList<LoadBalancerStatistic> Statistics { get; } = [];
-
-        /// <summary>
-        /// Throws an exception when you try to resolve service instances.
-        /// </summary>
-        public Task<Uri> ResolveServiceInstanceAsync(Uri requestUri, CancellationToken cancellationToken)
-        {
-            throw new DataException("(╯°□°）╯︵ ┻━┻");
-        }
-
-        public Task UpdateStatisticsAsync(Uri requestUri, Uri serviceInstanceUri, TimeSpan? responseTime, Exception? exception,
-            CancellationToken cancellationToken)
-        {
-            ArgumentNullException.ThrowIfNull(requestUri);
-            ArgumentNullException.ThrowIfNull(serviceInstanceUri);
-
-            Statistics.Add(new LoadBalancerStatistic(requestUri, serviceInstanceUri, responseTime, exception));
-            return Task.CompletedTask;
         }
     }
 }

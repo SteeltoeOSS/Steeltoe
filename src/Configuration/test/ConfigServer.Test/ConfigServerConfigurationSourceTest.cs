@@ -17,12 +17,9 @@ public sealed class ConfigServerConfigurationSourceTest
         var options = new ConfigServerClientOptions();
         var memSource = new MemoryConfigurationSource();
 
-        IList<IConfigurationSource> sources = new List<IConfigurationSource>
-        {
-            memSource
-        };
+        List<IConfigurationSource> sources = [memSource];
 
-        ILoggerFactory factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
 
         var source = new ConfigServerConfigurationSource(options, sources, new Dictionary<string, object>
         {
@@ -54,10 +51,7 @@ public sealed class ConfigServerConfigurationSourceTest
         var options = new ConfigServerClientOptions();
         var memSource = new MemoryConfigurationSource();
 
-        IList<IConfigurationSource> sources = new List<IConfigurationSource>
-        {
-            memSource
-        };
+        List<IConfigurationSource> sources = [memSource];
 
         var source = new ConfigServerConfigurationSource(options, sources, null, NullLoggerFactory.Instance);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());

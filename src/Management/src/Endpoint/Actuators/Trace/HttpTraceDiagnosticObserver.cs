@@ -11,18 +11,12 @@ using Microsoft.Extensions.Primitives;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Trace;
 
-internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
+internal sealed class HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> optionsMonitor, ILoggerFactory loggerFactory)
+    : TraceDiagnosticObserver(optionsMonitor, loggerFactory)
 {
-    private readonly IOptionsMonitor<TraceEndpointOptions> _optionsMonitor;
-    private readonly ILogger<HttpTraceDiagnosticObserver> _logger;
+    private readonly IOptionsMonitor<TraceEndpointOptions> _optionsMonitor = optionsMonitor;
+    private readonly ILogger<HttpTraceDiagnosticObserver> _logger = loggerFactory.CreateLogger<HttpTraceDiagnosticObserver>();
     private readonly ConcurrentQueue<HttpTrace> _queue = new();
-
-    public HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> optionsMonitor, ILoggerFactory loggerFactory)
-        : base(optionsMonitor, loggerFactory)
-    {
-        _optionsMonitor = optionsMonitor;
-        _logger = loggerFactory.CreateLogger<HttpTraceDiagnosticObserver>();
-    }
 
     public override HttpTraceResult GetTraces()
     {
@@ -49,16 +43,16 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
         string requestUri = GetRequestUri(context.Request);
         Dictionary<string, IList<string?>> requestHeaders = GetHeaders(context.Request.Headers);
 
-        var request = new Request(context.Request.Method, requestUri, requestHeaders, remoteAddress);
+        var request = new TraceRequest(context.Request.Method, requestUri, requestHeaders, remoteAddress);
 
         Dictionary<string, IList<string?>> responseHeaders = GetHeaders(context.Response.Headers);
-        var response = new Response(context.Response.StatusCode, responseHeaders);
+        var response = new TraceResponse(context.Response.StatusCode, responseHeaders);
 
         string? userName = GetUserPrincipal(context);
-        Principal? principal = userName == null ? null : new Principal(userName);
+        TracePrincipal? principal = userName == null ? null : new TracePrincipal(userName);
 
         string? sessionId = GetSessionId(context);
-        Session? session = sessionId == null ? null : new Session(sessionId);
+        TraceSession? session = sessionId == null ? null : new TraceSession(sessionId);
 
         long timestamp = GetJavaTime(DateTime.UtcNow.Ticks);
 

@@ -10,19 +10,14 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
 
-public sealed class CloudFoundryEndpointTest : BaseTest
+public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper) : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    public CloudFoundryEndpointTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
+    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
     [Fact]
     public async Task Invoke_ReturnsExpectedLinks()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -45,7 +40,7 @@ public sealed class CloudFoundryEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_OnlyCloudFoundryEndpoint_ReturnsExpectedLinks()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -65,7 +60,7 @@ public sealed class CloudFoundryEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -95,7 +90,7 @@ public sealed class CloudFoundryEndpointTest : BaseTest
     [Fact]
     public void Invoke_CloudFoundryDisable_DoesNotInvoke()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {

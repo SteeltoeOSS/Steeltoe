@@ -14,13 +14,12 @@ public sealed class ConfigServerHostedServiceTest
     [Fact]
     public async Task ServiceConstructsAndOperatesWithConfigurationRoot()
     {
-        var configurationRoot = new ConfigurationRoot(new List<IConfigurationProvider>
-        {
+        var configurationRoot = new ConfigurationRoot([
             new ConfigServerConfigurationProvider(new ConfigServerClientOptions
             {
                 Enabled = false
             }, null, null, NullLoggerFactory.Instance)
-        });
+        ]);
 
         var service = new ConfigServerHostedService(configurationRoot, []);
 
@@ -36,18 +35,14 @@ public sealed class ConfigServerHostedServiceTest
     [Fact]
     public async Task FindsConfigServerProviderInPlaceholderProvider()
     {
-        var placeholder = new PlaceholderResolverProvider(new List<IConfigurationProvider>
-        {
+        var placeholder = new PlaceholderResolverProvider([
             new ConfigServerConfigurationProvider(new ConfigServerClientOptions
             {
                 Enabled = false
             }, null, null, NullLoggerFactory.Instance)
-        }, NullLoggerFactory.Instance);
+        ], NullLoggerFactory.Instance);
 
-        var configurationRoot = new ConfigurationRoot(new List<IConfigurationProvider>
-        {
-            placeholder
-        });
+        var configurationRoot = new ConfigurationRoot([placeholder]);
 
         var service = new ConfigServerHostedService(configurationRoot, []);
 

@@ -4,6 +4,4 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.Trace;
 
-public interface IHttpTraceEndpointHandler : IEndpointHandler<object?, HttpTraceResult>
-{
-}
+public interface IHttpTraceEndpointHandler : IEndpointHandler<object?, HttpTraceResult>;

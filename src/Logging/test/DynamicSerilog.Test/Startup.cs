@@ -14,6 +14,8 @@ public sealed class Startup
 
     public Startup(ILogger<Startup> logger)
     {
+        ArgumentNullException.ThrowIfNull(logger);
+
         _logger = logger;
     }
 

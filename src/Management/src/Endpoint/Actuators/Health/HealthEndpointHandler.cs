@@ -17,7 +17,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 {
     private readonly IOptionsMonitor<HealthEndpointOptions> _endpointOptionsMonitor;
     private readonly IHealthAggregator _healthAggregator;
-    private readonly ICollection<IHealthContributor> _healthContributors;
+    private readonly IHealthContributor[] _healthContributors;
     private readonly IOptionsMonitor<HealthCheckServiceOptions> _healthOptionsMonitor;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<HealthEndpointHandler> _logger;
@@ -58,7 +58,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         string groupName = healthRequest.GroupName;
         HealthEndpointOptions endpointOptions = _endpointOptionsMonitor.CurrentValue;
 
-        ICollection<IHealthContributor> filteredContributors;
+        IHealthContributor[] filteredContributors;
         ICollection<HealthCheckRegistration> healthCheckRegistrations;
 
         if (!string.IsNullOrEmpty(groupName) && groupName != endpointOptions.Id)
@@ -122,7 +122,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
     /// <para />
     /// If group can't be parsed or is not configured, returns all health contributors.
     /// </returns>
-    private ICollection<IHealthContributor> GetFilteredContributors(string requestedGroup)
+    private IHealthContributor[] GetFilteredContributors(string requestedGroup)
     {
         if (!string.IsNullOrEmpty(requestedGroup))
         {

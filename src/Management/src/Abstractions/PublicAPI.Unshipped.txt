@@ -3,12 +3,12 @@ abstract Steeltoe.Management.Diagnostics.DiagnosticObserver.ProcessEvent(string!
 Steeltoe.Management.Configuration.EndpointOptions
 Steeltoe.Management.Configuration.EndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Configuration.EndpointOptions.EndpointOptions() -> void
-Steeltoe.Management.Configuration.EndpointOptions.RequiredPermissions.get -> Steeltoe.Management.Configuration.Permissions
+Steeltoe.Management.Configuration.EndpointOptions.RequiredPermissions.get -> Steeltoe.Management.Configuration.EndpointPermissions
 Steeltoe.Management.Configuration.EndpointOptions.RequiredPermissions.set -> void
-Steeltoe.Management.Configuration.Permissions
-Steeltoe.Management.Configuration.Permissions.Full = 2 -> Steeltoe.Management.Configuration.Permissions
-Steeltoe.Management.Configuration.Permissions.None = 0 -> Steeltoe.Management.Configuration.Permissions
-Steeltoe.Management.Configuration.Permissions.Restricted = 1 -> Steeltoe.Management.Configuration.Permissions
+Steeltoe.Management.Configuration.EndpointPermissions
+Steeltoe.Management.Configuration.EndpointPermissions.Full = 2 -> Steeltoe.Management.Configuration.EndpointPermissions
+Steeltoe.Management.Configuration.EndpointPermissions.None = 0 -> Steeltoe.Management.Configuration.EndpointPermissions
+Steeltoe.Management.Configuration.EndpointPermissions.Restricted = 1 -> Steeltoe.Management.Configuration.EndpointPermissions
 Steeltoe.Management.Diagnostics.DiagnosticObserver
 Steeltoe.Management.Diagnostics.DiagnosticObserver.DiagnosticObserver(string! name, string! listenerName, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
 Steeltoe.Management.Diagnostics.DiagnosticObserver.Dispose() -> void
@@ -56,4 +56,4 @@ virtual Steeltoe.Management.Configuration.EndpointOptions.RequiresExactMatch() -
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.Dispose(bool disposing) -> void
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnCompleted() -> void
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnError(System.Exception! error) -> void
-virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnNext(System.Collections.Generic.KeyValuePair<string!, object?> event) -> void
+virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnNext(System.Collections.Generic.KeyValuePair<string!, object?> value) -> void

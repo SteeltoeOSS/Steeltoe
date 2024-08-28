@@ -61,6 +61,7 @@ public sealed class RandomLoadBalancer : ILoadBalancer
     /// <inheritdoc />
     public Task UpdateStatisticsAsync(Uri requestUri, Uri serviceInstanceUri, TimeSpan? responseTime, Exception? exception, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         return Task.CompletedTask;
     }
 }

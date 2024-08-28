@@ -21,78 +21,82 @@ namespace Steeltoe.Connectors.Test.Redis;
 
 public sealed class RedisConnectorTest
 {
-    private const string MultiVcapServicesJson = @"{
-  ""p-redis"": [
-    {
-      ""label"": ""p-redis"",
-      ""provider"": null,
-      ""plan"": ""shared-vm"",
-      ""name"": ""myRedisServiceOne"",
-      ""tags"": [
-        ""pivotal"",
-        ""redis""
-      ],
-      ""instance_guid"": ""a9eb9256-73fe-4d3a-92d2-c91bcb1a739e"",
-      ""instance_name"": ""myRedisServiceOne"",
-      ""binding_guid"": ""3fde92a3-83b2-48de-bd30-958f632c3e20"",
-      ""binding_name"": null,
-      ""credentials"": {
-        ""host"": ""10.0.4.17"",
-        ""password"": ""36c5b850-3b44-4bcb-8b2f-510eeb9b1c6e"",
-        ""port"": 34029
-      },
-      ""syslog_drain_url"": null,
-      ""volume_mounts"": []
-    },
-    {
-      ""label"": ""p-redis"",
-      ""provider"": null,
-      ""plan"": ""shared-vm"",
-      ""name"": ""myRedisServiceTwo"",
-      ""tags"": [
-        ""pivotal"",
-        ""redis""
-      ],
-      ""instance_guid"": ""415cbd98-18a2-4ebb-966a-d57d82425724"",
-      ""instance_name"": ""myRedisServiceTwo"",
-      ""binding_guid"": ""012f540d-c9fc-4fc4-98ae-bcda7e6e3830"",
-      ""binding_name"": null,
-      ""credentials"": {
-        ""host"": ""10.0.4.17"",
-        ""password"": ""aa786395-98c3-4e7e-aee4-ca02e5a8590a"",
-        ""port"": 44369
-      },
-      ""syslog_drain_url"": null,
-      ""volume_mounts"": []
-    }
-  ]
-}";
+    private const string MultiVcapServicesJson = """
+        {
+          "p-redis": [
+            {
+              "label": "p-redis",
+              "provider": null,
+              "plan": "shared-vm",
+              "name": "myRedisServiceOne",
+              "tags": [
+                "pivotal",
+                "redis"
+              ],
+              "instance_guid": "a9eb9256-73fe-4d3a-92d2-c91bcb1a739e",
+              "instance_name": "myRedisServiceOne",
+              "binding_guid": "3fde92a3-83b2-48de-bd30-958f632c3e20",
+              "binding_name": null,
+              "credentials": {
+                "host": "10.0.4.17",
+                "password": "36c5b850-3b44-4bcb-8b2f-510eeb9b1c6e",
+                "port": 34029
+              },
+              "syslog_drain_url": null,
+              "volume_mounts": []
+            },
+            {
+              "label": "p-redis",
+              "provider": null,
+              "plan": "shared-vm",
+              "name": "myRedisServiceTwo",
+              "tags": [
+                "pivotal",
+                "redis"
+              ],
+              "instance_guid": "415cbd98-18a2-4ebb-966a-d57d82425724",
+              "instance_name": "myRedisServiceTwo",
+              "binding_guid": "012f540d-c9fc-4fc4-98ae-bcda7e6e3830",
+              "binding_name": null,
+              "credentials": {
+                "host": "10.0.4.17",
+                "password": "aa786395-98c3-4e7e-aee4-ca02e5a8590a",
+                "port": 44369
+              },
+              "syslog_drain_url": null,
+              "volume_mounts": []
+            }
+          ]
+        }
+        """;
 
-    private const string SingleVcapServicesJson = @"{
-  ""p-redis"": [
-    {
-      ""label"": ""p-redis"",
-      ""provider"": null,
-      ""plan"": ""shared-vm"",
-      ""name"": ""myRedisService"",
-      ""tags"": [
-        ""pivotal"",
-        ""redis""
-      ],
-      ""instance_guid"": ""3bdc54ae-9e8e-45b1-8f80-5ec0a73505bf"",
-      ""instance_name"": ""myRedisService"",
-      ""binding_guid"": ""776f5be6-c840-405f-8728-71563f1bff27"",
-      ""binding_name"": null,
-      ""credentials"": {
-        ""host"": ""10.0.4.17"",
-        ""password"": ""269493d4-579a-42f0-b43b-42e83741517d"",
-        ""port"": 37357
-      },
-      ""syslog_drain_url"": null,
-      ""volume_mounts"": []
-    }
-  ]
-}";
+    private const string SingleVcapServicesJson = """
+        {
+          "p-redis": [
+            {
+              "label": "p-redis",
+              "provider": null,
+              "plan": "shared-vm",
+              "name": "myRedisService",
+              "tags": [
+                "pivotal",
+                "redis"
+              ],
+              "instance_guid": "3bdc54ae-9e8e-45b1-8f80-5ec0a73505bf",
+              "instance_name": "myRedisService",
+              "binding_guid": "776f5be6-c840-405f-8728-71563f1bff27",
+              "binding_name": null,
+              "credentials": {
+                "host": "10.0.4.17",
+                "password": "269493d4-579a-42f0-b43b-42e83741517d",
+                "port": 37357
+              },
+              "syslog_drain_url": null,
+              "volume_mounts": []
+            }
+          ]
+        }
+        """;
 
     [Fact]
     public async Task Binds_options_without_service_bindings()

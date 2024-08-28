@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Metrics;
@@ -21,6 +22,12 @@ public sealed class MetricSampleTest : BaseTest
     {
         var sample = new MetricSample(MetricStatistic.Total, 100.00, null);
         string result = Serialize(sample);
-        Assert.Equal("{\"statistic\":\"TOTAL\",\"value\":100}", result);
+
+        result.Should().BeJson("""
+            {
+              "statistic": "TOTAL",
+              "value": 100
+            }
+            """);
     }
 }

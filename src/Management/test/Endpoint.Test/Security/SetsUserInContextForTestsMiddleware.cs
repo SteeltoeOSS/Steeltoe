@@ -10,17 +10,12 @@ namespace Steeltoe.Management.Endpoint.Test.Security;
 /// <summary>
 /// Adds a fake claim for Testing Authenticate test cases.
 /// </summary>
-internal sealed class SetsUserInContextForTestsMiddleware
+internal sealed class SetsUserInContextForTestsMiddleware(RequestDelegate? next)
 {
     private const string TestFakeAuthentication = "TestFakeAuthentication";
     private const string TestingHeader = "X-Test-Header";
 
-    private readonly RequestDelegate _next;
-
-    public SetsUserInContextForTestsMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
+    private readonly RequestDelegate? _next = next;
 
     public async Task InvokeAsync(HttpContext context)
     {
@@ -31,6 +26,9 @@ internal sealed class SetsUserInContextForTestsMiddleware
             context.User = new ClaimsPrincipal(claimsIdentity);
         }
 
-        await _next(context);
+        if (_next != null)
+        {
+            await _next(context);
+        }
     }
 }

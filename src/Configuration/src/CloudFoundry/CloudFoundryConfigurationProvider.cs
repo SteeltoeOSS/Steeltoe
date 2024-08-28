@@ -37,7 +37,7 @@ internal sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
         return stream;
     }
 
-    private void AddDiegoVariables(IDictionary<string, string?> data)
+    private void AddDiegoVariables(Dictionary<string, string?> data)
     {
         if (!data.ContainsKey("vcap:application:instance_id"))
         {
@@ -90,7 +90,7 @@ internal sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
         Data = data;
     }
 
-    private void LoadData(string prefix, IEnumerable<IConfigurationSection> sections, IDictionary<string, string?> data)
+    private void LoadData(string prefix, IEnumerable<IConfigurationSection> sections, Dictionary<string, string?> data)
     {
         foreach (IConfigurationSection section in sections)
         {
@@ -99,7 +99,7 @@ internal sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
         }
     }
 
-    private void LoadSection(string prefix, IConfigurationSection section, IDictionary<string, string?> data)
+    private void LoadSection(string prefix, IConfigurationSection section, Dictionary<string, string?> data)
     {
         if (string.IsNullOrEmpty(section.Value))
         {

@@ -39,7 +39,7 @@ internal static class ConfigurationKeyConverter
 
     private static IEnumerable<string> UniversalHierarchySplit(string source)
     {
-        var result = new List<string>();
+        List<string> result = [];
 
         int segmentStart = 0;
 

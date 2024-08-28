@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 using System.Globalization;
@@ -59,19 +58,14 @@ public sealed class EventPipeThreadDumper
     /// </returns>
     public async Task<IList<ThreadInfo>> DumpThreadsAsync(CancellationToken cancellationToken)
     {
-        var results = new List<ThreadInfo>();
+        List<ThreadInfo> results = [];
 
         try
         {
             _logger.LogDebug("Starting thread dump");
 
-            using var process = Process.GetCurrentProcess();
-            var client = new DiagnosticsClient(process.Id);
-
-            var providers = new List<EventPipeProvider>
-            {
-                new("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)
-            };
+            var client = new DiagnosticsClient(System.Environment.ProcessId);
+            List<EventPipeProvider> providers = [new EventPipeProvider("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)];
 
             using EventPipeSession session = client.StartEventPipeSession(providers);
             await DumpThreadsAsync(session, results, cancellationToken);
@@ -126,7 +120,7 @@ public sealed class EventPipeThreadDumper
 
                     const string template = "Thread (";
                     string threadFrame = stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false);
-                    int threadId = int.Parse(threadFrame.Substring(template.Length, threadFrame.Length - (template.Length + 1)), CultureInfo.InvariantCulture);
+                    int threadId = int.Parse(threadFrame.AsSpan(template.Length, threadFrame.Length - (template.Length + 1)), CultureInfo.InvariantCulture);
 
                     if (samplesForThread.TryGetValue(threadId, out List<StackSourceSample>? samples))
                     {
@@ -134,10 +128,7 @@ public sealed class EventPipeThreadDumper
                     }
                     else
                     {
-                        samplesForThread[threadId] = new List<StackSourceSample>
-                        {
-                            sample
-                        };
+                        samplesForThread[threadId] = [sample];
                     }
                 });
 
@@ -208,8 +199,7 @@ public sealed class EventPipeThreadDumper
     {
         _logger.LogDebug("Processing thread with ID: {Thread}", threadId);
 
-        var result = new List<StackTraceElement>();
-
+        List<StackTraceElement> result = [];
         StackSourceCallStackIndex stackIndex = stackSourceSample.StackIndex;
 
         while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith("Thread (", StringComparison.Ordinal))
@@ -291,8 +281,8 @@ public sealed class EventPipeThreadDumper
 
         ParseClassName(remaining, out remaining, out className);
 
-        int extIndex = remaining.IndexOf('.');
-        assemblyName = extIndex > 0 ? remaining.Substring(0, extIndex) : remaining;
+        int dotIndex = remaining.IndexOf('.');
+        assemblyName = dotIndex > 0 ? remaining[..dotIndex] : remaining;
 
         return true;
     }
@@ -308,8 +298,8 @@ public sealed class EventPipeThreadDumper
         }
         else
         {
-            remaining = input.Substring(0, classStartIndex);
-            className = input.Substring(classStartIndex + 1);
+            remaining = input[..classStartIndex];
+            className = input[(classStartIndex + 1)..];
         }
     }
 
@@ -319,8 +309,8 @@ public sealed class EventPipeThreadDumper
 
         if (methodStartIndex > 0)
         {
-            remaining = input.Substring(0, methodStartIndex);
-            methodName = input.Substring(methodStartIndex + 1);
+            remaining = input[..methodStartIndex];
+            methodName = input[(methodStartIndex + 1)..];
             return true;
         }
 
@@ -334,8 +324,8 @@ public sealed class EventPipeThreadDumper
 
         if (paramStartIndex > 0)
         {
-            remaining = input.Substring(0, paramStartIndex);
-            parameters = input.Substring(paramStartIndex);
+            remaining = input[..paramStartIndex];
+            parameters = input[paramStartIndex..];
             return true;
         }
 
@@ -359,7 +349,8 @@ public sealed class EventPipeThreadDumper
 
         if (moduleFile == null)
         {
-            _logger.LogTrace("GetSourceLine: Could not find moduleFile {0:x}.", log.CodeAddresses.Address(codeAddressIndex));
+            string hexAddress = log.CodeAddresses.Address(codeAddressIndex).ToString("X", CultureInfo.InvariantCulture);
+            _logger.LogTrace("GetSourceLine: Could not find moduleFile {HexAddress}.", hexAddress);
             return null;
         }
 
@@ -367,7 +358,8 @@ public sealed class EventPipeThreadDumper
 
         if (methodIndex == MethodIndex.Invalid)
         {
-            _logger.LogTrace("GetSourceLine: Could not find method for {0:x}", log.CodeAddresses.Address(codeAddressIndex));
+            string hexAddress = log.CodeAddresses.Address(codeAddressIndex).ToString("X", CultureInfo.InvariantCulture);
+            _logger.LogTrace("GetSourceLine: Could not find method for {HexAddress}", hexAddress);
             return null;
         }
 
@@ -375,7 +367,8 @@ public sealed class EventPipeThreadDumper
 
         if (methodToken == 0)
         {
-            _logger.LogTrace("GetSourceLine: Could not find method for {0:x}", log.CodeAddresses.Address(codeAddressIndex));
+            string hexAddress = log.CodeAddresses.Address(codeAddressIndex).ToString("X", CultureInfo.InvariantCulture);
+            _logger.LogTrace("GetSourceLine: Could not find method for {HexAddress}", hexAddress);
             return null;
         }
 

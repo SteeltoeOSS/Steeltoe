@@ -6,6 +6,4 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 
-public sealed class RouteMappingsEndpointOptions : EndpointOptions
-{
-}
+public sealed class RouteMappingsEndpointOptions : EndpointOptions;

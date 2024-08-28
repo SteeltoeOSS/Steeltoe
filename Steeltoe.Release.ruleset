@@ -1,15 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="Steeltoe Release" Description="Code quality rules for Steeltoe release builds" ToolsVersion="17.0">
-  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.CodeStyle" RuleNamespace="Microsoft.CodeAnalysis.CSharp.CodeStyle">
-    <Rule Id="IDE0161" Action="Warning" />
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.NetAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.CSharp.NetAnalyzers">
+    <Rule Id="CA1865" Action="Warning" />
+    <Rule Id="CA1866" Action="Warning" />
+    <Rule Id="CA2016" Action="Warning" />
   </Rules>
-  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
-    <Rule Id="IDE0161" Action="Warning" />
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.NetAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.NetAnalyzers">
+    <Rule Id="CA1018" Action="Warning" />
+    <Rule Id="CA1068" Action="Warning" />
+    <Rule Id="CA1305" Action="None" />
+    <Rule Id="CA1724" Action="Warning" />
+    <Rule Id="CA1806" Action="Warning" />
+    <Rule Id="CA1820" Action="Warning" />
+    <Rule Id="CA1822" Action="None" />
+    <Rule Id="CA1834" Action="Warning" />
+    <Rule Id="CA1846" Action="Warning" />
+    <Rule Id="CA1847" Action="Warning" />
+    <Rule Id="CA1852" Action="Warning" />
+    <Rule Id="CA1859" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
     <Rule Id="S100" Action="Warning" />
     <Rule Id="S106" Action="Warning" />
     <Rule Id="S1067" Action="Warning" />
+    <Rule Id="S107" Action="Warning" />
     <Rule Id="S1075" Action="None" />
     <Rule Id="S110" Action="Warning" />
     <Rule Id="S1104" Action="None" />
@@ -89,6 +103,7 @@
     <Rule Id="S6507" Action="Warning" />
     <Rule Id="S6513" Action="Warning" />
     <Rule Id="S6563" Action="Warning" />
+    <Rule Id="S6610" Action="None" />
     <Rule Id="S6797" Action="None" />
     <Rule Id="S6798" Action="None" />
     <Rule Id="S6800" Action="None" />

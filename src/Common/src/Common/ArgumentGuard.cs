@@ -9,7 +9,7 @@ namespace Steeltoe.Common;
 
 internal static class ArgumentGuard
 {
-    public static void ElementsNotNull<T>(IEnumerable<T?>? elements, [CallerArgumentExpression("elements")] string? parameterName = null)
+    public static void ElementsNotNull<T>(IEnumerable<T?>? elements, [CallerArgumentExpression(nameof(elements))] string? parameterName = null)
         where T : class
     {
         AssertNoDotInParameterName(parameterName);
@@ -20,7 +20,7 @@ internal static class ArgumentGuard
         }
     }
 
-    public static void ElementsNotNullOrEmpty(IEnumerable<string?>? elements, [CallerArgumentExpression("elements")] string? parameterName = null)
+    public static void ElementsNotNullOrEmpty(IEnumerable<string?>? elements, [CallerArgumentExpression(nameof(elements))] string? parameterName = null)
     {
         AssertNoDotInParameterName(parameterName);
 
@@ -30,7 +30,7 @@ internal static class ArgumentGuard
         }
     }
 
-    public static void ElementsNotNullOrWhiteSpace(IEnumerable<string?>? elements, [CallerArgumentExpression("elements")] string? parameterName = null)
+    public static void ElementsNotNullOrWhiteSpace(IEnumerable<string?>? elements, [CallerArgumentExpression(nameof(elements))] string? parameterName = null)
     {
         AssertNoDotInParameterName(parameterName);
 

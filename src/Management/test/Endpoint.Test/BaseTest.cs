@@ -16,7 +16,7 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public abstract class BaseTest : IDisposable
 {
-    protected JsonSerializerOptions SerializerOptions { get; } = new()
+    protected static JsonSerializerOptions SerializerOptions { get; } = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
@@ -71,7 +71,7 @@ public abstract class BaseTest : IDisposable
 
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>()
     {
-        return GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(new Dictionary<string, string?>());
+        return GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>([]);
     }
 
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(Dictionary<string, string?> settings)
@@ -112,7 +112,7 @@ public abstract class BaseTest : IDisposable
 
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>()
     {
-        return GetOptionsMonitorFromSettings<TOptions>(new Dictionary<string, string?>());
+        return GetOptionsMonitorFromSettings<TOptions>([]);
     }
 
     protected static TOptions GetOptionsFromSettings<TOptions, TConfigureOptions>()

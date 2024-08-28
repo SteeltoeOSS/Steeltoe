@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.RouteMappings;
@@ -28,22 +29,11 @@ public sealed class ApplicationMappingsTest : BaseTest
     [Fact]
     public void JsonSerialization_ReturnsExpected()
     {
-        var httpMethods = new List<string>
-        {
-            "GET"
-        };
-
-        var contentTypes = new List<string>
-        {
-            "application/json"
-        };
-
+        List<string> httpMethods = ["GET"];
+        List<string> contentTypes = ["application/json"];
         var routeDetails = new AspNetCoreRouteDetails("/Home/Index", httpMethods, contentTypes, contentTypes, Array.Empty<string>(), Array.Empty<string>());
 
-        var mappingDescriptions = new List<RouteMappingDescription>
-        {
-            new("foobar", routeDetails)
-        };
+        List<RouteMappingDescription> mappingDescriptions = [new RouteMappingDescription("foobar", routeDetails)];
 
         var mappingDictionary = new Dictionary<string, IList<RouteMappingDescription>>
         {
@@ -55,8 +45,23 @@ public sealed class ApplicationMappingsTest : BaseTest
 
         string result = Serialize(appMappings);
 
-        Assert.Equal(
-            "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"controllerTypeName\":[{\"handler\":\"foobar\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[application/json],consumes=[application/json]}\"}]}}}}}",
-            result);
+        result.Should().BeJson("""
+            {
+              "contexts": {
+                "application": {
+                  "mappings": {
+                    "dispatcherServlets": {
+                      "controllerTypeName": [
+                        {
+                          "handler": "foobar",
+                          "predicate": "{[/Home/Index],methods=[GET],produces=[application/json],consumes=[application/json]}"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+            """);
     }
 }

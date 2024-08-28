@@ -19,7 +19,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Services;
 
-public sealed class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest(ITestOutputHelper testOutputHelper) : BaseTest
 {
     private static readonly string SteeltoeVersion = typeof(ServicesEndpointHandler).Assembly.GetName().Version!.ToString();
 
@@ -28,12 +28,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         ["management:endpoints:actuator:exposure:include:0"] = "beans"
     };
 
-    private readonly ITestOutputHelper _output;
-
-    public EndpointMiddlewareTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
+    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
     [Fact]
     public async Task HandleServicesRequestAsync_ReturnsExpected()
@@ -142,7 +137,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task DoInvoke_ReturnsExpected()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
         testContext.AdditionalServices = (services, _) => services.AddServicesActuator();
         testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(AppSettings);
 
@@ -157,7 +152,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         using var reader = new StreamReader(httpContext.Response.Body, Encoding.UTF8);
 
         string response = await reader.ReadToEndAsync();
-        response.Should().StartWith("{\"contexts\":{\"application\":{\"beans\":{");
+        response.Should().StartWith("""{"contexts":{"application":{"beans":{""");
     }
 
     private static HttpContext CreateHttpContextForRequest(string method, string path)

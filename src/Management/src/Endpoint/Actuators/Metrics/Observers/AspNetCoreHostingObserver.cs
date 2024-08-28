@@ -63,7 +63,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
 
         if (eventName == StopEventName)
         {
-            _logger.LogTrace("HandleStopEvent start {Thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent start {Thread}", System.Environment.CurrentManagedThreadId);
 
             var context = GetPropertyOrDefault<HttpContext>(value, "HttpContext");
 
@@ -72,7 +72,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
                 HandleStopEvent(current, context);
             }
 
-            _logger.LogTrace("HandleStopEvent finish {Thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent finish {Thread}", System.Environment.CurrentManagedThreadId);
         }
     }
 
@@ -98,18 +98,18 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
 
         string uri = context.Request.Path.ToString();
         string statusCode = context.Response.StatusCode.ToString(CultureInfo.InvariantCulture);
-        string exception = GetException(context);
+        string exceptionTypeName = GetExceptionTypeName(context);
 
         return new Dictionary<string, object?>
         {
             { UriTagKey, uri },
             { StatusTagKey, statusCode },
-            { ExceptionTagKey, exception },
+            { ExceptionTagKey, exceptionTypeName },
             { MethodTagKey, context.Request.Method }
         };
     }
 
-    internal string GetException(HttpContext context)
+    internal string GetExceptionTypeName(HttpContext context)
     {
         var exception = context.Features.Get<IExceptionHandlerFeature>();
 

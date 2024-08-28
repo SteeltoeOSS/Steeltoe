@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Trace;
 using Steeltoe.Common;
@@ -37,7 +36,7 @@ public sealed class TracingLogProcessorTest
             ["management:tracing:name"] = "foobar"
         };
 
-        IOptionsMonitor<TracingOptions> optionsMonitor = GetTracingOptionsMonitor(appSettings);
+        TestOptionsMonitor<TracingOptions> optionsMonitor = GetTracingOptionsMonitor(appSettings);
         var processor = new TracingLogProcessor(optionsMonitor);
         Tracer tracer = TracerProvider.Default.GetTracer("tracername");
         TelemetrySpan span = tracer.StartActiveSpan("spanName");
@@ -45,8 +44,8 @@ public sealed class TracingLogProcessorTest
         string result = processor.Process("InputLogMessage");
 
         Assert.Contains("InputLogMessage", result, StringComparison.Ordinal);
-        Assert.Contains("[", result, StringComparison.Ordinal);
-        Assert.Contains("]", result, StringComparison.Ordinal);
+        Assert.Contains('[', result);
+        Assert.Contains(']', result);
         Assert.Contains(span.Context.TraceId.ToHexString(), result, StringComparison.Ordinal);
         Assert.Contains(span.Context.SpanId.ToHexString(), result, StringComparison.Ordinal);
         Assert.Contains("foobar", result, StringComparison.Ordinal);
@@ -56,8 +55,8 @@ public sealed class TracingLogProcessorTest
         result = processor.Process("InputLogMessage2");
 
         Assert.Contains("InputLogMessage2", result, StringComparison.Ordinal);
-        Assert.Contains("[", result, StringComparison.Ordinal);
-        Assert.Contains("]", result, StringComparison.Ordinal);
+        Assert.Contains('[', result);
+        Assert.Contains(']', result);
         Assert.Contains(childSpan.Context.TraceId.ToHexString(), result, StringComparison.Ordinal);
         Assert.Contains(childSpan.Context.SpanId.ToHexString(), result, StringComparison.Ordinal);
 
@@ -73,7 +72,7 @@ public sealed class TracingLogProcessorTest
             ["management:tracing:useShortTraceIds"] = "true"
         };
 
-        IOptionsMonitor<TracingOptions> optionsMonitor = GetTracingOptionsMonitor(appSettings);
+        TestOptionsMonitor<TracingOptions> optionsMonitor = GetTracingOptionsMonitor(appSettings);
         using TracerProvider openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
         Tracer tracer = TracerProvider.Default.GetTracer("tracername");
         TelemetrySpan span = tracer.StartActiveSpan("spanName");
@@ -82,8 +81,8 @@ public sealed class TracingLogProcessorTest
         string result = processor.Process("InputLogMessage");
 
         Assert.Contains("InputLogMessage", result, StringComparison.Ordinal);
-        Assert.Contains("[", result, StringComparison.Ordinal);
-        Assert.Contains("]", result, StringComparison.Ordinal);
+        Assert.Contains('[', result);
+        Assert.Contains(']', result);
 
         string full = span.Context.TraceId.ToHexString();
         string shorty = full.Substring(full.Length - 16, 16);
@@ -95,7 +94,7 @@ public sealed class TracingLogProcessorTest
         Assert.Contains("foobar", result, StringComparison.Ordinal);
     }
 
-    private IOptionsMonitor<TracingOptions> GetTracingOptionsMonitor(IDictionary<string, string?> appSettings)
+    private TestOptionsMonitor<TracingOptions> GetTracingOptionsMonitor(IDictionary<string, string?> appSettings)
     {
         var options = new TracingOptions();
 

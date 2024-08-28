@@ -7,14 +7,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Health;
 
-internal sealed class AuthenticatedTestMiddleware
+internal sealed class AuthenticatedTestMiddleware(RequestDelegate? next)
 {
-    private readonly RequestDelegate _next;
-
-    public AuthenticatedTestMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
+    private readonly RequestDelegate? _next = next;
 
     public async Task InvokeAsync(HttpContext context)
     {
@@ -26,6 +21,9 @@ internal sealed class AuthenticatedTestMiddleware
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         context.User = claimsPrincipal;
 
-        await _next(context);
+        if (_next != null)
+        {
+            await _next(context);
+        }
     }
 }

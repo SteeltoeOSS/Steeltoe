@@ -33,20 +33,18 @@ internal static class MySqlDbContextOptionsExtensionsShim
         if (string.IsNullOrWhiteSpace(connectionString))
         {
             // The overload that takes a connectionString parameter throws when it is null, empty or whitespace.
-            _ = packageResolver.MySqlDbContextOptionsExtensionsClass.InvokeMethodOverload("UseMySQL", true, new[]
-            {
+            _ = packageResolver.MySqlDbContextOptionsExtensionsClass.InvokeMethodOverload("UseMySQL", true, [
                 typeof(DbContextOptionsBuilder),
                 mySqlOptionsActionType
-            }, optionsBuilder, mySqlOptionsAction);
+            ], optionsBuilder, mySqlOptionsAction);
         }
         else
         {
-            _ = packageResolver.MySqlDbContextOptionsExtensionsClass.InvokeMethodOverload("UseMySQL", true, new[]
-            {
+            _ = packageResolver.MySqlDbContextOptionsExtensionsClass.InvokeMethodOverload("UseMySQL", true, [
                 typeof(DbContextOptionsBuilder),
                 typeof(string),
                 mySqlOptionsActionType
-            }, optionsBuilder, connectionString, mySqlOptionsAction);
+            ], optionsBuilder, connectionString, mySqlOptionsAction);
         }
     }
 
@@ -70,22 +68,20 @@ internal static class MySqlDbContextOptionsExtensionsShim
         if (string.IsNullOrWhiteSpace(connectionString))
         {
             // The overload that takes a connectionString parameter throws when it is null, empty or whitespace.
-            _ = packageResolver.MySqlDbContextOptionsExtensionsClass.InvokeMethodOverload("UseMySql", true, new[]
-            {
+            _ = packageResolver.MySqlDbContextOptionsExtensionsClass.InvokeMethodOverload("UseMySql", true, [
                 typeof(DbContextOptionsBuilder),
                 packageResolver.ServerVersionClass.Type,
                 mySqlOptionsActionType
-            }, optionsBuilder, serverVersion, mySqlOptionsAction);
+            ], optionsBuilder, serverVersion, mySqlOptionsAction);
         }
         else
         {
-            _ = packageResolver.MySqlDbContextOptionsExtensionsClass.InvokeMethodOverload("UseMySql", true, new[]
-            {
+            _ = packageResolver.MySqlDbContextOptionsExtensionsClass.InvokeMethodOverload("UseMySql", true, [
                 typeof(DbContextOptionsBuilder),
                 typeof(string),
                 packageResolver.ServerVersionClass.Type,
                 mySqlOptionsActionType
-            }, optionsBuilder, connectionString, serverVersion, mySqlOptionsAction);
+            ], optionsBuilder, connectionString, serverVersion, mySqlOptionsAction);
         }
     }
 }

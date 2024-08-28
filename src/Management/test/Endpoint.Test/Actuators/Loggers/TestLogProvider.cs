@@ -26,16 +26,12 @@ internal sealed class TestLogProvider : IDynamicLoggerProvider
     public ICollection<DynamicLoggerConfiguration> GetLoggerConfigurations()
     {
         GetLoggerConfigurationsCalled = true;
-        return new List<DynamicLoggerConfiguration>();
+        return [];
     }
 
     public void SetLogLevel(string categoryName, LogLevel? minLevel)
     {
         Category = categoryName;
         MinLevel = minLevel ?? LogLevel.None;
-    }
-
-    public void SetScopeProvider(IExternalScopeProvider scopeProvider)
-    {
     }
 }

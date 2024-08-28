@@ -5,6 +5,4 @@
 namespace Steeltoe.Connectors.RabbitMQ;
 
 /// <inheritdoc />
-public sealed class RabbitMQOptions : ConnectionStringOptions
-{
-}
+public sealed class RabbitMQOptions : ConnectionStringOptions;

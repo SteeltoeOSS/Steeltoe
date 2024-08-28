@@ -26,8 +26,7 @@ public sealed class EncryptionResolverProviderTest
     [Fact]
     public void Constructor_WithProviders()
     {
-        var providers = new List<IConfigurationProvider>();
-
+        List<IConfigurationProvider> providers = [];
         var provider = new EncryptionResolverProvider(providers, _decryptorMock.Object, NullLoggerFactory.Instance);
 
         Assert.Null(provider.Configuration);

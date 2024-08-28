@@ -25,8 +25,7 @@ public sealed class PlaceholderResolverProviderTest
     [Fact]
     public void Constructor_WithProviders()
     {
-        var providers = new List<IConfigurationProvider>();
-
+        List<IConfigurationProvider> providers = [];
         var provider = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
 
         Assert.Null(provider.Configuration);
@@ -50,8 +49,8 @@ public sealed class PlaceholderResolverProviderTest
 
         var holder = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
 
-        Assert.False(holder.TryGet("nokey", out string? value));
-        Assert.True(holder.TryGet("key1", out value));
+        Assert.False(holder.TryGet("nokey", out _));
+        Assert.True(holder.TryGet("key1", out string? value));
         Assert.Equal("value1", value);
         Assert.True(holder.TryGet("key2", out value));
         Assert.Equal("value1", value);
@@ -78,8 +77,8 @@ public sealed class PlaceholderResolverProviderTest
 
         var holder = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
 
-        Assert.False(holder.TryGet("nokey", out string? value));
-        Assert.True(holder.TryGet("key1", out value));
+        Assert.False(holder.TryGet("nokey", out _));
+        Assert.True(holder.TryGet("key1", out string? value));
         Assert.Equal("value1", value);
         Assert.True(holder.TryGet("key2", out value));
         Assert.Equal("value1", value);
@@ -98,33 +97,35 @@ public sealed class PlaceholderResolverProviderTest
     [Fact]
     public async Task GetReloadToken_ReturnsExpected_NotifyChanges()
     {
-        const string appsettings1 = @"
-                {
-                    ""spring"": {
-                        ""bar"": {
-                            ""name"": ""myName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""name"" : ""${spring:bar:name?noname}"",
-                        }
-                      }
-                    }
-                }";
+        const string appsettings1 = """
+            {
+              "spring": {
+                "bar": {
+                  "name": "myName"
+                },
+                "cloud": {
+                  "config": {
+                    "name": "${spring:bar:name?noname}"
+                  }
+                }
+              }
+            }
+            """;
 
-        const string appsettings2 = @"
-                {
-                    ""spring"": {
-                        ""bar"": {
-                            ""name"": ""newMyName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""name"" : ""${spring:bar:name?noname}"",
-                        }
-                      }
-                    }
-                }";
+        const string appsettings2 = """
+            {
+              "spring": {
+                "bar": {
+                  "name": "newMyName"
+                },
+                "cloud": {
+                  "config": {
+                    "name": "${spring:bar:name?noname}"
+                  }
+                }
+              }
+            }
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings1);
@@ -181,33 +182,35 @@ public sealed class PlaceholderResolverProviderTest
     [Fact]
     public async Task Load_ReloadsConfiguration()
     {
-        const string appsettings1 = @"
-                {
-                    ""spring"": {
-                        ""bar"": {
-                            ""name"": ""myName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""name"" : ""${spring:bar:name?noname}"",
-                        }
-                      }
-                    }
-                }";
+        const string appsettings1 = """
+            {
+              "spring": {
+                "bar": {
+                  "name": "myName"
+                },
+                "cloud": {
+                  "config": {
+                    "name": "${spring:bar:name?noname}"
+                  }
+                }
+              }
+            }
+            """;
 
-        const string appsettings2 = @"
-                {
-                    ""spring"": {
-                        ""bar"": {
-                            ""name"": ""newMyName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""name"" : ""${spring:bar:name?noname}"",
-                        }
-                      }
-                    }
-                }";
+        const string appsettings2 = """
+            {
+              "spring": {
+                "bar": {
+                  "name": "newMyName"
+                },
+                "cloud": {
+                  "config": {
+                    "name": "${spring:bar:name?noname}"
+                  }
+                }
+              }
+            }
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings1);

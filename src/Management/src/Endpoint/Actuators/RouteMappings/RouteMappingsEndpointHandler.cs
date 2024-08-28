@@ -21,7 +21,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
 {
     private readonly IOptionsMonitor<RouteMappingsEndpointOptions> _optionsMonitor;
     private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
-    private readonly ICollection<IApiDescriptionProvider> _apiDescriptionProviders;
+    private readonly IApiDescriptionProvider[] _apiDescriptionProviders;
     private readonly RouterMappings _routerMappings;
     private readonly ILogger<RouteMappingsEndpointHandler> _logger;
 
@@ -52,7 +52,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         _logger.LogTrace("Fetching application mappings");
 
         ApiDescriptionProviderContext apiContext = GetApiDescriptions(_actionDescriptorCollectionProvider.ActionDescriptors.Items);
-        IDictionary<string, IList<RouteMappingDescription>> dictionary = GetMappingDescriptions(apiContext);
+        Dictionary<string, IList<RouteMappingDescription>> dictionary = GetMappingDescriptions(apiContext);
 
         AddRouteMappingsDescriptions(dictionary);
 
@@ -62,9 +62,9 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         return Task.FromResult(response);
     }
 
-    private IDictionary<string, IList<RouteMappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)
+    private Dictionary<string, IList<RouteMappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)
     {
-        IDictionary<string, IList<RouteMappingDescription>> mappingDescriptions = new Dictionary<string, IList<RouteMappingDescription>>();
+        Dictionary<string, IList<RouteMappingDescription>> mappingDescriptions = [];
 
         foreach (ApiDescription description in apiContext.Results)
         {
@@ -125,7 +125,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             routeTemplate = $"/{descriptor.ControllerName}/{descriptor.ActionName}";
         }
 
-        IList<string> httpMethods = GetHttpMethods(description);
+        List<string> httpMethods = GetHttpMethods(description);
 
         List<string> consumes = description.SupportedRequestFormats.Select(format => format.MediaType).ToList();
 
@@ -137,14 +137,14 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             }
         }
 
-        var produces = new List<string>();
+        List<string> produces = [];
 
         foreach (ApiResponseType responseType in description.SupportedResponseTypes)
         {
             produces.AddRange(responseType.ApiResponseFormats.Select(format => format.MediaType));
         }
 
-        return new AspNetCoreRouteDetails(routeTemplate, httpMethods, consumes, produces, new List<string>(), new List<string>());
+        return new AspNetCoreRouteDetails(routeTemplate, httpMethods, consumes, produces, Array.Empty<string>(), Array.Empty<string>());
     }
 
     private AspNetCoreRouteDetails GetRouteDetails(ActionDescriptor actionDescriptor)
@@ -166,7 +166,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             RouteMappingDescription.AllHttpMethods
         ];
 
-        var consumes = new List<string>();
+        List<string> consumes = [];
 
         foreach (ConsumesAttribute attribute in actionDescriptor.FilterDescriptors.Where(descriptor => descriptor.Filter is ConsumesAttribute)
             .Select(descriptor => (ConsumesAttribute)descriptor.Filter))
@@ -174,7 +174,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             consumes.AddRange(attribute.ContentTypes);
         }
 
-        var produces = new List<string>();
+        List<string> produces = [];
 
         foreach (ProducesAttribute attribute in actionDescriptor.FilterDescriptors.Where(descriptor => descriptor.Filter is ProducesAttribute)
             .Select(descriptor => (ProducesAttribute)descriptor.Filter))
@@ -182,7 +182,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             produces.AddRange(attribute.ContentTypes);
         }
 
-        return new AspNetCoreRouteDetails(routeTemplate, httpMethods, consumes, produces, new List<string>(), new List<string>());
+        return new AspNetCoreRouteDetails(routeTemplate, httpMethods, consumes, produces, Array.Empty<string>(), Array.Empty<string>());
     }
 
     private AspNetCoreRouteDetails GetRouteDetails(Route route)
@@ -190,10 +190,11 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         string routeRouteTemplate = route.RouteTemplate ?? string.Empty;
         IList<string> httpMethods = GetHttpMethods(route);
 
-        return new AspNetCoreRouteDetails(routeRouteTemplate, httpMethods, new List<string>(), new List<string>(), new List<string>(), new List<string>());
+        return new AspNetCoreRouteDetails(routeRouteTemplate, httpMethods, Array.Empty<string>(), Array.Empty<string>(), Array.Empty<string>(),
+            Array.Empty<string>());
     }
 
-    private void AddRouteMappingsDescriptions(IDictionary<string, IList<RouteMappingDescription>> dictionary)
+    private void AddRouteMappingsDescriptions(Dictionary<string, IList<RouteMappingDescription>> dictionary)
     {
         foreach (IRouter router in _routerMappings.Routers)
         {
@@ -214,17 +215,9 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         }
     }
 
-    private IList<string> GetHttpMethods(ApiDescription description)
+    private List<string> GetHttpMethods(ApiDescription description)
     {
-        if (!string.IsNullOrEmpty(description.HttpMethod))
-        {
-            return new List<string>
-            {
-                description.HttpMethod
-            };
-        }
-
-        return new List<string>();
+        return !string.IsNullOrEmpty(description.HttpMethod) ? [description.HttpMethod] : [];
     }
 
     private IList<string> GetHttpMethods(Route route)
@@ -236,7 +229,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             return methodConstraint.AllowedMethods;
         }
 
-        return new List<string>();
+        return Array.Empty<string>();
     }
 
     private ApiDescriptionProviderContext GetApiDescriptions(IReadOnlyList<ActionDescriptor> actionDescriptors)

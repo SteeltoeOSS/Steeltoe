@@ -54,10 +54,38 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string? json = await reader.ReadLineAsync();
 
-        const string expected =
-            "{\"activeProfiles\":[\"Test\"],\"propertySources\":[{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:Console:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:actuator:exposure:include:0\":{\"value\":\"*\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
-
-        Assert.Equal(expected, json);
+        json.Should().BeJson("""
+            {
+              "activeProfiles": [
+                "Test"
+              ],
+              "propertySources": [
+                {
+                  "name": "MemoryConfigurationProvider",
+                  "properties": {
+                    "Logging:Console:IncludeScopes": {
+                      "value": "false"
+                    },
+                    "Logging:LogLevel:Default": {
+                      "value": "Warning"
+                    },
+                    "Logging:LogLevel:Pivotal": {
+                      "value": "Information"
+                    },
+                    "Logging:LogLevel:Steeltoe": {
+                      "value": "Information"
+                    },
+                    "management:endpoints:actuator:exposure:include:0": {
+                      "value": "*"
+                    },
+                    "management:endpoints:enabled": {
+                      "value": "true"
+                    }
+                  }
+                }
+              ]
+            }
+            """);
     }
 
     [Fact]
@@ -81,10 +109,46 @@ public sealed class EndpointMiddlewareTest : BaseTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         string json = await response.Content.ReadAsStringAsync();
 
-        const string expected =
-            "{\"activeProfiles\":[\"Production\"],\"propertySources\":[{\"name\":\"ChainedConfigurationProvider\",\"properties\":{\"applicationName\":{\"value\":\"Steeltoe.Management.Endpoint.Test\"}}},{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:Console:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:actuator:exposure:include:0\":{\"value\":\"*\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
-
-        Assert.Equal(expected, json);
+        json.Should().BeJson("""
+            {
+              "activeProfiles": [
+                "Production"
+              ],
+              "propertySources": [
+                {
+                  "name": "ChainedConfigurationProvider",
+                  "properties": {
+                    "applicationName": {
+                      "value": "Steeltoe.Management.Endpoint.Test"
+                    }
+                  }
+                },
+                {
+                  "name": "MemoryConfigurationProvider",
+                  "properties": {
+                    "Logging:Console:IncludeScopes": {
+                      "value": "false"
+                    },
+                    "Logging:LogLevel:Default": {
+                      "value": "Warning"
+                    },
+                    "Logging:LogLevel:Pivotal": {
+                      "value": "Information"
+                    },
+                    "Logging:LogLevel:Steeltoe": {
+                      "value": "Information"
+                    },
+                    "management:endpoints:actuator:exposure:include:0": {
+                      "value": "*"
+                    },
+                    "management:endpoints:enabled": {
+                      "value": "true"
+                    }
+                  }
+                }
+              ]
+            }
+            """);
     }
 
     [Fact]

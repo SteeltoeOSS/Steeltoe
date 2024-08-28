@@ -38,7 +38,7 @@ internal sealed class ConfigServerDiscoveryService
     }
 
     // Create discovery clients to be used (hopefully only) during startup
-    private ICollection<IDiscoveryClient> SetupDiscoveryClients(ILoggerFactory loggerFactory)
+    private IDiscoveryClient[] SetupDiscoveryClients(ILoggerFactory loggerFactory)
     {
         var tempServices = new ServiceCollection();
         tempServices.AddSingleton(loggerFactory);
@@ -90,7 +90,7 @@ internal sealed class ConfigServerDiscoveryService
         tempServices.AddEurekaDiscoveryClient();
     }
 
-    private ICollection<IDiscoveryClient> GetDiscoveryClientsFromServiceCollection(ServiceCollection services)
+    private IDiscoveryClient[] GetDiscoveryClientsFromServiceCollection(ServiceCollection services)
     {
         _temporaryServiceProviderForDiscoveryClients = services.BuildServiceProvider();
 
@@ -130,7 +130,7 @@ internal sealed class ConfigServerDiscoveryService
                 }
             }
 
-            if (!_options.Retry.Enabled || instances.Any())
+            if (!_options.Retry.Enabled || instances.Count > 0)
             {
                 break;
             }

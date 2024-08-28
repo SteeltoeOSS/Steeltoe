@@ -16,7 +16,7 @@ public sealed class CapturingLoggerProvider : ILoggerProvider
     private readonly Func<string, LogLevel, bool> _filter;
 
     private readonly object _lockObject = new();
-    private readonly IList<string> _messages = [];
+    private readonly List<string> _messages = [];
 
     public CapturingLoggerProvider()
         : this(DefaultFilter)
@@ -70,18 +70,11 @@ public sealed class CapturingLoggerProvider : ILoggerProvider
     {
     }
 
-    private sealed class CapturingLogger : ILogger
+    private sealed class CapturingLogger(CapturingLoggerProvider owner, string categoryName, Func<string, LogLevel, bool> filter) : ILogger
     {
-        private readonly CapturingLoggerProvider _owner;
-        private readonly string _categoryName;
-        private readonly Func<string, LogLevel, bool> _filter;
-
-        public CapturingLogger(CapturingLoggerProvider owner, string categoryName, Func<string, LogLevel, bool> filter)
-        {
-            _owner = owner;
-            _categoryName = categoryName;
-            _filter = filter;
-        }
+        private readonly CapturingLoggerProvider _owner = owner;
+        private readonly string _categoryName = categoryName;
+        private readonly Func<string, LogLevel, bool> _filter = filter;
 
         public bool IsEnabled(LogLevel logLevel)
         {

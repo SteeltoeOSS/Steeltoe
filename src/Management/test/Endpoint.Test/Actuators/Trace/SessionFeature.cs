@@ -13,6 +13,8 @@ internal sealed class SessionFeature : ISessionFeature
 
     public SessionFeature(ISession session)
     {
+        ArgumentNullException.ThrowIfNull(session);
+
         Session = session;
     }
 }

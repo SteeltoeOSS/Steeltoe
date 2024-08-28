@@ -10,14 +10,10 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.DbMigrations;
 
-internal sealed class DbMigrationsEndpointMiddleware : EndpointMiddleware<object?, Dictionary<string, DbMigrationsDescriptor>>
+internal sealed class DbMigrationsEndpointMiddleware(
+    IDbMigrationsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
+    : EndpointMiddleware<object?, Dictionary<string, DbMigrationsDescriptor>>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    public DbMigrationsEndpointMiddleware(IDbMigrationsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
-    {
-    }
-
     protected override async Task<Dictionary<string, DbMigrationsDescriptor>> InvokeEndpointHandlerAsync(HttpContext context,
         CancellationToken cancellationToken)
     {

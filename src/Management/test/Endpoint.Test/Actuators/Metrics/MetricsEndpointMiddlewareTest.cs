@@ -6,6 +6,7 @@ using System.Diagnostics.Metrics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Metrics;
 using Steeltoe.Management.Endpoint.Actuators.Metrics.SystemDiagnosticsMetrics;
 using Steeltoe.Management.Endpoint.Configuration;
@@ -135,7 +136,12 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body);
         string json = await reader.ReadToEndAsync();
-        Assert.Equal("{\"names\":[]}", json);
+
+        json.Should().BeJson("""
+            {
+              "names": []
+            }
+            """);
     }
 
     [Fact]
@@ -181,9 +187,37 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
         var reader = new StreamReader(context.Response.Body);
         string json = await reader.ReadToEndAsync();
 
-        Assert.Equal(
-            "{\"name\":\"test\",\"measurements\":[{\"statistic\":\"Rate\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}",
-            json);
+        json.Should().BeJson("""
+            {
+              "name": "test",
+              "measurements": [
+                {
+                  "statistic": "Rate",
+                  "value": 45
+                }
+              ],
+              "availableTags": [
+                {
+                  "tag": "a",
+                  "values": [
+                    "v1"
+                  ]
+                },
+                {
+                  "tag": "b",
+                  "values": [
+                    "v1"
+                  ]
+                },
+                {
+                  "tag": "c",
+                  "values": [
+                    "v1"
+                  ]
+                }
+              ]
+            }
+            """);
     }
 
     [Fact]
@@ -235,7 +269,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
 
         for (int index = 0; index < 10; index++)
         {
-            counter.Add(index, new ReadOnlySpan<KeyValuePair<string, object?>>(labels.ToArray()));
+            counter.Add(index, labels.ToArray());
         }
     }
 }

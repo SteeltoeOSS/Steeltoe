@@ -6,24 +6,19 @@ using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.Redis.DynamicTypeAccess;
 
-internal sealed class ConnectionMultiplexerShim : Shim, IDisposable
+internal sealed class ConnectionMultiplexerShim(StackExchangeRedisPackageResolver packageResolver, object instance)
+    : Shim(new InstanceAccessor(packageResolver.ConnectionMultiplexerClass, instance)), IDisposable
 {
     public override IDisposable Instance => (IDisposable)base.Instance;
-
-    public ConnectionMultiplexerShim(StackExchangeRedisPackageResolver packageResolver, object instance)
-        : base(new InstanceAccessor(packageResolver.ConnectionMultiplexerClass, instance))
-    {
-    }
 
     public static ConnectionMultiplexerInterfaceShim Connect(StackExchangeRedisPackageResolver packageResolver, string? configuration)
     {
         ArgumentNullException.ThrowIfNull(packageResolver);
 
-        object instance = packageResolver.ConnectionMultiplexerClass.InvokeMethodOverload("Connect", true, new[]
-        {
+        object instance = packageResolver.ConnectionMultiplexerClass.InvokeMethodOverload("Connect", true, [
             typeof(string),
             typeof(TextWriter)
-        }, configuration, null)!;
+        ], configuration, null)!;
 
         return new ConnectionMultiplexerInterfaceShim(packageResolver, instance);
     }
@@ -32,11 +27,10 @@ internal sealed class ConnectionMultiplexerShim : Shim, IDisposable
     {
         ArgumentNullException.ThrowIfNull(packageResolver);
 
-        var task = (Task)packageResolver.ConnectionMultiplexerClass.InvokeMethodOverload("ConnectAsync", true, new[]
-        {
+        var task = (Task)packageResolver.ConnectionMultiplexerClass.InvokeMethodOverload("ConnectAsync", true, [
             typeof(string),
             typeof(TextWriter)
-        }, configuration, null)!;
+        ], configuration, null)!;
 
         await task;
 

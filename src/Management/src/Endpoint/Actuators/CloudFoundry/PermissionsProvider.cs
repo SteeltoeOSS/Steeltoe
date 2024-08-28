@@ -21,14 +21,14 @@ internal sealed class PermissionsProvider
 {
     private const string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
     private const string CloudfoundryNotReachableMessage = "Cloud controller not reachable";
-    private const string ReadSensitiveData = "read_sensitive_data";
+    private const string ReadSensitiveDataJsonPropertyName = "read_sensitive_data";
     public const string HttpClientName = "CloudFoundrySecurity";
     public const string ApplicationIdMissingMessage = "Application id is not available";
     public const string EndpointNotConfiguredMessage = "Endpoint is not available";
     public const string CloudfoundryApiMissingMessage = "Cloud controller URL is not available";
     public const string AccessDeniedMessage = "Access denied";
-    public const string AuthorizationHeader = "Authorization";
-    public const string Bearer = "bearer";
+    public const string AuthorizationHeaderName = "Authorization";
+    public const string BearerHeaderNamePrefix = "Bearer ";
     private static readonly TimeSpan GetPermissionsTimeout = TimeSpan.FromMilliseconds(5000);
 
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _optionsMonitor;
@@ -81,7 +81,7 @@ internal sealed class PermissionsProvider
                     : new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
             }
 
-            Permissions permissions = await GetPermissionsAsync(response, cancellationToken);
+            EndpointPermissions permissions = await GetPermissionsAsync(response, cancellationToken);
             return new SecurityResult(permissions);
         }
         catch (Exception exception) when (!exception.IsCancellation())
@@ -92,12 +92,12 @@ internal sealed class PermissionsProvider
         }
     }
 
-    public async Task<Permissions> GetPermissionsAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+    public async Task<EndpointPermissions> GetPermissionsAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(response);
 
         string json = string.Empty;
-        var permissions = Permissions.None;
+        var permissions = EndpointPermissions.None;
 
         try
         {
@@ -107,10 +107,10 @@ internal sealed class PermissionsProvider
 
             var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
-            if (result != null && result.TryGetValue(ReadSensitiveData, out JsonElement permissionElement))
+            if (result != null && result.TryGetValue(ReadSensitiveDataJsonPropertyName, out JsonElement permissionElement))
             {
                 bool enabled = JsonSerializer.Deserialize<bool>(permissionElement.GetRawText());
-                permissions = enabled ? Permissions.Full : Permissions.Restricted;
+                permissions = enabled ? EndpointPermissions.Full : EndpointPermissions.Restricted;
             }
         }
         catch (Exception exception) when (!exception.IsCancellation())

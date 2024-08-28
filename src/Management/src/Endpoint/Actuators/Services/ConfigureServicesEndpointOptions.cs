@@ -7,12 +7,8 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Services;
 
-internal sealed class ConfigureServicesEndpointOptions : ConfigureEndpointOptions<ServicesEndpointOptions>
+internal sealed class ConfigureServicesEndpointOptions(IConfiguration configuration)
+    : ConfigureEndpointOptions<ServicesEndpointOptions>(configuration, ManagementInfoPrefix, "beans")
 {
     private const string ManagementInfoPrefix = "management:endpoints:services";
-
-    public ConfigureServicesEndpointOptions(IConfiguration configuration)
-        : base(configuration, ManagementInfoPrefix, "beans")
-    {
-    }
 }

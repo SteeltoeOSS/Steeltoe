@@ -13,11 +13,10 @@ public sealed class RedisConnectionStringBuilderTest
     {
         var builder = new RedisConnectionStringBuilder
         {
-            ConnectionString = "redis0:6380,allowAdmin=true"
+            ConnectionString = "redis0:6380,allowAdmin=true",
+            ["port"] = 123,
+            ["username"] = "me@host.com"
         };
-
-        builder["port"] = 123;
-        builder["username"] = "me@host.com";
 
         builder.ConnectionString.Should().Be("redis0:123,allowAdmin=true,username=me@host.com");
     }

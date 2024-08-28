@@ -18,13 +18,9 @@ public sealed class EncryptionResolverSourceTest
     public void Constructors_InitializesProperties()
     {
         var memorySource = new MemoryConfigurationSource();
+        List<IConfigurationSource> sources = [memorySource];
 
-        var sources = new List<IConfigurationSource>
-        {
-            memorySource
-        };
-
-        var factory = new LoggerFactory();
+        using var factory = new LoggerFactory();
 
         var encryptionSource = new EncryptionResolverSource(sources, _decryptorMock.Object, factory);
         Assert.Equal(factory, encryptionSource.LoggerFactory);
@@ -38,11 +34,7 @@ public sealed class EncryptionResolverSourceTest
     public void Build_ReturnsProvider()
     {
         var memorySource = new MemoryConfigurationSource();
-
-        IList<IConfigurationSource> sources = new List<IConfigurationSource>
-        {
-            memorySource
-        };
+        List<IConfigurationSource> sources = [memorySource];
 
         var encryptionSource = new EncryptionResolverSource(sources, _decryptorMock.Object, NullLoggerFactory.Instance);
         IConfigurationProvider provider = encryptionSource.Build(new ConfigurationBuilder());

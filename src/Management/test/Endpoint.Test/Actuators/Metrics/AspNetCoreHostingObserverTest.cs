@@ -42,16 +42,16 @@ public sealed class AspNetCoreHostingObserverTest : BaseTest
         var observer = new AspNetCoreHostingObserver(options, NullLoggerFactory.Instance);
 
         HttpContext context = GetHttpRequestMessage();
-        string exception = observer.GetException(context);
-        Assert.Equal("None", exception);
+        string exceptionTypeName = observer.GetExceptionTypeName(context);
+        Assert.Equal("None", exceptionTypeName);
 
         context = GetHttpRequestMessage();
 
-        var exceptionHandlerFeature = new ExceptionHandlerFeature(new Exception());
+        var exceptionHandlerFeature = new ExceptionHandlerFeature(new InvalidOperationException());
 
         context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
-        exception = observer.GetException(context);
-        Assert.Equal("Exception", exception);
+        exceptionTypeName = observer.GetExceptionTypeName(context);
+        Assert.Equal("InvalidOperationException", exceptionTypeName);
     }
 
     [Fact]
@@ -62,14 +62,14 @@ public sealed class AspNetCoreHostingObserverTest : BaseTest
 
         HttpContext context = GetHttpRequestMessage();
 
-        var exceptionHandlerFeature = new ExceptionHandlerFeature(new Exception());
+        var exceptionHandlerFeature = new ExceptionHandlerFeature(new InvalidOperationException());
 
         context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
         context.Response.StatusCode = 404;
 
-        List<KeyValuePair<string, object?>> tagContext = observer.GetLabelSets(context).ToList();
+        List<KeyValuePair<string, object?>> tagContext = [.. observer.GetLabelSets(context)];
 
-        Assert.Contains(KeyValuePair.Create("exception", (object?)"Exception"), tagContext);
+        Assert.Contains(KeyValuePair.Create("exception", (object?)"InvalidOperationException"), tagContext);
         Assert.Contains(KeyValuePair.Create("uri", (object?)"/foobar"), tagContext);
         Assert.Contains(KeyValuePair.Create("status", (object?)"404"), tagContext);
         Assert.Contains(KeyValuePair.Create("method", (object?)"GET"), tagContext);
@@ -93,13 +93,8 @@ public sealed class AspNetCoreHostingObserverTest : BaseTest
         return context;
     }
 
-    private sealed class ExceptionHandlerFeature : IExceptionHandlerFeature
+    private sealed class ExceptionHandlerFeature(Exception error) : IExceptionHandlerFeature
     {
-        public Exception Error { get; }
-
-        public ExceptionHandlerFeature(Exception error)
-        {
-            Error = error;
-        }
+        public Exception Error { get; } = error;
     }
 }

@@ -8,19 +8,14 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.ThreadDump;
 
-public sealed class ThreadDumpEndpointTest : BaseTest
+public sealed class ThreadDumpEndpointTest(ITestOutputHelper testOutputHelper) : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    public ThreadDumpEndpointTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
+    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
     [Fact]
     public async Task Invoke_CallsDumpThreads()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {

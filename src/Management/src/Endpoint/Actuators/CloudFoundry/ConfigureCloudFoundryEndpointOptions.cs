@@ -7,16 +7,12 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
-internal sealed class ConfigureCloudFoundryEndpointOptions : ConfigureEndpointOptions<CloudFoundryEndpointOptions>
+internal sealed class ConfigureCloudFoundryEndpointOptions(IConfiguration configuration)
+    : ConfigureEndpointOptions<CloudFoundryEndpointOptions>(configuration, ManagementInfoPrefix, string.Empty)
 {
     private const string ManagementInfoPrefix = "management:endpoints:cloudfoundry";
     private const string VcapApplicationIdKey = "vcap:application:application_id";
     private const string VcapApplicationCloudfoundryApiKey = "vcap:application:cf_api";
-
-    public ConfigureCloudFoundryEndpointOptions(IConfiguration configuration)
-        : base(configuration, ManagementInfoPrefix, string.Empty)
-    {
-    }
 
     public override void Configure(CloudFoundryEndpointOptions options)
     {

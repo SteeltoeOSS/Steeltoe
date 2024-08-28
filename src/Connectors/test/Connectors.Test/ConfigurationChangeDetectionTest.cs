@@ -22,18 +22,19 @@ public sealed class ConfigurationChangeDetectionTest
 
         const string fileName = "appsettings.json";
 
-        string fileContents = @"{
-  ""Steeltoe"": {
-    ""Client"": {
-      ""PostgreSql"": {
-        ""examplePostgreSqlService"": {
-            ""ConnectionString"": ""SERVER=one.com;DB=first""
-        }
-      }
-    }
-  }
-}
-";
+        string fileContents = """
+            {
+              "Steeltoe": {
+                "Client": {
+                  "PostgreSql": {
+                    "examplePostgreSqlService": {
+                      "ConnectionString": "SERVER=one.com;DB=first"
+                    }
+                  }
+                }
+              }
+            }
+            """;
 
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeFile(fileName, fileContents);
@@ -51,18 +52,19 @@ public sealed class ConfigurationChangeDetectionTest
         string? connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=one.com;Database=first");
 
-        fileContents = @"{
-  ""Steeltoe"": {
-    ""Client"": {
-      ""PostgreSql"": {
-        ""examplePostgreSqlService"": {
-            ""ConnectionString"": ""SERVER=two.com;DB=second""
+        fileContents = """
+        {
+          "Steeltoe": {
+            "Client": {
+              "PostgreSql": {
+                "examplePostgreSqlService": {
+                  "ConnectionString": "SERVER=two.com;DB=second"
+                }
+              }
+            }
+          }
         }
-      }
-    }
-  }
-}
-";
+        """;
 
         fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
@@ -70,18 +72,19 @@ public sealed class ConfigurationChangeDetectionTest
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=two.com;Database=second");
 
-        fileContents = @"{
-  ""Steeltoe"": {
-    ""Client"": {
-      ""PostgreSql"": {
-        ""examplePostgreSqlService"": {
-            ""ConnectionString"": ""SERVER=three.com;DB=third""
+        fileContents = """
+        {
+          "Steeltoe": {
+            "Client": {
+              "PostgreSql": {
+                "examplePostgreSqlService": {
+                  "ConnectionString": "SERVER=three.com;DB=third"
+                }
+              }
+            }
+          }
         }
-      }
-    }
-  }
-}
-";
+        """;
 
         fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
@@ -97,18 +100,19 @@ public sealed class ConfigurationChangeDetectionTest
 
         const string fileName = "appsettings.json";
 
-        string fileContents = @"{
-  ""Steeltoe"": {
-    ""Client"": {
-      ""PostgreSql"": {
-        ""examplePostgreSqlService"": {
-            ""ConnectionString"": ""SERVER=one.com;DB=first""
-        }
-      }
-    }
-  }
-}
-";
+        string fileContents = """
+            {
+              "Steeltoe": {
+                "Client": {
+                  "PostgreSql": {
+                    "examplePostgreSqlService": {
+                      "ConnectionString": "SERVER=one.com;DB=first"
+                    }
+                  }
+                }
+              }
+            }
+            """;
 
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeFile(fileName, fileContents);
@@ -130,18 +134,19 @@ public sealed class ConfigurationChangeDetectionTest
         string? connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=one.com;Database=first");
 
-        fileContents = @"{
-  ""Steeltoe"": {
-    ""Client"": {
-      ""PostgreSql"": {
-        ""examplePostgreSqlService"": {
-            ""ConnectionString"": ""SERVER=two.com;DB=second""
+        fileContents = """
+        {
+          "Steeltoe": {
+            "Client": {
+              "PostgreSql": {
+                "examplePostgreSqlService": {
+                  "ConnectionString": "SERVER=two.com;DB=second"
+                }
+              }
+            }
+          }
         }
-      }
-    }
-  }
-}
-";
+        """;
 
         fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
@@ -149,18 +154,19 @@ public sealed class ConfigurationChangeDetectionTest
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=two.com;Database=second");
 
-        fileContents = @"{
-  ""Steeltoe"": {
-    ""Client"": {
-      ""PostgreSql"": {
-        ""examplePostgreSqlService"": {
-            ""ConnectionString"": ""SERVER=three.com;DB=third""
+        fileContents = """
+        {
+          "Steeltoe": {
+            "Client": {
+              "PostgreSql": {
+                "examplePostgreSqlService": {
+                  "ConnectionString": "SERVER=three.com;DB=third"
+                }
+              }
+            }
+          }
         }
-      }
-    }
-  }
-}
-";
+        """;
 
         fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
@@ -176,18 +182,19 @@ public sealed class ConfigurationChangeDetectionTest
 
         const string fileName = "appsettings.json";
 
-        string fileContents = @"{
-  ""Steeltoe"": {
-    ""Client"": {
-      ""PostgreSql"": {
-        ""examplePostgreSqlService"": {
-            ""ConnectionString"": ""SERVER=one.com;DB=first""
-        }
-      }
-    }
-  }
-}
-";
+        string fileContents = """
+            {
+              "Steeltoe": {
+                "Client": {
+                  "PostgreSql": {
+                    "examplePostgreSqlService": {
+                      "ConnectionString": "SERVER=one.com;DB=first"
+                    }
+                  }
+                }
+              }
+            }
+            """;
 
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeFile(fileName, fileContents);
@@ -209,18 +216,19 @@ public sealed class ConfigurationChangeDetectionTest
         string? connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=one.com;Database=first");
 
-        fileContents = @"{
-  ""Steeltoe"": {
-    ""Client"": {
-      ""PostgreSql"": {
-        ""examplePostgreSqlService"": {
-            ""ConnectionString"": ""SERVER=two.com;DB=second""
+        fileContents = """
+        {
+          "Steeltoe": {
+            "Client": {
+              "PostgreSql": {
+                "examplePostgreSqlService": {
+                  "ConnectionString": "SERVER=two.com;DB=second"
+                }
+              }
+            }
+          }
         }
-      }
-    }
-  }
-}
-";
+        """;
 
         fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
@@ -228,18 +236,19 @@ public sealed class ConfigurationChangeDetectionTest
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=two.com;Database=second");
 
-        fileContents = @"{
-  ""Steeltoe"": {
-    ""Client"": {
-      ""PostgreSql"": {
-        ""examplePostgreSqlService"": {
-            ""ConnectionString"": ""SERVER=three.com;DB=third""
+        fileContents = """
+        {
+          "Steeltoe": {
+            "Client": {
+              "PostgreSql": {
+                "examplePostgreSqlService": {
+                  "ConnectionString": "SERVER=three.com;DB=third"
+                }
+              }
+            }
+          }
         }
-      }
-    }
-  }
-}
-";
+        """;
 
         fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();

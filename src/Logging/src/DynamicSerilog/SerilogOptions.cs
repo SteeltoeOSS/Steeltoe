@@ -41,9 +41,9 @@ public sealed class SerilogOptions
 
             string? minLevelText = section.GetValue<string>("MinimumLevel");
 
-            if (!string.IsNullOrEmpty(minLevelText))
+            if (Enum.TryParse(minLevelText, out LogEventLevel level))
             {
-                Enum.TryParse(minLevelText, out defaultLevel);
+                defaultLevel = level;
             }
 
             MinimumLevel = new MinimumLevel
@@ -67,7 +67,7 @@ public sealed class SerilogOptions
 
         var shim = new LoggerConfigurationShim(loggerConfiguration);
 
-        Dictionary<string, LogEventLevel> overrideLevels = new();
+        Dictionary<string, LogEventLevel> overrideLevels = [];
 
         foreach (KeyValuePair<string, LoggingLevelSwitch> overrideSwitch in shim.Overrides)
         {

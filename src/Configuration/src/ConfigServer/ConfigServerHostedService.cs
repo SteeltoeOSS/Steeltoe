@@ -15,7 +15,7 @@ namespace Steeltoe.Configuration.ConfigServer;
 internal sealed class ConfigServerHostedService : IHostedService
 {
     private readonly ConfigServerConfigurationProvider _configurationProvider;
-    private readonly ICollection<IDiscoveryClient> _discoveryClients;
+    private readonly IDiscoveryClient[] _discoveryClients;
 
     public ConfigServerHostedService(IConfigurationRoot configuration)
         : this(configuration, [])

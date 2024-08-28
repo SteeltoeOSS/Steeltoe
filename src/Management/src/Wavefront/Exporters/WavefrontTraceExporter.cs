@@ -18,6 +18,8 @@ namespace Steeltoe.Management.Wavefront.Exporters;
 /// </summary>
 public sealed class WavefrontTraceExporter : BaseExporter<Activity>
 {
+    private static readonly int ProxyLength = "proxy".Length;
+
     private readonly ILogger<WavefrontTraceExporter> _logger;
     private readonly WavefrontDirectIngestionClient _wavefrontSender;
     private readonly WavefrontExporterOptions _options;
@@ -39,7 +41,7 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
 
         if (uri.StartsWith("proxy://", StringComparison.Ordinal))
         {
-            uri = $"http{uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
+            uri = $"http{uri[ProxyLength..]}"; // Proxy reporting is now http on newer proxies.
         }
         else
         {
@@ -63,7 +65,7 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
         {
             try
             {
-                if (!activity.Tags.Any(pair => pair.Key == "http.url" && pair.Value != null && pair.Value.Contains(_options.Uri!, StringComparison.Ordinal)))
+                if (!activity.Tags.Any(pair => pair is { Key: "http.url", Value: not null } && pair.Value.Contains(_options.Uri!, StringComparison.Ordinal)))
                 {
                     _wavefrontSender.SendSpan(activity.OperationName, DateTimeUtils.UnixTimeMilliseconds(activity.StartTimeUtc), activity.Duration.Milliseconds,
                         _options.Source, Guid.Parse(activity.TraceId.ToString(), CultureInfo.InvariantCulture), FromActivitySpanId(activity.SpanId),
@@ -85,7 +87,7 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
         return ExportResult.Success;
     }
 
-    private IList<KeyValuePair<string, string?>> GetTags(IEnumerable<KeyValuePair<string, string?>> inputTags)
+    private List<KeyValuePair<string, string?>> GetTags(IEnumerable<KeyValuePair<string, string?>> inputTags)
     {
         List<KeyValuePair<string, string?>> tags = inputTags.ToList();
 

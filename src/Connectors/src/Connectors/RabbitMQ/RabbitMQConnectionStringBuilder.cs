@@ -35,12 +35,7 @@ internal sealed class RabbitMQConnectionStringBuilder : IConnectionStringBuilder
                 return ConnectionString;
             }
 
-            if (_settings.TryGetValue(keyword, out string? value))
-            {
-                return value;
-            }
-
-            return null;
+            return _settings.GetValueOrDefault(keyword);
         }
         set
         {
@@ -158,7 +153,7 @@ internal sealed class RabbitMQConnectionStringBuilder : IConnectionStringBuilder
         public const string VirtualHost = "virtualHost";
         public const string Url = "url";
 
-        private static readonly ISet<string> All = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> All = new(StringComparer.OrdinalIgnoreCase)
         {
             UseTls,
             Host,

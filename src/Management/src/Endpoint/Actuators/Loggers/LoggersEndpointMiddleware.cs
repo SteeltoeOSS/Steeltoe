@@ -14,16 +14,11 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Loggers;
 
-internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<LoggersRequest, LoggersResponse>
+internal sealed class LoggersEndpointMiddleware(
+    ILoggersEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
+    : EndpointMiddleware<LoggersRequest, LoggersResponse>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    private readonly ILogger<LoggersEndpointMiddleware> _logger;
-
-    public LoggersEndpointMiddleware(ILoggersEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
-    {
-        _logger = loggerFactory.CreateLogger<LoggersEndpointMiddleware>();
-    }
+    private readonly ILogger<LoggersEndpointMiddleware> _logger = loggerFactory.CreateLogger<LoggersEndpointMiddleware>();
 
     protected override async Task<LoggersResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
@@ -94,7 +89,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<LoggersRequ
             _logger.LogError(exception, "Exception deserializing loggers endpoint request.");
         }
 
-        return new Dictionary<string, string>();
+        return [];
     }
 
     protected override async Task WriteResponseAsync(LoggersResponse result, HttpContext context, CancellationToken cancellationToken)

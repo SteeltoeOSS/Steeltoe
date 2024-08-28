@@ -16,11 +16,13 @@ using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Configuration;
 
+#pragma warning disable xUnit1045 // Avoid using TheoryData type arguments that might not be serializable
+
 namespace Steeltoe.Management.Endpoint.Test;
 
 public sealed class ActuatorRouteBuilderExtensionsTest
 {
-    public static IEnumerable<object[]> ActuatorOptions
+    public static TheoryData<EndpointOptions> ActuatorOptions
     {
         get
         {
@@ -28,10 +30,14 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 
             using IHost host = hostBuilder.Build();
 
-            return host.Services.GetServices<EndpointOptions>().Select(options => new object[]
+            TheoryData<EndpointOptions> theoryData = [];
+
+            foreach (EndpointOptions options in host.Services.GetServices<EndpointOptions>())
             {
-                options
-            });
+                theoryData.Add(options);
+            }
+
+            return theoryData;
         }
     }
 
@@ -67,7 +73,7 @@ public sealed class ActuatorRouteBuilderExtensionsTest
                 {
                 });
 
-            services.AddAuthorization(options => options.AddPolicy("TestAuth", policyAction)); // setup Auth based on test Case
+            services.AddAuthorizationBuilder().AddPolicy("TestAuth", policyAction);
             services.AddServerSideBlazor();
         }).ConfigureWebHost(builder =>
         {

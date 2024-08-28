@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using A.B.C.D;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Serilog.Context;
 using Steeltoe.Common.TestResources;
 
@@ -22,8 +21,8 @@ public sealed class DynamicSerilogLoggerProviderTest
     [Fact]
     public void Create_CreatesLoggerWithCorrectFilters()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
-        var factory = new LoggerFactory();
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
         ILogger logger = factory.CreateLogger(typeof(TestClass));
@@ -40,8 +39,8 @@ public sealed class DynamicSerilogLoggerProviderTest
     [Fact]
     public void GetLoggerConfigurations_ReturnsExpected()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
-        var factory = new LoggerFactory();
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
         _ = factory.CreateLogger(typeof(TestClass));
@@ -60,8 +59,8 @@ public sealed class DynamicSerilogLoggerProviderTest
     [Fact]
     public void GetLoggerConfigurations_UsesMinLevelInformationByDefault()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
-        var factory = new LoggerFactory();
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
         _ = factory.CreateLogger(typeof(TestClass));
@@ -75,8 +74,8 @@ public sealed class DynamicSerilogLoggerProviderTest
     [Fact]
     public void GetLoggerConfigurations_ReturnsExpectedAfterSetLogLevel()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
-        var factory = new LoggerFactory();
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
         factory.CreateLogger(typeof(TestClass));
@@ -106,8 +105,8 @@ public sealed class DynamicSerilogLoggerProviderTest
     [Fact]
     public void SetLogLevel_UpdatesLogger()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
-        var factory = new LoggerFactory();
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
         ILogger logger = factory.CreateLogger(typeof(TestClass));
@@ -137,7 +136,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void SetLogLevel_UpdatesNamespaceDescendants()
     {
         // arrange (A* should log at Information)
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
 
         // act I: with original setup
         ILogger childLogger = provider.CreateLogger("A.B.C");
@@ -176,7 +175,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void SetLogLevel_CanResetToDefault()
     {
         // arrange (A* should log at Information)
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
 
         // act I: with original setup
         ILogger firstLogger = provider.CreateLogger("A.B.C");
@@ -214,8 +213,8 @@ public sealed class DynamicSerilogLoggerProviderTest
     [Fact]
     public void SetLogLevel_WorksOnDefault()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
-        var factory = new LoggerFactory();
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
         string[] originalConfiguration = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
@@ -230,8 +229,8 @@ public sealed class DynamicSerilogLoggerProviderTest
     [Fact]
     public void ResetLogLevel_WorksOnDefault()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
-        var factory = new LoggerFactory();
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
         string[] originalConfiguration = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
@@ -251,8 +250,8 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void Logger_LogsWithEnrichers()
     {
         using var console = new ConsoleOutputBorrower();
-        var provider = new DynamicSerilogLoggerProvider(GetConfigurationFromFile(), Enumerable.Empty<IDynamicMessageProcessor>());
-        var factory = new LoggerFactory();
+        var provider = new DynamicSerilogLoggerProvider(GetConfigurationFromFile(), []);
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
         ILogger logger = factory.CreateLogger(typeof(TestClass));
 
@@ -273,11 +272,11 @@ public sealed class DynamicSerilogLoggerProviderTest
 
         string logged = console.ToString();
 
-        logged.Should().Contain(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}");
+        logged.Should().Contain("""A.B.C.D.TestClass: {A=1, Application="Sample"}""");
         logged.Should().Contain("Carries property A = 1");
-        logged.Should().Contain(@"A.B.C.D.TestClass: {B=1, A=2, Application=""Sample""}");
+        logged.Should().Contain("""A.B.C.D.TestClass: {B=1, A=2, Application="Sample"}""");
         logged.Should().Contain("Carries A = 2 and B = 1");
-        logged.Should().Contain(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}");
+        logged.Should().Contain("""A.B.C.D.TestClass: {A=1, Application="Sample"}""");
         logged.Should().Contain("Carries property A = 1, again");
         logged.Should().MatchRegex(new Regex(@"ThreadId:<\d+>"));
     }
@@ -286,8 +285,8 @@ public sealed class DynamicSerilogLoggerProviderTest
     public void Logger_LogsWithDestructuring()
     {
         using var console = new ConsoleOutputBorrower();
-        var provider = new DynamicSerilogLoggerProvider(GetConfigurationFromFile(), Enumerable.Empty<IDynamicMessageProcessor>());
-        var factory = new LoggerFactory();
+        var provider = new DynamicSerilogLoggerProvider(GetConfigurationFromFile(), []);
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
         ILogger logger = factory.CreateLogger(typeof(TestClass));
 
@@ -299,15 +298,15 @@ public sealed class DynamicSerilogLoggerProviderTest
 
         string logged = console.ToString();
 
-        logged.Should().Contain("Info {\"Info1\": \"information1\", \"Info2\": \"information2\"}");
+        logged.Should().Contain("""Info {"Info1": "information1", "Info2": "information2"}""");
     }
 
     [Fact]
     public void Logger_LogsAtConfiguredSetting()
     {
         using var console = new ConsoleOutputBorrower();
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), Enumerable.Empty<IDynamicMessageProcessor>());
-        var factory = new LoggerFactory();
+        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
+        using var factory = new LoggerFactory();
         factory.AddProvider(provider);
         ILogger logger = factory.CreateLogger(typeof(TestClass));
 
@@ -394,7 +393,7 @@ public sealed class DynamicSerilogLoggerProviderTest
         logger.LogTrace("Trace message");
     }
 
-    private IOptionsMonitor<SerilogOptions> GetConfiguration()
+    private TestOptionsMonitor<SerilogOptions> GetConfiguration()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -415,7 +414,7 @@ public sealed class DynamicSerilogLoggerProviderTest
         return TestOptionsMonitor.Create(serilogOptions);
     }
 
-    private IOptionsMonitor<SerilogOptions> GetConfigurationFromFile()
+    private TestOptionsMonitor<SerilogOptions> GetConfigurationFromFile()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("serilogSettings.json");
         IConfiguration configuration = builder.Build();

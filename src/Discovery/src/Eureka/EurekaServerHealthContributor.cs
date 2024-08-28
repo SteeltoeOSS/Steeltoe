@@ -169,7 +169,7 @@ internal sealed class EurekaServerHealthContributor : IHealthContributor
     {
         var apps = new Dictionary<string, int>();
 
-        foreach (ApplicationInfo app in applications.RegisteredApplications)
+        foreach (ApplicationInfo app in applications)
         {
             int instanceCount = app.Instances.Count;
 

@@ -4,6 +4,4 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.Services;
 
-public interface IServicesEndpointHandler : IEndpointHandler<object?, IList<ServiceRegistration>>
-{
-}
+public interface IServicesEndpointHandler : IEndpointHandler<object?, IList<ServiceRegistration>>;

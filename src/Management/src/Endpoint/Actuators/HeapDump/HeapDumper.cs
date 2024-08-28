@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
 using Graphs;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.GCDump;
@@ -43,13 +42,13 @@ public sealed class HeapDumper
 
         try
         {
-            using var process = Process.GetCurrentProcess();
+            int processId = System.Environment.ProcessId;
 
             if (string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogInformation("Attempting to create a gcdump");
 
-                if (TryCollectMemoryGraph(process.Id, 30, true, out MemoryGraph memoryGraph, cancellationToken))
+                if (TryCollectMemoryGraph(processId, 30, true, out MemoryGraph memoryGraph, cancellationToken))
                 {
                     GCHeapDump.WriteMemoryGraph(memoryGraph, fileName, "dotnet-gcdump");
                     return fileName;
@@ -64,7 +63,7 @@ public sealed class HeapDumper
             }
 
             _logger.LogInformation("Attempting to create a '{DumpType}' dump", dumpType);
-            var client = new DiagnosticsClient(process.Id);
+            var client = new DiagnosticsClient(processId);
             client.WriteDump(dumpType, fileName);
             return fileName;
         }

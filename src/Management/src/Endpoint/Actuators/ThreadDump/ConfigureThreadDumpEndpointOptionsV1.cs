@@ -7,12 +7,8 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
-internal sealed class ConfigureThreadDumpEndpointOptionsV1 : ConfigureEndpointOptions<ThreadDumpEndpointOptions>
+internal sealed class ConfigureThreadDumpEndpointOptionsV1(IConfiguration configuration)
+    : ConfigureEndpointOptions<ThreadDumpEndpointOptions>(configuration, ManagementInfoPrefix, "dump")
 {
     private const string ManagementInfoPrefix = "management:endpoints:dump";
-
-    public ConfigureThreadDumpEndpointOptionsV1(IConfiguration configuration)
-        : base(configuration, ManagementInfoPrefix, "dump")
-    {
-    }
 }

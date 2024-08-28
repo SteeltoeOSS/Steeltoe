@@ -28,10 +28,11 @@ internal sealed class PostConfigureJwtBearerOptions : IPostConfigureOptions<JwtB
 
         if (!string.IsNullOrEmpty(clientId) && options.TokenValidationParameters.ValidAudiences?.Contains(clientId) != true)
         {
-            var audiences = new List<string>(options.TokenValidationParameters.ValidAudiences ?? [])
-            {
+            string[] audiences =
+            [
+                ..options.TokenValidationParameters.ValidAudiences ?? [],
                 clientId
-            };
+            ];
 
             options.TokenValidationParameters.ValidAudiences = audiences;
         }
@@ -44,6 +45,6 @@ internal sealed class PostConfigureJwtBearerOptions : IPostConfigureOptions<JwtB
         options.TokenValidationParameters.ValidIssuer = $"{options.Authority}/oauth/token";
 
         var keyResolver = new TokenKeyResolver(options.Authority, options.Backchannel);
-        options.TokenValidationParameters.IssuerSigningKeyResolver = keyResolver.ResolveSigningKey;
+        options.TokenValidationParameters.IssuerSigningKeyResolver = (_, _, keyId, _) => keyResolver.ResolveSigningKey(keyId);
     }
 }

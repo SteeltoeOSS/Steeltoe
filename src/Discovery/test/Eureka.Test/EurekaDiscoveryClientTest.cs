@@ -224,11 +224,8 @@ public sealed class EurekaDiscoveryClientTest
         Assert.NotNull(apps);
         Assert.Equal(1, apps.Version);
         Assert.Equal("UP_1_", apps.AppsHashCode);
-
-        IReadOnlyList<ApplicationInfo> registeredApplications = apps.RegisteredApplications;
-        Assert.NotNull(registeredApplications);
-        Assert.Single(registeredApplications);
-        Assert.Equal("FOO", registeredApplications[0].Name);
+        Assert.Single(apps);
+        Assert.Equal("FOO", apps.ElementAt(0).Name);
     }
 
     [Fact]
@@ -269,12 +266,9 @@ public sealed class EurekaDiscoveryClientTest
         Assert.NotNull(result);
         Assert.Equal(3, result.Version);
         Assert.Equal("UP_1_", result.AppsHashCode);
-
-        IReadOnlyList<ApplicationInfo> registeredApplications = result.RegisteredApplications;
-        Assert.NotNull(registeredApplications);
-        Assert.Single(registeredApplications);
-        Assert.Equal("FOO", registeredApplications[0].Name);
-        Assert.Single(registeredApplications[0].Instances);
+        Assert.Single(result);
+        Assert.Equal("FOO", result.ElementAt(0).Name);
+        Assert.Single(result.ElementAt(0).Instances);
     }
 
     [Fact]
@@ -684,7 +678,7 @@ public sealed class EurekaDiscoveryClientTest
 
     private sealed class ExtraRequestHeadersDelegatingHandler : DelegatingHandler
     {
-        public IDictionary<string, string> ExtraRequestHeaders { get; } = new Dictionary<string, string>();
+        public Dictionary<string, string> ExtraRequestHeaders { get; } = [];
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -701,16 +695,11 @@ public sealed class EurekaDiscoveryClientTest
         }
     }
 
-    private sealed class TestHealthCheckHandler : IHealthCheckHandler
+    private sealed class TestHealthCheckHandler(InstanceStatus status) : IHealthCheckHandler
     {
-        private readonly InstanceStatus _status;
+        private readonly InstanceStatus _status = status;
 
         public bool Awaited { get; private set; }
-
-        public TestHealthCheckHandler(InstanceStatus status)
-        {
-            _status = status;
-        }
 
         public async Task<InstanceStatus> GetStatusAsync(bool hasFirstHeartbeatCompleted, CancellationToken cancellationToken)
         {

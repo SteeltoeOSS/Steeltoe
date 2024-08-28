@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#pragma warning disable S3874 // "out" and "ref" parameters should not be used
 #pragma warning disable S107 // Methods should not have too many parameters
 
 namespace Steeltoe.Common.Net;

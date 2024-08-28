@@ -12,18 +12,18 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Metrics;
 
 public sealed class MetricsEndpointTest : BaseTest
 {
-    private readonly ITestOutputHelper _output;
+    private readonly ITestOutputHelper _testOutputHelper;
 
-    public MetricsEndpointTest(ITestOutputHelper output)
+    public MetricsEndpointTest(ITestOutputHelper testOutputHelper)
     {
-        _output = output;
+        _testOutputHelper = testOutputHelper;
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
     }
 
     [Fact]
     public async Task Invoke_WithNullMetricsRequest_ReturnsExpected()
     {
-        using (var testContext = new TestContext(_output))
+        using (var testContext = new TestContext(_testOutputHelper))
         {
             testContext.AdditionalServices = (services, _) =>
             {
@@ -57,7 +57,7 @@ public sealed class MetricsEndpointTest : BaseTest
             }
         }
 
-        using (var testContext = new TestContext(_output))
+        using (var testContext = new TestContext(_testOutputHelper))
         {
             testContext.AdditionalServices = (services, _) =>
             {
@@ -89,7 +89,7 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_WithMetricsRequest_ReturnsExpected()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -107,7 +107,7 @@ public sealed class MetricsEndpointTest : BaseTest
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.test5");
             long allKeysSum = 0;
 
-            var labels = new Dictionary<string, object?>
+            Dictionary<string, object?> labels = new()
             {
                 { "a", "v1" },
                 { "b", "v1" },
@@ -150,7 +150,7 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_WithMetricsRequest_ReturnsExpected_IncludesAdditionalInstruments()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalConfiguration = configuration =>
         {
@@ -179,7 +179,7 @@ public sealed class MetricsEndpointTest : BaseTest
 
             long allKeysSum = 0;
 
-            var labels = new Dictionary<string, object?>
+            Dictionary<string, object?> labels = new()
             {
                 { "a", "v1" },
                 { "b", "v1" },
@@ -225,7 +225,7 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task GetMetricSamples_ReturnsExpectedCounter()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -259,7 +259,7 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task GetAvailableTags_ReturnsExpected()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -275,14 +275,14 @@ public sealed class MetricsEndpointTest : BaseTest
             var handler = (MetricsEndpointHandler)testContext.GetRequiredService<IMetricsEndpointHandler>();
             Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test2");
 
-            var v1Tags = new Dictionary<string, object?>
+            Dictionary<string, object?> v1Tags = new()
             {
                 { "a", "v1" },
                 { "b", "v1" },
                 { "c", "v1" }
             };
 
-            var v2Tags = new Dictionary<string, object?>
+            Dictionary<string, object?> v2Tags = new()
             {
                 { "a", "v2" },
                 { "b", "v2" },
@@ -297,7 +297,7 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.NotNull(tagDictionary);
             Assert.Single(tagDictionary.Values);
 
-            IList<MetricTag> tags = tagDictionary.GetOrAdd("test.test2", new List<MetricTag>());
+            IList<MetricTag> tags = tagDictionary.GetOrAdd("test.test2", []);
 
             Assert.Equal(3, tags.Count);
 
@@ -325,7 +325,7 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.NotNull(tagDictionary);
             Assert.Single(tagDictionary.Values);
 
-            tags = tagDictionary.GetOrAdd("test.test3", new List<MetricTag>());
+            tags = tagDictionary.GetOrAdd("test.test3", []);
             Assert.Empty(tags);
         }
         finally
@@ -337,7 +337,7 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task GetMetricMeasurements_ReturnsExpected()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -354,24 +354,24 @@ public sealed class MetricsEndpointTest : BaseTest
 
             Histogram<double> testMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("test.test1");
 
-            var context1 = new Dictionary<string, object?>
+            Dictionary<string, object?> context1 = new()
             {
                 { "a", "v1" },
                 { "b", "v1" },
                 { "c", "v1" }
             };
 
-            var context2 = new Dictionary<string, object?>
+            Dictionary<string, object?> context2 = new()
             {
                 { "a", "v1" }
             };
 
-            var context3 = new Dictionary<string, object?>
+            Dictionary<string, object?> context3 = new()
             {
                 { "b", "v1" }
             };
 
-            var context4 = new Dictionary<string, object?>
+            Dictionary<string, object?> context4 = new()
             {
                 { "c", "v1" }
             };
@@ -412,17 +412,14 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.NotNull(measurements);
             Assert.Single(measurements);
 
-            IList<MetricSample> measurement = measurements.GetOrAdd("test.test1", new List<MetricSample>());
+            IList<MetricSample> measurement = measurements.GetOrAdd("test.test1", []);
             Assert.Equal(4, measurement.Count);
 
             MetricSample sample = measurement[0];
             Assert.Equal(allKeysSum, sample.Value);
             Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
-            var aTags = new List<KeyValuePair<string, string>>
-            {
-                new("a", "v1")
-            };
+            List<KeyValuePair<string, string>> aTags = [new KeyValuePair<string, string>("a", "v1")];
 
             IList<MetricSample> result = handler.GetMetricSamplesByTags(measurements, "test.test1", aTags);
             Assert.NotNull(result);
@@ -432,10 +429,7 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.Equal(allKeysSum + aSum, sample.Value);
             Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
-            var bTags = new List<KeyValuePair<string, string>>
-            {
-                new("b", "v1")
-            };
+            List<KeyValuePair<string, string>> bTags = [new KeyValuePair<string, string>("b", "v1")];
 
             result = handler.GetMetricSamplesByTags(measurements, "test.test1", bTags);
 
@@ -447,10 +441,7 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.Equal(allKeysSum + bSum, sample.Value);
             Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
-            var cTags = new List<KeyValuePair<string, string>>
-            {
-                new("c", "v1")
-            };
+            List<KeyValuePair<string, string>> cTags = [new KeyValuePair<string, string>("c", "v1")];
 
             result = handler.GetMetricSamplesByTags(measurements, "test.test1", cTags);
             Assert.NotNull(result);
@@ -460,11 +451,11 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.Equal(allKeysSum + cSum, sample.Value);
             Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
-            var abTags = new List<KeyValuePair<string, string>>
-            {
-                new("a", "v1"),
-                new("b", "v1")
-            };
+            List<KeyValuePair<string, string>> abTags =
+            [
+                new KeyValuePair<string, string>("a", "v1"),
+                new KeyValuePair<string, string>("b", "v1")
+            ];
 
             result = handler.GetMetricSamplesByTags(measurements, "test.test1", abTags);
 
@@ -475,11 +466,11 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.Equal(allKeysSum, sample.Value);
             Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
-            var acTags = new List<KeyValuePair<string, string>>
-            {
-                new("a", "v1"),
-                new("c", "v1")
-            };
+            List<KeyValuePair<string, string>> acTags =
+            [
+                new KeyValuePair<string, string>("a", "v1"),
+                new KeyValuePair<string, string>("c", "v1")
+            ];
 
             result = handler.GetMetricSamplesByTags(measurements, "test.test1", acTags);
 
@@ -491,11 +482,11 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.Equal(allKeysSum, sample.Value);
             Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
-            var bcTags = new List<KeyValuePair<string, string>>
-            {
-                new("b", "v1"),
-                new("c", "v1")
-            };
+            List<KeyValuePair<string, string>> bcTags =
+            [
+                new KeyValuePair<string, string>("b", "v1"),
+                new KeyValuePair<string, string>("c", "v1")
+            ];
 
             result = handler.GetMetricSamplesByTags(measurements, "test.test1", bcTags);
 
@@ -516,7 +507,7 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task GetMetric_ReturnsExpected()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -533,7 +524,7 @@ public sealed class MetricsEndpointTest : BaseTest
 
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.total");
 
-            var labels = new Dictionary<string, object?>
+            Dictionary<string, object?> labels = new()
             {
                 { "a", "v1" },
                 { "b", "v1" },

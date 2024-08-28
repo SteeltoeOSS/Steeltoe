@@ -6,19 +6,14 @@ using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.RabbitMQ.DynamicTypeAccess;
 
-internal sealed class ConnectionFactoryInterfaceShim : Shim
+internal sealed class ConnectionFactoryInterfaceShim(RabbitMQPackageResolver packageResolver, object instance)
+    : Shim(new InstanceAccessor(packageResolver.ConnectionFactoryInterface, instance))
 {
-    private readonly RabbitMQPackageResolver _packageResolver;
-
-    public ConnectionFactoryInterfaceShim(RabbitMQPackageResolver packageResolver, object instance)
-        : base(new InstanceAccessor(packageResolver.ConnectionFactoryInterface, instance))
-    {
-        _packageResolver = packageResolver;
-    }
+    private readonly RabbitMQPackageResolver _packageResolver = packageResolver;
 
     public ConnectionInterfaceShim CreateConnection()
     {
-        object instance = InstanceAccessor.InvokeMethodOverload("CreateConnection", true, Type.EmptyTypes)!;
-        return new ConnectionInterfaceShim(_packageResolver, instance);
+        object connectionInstance = InstanceAccessor.InvokeMethodOverload("CreateConnection", true, Type.EmptyTypes)!;
+        return new ConnectionInterfaceShim(_packageResolver, connectionInstance);
     }
 }

@@ -7,7 +7,7 @@ namespace Steeltoe.Management.Configuration;
 /// <summary>
 /// Represents the level of permissions required to access an endpoint, when running on Cloud Foundry.
 /// </summary>
-public enum Permissions
+public enum EndpointPermissions
 {
     /// <summary>
     /// Indicates no permission constraints.

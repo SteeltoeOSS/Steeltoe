@@ -15,7 +15,7 @@ public sealed class RefreshEndpointOptionsTest : BaseTest
         var options = GetOptionsFromSettings<RefreshEndpointOptions>();
         Assert.Null(options.Enabled);
         Assert.Equal("refresh", options.Id);
-        Assert.Equal(Permissions.Restricted, options.RequiredPermissions);
+        Assert.Equal(EndpointPermissions.Restricted, options.RequiredPermissions);
         Assert.True(options.ReturnConfiguration);
     }
 }

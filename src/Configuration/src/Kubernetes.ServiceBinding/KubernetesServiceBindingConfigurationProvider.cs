@@ -136,7 +136,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
         public string Name { get; }
         public string Path { get; }
         public string? Provider { get; }
-        public IDictionary<string, string?> Secrets => new ReadOnlyDictionary<string, string?>(_secrets);
+        public ReadOnlyDictionary<string, string?> Secrets => new(_secrets);
         public string Type { get; }
 
         // Creates a new Binding instance using the specified file system directory
@@ -146,12 +146,12 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
         }
 
         // Creates a new Binding instance using the specified content
-        private ServiceBinding(string name, string path, IDictionary<string, string?> secrets)
+        private ServiceBinding(string name, string path, Dictionary<string, string?> secrets)
         {
             Name = name ?? throw new ArgumentException("Binding has no name and is not a valid binding");
             Path = path ?? throw new ArgumentException("Binding has no path and is not a valid binding");
 
-            _secrets = new Dictionary<string, string?>();
+            _secrets = [];
 
             string? type = null;
             string? provider = null;
@@ -176,12 +176,12 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
             Provider = provider;
         }
 
-        private static IDictionary<string, string?> CreateSecrets(string path, IFileProvider fileProvider)
+        private static Dictionary<string, string?> CreateSecrets(string path, IFileProvider fileProvider)
         {
             return CreateFilePerEntry(path, fileProvider);
         }
 
-        private static IDictionary<string, string?> CreateFilePerEntry(string path, IFileProvider fileProvider)
+        private static Dictionary<string, string?> CreateFilePerEntry(string path, IFileProvider fileProvider)
         {
             try
             {
@@ -216,7 +216,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
 
     internal sealed class ServiceBindings
     {
-        public IList<ServiceBinding> Bindings { get; } = new List<ServiceBinding>();
+        public List<ServiceBinding> Bindings { get; } = [];
 
         public ServiceBindings(IFileProvider? fileProvider)
         {

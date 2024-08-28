@@ -38,7 +38,7 @@ public sealed class MigrateDbContextTask<TDbContext> : IApplicationTask
     public async Task RunAsync(CancellationToken cancellationToken)
     {
         bool isNewDatabase = false;
-        IList<string> migrations = Array.Empty<string>();
+        string[] migrations = [];
 
         try
         {
@@ -58,14 +58,10 @@ public sealed class MigrateDbContextTask<TDbContext> : IApplicationTask
             migrations = (await _dbContext.Database.GetAppliedMigrationsAsync(cancellationToken)).ToArray();
         }
 
-        if (migrations.Count > 0)
+        if (migrations.Length > 0)
         {
-            _logger.LogInformation("The following migrations have been successfully applied:");
-
-            foreach (string migration in migrations)
-            {
-                _logger.LogInformation(migration);
-            }
+            string migrationNames = string.Join(", ", migrations);
+            _logger.LogInformation("The following migrations have been successfully applied: {MigrationNames}.", migrationNames);
         }
         else
         {

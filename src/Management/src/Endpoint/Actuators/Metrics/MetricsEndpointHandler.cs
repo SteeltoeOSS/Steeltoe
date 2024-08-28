@@ -60,7 +60,7 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
         IList<KeyValuePair<string, string>> tags)
     {
         IList<MetricSample> filtered = measurements.GetOrAdd(metricName, new List<MetricSample>());
-        var sampleList = new List<MetricSample>();
+        List<MetricSample> sampleList = [];
 
         if (tags.Any())
         {

@@ -13,14 +13,10 @@ namespace Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 /// <summary>
 /// Middleware for displaying the mapped ASP.NET routes.
 /// </summary>
-internal sealed class RouteMappingsEndpointMiddleware : EndpointMiddleware<object?, RouteMappingsResponse>
+internal sealed class RouteMappingsEndpointMiddleware(
+    IRouteMappingsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
+    : EndpointMiddleware<object?, RouteMappingsResponse>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    public RouteMappingsEndpointMiddleware(IRouteMappingsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
-    {
-    }
-
     protected override async Task<RouteMappingsResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(null, context.RequestAborted);

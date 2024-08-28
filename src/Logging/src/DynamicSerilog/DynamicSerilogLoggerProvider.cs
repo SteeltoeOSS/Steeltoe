@@ -13,15 +13,11 @@ namespace Steeltoe.Logging.DynamicSerilog;
 /// <summary>
 /// Implements <see cref="DynamicLoggerProvider" /> for logging using Serilog.
 /// </summary>
-public sealed class DynamicSerilogLoggerProvider : DynamicLoggerProvider
+public sealed class DynamicSerilogLoggerProvider(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor, IEnumerable<IDynamicMessageProcessor> messageProcessors)
+    : DynamicLoggerProvider(CreateSerilogLogger(serilogOptionsMonitor), GetMinimumLevelsFromOptions(serilogOptionsMonitor), messageProcessors)
 {
     private static readonly object LoggerLock = new();
     private static Logger? _serilogLogger;
-
-    public DynamicSerilogLoggerProvider(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor, IEnumerable<IDynamicMessageProcessor> messageProcessors)
-        : base(CreateSerilogLogger(serilogOptionsMonitor), GetMinimumLevelsFromOptions(serilogOptionsMonitor), messageProcessors)
-    {
-    }
 
     /// <summary>
     /// Because of how Serilog is implemented, there is a single logger instance for a given application, which gets wrapped by ILoggers. However, while
@@ -45,7 +41,7 @@ public sealed class DynamicSerilogLoggerProvider : DynamicLoggerProvider
         return new SerilogMessageProcessingLogger(logger, filter, MessageProcessors);
     }
 
-    private static ILoggerProvider CreateSerilogLogger(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor)
+    private static SerilogLoggerProvider CreateSerilogLogger(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor)
     {
         ArgumentNullException.ThrowIfNull(serilogOptionsMonitor);
 

@@ -17,9 +17,9 @@ namespace Steeltoe.Common.Hosting;
 /// </summary>
 internal sealed class HostBuilderWrapper
 {
-    private readonly List<Action<HostBuilderContextWrapper, IServiceCollection>> _configureServicesActions = new();
-    private readonly List<Action<HostBuilderContextWrapper, IConfigurationBuilder>> _configureAppConfigurationActions = new();
-    private readonly List<Action<HostBuilderContextWrapper, ILoggingBuilder>> _configureLoggingActions = new();
+    private readonly List<Action<HostBuilderContextWrapper, IServiceCollection>> _configureServicesActions = [];
+    private readonly List<Action<HostBuilderContextWrapper, IConfigurationBuilder>> _configureAppConfigurationActions = [];
+    private readonly List<Action<HostBuilderContextWrapper, ILoggingBuilder>> _configureLoggingActions = [];
     private readonly object _innerBuilder;
 
     private HostBuilderWrapper(object innerBuilder)

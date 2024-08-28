@@ -18,87 +18,91 @@ namespace Steeltoe.Connectors.Test.MySql.MySqlConnector;
 
 public sealed class MySqlConnectorTest
 {
-    private const string MultiVcapServicesJson = @"{
-  ""p.mysql"": [
-    {
-      ""label"": ""p.mysql"",
-      ""provider"": null,
-      ""plan"": ""db-small"",
-      ""name"": ""myMySqlServiceOne"",
-      ""tags"": [
-        ""mysql""
-      ],
-      ""instance_guid"": ""566ad428-5747-4b76-89db-bae25c70adae"",
-      ""instance_name"": ""myMySqlServiceOne"",
-      ""binding_guid"": ""6862f371-181d-4aee-91c4-995015fb2973"",
-      ""binding_name"": null,
-      ""credentials"": {
-        ""hostname"": ""566ad428-5747-4b76-89db-bae25c70adae.mysql.service.internal"",
-        ""jdbcUrl"": ""jdbc:mysql://566ad428-5747-4b76-89db-bae25c70adae.mysql.service.internal:3306/service_instance_db?user=6862f371181d4aee91c4995015fb2973&password=q3o5o3o88dyc8os5&useSSL=false"",
-        ""name"": ""service_instance_db"",
-        ""password"": ""q3o5o3o88dyc8os5"",
-        ""port"": 3306,
-        ""uri"": ""mysql://6862f371181d4aee91c4995015fb2973:q3o5o3o88dyc8os5@566ad428-5747-4b76-89db-bae25c70adae.mysql.service.internal:3306/service_instance_db?reconnect=true"",
-        ""username"": ""6862f371181d4aee91c4995015fb2973""
-      },
-      ""syslog_drain_url"": null,
-      ""volume_mounts"": []
-    },
-    {
-      ""label"": ""p.mysql"",
-      ""provider"": null,
-      ""plan"": ""db-small"",
-      ""name"": ""myMySqlServiceTwo"",
-      ""tags"": [
-        ""mysql""
-      ],
-      ""instance_guid"": ""43adf261-6658-4b36-98a5-144ad3cf5ae6"",
-      ""instance_name"": ""myMySqlServiceTwo"",
-      ""binding_guid"": ""f2537d98-484c-4877-9a68-11b62852b38b"",
-      ""binding_name"": null,
-      ""credentials"": {
-        ""hostname"": ""43adf261-6658-4b36-98a5-144ad3cf5ae6.mysql.service.internal"",
-        ""jdbcUrl"": ""jdbc:mysql://43adf261-6658-4b36-98a5-144ad3cf5ae6.mysql.service.internal:3306/service_instance_db?user=f2537d98484c48779a6811b62852b38b&password=rr7t44xnbvvto8b8&useSSL=false"",
-        ""name"": ""service_instance_db"",
-        ""password"": ""rr7t44xnbvvto8b8"",
-        ""port"": 3306,
-        ""uri"": ""mysql://f2537d98484c48779a6811b62852b38b:rr7t44xnbvvto8b8@43adf261-6658-4b36-98a5-144ad3cf5ae6.mysql.service.internal:3306/service_instance_db?reconnect=true"",
-        ""username"": ""f2537d98484c48779a6811b62852b38b""
-      },
-      ""syslog_drain_url"": null,
-      ""volume_mounts"": []
-    }
-  ]
-}";
+    private const string MultiVcapServicesJson = """
+        {
+          "p.mysql": [
+            {
+              "label": "p.mysql",
+              "provider": null,
+              "plan": "db-small",
+              "name": "myMySqlServiceOne",
+              "tags": [
+                "mysql"
+              ],
+              "instance_guid": "566ad428-5747-4b76-89db-bae25c70adae",
+              "instance_name": "myMySqlServiceOne",
+              "binding_guid": "6862f371-181d-4aee-91c4-995015fb2973",
+              "binding_name": null,
+              "credentials": {
+                "hostname": "566ad428-5747-4b76-89db-bae25c70adae.mysql.service.internal",
+                "jdbcUrl": "jdbc:mysql://566ad428-5747-4b76-89db-bae25c70adae.mysql.service.internal:3306/service_instance_db?user=6862f371181d4aee91c4995015fb2973&password=q3o5o3o88dyc8os5&useSSL=false",
+                "name": "service_instance_db",
+                "password": "q3o5o3o88dyc8os5",
+                "port": 3306,
+                "uri": "mysql://6862f371181d4aee91c4995015fb2973:q3o5o3o88dyc8os5@566ad428-5747-4b76-89db-bae25c70adae.mysql.service.internal:3306/service_instance_db?reconnect=true",
+                "username": "6862f371181d4aee91c4995015fb2973"
+              },
+              "syslog_drain_url": null,
+              "volume_mounts": []
+            },
+            {
+              "label": "p.mysql",
+              "provider": null,
+              "plan": "db-small",
+              "name": "myMySqlServiceTwo",
+              "tags": [
+                "mysql"
+              ],
+              "instance_guid": "43adf261-6658-4b36-98a5-144ad3cf5ae6",
+              "instance_name": "myMySqlServiceTwo",
+              "binding_guid": "f2537d98-484c-4877-9a68-11b62852b38b",
+              "binding_name": null,
+              "credentials": {
+                "hostname": "43adf261-6658-4b36-98a5-144ad3cf5ae6.mysql.service.internal",
+                "jdbcUrl": "jdbc:mysql://43adf261-6658-4b36-98a5-144ad3cf5ae6.mysql.service.internal:3306/service_instance_db?user=f2537d98484c48779a6811b62852b38b&password=rr7t44xnbvvto8b8&useSSL=false",
+                "name": "service_instance_db",
+                "password": "rr7t44xnbvvto8b8",
+                "port": 3306,
+                "uri": "mysql://f2537d98484c48779a6811b62852b38b:rr7t44xnbvvto8b8@43adf261-6658-4b36-98a5-144ad3cf5ae6.mysql.service.internal:3306/service_instance_db?reconnect=true",
+                "username": "f2537d98484c48779a6811b62852b38b"
+              },
+              "syslog_drain_url": null,
+              "volume_mounts": []
+            }
+          ]
+        }
+        """;
 
-    private const string SingleVcapServicesJson = @"{
-  ""p.mysql"": [
-    {
-      ""label"": ""p.mysql"",
-      ""provider"": null,
-      ""plan"": ""db-small"",
-      ""name"": ""myMySqlServiceOne"",
-      ""tags"": [
-        ""mysql""
-      ],
-      ""instance_guid"": ""566ad428-5747-4b76-89db-bae25c70adae"",
-      ""instance_name"": ""myMySqlServiceOne"",
-      ""binding_guid"": ""6862f371-181d-4aee-91c4-995015fb2973"",
-      ""binding_name"": null,
-      ""credentials"": {
-        ""hostname"": ""566ad428-5747-4b76-89db-bae25c70adae.mysql.service.internal"",
-        ""jdbcUrl"": ""jdbc:mysql://566ad428-5747-4b76-89db-bae25c70adae.mysql.service.internal:3306/service_instance_db?user=6862f371181d4aee91c4995015fb2973&password=q3o5o3o88dyc8os5&useSSL=false"",
-        ""name"": ""service_instance_db"",
-        ""password"": ""q3o5o3o88dyc8os5"",
-        ""port"": 3306,
-        ""uri"": ""mysql://6862f371181d4aee91c4995015fb2973:q3o5o3o88dyc8os5@566ad428-5747-4b76-89db-bae25c70adae.mysql.service.internal:3306/service_instance_db?reconnect=true"",
-        ""username"": ""6862f371181d4aee91c4995015fb2973""
-      },
-      ""syslog_drain_url"": null,
-      ""volume_mounts"": []
-    }
-  ]
-}";
+    private const string SingleVcapServicesJson = """
+        {
+          "p.mysql": [
+            {
+              "label": "p.mysql",
+              "provider": null,
+              "plan": "db-small",
+              "name": "myMySqlServiceOne",
+              "tags": [
+                "mysql"
+              ],
+              "instance_guid": "566ad428-5747-4b76-89db-bae25c70adae",
+              "instance_name": "myMySqlServiceOne",
+              "binding_guid": "6862f371-181d-4aee-91c4-995015fb2973",
+              "binding_name": null,
+              "credentials": {
+                "hostname": "566ad428-5747-4b76-89db-bae25c70adae.mysql.service.internal",
+                "jdbcUrl": "jdbc:mysql://566ad428-5747-4b76-89db-bae25c70adae.mysql.service.internal:3306/service_instance_db?user=6862f371181d4aee91c4995015fb2973&password=q3o5o3o88dyc8os5&useSSL=false",
+                "name": "service_instance_db",
+                "password": "q3o5o3o88dyc8os5",
+                "port": 3306,
+                "uri": "mysql://6862f371181d4aee91c4995015fb2973:q3o5o3o88dyc8os5@566ad428-5747-4b76-89db-bae25c70adae.mysql.service.internal:3306/service_instance_db?reconnect=true",
+                "username": "6862f371181d4aee91c4995015fb2973"
+              },
+              "syslog_drain_url": null,
+              "volume_mounts": []
+            }
+          ]
+        }
+        """;
 
     [Fact]
     public async Task Binds_options_without_service_bindings()
@@ -327,9 +331,9 @@ public sealed class MySqlConnectorTest
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
 
-    private static IEnumerable<string> ExtractConnectionStringParameters(string? connectionString)
+    private static List<string> ExtractConnectionStringParameters(string? connectionString)
     {
-        List<string> entries = new();
+        List<string> entries = [];
 
         if (connectionString != null)
         {

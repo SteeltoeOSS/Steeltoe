@@ -8,7 +8,7 @@ namespace Steeltoe.Management.Endpoint;
 
 public sealed class ActuatorConventionBuilder : IEndpointConventionBuilder
 {
-    private readonly List<IEndpointConventionBuilder> _builders = new();
+    private readonly List<IEndpointConventionBuilder> _builders = [];
 
     public void Add(Action<EndpointBuilder> convention)
     {

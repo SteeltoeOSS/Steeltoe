@@ -6,18 +6,14 @@ using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.RabbitMQ.DynamicTypeAccess;
 
-internal sealed class ConnectionInterfaceShim : Shim, IDisposable
+internal sealed class ConnectionInterfaceShim(RabbitMQPackageResolver packageResolver, object instance)
+    : Shim(new InstanceAccessor(packageResolver.ConnectionInterface, instance)), IDisposable
 {
     public override IDisposable Instance => (IDisposable)base.Instance;
 
     public bool IsOpen => InstanceAccessor.GetPropertyValue<bool>("IsOpen");
 
     public IDictionary<string, object> ServerProperties => InstanceAccessor.GetPropertyValue<IDictionary<string, object>>("ServerProperties");
-
-    public ConnectionInterfaceShim(RabbitMQPackageResolver packageResolver, object instance)
-        : base(new InstanceAccessor(packageResolver.ConnectionInterface, instance))
-    {
-    }
 
     public void Dispose()
     {

@@ -6,6 +6,4 @@ using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
-public interface ICloudFoundryEndpointHandler : IEndpointHandler<string, Links>
-{
-}
+public interface ICloudFoundryEndpointHandler : IEndpointHandler<string, Links>;

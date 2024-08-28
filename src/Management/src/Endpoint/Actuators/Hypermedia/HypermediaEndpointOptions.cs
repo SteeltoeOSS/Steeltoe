@@ -6,6 +6,4 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 
-public sealed class HypermediaEndpointOptions : EndpointOptions
-{
-}
+public sealed class HypermediaEndpointOptions : EndpointOptions;

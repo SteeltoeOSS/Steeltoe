@@ -201,7 +201,7 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
         public const string Port = "port";
         public const string AuthenticationDatabase = "authenticationDatabase";
 
-        private static readonly ISet<string> All = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> All = new(StringComparer.OrdinalIgnoreCase)
         {
             Url,
             Username,

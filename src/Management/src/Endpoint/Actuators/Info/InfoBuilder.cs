@@ -6,7 +6,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.Info;
 
 public sealed class InfoBuilder : IInfoBuilder
 {
-    private readonly Dictionary<string, object> _info = new();
+    private readonly Dictionary<string, object> _info = [];
 
     public IDictionary<string, object> Build()
     {

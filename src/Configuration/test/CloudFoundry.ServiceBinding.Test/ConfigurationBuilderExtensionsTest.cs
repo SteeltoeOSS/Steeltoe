@@ -10,31 +10,40 @@ namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test;
 
 public sealed class ConfigurationBuilderExtensionsTest
 {
-    private const string VcapServicesJson = @"
-    {
-        ""elephantsql"": [{
-            ""name"": ""elephantsql-c6c60"",
-            ""label"": ""elephantsql"",
-            ""tags"": [
-                ""postgres"",
-                ""postgresql"",
-                ""relational""
-            ],
-            ""plan"": ""turtle"",
-            ""credentials"": {""uri"": ""postgres://seilbmbd:ABcdEF@babar.elephantsql.com:5432/seilbmbd""}
-        }],
-        ""sendgrid"": [{
-            ""name"": ""mysendgrid"",
-            ""label"": ""sendgrid"",
-            ""tags"": [""smtp""],
-            ""plan"": ""free"",
-            ""credentials"": {
-                ""hostname"": ""smtp.sendgrid.net"",
-                ""username"": ""QvsXMbJ3rK"",
-                ""password"": ""HCHMOYluTv""
+    private const string VcapServicesJson = """
+        {
+          "elephantsql": [
+            {
+              "name": "elephantsql-c6c60",
+              "label": "elephantsql",
+              "tags": [
+                "postgres",
+                "postgresql",
+                "relational"
+              ],
+              "plan": "turtle",
+              "credentials": {
+                "uri": "postgres://seilbmbd:ABcdEF@babar.elephantsql.com:5432/seilbmbd"
+              }
             }
-        }]
-    }";
+          ],
+          "sendgrid": [
+            {
+              "name": "mysendgrid",
+              "label": "sendgrid",
+              "tags": [
+                "smtp"
+              ],
+              "plan": "free",
+              "credentials": {
+                "hostname": "smtp.sendgrid.net",
+                "username": "QvsXMbJ3rK",
+                "password": "HCHMOYluTv"
+              }
+            }
+          ]
+        }
+        """;
 
     [Fact]
     public void AddCloudFoundryServiceBindings_RegistersProcessors()

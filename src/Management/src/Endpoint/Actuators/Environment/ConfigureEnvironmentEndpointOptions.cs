@@ -7,24 +7,20 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Environment;
 
-internal sealed class ConfigureEnvironmentEndpointOptions : ConfigureEndpointOptions<EnvironmentEndpointOptions>
+internal sealed class ConfigureEnvironmentEndpointOptions(IConfiguration configuration)
+    : ConfigureEndpointOptions<EnvironmentEndpointOptions>(configuration, ManagementInfoPrefix, "env")
 {
     private const string ManagementInfoPrefix = "management:endpoints:env";
 
     private static readonly string[] DefaultKeysToSanitize =
-    {
+    [
         "password",
         "secret",
         "key",
         "token",
         ".*credentials.*",
         "vcap_services"
-    };
-
-    public ConfigureEnvironmentEndpointOptions(IConfiguration configuration)
-        : base(configuration, ManagementInfoPrefix, "env")
-    {
-    }
+    ];
 
     public override void Configure(EnvironmentEndpointOptions options)
     {

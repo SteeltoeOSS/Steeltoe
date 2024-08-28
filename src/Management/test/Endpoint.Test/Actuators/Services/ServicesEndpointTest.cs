@@ -8,14 +8,9 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Services;
 
-public sealed class ServicesEndpointTest : BaseTest
+public sealed class ServicesEndpointTest(ITestOutputHelper testOutputHelper) : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    public ServicesEndpointTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
+    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
     [Fact]
     public async Task Invoke_ReturnsExpected()
@@ -103,7 +98,7 @@ public sealed class ServicesEndpointTest : BaseTest
 
     private async Task<ServiceRegistration> GetRegistrationForAsync(string? registrationName, Action<IServiceCollection>? registerService = null)
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -120,11 +115,7 @@ public sealed class ServicesEndpointTest : BaseTest
         return registration!;
     }
 
-    private interface IExampleService
-    {
-    }
+    private interface IExampleService;
 
-    internal sealed class ExampleService : IExampleService
-    {
-    }
+    internal sealed class ExampleService : IExampleService;
 }

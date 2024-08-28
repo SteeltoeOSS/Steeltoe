@@ -91,7 +91,7 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
             return configuredApplications;
         }
 
-        return _discoveryClient.Applications.RegisteredApplications.Select(app => app.Name).ToArray();
+        return _discoveryClient.Applications.Select(app => app.Name).ToArray();
     }
 
     internal IList<string>? GetApplicationsFromConfiguration()

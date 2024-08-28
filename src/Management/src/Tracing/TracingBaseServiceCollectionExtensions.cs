@@ -135,11 +135,11 @@ public static class TracingBaseServiceCollectionExtensions
 
             if (string.Equals(tracingOptions.PropagationType, "B3", StringComparison.OrdinalIgnoreCase))
             {
-                var propagators = new List<TextMapPropagator>
-                {
+                List<TextMapPropagator> propagators =
+                [
                     new B3Propagator(tracingOptions.SingleB3Header),
                     new BaggagePropagator()
-                };
+                ];
 
                 Sdk.SetDefaultTextMapPropagator(new CompositeTextMapPropagator(propagators));
             }

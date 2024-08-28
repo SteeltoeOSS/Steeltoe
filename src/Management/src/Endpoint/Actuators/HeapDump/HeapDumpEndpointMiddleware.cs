@@ -11,16 +11,11 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
-internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object?, string?>
+internal sealed class HeapDumpEndpointMiddleware(
+    IHeapDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
+    : EndpointMiddleware<object?, string?>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    private readonly ILogger<HeapDumpEndpointMiddleware> _logger;
-
-    public HeapDumpEndpointMiddleware(IHeapDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
-    {
-        _logger = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
-    }
+    private readonly ILogger<HeapDumpEndpointMiddleware> _logger = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
 
     protected override async Task<string?> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {

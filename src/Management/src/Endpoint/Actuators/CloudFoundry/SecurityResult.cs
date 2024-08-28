@@ -14,16 +14,16 @@ internal sealed class SecurityResult
     public HttpStatusCode Code { get; }
 
     [JsonIgnore]
-    public Permissions Permissions { get; }
+    public EndpointPermissions Permissions { get; }
 
     [JsonPropertyName("security_error")]
     public string Message { get; }
 
-    public SecurityResult(Permissions level)
+    public SecurityResult(EndpointPermissions permissions)
     {
         Code = HttpStatusCode.OK;
         Message = string.Empty;
-        Permissions = level;
+        Permissions = permissions;
     }
 
     public SecurityResult(HttpStatusCode code, string message)
@@ -32,6 +32,6 @@ internal sealed class SecurityResult
 
         Code = code;
         Message = message;
-        Permissions = Permissions.None;
+        Permissions = EndpointPermissions.None;
     }
 }

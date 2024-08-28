@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
@@ -14,7 +15,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo;
 /// <summary>
 /// Represents a collection of applications in Eureka server.
 /// </summary>
-public sealed class ApplicationInfoCollection
+public sealed class ApplicationInfoCollection : IReadOnlyCollection<ApplicationInfo>
 {
     private readonly object _addRemoveInstanceLock = new();
 
@@ -22,10 +23,10 @@ public sealed class ApplicationInfoCollection
     internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> VipInstanceMap { get; } = new();
     internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVipInstanceMap { get; } = new();
 
-    public IReadOnlyList<ApplicationInfo> RegisteredApplications => new List<ApplicationInfo>(ApplicationMap.Values);
     public string? AppsHashCode { get; internal set; }
     public long? Version { get; private set; }
-    public bool ReturnUpInstancesOnly { get; set; }
+    public bool ReturnUpInstancesOnly { get; internal set; }
+    public int Count => ApplicationMap.Count;
 
     internal ApplicationInfoCollection()
         : this(Array.Empty<ApplicationInfo>())
@@ -50,14 +51,14 @@ public sealed class ApplicationInfoCollection
         return ApplicationMap.GetValueOrDefault(appName.ToUpperInvariant());
     }
 
-    internal IReadOnlyList<InstanceInfo> GetInstancesBySecureVipAddress(string secureVipAddress)
+    internal List<InstanceInfo> GetInstancesBySecureVipAddress(string secureVipAddress)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(secureVipAddress);
 
         return GetByVipAddress(secureVipAddress, SecureVipInstanceMap);
     }
 
-    internal IReadOnlyList<InstanceInfo> GetInstancesByVipAddress(string vipAddress)
+    internal List<InstanceInfo> GetInstancesByVipAddress(string vipAddress)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(vipAddress);
 
@@ -68,6 +69,19 @@ public sealed class ApplicationInfoCollection
     public override string ToString()
     {
         return JsonSerializer.Serialize(this, DebugSerializerOptions.Instance);
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public IEnumerator<ApplicationInfo> GetEnumerator()
+    {
+        foreach (ApplicationInfo app in ApplicationMap.Values.ToArray())
+        {
+            yield return app;
+        }
     }
 
     internal void Add(ApplicationInfo app)
@@ -111,7 +125,7 @@ public sealed class ApplicationInfoCollection
         }
     }
 
-    private static ICollection<string> ExpandVipAddresses(string? addresses)
+    private static string[] ExpandVipAddresses(string? addresses)
     {
         if (string.IsNullOrWhiteSpace(addresses))
         {
@@ -147,7 +161,7 @@ public sealed class ApplicationInfoCollection
             {
                 _ = instances.TryRemove(instance.InstanceId, out _);
 
-                if (instances.Count == 0)
+                if (instances.IsEmpty)
                 {
                     _ = dictionary.TryRemove(addressUpper, out _);
                 }
@@ -159,7 +173,7 @@ public sealed class ApplicationInfoCollection
     {
         ArgumentNullException.ThrowIfNull(delta);
 
-        foreach (ApplicationInfo app in delta.RegisteredApplications)
+        foreach (ApplicationInfo app in delta)
         {
             foreach (InstanceInfo instance in app.Instances)
             {
@@ -193,7 +207,7 @@ public sealed class ApplicationInfoCollection
     {
         var statusMap = new Dictionary<string, int>();
 
-        foreach (ApplicationInfo app in RegisteredApplications)
+        foreach (ApplicationInfo app in this)
         {
             foreach (InstanceInfo instance in app.Instances)
             {
@@ -246,9 +260,9 @@ public sealed class ApplicationInfoCollection
         return apps;
     }
 
-    private IReadOnlyList<InstanceInfo> GetByVipAddress(string name, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dictionary)
+    private List<InstanceInfo> GetByVipAddress(string name, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dictionary)
     {
-        var result = new List<InstanceInfo>();
+        List<InstanceInfo> result = [];
 
         if (dictionary.TryGetValue(name.ToUpperInvariant(), out ConcurrentDictionary<string, InstanceInfo>? instances))
         {

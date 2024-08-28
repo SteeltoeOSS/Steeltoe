@@ -1,11 +1,18 @@
 <Project>
   <PropertyGroup>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <!--
+      Disabled IDE analyzers for "Use collection expression" because they are dangerous in a subtle way.
+      For example, a suggestion for the following code is raised:
+        public IList<string> KeysToSanitize { get; } = new List<string>();
+      Taking the suggestion TODAY produces List<string>(), but the spec doesn't require that, so the compiler may change it over time.
+      As a result, callers that cast back to List<string> will face a breaking change.
+     -->
+    <NoWarn>$(NoWarn);CS1591;IDE0028;IDE0300;IDE0301;IDE0302;IDE0303;IDE0304;IDE0305</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Authors>Steeltoe,VMware</Authors>
+    <Authors>Broadcom</Authors>
     <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageIcon>icon.png</PackageIcon>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>

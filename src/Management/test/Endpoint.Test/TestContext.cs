@@ -16,7 +16,7 @@ namespace Steeltoe.Management.Endpoint.Test;
 internal sealed class TestContext : IDisposable
 {
     private readonly XunitLoggerProvider _loggerProvider;
-    private readonly IServiceCollection _serviceCollection = new ServiceCollection();
+    private readonly ServiceCollection _serviceCollection = [];
     private ServiceProvider? _serviceProvider;
     private IConfigurationRoot? _configurationRoot;
 
@@ -69,11 +69,11 @@ internal sealed class TestContext : IDisposable
         }
     }
 
-    public TestContext(ITestOutputHelper output)
+    public TestContext(ITestOutputHelper testOutputHelper)
     {
-        ArgumentNullException.ThrowIfNull(output);
+        ArgumentNullException.ThrowIfNull(testOutputHelper);
 
-        _loggerProvider = new XunitLoggerProvider(output);
+        _loggerProvider = new XunitLoggerProvider(testOutputHelper);
     }
 
     public T GetRequiredService<T>()

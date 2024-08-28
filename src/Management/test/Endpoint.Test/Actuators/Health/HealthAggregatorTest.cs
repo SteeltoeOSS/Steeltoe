@@ -33,11 +33,7 @@ public sealed class HealthAggregatorTest : BaseTest
     [Fact]
     public async Task Aggregate_DisabledContributorOnly_ReturnsExpectedHealth()
     {
-        var contributors = new List<IHealthContributor>
-        {
-            new DisabledContributor()
-        };
-
+        List<IHealthContributor> contributors = [new DisabledContributor()];
         var aggregator = new HealthAggregator();
 
         SteeltoeHealthCheckResult result =
@@ -51,11 +47,7 @@ public sealed class HealthAggregatorTest : BaseTest
     [Fact]
     public async Task Aggregate_SingleContributor_ReturnsExpectedHealth()
     {
-        var contributors = new List<IHealthContributor>
-        {
-            new UpContributor()
-        };
-
+        List<IHealthContributor> contributors = [new UpContributor()];
         var aggregator = new HealthAggregator();
 
         SteeltoeHealthCheckResult result =
@@ -69,12 +61,9 @@ public sealed class HealthAggregatorTest : BaseTest
     [Fact]
     public async Task Aggregate_SingleCanceledContributor_Throws()
     {
-        var contributors = new List<IHealthContributor>
-        {
-            new UpContributor(5000)
-        };
-
+        List<IHealthContributor> contributors = [new UpContributor(5000)];
         using var source = new CancellationTokenSource();
+
         await source.CancelAsync();
 
         var aggregator = new HealthAggregator();
@@ -86,14 +75,14 @@ public sealed class HealthAggregatorTest : BaseTest
     [Fact]
     public async Task Aggregate_MultipleContributor_ReturnsExpectedHealth()
     {
-        var contributors = new List<IHealthContributor>
-        {
+        List<IHealthContributor> contributors =
+        [
             new DownContributor(),
             new UpContributor(),
             new OutOfServiceContributor(),
             new UnknownContributor(),
             new DisabledContributor()
-        };
+        ];
 
         var aggregator = new HealthAggregator();
 
@@ -108,7 +97,7 @@ public sealed class HealthAggregatorTest : BaseTest
     [Fact]
     public async Task Aggregate_DuplicateContributor_ReturnsExpectedHealth()
     {
-        var contributors = new List<IHealthContributor>();
+        List<IHealthContributor> contributors = [];
 
         for (int index = 0; index < 10; index++)
         {
@@ -128,12 +117,12 @@ public sealed class HealthAggregatorTest : BaseTest
     [Fact]
     public async Task Aggregate_MultipleContributor_OrderDoesNotMatter_ReturnsExpectedHealth()
     {
-        var contributors = new List<IHealthContributor>
-        {
+        List<IHealthContributor> contributors =
+        [
             new UpContributor(),
             new OutOfServiceContributor(),
             new UnknownContributor()
-        };
+        ];
 
         var aggregator = new HealthAggregator();
 
@@ -150,12 +139,12 @@ public sealed class HealthAggregatorTest : BaseTest
     {
         var stopwatch = new Stopwatch();
 
-        var contributors = new List<IHealthContributor>
-        {
+        List<IHealthContributor> contributors =
+        [
             new UpContributor(500),
             new UpContributor(500),
             new UpContributor(500)
-        };
+        ];
 
         var aggregator = new HealthAggregator();
         stopwatch.Start();

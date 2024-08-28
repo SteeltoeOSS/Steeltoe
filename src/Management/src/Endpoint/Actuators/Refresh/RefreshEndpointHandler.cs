@@ -37,7 +37,7 @@ internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
             root.Reload();
         }
 
-        IList<string> keys = new List<string>();
+        List<string> keys = [];
 
         if (_optionsMonitor.CurrentValue.ReturnConfiguration)
         {
@@ -47,6 +47,6 @@ internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
             }
         }
 
-        return Task.FromResult(keys);
+        return Task.FromResult<IList<string>>(keys);
     }
 }

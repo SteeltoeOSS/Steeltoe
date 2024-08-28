@@ -6,24 +6,19 @@ using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.Redis.DynamicTypeAccess;
 
-internal sealed class ConnectionMultiplexerInterfaceShim : Shim, IDisposable
+internal sealed class ConnectionMultiplexerInterfaceShim(StackExchangeRedisPackageResolver packageResolver, object instance)
+    : Shim(new InstanceAccessor(packageResolver.ConnectionMultiplexerInterface, instance)), IDisposable
 {
-    private readonly StackExchangeRedisPackageResolver _packageResolver;
+    private readonly StackExchangeRedisPackageResolver _packageResolver = packageResolver;
 
     public override IDisposable Instance => (IDisposable)base.Instance;
 
     public string ClientName => InstanceAccessor.GetPropertyValue<string>("ClientName");
 
-    public ConnectionMultiplexerInterfaceShim(StackExchangeRedisPackageResolver packageResolver, object instance)
-        : base(new InstanceAccessor(packageResolver.ConnectionMultiplexerInterface, instance))
-    {
-        _packageResolver = packageResolver;
-    }
-
     public DatabaseInterfaceShim GetDatabase()
     {
-        object instance = InstanceAccessor.InvokeMethod("GetDatabase", true, -1, null)!;
-        return new DatabaseInterfaceShim(_packageResolver, instance);
+        object databaseInstance = InstanceAccessor.InvokeMethod("GetDatabase", true, -1, null)!;
+        return new DatabaseInterfaceShim(_packageResolver, databaseInstance);
     }
 
     public void Dispose()

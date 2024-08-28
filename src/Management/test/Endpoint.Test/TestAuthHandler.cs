@@ -10,21 +10,17 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+internal sealed class TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> optionsMonitor, ILoggerFactory loggerFactory, UrlEncoder encoder)
+    : AuthenticationHandler<AuthenticationSchemeOptions>(optionsMonitor, loggerFactory, encoder)
 {
     public const string AuthenticationScheme = "TestScheme";
 
-    public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> optionsMonitor, ILoggerFactory logger, UrlEncoder encoder)
-        : base(optionsMonitor, logger, encoder)
-    {
-    }
-
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var ticket = new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(new[]
-        {
-            new Claim("scope", "actuators.read")
-        })), AuthenticationScheme);
+        var claim = new Claim("scope", "actuators.read");
+        var identity = new ClaimsIdentity([claim]);
+        var principal = new ClaimsPrincipal(identity);
+        var ticket = new AuthenticationTicket(principal, AuthenticationScheme);
 
         return Task.FromResult(AuthenticateResult.Success(ticket));
     }

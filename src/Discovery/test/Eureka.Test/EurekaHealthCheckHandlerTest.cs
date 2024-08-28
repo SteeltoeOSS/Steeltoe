@@ -58,7 +58,7 @@ public sealed class EurekaHealthCheckHandlerTest
     [Fact]
     public async Task Instance_status_is_unknown_when_health_contributor_throws()
     {
-        var contributor = new TestHealthContributor(new Exception("Health check failed."));
+        var contributor = new TestHealthContributor(new InvalidOperationException("Health check failed."));
 
         var services = new ServiceCollection();
         services.AddSingleton<IHealthContributor>(contributor);

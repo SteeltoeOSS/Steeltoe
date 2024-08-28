@@ -4,6 +4,4 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 
-public interface IRouteMappingsEndpointHandler : IEndpointHandler<object?, RouteMappingsResponse>
-{
-}
+public interface IRouteMappingsEndpointHandler : IEndpointHandler<object?, RouteMappingsResponse>;

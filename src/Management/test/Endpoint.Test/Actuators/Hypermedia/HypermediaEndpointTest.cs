@@ -9,19 +9,14 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Hypermedia;
 
-public sealed class HypermediaEndpointTest : BaseTest
+public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    public HypermediaEndpointTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
+    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
     [Fact]
     public async Task Invoke_ReturnsExpectedLinks()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -44,7 +39,7 @@ public sealed class HypermediaEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_OnlyActuatorHypermediaEndpoint_ReturnsExpectedLinks()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -64,7 +59,7 @@ public sealed class HypermediaEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -94,7 +89,7 @@ public sealed class HypermediaEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_CloudFoundryDisable_ReturnsExpectedLinks()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {

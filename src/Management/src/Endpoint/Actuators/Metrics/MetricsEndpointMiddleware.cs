@@ -12,16 +12,11 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Metrics;
 
-internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequest?, MetricsResponse?>
+internal sealed class MetricsEndpointMiddleware(
+    IMetricsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
+    : EndpointMiddleware<MetricsRequest?, MetricsResponse?>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    private readonly ILogger<MetricsEndpointMiddleware> _logger;
-
-    public MetricsEndpointMiddleware(IMetricsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
-    {
-        _logger = loggerFactory.CreateLogger<MetricsEndpointMiddleware>();
-    }
+    private readonly ILogger<MetricsEndpointMiddleware> _logger = loggerFactory.CreateLogger<MetricsEndpointMiddleware>();
 
     protected override async Task<MetricsResponse?> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
@@ -67,7 +62,7 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
 
     internal IList<KeyValuePair<string, string>> ParseTags(IQueryCollection query)
     {
-        var results = new List<KeyValuePair<string, string>>();
+        List<KeyValuePair<string, string>> results = [];
 
         foreach (KeyValuePair<string, StringValues> parameter in query)
         {

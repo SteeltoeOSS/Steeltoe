@@ -20,7 +20,7 @@ internal sealed class EventCounterListener : EventListener
     private readonly ILogger<EventCounterListener> _logger;
     private readonly bool _isInitialized;
 
-    private readonly Dictionary<string, string?> _refreshInterval = new();
+    private readonly Dictionary<string, string?> _refreshInterval = [];
 
     private readonly ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new();
     private readonly ConcurrentDictionary<string, ObservableGauge<long>> _longMeasureMetrics = new();
@@ -28,7 +28,7 @@ internal sealed class EventCounterListener : EventListener
     private readonly ConcurrentDictionary<string, double> _lastDoubleValue = new();
     private readonly ConcurrentDictionary<string, long> _lastLongValue = new();
 
-    private readonly ConcurrentBag<EventSource> _eventSources = new();
+    private readonly ConcurrentBag<EventSource> _eventSources = [];
 
     public EventCounterListener(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILogger<EventCounterListener> logger)
     {
@@ -71,7 +71,7 @@ internal sealed class EventCounterListener : EventListener
         {
             if (string.Equals(eventData.EventName, EventName, StringComparison.OrdinalIgnoreCase) && eventData.Payload != null)
             {
-                foreach (IDictionary<string, object?>? payload in eventData.Payload)
+                foreach (IDictionary<string, object?>? payload in eventData.Payload.Cast<IDictionary<string, object?>?>())
                 {
                     if (payload != null)
                     {
@@ -139,7 +139,7 @@ internal sealed class EventCounterListener : EventListener
         double? doubleValue = null;
         long? longValue = null;
         string counterName = string.Empty;
-        var labelSet = new List<KeyValuePair<string, object?>>();
+        List<KeyValuePair<string, object?>> labelSet = [];
         string? counterDisplayUnit = null;
         string? counterDisplayName = null;
 

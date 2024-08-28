@@ -38,10 +38,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
     public Task<EnvironmentResponse> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
-        IList<string> activeProfiles = new List<string>
-        {
-            _environment.EnvironmentName
-        };
+        List<string> activeProfiles = [_environment.EnvironmentName];
 
         _logger.LogTrace("Fetching property sources");
         IList<PropertySourceDescriptor> propertySources = GetPropertySources();
@@ -52,7 +49,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
     internal IList<PropertySourceDescriptor> GetPropertySources()
     {
-        var results = new List<PropertySourceDescriptor>();
+        List<PropertySourceDescriptor> results = [];
 
         if (_configuration is IConfigurationRoot root)
         {
@@ -81,7 +78,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         var properties = new Dictionary<string, PropertyValueDescriptor>();
         string sourceName = GetPropertySourceName(provider);
 
-        foreach (string key in GetFullKeyNames(provider, null, new HashSet<string>()))
+        foreach (string key in GetFullKeyNames(provider, null, []))
         {
             if (provider.TryGet(key, out string? value))
             {
@@ -107,7 +104,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
     private HashSet<string> GetFullKeyNames(IConfigurationProvider provider, string? rootKey, HashSet<string> initialKeys)
     {
-        foreach (string key in provider.GetChildKeys(Enumerable.Empty<string>(), rootKey).Distinct(StringComparer.OrdinalIgnoreCase))
+        foreach (string key in provider.GetChildKeys([], rootKey).Distinct(StringComparer.OrdinalIgnoreCase))
         {
             string surrogateKey = key;
 

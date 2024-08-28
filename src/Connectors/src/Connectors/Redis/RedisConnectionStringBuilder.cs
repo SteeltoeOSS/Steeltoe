@@ -131,7 +131,7 @@ internal sealed class RedisConnectionStringBuilder : IConnectionStringBuilder
         public const string Host = "host";
         public const string Port = "port";
 
-        private static readonly ISet<string> All = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> All = new(StringComparer.OrdinalIgnoreCase)
         {
             Host,
             Port

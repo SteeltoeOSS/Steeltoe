@@ -6,19 +6,12 @@ using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
 
-internal sealed class MongoClientInterfaceShim : Shim
+internal sealed class MongoClientInterfaceShim(MongoDbPackageResolver packageResolver, object instance)
+    : Shim(new InstanceAccessor(packageResolver.MongoClientInterface, instance))
 {
-    public MongoClientInterfaceShim(MongoDbPackageResolver packageResolver, object instance)
-        : base(new InstanceAccessor(packageResolver.MongoClientInterface, instance))
-    {
-    }
-
     public async Task<IDisposable> ListDatabaseNamesAsync(CancellationToken cancellationToken)
     {
-        var task = (Task)InstanceAccessor.InvokeMethodOverload("ListDatabaseNamesAsync", true, new[]
-        {
-            typeof(CancellationToken)
-        }, cancellationToken)!;
+        var task = (Task)InstanceAccessor.InvokeMethodOverload("ListDatabaseNamesAsync", true, [typeof(CancellationToken)], cancellationToken)!;
 
         await task;
 

@@ -75,13 +75,9 @@ public static class LoggingBuilderExtensions
             .Singleton<IConfigureOptions<SimpleConsoleFormatterOptions>, SimpleConsoleLoggerFormatterConfigureOptions>());
     }
 
-    private sealed class SimpleConsoleLoggerFormatterConfigureOptions : ConfigureFromConfigurationOptions<SimpleConsoleFormatterOptions>
+    private sealed class SimpleConsoleLoggerFormatterConfigureOptions(ILoggerProviderConfiguration<ConsoleLoggerProvider> providerConfiguration)
+        : ConfigureFromConfigurationOptions<SimpleConsoleFormatterOptions>(providerConfiguration.Configuration.GetSection("FormatterOptions"))
     {
-        public SimpleConsoleLoggerFormatterConfigureOptions(ILoggerProviderConfiguration<ConsoleLoggerProvider> providerConfiguration)
-            : base(providerConfiguration.Configuration.GetSection("FormatterOptions"))
-        {
-        }
-
         public override void Configure(SimpleConsoleFormatterOptions options)
         {
             base.Configure(options);

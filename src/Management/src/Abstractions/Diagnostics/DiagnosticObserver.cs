@@ -64,19 +64,21 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
     {
     }
 
+#pragma warning disable CA1716 // Identifiers should not match keywords
     public virtual void OnError(Exception error)
+#pragma warning restore CA1716 // Identifiers should not match keywords
     {
     }
 
-    public virtual void OnNext(KeyValuePair<string, object?> @event)
+    public virtual void OnNext(KeyValuePair<string, object?> value)
     {
         try
         {
-            ProcessEvent(@event.Key, @event.Value);
+            ProcessEvent(value.Key, value.Value);
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Failed to process event {Id}", @event.Key);
+            _logger.LogError(exception, "Failed to process event {Id}", value.Key);
         }
     }
 

@@ -63,9 +63,21 @@ public sealed class EndpointMiddlewareTest : BaseTest
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator"));
         string json = await response.Content.ReadAsStringAsync();
 
-        Assert.Equal(
-            "{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/actuator/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/actuator\",\"templated\":false}}}",
-            json);
+        json.Should().BeJson("""
+            {
+              "type": "steeltoe",
+              "_links": {
+                "info": {
+                  "href": "http://localhost/actuator/info",
+                  "templated": false
+                },
+                "self": {
+                  "href": "http://localhost/actuator",
+                  "templated": false
+                }
+              }
+            }
+            """);
     }
 
     [Fact]
@@ -84,9 +96,21 @@ public sealed class EndpointMiddlewareTest : BaseTest
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/"));
         string json = await response.Content.ReadAsStringAsync();
 
-        Assert.Equal(
-            "{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/\",\"templated\":false}}}",
-            json);
+        json.Should().BeJson("""
+            {
+              "type": "steeltoe",
+              "_links": {
+                "info": {
+                  "href": "http://localhost/info",
+                  "templated": false
+                },
+                "self": {
+                  "href": "http://localhost/",
+                  "templated": false
+                }
+              }
+            }
+            """);
     }
 
     [Fact]

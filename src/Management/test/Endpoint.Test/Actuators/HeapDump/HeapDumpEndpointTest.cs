@@ -12,14 +12,9 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 
-public sealed class HeapDumpEndpointTest : BaseTest
+public sealed class HeapDumpEndpointTest(ITestOutputHelper testOutputHelper) : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    public HeapDumpEndpointTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
+    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
     [Fact]
     public async Task Invoke_CreatesDump()
@@ -28,7 +23,7 @@ public sealed class HeapDumpEndpointTest : BaseTest
 
         if (Platform.IsWindows && RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase))
         {
-            using var testContext = new TestContext(_output);
+            using var testContext = new TestContext(_testOutputHelper);
 
             testContext.AdditionalServices = (services, _) =>
             {
@@ -48,7 +43,7 @@ public sealed class HeapDumpEndpointTest : BaseTest
         {
             if (typeof(object).Assembly.GetType("System.Index") != null)
             {
-                using var testContext = new TestContext(_output);
+                using var testContext = new TestContext(_testOutputHelper);
 
                 testContext.AdditionalServices = (services, _) =>
                 {
@@ -67,7 +62,7 @@ public sealed class HeapDumpEndpointTest : BaseTest
         }
         else if (Platform.IsWindows || Platform.IsLinux)
         {
-            throw new Exception();
+            throw new PlatformNotSupportedException();
         }
     }
 }

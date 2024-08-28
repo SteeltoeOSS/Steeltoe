@@ -11,6 +11,7 @@ namespace Steeltoe.Logging.DynamicSerilog.Test;
 /// <summary>
 /// Serilog automatically adds the sink from IConfiguration when provided; Needed for "Serilog:Using" = [ "Steeltoe.Logging.DynamicSerilog.Test" ].
 /// </summary>
+// ReSharper disable once UnusedType.Global
 public static class LoggerSinkConfigurationExtensions
 {
     public static LoggerConfiguration TestSink(this LoggerSinkConfiguration loggerConfiguration)

@@ -6,21 +6,14 @@ using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.EntityFrameworkCore.MySql.DynamicTypeAccess;
 
-internal sealed class ServerVersionShim : Shim
+internal sealed class ServerVersionShim(MySqlEntityFrameworkCorePackageResolver packageResolver, object instance)
+    : Shim(new InstanceAccessor(packageResolver.ServerVersionClass, instance))
 {
-    public ServerVersionShim(MySqlEntityFrameworkCorePackageResolver packageResolver, object instance)
-        : base(new InstanceAccessor(packageResolver.ServerVersionClass, instance))
-    {
-    }
-
     public static ServerVersionShim AutoDetect(MySqlEntityFrameworkCorePackageResolver packageResolver, string connectionString)
     {
         ArgumentNullException.ThrowIfNull(packageResolver);
 
-        object instance = packageResolver.ServerVersionClass.InvokeMethodOverload("AutoDetect", true, new[]
-        {
-            typeof(string)
-        }, connectionString)!;
+        object instance = packageResolver.ServerVersionClass.InvokeMethodOverload("AutoDetect", true, [typeof(string)], connectionString)!;
 
         return new ServerVersionShim(packageResolver, instance);
     }

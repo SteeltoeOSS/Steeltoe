@@ -6,23 +6,16 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Metrics;
 
-public sealed class MetricSample
+public sealed class MetricSample(MetricStatistic statistic, double value, IList<KeyValuePair<string, string>>? tags)
 {
     [JsonPropertyName("statistic")]
-    public MetricStatistic Statistic { get; }
+    public MetricStatistic Statistic { get; } = statistic;
 
     [JsonPropertyName("value")]
-    public double Value { get; }
+    public double Value { get; } = value;
 
     [JsonIgnore]
-    public IList<KeyValuePair<string, string>>? Tags { get; }
-
-    public MetricSample(MetricStatistic statistic, double value, IList<KeyValuePair<string, string>>? tags)
-    {
-        Statistic = statistic;
-        Value = value;
-        Tags = tags;
-    }
+    public IList<KeyValuePair<string, string>>? Tags { get; } = tags;
 
     public override string ToString()
     {

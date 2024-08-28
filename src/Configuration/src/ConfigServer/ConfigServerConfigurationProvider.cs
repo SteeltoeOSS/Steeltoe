@@ -295,7 +295,8 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         return null;
     }
 
-    private static bool AreDictionariesEqual<TKey, TValue>(IDictionary<TKey, TValue> first, IDictionary<TKey, TValue> second)
+    private static bool AreDictionariesEqual<TKey, TValue>(IDictionary<TKey, TValue> first, Dictionary<TKey, TValue> second)
+        where TKey : notnull
     {
         return first.Count == second.Count && first.Keys.All(firstKey =>
             second.ContainsKey(firstKey) && EqualityComparer<TValue>.Default.Equals(first[firstKey], second[firstKey]));
@@ -315,7 +316,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     {
         IServiceInstance[] instances = (await configServerDiscoveryService.GetConfigServerInstancesAsync(cancellationToken)).ToArray();
 
-        if (!instances.Any())
+        if (instances.Length == 0)
         {
             if (ClientOptions.FailFast)
             {
@@ -351,7 +352,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 {
                     if (uri.EndsWith('/') && path.StartsWith('/'))
                     {
-                        uri = uri.Substring(0, uri.Length - 1);
+                        uri = uri[..^1];
                     }
 
                     uri += path;
@@ -455,7 +456,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// <param name="data">
     /// The client settings to add.
     /// </param>
-    private void AddConfigServerClientOptions(IDictionary<string, string?> data)
+    private void AddConfigServerClientOptions(Dictionary<string, string?> data)
     {
         data["spring:cloud:config:enabled"] = ClientOptions.Enabled.ToString(CultureInfo.InvariantCulture);
         data["spring:cloud:config:failFast"] = ClientOptions.FailFast.ToString(CultureInfo.InvariantCulture);
@@ -612,7 +613,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// <param name="data">
     /// The dictionary to add the property source to.
     /// </param>
-    private void AddPropertySource(PropertySource? source, IDictionary<string, string?> data)
+    private void AddPropertySource(PropertySource? source, Dictionary<string, string?> data)
     {
         ArgumentNullException.ThrowIfNull(data);
 

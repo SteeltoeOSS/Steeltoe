@@ -49,10 +49,24 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string? json = await reader.ReadLineAsync();
 
-        const string expected =
-            "[\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"management:endpoints:actuator\",\"management:endpoints:actuator:exposure\",\"management:endpoints:actuator:exposure:include\",\"management:endpoints:actuator:exposure:include:0\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:Console\",\"Logging:Console:IncludeScopes\"]";
-
-        Assert.Equal(expected, json);
+        json.Should().BeJson("""
+            [
+              "management",
+              "management:endpoints",
+              "management:endpoints:enabled",
+              "management:endpoints:actuator",
+              "management:endpoints:actuator:exposure",
+              "management:endpoints:actuator:exposure:include",
+              "management:endpoints:actuator:exposure:include:0",
+              "Logging",
+              "Logging:LogLevel",
+              "Logging:LogLevel:Steeltoe",
+              "Logging:LogLevel:Pivotal",
+              "Logging:LogLevel:Default",
+              "Logging:Console",
+              "Logging:Console:IncludeScopes"
+            ]
+            """);
     }
 
     [Fact]
@@ -77,10 +91,27 @@ public sealed class EndpointMiddlewareTest : BaseTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         string json = await response.Content.ReadAsStringAsync();
 
-        const string expected =
-            "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"management:endpoints:actuator\",\"management:endpoints:actuator:exposure\",\"management:endpoints:actuator:exposure:include\",\"management:endpoints:actuator:exposure:include:0\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:Console\",\"Logging:Console:IncludeScopes\",\"environment\",\"applicationName\"]";
-
-        Assert.Equal(expected, json);
+        json.Should().BeJson("""
+            [
+              "urls",
+              "management",
+              "management:endpoints",
+              "management:endpoints:enabled",
+              "management:endpoints:actuator",
+              "management:endpoints:actuator:exposure",
+              "management:endpoints:actuator:exposure:include",
+              "management:endpoints:actuator:exposure:include:0",
+              "Logging",
+              "Logging:LogLevel",
+              "Logging:LogLevel:Steeltoe",
+              "Logging:LogLevel:Pivotal",
+              "Logging:LogLevel:Default",
+              "Logging:Console",
+              "Logging:Console:IncludeScopes",
+              "environment",
+              "applicationName"
+            ]
+            """);
     }
 
     [Fact]

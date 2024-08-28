@@ -12,9 +12,9 @@ namespace Steeltoe.Management.Diagnostics;
 
 internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
 {
-    private readonly IList<IRuntimeDiagnosticSource> _runtimeSources;
-    private readonly IList<EventListener> _eventListeners;
-    private readonly IList<IDiagnosticObserver> _observers;
+    private readonly List<IRuntimeDiagnosticSource> _runtimeSources;
+    private readonly List<EventListener> _eventListeners;
+    private readonly List<IDiagnosticObserver> _observers;
     private readonly ILogger<DiagnosticsManager> _logger;
 
     private bool _isDisposed;
@@ -44,7 +44,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
         ArgumentGuard.ElementsNotNull(eventListenerList);
 
         _logger = logger;
-        var filteredObservers = new List<IDiagnosticObserver>();
+        List<IDiagnosticObserver> filteredObservers = [];
 
         foreach (IDiagnosticObserver observer in observerArray)
         {

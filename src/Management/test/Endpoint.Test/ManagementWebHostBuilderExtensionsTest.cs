@@ -52,15 +52,16 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
             {
             });
 
-        services.AddAuthorization(options => options.AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read")));
+        services.AddAuthorizationBuilder().AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read"));
     }).Configure(applicationBuilder => applicationBuilder.UseRouting().UseAuthentication().UseAuthorization());
 
     [Fact]
     public void AddDbMigrationsActuator_IWebHostBuilder()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.AddDbMigrationsActuator();
+        using IWebHost host = hostBuilder.Build();
 
-        using IWebHost host = hostBuilder.AddDbMigrationsActuator().Build();
         var handler = host.Services.GetService<IDbMigrationsEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -73,8 +74,8 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddDbMigrationsActuator_IWebHostBuilder_IStartupFilterFires()
     {
         IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
-
-        using IWebHost host = hostBuilder.AddDbMigrationsActuator().Start();
+        hostBuilder.AddDbMigrationsActuator();
+        using IWebHost host = hostBuilder.Start();
 
         var requestUri = new Uri("/actuator/dbmigrations", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
@@ -85,8 +86,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public void AddEnvironmentActuator_IWebHostBuilder()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.AddEnvironmentActuator();
+        using IWebHost host = hostBuilder.Build();
 
-        using IWebHost host = hostBuilder.AddEnvironmentActuator().Build();
         IEnumerable<IEnvironmentEndpointHandler> handlers = host.Services.GetServices<IEnvironmentEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -99,8 +101,8 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddEnvironmentActuator_IWebHostBuilder_IStartupFilterFires()
     {
         IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
-
-        using IWebHost host = hostBuilder.AddEnvironmentActuator().Start();
+        hostBuilder.AddEnvironmentActuator();
+        using IWebHost host = hostBuilder.Start();
 
         var requestUri = new Uri("/actuator/env", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
@@ -149,8 +151,8 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddHealthActuator_IWebHostBuilder_IStartupFilterFires()
     {
         IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
-
-        using IWebHost host = hostBuilder.AddHealthActuator().Start();
+        hostBuilder.AddHealthActuator();
+        using IWebHost host = hostBuilder.Start();
 
         var requestUri = new Uri("/actuator/health", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
@@ -161,9 +163,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddHealthActuator_IWebHostBuilder_IStartupFilterFireRegistersAvailabilityEvents()
     {
         IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
+        hostBuilder.AddHealthActuator();
+        using IWebHost host = hostBuilder.Start();
 
-        // start the server, get a client
-        using IWebHost host = hostBuilder.AddHealthActuator().Start();
         HttpClient client = host.GetTestClient();
 
         // request liveness & readiness in order to validate the ApplicationAvailability has been set as expected
@@ -187,8 +189,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         if (Platform.IsWindows)
         {
             IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+            hostBuilder.AddHeapDumpActuator();
+            using IWebHost host = hostBuilder.Build();
 
-            using IWebHost host = hostBuilder.AddHeapDumpActuator().Build();
             IEnumerable<IHeapDumpEndpointHandler> handlers = host.Services.GetServices<IHeapDumpEndpointHandler>();
             IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -204,8 +207,8 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         if (Platform.IsWindows)
         {
             IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
-
-            using IWebHost host = hostBuilder.AddHeapDumpActuator().Start();
+            hostBuilder.AddHeapDumpActuator();
+            using IWebHost host = hostBuilder.Start();
 
             var requestUri = new Uri("/actuator/heapdump", UriKind.Relative);
             HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
@@ -217,8 +220,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public void AddHypermediaActuator_IWebHostBuilder()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.AddHypermediaActuator();
+        using IWebHost host = hostBuilder.Build();
 
-        using IWebHost host = hostBuilder.AddHypermediaActuator().Build();
         IEnumerable<IActuatorEndpointHandler> handlers = host.Services.GetServices<IActuatorEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -231,8 +235,8 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddHypermediaActuator_IWebHostBuilder_IStartupFilterFires()
     {
         IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
-
-        using IWebHost host = hostBuilder.AddHypermediaActuator().Start();
+        hostBuilder.AddHypermediaActuator();
+        using IWebHost host = hostBuilder.Start();
 
         var requestUri = new Uri("/actuator", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
@@ -244,7 +248,6 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.AddInfoActuator();
-
         using IWebHost host = hostBuilder.Build();
 
         Assert.NotNull(host.Services.GetService<IInfoEndpointHandler>());
@@ -257,7 +260,6 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.AddInfoActuator();
         hostBuilder.ConfigureServices(services => services.AddInfoContributor<TestInfoContributor>());
-
         using IWebHost host = hostBuilder.Build();
 
         Assert.NotNull(host.Services.GetService<IInfoEndpointHandler>());
@@ -269,8 +271,8 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddInfoActuator_IWebHostBuilder_IStartupFilterFires()
     {
         IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
-
-        using IWebHost host = hostBuilder.AddInfoActuator().Start();
+        hostBuilder.AddInfoActuator();
+        using IWebHost host = hostBuilder.Start();
 
         var requestUri = new Uri("/actuator/info", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
@@ -281,8 +283,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public void AddLoggersActuator_IWebHostBuilder()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.AddLoggersActuator();
+        using IWebHost host = hostBuilder.Build();
 
-        using IWebHost host = hostBuilder.AddLoggersActuator().Build();
         IEnumerable<ILoggersEndpointHandler> handlers = host.Services.GetServices<ILoggersEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -295,8 +298,8 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddLoggersActuator_IWebHostBuilder_IStartupFilterFires()
     {
         IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
-
-        using IWebHost host = hostBuilder.AddLoggersActuator().Start();
+        hostBuilder.AddLoggersActuator();
+        using IWebHost host = hostBuilder.Start();
 
         var requestUri = new Uri("/actuator/loggers", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
@@ -307,9 +310,10 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddLoggers_IWebHostBuilder_MultipleLoggersScenario1()
     {
         // Add Serilog + DynamicConsole = runs OK
-        IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed.ConfigureLogging(builder => builder.AddDynamicSerilog().AddDynamicConsole());
-
-        using IWebHost host = hostBuilder.AddLoggersActuator().Start();
+        IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
+        hostBuilder.ConfigureLogging(builder => builder.AddDynamicSerilog().AddDynamicConsole());
+        hostBuilder.AddLoggersActuator();
+        using IWebHost host = hostBuilder.Start();
 
         var requestUri = new Uri("/actuator/loggers", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
@@ -320,9 +324,11 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public void AddLoggers_IWebHostBuilder_MultipleLoggersScenario2()
     {
         // Add DynamicConsole + Serilog = throws exception
-        IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed.ConfigureLogging(builder => builder.AddDynamicConsole().AddDynamicSerilog());
+        IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
+        hostBuilder.ConfigureLogging(builder => builder.AddDynamicConsole().AddDynamicSerilog());
+        hostBuilder.AddLoggersActuator();
 
-        var exception = Assert.Throws<InvalidOperationException>(() => hostBuilder.AddLoggersActuator().Start());
+        var exception = Assert.Throws<InvalidOperationException>(() => hostBuilder.Start());
 
         Assert.Contains("An IDynamicLoggerProvider has already been configured! Call 'AddDynamicSerilog' earlier", exception.Message, StringComparison.Ordinal);
     }
@@ -331,8 +337,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public void AddMappingsActuator_IWebHostBuilder()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.AddMappingsActuator();
+        using IWebHost host = hostBuilder.Build();
 
-        using IWebHost host = hostBuilder.AddMappingsActuator().Build();
         IEnumerable<RouterMappings> mappings = host.Services.GetServices<RouterMappings>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -345,8 +352,8 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddMappingsActuator_IWebHostBuilder_IStartupFilterFires()
     {
         IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
-
-        using IWebHost host = hostBuilder.AddMappingsActuator().Start();
+        hostBuilder.AddMappingsActuator();
+        using IWebHost host = hostBuilder.Start();
 
         var requestUri = new Uri("/actuator/mappings", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
@@ -357,8 +364,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public void AddMetricsActuator_IWebHostBuilder()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.AddMetricsActuator();
+        using IWebHost host = hostBuilder.Build();
 
-        using IWebHost host = hostBuilder.AddMetricsActuator().Build();
         IEnumerable<IMetricsEndpointHandler> handlers = host.Services.GetServices<IMetricsEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -371,8 +379,8 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddMetricsActuator_IWebHostBuilder_IStartupFilterFires()
     {
         IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
-
-        using IWebHost host = hostBuilder.AddMetricsActuator().Start();
+        hostBuilder.AddMetricsActuator();
+        using IWebHost host = hostBuilder.Start();
 
         var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
@@ -383,8 +391,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public void AddRefreshActuator_IWebHostBuilder()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.AddRefreshActuator();
+        using IWebHost host = hostBuilder.Build();
 
-        using IWebHost host = hostBuilder.AddRefreshActuator().Build();
         IEnumerable<IRefreshEndpointHandler> handlers = host.Services.GetServices<IRefreshEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -397,8 +406,8 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddRefreshActuator_IWebHostBuilder_IStartupFilterFires()
     {
         IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
-
-        using IWebHost host = hostBuilder.AddRefreshActuator().Start();
+        hostBuilder.AddRefreshActuator();
+        using IWebHost host = hostBuilder.Start();
 
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().PostAsync(requestUri, null);
@@ -411,8 +420,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         if (Platform.IsWindows)
         {
             IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+            hostBuilder.AddThreadDumpActuator();
+            using IWebHost host = hostBuilder.Build();
 
-            using IWebHost host = hostBuilder.AddThreadDumpActuator().Build();
             IEnumerable<IThreadDumpEndpointHandler> handlers = host.Services.GetServices<IThreadDumpEndpointHandler>();
             IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -428,8 +438,8 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         if (Platform.IsWindows)
         {
             IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
-
-            using IWebHost host = hostBuilder.AddThreadDumpActuator().Start();
+            hostBuilder.AddThreadDumpActuator();
+            using IWebHost host = hostBuilder.Start();
 
             var requestUri = new Uri("/actuator/threaddump", UriKind.Relative);
             HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
@@ -441,8 +451,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public void AddTraceActuator_IWebHostBuilder()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.AddTraceActuator();
+        using IWebHost host = hostBuilder.Build();
 
-        using IWebHost host = hostBuilder.AddTraceActuator().Build();
         IEnumerable<IHttpTraceEndpointHandler> handlers = host.Services.GetServices<IHttpTraceEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -455,8 +466,8 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddTraceActuator_IWebHostBuilder_IStartupFilterFires()
     {
         IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
-
-        using IWebHost host = hostBuilder.AddTraceActuator().Start();
+        hostBuilder.AddTraceActuator();
+        using IWebHost host = hostBuilder.Start();
 
         var requestUri = new Uri("/actuator/httptrace", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
@@ -467,8 +478,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public void AddServicesActuator_IWebHostBuilder()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.AddServicesActuator();
+        using IWebHost host = hostBuilder.Build();
 
-        using IWebHost host = hostBuilder.AddServicesActuator().Build();
         IEnumerable<IServicesEndpointHandler> handlers = host.Services.GetServices<IServicesEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -481,8 +493,8 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddServicesActuator_IWebHostBuilder_IStartupFilterFires()
     {
         IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
-
-        using IWebHost host = hostBuilder.AddServicesActuator().Start();
+        hostBuilder.AddServicesActuator();
+        using IWebHost host = hostBuilder.Start();
 
         var requestUri = new Uri("/actuator/beans", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
@@ -493,8 +505,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public void AddCloudFoundryActuator_IWebHostBuilder()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.AddCloudFoundryActuator();
+        using IWebHost host = hostBuilder.Build();
 
-        using IWebHost host = hostBuilder.AddCloudFoundryActuator().Build();
         IEnumerable<ICloudFoundryEndpointHandler> handlers = host.Services.GetServices<ICloudFoundryEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -507,8 +520,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddAllActuators_IWebHostBuilder_IStartupFilterFires()
     {
         IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
+        hostBuilder.AddAllActuators();
+        using IWebHost host = hostBuilder.Start();
 
-        using IWebHost host = hostBuilder.AddAllActuators().Start();
         HttpClient client = host.GetTestServer().CreateClient();
 
         HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
@@ -523,8 +537,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddAllActuatorsWithConventions_IWebHostBuilder_IStartupFilterFires()
     {
         IWebHostBuilder hostBuilder = _testServerWithSecureRouting;
+        hostBuilder.AddAllActuators(builder => builder.RequireAuthorization("TestAuth"));
+        using IWebHost host = hostBuilder.Start();
 
-        using IWebHost host = hostBuilder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).Start();
         HttpClient client = host.GetTestServer().CreateClient();
 
         HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
@@ -539,8 +554,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public void AddAllActuators_IWebHostBuilder()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.AddAllActuators();
+        using IWebHost host = hostBuilder.Build();
 
-        using IWebHost host = hostBuilder.AddAllActuators().Build();
         IEnumerable<IActuatorEndpointHandler> handlers = host.Services.GetServices<IActuatorEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -554,7 +570,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "some"); // Allow routing to /cloudfoundryapplication
 
-        using IWebHost host = _testServerWithAllActuatorsExposed.AddCloudFoundryActuator().Start();
+        IWebHostBuilder hostBuilder = _testServerWithAllActuatorsExposed;
+        hostBuilder.AddCloudFoundryActuator();
+        using IWebHost host = hostBuilder.Start();
 
         var requestUri = new Uri("/cloudfoundryapplication", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
@@ -564,10 +582,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddSeveralActuators_IWebHostBuilder_NoConflict()
     {
-        IWebHostBuilder hostBuilder = _testServerWithSecureRouting.AddHypermediaActuator().AddInfoActuator().AddHealthActuator()
-            .AddAllActuators(ep => ep.RequireAuthorization("TestAuth"));
-
+        IWebHostBuilder hostBuilder = _testServerWithSecureRouting;
+        hostBuilder.AddHypermediaActuator();
+        hostBuilder.AddInfoActuator();
+        hostBuilder.AddHealthActuator();
+        hostBuilder.AddAllActuators(builder => builder.RequireAuthorization("TestAuth"));
         using IWebHost host = hostBuilder.Start();
+
         HttpClient client = host.GetTestServer().CreateClient();
 
         IStartupFilter[] startupFilters = host.Services.GetServices<IStartupFilter>().ToArray();
@@ -586,11 +607,14 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddSeveralActuators_IWebHostBuilder_PrefersEndpointConfiguration()
     {
-        IWebHostBuilder hostBuilder = _testServerWithSecureRouting
-            .ConfigureServices(services => services.ActivateActuatorEndpoints().RequireAuthorization("TestAuth"))
+        IWebHostBuilder hostBuilder = _testServerWithSecureRouting;
 
-            // each of these will try to add their own AllActuatorsStartupFilter but should no-op in favor of the above
-            .AddHypermediaActuator().AddInfoActuator().AddHealthActuator();
+        hostBuilder.ConfigureServices(services => services.ActivateActuatorEndpoints().RequireAuthorization("TestAuth"));
+
+        // each of these will try to add their own AllActuatorsStartupFilter but should no-op in favor of the above
+        hostBuilder.AddHypermediaActuator();
+        hostBuilder.AddInfoActuator();
+        hostBuilder.AddHealthActuator();
 
         using IWebHost host = hostBuilder.Start();
         HttpClient client = host.GetTestServer().CreateClient();

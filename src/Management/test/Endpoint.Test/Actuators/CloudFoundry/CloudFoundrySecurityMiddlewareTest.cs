@@ -364,7 +364,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         HttpContext context = CreateRequest("GET", "/");
         SecurityResult result = await middleware.GetPermissionsAsync(context);
         Assert.NotNull(result);
-        Assert.Equal(Permissions.None, result.Permissions);
+        Assert.Equal(EndpointPermissions.None, result.Permissions);
         Assert.Equal(HttpStatusCode.Unauthorized, result.Code);
     }
 

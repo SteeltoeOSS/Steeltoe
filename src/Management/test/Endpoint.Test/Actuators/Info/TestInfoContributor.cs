@@ -6,26 +6,21 @@ using Steeltoe.Management.Endpoint.Actuators.Info;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Info;
 
-internal sealed class TestInfoContributor : IInfoContributor
+internal sealed class TestInfoContributor(bool throws) : IInfoContributor
 {
+    public bool Throws { get; } = throws;
     public bool Called { get; private set; }
-    public bool Throws { get; }
 
     public TestInfoContributor()
+        : this(false)
     {
-        Throws = false;
-    }
-
-    public TestInfoContributor(bool throws)
-    {
-        Throws = throws;
     }
 
     public Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
     {
         if (Throws)
         {
-            throw new Exception();
+            throw new InvalidOperationException();
         }
 
         Called = true;

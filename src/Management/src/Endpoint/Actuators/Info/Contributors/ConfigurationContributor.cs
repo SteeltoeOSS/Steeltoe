@@ -6,14 +6,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Info.Contributors;
 
-internal abstract class ConfigurationContributor
+internal abstract class ConfigurationContributor(IConfiguration? configuration)
 {
-    protected IConfiguration? Configuration { get; set; }
-
-    protected ConfigurationContributor(IConfiguration? configuration)
-    {
-        Configuration = configuration;
-    }
+    protected IConfiguration? Configuration { get; set; } = configuration;
 
     protected void Contribute(IInfoBuilder builder, string prefix, bool keepPrefix)
     {
@@ -37,7 +32,7 @@ internal abstract class ConfigurationContributor
 
             if (keepPrefix)
             {
-                dictionary = new Dictionary<string, object>();
+                dictionary = [];
                 result[prefix] = dictionary;
             }
 
@@ -47,7 +42,7 @@ internal abstract class ConfigurationContributor
         return result;
     }
 
-    private void AddChildren(IDictionary<string, object> dictionary, IEnumerable<IConfigurationSection> sections)
+    private void AddChildren(Dictionary<string, object> dictionary, IEnumerable<IConfigurationSection> sections)
     {
         foreach (IConfigurationSection section in sections)
         {

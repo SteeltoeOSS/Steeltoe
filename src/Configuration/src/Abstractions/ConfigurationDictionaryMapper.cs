@@ -14,6 +14,10 @@ internal abstract class ConfigurationDictionaryMapper
 
     protected ConfigurationDictionaryMapper(IDictionary<string, string?> configurationData, string bindingKey, params string[] toPrefix)
     {
+        ArgumentNullException.ThrowIfNull(configurationData);
+        ArgumentNullException.ThrowIfNull(bindingKey);
+        ArgumentNullException.ThrowIfNull(toPrefix);
+
         ConfigurationData = configurationData;
         BindingKey = !string.IsNullOrEmpty(bindingKey) ? bindingKey + ConfigurationPath.KeyDelimiter : string.Empty;
         ToPrefix = toPrefix.Length > 0 ? string.Join(ConfigurationPath.KeyDelimiter, toPrefix) + ConfigurationPath.KeyDelimiter : string.Empty;

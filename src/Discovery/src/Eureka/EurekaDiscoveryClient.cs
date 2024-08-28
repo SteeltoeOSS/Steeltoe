@@ -10,6 +10,9 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 
+// Justification: See the doc-comments on IDiscoveryClient.ShutdownAsync.
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
+
 namespace Steeltoe.Discovery.Eureka;
 
 /// <summary>
@@ -147,7 +150,8 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(vipAddress);
 
-        return secure ? Applications.GetInstancesBySecureVipAddress(vipAddress) : Applications.GetInstancesByVipAddress(vipAddress);
+        List<InstanceInfo> instances = secure ? Applications.GetInstancesBySecureVipAddress(vipAddress) : Applications.GetInstancesByVipAddress(vipAddress);
+        return instances.AsReadOnly();
     }
 
     /// <inheritdoc />
@@ -319,7 +323,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
 
             bool requireFullFetch = doFullUpdate || !string.IsNullOrWhiteSpace(clientOptions.RegistryRefreshSingleVipAddress) ||
-                clientOptions.IsFetchDeltaDisabled || _remoteApps.RegisteredApplications.Count == 0;
+                clientOptions.IsFetchDeltaDisabled || _remoteApps.Count == 0;
 
             ApplicationInfoCollection fetched =
                 requireFullFetch ? await FetchFullRegistryAsync(cancellationToken) : await FetchRegistryDeltaAsync(cancellationToken);
@@ -369,7 +373,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             ? await _eurekaClient.GetApplicationsAsync(cancellationToken)
             : await _eurekaClient.GetByVipAsync(clientOptions.RegistryRefreshSingleVipAddress, cancellationToken);
 
-        _logger.LogDebug("Full registry fetch succeeded with {Count} applications.", applications.RegisteredApplications.Count);
+        _logger.LogDebug("Full registry fetch succeeded with {Count} applications.", applications.Count);
         return applications;
     }
 
@@ -401,7 +405,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             return await FetchFullRegistryAsync(cancellationToken);
         }
 
-        _logger.LogDebug("Registry delta fetch succeeded with {Count} changes.", delta.RegisteredApplications.Count);
+        _logger.LogDebug("Registry delta fetch succeeded with {Count} changes.", delta.Count);
         _remoteApps.AppsHashCode = delta.AppsHashCode;
         return _remoteApps;
     }
@@ -498,9 +502,9 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     /// <inheritdoc />
     public Task<ISet<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
-        ISet<string> names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        HashSet<string> names = new(StringComparer.OrdinalIgnoreCase);
 
-        foreach (ApplicationInfo app in Applications.RegisteredApplications)
+        foreach (ApplicationInfo app in Applications)
         {
             if (app.Instances.Count != 0)
             {
@@ -508,7 +512,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             }
         }
 
-        return Task.FromResult(names);
+        return Task.FromResult<ISet<string>>(names);
     }
 
     /// <inheritdoc />
@@ -519,13 +523,13 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         IReadOnlyList<InstanceInfo> nonSecureInstances = GetInstancesByVipAddress(serviceId, false);
         IReadOnlyList<InstanceInfo> secureInstances = GetInstancesByVipAddress(serviceId, true);
 
-        InstanceInfo[] instances = secureInstances.Concat(nonSecureInstances).DistinctBy(instance => instance.InstanceId).ToArray();
-        IList<IServiceInstance> serviceInstances = instances.Select(instance => new EurekaServiceInstance(instance)).Cast<IServiceInstance>().ToArray();
+        IEnumerable<InstanceInfo> instances = secureInstances.Concat(nonSecureInstances).DistinctBy(instance => instance.InstanceId);
+        IServiceInstance[] serviceInstances = instances.Select(instance => new EurekaServiceInstance(instance)).Cast<IServiceInstance>().ToArray();
 
-        _logger.LogDebug("Returning {Count} service instances: {ServiceInstances}", serviceInstances.Count,
+        _logger.LogDebug("Returning {Count} service instances: {ServiceInstances}", serviceInstances.Length,
             string.Join(", ", serviceInstances.Select(instance => $"{instance.ServiceId}={instance.Uri}")));
 
-        return Task.FromResult(serviceInstances);
+        return Task.FromResult<IList<IServiceInstance>>(serviceInstances);
     }
 
     /// <inheritdoc />

@@ -14,7 +14,7 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
     [Fact]
     public async Task ConfigureConfigServerClientOptions_ConfiguresConfigServerClientOptions_WithDefaults()
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder();
+        var builder = new ConfigurationBuilder();
         builder.AddConfigServer();
         IConfiguration configuration = builder.Build();
 

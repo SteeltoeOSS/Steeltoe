@@ -140,8 +140,8 @@ internal sealed class PropertyPlaceholderHelper
 
                     if (separatorIndex != -1)
                     {
-                        string actualPlaceholder = placeholder.Substring(0, separatorIndex);
-                        string defaultValue = placeholder.Substring(separatorIndex + Separator.Length);
+                        string actualPlaceholder = placeholder[..separatorIndex];
+                        string defaultValue = placeholder[(separatorIndex + Separator.Length)..];
                         propertyValue = configuration[actualPlaceholder] ?? defaultValue;
                     }
                     else if (useEmptyStringIfNotFound)
@@ -252,6 +252,6 @@ internal sealed class PropertyPlaceholderHelper
 
     private static string Substring(StringBuilder builder, int start, int end)
     {
-        return builder.ToString().Substring(start, end - start);
+        return builder.ToString()[start..end];
     }
 }

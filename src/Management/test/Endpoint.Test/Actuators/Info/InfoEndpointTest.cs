@@ -9,19 +9,14 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Info;
 
-public sealed class InfoEndpointTest : BaseTest
+public sealed class InfoEndpointTest(ITestOutputHelper testOutputHelper) : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    public InfoEndpointTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
+    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
     [Fact]
     public async Task Invoke_NoContributors_ReturnsExpectedInfo()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -39,14 +34,14 @@ public sealed class InfoEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_CallsAllContributors()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
-        var contributors = new List<IInfoContributor>
-        {
+        List<IInfoContributor> contributors =
+        [
             new TestInfoContributor(),
             new TestInfoContributor(),
             new TestInfoContributor()
-        };
+        ];
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -68,14 +63,14 @@ public sealed class InfoEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_HandlesExceptions()
     {
-        using var testContext = new TestContext(_output);
+        using var testContext = new TestContext(_testOutputHelper);
 
-        var contributors = new List<IInfoContributor>
-        {
+        List<IInfoContributor> contributors =
+        [
             new TestInfoContributor(),
             new TestInfoContributor(true),
             new TestInfoContributor()
-        };
+        ];
 
         testContext.AdditionalServices = (services, _) =>
         {

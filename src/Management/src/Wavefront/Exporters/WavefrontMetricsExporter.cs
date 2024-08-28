@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Wavefront.SDK.CSharp.DirectIngestion;
-using Wavefront.SDK.CSharp.Entities.Metrics;
 
 #pragma warning disable S4040 // Strings should be normalized to uppercase
 
@@ -14,8 +13,10 @@ namespace Steeltoe.Management.Wavefront.Exporters;
 
 public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
 {
+    private static readonly int ProxyLength = "proxy".Length;
+
     private readonly ILogger<WavefrontMetricsExporter> _logger;
-    private readonly IWavefrontMetricSender _wavefrontSender;
+    private readonly WavefrontDirectIngestionClient _wavefrontSender;
 
     internal WavefrontExporterOptions Options { get; }
 
@@ -37,7 +38,7 @@ public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
 
         if (uri.StartsWith("proxy://", StringComparison.Ordinal))
         {
-            uri = $"http{uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
+            uri = $"http{uri[ProxyLength..]}"; // Proxy reporting is now http on newer proxies.
         }
         else
         {

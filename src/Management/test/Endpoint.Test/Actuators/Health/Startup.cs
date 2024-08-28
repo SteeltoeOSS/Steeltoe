@@ -20,6 +20,8 @@ public sealed class Startup
 
     public Startup(IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         _configuration = configuration;
     }
 
@@ -46,7 +48,9 @@ public sealed class Startup
                 services.AddHealthContributor<DisabledContributor>();
                 break;
             case "default":
-                services.AddSingleton<IOptionsMonitor<HealthCheckServiceOptions>>(new TestHealthCheckServiceOptions());
+                services.TryAddEnumerable(ServiceDescriptor
+                    .Singleton<IPostConfigureOptions<HealthCheckServiceOptions>, PostConfigureHealthCheckServiceOptionsForTest>());
+
                 break;
         }
     }

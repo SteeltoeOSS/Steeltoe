@@ -4,6 +4,4 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.Environment;
 
-public interface IEnvironmentEndpointHandler : IEndpointHandler<object?, EnvironmentResponse>
-{
-}
+public interface IEnvironmentEndpointHandler : IEndpointHandler<object?, EnvironmentResponse>;
