@@ -44,8 +44,13 @@ public sealed class RedisDataProtectionBuilderExtensionsTest
             };
         });
 
+        builder.Services.AddSession(options =>
+        {
+            options.Cookie.HttpOnly = true;
+            options.Cookie.IsEssential = true;
+        });
+
         builder.Services.AddDataProtection().PersistKeysToRedis().SetApplicationName(appName);
-        builder.Services.AddSession();
 
         await using WebApplication app = builder.Build();
 
