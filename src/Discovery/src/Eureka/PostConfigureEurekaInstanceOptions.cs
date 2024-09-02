@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
+using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Actuators.Info;
@@ -67,9 +68,11 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
 
     private void SetHostNameAndIpAddress(EurekaInstanceOptions options)
     {
+        var vcapOptions = _appInfo as CloudFoundryApplicationOptions;
+
         if (!options.IsForceHostNameMethod())
         {
-            string? firstAppUri = _appInfo.Uris.FirstOrDefault();
+            string? firstAppUri = vcapOptions?.Uris.FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(firstAppUri))
             {
@@ -80,9 +83,9 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
         HostInfo? hostInfo = options.UseNetworkInterfaces ? _inetUtils.FindFirstNonLoopbackHostInfo() : null;
         options.HostName ??= hostInfo != null ? hostInfo.Hostname : DnsTools.ResolveHostName();
 
-        if (!string.IsNullOrWhiteSpace(_appInfo.InternalIP))
+        if (!string.IsNullOrWhiteSpace(vcapOptions?.InternalIP))
         {
-            options.IPAddress = _appInfo.InternalIP;
+            options.IPAddress = vcapOptions.InternalIP;
         }
 
         if (string.IsNullOrWhiteSpace(options.IPAddress))
@@ -142,25 +145,29 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
 
     private void SetInstanceId(EurekaInstanceOptions options)
     {
+        var vcapOptions = _appInfo as CloudFoundryApplicationOptions;
+
         if (options.IsGoRouterMethod())
         {
-            string? firstAppUri = _appInfo.Uris.FirstOrDefault();
+            string? firstAppUri = vcapOptions?.Uris.FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(firstAppUri))
             {
-                options.InstanceId = $"{firstAppUri}:{_appInfo.InstanceId}";
+#pragma warning disable S2589 // Boolean expressions should not be gratuitous
+                options.InstanceId = $"{firstAppUri}:{vcapOptions?.InstanceId}";
+#pragma warning restore S2589 // Boolean expressions should not be gratuitous
             }
         }
         else if (options.IsContainerToContainerMethod())
         {
-            options.InstanceId = $"{_appInfo.InternalIP}:{_appInfo.InstanceId}";
+            options.InstanceId = $"{vcapOptions?.InternalIP}:{vcapOptions?.InstanceId}";
         }
         else if (options.IsForceHostNameMethod())
         {
-            options.InstanceId = $"{options.HostName}:{_appInfo.InstanceId}";
+            options.InstanceId = $"{options.HostName}:{vcapOptions?.InstanceId}";
         }
 
-        options.InstanceId ??= _appInfo.InstanceId;
+        options.InstanceId ??= vcapOptions?.InstanceId;
 
         if (string.IsNullOrWhiteSpace(options.InstanceId))
         {
@@ -188,11 +195,11 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
 
     private void SetMetadata(EurekaInstanceOptions options)
     {
-        if (Platform.IsCloudFoundry)
+        if (Platform.IsCloudFoundry && _appInfo is CloudFoundryApplicationOptions vcapOptions)
         {
-            options.MetadataMap["cfAppGuid"] = _appInfo.ApplicationId;
-            options.MetadataMap["cfInstanceIndex"] = _appInfo.InstanceIndex.ToString(CultureInfo.InvariantCulture);
-            options.MetadataMap["instanceId"] = _appInfo.InstanceId;
+            options.MetadataMap["cfAppGuid"] = vcapOptions.ApplicationId;
+            options.MetadataMap["cfInstanceIndex"] = vcapOptions.InstanceIndex.ToString(CultureInfo.InvariantCulture);
+            options.MetadataMap["instanceId"] = vcapOptions.InstanceId;
             options.MetadataMap["zone"] = "unknown";
         }
     }

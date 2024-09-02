@@ -9,13 +9,6 @@ namespace Steeltoe.Common;
 /// </summary>
 public interface IApplicationInstanceInfo
 {
-    // These properties exist to avoid taking a dependency on Configuration.CloudFoundry in other Steeltoe projects.
-    internal string? ApplicationId { get; }
-    internal string? InstanceId { get; }
-    internal int InstanceIndex { get; }
-    internal IList<string> Uris { get; }
-    internal string? InternalIP { get; }
-
     /// <summary>
     /// Gets the name of this application.
     /// </summary>

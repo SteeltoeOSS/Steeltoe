@@ -18,11 +18,6 @@ public sealed class ApplicationInstanceInfoTest
         var options = new ApplicationInstanceInfo();
 
         Assert.Null(options.ApplicationName);
-        Assert.Null(options.ApplicationId);
-        Assert.Null(options.InstanceId);
-        Assert.Equal(-1, options.InstanceIndex);
-        Assert.Empty(options.Uris);
-        Assert.Null(options.InternalIP);
     }
 
     [Fact]

@@ -50,17 +50,11 @@ internal sealed class ConfigureConfigServerClientOptions : IConfigureOptions<Con
     private string? GetApplicationName()
     {
         var vcapOptions = new CloudFoundryApplicationOptions();
-        _configuration.GetSection(CloudFoundryApplicationOptions.ConfigurationPrefix).Bind(vcapOptions);
 
-        if (vcapOptions.ApplicationName != CloudFoundryApplicationOptions.DefaultApplicationName)
-        {
-            return vcapOptions.ApplicationName;
-        }
-
-        var defaultOptions = new ApplicationInstanceInfo();
         var defaultConfigurer = new ConfigureApplicationInstanceInfo(_configuration);
-        defaultConfigurer.Configure(defaultOptions);
+        var cloudFoundryConfigurer = new ConfigureCloudFoundryApplicationOptions(_configuration, defaultConfigurer);
+        cloudFoundryConfigurer.Configure(vcapOptions);
 
-        return defaultOptions.ApplicationName;
+        return vcapOptions.ApplicationName;
     }
 }

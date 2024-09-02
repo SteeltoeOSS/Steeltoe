@@ -106,17 +106,22 @@ public sealed class ConsulRegistrationTest
         var appsettings = new Dictionary<string, string?>();
 
         // default value is assembly name
-        ConsulRegistration registration = TestRegistrationFactory.Create(appsettings, false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(appsettings, true);
         Assert.Equal(Assembly.GetEntryAssembly()!.GetName().Name!.Replace('.', '-'), registration.ServiceId);
 
         // followed by spring:application:name
         appsettings.Add("spring:application:name", "SpringApplicationName");
-        registration = TestRegistrationFactory.Create(appsettings, false);
+        registration = TestRegistrationFactory.Create(appsettings, true);
         Assert.Equal("SpringApplicationName", registration.ServiceId);
+
+        // followed by vcap:application:application_name
+        appsettings.Add("vcap:application:application_name", "VcapApplicationName");
+        registration = TestRegistrationFactory.Create(appsettings, true);
+        Assert.Equal("VcapApplicationName", registration.ServiceId);
 
         // Consul-discovery is the highest priority
         appsettings.Add("consul:discovery:serviceName", "ConsulDiscoveryServiceName");
-        registration = TestRegistrationFactory.Create(appsettings, false);
+        registration = TestRegistrationFactory.Create(appsettings, true);
         Assert.Equal("ConsulDiscoveryServiceName", registration.ServiceId);
     }
 
