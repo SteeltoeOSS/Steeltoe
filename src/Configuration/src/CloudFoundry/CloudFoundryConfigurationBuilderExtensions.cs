@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common.Logging;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
@@ -52,8 +51,7 @@ public static class CloudFoundryConfigurationBuilderExtensions
     /// Provides access to the contents of the various Cloud Foundry environment variables.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
-    /// write only to the console until logging is fully initialized.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.

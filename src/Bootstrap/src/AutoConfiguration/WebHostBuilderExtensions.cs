@@ -15,6 +15,7 @@ namespace Steeltoe.Bootstrap.AutoConfiguration;
 public static class WebHostBuilderExtensions
 {
     private static readonly IReadOnlySet<string> EmptySet = ImmutableHashSet<string>.Empty;
+    private static readonly ILoggerFactory DefaultLoggerFactory = BootstrapLoggerFactory.CreateConsole();
 
     /// <summary>
     /// Automatically configures Steeltoe packages that have been added to your project as NuGet references.
@@ -27,7 +28,7 @@ public static class WebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddSteeltoe(this IWebHostBuilder builder)
     {
-        return AddSteeltoe(builder, EmptySet, BootstrapLoggerFactory.Default);
+        return AddSteeltoe(builder, EmptySet, DefaultLoggerFactory);
     }
 
     /// <summary>
@@ -44,7 +45,7 @@ public static class WebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddSteeltoe(this IWebHostBuilder builder, IReadOnlySet<string> assemblyNamesToExclude)
     {
-        return AddSteeltoe(builder, assemblyNamesToExclude, BootstrapLoggerFactory.Default);
+        return AddSteeltoe(builder, assemblyNamesToExclude, DefaultLoggerFactory);
     }
 
     /// <summary>
@@ -54,8 +55,8 @@ public static class WebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
-    /// write only to the console until logging is fully initialized.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or use <see cref="BootstrapLoggerFactory" /> to write
+    /// only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
@@ -75,8 +76,8 @@ public static class WebHostBuilderExtensions
     /// The set of assembly names to exclude from autoconfiguration. For ease of use, select from the constants in <see cref="SteeltoeAssemblyNames" />.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
-    /// write only to the console until logging is fully initialized.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or use <see cref="BootstrapLoggerFactory" /> to write
+    /// only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.

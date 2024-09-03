@@ -3,21 +3,18 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Steeltoe.Configuration.Encryption.Test;
 
 public sealed class EncryptionConfigurationExtensionsTest
 {
-    private readonly Mock<ITextDecryptor> _decryptorMock = new();
-
     [Fact]
     public void AddEncryptionResolver_AddsEncryptionResolverSourceToList()
     {
         var configurationBuilder = new ConfigurationBuilder();
 
-        configurationBuilder.AddEncryptionResolver(_decryptorMock.Object);
+        configurationBuilder.AddEncryptionResolver();
 
         EncryptionResolverSource? encryptionSource = configurationBuilder.Sources.OfType<EncryptionResolverSource>().SingleOrDefault();
         Assert.NotNull(encryptionSource);
@@ -28,9 +25,9 @@ public sealed class EncryptionConfigurationExtensionsTest
     {
         var configurationBuilder = new ConfigurationBuilder();
 
-        configurationBuilder.AddEncryptionResolver(_decryptorMock.Object);
-        configurationBuilder.AddEncryptionResolver(_decryptorMock.Object);
-        configurationBuilder.AddEncryptionResolver(_decryptorMock.Object);
+        configurationBuilder.AddEncryptionResolver();
+        configurationBuilder.AddEncryptionResolver();
+        configurationBuilder.AddEncryptionResolver();
 
         EncryptionResolverSource? source = configurationBuilder.Sources.OfType<EncryptionResolverSource>().SingleOrDefault();
         Assert.NotNull(source);
@@ -42,9 +39,8 @@ public sealed class EncryptionConfigurationExtensionsTest
     public void AddEncryptionResolver_CreatesProvider()
     {
         var configurationBuilder = new ConfigurationBuilder();
-        using var loggerFactory = new LoggerFactory();
 
-        configurationBuilder.AddEncryptionResolver(_decryptorMock.Object, loggerFactory);
+        configurationBuilder.AddEncryptionResolver();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         EncryptionResolverProvider? provider = configurationRoot.Providers.OfType<EncryptionResolverProvider>().SingleOrDefault();
@@ -63,7 +59,7 @@ public sealed class EncryptionConfigurationExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(settings);
-        builder.AddEncryptionResolver(_decryptorMock.Object);
+        builder.AddEncryptionResolver();
 
         Assert.Single(builder.Sources);
         IConfigurationRoot configurationRoot = builder.Build();
@@ -76,7 +72,8 @@ public sealed class EncryptionConfigurationExtensionsTest
     [Fact]
     public void AddEncryptionResolver_WithConfiguration_ReturnsNewConfigurationWithDecryption()
     {
-        _decryptorMock.Setup(x => x.Decrypt(It.IsAny<string>())).Returns((string _) => "DECRYPTED");
+        Mock<ITextDecryptor> decryptorMock = new();
+        decryptorMock.Setup(x => x.Decrypt(It.IsAny<string>())).Returns((string _) => "DECRYPTED");
 
         var settings = new Dictionary<string, string?>
         {
@@ -88,7 +85,7 @@ public sealed class EncryptionConfigurationExtensionsTest
         builder.AddInMemoryCollection(settings);
         IConfigurationRoot configuration1 = builder.Build();
 
-        IConfiguration configuration2 = configuration1.AddEncryptionResolver(_decryptorMock.Object);
+        IConfiguration configuration2 = configuration1.AddEncryptionResolver(decryptorMock.Object);
         Assert.NotSame(configuration1, configuration2);
 
         var root2 = (IConfigurationRoot)configuration2;
@@ -100,14 +97,15 @@ public sealed class EncryptionConfigurationExtensionsTest
         Assert.Equal("value1", configuration2["key1"]);
         Assert.Equal("DECRYPTED", configuration2["key2"]);
 
-        _decryptorMock.Verify(x => x.Decrypt("something"));
-        _decryptorMock.VerifyNoOtherCalls();
+        decryptorMock.Verify(x => x.Decrypt("something"));
+        decryptorMock.VerifyNoOtherCalls();
     }
 
     [Fact]
     public void AddEncryptionResolver_WithConfiguration_ReturnsNewConfigurationWithWithKeyAliasDecryption()
     {
-        _decryptorMock.Setup(x => x.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string _, string _) => "DECRYPTED");
+        Mock<ITextDecryptor> decryptorMock = new();
+        decryptorMock.Setup(x => x.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string _, string _) => "DECRYPTED");
 
         var settings = new Dictionary<string, string?>
         {
@@ -119,7 +117,7 @@ public sealed class EncryptionConfigurationExtensionsTest
         builder.AddInMemoryCollection(settings);
         IConfigurationRoot configuration1 = builder.Build();
 
-        IConfiguration configuration2 = configuration1.AddEncryptionResolver(_decryptorMock.Object);
+        IConfiguration configuration2 = configuration1.AddEncryptionResolver(decryptorMock.Object);
         Assert.NotSame(configuration1, configuration2);
 
         var root2 = (IConfigurationRoot)configuration2;
@@ -131,17 +129,18 @@ public sealed class EncryptionConfigurationExtensionsTest
         Assert.Equal("value1", configuration2["key1"]);
         Assert.Equal("DECRYPTED", configuration2["key2"]);
 
-        _decryptorMock.Verify(x => x.Decrypt("something", "keyalias"));
-        _decryptorMock.VerifyNoOtherCalls();
+        decryptorMock.Verify(x => x.Decrypt("something", "keyalias"));
+        decryptorMock.VerifyNoOtherCalls();
     }
 
     [Fact]
     public void AddEncryptionResolver_WithConfiguration_NoDuplicates()
     {
+        Mock<ITextDecryptor> decryptorMock = new();
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        IConfiguration newConfiguration = configurationRoot.AddEncryptionResolver(_decryptorMock.Object).AddEncryptionResolver(_decryptorMock.Object)
-            .AddEncryptionResolver(_decryptorMock.Object);
+        IConfiguration newConfiguration = configurationRoot.AddEncryptionResolver(decryptorMock.Object).AddEncryptionResolver(decryptorMock.Object)
+            .AddEncryptionResolver(decryptorMock.Object);
 
         ConfigurationRoot newConfigurationRoot = newConfiguration.Should().BeOfType<ConfigurationRoot>().Which;
         newConfigurationRoot.Providers.Should().HaveCount(1);

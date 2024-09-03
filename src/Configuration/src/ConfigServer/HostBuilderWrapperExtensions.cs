@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Hosting;
-using Steeltoe.Common.Logging;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -23,11 +22,6 @@ internal static class HostBuilderWrapperExtensions
         });
 
         wrapper.ConfigureServices(services => services.AddConfigServerServices());
-
-        if (loggerFactory is IBootstrapLoggerFactory)
-        {
-            BootstrapLoggerHostedService.Register(wrapper);
-        }
 
         return wrapper;
     }

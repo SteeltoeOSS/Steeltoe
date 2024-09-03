@@ -60,9 +60,9 @@ internal sealed class BootstrapScanner
 
     public void ConfigureSteeltoe()
     {
-        if (_loggerFactory is IBootstrapLoggerFactory)
+        if (_loggerFactory is BootstrapLoggerFactory bootstrapLoggerFactory)
         {
-            BootstrapLoggerHostedService.Register(_wrapper);
+            _wrapper.ConfigureServices(services => services.UpgradeBootstrapLoggerFactory(bootstrapLoggerFactory));
         }
 
         if (!WireIfLoaded(WireConfigServer, SteeltoeAssemblyNames.ConfigurationConfigServer))

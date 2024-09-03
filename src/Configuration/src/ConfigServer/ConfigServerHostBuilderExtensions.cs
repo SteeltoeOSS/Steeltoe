@@ -7,7 +7,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Hosting;
-using Steeltoe.Common.Logging;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -24,7 +23,7 @@ public static class ConfigServerHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddConfigServer(this IWebHostBuilder builder)
     {
-        return AddConfigServer(builder, BootstrapLoggerFactory.Default);
+        return AddConfigServer(builder, NullLoggerFactory.Instance);
     }
 
     /// <summary>
@@ -34,8 +33,7 @@ public static class ConfigServerHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
-    /// write only to the console until logging is fully initialized.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
@@ -62,7 +60,7 @@ public static class ConfigServerHostBuilderExtensions
     /// </returns>
     public static IHostBuilder AddConfigServer(this IHostBuilder builder)
     {
-        return AddConfigServer(builder, BootstrapLoggerFactory.Default);
+        return AddConfigServer(builder, NullLoggerFactory.Instance);
     }
 
     /// <summary>
@@ -72,8 +70,7 @@ public static class ConfigServerHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
-    /// write only to the console until logging is fully initialized.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
@@ -101,7 +98,7 @@ public static class ConfigServerHostBuilderExtensions
     /// </returns>
     public static IHostApplicationBuilder AddConfigServer(this IHostApplicationBuilder builder)
     {
-        return AddConfigServer(builder, BootstrapLoggerFactory.Default);
+        return AddConfigServer(builder, NullLoggerFactory.Instance);
     }
 
     /// <summary>
@@ -112,8 +109,7 @@ public static class ConfigServerHostBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
-    /// write only to the console until logging is fully initialized.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
