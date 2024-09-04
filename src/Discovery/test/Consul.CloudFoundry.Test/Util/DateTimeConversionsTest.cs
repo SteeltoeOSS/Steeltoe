@@ -4,7 +4,7 @@
 
 using Steeltoe.Discovery.Consul.Util;
 
-namespace Steeltoe.Discovery.Consul.Test.Util;
+namespace Steeltoe.Discovery.Consul.CloudFoundry.Test.Util;
 
 public sealed class DateTimeConversionsTest
 {

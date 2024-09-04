@@ -11,7 +11,7 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
 
-namespace Steeltoe.Discovery.Consul.Test;
+namespace Steeltoe.Discovery.Consul.CloudFoundry.Test;
 
 public sealed class ConsulServiceCollectionExtensionsTest
 {

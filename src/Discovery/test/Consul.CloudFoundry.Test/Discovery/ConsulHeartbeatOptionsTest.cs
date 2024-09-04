@@ -4,7 +4,7 @@
 
 using Steeltoe.Discovery.Consul.Configuration;
 
-namespace Steeltoe.Discovery.Consul.Test.Discovery;
+namespace Steeltoe.Discovery.Consul.CloudFoundry.Test.Discovery;
 
 public sealed class ConsulHeartbeatOptionsTest
 {

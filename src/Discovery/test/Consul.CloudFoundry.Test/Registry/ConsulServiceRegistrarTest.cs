@@ -9,7 +9,7 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Registry;
 
-namespace Steeltoe.Discovery.Consul.Test.Registry;
+namespace Steeltoe.Discovery.Consul.CloudFoundry.Test.Registry;
 
 public sealed class ConsulServiceRegistrarTest
 {

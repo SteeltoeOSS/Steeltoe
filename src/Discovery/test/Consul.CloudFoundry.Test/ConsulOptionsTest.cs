@@ -4,7 +4,7 @@
 
 using Steeltoe.Discovery.Consul.Configuration;
 
-namespace Steeltoe.Discovery.Consul.Test;
+namespace Steeltoe.Discovery.Consul.CloudFoundry.Test;
 
 public sealed class ConsulOptionsTest
 {

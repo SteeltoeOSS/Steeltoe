@@ -18,6 +18,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Http\Steeltoe.Common.Http.csproj" />
-    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Configuration.CloudFoundry.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Configuration.CloudFoundry.csproj" PrivateAssets="All" />
   </ItemGroup>
+
+  <ItemDefinitionGroup>
+    <Reference>
+      <Private>False</Private>
+    </Reference>
+    <ProjectReference>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemDefinitionGroup>
 </Project>
