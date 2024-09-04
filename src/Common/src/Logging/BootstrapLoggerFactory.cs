@@ -2,26 +2,136 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.Concurrent;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Common.Logging;
 
 /// <summary>
-/// Provides access to logging infrastructure before service container is created. Any loggers created are updated with configuration settings after
-/// configuration subsystem and later DI subsystem are available. This class should only be used by components that need logging infrastructure before
-/// the service container is available.
+/// Provides early logging at application initialization, before configuration has been loaded, the service container has been built, and the app has
+/// started. Once the app has started, the created loggers can be upgraded to utilize loaded configuration and the service container by calling
+/// <see cref="BootstrapLoggerServiceCollectionExtensions.UpgradeBootstrapLoggerFactory" />.
 /// </summary>
-public static class BootstrapLoggerFactory
+public sealed class BootstrapLoggerFactory : ILoggerFactory
 {
-    // Intended for integration tests, to prevent them from influencing each other.
-    private static readonly ConcurrentDictionary<object, IBootstrapLoggerFactory> InstanceMap = new();
-
-    public static IBootstrapLoggerFactory Default { get; } = new UpgradableBootstrapLoggerFactory();
-
-    internal static IBootstrapLoggerFactory GetInstance(object contextKey)
+    private static readonly Action<ILoggingBuilder> ConfigureConsole = loggingBuilder =>
     {
-        ArgumentNullException.ThrowIfNull(contextKey);
+        loggingBuilder.SetMinimumLevel(LogLevel.Trace);
+        loggingBuilder.AddConsole(options => options.MaxQueueLength = 1);
 
-        return InstanceMap.GetOrAdd(contextKey, _ => new UpgradableBootstrapLoggerFactory());
+        loggingBuilder.AddConfiguration(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["LogLevel:Default"] = "Information"
+        }).Build());
+    };
+
+    private readonly object _lock = new();
+    private readonly Dictionary<string, UpgradableLogger> _loggersByCategoryName = [];
+    private ILoggerFactory _innerFactory;
+
+    private BootstrapLoggerFactory(Action<ILoggingBuilder> configure)
+    {
+        _innerFactory = LoggerFactory.Create(configure);
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="BootstrapLoggerFactory" /> that writes to the console.
+    /// </summary>
+    public static BootstrapLoggerFactory CreateConsole()
+    {
+        return CreateEmpty(ConfigureConsole);
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="BootstrapLoggerFactory" /> that writes to the console.
+    /// </summary>
+    /// <param name="configure">
+    /// Enables to further configure the bootstrap logger from code.
+    /// </param>
+    public static BootstrapLoggerFactory CreateConsole(Action<ILoggingBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        return CreateEmpty(loggingBuilder =>
+        {
+            ConfigureConsole(loggingBuilder);
+            configure(loggingBuilder);
+        });
+    }
+
+    /// <summary>
+    /// Creates a new empty <see cref="BootstrapLoggerFactory" />.
+    /// </summary>
+    /// <param name="configure">
+    /// Enables to fully configure the bootstrap logger from code.
+    /// </param>
+    public static BootstrapLoggerFactory CreateEmpty(Action<ILoggingBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        return new BootstrapLoggerFactory(configure);
+    }
+
+    /// <inheritdoc />
+    public void AddProvider(ILoggerProvider provider)
+    {
+        ArgumentNullException.ThrowIfNull(provider);
+
+        lock (_lock)
+        {
+            _innerFactory.AddProvider(provider);
+        }
+    }
+
+    /// <inheritdoc />
+    public ILogger CreateLogger(string categoryName)
+    {
+        ArgumentNullException.ThrowIfNull(categoryName);
+
+        lock (_lock)
+        {
+            if (!_loggersByCategoryName.TryGetValue(categoryName, out UpgradableLogger? logger))
+            {
+                ILogger innerLogger = _innerFactory.CreateLogger(categoryName);
+                logger = new UpgradableLogger(innerLogger, categoryName);
+                _loggersByCategoryName.Add(categoryName, logger);
+            }
+
+            return logger;
+        }
+    }
+
+    /// <summary>
+    /// Upgrades the active loggers from new instances obtained from the service container.
+    /// </summary>
+    /// <param name="loggerFactory">
+    /// The logger factory from the service container.
+    /// </param>
+    public void Upgrade(ILoggerFactory loggerFactory)
+    {
+        ArgumentNullException.ThrowIfNull(loggerFactory);
+
+        if (loggerFactory == _innerFactory)
+        {
+            return;
+        }
+
+        lock (_lock)
+        {
+            foreach (UpgradableLogger logger in _loggersByCategoryName.Values)
+            {
+                ILogger replacementLogger = loggerFactory.CreateLogger(logger.CategoryName);
+                logger.Upgrade(replacementLogger);
+            }
+
+            _innerFactory.Dispose();
+            _innerFactory = loggerFactory;
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        _innerFactory.Dispose();
     }
 }

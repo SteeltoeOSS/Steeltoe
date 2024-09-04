@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Configuration.Encryption.Decryption;
 
 namespace Steeltoe.Configuration.Encryption;
 
@@ -19,15 +20,37 @@ public static class EncryptionConfigurationExtensions
     /// <param name="builder">
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
-    /// <param name="textDecryptor">
-    /// The decryptor to use.
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IConfigurationBuilder AddEncryptionResolver(this IConfigurationBuilder builder)
+    {
+        return AddEncryptionResolver(builder, NullLoggerFactory.Instance);
+    }
+
+    /// <summary>
+    /// Adds an encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
+    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
+    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
+    /// all applications' configuration sources with encryption resolution.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static IConfigurationBuilder AddEncryptionResolver(this IConfigurationBuilder builder, ITextDecryptor textDecryptor)
+    public static IConfigurationBuilder AddEncryptionResolver(this IConfigurationBuilder builder, ILoggerFactory loggerFactory)
     {
-        return AddEncryptionResolver(builder, textDecryptor, NullLoggerFactory.Instance);
+        ArgumentNullException.ThrowIfNull(builder);
+
+        IConfiguration configuration = builder.Build();
+        ITextDecryptor textDecryptor = ConfigServerEncryptionSettings.CreateTextDecryptor(configuration);
+
+        return AddEncryptionResolver(builder, textDecryptor, loggerFactory);
     }
 
     /// <summary>

@@ -14,6 +14,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Hosting\Steeltoe.Common.Hosting.csproj" />
-    <ProjectReference Include="..\..\..\Common\src\Logging\Steeltoe.Common.Logging.csproj" />
   </ItemGroup>
 </Project>
