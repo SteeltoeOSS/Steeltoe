@@ -19,7 +19,7 @@ public sealed class ConsulServiceRegistrarTest
     public async Task Start_CallsRegistry()
     {
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        ConsulRegistration registration = TestRegistrationFactory.Create(new Dictionary<string, string?>(), false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(new Dictionary<string, string?>());
 
         (Mock<IConsulClient> clientMock, Mock<IAgentEndpoint> agentMock) = CreateConsulClientAgentMock(registration);
         await using var registry = new ConsulServiceRegistry(clientMock.Object, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
@@ -39,7 +39,7 @@ public sealed class ConsulServiceRegistrarTest
             Register = false
         });
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(new Dictionary<string, string?>(), false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(new Dictionary<string, string?>());
 
         (Mock<IConsulClient> clientMock, Mock<IAgentEndpoint> agentMock) = CreateConsulClientAgentMock(registration);
         await using var registry = new ConsulServiceRegistry(clientMock.Object, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
@@ -59,7 +59,7 @@ public sealed class ConsulServiceRegistrarTest
             Enabled = false
         });
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(new Dictionary<string, string?>(), false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(new Dictionary<string, string?>());
 
         (Mock<IConsulClient> clientMock, Mock<IAgentEndpoint> agentMock) = CreateConsulClientAgentMock(registration);
         await using var registry = new ConsulServiceRegistry(clientMock.Object, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
@@ -75,7 +75,7 @@ public sealed class ConsulServiceRegistrarTest
     public async Task Dispose_CallsRegistry()
     {
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        ConsulRegistration registration = TestRegistrationFactory.Create(new Dictionary<string, string?>(), false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(new Dictionary<string, string?>());
 
         (Mock<IConsulClient> clientMock, Mock<IAgentEndpoint> agentMock) = CreateConsulClientAgentMock(registration);
         await using var registry = new ConsulServiceRegistry(clientMock.Object, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
@@ -98,7 +98,7 @@ public sealed class ConsulServiceRegistrarTest
             Deregister = false
         });
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(new Dictionary<string, string?>(), false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(new Dictionary<string, string?>());
 
         (Mock<IConsulClient> clientMock, Mock<IAgentEndpoint> agentMock) = CreateConsulClientAgentMock(registration);
         await using var registry = new ConsulServiceRegistry(clientMock.Object, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);

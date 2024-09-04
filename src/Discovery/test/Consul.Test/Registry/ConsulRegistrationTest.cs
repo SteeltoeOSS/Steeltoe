@@ -59,7 +59,7 @@ public sealed class ConsulRegistrationTest
             ["consul:discovery:tags:1"] = "bar"
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings, false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
 
         Assert.Equal(2, registration.Tags.Count);
         Assert.Contains("foo", registration.Tags);
@@ -79,7 +79,7 @@ public sealed class ConsulRegistrationTest
             ["consul:discovery:scheme"] = "https"
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings, false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
         IReadOnlyDictionary<string, string?> metadata = registration.Metadata;
 
         Assert.Equal(5, metadata.Keys.Count());
@@ -106,22 +106,17 @@ public sealed class ConsulRegistrationTest
         var appsettings = new Dictionary<string, string?>();
 
         // default value is assembly name
-        ConsulRegistration registration = TestRegistrationFactory.Create(appsettings, true);
+        ConsulRegistration registration = TestRegistrationFactory.Create(appsettings);
         Assert.Equal(Assembly.GetEntryAssembly()!.GetName().Name!.Replace('.', '-'), registration.ServiceId);
 
         // followed by spring:application:name
         appsettings.Add("spring:application:name", "SpringApplicationName");
-        registration = TestRegistrationFactory.Create(appsettings, true);
+        registration = TestRegistrationFactory.Create(appsettings);
         Assert.Equal("SpringApplicationName", registration.ServiceId);
-
-        // followed by vcap:application:application_name
-        appsettings.Add("vcap:application:application_name", "VcapApplicationName");
-        registration = TestRegistrationFactory.Create(appsettings, true);
-        Assert.Equal("VcapApplicationName", registration.ServiceId);
 
         // Consul-discovery is the highest priority
         appsettings.Add("consul:discovery:serviceName", "ConsulDiscoveryServiceName");
-        registration = TestRegistrationFactory.Create(appsettings, true);
+        registration = TestRegistrationFactory.Create(appsettings);
         Assert.Equal("ConsulDiscoveryServiceName", registration.ServiceId);
     }
 
@@ -133,12 +128,8 @@ public sealed class ConsulRegistrationTest
             { "consul:discovery:serviceName", "serviceName" }
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appsettings, false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(appsettings);
         Assert.StartsWith("serviceName-", registration.InstanceId, StringComparison.Ordinal);
-
-        appsettings.Add("vcap:application:instance_id", "vcapId");
-        registration = TestRegistrationFactory.Create(appsettings, true);
-        Assert.Equal("serviceName-vcapId", registration.InstanceId);
     }
 
     [Fact]
@@ -150,11 +141,11 @@ public sealed class ConsulRegistrationTest
             ["spring:application:name"] = "foobar"
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings, false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
         Assert.Equal("instanceId", registration.InstanceId);
 
         appSettings.Remove("consul:discovery:instanceId");
-        registration = TestRegistrationFactory.Create(appSettings, false);
+        registration = TestRegistrationFactory.Create(appSettings);
         Assert.StartsWith("foobar-", registration.InstanceId, StringComparison.Ordinal);
     }
 
@@ -192,7 +183,7 @@ public sealed class ConsulRegistrationTest
             { "consul:discovery:port", "1100" }
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings, false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
 
         Assert.StartsWith("foobar-", registration.InstanceId, StringComparison.Ordinal);
         Assert.False(registration.IsSecure);

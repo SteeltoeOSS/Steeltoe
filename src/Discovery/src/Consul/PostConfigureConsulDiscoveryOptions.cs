@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
-using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Discovery.Consul.Configuration;
 
 namespace Steeltoe.Discovery.Consul;
@@ -112,9 +111,7 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
 
         if (string.IsNullOrEmpty(instanceId))
         {
-            string defaultInstanceId = (_applicationInstanceInfo is CloudFoundryApplicationOptions vcapOptions ? vcapOptions.InstanceId : null) ??
-                $"{Random.Shared.Next(10_000_000, 99_999_999):D8}";
-
+            string defaultInstanceId = $"{Random.Shared.Next(10_000_000, 99_999_999):D8}";
             instanceId = $"{options.ServiceName}:{defaultInstanceId}";
         }
 

@@ -10,7 +10,6 @@ using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Registry;
 
@@ -18,21 +17,13 @@ namespace Steeltoe.Discovery.Consul.Test.Registry;
 
 internal static class TestRegistrationFactory
 {
-    public static ConsulRegistration Create(IDictionary<string, string?> appSettings, bool useCloudFoundry)
+    public static ConsulRegistration Create(IDictionary<string, string?> appSettings)
     {
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
-
-        if (useCloudFoundry)
-        {
-            services.AddCloudFoundryOptions();
-        }
-        else
-        {
-            services.AddApplicationInstanceInfo();
-        }
+        services.AddApplicationInstanceInfo();
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var appInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
