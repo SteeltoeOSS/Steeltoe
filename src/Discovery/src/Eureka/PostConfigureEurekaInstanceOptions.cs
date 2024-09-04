@@ -26,21 +26,58 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
     private static readonly AssemblyLoader AssemblyLoader = new();
     private readonly IServiceProvider _serviceProvider;
     private readonly IConfiguration _configuration;
-    private readonly IApplicationInstanceInfo _appInfo;
+    private readonly UnifiedApplicationInfo _appInfo;
     private readonly InetUtils _inetUtils;
 
-    public PostConfigureEurekaInstanceOptions(IServiceProvider serviceProvider, IConfiguration configuration, IApplicationInstanceInfo appInfo,
+    public PostConfigureEurekaInstanceOptions(IServiceProvider serviceProvider, IConfiguration configuration, IApplicationInstanceInfo applicationInstanceInfo,
         InetUtils inetUtils)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
         ArgumentNullException.ThrowIfNull(configuration);
-        ArgumentNullException.ThrowIfNull(appInfo);
+        ArgumentNullException.ThrowIfNull(applicationInstanceInfo);
         ArgumentNullException.ThrowIfNull(inetUtils);
 
         _serviceProvider = serviceProvider;
         _configuration = configuration;
-        _appInfo = appInfo;
+        _appInfo = ToUnifiedApplicationInfo(applicationInstanceInfo);
         _inetUtils = inetUtils;
+    }
+
+    private UnifiedApplicationInfo ToUnifiedApplicationInfo(IApplicationInstanceInfo applicationInstanceInfo)
+    {
+        if (AssemblyLoader.IsAssemblyLoaded("Steeltoe.Configuration.CloudFoundry"))
+        {
+            UnifiedApplicationInfo? applicationInfo = FromCloudFoundryApplicationOptions(applicationInstanceInfo);
+
+            if (applicationInfo != null)
+            {
+                return applicationInfo;
+            }
+        }
+
+        return new UnifiedApplicationInfo
+        {
+            ApplicationName = applicationInstanceInfo.ApplicationName
+        };
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static UnifiedApplicationInfo? FromCloudFoundryApplicationOptions(IApplicationInstanceInfo applicationInstanceInfo)
+    {
+        if (applicationInstanceInfo is CloudFoundryApplicationOptions vcapOptions)
+        {
+            return new UnifiedApplicationInfo
+            {
+                ApplicationName = vcapOptions.ApplicationName,
+                ApplicationId = vcapOptions.ApplicationId,
+                Uris = vcapOptions.Uris,
+                InstanceId = vcapOptions.InstanceId,
+                InstanceIndex = vcapOptions.InstanceIndex,
+                InternalIP = vcapOptions.InternalIP
+            };
+        }
+
+        return null;
     }
 
     public void PostConfigure(string? name, EurekaInstanceOptions options)
@@ -68,11 +105,9 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
 
     private void SetHostNameAndIpAddress(EurekaInstanceOptions options)
     {
-        var vcapOptions = _appInfo as CloudFoundryApplicationOptions;
-
         if (!options.IsForceHostNameMethod())
         {
-            string? firstAppUri = vcapOptions?.Uris.FirstOrDefault();
+            string? firstAppUri = _appInfo.Uris.FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(firstAppUri))
             {
@@ -83,9 +118,9 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
         HostInfo? hostInfo = options.UseNetworkInterfaces ? _inetUtils.FindFirstNonLoopbackHostInfo() : null;
         options.HostName ??= hostInfo != null ? hostInfo.Hostname : DnsTools.ResolveHostName();
 
-        if (!string.IsNullOrWhiteSpace(vcapOptions?.InternalIP))
+        if (!string.IsNullOrWhiteSpace(_appInfo.InternalIP))
         {
-            options.IPAddress = vcapOptions.InternalIP;
+            options.IPAddress = _appInfo.InternalIP;
         }
 
         if (string.IsNullOrWhiteSpace(options.IPAddress))
@@ -145,29 +180,25 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
 
     private void SetInstanceId(EurekaInstanceOptions options)
     {
-        var vcapOptions = _appInfo as CloudFoundryApplicationOptions;
-
         if (options.IsGoRouterMethod())
         {
-            string? firstAppUri = vcapOptions?.Uris.FirstOrDefault();
+            string? firstAppUri = _appInfo.Uris.FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(firstAppUri))
             {
-#pragma warning disable S2589 // Boolean expressions should not be gratuitous
-                options.InstanceId = $"{firstAppUri}:{vcapOptions?.InstanceId}";
-#pragma warning restore S2589 // Boolean expressions should not be gratuitous
+                options.InstanceId = $"{firstAppUri}:{_appInfo.InstanceId}";
             }
         }
         else if (options.IsContainerToContainerMethod())
         {
-            options.InstanceId = $"{vcapOptions?.InternalIP}:{vcapOptions?.InstanceId}";
+            options.InstanceId = $"{_appInfo.InternalIP}:{_appInfo.InstanceId}";
         }
         else if (options.IsForceHostNameMethod())
         {
-            options.InstanceId = $"{options.HostName}:{vcapOptions?.InstanceId}";
+            options.InstanceId = $"{options.HostName}:{_appInfo.InstanceId}";
         }
 
-        options.InstanceId ??= vcapOptions?.InstanceId;
+        options.InstanceId ??= _appInfo.InstanceId;
 
         if (string.IsNullOrWhiteSpace(options.InstanceId))
         {
@@ -195,11 +226,11 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
 
     private void SetMetadata(EurekaInstanceOptions options)
     {
-        if (Platform.IsCloudFoundry && _appInfo is CloudFoundryApplicationOptions vcapOptions)
+        if (Platform.IsCloudFoundry)
         {
-            options.MetadataMap["cfAppGuid"] = vcapOptions.ApplicationId;
-            options.MetadataMap["cfInstanceIndex"] = vcapOptions.InstanceIndex.ToString(CultureInfo.InvariantCulture);
-            options.MetadataMap["instanceId"] = vcapOptions.InstanceId;
+            options.MetadataMap["cfAppGuid"] = _appInfo.ApplicationId;
+            options.MetadataMap["cfInstanceIndex"] = _appInfo.InstanceIndex.ToString(CultureInfo.InvariantCulture);
+            options.MetadataMap["instanceId"] = _appInfo.InstanceId;
             options.MetadataMap["zone"] = "unknown";
         }
     }
@@ -231,5 +262,15 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
                 instanceOptions.StatusPageUrlPath = $"{basePath}{infoEndpointOptions.Path?.TrimStart('/')}";
             }
         }
+    }
+
+    private sealed class UnifiedApplicationInfo
+    {
+        public string? ApplicationName { get; set; }
+        public string? ApplicationId { get; set; }
+        public IList<string> Uris { get; set; } = new List<string>();
+        public string? InstanceId { get; set; }
+        public int InstanceIndex { get; set; } = -1;
+        public string? InternalIP { get; set; }
     }
 }
