@@ -14,7 +14,7 @@ using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Registry;
 
-namespace Steeltoe.Discovery.Consul.CloudFoundry.Test.Registry;
+namespace Steeltoe.Discovery.Consul.Test.Registry;
 
 internal static class TestRegistrationFactory
 {

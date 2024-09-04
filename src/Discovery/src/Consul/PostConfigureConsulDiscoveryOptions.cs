@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +17,6 @@ namespace Steeltoe.Discovery.Consul;
 internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOptions<ConsulDiscoveryOptions>
 {
     private const char SafeChar = '-';
-    private static readonly AssemblyLoader AssemblyLoader = new();
 
     private readonly IConfiguration _configuration;
     private readonly InetUtils _inetUtils;
@@ -114,29 +112,13 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
 
         if (string.IsNullOrEmpty(instanceId))
         {
-            string defaultInstanceId = GetDefaultInstanceId();
+            string defaultInstanceId = (_applicationInstanceInfo is CloudFoundryApplicationOptions vcapOptions ? vcapOptions.InstanceId : null) ??
+                $"{Random.Shared.Next(10_000_000, 99_999_999):D8}";
+
             instanceId = $"{options.ServiceName}:{defaultInstanceId}";
         }
 
         return NormalizeForConsul(instanceId, nameof(ConsulDiscoveryOptions.InstanceId));
-    }
-
-    private string GetDefaultInstanceId()
-    {
-        string? instanceId = null;
-
-        if (AssemblyLoader.IsAssemblyLoaded("Steeltoe.Configuration.CloudFoundry"))
-        {
-            instanceId = GetCloudFoundryInstanceId();
-        }
-
-        return instanceId ?? $"{Random.Shared.Next(10_000_000, 99_999_999):D8}";
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private string? GetCloudFoundryInstanceId()
-    {
-        return _applicationInstanceInfo is CloudFoundryApplicationOptions vcapOptions ? vcapOptions.InstanceId : null;
     }
 
     internal static string NormalizeForConsul(string? value, string propertyName)

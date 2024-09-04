@@ -8,7 +8,7 @@ using Moq;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
 
-namespace Steeltoe.Discovery.Consul.CloudFoundry.Test.Discovery;
+namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
 public sealed class TtlSchedulerTest
 {

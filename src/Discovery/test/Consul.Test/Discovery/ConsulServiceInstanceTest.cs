@@ -4,7 +4,7 @@
 
 using Consul;
 
-namespace Steeltoe.Discovery.Consul.CloudFoundry.Test.Discovery;
+namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
 public sealed class ConsulServiceInstanceTest
 {

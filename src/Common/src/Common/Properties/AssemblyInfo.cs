@@ -23,7 +23,6 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Configuration")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Configuration.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Consul")]
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.Consul.CloudFoundry.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Consul.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka.CloudFoundry.Test")]
