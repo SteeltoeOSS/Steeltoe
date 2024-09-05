@@ -45,14 +45,11 @@ public abstract class EndpointOptions
     /// <summary>
     /// Gets the list of HTTP verbs that are allowed for this endpoint.
     /// </summary>
-    public IList<string> AllowedVerbs { get; }
+    public IList<string> AllowedVerbs { get; private set; } = new List<string>();
 
-    protected EndpointOptions()
+    internal void ApplyDefaultAllowedVerbs()
     {
-        // ReSharper disable once VirtualMemberCallInConstructor
-#pragma warning disable S1699 // Constructors should only call non-overridable methods
         AllowedVerbs = GetDefaultAllowedVerbs();
-#pragma warning restore S1699 // Constructors should only call non-overridable methods
     }
 
     /// <summary>

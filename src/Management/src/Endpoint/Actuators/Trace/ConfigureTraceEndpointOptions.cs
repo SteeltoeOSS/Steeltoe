@@ -8,20 +8,14 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Trace;
 
-internal sealed class ConfigureTraceEndpointOptions : ConfigureEndpointOptions<TraceEndpointOptions>, IConfigureNamedOptions<TraceEndpointOptions>
+internal sealed class ConfigureTraceEndpointOptions(IConfiguration configuration)
+    : ConfigureEndpointOptions<TraceEndpointOptions>(configuration, ManagementInfoPrefixV2, EndpointIdV2), IConfigureNamedOptions<TraceEndpointOptions>
 {
+    private const string EndpointIdV1 = "trace";
+    private const string EndpointIdV2 = "httptrace";
     private const string ManagementInfoPrefixV1 = "management:endpoints:trace";
-    private const string ManagementInfoPrefix = "management:endpoints:httptrace";
+    private const string ManagementInfoPrefixV2 = "management:endpoints:httptrace";
     private const int DefaultCapacity = 100;
-    private readonly IConfiguration _configuration;
-
-    public ConfigureTraceEndpointOptions(IConfiguration configuration)
-        : base(configuration, ManagementInfoPrefix, "httptrace")
-    {
-        ArgumentNullException.ThrowIfNull(configuration);
-
-        _configuration = configuration;
-    }
 
     public void Configure(string? name, TraceEndpointOptions options)
     {
@@ -29,16 +23,11 @@ internal sealed class ConfigureTraceEndpointOptions : ConfigureEndpointOptions<T
 
         if (name == TraceEndpointOptionNames.V2.ToString() || string.IsNullOrEmpty(name))
         {
-            Configure(options);
+            ConfigureAtKey(Configuration, ManagementInfoPrefixV2, EndpointIdV2, options);
         }
         else
         {
-            _configuration.GetSection(ManagementInfoPrefixV1).Bind(options);
-
-            if (string.IsNullOrEmpty(options.Id))
-            {
-                options.Id = "trace";
-            }
+            ConfigureAtKey(Configuration, ManagementInfoPrefixV1, EndpointIdV1, options);
         }
 
         if (options.Capacity == -1)

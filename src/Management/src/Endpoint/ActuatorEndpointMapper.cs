@@ -45,8 +45,10 @@ internal sealed class ActuatorEndpointMapper
         InnerMap(middleware => endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middleware.GetType()).Build(),
             (middleware, requestPath, pipeline) =>
             {
-                IEndpointConventionBuilder builder = endpointRouteBuilder.MapMethods(requestPath, middleware.EndpointOptions.AllowedVerbs, pipeline);
-                conventionBuilder.Add(builder);
+                HashSet<string> allowedVerbs = middleware.EndpointOptions.AllowedVerbs.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                IEndpointConventionBuilder endpointConventionBuilder = endpointRouteBuilder.MapMethods(requestPath, allowedVerbs, pipeline);
+                conventionBuilder.Add(endpointConventionBuilder);
             });
     }
 
@@ -56,7 +58,9 @@ internal sealed class ActuatorEndpointMapper
 
         InnerMap(middleware => routeBuilder.ApplicationBuilder.UseMiddleware(middleware.GetType()).Build(), (middleware, requestPath, pipeline) =>
         {
-            foreach (string verb in middleware.EndpointOptions.AllowedVerbs)
+            HashSet<string> allowedVerbs = middleware.EndpointOptions.AllowedVerbs.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (string verb in allowedVerbs)
             {
                 routeBuilder.MapVerb(verb, requestPath, pipeline);
             }
