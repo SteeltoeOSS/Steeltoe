@@ -228,7 +228,7 @@
                   "items": {
                     "type": "string"
                   },
-                  "description": "Gets the list of keys to sanitize."
+                  "description": "Gets the list of keys to sanitize. Allows regular expressions."
                 },
                 "Path": {
                   "type": "string",
