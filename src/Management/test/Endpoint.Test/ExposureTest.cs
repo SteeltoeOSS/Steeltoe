@@ -41,6 +41,21 @@ public sealed class ExposureTest : BaseTest
     }
 
     [Fact]
+    public void ExposureCanClearDefaults()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["management:endpoints:actuator:exposure:include:0"] = "",
+            ["management:endpoints:actuator:exposure:exclude:0"] = ""
+        };
+
+        var options = GetOptionsFromSettings<ManagementOptions>(appSettings);
+
+        options.Exposure.Include.Should().BeEmpty();
+        options.Exposure.Exclude.Should().BeEmpty();
+    }
+
+    [Fact]
     public void ExposureBindsToSteeltoeSettings()
     {
         var appSettings = new Dictionary<string, string?>
