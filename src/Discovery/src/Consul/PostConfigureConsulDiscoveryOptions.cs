@@ -111,7 +111,7 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
 
         if (string.IsNullOrEmpty(instanceId))
         {
-            string defaultInstanceId = _applicationInstanceInfo.InstanceId ?? $"{Random.Shared.Next(10_000_000, 99_999_999):D8}";
+            string defaultInstanceId = $"{Random.Shared.Next(10_000_000, 99_999_999):D8}";
             instanceId = $"{options.ServiceName}:{defaultInstanceId}";
         }
 

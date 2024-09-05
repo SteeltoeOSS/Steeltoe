@@ -7,12 +7,9 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
-public sealed class CloudFoundryApplicationOptions : IApplicationInstanceInfo
+public sealed class CloudFoundryApplicationOptions : ApplicationInstanceInfo
 {
     // See https://docs.cloudfoundry.org/devguide/deploy-apps/environment-variable.html#VCAP-APPLICATION
-
-    internal const string ConfigurationPrefix = "vcap:application";
-    internal const string DefaultApplicationName = "unknown";
 
     /// <summary>
     /// Gets or sets the GUID identifying the app.
@@ -24,7 +21,7 @@ public sealed class CloudFoundryApplicationOptions : IApplicationInstanceInfo
     /// Gets or sets the name assigned to the app when it was pushed.
     /// </summary>
     [ConfigurationKeyName("application_name")]
-    public string ApplicationName { get; set; } = DefaultApplicationName;
+    public override string? ApplicationName { get; set; }
 
     /// <summary>
     /// Gets the URIs assigned to the app.

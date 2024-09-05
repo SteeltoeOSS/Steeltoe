@@ -1,4 +1,6 @@
 #nullable enable
+override Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ApplicationName.get -> string?
+override Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ApplicationName.set -> void
 static Steeltoe.Configuration.CloudFoundry.CloudFoundryConfigurationBuilderExtensions.AddCloudFoundry(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
 static Steeltoe.Configuration.CloudFoundry.CloudFoundryConfigurationBuilderExtensions.AddCloudFoundry(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader? settingsReader) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
 static Steeltoe.Configuration.CloudFoundry.CloudFoundryConfigurationBuilderExtensions.AddCloudFoundry(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader? settingsReader, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
@@ -22,8 +24,6 @@ Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.Api.get -> st
 Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.Api.set -> void
 Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ApplicationId.get -> string?
 Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ApplicationId.set -> void
-Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ApplicationName.get -> string!
-Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ApplicationName.set -> void
 Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ApplicationVersion.get -> string?
 Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ApplicationVersion.set -> void
 Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.CloudFoundryApplicationOptions() -> void

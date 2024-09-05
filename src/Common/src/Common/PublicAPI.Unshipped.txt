@@ -11,18 +11,7 @@ static Steeltoe.Common.Platform.IsLinux.get -> bool
 static Steeltoe.Common.Platform.IsOSX.get -> bool
 static Steeltoe.Common.Platform.IsWindows.get -> bool
 Steeltoe.Common.ApplicationInstanceInfo
-Steeltoe.Common.ApplicationInstanceInfo.ApplicationId.get -> string?
-Steeltoe.Common.ApplicationInstanceInfo.ApplicationId.set -> void
 Steeltoe.Common.ApplicationInstanceInfo.ApplicationInstanceInfo() -> void
-Steeltoe.Common.ApplicationInstanceInfo.ApplicationName.get -> string?
-Steeltoe.Common.ApplicationInstanceInfo.ApplicationName.set -> void
-Steeltoe.Common.ApplicationInstanceInfo.InstanceId.get -> string?
-Steeltoe.Common.ApplicationInstanceInfo.InstanceId.set -> void
-Steeltoe.Common.ApplicationInstanceInfo.InstanceIndex.get -> int
-Steeltoe.Common.ApplicationInstanceInfo.InstanceIndex.set -> void
-Steeltoe.Common.ApplicationInstanceInfo.InternalIP.get -> string?
-Steeltoe.Common.ApplicationInstanceInfo.InternalIP.set -> void
-Steeltoe.Common.ApplicationInstanceInfo.Uris.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Common.CasingConventions.EnumExtensions
 Steeltoe.Common.CasingConventions.SnakeCaseAllCapsEnumMemberJsonConverter
 Steeltoe.Common.CasingConventions.SnakeCaseAllCapsEnumMemberJsonConverter.SnakeCaseAllCapsEnumMemberJsonConverter() -> void
@@ -80,3 +69,5 @@ Steeltoe.Common.Net.InetOptions.SkipReverseDnsLookup.set -> void
 Steeltoe.Common.Net.InetOptions.UseOnlySiteLocalInterfaces.get -> bool
 Steeltoe.Common.Net.InetOptions.UseOnlySiteLocalInterfaces.set -> void
 Steeltoe.Common.Platform
+virtual Steeltoe.Common.ApplicationInstanceInfo.ApplicationName.get -> string?
+virtual Steeltoe.Common.ApplicationInstanceInfo.ApplicationName.set -> void

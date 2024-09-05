@@ -18,7 +18,7 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
 {
     private static readonly Dictionary<string, string?> EurekaSettings = new()
     {
-        ["eureka:client:shouldRegister"] = "true",
+        ["eureka:client:shouldRegisterWithEureka"] = "true",
         ["eureka:client:eurekaServer:connectTimeoutSeconds"] = "1",
         ["eureka:client:eurekaServer:retryCount"] = "0"
     };

@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
+using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Actuators.Info;
@@ -25,21 +26,58 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
     private static readonly AssemblyLoader AssemblyLoader = new();
     private readonly IServiceProvider _serviceProvider;
     private readonly IConfiguration _configuration;
-    private readonly IApplicationInstanceInfo _appInfo;
+    private readonly UnifiedApplicationInfo _appInfo;
     private readonly InetUtils _inetUtils;
 
-    public PostConfigureEurekaInstanceOptions(IServiceProvider serviceProvider, IConfiguration configuration, IApplicationInstanceInfo appInfo,
+    public PostConfigureEurekaInstanceOptions(IServiceProvider serviceProvider, IConfiguration configuration, IApplicationInstanceInfo applicationInstanceInfo,
         InetUtils inetUtils)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
         ArgumentNullException.ThrowIfNull(configuration);
-        ArgumentNullException.ThrowIfNull(appInfo);
+        ArgumentNullException.ThrowIfNull(applicationInstanceInfo);
         ArgumentNullException.ThrowIfNull(inetUtils);
 
         _serviceProvider = serviceProvider;
         _configuration = configuration;
-        _appInfo = appInfo;
+        _appInfo = ToUnifiedApplicationInfo(applicationInstanceInfo);
         _inetUtils = inetUtils;
+    }
+
+    private UnifiedApplicationInfo ToUnifiedApplicationInfo(IApplicationInstanceInfo applicationInstanceInfo)
+    {
+        if (AssemblyLoader.IsAssemblyLoaded("Steeltoe.Configuration.CloudFoundry"))
+        {
+            UnifiedApplicationInfo? applicationInfo = FromCloudFoundryApplicationOptions(applicationInstanceInfo);
+
+            if (applicationInfo != null)
+            {
+                return applicationInfo;
+            }
+        }
+
+        return new UnifiedApplicationInfo
+        {
+            ApplicationName = applicationInstanceInfo.ApplicationName
+        };
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static UnifiedApplicationInfo? FromCloudFoundryApplicationOptions(IApplicationInstanceInfo applicationInstanceInfo)
+    {
+        if (applicationInstanceInfo is CloudFoundryApplicationOptions vcapOptions)
+        {
+            return new UnifiedApplicationInfo
+            {
+                ApplicationName = vcapOptions.ApplicationName,
+                ApplicationId = vcapOptions.ApplicationId,
+                Uris = vcapOptions.Uris,
+                InstanceId = vcapOptions.InstanceId,
+                InstanceIndex = vcapOptions.InstanceIndex,
+                InternalIP = vcapOptions.InternalIP
+            };
+        }
+
+        return null;
     }
 
     public void PostConfigure(string? name, EurekaInstanceOptions options)
@@ -224,5 +262,15 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
                 instanceOptions.StatusPageUrlPath = $"{basePath}{infoEndpointOptions.Path?.TrimStart('/')}";
             }
         }
+    }
+
+    private sealed class UnifiedApplicationInfo
+    {
+        public string? ApplicationName { get; set; }
+        public string? ApplicationId { get; set; }
+        public IList<string> Uris { get; set; } = new List<string>();
+        public string? InstanceId { get; set; }
+        public int InstanceIndex { get; set; } = -1;
+        public string? InternalIP { get; set; }
     }
 }

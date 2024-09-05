@@ -29,7 +29,7 @@ public sealed class ConsulServiceRegistryTest
             { "spring:application:name", "foobar" }
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings, false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
         await registry.RegisterAsync(registration, CancellationToken.None);
 
         agentMoq.Verify(endpoint => endpoint.ServiceRegister(registration.InnerRegistration, default), Times.Once);
@@ -55,7 +55,7 @@ public sealed class ConsulServiceRegistryTest
             { "spring:application:name", "foobar" }
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings, false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
         await registry.RegisterAsync(registration, CancellationToken.None);
 
         agentMoq.Verify(endpoint => endpoint.ServiceRegister(registration.InnerRegistration, default), Times.Once);
@@ -84,7 +84,7 @@ public sealed class ConsulServiceRegistryTest
             { "spring:application:name", "foobar" }
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings, false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
 
         await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
         await Assert.ThrowsAsync<ArgumentException>(async () => await registry.SetStatusAsync(registration, string.Empty, CancellationToken.None));
@@ -105,7 +105,7 @@ public sealed class ConsulServiceRegistryTest
             { "spring:application:name", "foobar" }
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings, false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
 
         await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
         await registry.SetStatusAsync(registration, "Up", CancellationToken.None);
@@ -125,7 +125,7 @@ public sealed class ConsulServiceRegistryTest
             { "spring:application:name", "foobar" }
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings, false);
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
 
         var queryResult = new QueryResult<HealthCheck[]>
         {

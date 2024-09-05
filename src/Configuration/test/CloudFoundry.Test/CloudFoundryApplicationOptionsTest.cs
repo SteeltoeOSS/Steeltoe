@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Configuration.CloudFoundry.Test;
@@ -10,12 +12,43 @@ namespace Steeltoe.Configuration.CloudFoundry.Test;
 public sealed class CloudFoundryApplicationOptionsTest
 {
     [Fact]
-    public void NoVcapApplicationConfiguration()
+    public void DefaultConstructor()
     {
         var options = new CloudFoundryApplicationOptions();
 
         options.ApplicationId.Should().BeNull();
-        options.ApplicationName.Should().Be("unknown");
+        options.ApplicationName.Should().BeNull();
+        options.Uris.Should().BeEmpty();
+        options.ApplicationVersion.Should().BeNull();
+        options.Api.Should().BeNull();
+        options.Limits.Should().BeNull();
+        options.OrganizationId.Should().BeNull();
+        options.OrganizationName.Should().BeNull();
+        options.ProcessId.Should().BeNull();
+        options.ProcessType.Should().BeNull();
+        options.SpaceId.Should().BeNull();
+        options.SpaceName.Should().BeNull();
+        options.Start.Should().BeNull();
+        options.StartedAtTimestamp.Should().Be(0);
+        options.InstanceId.Should().BeNull();
+        options.InstanceIndex.Should().Be(-1);
+        options.InstancePort.Should().Be(-1);
+        options.InstanceIP.Should().BeNull();
+        options.InternalIP.Should().BeNull();
+    }
+
+    [Fact]
+    public void NoVcapApplicationConfiguration()
+    {
+        IConfiguration configuration = new ConfigurationBuilder().Build();
+        var defaultConfigurer = new ConfigureApplicationInstanceInfo(configuration);
+        var cloudFoundryConfigurer = new ConfigureCloudFoundryApplicationOptions(configuration, defaultConfigurer);
+
+        var options = new CloudFoundryApplicationOptions();
+        cloudFoundryConfigurer.Configure(options);
+
+        options.ApplicationId.Should().BeNull();
+        options.ApplicationName.Should().Be(Assembly.GetEntryAssembly()!.GetName().Name);
         options.Uris.Should().BeEmpty();
         options.ApplicationVersion.Should().BeNull();
         options.Api.Should().BeNull();
@@ -76,8 +109,11 @@ public sealed class CloudFoundryApplicationOptionsTest
         builder.AddCloudFoundry();
         IConfiguration configuration = builder.Build();
 
+        var defaultConfigurer = new ConfigureApplicationInstanceInfo(configuration);
+        var cloudFoundryConfigurer = new ConfigureCloudFoundryApplicationOptions(configuration, defaultConfigurer);
+
         var options = new CloudFoundryApplicationOptions();
-        configuration.GetSection("vcap:application").Bind(options);
+        cloudFoundryConfigurer.Configure(options);
 
         options.ApplicationId.Should().Be("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3");
         options.ApplicationName.Should().Be("my-app");

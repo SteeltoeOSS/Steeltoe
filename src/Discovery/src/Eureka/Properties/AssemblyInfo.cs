@@ -19,4 +19,5 @@ using Steeltoe.Discovery.Eureka.Configuration;
 [assembly: LoggingCategories("Steeltoe", "Steeltoe.Discovery", "Steeltoe.Discovery.Eureka")]
 
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka.CloudFoundry.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.HttpClients.Test")]
