@@ -19,27 +19,27 @@ internal sealed class CloudFoundrySecurityMiddleware
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _endpointOptionsMonitor;
-    private readonly EndpointOptions[] _endpointOptionsArray;
+    private readonly IEndpointOptionsMonitorProvider[] _endpointOptionsMonitorProviderArray;
     private readonly RequestDelegate? _next;
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
     private readonly PermissionsProvider _permissionsProvider;
 
     public CloudFoundrySecurityMiddleware(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor, IEnumerable<EndpointOptions> endpointOptionsCollection,
+        IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor, IEnumerable<IEndpointOptionsMonitorProvider> endpointOptionsMonitorProviders,
         PermissionsProvider permissionsProvider, ILogger<CloudFoundrySecurityMiddleware> logger, RequestDelegate? next)
     {
         ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
         ArgumentNullException.ThrowIfNull(endpointOptionsMonitor);
-        ArgumentNullException.ThrowIfNull(endpointOptionsCollection);
+        ArgumentNullException.ThrowIfNull(endpointOptionsMonitorProviders);
         ArgumentNullException.ThrowIfNull(permissionsProvider);
         ArgumentNullException.ThrowIfNull(logger);
 
-        EndpointOptions[] endpointOptionsArray = endpointOptionsCollection.ToArray();
-        ArgumentGuard.ElementsNotNull(endpointOptionsArray);
+        IEndpointOptionsMonitorProvider[] endpointOptionsMonitorProviderArray = endpointOptionsMonitorProviders.ToArray();
+        ArgumentGuard.ElementsNotNull(endpointOptionsMonitorProviderArray);
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptionsMonitor = endpointOptionsMonitor;
-        _endpointOptionsArray = endpointOptionsArray.Where(options => options is not HypermediaEndpointOptions).ToArray();
+        _endpointOptionsMonitorProviderArray = endpointOptionsMonitorProviderArray;
         _permissionsProvider = permissionsProvider;
         _logger = logger;
         _next = next;
@@ -125,7 +125,8 @@ internal sealed class CloudFoundrySecurityMiddleware
 
     private EndpointOptions? FindTargetEndpoint(PathString requestPath)
     {
-        foreach (EndpointOptions endpointOptions in _endpointOptionsArray)
+        foreach (EndpointOptions endpointOptions in _endpointOptionsMonitorProviderArray.Select(provider => provider.Get())
+            .Where(options => options is not HypermediaEndpointOptions))
         {
             string basePath = ConfigureManagementOptions.DefaultCloudFoundryPath;
 

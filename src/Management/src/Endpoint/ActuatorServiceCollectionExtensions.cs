@@ -50,9 +50,7 @@ public static class ActuatorServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.ConfigureOptionsWithChangeTokenSource<TOptions, TConfigureOptions>();
-
-        services.TryAddEnumerable(
-            ServiceDescriptor.Singleton<EndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointOptionsMonitorProvider, EndpointOptionsMonitorProvider<TOptions>>());
     }
 
     internal static void ConfigureOptionsWithChangeTokenSource<TOptions, TConfigureOptions>(this IServiceCollection services)

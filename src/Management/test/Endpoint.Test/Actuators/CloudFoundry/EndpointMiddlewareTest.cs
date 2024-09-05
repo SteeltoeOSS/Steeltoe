@@ -36,7 +36,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var endpointOptions = new HypermediaEndpointOptions();
+        HypermediaEndpointOptions endpointOptions = GetOptionsMonitorFromSettings<HypermediaEndpointOptions>().CurrentValue;
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
         Assert.True(endpointOptions.RequiresExactMatch());
 
