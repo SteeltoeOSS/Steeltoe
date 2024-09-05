@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
+using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.RouteMappings;
@@ -27,6 +28,7 @@ public sealed class Startup
     {
         services.AddCloudFoundryActuator();
         services.AddMappingsActuator();
+        services.AddRefreshActuator();
 
         services.AddMvc(options =>
         {
@@ -55,7 +57,6 @@ public sealed class Startup
             {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 routes.MapAllActuators();
-
                 routes.AddRoutesToMappingsActuator();
             });
         }

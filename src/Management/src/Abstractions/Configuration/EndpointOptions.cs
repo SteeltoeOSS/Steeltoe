@@ -47,6 +47,13 @@ public abstract class EndpointOptions
     /// </summary>
     public IList<string> AllowedVerbs { get; private set; } = new List<string>();
 
+    internal HashSet<string> GetSafeAllowedVerbs()
+    {
+        // Caution: Mapping with an empty string in the list results in exposing the endpoint at ALL verbs.
+        // And duplicate verbs that only differ in case result in an ambiguous match error when mapping routes.
+        return AllowedVerbs.Where(verb => verb.Length > 0).ToHashSet(StringComparer.OrdinalIgnoreCase);
+    }
+
     internal void ApplyDefaultAllowedVerbs()
     {
         AllowedVerbs = GetDefaultAllowedVerbs();

@@ -34,7 +34,7 @@ public sealed class EnvironmentEndpointOptionsTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:env:keysToSanitize:0"] = ""
+            ["management:endpoints:env:keysToSanitize:0"] = string.Empty
         };
 
         EnvironmentEndpointOptions options = GetOptionsFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>(appSettings);

@@ -16,7 +16,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Configuration;
 
@@ -50,7 +49,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task HandleMappingsRequestAsync_MVCNotUsed_NoRoutes_ReturnsExpected()
+    public async Task HandleMappingsRequestAsync_MvcNotUsed_NoRoutes_ReturnsExpected()
     {
         IOptionsMonitor<RouteMappingsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<RouteMappingsEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
@@ -99,16 +98,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:actuator:exposure:include:0", "*" }
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(
-                (webHostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        builder.ConfigureLogging((webHostContext, loggingBuilder) => loggingBuilder.AddConfiguration(webHostContext.Configuration));
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
+
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/mappings"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         string json = await response.Content.ReadAsStringAsync();
@@ -171,6 +168,99 @@ public sealed class EndpointMiddlewareTest : BaseTest
               }
             }
             """);
+
+        response = await client.GetAsync(new Uri("http://localhost/actuator/refresh"));
+        Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
+
+        response = await client.PostAsync(new Uri("http://localhost/actuator/refresh"), null);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task MappingsActuator_EndpointRouting_CanTurnOffAllVerbs()
+    {
+        var appSettings = new Dictionary<string, string?>(AppSettings)
+        {
+            { "management:endpoints:actuator:exposure:include:0", "*" },
+            { "management:endpoints:refresh:allowedVerbs:0", string.Empty }
+        };
+
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        builder.ConfigureLogging((webHostContext, loggingBuilder) => loggingBuilder.AddConfiguration(webHostContext.Configuration));
+
+        using var server = new TestServer(builder);
+        HttpClient client = server.CreateClient();
+
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/mappings"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
+
+        json.Should().BeJson($$"""
+            {
+              "contexts": {
+                "application": {
+                  "mappings": {
+                    "dispatcherServlets": {
+                      "{{typeof(HomeController).FullName}}": [
+                        {
+                          "handler": "{{typeof(Person).FullName}} Index()",
+                          "predicate": "{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json],consumes=[text/plain || application/json || text/json]}",
+                          "details": {
+                            "requestMappingConditions": {
+                              "patterns": [
+                                "/Home/Index"
+                              ],
+                              "methods": [
+                                "GET"
+                              ],
+                              "consumes": [
+                                {
+                                  "mediaType": "text/plain",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "application/json",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "text/json",
+                                  "negated": false
+                                }
+                              ],
+                              "produces": [
+                                {
+                                  "mediaType": "text/plain",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "application/json",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "text/json",
+                                  "negated": false
+                                }
+                              ],
+                              "headers": [],
+                              "params": []
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+            """);
+
+        response = await client.GetAsync(new Uri("http://localhost/actuator/refresh"));
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        response = await client.PostAsync(new Uri("http://localhost/actuator/refresh"), null);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]
@@ -182,16 +272,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "TestUsesEndpointRouting", "False" }
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(
-                (webHostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        builder.ConfigureLogging((webHostContext, loggingBuilder) => loggingBuilder.AddConfiguration(webHostContext.Configuration));
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
+
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/mappings"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         string json = await response.Content.ReadAsStringAsync();
@@ -256,7 +344,11 @@ public sealed class EndpointMiddlewareTest : BaseTest
                         {
                           "handler": "CoreRouteHandler",
                           "predicate": "{[/actuator/mappings],methods=[Get]}"
-                        }
+                        },
+                        {
+                          "handler": "CoreRouteHandler",
+                          "predicate": "{[/actuator/refresh],methods=[Post]}"
+                        }            
                       ]
                     }
                   }
@@ -264,6 +356,110 @@ public sealed class EndpointMiddlewareTest : BaseTest
               }
             }
             """);
+
+        response = await client.GetAsync(new Uri("http://localhost/actuator/refresh"));
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        response = await client.PostAsync(new Uri("http://localhost/actuator/refresh"), null);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task MappingsActuator_ConventionalRouting_CanTurnOffAllVerbs()
+    {
+        var appSettings = new Dictionary<string, string?>(AppSettings)
+        {
+            { "management:endpoints:actuator:exposure:include:0", "*" },
+            { "management:endpoints:refresh:allowedVerbs:0", string.Empty },
+            { "TestUsesEndpointRouting", "False" }
+        };
+
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        builder.ConfigureLogging((webHostContext, loggingBuilder) => loggingBuilder.AddConfiguration(webHostContext.Configuration));
+
+        using var server = new TestServer(builder);
+        HttpClient client = server.CreateClient();
+
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/mappings"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
+
+        json.Should().BeJson($$"""
+            {
+              "contexts": {
+                "application": {
+                  "mappings": {
+                    "dispatcherServlets": {
+                      "{{typeof(HomeController).FullName}}": [
+                        {
+                          "handler": "{{typeof(Person).FullName}} Index()",
+                          "predicate": "{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json],consumes=[text/plain || application/json || text/json]}",
+                          "details": {
+                            "requestMappingConditions": {
+                              "patterns": [
+                                "/Home/Index"
+                              ],
+                              "methods": [
+                                "GET"
+                              ],
+                              "consumes": [
+                                {
+                                  "mediaType": "text/plain",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "application/json",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "text/json",
+                                  "negated": false
+                                }
+                              ],
+                              "produces": [
+                                {
+                                  "mediaType": "text/plain",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "application/json",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "text/json",
+                                  "negated": false
+                                }
+                              ],
+                              "headers": [],
+                              "params": []
+                            }
+                          }
+                        }
+                      ],
+                      "CoreRouteHandler": [
+                        {
+                          "handler": "CoreRouteHandler",
+                          "predicate": "{[{controller=Home}/{action=Index}/{id?}],methods=[GET || PUT || POST || DELETE || HEAD || OPTIONS]}"
+                        },
+                        {
+                          "handler": "CoreRouteHandler",
+                          "predicate": "{[/actuator/mappings],methods=[Get]}"
+                        }            
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+            """);
+
+        response = await client.GetAsync(new Uri("http://localhost/actuator/refresh"));
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        response = await client.PostAsync(new Uri("http://localhost/actuator/refresh"), null);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     private HttpContext CreateRequest(string method, string path)

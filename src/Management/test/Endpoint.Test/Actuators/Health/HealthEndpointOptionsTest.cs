@@ -80,7 +80,7 @@ public sealed class HealthEndpointOptionsTest : BaseTest
     {
         var appsettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:health:groups::include"] = ""
+            ["management:endpoints:health:groups::include"] = string.Empty
         };
 
         HealthEndpointOptions options = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appsettings);

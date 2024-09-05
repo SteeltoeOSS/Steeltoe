@@ -45,8 +45,8 @@ public sealed class ExposureTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:actuator:exposure:include:0"] = "",
-            ["management:endpoints:actuator:exposure:exclude:0"] = ""
+            ["management:endpoints:actuator:exposure:include:0"] = string.Empty,
+            ["management:endpoints:actuator:exposure:exclude:0"] = string.Empty
         };
 
         var options = GetOptionsFromSettings<ManagementOptions>(appSettings);

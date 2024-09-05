@@ -6,11 +6,12 @@ using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Refresh;
 
-public sealed class HttpVerbTest
+public sealed class HttpVerbInEndpointRoutingTest
 {
     [Fact]
     public async Task Allows_only_POST_requests()
@@ -22,10 +23,12 @@ public sealed class HttpVerbTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddControllersWithViews();
         builder.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
         app.UseRouting();
+        app.MapDefaultControllerRoute();
         await app.StartAsync();
 
         using TestServer testServer = app.GetTestServer();
@@ -46,15 +49,17 @@ public sealed class HttpVerbTest
         var appSettings = new Dictionary<string, string?>
         {
             ["Management:Endpoints:Actuator:Exposure:Include:0"] = "refresh",
-            ["Management:Endpoints:Refresh:AllowedVerbs:0"] = ""
+            ["Management:Endpoints:Refresh:AllowedVerbs:0"] = string.Empty
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddControllersWithViews();
         builder.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
         app.UseRouting();
+        app.MapDefaultControllerRoute();
         await app.StartAsync();
 
         using TestServer testServer = app.GetTestServer();
@@ -63,10 +68,10 @@ public sealed class HttpVerbTest
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
-        getResponse.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
+        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null);
-        postResponse.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
+        postResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -80,10 +85,12 @@ public sealed class HttpVerbTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddControllersWithViews();
         builder.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
         app.UseRouting();
+        app.MapDefaultControllerRoute();
         await app.StartAsync();
 
         using TestServer testServer = app.GetTestServer();
@@ -110,10 +117,12 @@ public sealed class HttpVerbTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddControllersWithViews();
         builder.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
         app.UseRouting();
+        app.MapDefaultControllerRoute();
         await app.StartAsync();
 
         using TestServer testServer = app.GetTestServer();
