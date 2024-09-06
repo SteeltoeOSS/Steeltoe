@@ -43,7 +43,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var handler = new RefreshEndpointHandler(endpointOptionsMonitor, configurationRoot, NullLoggerFactory.Instance);
         var middleware = new RefreshEndpointMiddleware(handler, managementOptions, NullLoggerFactory.Instance);
 
-        HttpContext context = CreateRequest("GET", "/refresh");
+        HttpContext context = CreateRequest("POST", "/refresh");
         await middleware.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);

@@ -295,7 +295,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
     {
         var appsettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:env:keystosanitize:0"] = "credentials",
+            ["management:endpoints:env:keysToSanitize:0"] = "credentials",
             ["password"] = "mysecret"
         };
 

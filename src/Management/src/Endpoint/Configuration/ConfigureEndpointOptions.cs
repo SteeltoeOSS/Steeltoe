@@ -30,11 +30,21 @@ internal abstract class ConfigureEndpointOptions<T> : IConfigureOptionsWithKey<T
 
     public virtual void Configure(T options)
     {
+        ConfigureAtKey(Configuration, _prefix, _id, options);
+    }
+
+    protected static void ConfigureAtKey(IConfiguration configuration, string configurationKey, string endpointId, T options)
+    {
         ArgumentNullException.ThrowIfNull(options);
 
-        Configuration.GetSection(_prefix).Bind(options);
+        configuration.GetSection(configurationKey).Bind(options);
 
-        options.Id ??= _id;
+        options.Id ??= endpointId;
+
+        if (options.AllowedVerbs.Count == 0)
+        {
+            options.ApplyDefaultAllowedVerbs();
+        }
 
         if (!Enum.IsDefined(options.RequiredPermissions))
         {

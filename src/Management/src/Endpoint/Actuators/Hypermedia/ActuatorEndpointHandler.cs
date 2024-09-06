@@ -17,25 +17,26 @@ internal sealed class ActuatorEndpointHandler : IActuatorEndpointHandler
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IOptionsMonitor<HypermediaEndpointOptions> _endpointOptionsMonitor;
-    private readonly EndpointOptions[] _endpointOptionsArray;
+    private readonly IEndpointOptionsMonitorProvider[] _endpointOptionsMonitorProviderArray;
     private readonly ILogger<HypermediaService> _hypermediaServiceLogger;
 
     public EndpointOptions Options => _endpointOptionsMonitor.CurrentValue;
 
     public ActuatorEndpointHandler(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        IOptionsMonitor<HypermediaEndpointOptions> endpointOptionsMonitor, IEnumerable<EndpointOptions> endpointOptionsCollection, ILoggerFactory loggerFactory)
+        IOptionsMonitor<HypermediaEndpointOptions> endpointOptionsMonitor, IEnumerable<IEndpointOptionsMonitorProvider> endpointOptionsMonitorProviders,
+        ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
         ArgumentNullException.ThrowIfNull(endpointOptionsMonitor);
-        ArgumentNullException.ThrowIfNull(endpointOptionsCollection);
+        ArgumentNullException.ThrowIfNull(endpointOptionsMonitorProviders);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        EndpointOptions[] endpointOptionsArray = endpointOptionsCollection.ToArray();
-        ArgumentGuard.ElementsNotNull(endpointOptionsArray);
+        IEndpointOptionsMonitorProvider[] endpointOptionsMonitorProviderArray = endpointOptionsMonitorProviders.ToArray();
+        ArgumentGuard.ElementsNotNull(endpointOptionsMonitorProviderArray);
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptionsMonitor = endpointOptionsMonitor;
-        _endpointOptionsArray = endpointOptionsArray;
+        _endpointOptionsMonitorProviderArray = endpointOptionsMonitorProviderArray;
         _hypermediaServiceLogger = loggerFactory.CreateLogger<HypermediaService>();
     }
 
@@ -43,7 +44,7 @@ internal sealed class ActuatorEndpointHandler : IActuatorEndpointHandler
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(baseUrl);
 
-        var service = new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _endpointOptionsArray, _hypermediaServiceLogger);
+        var service = new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _endpointOptionsMonitorProviderArray, _hypermediaServiceLogger);
         Links result = service.Invoke(baseUrl);
         return Task.FromResult(result);
     }

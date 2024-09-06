@@ -15,38 +15,38 @@ internal sealed class HypermediaService
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly EndpointOptions _endpointOptions;
-    private readonly ICollection<EndpointOptions> _endpointOptionsCollection;
+    private readonly ICollection<IEndpointOptionsMonitorProvider> _endpointOptionsMonitorProviders;
     private readonly ILogger<HypermediaService> _logger;
 
     public HypermediaService(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        IOptionsMonitor<HypermediaEndpointOptions> hypermediaEndpointOptionsMonitor, ICollection<EndpointOptions> endpointOptionsCollection,
-        ILogger<HypermediaService> logger)
+        IOptionsMonitor<HypermediaEndpointOptions> hypermediaEndpointOptionsMonitor,
+        ICollection<IEndpointOptionsMonitorProvider> endpointOptionsMonitorProviders, ILogger<HypermediaService> logger)
     {
         ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
         ArgumentNullException.ThrowIfNull(hypermediaEndpointOptionsMonitor);
-        ArgumentNullException.ThrowIfNull(endpointOptionsCollection);
-        ArgumentGuard.ElementsNotNull(endpointOptionsCollection);
+        ArgumentNullException.ThrowIfNull(endpointOptionsMonitorProviders);
+        ArgumentGuard.ElementsNotNull(endpointOptionsMonitorProviders);
         ArgumentNullException.ThrowIfNull(logger);
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptions = hypermediaEndpointOptionsMonitor.CurrentValue;
-        _endpointOptionsCollection = endpointOptionsCollection;
+        _endpointOptionsMonitorProviders = endpointOptionsMonitorProviders;
         _logger = logger;
     }
 
     public HypermediaService(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        IOptionsMonitor<CloudFoundryEndpointOptions> cloudFoundryEndpointOptionsMonitor, ICollection<EndpointOptions> endpointOptionsCollection,
-        ILogger<HypermediaService> logger)
+        IOptionsMonitor<CloudFoundryEndpointOptions> cloudFoundryEndpointOptionsMonitor,
+        ICollection<IEndpointOptionsMonitorProvider> endpointOptionsMonitorProviders, ILogger<HypermediaService> logger)
     {
         ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
         ArgumentNullException.ThrowIfNull(cloudFoundryEndpointOptionsMonitor);
-        ArgumentNullException.ThrowIfNull(endpointOptionsCollection);
-        ArgumentGuard.ElementsNotNull(endpointOptionsCollection);
+        ArgumentNullException.ThrowIfNull(endpointOptionsMonitorProviders);
+        ArgumentGuard.ElementsNotNull(endpointOptionsMonitorProviders);
         ArgumentNullException.ThrowIfNull(logger);
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptions = cloudFoundryEndpointOptionsMonitor.CurrentValue;
-        _endpointOptionsCollection = endpointOptionsCollection;
+        _endpointOptionsMonitorProviders = endpointOptionsMonitorProviders;
         _logger = logger;
     }
 
@@ -65,7 +65,7 @@ internal sealed class HypermediaService
 
         Link? selfLink = null;
 
-        foreach (EndpointOptions endpointOptions in _endpointOptionsCollection)
+        foreach (EndpointOptions endpointOptions in _endpointOptionsMonitorProviders.Select(provider => provider.Get()))
         {
             if (!endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue) || !endpointOptions.IsExposed(_managementOptionsMonitor.CurrentValue))
             {

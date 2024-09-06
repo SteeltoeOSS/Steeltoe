@@ -14,47 +14,40 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Configuration;
+using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Configuration;
-
-#pragma warning disable xUnit1045 // Avoid using TheoryData type arguments that might not be serializable
 
 namespace Steeltoe.Management.Endpoint.Test;
 
 public sealed class ActuatorRouteBuilderExtensionsTest
 {
-    public static TheoryData<EndpointOptions> ActuatorOptions
+    public static TheoryData<Type> EndpointOptionsTypes
     {
         get
         {
-            IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "actuators.read"));
+            List<Type> endpointOptionsType = typeof(ConfigureEndpointOptions<>).Assembly.GetTypes()
+                .Where(type => type.IsAssignableTo(typeof(EndpointOptions)) && type != typeof(CloudFoundryEndpointOptions)).ToList();
 
-            using IHost host = hostBuilder.Build();
-
-            TheoryData<EndpointOptions> theoryData = [];
-
-            foreach (EndpointOptions options in host.Services.GetServices<EndpointOptions>())
-            {
-                theoryData.Add(options);
-            }
-
+            TheoryData<Type> theoryData = [];
+            endpointOptionsType.ForEach(theoryData.Add);
             return theoryData;
         }
     }
 
     [Theory]
-    [MemberData(nameof(ActuatorOptions))]
-    public async Task MapTestAuthSuccess(EndpointOptions options)
+    [MemberData(nameof(EndpointOptionsTypes))]
+    public async Task MapTestAuthSuccess(Type endpointOptionsType)
     {
         IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "actuators.read"));
-        await ActAndAssertAsync(hostBuilder, options, true);
+        await ActAndAssertAsync(hostBuilder, endpointOptionsType, true);
     }
 
     [Theory]
-    [MemberData(nameof(ActuatorOptions))]
-    public async Task MapTestAuthFail(EndpointOptions options)
+    [MemberData(nameof(EndpointOptionsTypes))]
+    public async Task MapTestAuthFail(Type endpointOptionsType)
     {
         IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "invalidscope"));
-        await ActAndAssertAsync(hostBuilder, options, false);
+        await ActAndAssertAsync(hostBuilder, endpointOptionsType, false);
     }
 
     private static IHostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction)
@@ -85,9 +78,14 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         }).ConfigureAppConfiguration(configure => configure.AddInMemoryCollection(appSettings));
     }
 
-    private async Task ActAndAssertAsync(IHostBuilder builder, EndpointOptions options, bool expectedSuccess)
+    private async Task ActAndAssertAsync(IHostBuilder builder, Type endpointOptionsType, bool expectedSuccess)
     {
         using IHost host = await builder.StartAsync();
+
+        Type optionsMonitorType = typeof(IOptionsMonitor<>).MakeGenericType(endpointOptionsType);
+        object optionsMonitor = host.Services.GetRequiredService(optionsMonitorType);
+        var options = (EndpointOptions)((dynamic)optionsMonitor).CurrentValue;
+
         using TestServer server = host.GetTestServer();
 
         ManagementOptions managementOptions = host.Services.GetRequiredService<IOptionsMonitor<ManagementOptions>>().CurrentValue;

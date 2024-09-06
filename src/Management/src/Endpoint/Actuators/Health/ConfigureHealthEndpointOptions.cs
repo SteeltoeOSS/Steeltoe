@@ -28,14 +28,21 @@ internal sealed class ConfigureHealthEndpointOptions(IConfiguration configuratio
             };
         }
 
-        options.Groups.TryAdd("liveness", new HealthGroupOptions
+        if (options.Groups.Count == 0)
         {
-            Include = "liveness"
-        });
+            options.Groups["liveness"] = new HealthGroupOptions
+            {
+                Include = "liveness"
+            };
 
-        options.Groups.TryAdd("readiness", new HealthGroupOptions
+            options.Groups["readiness"] = new HealthGroupOptions
+            {
+                Include = "readiness"
+            };
+        }
+        else if (options.Groups.Count == 1 && options.Groups.TryGetValue(string.Empty, out HealthGroupOptions? group) && string.IsNullOrEmpty(group.Include))
         {
-            Include = "readiness"
-        });
+            options.Groups.Clear();
+        }
     }
 }

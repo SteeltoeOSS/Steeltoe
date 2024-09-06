@@ -30,12 +30,17 @@ internal sealed class ConfigureEnvironmentEndpointOptions(IConfiguration configu
 
         // It's not possible to distinguish between null and an empty list in configuration.
         // See https://github.com/dotnet/extensions/issues/1341.
+        // As a workaround, we interpret a single empty string element to clear the defaults.
         if (options.KeysToSanitize.Count == 0)
         {
             foreach (string defaultKey in DefaultKeysToSanitize)
             {
                 options.KeysToSanitize.Add(defaultKey);
             }
+        }
+        else if (options.KeysToSanitize is [""])
+        {
+            options.KeysToSanitize.Clear();
         }
     }
 }

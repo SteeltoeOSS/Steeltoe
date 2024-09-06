@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.Environment;
 public sealed class EnvironmentEndpointOptions : EndpointOptions
 {
     /// <summary>
-    /// Gets the list of keys to sanitize.
+    /// Gets the list of keys to sanitize. Allows regular expressions.
     /// </summary>
     public IList<string> KeysToSanitize { get; } = new List<string>();
 }

@@ -123,6 +123,18 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
             {
                 ReplaceCollection(options.Include, DefaultIncludes);
             }
+            else
+            {
+                if (options.Include is [""])
+                {
+                    ReplaceCollection(options.Include, Array.Empty<string>());
+                }
+
+                if (options.Exclude is [""])
+                {
+                    ReplaceCollection(options.Exclude, Array.Empty<string>());
+                }
+            }
         }
 
         private static List<string>? GetListFromConfigurationCsvString(IConfigurationSection section, string key)

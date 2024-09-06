@@ -20,12 +20,42 @@ public sealed class EnvironmentEndpointOptionsTest : BaseTest
     ];
 
     [Fact]
-    public void Constructor_InitializesWithDefaults()
+    public void AppliesDefaults()
     {
         EnvironmentEndpointOptions options = GetOptionsFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();
 
-        Assert.Equal("env", options.Id);
-        Assert.Equal(DefaultKeysToSanitize, options.KeysToSanitize);
-        Assert.Equal(EndpointPermissions.Restricted, options.RequiredPermissions);
+        options.Id.Should().Be("env");
+        options.KeysToSanitize.Should().BeEquivalentTo(DefaultKeysToSanitize);
+        options.RequiredPermissions.Should().Be(EndpointPermissions.Restricted);
+    }
+
+    [Fact]
+    public void CanClearDefaults()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["management:endpoints:env:keysToSanitize:0"] = string.Empty
+        };
+
+        EnvironmentEndpointOptions options = GetOptionsFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>(appSettings);
+
+        options.Id.Should().Be("env");
+        options.KeysToSanitize.Should().BeEquivalentTo([]);
+        options.RequiredPermissions.Should().Be(EndpointPermissions.Restricted);
+    }
+
+    [Fact]
+    public void CanOverrideDefaults()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["management:endpoints:env:keysToSanitize:0"] = "accessToken"
+        };
+
+        EnvironmentEndpointOptions options = GetOptionsFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>(appSettings);
+
+        options.Id.Should().Be("env");
+        options.KeysToSanitize.Should().BeEquivalentTo(["accessToken"]);
+        options.RequiredPermissions.Should().Be(EndpointPermissions.Restricted);
     }
 }

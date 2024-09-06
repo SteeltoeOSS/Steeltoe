@@ -45,14 +45,18 @@ public abstract class EndpointOptions
     /// <summary>
     /// Gets the list of HTTP verbs that are allowed for this endpoint.
     /// </summary>
-    public IList<string> AllowedVerbs { get; }
+    public IList<string> AllowedVerbs { get; private set; } = new List<string>();
 
-    protected EndpointOptions()
+    internal HashSet<string> GetSafeAllowedVerbs()
     {
-        // ReSharper disable once VirtualMemberCallInConstructor
-#pragma warning disable S1699 // Constructors should only call non-overridable methods
+        // Caution: Mapping with an empty string in the list results in exposing the endpoint at ALL verbs.
+        // And duplicate verbs that only differ in case result in an ambiguous match error when mapping routes.
+        return AllowedVerbs.Where(verb => verb.Length > 0).ToHashSet(StringComparer.OrdinalIgnoreCase);
+    }
+
+    internal void ApplyDefaultAllowedVerbs()
+    {
         AllowedVerbs = GetDefaultAllowedVerbs();
-#pragma warning restore S1699 // Constructors should only call non-overridable methods
     }
 
     /// <summary>
