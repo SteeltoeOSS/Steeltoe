@@ -94,7 +94,7 @@ internal sealed class PropertyPlaceholderHelper
                 // Now obtain the value for the fully resolved key...
                 string? propertyValue = configuration[expression.Key];
 
-                // Attempt to resolve as a spring-compatible placeholder.
+                // Attempt to resolve as a Spring-compatible placeholder.
                 if (propertyValue == null)
                 {
                     // Replace Spring delimiters ('.') with dotnet-friendly delimiters (':') so Spring placeholders can also be resolved.
