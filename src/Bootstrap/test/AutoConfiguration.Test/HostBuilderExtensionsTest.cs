@@ -28,7 +28,7 @@ using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Encryption;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding;
+using Steeltoe.Configuration.Kubernetes.ServiceBindings;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
 using Steeltoe.Connectors;

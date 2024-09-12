@@ -16,7 +16,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.CloudFoundry.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.Encryption")]
-[assembly: InternalsVisibleTo("Steeltoe.Configuration.Kubernetes.ServiceBinding")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.Kubernetes.ServiceBindings")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.Placeholder")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors.EntityFrameworkCore")]

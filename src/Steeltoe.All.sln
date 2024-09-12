@@ -178,9 +178,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{
 		..\build\templates\consolidate-coverage.yaml = ..\build\templates\consolidate-coverage.yaml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.Kubernetes.ServiceBinding", "Configuration\src\Kubernetes.ServiceBinding\Steeltoe.Configuration.Kubernetes.ServiceBinding.csproj", "{6A064B5A-21F7-452A-AAFF-3C0A68286FDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.Kubernetes.ServiceBindings", "Configuration\src\Kubernetes.ServiceBindings\Steeltoe.Configuration.Kubernetes.ServiceBindings.csproj", "{6A064B5A-21F7-452A-AAFF-3C0A68286FDF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.Kubernetes.ServiceBinding.Test", "Configuration\test\Kubernetes.ServiceBinding.Test\Steeltoe.Configuration.Kubernetes.ServiceBinding.Test.csproj", "{0D68FC03-7FD4-4280-852B-0E620872CE22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.Kubernetes.ServiceBindings.Test", "Configuration\test\Kubernetes.ServiceBindings.Test\Steeltoe.Configuration.Kubernetes.ServiceBindings.Test.csproj", "{0D68FC03-7FD4-4280-852B-0E620872CE22}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.Encryption.Test", "Configuration\test\Encryption.Test\Steeltoe.Configuration.Encryption.Test.csproj", "{BCC3F7DC-080D-4A7E-8060-40ED65073EB3}"
 EndProject

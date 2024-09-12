@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.FileProviders;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding;
+using Steeltoe.Configuration.Kubernetes.ServiceBindings;
 
 namespace Steeltoe.Connectors.Test;
 

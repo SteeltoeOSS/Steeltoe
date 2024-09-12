@@ -10,7 +10,7 @@ using MySqlConnector;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding;
+using Steeltoe.Configuration.Kubernetes.ServiceBindings;
 using Steeltoe.Connectors.MySql;
 using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 
