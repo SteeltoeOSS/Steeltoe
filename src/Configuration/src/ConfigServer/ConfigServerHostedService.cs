@@ -30,8 +30,8 @@ internal sealed class ConfigServerHostedService : IHostedService
         IDiscoveryClient[] discoveryClientArray = discoveryClients.ToArray();
         ArgumentGuard.ElementsNotNull(discoveryClientArray);
 
-        _configurationProvider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>() ??
-            throw new ArgumentException("ConfigServerConfigurationProvider was not found in configuration.", nameof(configuration));
+        _configurationProvider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().FirstOrDefault() ??
+            throw new InvalidOperationException("ConfigServerConfigurationProvider was not found in configuration.");
 
         _discoveryClients = discoveryClientArray;
     }

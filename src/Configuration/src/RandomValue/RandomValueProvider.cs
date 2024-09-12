@@ -18,7 +18,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
     private readonly string _prefix;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RandomValueProvider" /> class. The new placeholder resolver wraps the provided configuration.
+    /// Initializes a new instance of the <see cref="RandomValueProvider" /> class.
     /// </summary>
     /// <param name="prefix">
     /// Prefix to use to match random number keys.
@@ -75,7 +75,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
     /// </param>
     public override void Set(string key, string? value)
     {
-        // for future use
+        // Intentionally left empty.
     }
 
     /// <summary>

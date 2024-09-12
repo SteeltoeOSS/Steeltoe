@@ -1,21 +1,11 @@
 #nullable enable
-static Steeltoe.Configuration.Encryption.EncryptionConfigurationExtensions.AddEncryptionResolver(this Microsoft.Extensions.Configuration.ConfigurationManager! configurationManager, Steeltoe.Configuration.Encryption.ITextDecryptor! textDecryptor) -> Microsoft.Extensions.Configuration.ConfigurationManager!
-static Steeltoe.Configuration.Encryption.EncryptionConfigurationExtensions.AddEncryptionResolver(this Microsoft.Extensions.Configuration.ConfigurationManager! configurationManager, Steeltoe.Configuration.Encryption.ITextDecryptor! textDecryptor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.ConfigurationManager!
-static Steeltoe.Configuration.Encryption.EncryptionConfigurationExtensions.AddEncryptionResolver(this Microsoft.Extensions.Configuration.IConfiguration! configuration, Steeltoe.Configuration.Encryption.ITextDecryptor! textDecryptor) -> Microsoft.Extensions.Configuration.IConfiguration!
-static Steeltoe.Configuration.Encryption.EncryptionConfigurationExtensions.AddEncryptionResolver(this Microsoft.Extensions.Configuration.IConfiguration! configuration, Steeltoe.Configuration.Encryption.ITextDecryptor! textDecryptor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfiguration!
-static Steeltoe.Configuration.Encryption.EncryptionConfigurationExtensions.AddEncryptionResolver(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.Encryption.EncryptionConfigurationExtensions.AddEncryptionResolver(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.Encryption.EncryptionConfigurationExtensions.AddEncryptionResolver(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Steeltoe.Configuration.Encryption.ITextDecryptor! textDecryptor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.Encryption.EncryptionServiceCollectionExtensions.ConfigureConfigServerEncryptionResolver(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> Microsoft.Extensions.Configuration.IConfiguration!
-static Steeltoe.Configuration.Encryption.EncryptionServiceCollectionExtensions.ConfigureConfigServerEncryptionResolver(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfiguration!
-static Steeltoe.Configuration.Encryption.EncryptionServiceCollectionExtensions.ConfigureEncryptionResolver(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> Microsoft.Extensions.Configuration.IConfiguration!
-static Steeltoe.Configuration.Encryption.EncryptionServiceCollectionExtensions.ConfigureEncryptionResolver(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, Steeltoe.Configuration.Encryption.ITextDecryptor! textDecryptor) -> Microsoft.Extensions.Configuration.IConfiguration!
-static Steeltoe.Configuration.Encryption.EncryptionServiceCollectionExtensions.ConfigureEncryptionResolver(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, Steeltoe.Configuration.Encryption.ITextDecryptor! textDecryptor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfiguration!
-Steeltoe.Configuration.Encryption.DecryptionException
-Steeltoe.Configuration.Encryption.DecryptionException.DecryptionException(string? message) -> void
-Steeltoe.Configuration.Encryption.DecryptionException.DecryptionException(string? message, System.Exception? innerException) -> void
-Steeltoe.Configuration.Encryption.EncryptionConfigurationExtensions
-Steeltoe.Configuration.Encryption.EncryptionServiceCollectionExtensions
-Steeltoe.Configuration.Encryption.ITextDecryptor
-Steeltoe.Configuration.Encryption.ITextDecryptor.Decrypt(string! fullCipher) -> string!
-Steeltoe.Configuration.Encryption.ITextDecryptor.Decrypt(string! fullCipher, string! alias) -> string!
+static Steeltoe.Configuration.Encryption.DecryptionConfigurationBuilderExtensions.AddDecryption(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.Encryption.DecryptionConfigurationBuilderExtensions.AddDecryption(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.Encryption.DecryptionConfigurationBuilderExtensions.AddDecryption(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Steeltoe.Configuration.Encryption.Cryptography.ITextDecryptor? textDecryptor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+Steeltoe.Configuration.Encryption.Cryptography.DecryptionException
+Steeltoe.Configuration.Encryption.Cryptography.DecryptionException.DecryptionException(string? message) -> void
+Steeltoe.Configuration.Encryption.Cryptography.DecryptionException.DecryptionException(string? message, System.Exception? innerException) -> void
+Steeltoe.Configuration.Encryption.Cryptography.ITextDecryptor
+Steeltoe.Configuration.Encryption.Cryptography.ITextDecryptor.Decrypt(string! fullCipher) -> string!
+Steeltoe.Configuration.Encryption.Cryptography.ITextDecryptor.Decrypt(string! fullCipher, string! alias) -> string!
+Steeltoe.Configuration.Encryption.DecryptionConfigurationBuilderExtensions

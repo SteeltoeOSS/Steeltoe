@@ -43,7 +43,7 @@ public static class SpringBootConfigurationBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        if (!builder.Sources.OfType<SpringBootEnvironmentVariableSource>().Any())
+        if (!builder.EnumerateSources<SpringBootEnvironmentVariableSource>().Any())
         {
             builder.Add(new SpringBootEnvironmentVariableSource());
         }
@@ -92,7 +92,7 @@ public static class SpringBootConfigurationBuilderExtensions
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        if (!builder.Sources.OfType<SpringBootCommandLineSource>().Any())
+        if (!builder.EnumerateSources<SpringBootCommandLineSource>().Any())
         {
             builder.Add(new SpringBootCommandLineSource(configuration));
         }

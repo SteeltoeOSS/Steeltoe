@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Configuration\src\ConfigServer\Steeltoe.Configuration.ConfigServer.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\Encryption\Steeltoe.Configuration.Encryption.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\Placeholder\Steeltoe.Configuration.Placeholder.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\RandomValue\Steeltoe.Configuration.RandomValue.csproj" />
     <ProjectReference Include="..\..\..\Connectors\src\Connectors\Steeltoe.Connectors.csproj" />
     <ProjectReference Include="..\..\..\Discovery\src\Configuration\Steeltoe.Discovery.Configuration.csproj" />

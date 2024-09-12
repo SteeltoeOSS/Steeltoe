@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
-using Steeltoe.Configuration.Placeholder;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -70,11 +69,10 @@ public static class ConfigServerConfigurationBuilderExtensions
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        if (!builder.Sources.OfType<ConfigServerConfigurationSource>().Any())
+        if (!builder.EnumerateSources<ConfigServerConfigurationSource>().Any())
         {
             builder.AddCloudFoundry();
             builder.AddKubernetesServiceBindings();
-            builder.AddPlaceholderResolver(loggerFactory);
 
             ConfigServerConfigurationSource source = builder is IConfiguration configuration
                 ? new ConfigServerConfigurationSource(options, configuration, loggerFactory)

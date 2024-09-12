@@ -75,7 +75,7 @@ public static class ConfigurationBuilderExtensions
         ArgumentNullException.ThrowIfNull(serviceBindingsReader);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        if (!builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().Any())
+        if (!builder.EnumerateSources<CloudFoundryServiceBindingConfigurationSource>().Any())
         {
             var source = new CloudFoundryServiceBindingConfigurationSource(serviceBindingsReader)
             {

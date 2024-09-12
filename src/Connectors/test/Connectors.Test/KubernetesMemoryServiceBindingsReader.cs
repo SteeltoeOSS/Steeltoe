@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.FileProviders;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
 namespace Steeltoe.Connectors.Test;

@@ -13,7 +13,7 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 public sealed class ConfigServerHealthContributorTest
 {
     [Fact]
-    public void Constructor_FindsConfigServerProvider()
+    public void Constructor_FindsConfigServerProviderInsidePlaceholderProvider()
     {
         var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {

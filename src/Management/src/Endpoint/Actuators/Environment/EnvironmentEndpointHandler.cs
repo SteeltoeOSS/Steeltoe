@@ -51,21 +51,10 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
     {
         List<PropertySourceDescriptor> results = [];
 
-        if (_configuration is IConfigurationRoot root)
+        foreach (IConfigurationProvider provider in _configuration.EnumerateProviders())
         {
-            List<IConfigurationProvider> providers = root.Providers.ToList();
-            IPlaceholderResolverProvider? placeholderProvider = providers.OfType<IPlaceholderResolverProvider>().FirstOrDefault();
-
-            if (placeholderProvider != null)
-            {
-                providers.InsertRange(0, placeholderProvider.Providers);
-            }
-
-            foreach (IConfigurationProvider provider in providers)
-            {
-                PropertySourceDescriptor descriptor = GetPropertySourceDescriptor(provider);
-                results.Add(descriptor);
-            }
+            PropertySourceDescriptor descriptor = GetPropertySourceDescriptor(provider);
+            results.Add(descriptor);
         }
 
         return results;
@@ -82,8 +71,9 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         {
             if (provider.TryGet(key, out string? value))
             {
-                if (provider is IPlaceholderResolverProvider placeholderProvider && !placeholderProvider.ResolvedKeys.Contains(key))
+                if (provider is CompositeConfigurationProvider)
                 {
+                    // Wraps other providers, but has no key/value storage of its own.
                     continue;
                 }
 

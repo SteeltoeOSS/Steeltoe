@@ -9,12 +9,11 @@
     <None Update="instance.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Encryption\server.jks">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ConfigServer\Steeltoe.Configuration.ConfigServer.csproj" />
+    <ProjectReference Include="..\..\src\Encryption\Steeltoe.Configuration.Encryption.csproj" />
+    <ProjectReference Include="..\..\src\Placeholder\Steeltoe.Configuration.Placeholder.csproj" />
   </ItemGroup>
 </Project>

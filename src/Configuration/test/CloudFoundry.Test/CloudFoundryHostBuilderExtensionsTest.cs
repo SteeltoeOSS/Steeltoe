@@ -24,7 +24,8 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
         var instanceInfo = host.Services.GetRequiredService<IApplicationInstanceInfo>();
         Assert.IsAssignableFrom<CloudFoundryApplicationOptions>(instanceInfo);
         var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
-        Assert.Contains(configurationRoot.Providers, provider => provider is CloudFoundryConfigurationProvider);
+
+        Assert.Single(configurationRoot.EnumerateProviders<CloudFoundryConfigurationProvider>());
     }
 
     [Fact]
@@ -35,7 +36,8 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
         using IWebHost host = hostbuilder.Build();
 
         var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
-        Assert.Contains(configurationRoot.Providers, provider => provider is CloudFoundryConfigurationProvider);
+
+        Assert.Single(configurationRoot.EnumerateProviders<CloudFoundryConfigurationProvider>());
     }
 
     [Fact]
@@ -46,6 +48,7 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
         await using WebApplication host = hostbuilder.Build();
 
         var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
-        Assert.Contains(configurationRoot.Providers, provider => provider is CloudFoundryConfigurationProvider);
+
+        Assert.Single(configurationRoot.EnumerateProviders<CloudFoundryConfigurationProvider>());
     }
 }

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Configuration;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
@@ -29,7 +30,7 @@ internal static class ConnectorConfigurer
     private static bool IsConfigured<TPostProcessor>(IConfigurationBuilder builder)
         where TPostProcessor : ConnectionStringPostProcessor
     {
-        return builder.Sources.OfType<ConnectionStringPostProcessorConfigurationSource>().Any(connectionStringSource =>
+        return builder.EnumerateSources<ConnectionStringPostProcessorConfigurationSource>().Any(connectionStringSource =>
             connectionStringSource.PostProcessors.Any(postProcessor => postProcessor is TPostProcessor));
     }
 

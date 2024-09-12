@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Common.TestResources.IO;
+using Steeltoe.Configuration.Placeholder;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
@@ -24,7 +25,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
     }
@@ -92,7 +93,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
@@ -146,7 +147,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
@@ -180,7 +181,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
@@ -219,7 +220,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
@@ -261,7 +262,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
@@ -301,7 +302,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
@@ -319,7 +320,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     }
 
     [Fact]
-    public void AddConfigServer_HandlesPlaceHolders()
+    public void AddConfigServer_SubstitutesPlaceholders()
     {
         const string appsettings = """
             {
@@ -356,10 +357,11 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
         configurationBuilder.AddJsonFile(fileName);
+        configurationBuilder.AddPlaceholderResolver();
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
@@ -459,7 +461,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
@@ -567,7 +569,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;

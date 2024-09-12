@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Logging.DynamicLogger;
+using Steeltoe.Configuration.Encryption;
+using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Management.Endpoint.Actuators.Environment;
 using Steeltoe.Management.Endpoint.Configuration;
 
@@ -91,22 +91,16 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task EnvironmentActuator_ReturnsExpectedData()
     {
-        // Some developers set ASPNETCORE_ENVIRONMENT in their environment, which will break this test if we don't un-set it
-        using var scope = new EnvironmentVariableScope("ASPNETCORE_ENVIRONMENT", null);
-
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
-                (webHostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
         using var server = new TestServer(builder);
+        using HttpClient client = server.CreateClient();
 
-        HttpClient client = server.CreateClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/env"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         string json = await response.Content.ReadAsStringAsync();
 
         json.Should().BeJson("""
@@ -121,6 +115,97 @@ public sealed class EndpointMiddlewareTest : BaseTest
                     "applicationName": {
                       "value": "Steeltoe.Management.Endpoint.Test"
                     }
+                  }
+                },
+                {
+                  "name": "EnvironmentVariablesConfigurationProvider",
+                  "properties": {
+                    "applicationName": {
+                      "value": "Steeltoe.Management.Endpoint.Test"
+                    },
+                    "environment": {},
+                    "urls": {}
+                  }
+                },
+                {
+                  "name": "MemoryConfigurationProvider",
+                  "properties": {
+                    "Logging:Console:IncludeScopes": {
+                      "value": "false"
+                    },
+                    "Logging:LogLevel:Default": {
+                      "value": "Warning"
+                    },
+                    "Logging:LogLevel:Pivotal": {
+                      "value": "Information"
+                    },
+                    "Logging:LogLevel:Steeltoe": {
+                      "value": "Information"
+                    },
+                    "management:endpoints:actuator:exposure:include:0": {
+                      "value": "*"
+                    },
+                    "management:endpoints:enabled": {
+                      "value": "true"
+                    }
+                  }
+                }
+              ]
+            }
+            """);
+    }
+
+    [Fact]
+    public async Task EnvironmentActuator_withPlaceholderDecryption_ReturnsExpectedData()
+    {
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+
+        builder.ConfigureAppConfiguration((_, configuration) =>
+        {
+            configuration.AddInMemoryCollection(AppSettings);
+            configuration.AddPlaceholderResolver();
+            configuration.AddDecryption();
+        });
+
+        using var server = new TestServer(builder);
+        using HttpClient client = server.CreateClient();
+
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/env"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        string json = await response.Content.ReadAsStringAsync();
+
+        json.Should().BeJson("""
+            {
+              "activeProfiles": [
+                "Production"
+              ],
+              "propertySources": [
+                {
+                  "name": "DecryptionConfigurationProvider",
+                  "properties": {}
+                },
+                {
+                  "name": "PlaceholderConfigurationProvider",
+                  "properties": {}
+                },
+                {
+                  "name": "ChainedConfigurationProvider",
+                  "properties": {
+                    "applicationName": {
+                      "value": "Steeltoe.Management.Endpoint.Test"
+                    }
+                  }
+                },
+                {
+                  "name": "EnvironmentVariablesConfigurationProvider",
+                  "properties": {
+                    "applicationName": {
+                      "value": "Steeltoe.Management.Endpoint.Test"
+                    },
+                    "environment": {},
+                    "urls": {}
                   }
                 },
                 {

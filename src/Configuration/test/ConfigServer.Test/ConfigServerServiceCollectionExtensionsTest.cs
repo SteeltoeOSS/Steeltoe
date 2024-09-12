@@ -6,6 +6,8 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Configuration.Encryption;
+using Steeltoe.Configuration.Placeholder;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
@@ -27,5 +29,24 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
 
         string? expectedAppName = Assembly.GetEntryAssembly()!.GetName().Name;
         TestHelper.VerifyDefaults(optionsMonitor.CurrentValue, expectedAppName);
+    }
+
+    [Fact]
+    public void DoesNotAddConfigServerMultipleTimes()
+    {
+        var builder = new ConfigurationBuilder();
+        builder.AddConfigServer();
+        builder.AddPlaceholderResolver();
+        builder.AddDecryption();
+        builder.AddConfigServer();
+        builder.AddPlaceholderResolver();
+        builder.AddDecryption();
+        builder.AddConfigServer();
+
+        builder.EnumerateSources<ConfigServerConfigurationSource>().Should().HaveCount(1);
+
+        IConfigurationRoot configurationRoot = builder.Build();
+
+        configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Should().HaveCount(1);
     }
 }

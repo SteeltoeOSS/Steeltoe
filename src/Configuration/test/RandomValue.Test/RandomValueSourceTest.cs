@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Steeltoe.Configuration.RandomValue.Test;
@@ -13,15 +12,11 @@ public sealed class RandomValueSourceTest
     [Fact]
     public void Constructors_InitializesDefaults()
     {
-        using var factory = new LoggerFactory();
-
-        var source = new RandomValueSource(factory);
-        Assert.Equal(factory, source.LoggerFactory);
+        var source = new RandomValueSource(NullLoggerFactory.Instance);
         Assert.NotNull(source.Prefix);
         Assert.Equal("random:", source.Prefix);
 
-        source = new RandomValueSource("foobar:", factory);
-        Assert.Equal(factory, source.LoggerFactory);
+        source = new RandomValueSource("foobar:", NullLoggerFactory.Instance);
         Assert.NotNull(source.Prefix);
         Assert.Equal("foobar:", source.Prefix);
     }
