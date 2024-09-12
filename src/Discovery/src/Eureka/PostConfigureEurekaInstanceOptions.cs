@@ -43,30 +43,10 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
         _inetUtils = inetUtils;
     }
 
-    private UnifiedApplicationInfo ToUnifiedApplicationInfo(IApplicationInstanceInfo applicationInstanceInfo)
+    private static UnifiedApplicationInfo ToUnifiedApplicationInfo(IApplicationInstanceInfo applicationInstanceInfo)
     {
-        if (AssemblyLoader.IsAssemblyLoaded("Steeltoe.Configuration.CloudFoundry"))
-        {
-            UnifiedApplicationInfo? applicationInfo = FromCloudFoundryApplicationOptions(applicationInstanceInfo);
-
-            if (applicationInfo != null)
-            {
-                return applicationInfo;
-            }
-        }
-
-        return new UnifiedApplicationInfo
-        {
-            ApplicationName = applicationInstanceInfo.ApplicationName
-        };
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static UnifiedApplicationInfo? FromCloudFoundryApplicationOptions(IApplicationInstanceInfo applicationInstanceInfo)
-    {
-        if (applicationInstanceInfo is CloudFoundryApplicationOptions vcapOptions)
-        {
-            return new UnifiedApplicationInfo
+        return applicationInstanceInfo is CloudFoundryApplicationOptions vcapOptions
+            ? new UnifiedApplicationInfo
             {
                 ApplicationName = vcapOptions.ApplicationName,
                 ApplicationId = vcapOptions.ApplicationId,
@@ -74,10 +54,11 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
                 InstanceId = vcapOptions.InstanceId,
                 InstanceIndex = vcapOptions.InstanceIndex,
                 InternalIP = vcapOptions.InternalIP
+            }
+            : new UnifiedApplicationInfo
+            {
+                ApplicationName = applicationInstanceInfo.ApplicationName
             };
-        }
-
-        return null;
     }
 
     public void PostConfigure(string? name, EurekaInstanceOptions options)

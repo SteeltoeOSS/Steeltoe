@@ -227,8 +227,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Logging", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Logging.Test", "Common\test\Logging.Test\Steeltoe.Common.Logging.Test.csproj", "{A9CCC214-212A-4296-98F5-65ADDB2BB8B4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Eureka.CloudFoundry.Test", "Discovery\test\Eureka.CloudFoundry.Test\Steeltoe.Discovery.Eureka.CloudFoundry.Test.csproj", "{3D57D6F8-A5C9-4B72-A137-A1605DC978A0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -519,10 +517,6 @@ Global
 		{A9CCC214-212A-4296-98F5-65ADDB2BB8B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9CCC214-212A-4296-98F5-65ADDB2BB8B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9CCC214-212A-4296-98F5-65ADDB2BB8B4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3D57D6F8-A5C9-4B72-A137-A1605DC978A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D57D6F8-A5C9-4B72-A137-A1605DC978A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3D57D6F8-A5C9-4B72-A137-A1605DC978A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3D57D6F8-A5C9-4B72-A137-A1605DC978A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -600,7 +594,6 @@ Global
 		{C4C38F83-8410-443C-9599-ACFB5FA7CD2D} = {DF26D677-72A3-442D-B556-46E3D0EF4A77}
 		{738AFF97-B4C4-4EAC-B9C5-C405D481C92B} = {59874241-E276-4035-B31D-14924889A1C9}
 		{A9CCC214-212A-4296-98F5-65ADDB2BB8B4} = {59874241-E276-4035-B31D-14924889A1C9}
-		{3D57D6F8-A5C9-4B72-A137-A1605DC978A0} = {31BAEBB1-696E-44A1-B1EF-0D150E6D2559}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}

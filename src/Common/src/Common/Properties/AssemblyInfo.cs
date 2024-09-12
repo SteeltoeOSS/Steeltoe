@@ -25,7 +25,6 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Consul")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Consul.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka")]
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka.CloudFoundry.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.HttpClients")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.HttpClients.Test")]
