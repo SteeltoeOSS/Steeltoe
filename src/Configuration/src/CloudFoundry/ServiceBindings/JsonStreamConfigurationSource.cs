@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 
-namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+namespace Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
 internal sealed class JsonStreamConfigurationSource : JsonConfigurationSource
 {

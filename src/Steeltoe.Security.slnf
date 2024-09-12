@@ -6,7 +6,7 @@
       "Common\\src\\Common\\Steeltoe.Common.csproj",
       "Common\\test\\TestResources\\Steeltoe.Common.TestResources.csproj",
       "Configuration\\src\\Abstractions\\Steeltoe.Configuration.Abstractions.csproj",
-      "Configuration\\src\\CloudFoundry.ServiceBinding\\Steeltoe.Configuration.CloudFoundry.ServiceBinding.csproj",
+      "Configuration\\src\\CloudFoundry\\Steeltoe.Configuration.CloudFoundry.csproj",
       "Configuration\\src\\Kubernetes.ServiceBinding\\Steeltoe.Configuration.Kubernetes.ServiceBinding.csproj",
       "Connectors\\src\\Connectors\\Steeltoe.Connectors.csproj",
       "Security\\src\\Authentication.JwtBearer\\Steeltoe.Security.Authentication.JwtBearer.csproj",

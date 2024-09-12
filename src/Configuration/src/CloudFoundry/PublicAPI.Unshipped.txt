@@ -11,6 +11,9 @@ static Steeltoe.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.Add
 static Steeltoe.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundryConfiguration(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundryConfiguration(this Microsoft.Extensions.Hosting.IHostBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Configuration.CloudFoundry.CloudFoundryServiceCollectionExtensions.AddCloudFoundryOptions(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Configuration.CloudFoundry.ServiceBindings.ConfigurationBuilderExtensions.AddCloudFoundryServiceBindings(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.CloudFoundry.ServiceBindings.ConfigurationBuilderExtensions.AddCloudFoundryServiceBindings(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Steeltoe.Configuration.CloudFoundry.ServiceBindings.IServiceBindingsReader! serviceBindingsReader) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.CloudFoundry.ServiceBindings.ConfigurationBuilderExtensions.AddCloudFoundryServiceBindings(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, System.Predicate<string!>! ignoreKeyPredicate, Steeltoe.Configuration.CloudFoundry.ServiceBindings.IServiceBindingsReader! serviceBindingsReader, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
 Steeltoe.Configuration.CloudFoundry.ApplicationLimits
 Steeltoe.Configuration.CloudFoundry.ApplicationLimits.ApplicationLimits() -> void
 Steeltoe.Configuration.CloudFoundry.ApplicationLimits.Disk.get -> int
@@ -86,3 +89,6 @@ Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstanceInternal
 Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstanceIP.get -> string?
 Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstancePort.get -> string?
 Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader.ServicesJson.get -> string?
+Steeltoe.Configuration.CloudFoundry.ServiceBindings.ConfigurationBuilderExtensions
+Steeltoe.Configuration.CloudFoundry.ServiceBindings.IServiceBindingsReader
+Steeltoe.Configuration.CloudFoundry.ServiceBindings.IServiceBindingsReader.GetServiceBindingsJson() -> string?

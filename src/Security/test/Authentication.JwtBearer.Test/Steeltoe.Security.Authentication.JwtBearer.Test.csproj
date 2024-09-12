@@ -6,7 +6,7 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry.ServiceBinding\Steeltoe.Configuration.CloudFoundry.ServiceBinding.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Configuration.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\src\Authentication.JwtBearer\Steeltoe.Security.Authentication.JwtBearer.csproj" />
   </ItemGroup>
 </Project>

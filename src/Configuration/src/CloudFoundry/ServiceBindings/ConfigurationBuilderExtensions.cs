@@ -5,9 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
 
-namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+namespace Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
 /// <summary>
 /// Extension methods for registering CloudFoundry <see cref="CloudFoundryServiceBindingConfigurationProvider" /> with

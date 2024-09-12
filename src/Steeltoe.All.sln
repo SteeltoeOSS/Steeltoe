@@ -190,10 +190,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Prometh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Wavefront", "Management\src\Wavefront\Steeltoe.Management.Wavefront.csproj", "{E887239C-FC4B-4EEE-9BD6-2DF6553DE2A9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.CloudFoundry.ServiceBinding", "Configuration\src\CloudFoundry.ServiceBinding\Steeltoe.Configuration.CloudFoundry.ServiceBinding.csproj", "{5625E2FC-9DAD-4ADC-B9A6-6ED192E9A4F4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test", "Configuration\test\CloudFoundry.ServiceBinding.Test\Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test.csproj", "{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Bootstrap.EmptyAutoConfiguration.Test", "Bootstrap\test\EmptyAutoConfiguration.Test\Steeltoe.Bootstrap.EmptyAutoConfiguration.Test.csproj", "{C821DCC5-880F-4F85-97B1-6D9A56DAD6F0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Wavefront.Test", "Management\test\Wavefront.Test\Steeltoe.Management.Wavefront.Test.csproj", "{6D176D53-9D27-41A3-B466-D1F0E5B29A22}"
@@ -459,14 +455,6 @@ Global
 		{E887239C-FC4B-4EEE-9BD6-2DF6553DE2A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E887239C-FC4B-4EEE-9BD6-2DF6553DE2A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E887239C-FC4B-4EEE-9BD6-2DF6553DE2A9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5625E2FC-9DAD-4ADC-B9A6-6ED192E9A4F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5625E2FC-9DAD-4ADC-B9A6-6ED192E9A4F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5625E2FC-9DAD-4ADC-B9A6-6ED192E9A4F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5625E2FC-9DAD-4ADC-B9A6-6ED192E9A4F4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C821DCC5-880F-4F85-97B1-6D9A56DAD6F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C821DCC5-880F-4F85-97B1-6D9A56DAD6F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C821DCC5-880F-4F85-97B1-6D9A56DAD6F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -596,8 +584,6 @@ Global
 		{764B3355-FD20-42E3-B452-357FCC20A27D} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 		{7603B7DF-0297-4CF7-BB31-D5B8BABF7D5B} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
 		{E887239C-FC4B-4EEE-9BD6-2DF6553DE2A9} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
-		{5625E2FC-9DAD-4ADC-B9A6-6ED192E9A4F4} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
-		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 		{C821DCC5-880F-4F85-97B1-6D9A56DAD6F0} = {EA9C3A73-3F31-4DC9-982C-963CE613E119}
 		{6D176D53-9D27-41A3-B466-D1F0E5B29A22} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
 		{7866263B-936E-4604-A821-73C46BAB1657} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}

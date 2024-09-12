@@ -3,8 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
-namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test;
+namespace Steeltoe.Configuration.CloudFoundry.Test.ServiceBindings;
 
 public abstract class BasePostProcessorsTest
 {

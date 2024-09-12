@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
 
-namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test;
+namespace Steeltoe.Configuration.CloudFoundry.Test.ServiceBindings;
 
 public sealed class PostProcessorsTest : BasePostProcessorsTest
 {

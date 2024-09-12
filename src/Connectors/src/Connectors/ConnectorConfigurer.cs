@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
 namespace Steeltoe.Connectors;

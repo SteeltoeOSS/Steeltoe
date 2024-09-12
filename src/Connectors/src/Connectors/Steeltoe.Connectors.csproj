@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry.ServiceBinding\Steeltoe.Configuration.CloudFoundry.ServiceBinding.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Configuration.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\Kubernetes.ServiceBinding\Steeltoe.Configuration.Kubernetes.ServiceBinding.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
   </ItemGroup>

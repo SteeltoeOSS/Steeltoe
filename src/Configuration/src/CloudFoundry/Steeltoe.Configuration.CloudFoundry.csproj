@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Configuration Provider for reading Cloud Foundry Environment Variables</Description>
-    <PackageTags>configuration;CloudFoundry;vcap</PackageTags>
+    <Description>Configuration Provider for reading Cloud Foundry environment variables</Description>
+    <PackageTags>configuration;CloudFoundry;vcap;vcap_application;vcap_services;tanzu</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

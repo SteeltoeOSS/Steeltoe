@@ -5,8 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
-namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test;
+namespace Steeltoe.Configuration.CloudFoundry.Test.ServiceBindings;
 
 public sealed class ConfigurationBuilderExtensionsTest
 {

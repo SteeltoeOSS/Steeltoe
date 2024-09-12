@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Discovery.Eureka.Configuration;
 
 namespace Steeltoe.Discovery.Eureka.CloudFoundry.Test;

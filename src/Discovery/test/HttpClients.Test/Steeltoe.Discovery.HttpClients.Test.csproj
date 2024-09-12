@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry.ServiceBinding\Steeltoe.Configuration.CloudFoundry.ServiceBinding.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Configuration.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\src\Configuration\Steeltoe.Discovery.Configuration.csproj" />
     <ProjectReference Include="..\..\src\Consul\Steeltoe.Discovery.Consul.csproj" />

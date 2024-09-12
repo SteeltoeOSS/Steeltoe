@@ -25,7 +25,7 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Encryption;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;

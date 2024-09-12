@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+namespace Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
 internal sealed class CloudFoundryServiceBindingConfigurationProvider : PostProcessorConfigurationProvider
 {

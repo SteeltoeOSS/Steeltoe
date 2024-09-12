@@ -13,7 +13,7 @@ using Moq;
 using StackExchange.Redis;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connectors.Redis;
 

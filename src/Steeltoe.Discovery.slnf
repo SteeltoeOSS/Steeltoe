@@ -9,7 +9,6 @@
       "Common\\src\\Logging\\Steeltoe.Common.Logging.csproj",
       "Common\\test\\TestResources\\Steeltoe.Common.TestResources.csproj",
       "Configuration\\src\\Abstractions\\Steeltoe.Configuration.Abstractions.csproj",
-      "Configuration\\src\\CloudFoundry.ServiceBinding\\Steeltoe.Configuration.CloudFoundry.ServiceBinding.csproj",
       "Configuration\\src\\CloudFoundry\\Steeltoe.Configuration.CloudFoundry.csproj",
       "Discovery\\src\\Configuration\\Steeltoe.Discovery.Configuration.csproj",
       "Discovery\\src\\Consul\\Steeltoe.Discovery.Consul.csproj",

@@ -5,7 +5,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
+namespace Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
 
 internal abstract class CloudFoundryPostProcessor : IConfigurationPostProcessor
 {

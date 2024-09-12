@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
+namespace Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
 
 internal sealed class EurekaCloudFoundryPostProcessor : CloudFoundryPostProcessor
 {
