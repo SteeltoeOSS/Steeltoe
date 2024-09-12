@@ -11,26 +11,26 @@ public sealed class TextDecryptorFactoryTest
     [Fact]
     public void Create_WhenDisabled_CreateNoneDecryptor()
     {
-        var configServerEncryptionSettings = new ConfigServerDecryptionSettings();
-        Assert.IsType<NoneDecryptor>(TextDecryptorFactory.CreateDecryptor(configServerEncryptionSettings));
+        var settings = new ConfigServerDecryptionSettings();
+        Assert.IsType<NoneDecryptor>(TextDecryptorFactory.CreateDecryptor(settings));
     }
 
     [Fact]
     public void Create_WhenEnabledWithKey_CreateAesDecryptor()
     {
-        var configServerEncryptionSettings = new ConfigServerDecryptionSettings
+        var settings = new ConfigServerDecryptionSettings
         {
             Enabled = true,
             Key = "something"
         };
 
-        Assert.IsType<AesTextDecryptor>(TextDecryptorFactory.CreateDecryptor(configServerEncryptionSettings));
+        Assert.IsType<AesTextDecryptor>(TextDecryptorFactory.CreateDecryptor(settings));
     }
 
     [Fact]
     public void Create_WhenEnabledKeyStoreLocation_CreateRsaDecryptor()
     {
-        var configServerEncryptionSettings = new ConfigServerDecryptionSettings
+        var settings = new ConfigServerDecryptionSettings
         {
             Enabled = true,
             KeyStore =
@@ -41,13 +41,13 @@ public sealed class TextDecryptorFactoryTest
             }
         };
 
-        Assert.IsType<RsaKeyStoreDecryptor>(TextDecryptorFactory.CreateDecryptor(configServerEncryptionSettings));
+        Assert.IsType<RsaKeyStoreDecryptor>(TextDecryptorFactory.CreateDecryptor(settings));
     }
 
     [Fact]
     public void Create_WhenEnabledInvalidStoreLocation_Throws()
     {
-        var configServerEncryptionSettings = new ConfigServerDecryptionSettings
+        var settings = new ConfigServerDecryptionSettings
         {
             Enabled = true,
             KeyStore =
@@ -57,13 +57,13 @@ public sealed class TextDecryptorFactoryTest
             }
         };
 
-        Assert.Throws<DecryptionException>(() => TextDecryptorFactory.CreateDecryptor(configServerEncryptionSettings));
+        Assert.Throws<DecryptionException>(() => TextDecryptorFactory.CreateDecryptor(settings));
     }
 
     [Fact]
     public void Create_WhenEnabledInvalidStorePassword_Throws()
     {
-        var configServerEncryptionSettings = new ConfigServerDecryptionSettings
+        var settings = new ConfigServerDecryptionSettings
         {
             Enabled = true,
             KeyStore =
@@ -73,13 +73,13 @@ public sealed class TextDecryptorFactoryTest
             }
         };
 
-        Assert.Throws<DecryptionException>(() => TextDecryptorFactory.CreateDecryptor(configServerEncryptionSettings));
+        Assert.Throws<DecryptionException>(() => TextDecryptorFactory.CreateDecryptor(settings));
     }
 
     [Fact]
     public void Create_WhenEnabledInvalidStoreAlias_Throws()
     {
-        var configServerEncryptionSettings = new ConfigServerDecryptionSettings
+        var settings = new ConfigServerDecryptionSettings
         {
             Enabled = true,
             KeyStore =
@@ -89,13 +89,13 @@ public sealed class TextDecryptorFactoryTest
             }
         };
 
-        Assert.Throws<DecryptionException>(() => TextDecryptorFactory.CreateDecryptor(configServerEncryptionSettings));
+        Assert.Throws<DecryptionException>(() => TextDecryptorFactory.CreateDecryptor(settings));
     }
 
     [Fact]
     public void Create_WhenEnabledValidKeyAndStore_Throws()
     {
-        var configServerEncryptionSettings = new ConfigServerDecryptionSettings
+        var settings = new ConfigServerDecryptionSettings
         {
             Enabled = true,
             Key = "something",
@@ -107,17 +107,17 @@ public sealed class TextDecryptorFactoryTest
             }
         };
 
-        Assert.Throws<DecryptionException>(() => TextDecryptorFactory.CreateDecryptor(configServerEncryptionSettings));
+        Assert.Throws<DecryptionException>(() => TextDecryptorFactory.CreateDecryptor(settings));
     }
 
     [Fact]
     public void Create_WhenEnabledNothingConfigured_Throws()
     {
-        var configServerEncryptionSettings = new ConfigServerDecryptionSettings
+        var settings = new ConfigServerDecryptionSettings
         {
             Enabled = true
         };
 
-        Assert.Throws<DecryptionException>(() => TextDecryptorFactory.CreateDecryptor(configServerEncryptionSettings));
+        Assert.Throws<DecryptionException>(() => TextDecryptorFactory.CreateDecryptor(settings));
     }
 }
