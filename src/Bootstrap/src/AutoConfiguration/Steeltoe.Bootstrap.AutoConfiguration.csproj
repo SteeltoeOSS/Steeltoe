@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\..\Common\src\Hosting\Steeltoe.Common.Hosting.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Logging\Steeltoe.Common.Logging.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\ConfigServer\Steeltoe.Configuration.ConfigServer.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Configuration\src\Encryption\Steeltoe.Configuration.Encryption.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Configuration\src\RandomValue\Steeltoe.Configuration.RandomValue.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Configuration\src\Placeholder\Steeltoe.Configuration.Placeholder.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Connectors\src\Connectors\Steeltoe.Connectors.csproj" PrivateAssets="All" />

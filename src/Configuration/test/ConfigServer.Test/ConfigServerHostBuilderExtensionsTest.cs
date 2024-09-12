@@ -26,8 +26,8 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         using IWebHost host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.NotNull(configuration.FindConfigurationProvider<CloudFoundryConfigurationProvider>());
-        Assert.NotNull(configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>());
+        Assert.Single(configuration.EnumerateProviders<CloudFoundryConfigurationProvider>());
+        Assert.Single(configuration.EnumerateProviders<ConfigServerConfigurationProvider>());
     }
 
     [Fact]
@@ -40,8 +40,8 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         using IHost host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.NotNull(configuration.FindConfigurationProvider<CloudFoundryConfigurationProvider>());
-        Assert.NotNull(configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>());
+        Assert.Single(configuration.EnumerateProviders<CloudFoundryConfigurationProvider>());
+        Assert.Single(configuration.EnumerateProviders<ConfigServerConfigurationProvider>());
     }
 
     [Fact]
@@ -59,8 +59,8 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         await using WebApplication host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.NotNull(configuration.FindConfigurationProvider<CloudFoundryConfigurationProvider>());
-        Assert.NotNull(configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>());
+        Assert.Single(configuration.EnumerateProviders<CloudFoundryConfigurationProvider>());
+        Assert.Single(configuration.EnumerateProviders<ConfigServerConfigurationProvider>());
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         using (IHost host = hostBuilder.Build())
         {
             var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
-            provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+            provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
         }
 
         FieldInfo refreshTimerField = provider.GetType().GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
@@ -104,7 +104,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         using (IWebHost webHost = webHostBuilder.Build())
         {
             var configurationRoot = (IConfigurationRoot)webHost.Services.GetRequiredService<IConfiguration>();
-            provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+            provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
         }
 
         FieldInfo refreshTimerField = provider.GetType().GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
@@ -124,7 +124,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         hostBuilder.AddConfigServer();
 
         var configurationRoot = (IConfigurationRoot)hostBuilder.Configuration;
-        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
 
         await using (WebApplication host = hostBuilder.Build())
         {
@@ -151,7 +151,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         await using WebApplication host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        var provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();
+        ConfigServerConfigurationProvider? provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         provider.Should().NotBeNull();
         provider!.ClientOptions.Name.Should().Be("myApp");
@@ -173,7 +173,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         await using WebApplication host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        var provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();
+        ConfigServerConfigurationProvider? provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         provider.Should().NotBeNull();
         provider!.ClientOptions.Name.Should().Be("myApp");
@@ -195,7 +195,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         await using WebApplication host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        var provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();
+        ConfigServerConfigurationProvider? provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         provider.Should().NotBeNull();
         provider!.ClientOptions.Name.Should().Be("myApp");
@@ -219,7 +219,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         await using WebApplication host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        var provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();
+        ConfigServerConfigurationProvider? provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         provider.Should().NotBeNull();
         provider!.ClientOptions.Name.Should().Be("myApp");
@@ -241,7 +241,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         await using WebApplication host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        var provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();
+        ConfigServerConfigurationProvider? provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         provider.Should().NotBeNull();
         provider!.ClientOptions.Environment.Should().Be("TestEnv");
@@ -263,7 +263,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         await using WebApplication host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        var provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();
+        ConfigServerConfigurationProvider? provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         provider.Should().NotBeNull();
         provider!.ClientOptions.Environment.Should().Be("TestEnv");

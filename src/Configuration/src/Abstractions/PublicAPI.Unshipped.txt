@@ -1,4 +1,3 @@
 #nullable enable
-Steeltoe.Configuration.IPlaceholderResolverProvider
-Steeltoe.Configuration.IPlaceholderResolverProvider.Providers.get -> System.Collections.Generic.IList<Microsoft.Extensions.Configuration.IConfigurationProvider!>!
-Steeltoe.Configuration.IPlaceholderResolverProvider.ResolvedKeys.get -> System.Collections.Generic.IList<string!>!
+Steeltoe.Configuration.ICompositeConfigurationSource
+Steeltoe.Configuration.ICompositeConfigurationSource.Sources.get -> System.Collections.Generic.IList<Microsoft.Extensions.Configuration.IConfigurationSource!>!

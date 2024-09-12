@@ -14,9 +14,9 @@ namespace Steeltoe.Configuration.RandomValue;
 internal sealed class RandomValueSource : IConfigurationSource
 {
     private const string DefaultPrefix = "random:";
+    private readonly ILoggerFactory _loggerFactory;
 
     internal string Prefix { get; }
-    internal ILoggerFactory LoggerFactory { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RandomValueSource" /> class.
@@ -43,7 +43,7 @@ internal sealed class RandomValueSource : IConfigurationSource
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         Prefix = prefix ?? DefaultPrefix;
-        LoggerFactory = loggerFactory;
+        _loggerFactory = loggerFactory;
     }
 
     /// <summary>
@@ -57,6 +57,6 @@ internal sealed class RandomValueSource : IConfigurationSource
     /// </returns>
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        return new RandomValueProvider(Prefix, LoggerFactory);
+        return new RandomValueProvider(Prefix, _loggerFactory);
     }
 }

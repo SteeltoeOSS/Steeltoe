@@ -11,6 +11,8 @@ namespace Steeltoe.Configuration.ConfigServer;
 
 internal sealed class ConfigServerConfigurationSource : IConfigurationSource
 {
+    private readonly ILoggerFactory _loggerFactory;
+
     internal List<IConfigurationSource> Sources { get; } = [];
     internal Dictionary<string, object> Properties { get; } = [];
 
@@ -24,11 +26,6 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// <see cref="DefaultOptions" />.
     /// </summary>
     internal IConfiguration? Configuration { get; private set; }
-
-    /// <summary>
-    /// Gets the logger factory used by the Config Server client.
-    /// </summary>
-    internal ILoggerFactory LoggerFactory { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
@@ -50,7 +47,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
 
         Configuration = configuration;
         DefaultOptions = defaultOptions;
-        LoggerFactory = loggerFactory;
+        _loggerFactory = loggerFactory;
     }
 
     /// <summary>
@@ -84,7 +81,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
         }
 
         DefaultOptions = defaultOptions;
-        LoggerFactory = loggerFactory;
+        _loggerFactory = loggerFactory;
     }
 
     /// <summary>
@@ -129,6 +126,6 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
             DefaultOptions.ClientCertificate.Certificate = options.Certificate;
         }
 
-        return new ConfigServerConfigurationProvider(this, LoggerFactory);
+        return new ConfigServerConfigurationProvider(this, _loggerFactory);
     }
 }

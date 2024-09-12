@@ -7,6 +7,7 @@ Steeltoe configuration providers can:
 - Interact with [Spring Cloud Config](https://spring.io/projects/spring-cloud-config)
 - Read [Cloud Foundry environment variables](https://docs.cloudfoundry.org/devguide/deploy-apps/environment-variable.html)
 - Replace property placeholders
+- Decrypt encrypted values
 - Provide random values
 
 For more information on how to use these components see the [Steeltoe documentation](https://steeltoe.io/).
@@ -19,7 +20,7 @@ See the `Configuration` directory inside the [Samples](https://github.com/Steelt
 
 ### Unstructured data files
 
-Unlike the Java version of the configuration server client, the Steeltoe client currently only supports property and yaml files; not plain text.
+Unlike the Java version of the Config Server client, the Steeltoe client currently only supports property and yaml files; not plain text.
 
 ### Server initiated reload
 

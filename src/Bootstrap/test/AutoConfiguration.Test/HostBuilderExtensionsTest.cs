@@ -27,6 +27,7 @@ using Steeltoe.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.ConfigServer;
+using Steeltoe.Configuration.Encryption;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
@@ -83,6 +84,17 @@ public sealed class HostBuilderExtensionsTest
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationRandomValue, hostBuilderType);
 
         AssertRandomValueConfigurationIsAutowired(hostWrapper);
+    }
+
+    [Theory]
+    [InlineData(HostBuilderType.Host)]
+    [InlineData(HostBuilderType.WebHost)]
+    [InlineData(HostBuilderType.WebApplication)]
+    public async Task EncryptionConfiguration_IsAutowired(HostBuilderType hostBuilderType)
+    {
+        await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationEncryption, hostBuilderType);
+
+        AssertEncryptionConfigurationIsAutowired(hostWrapper);
     }
 
     [Theory]
@@ -220,6 +232,7 @@ public sealed class HostBuilderExtensionsTest
         AssertConfigServerConfigurationIsAutowired(hostWrapper);
         AssertCloudFoundryConfigurationIsAutowired(hostWrapper);
         AssertRandomValueConfigurationIsAutowired(hostWrapper);
+        AssertEncryptionConfigurationIsAutowired(hostWrapper);
         AssertPlaceholderResolverIsAutowired(hostWrapper);
         AssertConnectorsAreAutowired(hostWrapper);
         AssertDynamicSerilogIsAutowired(hostWrapper);
@@ -238,37 +251,44 @@ public sealed class HostBuilderExtensionsTest
     {
         var configuration = hostWrapper.Services.GetRequiredService<IConfiguration>();
 
-        configuration.FindConfigurationProvider<CloudFoundryConfigurationProvider>().Should().NotBeNull();
-        configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>().Should().NotBeNull();
+        configuration.EnumerateProviders<CloudFoundryConfigurationProvider>().Should().HaveCount(1);
+        configuration.EnumerateProviders<ConfigServerConfigurationProvider>().Should().HaveCount(1);
     }
 
     private static void AssertCloudFoundryConfigurationIsAutowired(HostWrapper hostWrapper)
     {
         var configuration = hostWrapper.Services.GetRequiredService<IConfiguration>();
 
-        configuration.FindConfigurationProvider<CloudFoundryConfigurationProvider>().Should().NotBeNull();
+        configuration.EnumerateProviders<CloudFoundryConfigurationProvider>().Should().HaveCount(1);
     }
 
     private static void AssertRandomValueConfigurationIsAutowired(HostWrapper hostWrapper)
     {
         var configuration = hostWrapper.Services.GetRequiredService<IConfiguration>();
 
-        configuration.FindConfigurationProvider<RandomValueProvider>().Should().NotBeNull();
+        configuration.EnumerateProviders<RandomValueProvider>().Should().HaveCount(1);
+    }
+
+    private static void AssertEncryptionConfigurationIsAutowired(HostWrapper hostWrapper)
+    {
+        var configurationRoot = (IConfigurationRoot)hostWrapper.Services.GetRequiredService<IConfiguration>();
+
+        configurationRoot.EnumerateProviders<DecryptionConfigurationProvider>().Should().HaveCount(1);
     }
 
     private static void AssertPlaceholderResolverIsAutowired(HostWrapper hostWrapper)
     {
         var configurationRoot = (IConfigurationRoot)hostWrapper.Services.GetRequiredService<IConfiguration>();
 
-        configurationRoot.Providers.OfType<PlaceholderResolverProvider>().Should().HaveCount(1);
+        configurationRoot.EnumerateProviders<PlaceholderConfigurationProvider>().Should().HaveCount(1);
     }
 
     private static void AssertConnectorsAreAutowired(HostWrapper hostWrapper)
     {
         var configuration = hostWrapper.Services.GetRequiredService<IConfiguration>();
 
-        configuration.FindConfigurationProvider<KubernetesServiceBindingConfigurationProvider>().Should().NotBeNull();
-        configuration.FindConfigurationProvider<CloudFoundryServiceBindingConfigurationProvider>().Should().NotBeNull();
+        configuration.EnumerateProviders<KubernetesServiceBindingConfigurationProvider>().Should().NotBeEmpty();
+        configuration.EnumerateProviders<CloudFoundryServiceBindingConfigurationProvider>().Should().HaveCount(1);
 
         hostWrapper.Services.GetService<ConnectorFactory<CosmosDbOptions, CosmosClient>>().Should().NotBeNull();
         hostWrapper.Services.GetService<ConnectorFactory<MongoDbOptions, IMongoClient>>().Should().NotBeNull();

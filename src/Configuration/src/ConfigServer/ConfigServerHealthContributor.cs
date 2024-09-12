@@ -23,7 +23,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
         ArgumentNullException.ThrowIfNull(logger);
 
         _logger = logger;
-        Provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();
+        Provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         if (Provider == null)
         {

@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Configuration.Encryption;
 using Steeltoe.Configuration.Placeholder;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
@@ -14,36 +15,12 @@ public sealed class ConfigServerHostedServiceTest
     [Fact]
     public async Task ServiceConstructsAndOperatesWithConfigurationRoot()
     {
-        var configurationRoot = new ConfigurationRoot([
-            new ConfigServerConfigurationProvider(new ConfigServerClientOptions
-            {
-                Enabled = false
-            }, null, null, NullLoggerFactory.Instance)
-        ]);
-
-        var service = new ConfigServerHostedService(configurationRoot, []);
-
-        Func<Task> startStopAction = async () =>
+        var provider = new ConfigServerConfigurationProvider(new ConfigServerClientOptions
         {
-            await service.StartAsync(default);
-            await service.StopAsync(default);
-        };
+            Enabled = false
+        }, null, null, NullLoggerFactory.Instance);
 
-        await startStopAction.Should().NotThrowAsync("ConfigServerHostedService should start");
-    }
-
-    [Fact]
-    public async Task FindsConfigServerProviderInPlaceholderProvider()
-    {
-        var placeholder = new PlaceholderResolverProvider([
-            new ConfigServerConfigurationProvider(new ConfigServerClientOptions
-            {
-                Enabled = false
-            }, null, null, NullLoggerFactory.Instance)
-        ], NullLoggerFactory.Instance);
-
-        var configurationRoot = new ConfigurationRoot([placeholder]);
-
+        var configurationRoot = new ConfigurationRoot([provider]);
         var service = new ConfigServerHostedService(configurationRoot, []);
 
         Func<Task> startStopAction = async () =>
@@ -70,5 +47,30 @@ public sealed class ConfigServerHostedServiceTest
         };
 
         await startStopAction.Should().NotThrowAsync("ConfigServerHostedService should start");
+    }
+
+    [Fact]
+    public void ThrowsWhenConfigServerProviderNotFound()
+    {
+        var builder = new ConfigurationBuilder();
+        IConfigurationRoot configurationRoot = builder.Build();
+
+        Action action = () => _ = new ConfigServerHostedService(configurationRoot, []);
+
+        action.Should().ThrowExactly<InvalidOperationException>().WithMessage("ConfigServerConfigurationProvider was not found in configuration.");
+    }
+
+    [Fact]
+    public void FindsConfigServerProviderInPlaceholderProviderInDecryptionProvider()
+    {
+        var builder = new ConfigurationBuilder();
+        builder.AddConfigServer();
+        builder.AddPlaceholderResolver();
+        builder.AddDecryption();
+        IConfigurationRoot configurationRoot = builder.Build();
+
+        Action action = () => _ = new ConfigServerHostedService(configurationRoot, []);
+
+        action.Should().NotThrow();
     }
 }

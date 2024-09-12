@@ -1,6 +1,7 @@
 #nullable enable
 const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ConfigurationCloudFoundry = "Steeltoe.Configuration.CloudFoundry" -> string!
 const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ConfigurationConfigServer = "Steeltoe.Configuration.ConfigServer" -> string!
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ConfigurationEncryption = "Steeltoe.Configuration.Encryption" -> string!
 const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ConfigurationPlaceholder = "Steeltoe.Configuration.Placeholder" -> string!
 const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ConfigurationRandomValue = "Steeltoe.Configuration.RandomValue" -> string!
 const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.Connectors = "Steeltoe.Connectors" -> string!

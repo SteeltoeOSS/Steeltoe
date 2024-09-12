@@ -78,7 +78,7 @@ public static class RandomValueConfigurationBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        if (!builder.Sources.OfType<RandomValueSource>().Any())
+        if (!builder.EnumerateSources<RandomValueSource>().Any())
         {
             if (prefix != null && !prefix.EndsWith(':'))
             {

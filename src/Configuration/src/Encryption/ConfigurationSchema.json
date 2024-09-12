@@ -21,11 +21,11 @@
       "properties": {
         "Enabled": {
           "type": "boolean",
-          "description": "Gets or sets a value indicating whether encryption is enabled. Default value: false."
+          "description": "Gets or sets a value indicating whether decryption is enabled. Default value: false."
         },
         "Key": {
           "type": "string",
-          "description": "Gets or sets the key of the simple encryption."
+          "description": "Gets or sets the cryptographic key."
         },
         "KeyStore": {
           "type": "object",
@@ -61,10 +61,10 @@
               "description": "Gets or sets a value indicating whether strong encryption is enabled. Default value: false."
             }
           },
-          "description": "Gets the settings related to RSA encryption."
+          "description": "Gets the settings related to RSA cryptography."
         }
       },
-      "description": "Holds settings used to configure encryption for the Spring Cloud Config Server provider."
+      "description": "Holds settings used to configure decryption for the Spring Cloud Config Server provider."
     }
   }
 }

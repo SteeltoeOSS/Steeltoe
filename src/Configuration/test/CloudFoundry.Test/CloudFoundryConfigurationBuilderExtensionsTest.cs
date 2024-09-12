@@ -12,22 +12,9 @@ public sealed class CloudFoundryConfigurationBuilderExtensionsTest
     public void AddCloudFoundry_AddsCloudFoundrySourceToSourcesList()
     {
         var configurationBuilder = new ConfigurationBuilder();
-
         configurationBuilder.AddCloudFoundry();
 
-        CloudFoundryConfigurationSource? cloudSource = null;
-
-        foreach (IConfigurationSource source in configurationBuilder.Sources)
-        {
-            cloudSource = source as CloudFoundryConfigurationSource;
-
-            if (cloudSource != null)
-            {
-                break;
-            }
-        }
-
-        Assert.NotNull(cloudSource);
+        configurationBuilder.EnumerateSources<CloudFoundryConfigurationSource>().Should().HaveCount(1);
     }
 
     [Fact]

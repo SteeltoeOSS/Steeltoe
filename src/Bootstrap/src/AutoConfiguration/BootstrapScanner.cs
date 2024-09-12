@@ -10,6 +10,7 @@ using Steeltoe.Common.Hosting;
 using Steeltoe.Common.Logging;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.ConfigServer;
+using Steeltoe.Configuration.Encryption;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
 using Steeltoe.Connectors.CosmosDb;
@@ -71,6 +72,7 @@ internal sealed class BootstrapScanner
         }
 
         WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblyNames.ConfigurationRandomValue);
+        WireIfLoaded(WireDecryptionProvider, SteeltoeAssemblyNames.ConfigurationEncryption);
         WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblyNames.ConfigurationPlaceholder);
         WireIfLoaded(WireConnectors, SteeltoeAssemblyNames.Connectors);
         WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblyNames.LoggingDynamicSerilog);
@@ -102,6 +104,13 @@ internal sealed class BootstrapScanner
         _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddRandomValueSource(_loggerFactory));
 
         _logger.LogInformation("Configured random value configuration provider");
+    }
+
+    private void WireDecryptionProvider()
+    {
+        _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddDecryption(_loggerFactory));
+
+        _logger.LogInformation("Configured decryption configuration provider");
     }
 
     private void WirePlaceholderResolver()
