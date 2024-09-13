@@ -43,6 +43,7 @@ using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Logging;
+using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
@@ -144,6 +145,17 @@ public sealed class HostBuilderExtensionsTest
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.LoggingDynamicSerilog, hostBuilderType);
 
         AssertDynamicSerilogIsAutowired(hostWrapper);
+    }
+
+    [Theory]
+    [InlineData(HostBuilderType.Host)]
+    [InlineData(HostBuilderType.WebHost)]
+    [InlineData(HostBuilderType.WebApplication)]
+    public async Task DynamicConsoleLogger_IsAutowired(HostBuilderType hostBuilderType)
+    {
+        await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.LoggingDynamicLogger, hostBuilderType);
+
+        AssertDynamicConsoleIsAutowired(hostWrapper);
     }
 
     [Theory]
@@ -305,6 +317,13 @@ public sealed class HostBuilderExtensionsTest
         var loggerProvider = hostWrapper.Services.GetRequiredService<IDynamicLoggerProvider>();
 
         loggerProvider.Should().BeOfType<DynamicSerilogLoggerProvider>();
+    }
+
+    private static void AssertDynamicConsoleIsAutowired(HostWrapper hostWrapper)
+    {
+        var loggerProvider = hostWrapper.Services.GetRequiredService<IDynamicLoggerProvider>();
+
+        loggerProvider.Should().BeOfType<DynamicConsoleLoggerProvider>();
     }
 
     private static void AssertServiceDiscoveryClientsAreAutowired(HostWrapper hostWrapper)
