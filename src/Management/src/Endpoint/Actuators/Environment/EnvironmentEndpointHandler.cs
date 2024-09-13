@@ -16,7 +16,6 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
     private readonly IOptionsMonitor<EnvironmentEndpointOptions> _optionsMonitor;
     private readonly IConfiguration _configuration;
     private readonly IHostEnvironment _environment;
-    private readonly Sanitizer _sanitizer;
     private readonly ILogger<EnvironmentEndpointHandler> _logger;
 
     public EndpointOptions Options => _optionsMonitor.CurrentValue;
@@ -32,7 +31,6 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         _optionsMonitor = optionsMonitor;
         _configuration = configuration;
         _environment = environment;
-        _sanitizer = new Sanitizer(optionsMonitor.CurrentValue.KeysToSanitize);
         _logger = loggerFactory.CreateLogger<EnvironmentEndpointHandler>();
     }
 
@@ -66,6 +64,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
         var properties = new Dictionary<string, PropertyValueDescriptor>();
         string sourceName = GetPropertySourceName(provider);
+        Sanitizer? sanitizer = null;
 
         foreach (string key in GetFullKeyNames(provider, null, []))
         {
@@ -77,7 +76,8 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
                     continue;
                 }
 
-                string? sanitizedValue = _sanitizer.Sanitize(key, value);
+                sanitizer ??= _optionsMonitor.CurrentValue.GetSanitizer();
+                string? sanitizedValue = sanitizer.Sanitize(key, value);
                 properties.Add(key, new PropertyValueDescriptor(sanitizedValue));
             }
         }

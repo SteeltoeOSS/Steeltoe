@@ -24,7 +24,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
-        ["Logging:LogLevel:Pivotal"] = "Information",
+        ["Logging:LogLevel:TestApp"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:actuator:exposure:include:0"] = "*"
@@ -60,8 +60,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
               "management:endpoints:actuator:exposure:include:0",
               "Logging",
               "Logging:LogLevel",
+              "Logging:LogLevel:TestApp",
               "Logging:LogLevel:Steeltoe",
-              "Logging:LogLevel:Pivotal",
               "Logging:LogLevel:Default",
               "Logging:Console",
               "Logging:Console:IncludeScopes"
@@ -103,8 +103,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
               "management:endpoints:actuator:exposure:include:0",
               "Logging",
               "Logging:LogLevel",
+              "Logging:LogLevel:TestApp",
               "Logging:LogLevel:Steeltoe",
-              "Logging:LogLevel:Pivotal",
               "Logging:LogLevel:Default",
               "Logging:Console",
               "Logging:Console:IncludeScopes",

@@ -28,7 +28,7 @@ public sealed class CloudFoundryServiceCollectionExtensionsTest
               "space_name": "playground",
               "space_id": "f03f2ab0-cf33-416b-999c-fb01c1247753",
               "organization_id": "d7afe5cb-2d42-487b-a415-f47c0665f1ba",
-              "organization_name": "pivot-thess",
+              "organization_name": "some-org",
               "uris": [
                 "foo-unexpected-serval-iy.apps.pcfone.io"
               ],

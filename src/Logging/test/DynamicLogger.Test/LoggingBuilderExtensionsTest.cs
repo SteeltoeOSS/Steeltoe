@@ -292,7 +292,7 @@ public sealed class LoggingBuilderExtensionsTest
     }
 
     [Fact]
-    public async Task AddDynamicConsole_DisablesColorOnPivotalPlatform()
+    public async Task AddDynamicConsole_DisablesColorOnCloudFoundry()
     {
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "not empty");
 
