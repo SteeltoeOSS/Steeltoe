@@ -18,6 +18,7 @@ public static class SteeltoeAssemblyNames
     public const string DiscoveryConfiguration = "Steeltoe.Discovery.Configuration";
     public const string DiscoveryConsul = "Steeltoe.Discovery.Consul";
     public const string DiscoveryEureka = "Steeltoe.Discovery.Eureka";
+    public const string LoggingDynamicLogger = "Steeltoe.Logging.DynamicLogger";
     public const string LoggingDynamicSerilog = "Steeltoe.Logging.DynamicSerilog";
     public const string ManagementEndpoint = "Steeltoe.Management.Endpoint";
     public const string ManagementPrometheus = "Steeltoe.Management.Prometheus";

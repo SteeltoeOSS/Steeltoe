@@ -30,6 +30,7 @@ using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
+using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Prometheus;
@@ -75,7 +76,12 @@ internal sealed class BootstrapScanner
         WireIfLoaded(WireDecryptionProvider, SteeltoeAssemblyNames.ConfigurationEncryption);
         WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblyNames.ConfigurationPlaceholder);
         WireIfLoaded(WireConnectors, SteeltoeAssemblyNames.Connectors);
-        WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblyNames.LoggingDynamicSerilog);
+
+        if (!WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblyNames.LoggingDynamicSerilog))
+        {
+            WireIfLoaded(WireDynamicConsole, SteeltoeAssemblyNames.LoggingDynamicLogger);
+        }
+
         WireIfLoaded(WireDiscoveryConfiguration, SteeltoeAssemblyNames.DiscoveryConfiguration);
         WireIfLoaded(WireDiscoveryConsul, SteeltoeAssemblyNames.DiscoveryConsul);
         WireIfLoaded(WireDiscoveryEureka, SteeltoeAssemblyNames.DiscoveryEureka);
@@ -198,6 +204,13 @@ internal sealed class BootstrapScanner
         _wrapper.AddDynamicSerilog(null, false);
 
         _logger.LogInformation("Configured dynamic console logger for Serilog");
+    }
+
+    private void WireDynamicConsole()
+    {
+        _wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
+
+        _logger.LogInformation("Configured dynamic console logger");
     }
 
     private void WireDiscoveryConfiguration()
