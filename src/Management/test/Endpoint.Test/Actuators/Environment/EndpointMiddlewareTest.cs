@@ -26,7 +26,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
-        ["Logging:LogLevel:Pivotal"] = "Information",
+        ["Logging:LogLevel:TestApp"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:actuator:exposure:include:0"] = "*"
@@ -70,10 +70,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
                     "Logging:LogLevel:Default": {
                       "value": "Warning"
                     },
-                    "Logging:LogLevel:Pivotal": {
+                    "Logging:LogLevel:Steeltoe": {
                       "value": "Information"
                     },
-                    "Logging:LogLevel:Steeltoe": {
+                    "Logging:LogLevel:TestApp": {
                       "value": "Information"
                     },
                     "management:endpoints:actuator:exposure:include:0": {
@@ -137,10 +137,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
                     "Logging:LogLevel:Default": {
                       "value": "Warning"
                     },
-                    "Logging:LogLevel:Pivotal": {
+                    "Logging:LogLevel:Steeltoe": {
                       "value": "Information"
                     },
-                    "Logging:LogLevel:Steeltoe": {
+                    "Logging:LogLevel:TestApp": {
                       "value": "Information"
                     },
                     "management:endpoints:actuator:exposure:include:0": {
@@ -218,10 +218,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
                     "Logging:LogLevel:Default": {
                       "value": "Warning"
                     },
-                    "Logging:LogLevel:Pivotal": {
+                    "Logging:LogLevel:Steeltoe": {
                       "value": "Information"
                     },
-                    "Logging:LogLevel:Steeltoe": {
+                    "Logging:LogLevel:TestApp": {
                       "value": "Information"
                     },
                     "management:endpoints:actuator:exposure:include:0": {

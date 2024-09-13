@@ -24,7 +24,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
-        ["Logging:LogLevel:Pivotal"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:dump:enabled"] = "true",
