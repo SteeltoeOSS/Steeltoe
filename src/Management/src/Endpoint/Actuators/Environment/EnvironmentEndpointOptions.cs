@@ -8,8 +8,16 @@ namespace Steeltoe.Management.Endpoint.Actuators.Environment;
 
 public sealed class EnvironmentEndpointOptions : EndpointOptions
 {
+    private Sanitizer? _sanitizer;
+
     /// <summary>
     /// Gets the list of keys to sanitize. Allows regular expressions.
     /// </summary>
     public IList<string> KeysToSanitize { get; } = new List<string>();
+
+    internal Sanitizer GetSanitizer()
+    {
+        _sanitizer ??= new Sanitizer(KeysToSanitize);
+        return _sanitizer;
+    }
 }

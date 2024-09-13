@@ -4,6 +4,7 @@
 
 using System.Net;
 using System.Text;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
@@ -250,6 +251,150 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         Assert.Single(endpointOptions.AllowedVerbs);
         Assert.Contains("Get", endpointOptions.AllowedVerbs);
+    }
+
+    [Fact]
+    public async Task EnvironmentActuator_UpdatesSanitizerRulesOnConfigurationChange()
+    {
+        var fileProvider = new MemoryFileProvider();
+        const string appSettingsJsonFileName = "appsettings.json";
+
+        fileProvider.IncludeFile(appSettingsJsonFileName, """
+        {
+          "Management": {
+            "Endpoints": {
+              "Enabled": true,
+              "Actuator": {
+                "Exposure": {
+                  "Include": [
+                    "env"
+                  ]
+                }
+              },
+              "Env": {
+                "KeysToSanitize": [
+                  "Password"
+                ]
+              }
+            }
+          },
+          "TestSettings": {
+            "Password": "secret-password",
+            "AccessToken": "secret-token"
+          }
+        }
+        """);
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.Sources.Clear();
+        builder.Configuration.AddJsonFile(fileProvider, appSettingsJsonFileName, false, true);
+        builder.AddEnvironmentActuator();
+
+        await using WebApplication app = builder.Build();
+        app.UseRouting();
+
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
+        using HttpClient client = server.CreateClient();
+
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/env"));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string json = await response.Content.ReadAsStringAsync();
+
+        json.Should().BeJson("""
+            {
+              "activeProfiles": [
+                "Production"
+              ],
+              "propertySources": [
+                {
+                  "name": "JsonConfigurationProvider: [appsettings.json]",
+                  "properties": {
+                    "Management:Endpoints:Actuator:Exposure:Include:0": {
+                      "value": "env"
+                    },
+                    "Management:Endpoints:Enabled": {
+                      "value": "True"
+                    },
+                    "Management:Endpoints:Env:KeysToSanitize:0": {
+                      "value": "Password"
+                    },
+                    "TestSettings:AccessToken": {
+                      "value": "secret-token"
+                    },
+                    "TestSettings:Password": {
+                      "value": "******"
+                    }
+                  }
+                }
+              ]
+            }
+            """);
+
+        fileProvider.ReplaceFile(appSettingsJsonFileName, """
+        {
+          "Management": {
+            "Endpoints": {
+              "Enabled": true,
+              "Actuator": {
+                "Exposure": {
+                  "Include": [
+                    "env"
+                  ]
+                }
+              },
+              "Env": {
+                "KeysToSanitize": [
+                  "AccessToken"
+                ]
+              }
+            }
+          },
+          "TestSettings": {
+            "Password": "secret-password",
+            "AccessToken": "secret-token"
+          }
+        }
+        """);
+
+        fileProvider.NotifyChanged();
+
+        response = await client.GetAsync(new Uri("http://localhost/actuator/env"));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        json = await response.Content.ReadAsStringAsync();
+
+        json.Should().BeJson("""
+            {
+              "activeProfiles": [
+                "Production"
+              ],
+              "propertySources": [
+                {
+                  "name": "JsonConfigurationProvider: [appsettings.json]",
+                  "properties": {
+                    "Management:Endpoints:Actuator:Exposure:Include:0": {
+                      "value": "env"
+                    },
+                    "Management:Endpoints:Enabled": {
+                      "value": "True"
+                    },
+                    "Management:Endpoints:Env:KeysToSanitize:0": {
+                      "value": "AccessToken"
+                    },
+                    "TestSettings:AccessToken": {
+                      "value": "******"
+                    },
+                    "TestSettings:Password": {
+                      "value": "secret-password"
+                    }
+                  }
+                }
+              ]
+            }
+            """);
     }
 
     private HttpContext CreateRequest(string method, string path)
