@@ -9,8 +9,8 @@ using Microsoft.Extensions.Options;
 using Npgsql;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
+using Steeltoe.Configuration.Kubernetes.ServiceBindings;
 using Steeltoe.Connectors.PostgreSql;
 
 namespace Steeltoe.Connectors.Test.PostgreSql;

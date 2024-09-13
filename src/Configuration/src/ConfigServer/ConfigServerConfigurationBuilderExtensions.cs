@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding;
+using Steeltoe.Configuration.Kubernetes.ServiceBindings;
 
 namespace Steeltoe.Configuration.ConfigServer;
 

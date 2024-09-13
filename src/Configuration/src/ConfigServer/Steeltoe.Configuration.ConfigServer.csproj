@@ -15,7 +15,7 @@
     <ProjectReference Include="..\..\..\Discovery\src\Consul\Steeltoe.Discovery.Consul.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Discovery\src\Eureka\Steeltoe.Discovery.Eureka.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\CloudFoundry\Steeltoe.Configuration.CloudFoundry.csproj" />
-    <ProjectReference Include="..\Kubernetes.ServiceBinding\Steeltoe.Configuration.Kubernetes.ServiceBinding.csproj" />
+    <ProjectReference Include="..\Kubernetes.ServiceBindings\Steeltoe.Configuration.Kubernetes.ServiceBindings.csproj" />
   </ItemGroup>
 
   <ItemDefinitionGroup>

@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Connectors.CosmosDb;
 
 namespace Steeltoe.Connectors.Test.CosmosDb;

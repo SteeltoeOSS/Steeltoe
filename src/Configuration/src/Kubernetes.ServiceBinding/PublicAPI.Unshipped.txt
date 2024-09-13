@@ -1,7 +1,0 @@
-#nullable enable
-static Steeltoe.Configuration.Kubernetes.ServiceBinding.ConfigurationBuilderExtensions.AddKubernetesServiceBindings(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.Kubernetes.ServiceBinding.ConfigurationBuilderExtensions.AddKubernetesServiceBindings(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, bool optional, bool reloadOnChange, System.Predicate<string!>! ignoreKeyPredicate, Steeltoe.Configuration.Kubernetes.ServiceBinding.IServiceBindingsReader! serviceBindingsReader, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.Kubernetes.ServiceBinding.ConfigurationBuilderExtensions.AddKubernetesServiceBindings(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Steeltoe.Configuration.Kubernetes.ServiceBinding.IServiceBindingsReader! serviceBindingsReader) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-Steeltoe.Configuration.Kubernetes.ServiceBinding.ConfigurationBuilderExtensions
-Steeltoe.Configuration.Kubernetes.ServiceBinding.IServiceBindingsReader
-Steeltoe.Configuration.Kubernetes.ServiceBinding.IServiceBindingsReader.GetRootDirectory() -> Microsoft.Extensions.FileProviders.IFileProvider?
