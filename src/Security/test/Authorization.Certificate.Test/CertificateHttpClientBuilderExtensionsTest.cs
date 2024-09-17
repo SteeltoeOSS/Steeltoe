@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Certificates;
@@ -50,7 +49,7 @@ public sealed class CertificateHttpClientBuilderExtensionsTest
 
     private static IHostBuilder GetHostBuilder(string? certificateHeaderName = null)
     {
-        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate());
 
         hostBuilder.ConfigureServices(services =>
@@ -63,11 +62,6 @@ public sealed class CertificateHttpClientBuilderExtensionsTest
             {
                 services.AddHttpClient("test").AddAppInstanceIdentityCertificate(certificateHeaderName);
             }
-        });
-
-        hostBuilder.ConfigureWebHost(webBuilder =>
-        {
-            webBuilder.UseTestServer();
         });
 
         return hostBuilder;

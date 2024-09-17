@@ -50,7 +50,6 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
 
         configurationBuilder.AddJsonFile(fileName);
 
-        // Act and Assert (expects Spring Cloud Config Server to be running)
         configurationBuilder.AddConfigServer();
         IConfigurationRoot root = configurationBuilder.Build();
 
@@ -103,9 +102,10 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
 
         builder.AddConfigServer();
 
-        // Act and Assert (TestServer expects Spring Cloud Config Server to be running)
-        using var server = new TestServer(builder);
-        using HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"));
 
         Assert.Equal("spamfrom foo developmentSpring Cloud Sampleshttps://github.com/spring-cloud-samples", result);
@@ -193,9 +193,10 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
 
         builder.AddConfigServer();
 
-        // Act and Assert (TestServer expects Spring Cloud Config Server to be running @ localhost:8888)
-        using var server = new TestServer(builder);
-        using HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"));
 
         Assert.Equal("spamfrom foo developmentSpring Cloud Sampleshttps://github.com/spring-cloud-samples", result);
@@ -274,8 +275,9 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
 
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseEnvironment("development");
+        builder.UseStartup<TestServerStartup>();
 
-        builder.UseStartup<TestServerStartup>().ConfigureAppConfiguration(configurationBuilder =>
+        builder.ConfigureAppConfiguration(configurationBuilder =>
         {
             configurationBuilder.SetBasePath(directory);
             configurationBuilder.AddJsonFile(fileName);
@@ -283,9 +285,10 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
 
         builder.AddConfigServer();
 
-        // Act and Assert (TestServer expects Spring Cloud Config Server to be running)
-        using var server = new TestServer(builder);
-        using HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"));
 
         Assert.Equal("spambarcelonaSpring Cloud Sampleshttps://github.com/spring-cloud-samples", result);
@@ -329,7 +332,6 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
 
         configurationBuilder.AddJsonFile(fileName);
 
-        // Act and Assert (expects Spring Cloud Config Server to be running)
         configurationBuilder.AddConfigServer();
         IConfigurationRoot root = configurationBuilder.Build();
 
@@ -381,9 +383,10 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
 
         builder.AddConfigServer();
 
-        // Act and Assert (TestServer expects Spring Cloud Config Server to be running)
-        using var server = new TestServer(builder);
-        using HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         string result = await client.GetStringAsync(new Uri("http://localhost/Home/Health"));
 
         // after switching to newer config server image, the health response has changed to

@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -100,13 +99,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
-        builder.ConfigureLogging((webHostContext, loggingBuilder) => loggingBuilder.AddConfiguration(webHostContext.Configuration));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
 
+        using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/mappings"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         string json = await response.Content.ReadAsStringAsync();
 
         json.Should().BeJson($$"""
@@ -187,13 +187,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
-        builder.ConfigureLogging((webHostContext, loggingBuilder) => loggingBuilder.AddConfiguration(webHostContext.Configuration));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
 
+        using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/mappings"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         string json = await response.Content.ReadAsStringAsync();
 
         json.Should().BeJson($$"""
@@ -274,13 +275,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
-        builder.ConfigureLogging((webHostContext, loggingBuilder) => loggingBuilder.AddConfiguration(webHostContext.Configuration));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
 
+        using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/mappings"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         string json = await response.Content.ReadAsStringAsync();
 
         json.Should().BeJson($$"""
@@ -376,13 +378,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
-        builder.ConfigureLogging((webHostContext, loggingBuilder) => loggingBuilder.AddConfiguration(webHostContext.Configuration));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
 
+        using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/mappings"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         string json = await response.Content.ReadAsStringAsync();
 
         json.Should().BeJson($$"""

@@ -37,11 +37,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         // Note: This test pulls in from git.properties and appsettings created
         // in the Startup class
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using HttpClient client = app.GetTestClient();
 
         var dictionary = await client.GetFromJsonAsync<Dictionary<string, Dictionary<string, JsonElement>>>("http://localhost/management/infomanagement",
             SerializerOptions);
@@ -86,11 +89,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConverter" }
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using HttpClient client = app.GetTestClient();
         string response = await client.GetStringAsync(new Uri("http://localhost/actuator/info"));
 
         Assert.Contains("1499884839000", response, StringComparison.Ordinal);

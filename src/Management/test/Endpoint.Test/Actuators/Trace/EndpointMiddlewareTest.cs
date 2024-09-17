@@ -6,9 +6,7 @@ using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Actuators.Trace;
 using Steeltoe.Management.Endpoint.Configuration;
 
@@ -18,9 +16,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string?> AppSettings = new()
     {
-        ["Logging:Console:IncludeScopes"] = "false",
-        ["Logging:LogLevel:Default"] = "Warning",
-        ["Logging:LogLevel:Steeltoe"] = "Information",
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:trace:enabled"] = "true",
         ["management:endpoints:actuator:exposure:include:0"] = "httptrace"
@@ -29,18 +24,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task TraceActuator_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
-                (webHostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/httptrace"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
     }

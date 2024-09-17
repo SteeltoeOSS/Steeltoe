@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,7 +33,6 @@ public sealed class DiscoveryHostBuilderExtensionsTest
     public void AddEurekaDiscoveryClient_IHostBuilder_AddsServiceDiscovery_Eureka()
     {
         IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
-        hostBuilder.ConfigureWebHost(builder => builder.UseTestServer());
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
 
         hostBuilder.ConfigureServices(services => services.AddEurekaDiscoveryClient());
@@ -53,7 +51,6 @@ public sealed class DiscoveryHostBuilderExtensionsTest
     public async Task AddEurekaDiscoveryClient_IHostBuilder_StartsUp()
     {
         IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
-        hostBuilder.ConfigureWebHost(builder => builder.UseTestServer());
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
 
         hostBuilder.ConfigureServices(services => services.AddEurekaDiscoveryClient());
@@ -67,7 +64,6 @@ public sealed class DiscoveryHostBuilderExtensionsTest
     public void AddConsulDiscoveryClient_IHostBuilder_AddsServiceDiscovery_Consul()
     {
         IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
-        hostBuilder.ConfigureWebHost(builder => builder.UseTestServer());
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ConsulSettings));
 
         hostBuilder.ConfigureServices(services => services.AddConsulDiscoveryClient());

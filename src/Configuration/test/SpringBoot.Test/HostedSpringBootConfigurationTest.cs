@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,9 +22,9 @@ public sealed class HostedSpringBootConfigurationTest
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.UseStartup<TestServerStartup>();
         hostBuilder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddSpringBootFromEnvironmentVariable());
+        using IWebHost app = hostBuilder.Build();
 
-        using var server = new TestServer(hostBuilder);
-        var configuration = server.Services.GetRequiredService<IConfiguration>();
+        var configuration = app.Services.GetRequiredService<IConfiguration>();
 
         Assert.NotNull(configuration["foo:bar"]);
         Assert.Equal("value", configuration["foo:bar"]);
@@ -43,9 +42,9 @@ public sealed class HostedSpringBootConfigurationTest
 
         hostBuilder.UseStartup<TestServerStartup>();
         hostBuilder.ConfigureAppConfiguration((context, configurationBuilder) => configurationBuilder.AddSpringBootFromCommandLine(context.Configuration));
+        using IWebHost app = hostBuilder.Build();
 
-        using var server = new TestServer(hostBuilder);
-        var configuration = server.Services.GetRequiredService<IConfiguration>();
+        var configuration = app.Services.GetRequiredService<IConfiguration>();
 
         Assert.NotNull(configuration["spring:cloud:stream:bindings:input:destination"]);
         Assert.Equal("testDestination", configuration["spring:cloud:stream:bindings:input:destination"]);

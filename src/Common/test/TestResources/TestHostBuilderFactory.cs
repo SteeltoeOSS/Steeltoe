@@ -4,6 +4,8 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Common.TestResources;
@@ -14,17 +16,43 @@ public static class TestHostBuilderFactory
     {
     };
 
+    private static readonly Action<ServiceProviderOptions> ConfigureServiceProvider = options =>
+    {
+        options.ValidateScopes = true;
+        options.ValidateOnBuild = true;
+    };
+
     public static IHostBuilder Create()
     {
         var builder = new HostBuilder();
-        ConfigureBuilder(builder);
+        ConfigureBuilder(builder, false, false);
 
         return builder;
     }
 
-    private static void ConfigureBuilder(IHostBuilder builder)
+    public static IHostBuilder CreateWeb()
     {
-        builder.ConfigureWebHost(webHostBuilder => webHostBuilder.Configure(EmptyAction));
-        builder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        var builder = new HostBuilder();
+        ConfigureBuilder(builder, true, true);
+
+        return builder;
+    }
+
+    private static void ConfigureBuilder(IHostBuilder builder, bool configureWebHost, bool useTestServer)
+    {
+        builder.UseDefaultServiceProvider(ConfigureServiceProvider);
+
+        if (configureWebHost)
+        {
+            builder.ConfigureWebHostDefaults(webHostBuilder =>
+            {
+                webHostBuilder.Configure(EmptyAction);
+
+                if (useTestServer)
+                {
+                    webHostBuilder.UseTestServer();
+                }
+            });
+        }
     }
 }

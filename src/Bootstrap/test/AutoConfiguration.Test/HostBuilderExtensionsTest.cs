@@ -6,7 +6,6 @@ using System.Net;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Caching.Distributed;
@@ -433,14 +432,12 @@ public sealed class HostBuilderExtensionsTest
 
         private static IHost GetHostExcluding(IReadOnlySet<string> assemblyNamesToExclude)
         {
-            IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+            IHostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
 
             hostBuilder.ConfigureWebHost(builder =>
             {
                 builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.Add(FastTestConfigurations.All));
                 builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
-                builder.UseTestServer();
-
                 builder.AddSteeltoe(assemblyNamesToExclude);
             });
 
@@ -452,8 +449,6 @@ public sealed class HostBuilderExtensionsTest
             IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
             builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.Add(FastTestConfigurations.All));
             builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
-            builder.UseTestServer();
-
             builder.AddSteeltoe(assemblyNamesToExclude);
 
             return builder.Build();
@@ -463,8 +458,6 @@ public sealed class HostBuilderExtensionsTest
         {
             WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
             builder.Configuration.Add(FastTestConfigurations.All);
-            builder.WebHost.UseTestServer();
-
             builder.AddSteeltoe(assemblyNamesToExclude);
 
             WebApplication host = builder.Build();

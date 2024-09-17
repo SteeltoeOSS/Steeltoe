@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,7 +34,6 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
     public void AddEurekaDiscoveryClient_IWebHostBuilder_AddsServiceDiscovery_Eureka()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
-        hostBuilder.UseTestServer();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
 
         hostBuilder.ConfigureServices(services => services.AddEurekaDiscoveryClient());

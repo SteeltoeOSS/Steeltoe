@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -19,9 +19,11 @@ public sealed class ActuatorServiceCollectionExtensionsTest
     public void AddAllActuators_ConfiguresCorsDefaults()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
+        hostBuilder.ConfigureServices(services => services.AddAllActuators());
+        using IWebHost host = hostBuilder.Build();
 
-        using IWebHost host = hostBuilder.ConfigureServices(services => services.AddAllActuators()).Build();
-        var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
+        var options = host.Services.GetService<IOptions<CorsOptions>>();
 
         Assert.NotNull(options);
         CorsPolicy? policy = options.Value.GetPolicy("SteeltoeManagement");
@@ -35,11 +37,11 @@ public sealed class ActuatorServiceCollectionExtensionsTest
     public void AddAllActuators_ConfiguresCorsCustom()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
+        hostBuilder.ConfigureServices(services => services.AddAllActuators(myPolicy => myPolicy.WithOrigins("http://google.com")));
+        using IWebHost host = hostBuilder.Build();
 
-        using IWebHost host = hostBuilder.ConfigureServices(services => services.AddAllActuators(myPolicy => myPolicy.WithOrigins("http://google.com")))
-            .Build();
-
-        var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
+        var options = host.Services.GetService<IOptions<CorsOptions>>();
 
         Assert.NotNull(options);
         CorsPolicy? policy = options.Value.GetPolicy("SteeltoeManagement");
@@ -78,9 +80,11 @@ public sealed class ActuatorServiceCollectionExtensionsTest
             }
             """);
 
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create().ConfigureAppConfiguration(builder => builder.AddCloudFoundry());
-
-        using IWebHost host = hostBuilder.ConfigureServices(services => services.AddAllActuators()).Build();
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.ConfigureAppConfiguration(builder => builder.AddCloudFoundry());
+        hostBuilder.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
+        hostBuilder.ConfigureServices(services => services.AddAllActuators());
+        using IWebHost host = hostBuilder.Build();
 
         Assert.NotNull(host.Services.GetService<ICloudFoundryEndpointHandler>());
     }
@@ -88,9 +92,12 @@ public sealed class ActuatorServiceCollectionExtensionsTest
     [Fact]
     public void AddAllActuators_NoCF_offCF()
     {
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create().ConfigureAppConfiguration(builder => builder.AddCloudFoundry());
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.ConfigureAppConfiguration(builder => builder.AddCloudFoundry());
+        hostBuilder.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
+        hostBuilder.ConfigureServices(services => services.AddAllActuators());
 
-        using IWebHost host = hostBuilder.ConfigureServices(services => services.AddAllActuators()).Build();
+        using IWebHost host = hostBuilder.Build();
 
         Assert.Null(host.Services.GetService<ICloudFoundryEndpointHandler>());
     }

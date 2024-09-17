@@ -26,9 +26,13 @@ public sealed class SerilogWebHostBuilderTest
     {
         var testSink = new TestSink();
 
-        using IWebHost host = TestWebHostBuilderFactory.Create().UseStartup<Startup>().AddDynamicSerilog((_, loggerConfiguration) =>
-            loggerConfiguration.MinimumLevel.Error().Enrich.WithExceptionDetails().MinimumLevel.Override("Microsoft", LogEventLevel.Warning).WriteTo
-                .Sink(testSink)).Build();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+
+        builder.AddDynamicSerilog((_, loggerConfiguration) => loggerConfiguration.MinimumLevel.Error().Enrich.WithExceptionDetails().MinimumLevel
+            .Override("Microsoft", LogEventLevel.Warning).WriteTo.Sink(testSink));
+
+        using IWebHost host = builder.Build();
 
         List<string> logs = testSink.GetLogs();
 
@@ -48,8 +52,12 @@ public sealed class SerilogWebHostBuilderTest
             { "Serilog:WriteTo:Name", "TestSink" }
         };
 
-        using IWebHost host = TestWebHostBuilderFactory.Create().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appSettings))
-            .UseStartup<Startup>().AddDynamicSerilog().Build();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        builder.UseStartup<Startup>();
+        builder.AddDynamicSerilog();
+
+        using IWebHost host = builder.Build();
 
         object logger = host.Services.GetRequiredService<ILogger<SerilogWebHostBuilderTest>>();
         ILogEventSink[] sinks = GetSinks(logger);

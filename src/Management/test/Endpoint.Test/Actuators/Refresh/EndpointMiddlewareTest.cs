@@ -8,11 +8,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Configuration;
 
@@ -76,19 +74,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         var appSettings = new Dictionary<string, string?>(AppSettings);
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(
-                (webHostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
-        using var server = new TestServer(builder);
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
 
-        HttpClient client = server.CreateClient();
+        using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/refresh"), null);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         string json = await response.Content.ReadAsStringAsync();
 
         json.Should().BeJson("""

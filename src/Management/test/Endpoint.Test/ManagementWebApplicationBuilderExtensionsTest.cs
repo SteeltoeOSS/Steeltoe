@@ -116,10 +116,10 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
         hostBuilder.AddHealthActuator();
 
-        // start the server, get a client
         await using WebApplication host = hostBuilder.Build();
         host.UseRouting();
         await host.StartAsync();
+
         HttpClient client = host.GetTestClient();
         await client.GetAsync(new Uri("/actuator/health", UriKind.Relative));
 
@@ -359,7 +359,8 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddAllActuatorsWithConventions_WebApplicationBuilder_IStartupFilterFires()
     {
-        await using WebApplication host = GetTestWebAppWithSecureRouting(builder => builder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")));
+        await using WebApplication host = GetTestWebAppWithSecureRouting(builder =>
+            builder.AddAllActuators(endpointConventionBuilder => endpointConventionBuilder.RequireAuthorization("TestAuth")));
 
         await host.StartAsync();
         HttpClient client = host.GetTestClient();
@@ -378,7 +379,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "some"); // Allow routing to /cloudfoundryapplication
 
         WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
-        hostBuilder.WebHost.UseTestServer();
         hostBuilder.AddCloudFoundryActuator();
 
         await using WebApplication host = hostBuilder.Build();
@@ -397,7 +397,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
             builder.AddHypermediaActuator();
             builder.AddInfoActuator();
             builder.AddHealthActuator();
-            builder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth"));
+            builder.AddAllActuators(endpointConventionBuilder => endpointConventionBuilder.RequireAuthorization("TestAuth"));
         });
 
         await host.StartAsync();
@@ -416,7 +416,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     {
         await using WebApplication host = GetTestWebAppWithSecureRouting(builder =>
         {
-            builder.AddHypermediaActuator().AddInfoActuator().AddHealthActuator();
+            builder.AddHypermediaActuator();
+            builder.AddInfoActuator();
+            builder.AddHealthActuator();
             builder.Services.ActivateActuatorEndpoints().RequireAuthorization("TestAuth");
         });
 
@@ -454,7 +456,10 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         builder.Services.AddAuthorizationBuilder().AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read"));
 
         WebApplication app = builder.Build();
-        app.UseRouting().UseAuthentication().UseAuthorization();
+        app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
+
         return app;
     }
 }

@@ -11,9 +11,12 @@ public sealed class TracingCoreHostBuilderExtensionsTest : TestBase
     [Fact]
     public async Task AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
     {
-        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
+        IServiceCollection services = new ServiceCollection();
+        services.AddSingleton(GetConfiguration());
+        services.AddLogging();
+        services.AddDistributedTracingAspNetCore();
 
-        await using ServiceProvider serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceContainerCore(serviceProvider);

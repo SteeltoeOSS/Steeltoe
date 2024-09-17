@@ -15,7 +15,8 @@ public sealed class Startup
     {
         services.AddDbContext<MockDbContext>();
         services.AddCloudFoundryActuator();
-        services.AddEntityFrameworkInMemoryDatabase().AddDbContext<MockDbContext>();
+        services.AddEntityFrameworkInMemoryDatabase();
+        services.AddDbContext<MockDbContext>();
         services.AddSingleton<IDatabaseMigrationScanner, TestDatabaseMigrationScanner>();
         services.AddDbMigrationsActuator();
     }

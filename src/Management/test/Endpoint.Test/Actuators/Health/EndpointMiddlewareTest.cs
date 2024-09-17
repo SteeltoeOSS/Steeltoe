@@ -26,13 +26,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HealthActuator_ReturnsOnlyStatus()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
 
@@ -49,14 +53,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:health:showdetails", "whenauthorized" }
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<AuthStartup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<AuthStartup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
 
+        using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
 
@@ -75,14 +82,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:health:claim:value", "show" }
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<AuthStartup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<AuthStartup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
 
+        using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
 
@@ -101,12 +111,16 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings);
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
@@ -127,13 +141,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:customjsonconverters:0", typeof(HealthConverterV3).FullName! }
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
 
@@ -156,13 +174,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
             ["HealthCheckType"] = "default"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
 
@@ -183,13 +205,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
             ["management:endpoints:health:diskspace:enabled"] = "false"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
 
@@ -205,8 +231,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings);
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         builder.ConfigureServices(services =>
         {
@@ -215,161 +242,135 @@ public sealed class EndpointMiddlewareTest : BaseTest
             serviceProvider.GetServices<IEndpointHandler<HealthEndpointRequest, HealthEndpointResponse>>();
         });
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
     }
 
-    [Fact]
-    public async Task GetStatusCode_ReturnsExpected()
+    [Theory]
+    [InlineData(null, HttpStatusCode.OK, "\"status\":\"UP\"")]
+    [InlineData("down", HttpStatusCode.ServiceUnavailable, "\"status\":\"DOWN\"")]
+    [InlineData("out", HttpStatusCode.ServiceUnavailable, "\"status\":\"OUT_OF_SERVICE\"")]
+    [InlineData("unknown", HttpStatusCode.OK, "\"status\":\"UNKNOWN\"")]
+    [InlineData("disabled", HttpStatusCode.OK, "\"status\":\"UNKNOWN\"")]
+    [InlineData("default", HttpStatusCode.OK, "\"status\":\"UP\"")]
+    public async Task GetStatusCode_ReturnsExpected(string? healthCheckType, HttpStatusCode expectedStatusCode, string expectedJson)
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings)).UseStartup<Startup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
 
-        using (var server = new TestServer(builder))
+        builder.ConfigureAppConfiguration((_, configuration) =>
         {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            string json = await response.Content.ReadAsStringAsync();
-            Assert.NotNull(json);
-            Assert.Contains("\"status\":\"UP\"", json, StringComparison.Ordinal);
-        }
+            var settings = new Dictionary<string, string?>(_appSettings);
 
-        builder = TestWebHostBuilderFactory.Create().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string?>(_appSettings)
+            if (healthCheckType != null)
             {
-                ["HealthCheckType"] = "down"
-            })).UseStartup<Startup>();
+                settings.Add("HealthCheckType", healthCheckType);
+            }
 
-        using (var server = new TestServer(builder))
+            configuration.AddInMemoryCollection(settings);
+        });
+
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using HttpClient client = app.GetTestClient();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        response.StatusCode.Should().Be(expectedStatusCode);
+
+        string json = await response.Content.ReadAsStringAsync();
+        json.Should().Contain(expectedJson);
+    }
+
+    [Fact]
+    public async Task GetStatusCode_OverrideUseStatusCodeFromResponseInConfiguration_ReturnsExpected()
+    {
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+
+        builder.ConfigureAppConfiguration((_, configuration) =>
         {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage downResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-            Assert.Equal(HttpStatusCode.ServiceUnavailable, downResult.StatusCode);
-            string downJson = await downResult.Content.ReadAsStringAsync();
-            Assert.NotNull(downJson);
-            Assert.Contains("\"status\":\"DOWN\"", downJson, StringComparison.Ordinal);
-        }
-
-        builder = TestWebHostBuilderFactory.Create().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string?>(_appSettings)
-            {
-                ["HealthCheckType"] = "out"
-            })).UseStartup<Startup>();
-
-        using (var server = new TestServer(builder))
-        {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage outResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-            Assert.Equal(HttpStatusCode.ServiceUnavailable, outResult.StatusCode);
-            string outJson = await outResult.Content.ReadAsStringAsync();
-            Assert.NotNull(outJson);
-            Assert.Contains("\"status\":\"OUT_OF_SERVICE\"", outJson, StringComparison.Ordinal);
-        }
-
-        builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string?>(_appSettings)
-            {
-                ["HealthCheckType"] = "unknown"
-            }));
-
-        using (var server = new TestServer(builder))
-        {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage unknownResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-            Assert.Equal(HttpStatusCode.OK, unknownResult.StatusCode);
-            string unknownJson = await unknownResult.Content.ReadAsStringAsync();
-            Assert.NotNull(unknownJson);
-            Assert.Contains("\"status\":\"UNKNOWN\"", unknownJson, StringComparison.Ordinal);
-        }
-
-        builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string?>(_appSettings)
-            {
-                ["HealthCheckType"] = "disabled"
-            }));
-
-        using (var server = new TestServer(builder))
-        {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage unknownResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-            Assert.Equal(HttpStatusCode.OK, unknownResult.StatusCode);
-            string disabledJson = await unknownResult.Content.ReadAsStringAsync();
-            Assert.NotNull(disabledJson);
-            Assert.Contains("\"status\":\"UNKNOWN\"", disabledJson, StringComparison.Ordinal);
-        }
-
-        builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string?>(_appSettings)
-            {
-                ["HealthCheckType"] = "default"
-            }));
-
-        using (var server = new TestServer(builder))
-        {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage unknownResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-            Assert.Equal(HttpStatusCode.OK, unknownResult.StatusCode);
-            string unknownJson = await unknownResult.Content.ReadAsStringAsync();
-            Assert.NotNull(unknownJson);
-            Assert.Contains("\"status\":\"UP\"", unknownJson, StringComparison.Ordinal);
-        }
-
-        builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string?>(_appSettings)
+            var settings = new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "down",
                 ["management:endpoints:UseStatusCodeFromResponse"] = "false"
-            }));
+            };
 
-        using (var server = new TestServer(builder))
+            configuration.AddInMemoryCollection(settings);
+        });
+
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using HttpClient client = app.GetTestClient();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string json = await response.Content.ReadAsStringAsync();
+
+        json.Should().Contain("""
+            "status":"DOWN"
+            """);
+    }
+
+    [Fact]
+    public async Task GetStatusCode_OverrideUseStatusCodeFromResponseInHeader_ReturnsExpected()
+    {
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+
+        builder.ConfigureAppConfiguration((_, configuration) =>
         {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage downResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-            Assert.Equal(HttpStatusCode.OK, downResult.StatusCode);
-            string downJson = await downResult.Content.ReadAsStringAsync();
-            Assert.NotNull(downJson);
-            Assert.Contains("\"status\":\"DOWN\"", downJson, StringComparison.Ordinal);
-        }
-
-        builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string?>(_appSettings)
+            var settings = new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "down",
                 ["management:endpoints:UseStatusCodeFromResponse"] = "false"
-            }));
+            };
 
-        using (var server = new TestServer(builder))
-        {
-            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication/health"));
-            requestMessage.Headers.Add("X-Use-Status-Code-From-Response", "true");
+            configuration.AddInMemoryCollection(settings);
+        });
 
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage downResult = await client.SendAsync(requestMessage);
-            Assert.Equal(HttpStatusCode.ServiceUnavailable, downResult.StatusCode);
-            string downJson = await downResult.Content.ReadAsStringAsync();
-            Assert.NotNull(downJson);
-            Assert.Contains("\"status\":\"DOWN\"", downJson, StringComparison.Ordinal);
-        }
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication/health"));
+        requestMessage.Headers.Add("X-Use-Status-Code-From-Response", "true");
+
+        using HttpClient client = app.GetTestClient();
+        HttpResponseMessage response = await client.SendAsync(requestMessage);
+        response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
+
+        string json = await response.Content.ReadAsStringAsync();
+
+        json.Should().Contain("""
+            "status":"DOWN"
+            """);
     }
 
     [Fact]
     public async Task GetStatusCode_MicrosoftAggregator_ReturnsExpected()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) =>
-            configuration.AddInMemoryCollection(new Dictionary<string, string?>(_appSettings)
-            {
-                ["HealthCheckType"] = "default"
-            }));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(new Dictionary<string, string?>(_appSettings)
+        {
+            ["HealthCheckType"] = "default"
+        }));
+
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using HttpClient client = app.GetTestClient();
         HttpResponseMessage unknownResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, unknownResult.StatusCode);
+
         string unknownJson = await unknownResult.Content.ReadAsStringAsync();
         Assert.NotNull(unknownJson);
         Assert.Contains("\"status\":\"UP\"", unknownJson, StringComparison.Ordinal);
@@ -378,12 +379,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task GetStatusCode_InvalidGroupName_Returns404()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>();
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
 
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using HttpClient client = app.GetTestClient();
         HttpResponseMessage responseMessage = await client.GetAsync(new Uri("http://localhost/actuator/health/foo"));
-
         Assert.Equal(HttpStatusCode.NotFound, responseMessage.StatusCode);
 
         string body = await responseMessage.Content.ReadAsStringAsync();
