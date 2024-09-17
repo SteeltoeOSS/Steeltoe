@@ -96,9 +96,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
-        using var server = new TestServer(builder);
-        using HttpClient client = server.CreateClient();
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
 
+        using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/env"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -169,9 +170,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
             configuration.AddDecryption();
         });
 
-        using var server = new TestServer(builder);
-        using HttpClient client = server.CreateClient();
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
 
+        using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/env"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 

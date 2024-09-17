@@ -24,7 +24,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     private readonly EnvironmentVariableScope _scope = new("VCAP_APPLICATION", "some");
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_ReturnsServiceUnavailable()
+    public async Task CloudFoundrySecurityMiddleware_MissingApplicationID_ReturnsServiceUnavailable()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -41,18 +41,22 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["info:NET:ASPNET:version"] = "2.0.0"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<StartupWithSecurity>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
-        // Application ID missing
-        using (var server = new TestServer(builder))
-        {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
-            Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
-        }
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
 
-        var appSettings2 = new Dictionary<string, string?>
+        using HttpClient client = host.GetTestClient();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CloudFoundrySecurityMiddleware_MissingCloudFoundryApi_ReturnsServiceUnavailable()
+    {
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:path"] = "/",
@@ -68,75 +72,84 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:application_id"] = "foobar"
         };
 
-        IWebHostBuilder builder2 = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings2));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<StartupWithSecurity>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
-        // CloudFoundry Api missing
-        using (var server = new TestServer(builder2))
-        {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
-            Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
-        }
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
 
-        var appSettings3 = new Dictionary<string, string?>
-        {
-            ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/",
-            ["management:endpoints:info:enabled"] = "true",
-            ["info:application:name"] = "foobar",
-            ["info:application:version"] = "1.0.0",
-            ["info:application:date"] = "5/1/2008",
-            ["info:application:time"] = "8:30:52 AM",
-            ["info:NET:type"] = "Core",
-            ["info:NET:version"] = "2.0.0",
-            ["info:NET:ASPNET:type"] = "Core",
-            ["info:NET:ASPNET:version"] = "2.0.0",
-            ["vcap:application:application_id"] = "foobar",
-            ["vcap:application:cf_api"] = "http://localhost:9999/foo"
-        };
-
-        IWebHostBuilder builder3 = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings3));
-
-        // Endpoint not configured
-        using (var server = new TestServer(builder3))
-        {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/barfoo"));
-            Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
-        }
-
-        var appSettings4 = new Dictionary<string, string?>
-        {
-            ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/",
-            ["management:endpoints:info:enabled"] = "true",
-            ["info:application:name"] = "foobar",
-            ["info:application:version"] = "1.0.0",
-            ["info:application:date"] = "5/1/2008",
-            ["info:application:time"] = "8:30:52 AM",
-            ["info:NET:type"] = "Core",
-            ["info:NET:version"] = "2.0.0",
-            ["info:NET:ASPNET:type"] = "Core",
-            ["info:NET:ASPNET:version"] = "2.0.0",
-            ["vcap:application:application_id"] = "foobar",
-            ["vcap:application:cf_api"] = "http://localhost:9999/foo"
-        };
-
-        IWebHostBuilder builder4 = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings4));
-
-        using (var server = new TestServer(builder4))
-        {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        }
+        using HttpClient client = host.GetTestClient();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_ReturnsWithStatusOverride()
+    public async Task CloudFoundrySecurityMiddleware_EndpointNotConfigured_ReturnsServiceUnavailable()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["management:endpoints:enabled"] = "true",
+            ["management:endpoints:path"] = "/",
+            ["management:endpoints:info:enabled"] = "true",
+            ["info:application:name"] = "foobar",
+            ["info:application:version"] = "1.0.0",
+            ["info:application:date"] = "5/1/2008",
+            ["info:application:time"] = "8:30:52 AM",
+            ["info:NET:type"] = "Core",
+            ["info:NET:version"] = "2.0.0",
+            ["info:NET:ASPNET:type"] = "Core",
+            ["info:NET:ASPNET:version"] = "2.0.0",
+            ["vcap:application:application_id"] = "foobar",
+            ["vcap:application:cf_api"] = "http://localhost:9999/foo"
+        };
+
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<StartupWithSecurity>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/barfoo"));
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CloudFoundrySecurityMiddleware_MissingAccessToken_ReturnsUnauthorized()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["management:endpoints:enabled"] = "true",
+            ["management:endpoints:path"] = "/",
+            ["management:endpoints:info:enabled"] = "true",
+            ["info:application:name"] = "foobar",
+            ["info:application:version"] = "1.0.0",
+            ["info:application:date"] = "5/1/2008",
+            ["info:application:time"] = "8:30:52 AM",
+            ["info:NET:type"] = "Core",
+            ["info:NET:version"] = "2.0.0",
+            ["info:NET:ASPNET:type"] = "Core",
+            ["info:NET:ASPNET:version"] = "2.0.0",
+            ["vcap:application:application_id"] = "foobar",
+            ["vcap:application:cf_api"] = "http://localhost:9999/foo"
+        };
+
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<StartupWithSecurity>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CloudFoundrySecurityMiddleware_UseStatusCodeFromResponseFalse_ReturnsOk()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -154,17 +167,22 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["info:NET:ASPNET:version"] = "2.0.0"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<StartupWithSecurity>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
-        using (var server = new TestServer(builder))
-        {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
 
-        var appSettings3 = new Dictionary<string, string?>
+        using HttpClient client = host.GetTestClient();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CloudFoundrySecurityMiddleware_UseStatusCodeFromResponseFalse_ReturnsUnauthorized()
+    {
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:path"] = "/",
@@ -182,44 +200,14 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder3 = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings3));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<StartupWithSecurity>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
-        using (var server = new TestServer(builder3))
-        {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        }
-    }
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
 
-    [Fact]
-    public async Task CloudFoundrySecurityMiddleware_ReturnsSecurityException()
-    {
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["management:endpoints:enabled"] = "true",
-
-            ["management:endpoints:path"] = "/",
-            ["management:endpoints:info:enabled"] = "true",
-
-            ["info:application:name"] = "foobar",
-            ["info:application:version"] = "1.0.0",
-            ["info:application:date"] = "5/1/2008",
-            ["info:application:time"] = "8:30:52 AM",
-            ["info:NET:type"] = "Core",
-            ["info:NET:version"] = "2.0.0",
-            ["info:NET:ASPNET:type"] = "Core",
-            ["info:NET:ASPNET:version"] = "2.0.0",
-            ["vcap:application:application_id"] = "foobar",
-            ["vcap:application:cf_api"] = "http://localhost:9999/foo"
-        };
-
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
-
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -230,10 +218,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
-
             ["management:endpoints:path"] = "/",
             ["management:endpoints:info:enabled"] = "true",
-
             ["management:endpoints:cloudfoundry:enabled"] = "false",
             ["info:application:name"] = "foobar",
             ["info:application:version"] = "1.0.0",
@@ -247,11 +233,14 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<StartupWithSecurity>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/info"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -278,14 +267,19 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>().ConfigureAppConfiguration((_, configuration) =>
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<StartupWithSecurity>();
+
+        builder.ConfigureAppConfiguration((_, configuration) =>
         {
             configuration.AddInMemoryCollection(appSettings);
             configuration.AddEnvironmentVariables();
         });
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -296,9 +290,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
-
             ["management:endpoints:info:enabled"] = "true",
-
             ["info:application:name"] = "foobar",
             ["info:application:version"] = "1.0.0",
             ["info:application:date"] = "5/1/2008",
@@ -311,11 +303,14 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<StartupWithSecurity>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication"));
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode); // We expect the authorization to fail, but the FindEndpoint logic to work.
 

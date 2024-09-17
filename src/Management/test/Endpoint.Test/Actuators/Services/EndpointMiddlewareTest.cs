@@ -89,14 +89,15 @@ public sealed class EndpointMiddlewareTest(ITestOutputHelper testOutputHelper) :
     [Fact]
     public async Task ServicesActuator_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
-        using var server = new TestServer(builder);
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
 
-        HttpClient client = server.CreateClient();
+        using HttpClient client = host.GetTestClient();
         HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/beans"));
-
         result.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string json = await result.Content.ReadAsStringAsync();

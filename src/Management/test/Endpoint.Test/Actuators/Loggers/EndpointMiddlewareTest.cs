@@ -31,15 +31,20 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging((context, loggingBuilder) =>
-            {
-                loggingBuilder.AddConfiguration(context.Configuration);
-                loggingBuilder.AddDynamicConsole();
-            });
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        builder.ConfigureLogging((context, loggingBuilder) =>
+        {
+            loggingBuilder.AddConfiguration(context.Configuration);
+            loggingBuilder.AddDynamicConsole();
+        });
+
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         var result = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers");
 
         Assert.True(result.TryGetProperty("loggers", out JsonElement loggers));
@@ -51,15 +56,20 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_ReturnsBadRequest()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging((context, loggingBuilder) =>
-            {
-                loggingBuilder.AddConfiguration(context.Configuration);
-                loggingBuilder.AddDynamicConsole();
-            });
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        builder.ConfigureLogging((context, loggingBuilder) =>
+        {
+            loggingBuilder.AddConfiguration(context.Configuration);
+            loggingBuilder.AddDynamicConsole();
+        });
+
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"BadData\"}");
         HttpResponseMessage changeResult = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content);
         Assert.Equal(HttpStatusCode.BadRequest, changeResult.StatusCode);
@@ -68,15 +78,20 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_AcceptsPost()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging((context, loggingBuilder) =>
-            {
-                loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
-                loggingBuilder.AddDynamicConsole();
-            });
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        builder.ConfigureLogging((context, loggingBuilder) =>
+        {
+            loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
+            loggingBuilder.AddDynamicConsole();
+        });
+
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}");
         HttpResponseMessage changeResult = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content);
         Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
@@ -93,15 +108,20 @@ public sealed class EndpointMiddlewareTest : BaseTest
             ["management:endpoints:path"] = "/"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging((context, loggingBuilder) =>
-            {
-                loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
-                loggingBuilder.AddDynamicConsole();
-            });
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        builder.ConfigureLogging((context, loggingBuilder) =>
+        {
+            loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
+            loggingBuilder.AddDynamicConsole();
+        });
+
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}");
         HttpResponseMessage changeResult = await client.PostAsync(new Uri("http://localhost/loggers/Default"), content);
         Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
@@ -113,15 +133,20 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_UpdateNameSpace_UpdatesChildren()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging((context, loggingBuilder) =>
-            {
-                loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
-                loggingBuilder.AddDynamicConsole();
-            });
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        builder.ConfigureLogging((context, loggingBuilder) =>
+        {
+            loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
+            loggingBuilder.AddDynamicConsole();
+        });
+
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"TRACE\"}");
         HttpResponseMessage changeResult = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Steeltoe"), content);
         Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
@@ -156,17 +181,23 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_MultipleProviders_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging((context, loggingBuilder) =>
-            {
-                loggingBuilder.AddConfiguration(context.Configuration);
-                loggingBuilder.AddDynamicConsole();
-                loggingBuilder.AddDebug();
-            });
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        builder.ConfigureLogging((context, loggingBuilder) =>
+        {
+            loggingBuilder.AddConfiguration(context.Configuration);
+            loggingBuilder.AddDynamicConsole();
+            loggingBuilder.AddDebug();
+        });
+
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         var result = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers");
+
         Assert.True(result.TryGetProperty("loggers", out JsonElement loggers));
         Assert.True(result.TryGetProperty("levels", out _));
         Assert.Equal("WARN", loggers.GetProperty("Default").GetProperty("configuredLevel").GetString());

@@ -7,12 +7,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 using Steeltoe.Management.Endpoint.Configuration;
 
@@ -22,9 +20,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string?> AppSettings = new()
     {
-        ["Logging:Console:IncludeScopes"] = "false",
-        ["Logging:LogLevel:Default"] = "Warning",
-        ["Logging:LogLevel:Steeltoe"] = "Information",
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:dump:enabled"] = "true",
         ["management:endpoints:actuator:exposure:include:0"] = "threaddump",
@@ -54,18 +49,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task ThreadDumpActuator_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<StartupV1>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
-                (webHostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<StartupV1>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/dump"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
         Assert.NotEqual("[]", json);
@@ -78,18 +72,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         if (Platform.IsWindows)
         {
-            IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-                .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
-                    (webHostContext, loggingBuilder) =>
-                    {
-                        loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                        loggingBuilder.AddDynamicConsole();
-                    });
+            IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+            builder.UseStartup<Startup>();
+            builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
-            using var server = new TestServer(builder);
-            HttpClient client = server.CreateClient();
+            using IWebHost host = builder.Build();
+            await host.StartAsync();
+
+            using HttpClient client = host.GetTestClient();
             HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/threaddump"));
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
             string json = await response.Content.ReadAsStringAsync();
             Assert.NotNull(json);
             Assert.NotEqual("{}", json);

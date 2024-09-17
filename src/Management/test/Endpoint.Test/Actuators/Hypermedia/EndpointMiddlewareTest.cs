@@ -35,13 +35,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [InlineData("http://somehost:8080", "http://somehost:8080", "http")]
     public async Task CloudFoundryEndpointMiddleware_ReturnsExpectedData(string requestUriString, string calculatedHost, string xForwarded)
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         client.DefaultRequestHeaders.Add("X-Forwarded-Proto", xForwarded);
         var links = await client.GetFromJsonAsync<Links>($"{requestUriString}/actuator", SerializerOptions);
+
         Assert.NotNull(links);
         Assert.True(links.Entries.ContainsKey("self"));
         Assert.Equal($"{calculatedHost}/actuator", links.Entries["self"].Href);
@@ -52,14 +56,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HypermediaEndpointMiddleware_ServiceContractNotBroken()
     {
-        // arrange a server and client
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
 
-        // send the request
+        using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator"));
         string json = await response.Content.ReadAsStringAsync();
 
@@ -85,14 +89,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         _appSettings.Add("Management:Endpoints:Path", "/");
 
-        // arrange a server and client
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
 
-        // send the request
+        using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/"));
         string json = await response.Content.ReadAsStringAsync();
 

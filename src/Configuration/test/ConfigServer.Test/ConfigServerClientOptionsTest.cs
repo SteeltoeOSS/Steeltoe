@@ -41,7 +41,8 @@ public sealed class ConfigServerClientOptionsTest
     [Fact]
     public async Task ConfigureConfigServerClientOptions_WithValues()
     {
-        IServiceCollection services = new ServiceCollection().AddOptions();
+        IServiceCollection services = new ServiceCollection();
+        services.AddOptions();
 
         const string appsettings = """
             {

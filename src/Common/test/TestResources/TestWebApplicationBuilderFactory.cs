@@ -5,11 +5,18 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Common.TestResources;
 
 public static class TestWebApplicationBuilderFactory
 {
+    private static readonly Action<ServiceProviderOptions> ConfigureServiceProvider = options =>
+    {
+        options.ValidateScopes = true;
+        options.ValidateOnBuild = true;
+    };
+
     /// <summary>
     /// Creates an empty builder with activated test server.
     /// </summary>
@@ -80,7 +87,7 @@ public static class TestWebApplicationBuilderFactory
 
     private static void ConfigureBuilder(WebApplicationBuilder builder, bool useTestServer)
     {
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        builder.WebHost.UseDefaultServiceProvider(ConfigureServiceProvider);
 
         if (useTestServer)
         {

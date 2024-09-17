@@ -194,19 +194,18 @@ public sealed class CloudFoundryConfigurationProviderTest
 
         VcapApp? options = null;
 
-        using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
+        using var tokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
 
-        void ReloadLoop()
+        _ = Task.Run(() =>
         {
-            while (!cts.IsCancellationRequested)
+            // ReSharper disable once AccessToDisposedClosure
+            while (!tokenSource.IsCancellationRequested)
             {
                 configurationRoot.Reload();
             }
-        }
+        }, tokenSource.Token);
 
-        _ = Task.Run(ReloadLoop, cts.Token);
-
-        while (!cts.IsCancellationRequested)
+        while (!tokenSource.IsCancellationRequested)
         {
             options = configurationRoot.GetSection("vcap:application").Get<VcapApp>();
         }

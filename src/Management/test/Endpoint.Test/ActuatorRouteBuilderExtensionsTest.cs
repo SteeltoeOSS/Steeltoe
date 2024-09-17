@@ -57,7 +57,11 @@ public sealed class ActuatorRouteBuilderExtensionsTest
             { "management:endpoints:actuator:exposure:include:0", "*" }
         };
 
-        return TestHostBuilderFactory.Create().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices(services =>
+        IHostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
+        hostBuilder.ConfigureLogging(builder => builder.AddDynamicConsole());
+        hostBuilder.ConfigureAppConfiguration(configure => configure.AddInMemoryCollection(appSettings));
+
+        hostBuilder.ConfigureServices(services =>
         {
             services.AddAllActuators();
 
@@ -68,14 +72,31 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 
             services.AddAuthorizationBuilder().AddPolicy("TestAuth", policyAction);
             services.AddServerSideBlazor();
-        }).ConfigureWebHost(builder =>
+
+            // Workaround for service provider validation failure:
+            //   Unable to resolve service for type 'Microsoft.AspNetCore.Components.PersistentComponentState' while attempting
+            //   to activate 'Microsoft.AspNetCore.Components.Forms.DefaultAntiforgeryStateProvider'.
+            // This happens because we're adding Blazor, but without using WebAssemblyHostBuilder.
+            services.AddRazorComponents();
+        });
+
+        hostBuilder.ConfigureWebHost(builder =>
         {
-            builder.Configure(app => app.UseRouting().UseAuthentication().UseAuthorization().UseEndpoints(endpoints =>
+            builder.Configure(app =>
             {
-                endpoints.MapAllActuators().RequireAuthorization("TestAuth");
-                endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
-            })).UseTestServer();
-        }).ConfigureAppConfiguration(configure => configure.AddInMemoryCollection(appSettings));
+                app.UseRouting();
+                app.UseAuthentication();
+                app.UseAuthorization();
+
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapAllActuators().RequireAuthorization("TestAuth");
+                    endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
+                });
+            });
+        });
+
+        return hostBuilder;
     }
 
     private async Task ActAndAssertAsync(IHostBuilder builder, Type endpointOptionsType, bool expectedSuccess)

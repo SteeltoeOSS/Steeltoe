@@ -267,9 +267,13 @@ public sealed class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.ReturnStatus = [500];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientOptions options = _commonOptions;
@@ -289,9 +293,13 @@ public sealed class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.ReturnStatus = [204];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientOptions options = _commonOptions;
@@ -325,9 +333,13 @@ public sealed class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Response = environment;
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
         TestConfigServerStartup.Label = "testlabel";
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         var options = new ConfigServerClientOptions
@@ -370,9 +382,13 @@ public sealed class ConfigServerConfigurationProviderTest
         // Initial requests succeed, but later requests return 400 status code so that an exception is thrown during polling
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 2).Concat(Enumerable.Repeat(400, 100)).ToArray();
         TestConfigServerStartup.Label = "testlabel";
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         var options = new ConfigServerClientOptions
@@ -398,7 +414,7 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void Create_WithNonZeroPollingIntervalAndClientDisabled_PollingDisabled()
+    public async Task Create_WithNonZeroPollingIntervalAndClientDisabled_PollingDisabled()
     {
         // Arrange
         const string environment = """
@@ -417,9 +433,13 @@ public sealed class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Response = environment;
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
         TestConfigServerStartup.Label = "testlabel";
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         var options = new ConfigServerClientOptions
@@ -472,9 +492,13 @@ public sealed class ConfigServerConfigurationProviderTest
         ];
 
         TestConfigServerStartup.Label = "testlabel";
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientOptions options = _commonOptions;
@@ -514,9 +538,13 @@ public sealed class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientOptions options = _commonOptions;
@@ -552,9 +580,13 @@ public sealed class ConfigServerConfigurationProviderTest
             200
         ];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientOptions options = _commonOptions;
@@ -579,9 +611,13 @@ public sealed class ConfigServerConfigurationProviderTest
             200
         ];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientOptions options = _commonOptions;
@@ -602,9 +638,13 @@ public sealed class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.ReturnStatus = [404];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientOptions options = _commonOptions;
@@ -624,9 +664,13 @@ public sealed class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.ReturnStatus = [404];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientOptions options = _commonOptions;
@@ -643,9 +687,13 @@ public sealed class ConfigServerConfigurationProviderTest
         ConfigServerClientOptions options = _commonOptions;
         options.FailFast = true;
         options.Uri = "http://localhost:8888,http://localhost:8888";
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
@@ -669,9 +717,13 @@ public sealed class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.ReturnStatus = [500];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientOptions options = _commonOptions;
@@ -694,9 +746,13 @@ public sealed class ConfigServerConfigurationProviderTest
             500
         ];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientOptions options = _commonOptions;
@@ -724,9 +780,13 @@ public sealed class ConfigServerConfigurationProviderTest
             500
         ];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         var options = new ConfigServerClientOptions
@@ -773,9 +833,13 @@ public sealed class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientOptions options = _commonOptions;
@@ -793,7 +857,7 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void ReLoad_DataDictionary_With_New_Configurations()
+    public async Task ReLoad_DataDictionary_With_New_Configurations()
     {
         const string environment = """
             {
@@ -819,9 +883,13 @@ public sealed class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
-        using var server = new TestServer(builder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientOptions options = _commonOptions;
@@ -1313,7 +1381,7 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void Reload_And_Bind_Without_Throwing_Exception()
+    public async Task Reload_And_Bind_Without_Throwing_Exception()
     {
         const string environment = """
             {
@@ -1338,11 +1406,15 @@ public sealed class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
 
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<TestConfigServerStartup>();
 
         ConfigServerClientOptions clientOptions = _commonOptions;
 
-        using var server = new TestServer(hostBuilder);
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri(clientOptions.Uri!);
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
@@ -1356,19 +1428,18 @@ public sealed class ConfigServerConfigurationProviderTest
 
         TestOptions? testOptions = null;
 
-        using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
+        using var tokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
 
-        void ReloadLoop()
+        _ = Task.Run(() =>
         {
-            while (!cts.IsCancellationRequested)
+            // ReSharper disable once AccessToDisposedClosure
+            while (!tokenSource.IsCancellationRequested)
             {
                 configurationRoot.Reload();
             }
-        }
+        }, tokenSource.Token);
 
-        _ = Task.Run(ReloadLoop, cts.Token);
-
-        while (!cts.IsCancellationRequested)
+        while (!tokenSource.IsCancellationRequested)
         {
             testOptions = configurationRoot.Get<TestOptions>();
         }

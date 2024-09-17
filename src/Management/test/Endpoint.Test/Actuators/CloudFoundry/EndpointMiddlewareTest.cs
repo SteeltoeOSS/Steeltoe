@@ -50,12 +50,16 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task CloudFoundryEndpointMiddleware_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         var links = await client.GetFromJsonAsync<Links>("http://localhost/cloudfoundryapplication", SerializerOptions);
+
         Assert.NotNull(links);
         Assert.True(links.Entries.ContainsKey("self"));
         Assert.Equal("http://localhost/cloudfoundryapplication", links.Entries["self"].Href);
@@ -66,14 +70,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task CloudFoundryEndpointMiddleware_ServiceContractNotBroken()
     {
-        // arrange a server and client
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
 
-        // send the request
+        using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication"));
         string json = await response.Content.ReadAsStringAsync();
 
@@ -97,11 +101,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task CloudFoundryOptions_UseDefaultJsonSerializerOptions()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         string response = await client.GetStringAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
 
         Assert.Contains("2017-07-12T18:40:39Z", response, StringComparison.Ordinal);
@@ -116,11 +123,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConverter" }
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
         string response = await client.GetStringAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
 
         Assert.Contains("1499884839000", response, StringComparison.Ordinal);

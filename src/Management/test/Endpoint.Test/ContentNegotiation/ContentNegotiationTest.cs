@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 
@@ -76,34 +75,31 @@ public sealed class ContentNegotiationTest
         string name = endpointName == EndpointName.Cloudfoundry ? "VCAP_APPLICATION" : "unused";
         using var scope = new EnvironmentVariableScope(name, "some"); // Allow routing to /cloudfoundryapplication
 
-        // arrange a server and client
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartupForEndpoint(endpointName)
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
-                (webHostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartupForEndpoint(endpointName);
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        if (endpointName == EndpointName.Loggers)
+        {
+            builder.ConfigureLogging(loggingBuilder =>
+            {
+                loggingBuilder.AddDynamicConsole();
+            });
+        }
+
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
 
         foreach (string accept in accepts)
         {
             client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", accept);
         }
 
-        // send the request
-        HttpResponseMessage response;
-
-        if (endpointName == EndpointName.Refresh)
-        {
-            response = await client.PostAsync(new Uri(endpointPath), null);
-        }
-        else
-        {
-            response = await client.GetAsync(new Uri(endpointPath));
-        }
+        HttpResponseMessage response = endpointName == EndpointName.Refresh
+            ? await client.PostAsync(new Uri(endpointPath), null)
+            : await client.GetAsync(new Uri(endpointPath));
 
         IEnumerable<string> contentHeaders = response.Content.Headers.GetValues("Content-Type");
         Assert.Contains(contentHeaders, header => header.StartsWith(contentType, StringComparison.Ordinal));

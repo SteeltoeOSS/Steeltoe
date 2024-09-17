@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Common.TestResources.IO;
-using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 using Steeltoe.Management.Endpoint.Configuration;
 
@@ -22,9 +21,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string?> AppSettings = new()
     {
-        ["Logging:Console:IncludeScopes"] = "false",
-        ["Logging:LogLevel:Default"] = "Warning",
-        ["Logging:LogLevel:Steeltoe"] = "Information",
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:heapdump:enabled"] = "true",
         ["management:endpoints:heapdump:heapdumptype"] = "gcdump",
@@ -60,16 +56,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HeapDumpActuator_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
-                (webHostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/heapdump"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 

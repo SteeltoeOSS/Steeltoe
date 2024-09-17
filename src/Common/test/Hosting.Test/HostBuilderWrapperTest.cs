@@ -96,7 +96,7 @@ public sealed class HostBuilderWrapperTest
 
         var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
-        IHostBuilder builder = TestHostBuilderFactory.Create();
+        IHostBuilder builder = TestHostBuilderFactory.CreateWeb();
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());

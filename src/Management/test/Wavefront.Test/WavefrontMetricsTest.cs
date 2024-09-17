@@ -5,7 +5,6 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,7 +31,6 @@ public sealed class WavefrontMetricsTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddWavefrontMetrics();
-        builder.WebHost.UseTestServer();
 
         await using WebApplication host = builder.Build();
         await host.StartAsync();
@@ -53,7 +51,7 @@ public sealed class WavefrontMetricsTest
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appSettings));
         hostBuilder.ConfigureServices(services => services.AddWavefrontMetrics());
 
-        using IWebHost host = hostBuilder.UseTestServer().Build();
+        using IWebHost host = hostBuilder.Build();
         await host.StartAsync();
 
         IEnumerable<IDiagnosticsManager> diagnosticsManagers = host.Services.GetServices<IDiagnosticsManager>();

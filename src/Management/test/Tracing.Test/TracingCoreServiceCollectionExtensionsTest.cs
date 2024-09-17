@@ -15,9 +15,12 @@ public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public async Task AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
     {
-        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
+        IServiceCollection services = new ServiceCollection();
+        services.AddSingleton(GetConfiguration());
+        services.AddLogging();
+        services.AddDistributedTracingAspNetCore();
 
-        await using ServiceProvider serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceContainerCore(serviceProvider);
@@ -26,9 +29,11 @@ public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public async Task AddDistributedTracingAspNetCore_WiresIncludedExporters()
     {
-        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
-
-        await using ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider(true);
+        IServiceCollection services = new ServiceCollection();
+        services.AddSingleton(GetConfiguration());
+        services.AddLogging();
+        services.AddDistributedTracing(null);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
         Assert.Single(hostedServices, hostedService => hostedService.GetType().Name == "TelemetryHostedService");
@@ -43,13 +48,18 @@ public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public async Task AddDistributedTracingAspNetCore_WiresWavefrontExporters()
     {
-        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string?>
+        IServiceCollection services = new ServiceCollection();
+
+        services.AddSingleton(GetConfiguration(new Dictionary<string, string?>
         {
             { "management:metrics:export:wavefront:uri", "https://test.wavefront.com" },
             { "management:metrics:export:wavefront:apiToken", "fakeSecret" }
         }));
 
-        await using ServiceProvider serviceProvider = services.AddLogging().AddDistributedTracing(null).BuildServiceProvider(true);
+        services.AddLogging();
+        services.AddDistributedTracing(null);
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
         Assert.NotNull(tracerProvider);

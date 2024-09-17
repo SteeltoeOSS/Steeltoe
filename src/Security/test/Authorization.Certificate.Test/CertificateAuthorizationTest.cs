@@ -190,10 +190,9 @@ public sealed class CertificateAuthorizationTest
 
     private IHostBuilder GetHostBuilder()
     {
-        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate(Certificates.ServerOrgId, Certificates.ServerSpaceId));
-        hostBuilder.ConfigureWebHostDefaults(builder => builder.UseStartup<TestServerCertificateStartup>());
-        hostBuilder.ConfigureWebHost(builder => builder.UseTestServer());
+        hostBuilder.ConfigureWebHost(builder => builder.UseStartup<TestServerCertificateStartup>());
         return hostBuilder;
     }
 
