@@ -12,6 +12,7 @@ public static class SteeltoeAssemblyNames
     public const string ConfigurationCloudFoundry = "Steeltoe.Configuration.CloudFoundry";
     public const string ConfigurationConfigServer = "Steeltoe.Configuration.ConfigServer";
     public const string ConfigurationRandomValue = "Steeltoe.Configuration.RandomValue";
+    public const string ConfigurationSpringBoot = "Steeltoe.Configuration.SpringBoot";
     public const string ConfigurationPlaceholder = "Steeltoe.Configuration.Placeholder";
     public const string ConfigurationEncryption = "Steeltoe.Configuration.Encryption";
     public const string Connectors = "Steeltoe.Connectors";
