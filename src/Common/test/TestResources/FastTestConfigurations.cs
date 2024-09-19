@@ -9,6 +9,7 @@ public enum FastTestConfigurations
 {
     ConfigServer = 1,
     Discovery = 2,
-    WaveFrontExport = 4,
-    All = ConfigServer | Discovery | WaveFrontExport
+    Connectors = 4,
+    WaveFrontExport = 8,
+    All = ConfigServer | Discovery | Connectors | WaveFrontExport
 }
