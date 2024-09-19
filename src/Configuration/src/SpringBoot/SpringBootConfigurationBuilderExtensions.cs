@@ -51,6 +51,7 @@ public static class SpringBootConfigurationBuilderExtensions
         return builder;
     }
 
+#pragma warning disable SA1629 // Documentation text should end with a period
     /// <summary>
     /// Adds a configuration source to the <see cref="ConfigurationBuilder" /> that reads from the command-line and expands the child keys found within. Any
     /// '.' delimiters in configuration keys are converted to ':', which is the separator used by .NET.
@@ -58,17 +59,21 @@ public static class SpringBootConfigurationBuilderExtensions
     /// <param name="builder">
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
-    /// <param name="configuration">
-    /// The <see cref="IConfiguration" /> to wrap.
+    /// <param name="args">
+    /// The command-line arguments. Use <code><![CDATA[
+    /// System.Environment.GetCommandLineArgs().Skip(1).ToArray()
+    /// ]]></code> if unavailable.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static IConfigurationBuilder AddSpringBootFromCommandLine(this IConfigurationBuilder builder, IConfiguration configuration)
+    public static IConfigurationBuilder AddSpringBootFromCommandLine(this IConfigurationBuilder builder, string[] args)
+#pragma warning restore SA1629 // Documentation text should end with a period
     {
-        return AddSpringBootFromCommandLine(builder, configuration, NullLoggerFactory.Instance);
+        return AddSpringBootFromCommandLine(builder, args, NullLoggerFactory.Instance);
     }
 
+#pragma warning disable SA1629 // Documentation text should end with a period
     /// <summary>
     /// Adds a configuration source to the <see cref="ConfigurationBuilder" /> that reads from the command-line and expands the child keys found within. Any
     /// '.' delimiters in configuration keys are converted to ':', which is the separator used by .NET.
@@ -76,8 +81,10 @@ public static class SpringBootConfigurationBuilderExtensions
     /// <param name="builder">
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
-    /// <param name="configuration">
-    /// The <see cref="IConfiguration" /> to wrap.
+    /// <param name="args">
+    /// The command-line arguments. Use <code><![CDATA[
+    /// System.Environment.GetCommandLineArgs().Skip(1).ToArray()
+    /// ]]></code> if unavailable.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
@@ -85,16 +92,16 @@ public static class SpringBootConfigurationBuilderExtensions
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static IConfigurationBuilder AddSpringBootFromCommandLine(this IConfigurationBuilder builder, IConfiguration configuration,
-        ILoggerFactory loggerFactory)
+    public static IConfigurationBuilder AddSpringBootFromCommandLine(this IConfigurationBuilder builder, string[] args, ILoggerFactory loggerFactory)
+#pragma warning restore SA1629 // Documentation text should end with a period
     {
         ArgumentNullException.ThrowIfNull(builder);
-        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         if (!builder.EnumerateSources<SpringBootCommandLineSource>().Any())
         {
-            builder.Add(new SpringBootCommandLineSource(configuration));
+            builder.Add(new SpringBootCommandLineSource(args));
         }
 
         return builder;

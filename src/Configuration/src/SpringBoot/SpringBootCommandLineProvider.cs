@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.CommandLine;
 
 namespace Steeltoe.Configuration.SpringBoot;
 
@@ -14,32 +13,41 @@ namespace Steeltoe.Configuration.SpringBoot;
 internal sealed class SpringBootCommandLineProvider : ConfigurationProvider
 {
     private const string KeyPrefix = "spring.";
-    private readonly IConfiguration _configuration;
+    private readonly string[] _args;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SpringBootCommandLineProvider" /> class. The <see cref="IConfiguration" /> is assumed to contain
-    /// configuration keys originating from the <see cref="CommandLineConfigurationProvider" />.
-    /// </summary>
-    /// <param name="configuration">
-    /// The <see cref="IConfiguration" /> to read application settings from.
-    /// </param>
-    public SpringBootCommandLineProvider(IConfiguration configuration)
+    public SpringBootCommandLineProvider(string[] args)
     {
-        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(args);
 
-        _configuration = configuration;
+        _args = args;
     }
 
     public override void Load()
     {
-        foreach (KeyValuePair<string, string?> pair in _configuration.AsEnumerable())
-        {
-            string key = pair.Key;
+        IConfigurationRoot? configurationRoot = null;
 
-            if (key.StartsWith(KeyPrefix, StringComparison.OrdinalIgnoreCase))
+        try
+        {
+            configurationRoot = new ConfigurationBuilder().AddCommandLine(_args).Build();
+            var data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+
+            foreach ((string key, string? value) in configurationRoot.AsEnumerable())
             {
-                string newKey = key.Replace('.', ':');
-                Data[newKey] = pair.Value;
+                if (key.StartsWith(KeyPrefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Convert array references, for example: foo:bar[1]:baz -> foo:bar:1:baz
+                    string newKey = key.Replace('.', ':').Replace('[', ':').Replace("]", string.Empty, StringComparison.Ordinal);
+                    data[newKey] = value;
+                }
+            }
+
+            Data = data;
+        }
+        finally
+        {
+            if (configurationRoot is IDisposable disposable)
+            {
+                disposable.Dispose();
             }
         }
     }

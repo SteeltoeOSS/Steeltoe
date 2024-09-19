@@ -11,23 +11,23 @@ namespace Steeltoe.Configuration.SpringBoot;
 /// </summary>
 internal sealed class SpringBootCommandLineSource : IConfigurationSource
 {
-    internal IConfiguration Configuration { get; }
+    private readonly string[] _args;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SpringBootCommandLineSource" /> class.
     /// </summary>
-    /// <param name="configuration">
-    /// The <see cref="IConfiguration" /> to read application settings from.
+    /// <param name="args">
+    /// The command-line arguments.
     /// </param>
-    public SpringBootCommandLineSource(IConfiguration configuration)
+    public SpringBootCommandLineSource(string[] args)
     {
-        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(args);
 
-        Configuration = configuration;
+        _args = args;
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        return new SpringBootCommandLineProvider(Configuration);
+        return new SpringBootCommandLineProvider(_args);
     }
 }

@@ -23,22 +23,23 @@ public sealed class SpringBootConfigurationBuilderExtensionsTest
     [Fact]
     public void AddSpringBootCmd_AddKeys()
     {
-        IConfigurationRoot configuration1 = new ConfigurationBuilder().AddCommandLine([
+        string[] args =
+        [
             "spring.foo.bar=value",
-            "spring.bar.foo=value2",
+            "spring.bar[0].foo=value2",
             "bar.foo=value3"
-        ]).Build();
+        ];
 
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddSpringBootFromCommandLine(configuration1);
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddSpringBootFromCommandLine(args);
 
-        IConfigurationRoot configuration2 = builder.Build();
-        string? value = configuration2["spring:foo:bar"];
+        IConfigurationRoot configuration = builder.Build();
+        string? value = configuration["spring:foo:bar"];
 
         Assert.Equal("value", value);
 
-        value = configuration2["spring:bar:foo"];
+        value = configuration["spring:bar:0:foo"];
         Assert.Equal("value2", value);
 
-        Assert.Null(configuration2["bar:foo"]);
+        Assert.Null(configuration["bar:foo"]);
     }
 }

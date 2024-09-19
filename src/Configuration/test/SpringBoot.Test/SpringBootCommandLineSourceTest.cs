@@ -9,20 +9,9 @@ namespace Steeltoe.Configuration.SpringBoot.Test;
 public sealed class SpringBootCommandLineSourceTest
 {
     [Fact]
-    public void Constructors__InitializesDefaults()
-    {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCommandLine([]).Build();
-
-        var source = new SpringBootCommandLineSource(configurationRoot);
-        Assert.Equal(configurationRoot, source.Configuration);
-    }
-
-    [Fact]
     public void Build__ReturnsProvider()
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCommandLine([]).Build();
-
-        var source = new SpringBootCommandLineSource(configurationRoot);
+        var source = new SpringBootCommandLineSource([]);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<SpringBootCommandLineProvider>(provider);
     }
