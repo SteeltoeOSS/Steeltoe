@@ -20,10 +20,9 @@ public sealed class HostedSpringBootConfigurationTest
         using var scope = new EnvironmentVariableScope("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
-        hostBuilder.UseStartup<TestServerStartup>();
         hostBuilder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddSpringBootFromEnvironmentVariable());
-        using IWebHost app = hostBuilder.Build();
 
+        using IWebHost app = hostBuilder.Build();
         var configuration = app.Services.GetRequiredService<IConfiguration>();
 
         Assert.NotNull(configuration["foo:bar"]);
@@ -33,17 +32,16 @@ public sealed class HostedSpringBootConfigurationTest
     [Fact]
     public void WebHostConfiguresIConfiguration_CmdLine()
     {
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
-
-        hostBuilder.UseConfiguration(new ConfigurationBuilder().AddCommandLine([
+        string[] args =
+        [
             "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination",
             "Spring.Cloud.Stream.Bindings.Input.Group=testGroup"
-        ]).Build());
+        ];
 
-        hostBuilder.UseStartup<TestServerStartup>();
-        hostBuilder.ConfigureAppConfiguration((context, configurationBuilder) => configurationBuilder.AddSpringBootFromCommandLine(context.Configuration));
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddSpringBootFromCommandLine(args));
+
         using IWebHost app = hostBuilder.Build();
-
         var configuration = app.Services.GetRequiredService<IConfiguration>();
 
         Assert.NotNull(configuration["spring:cloud:stream:bindings:input:destination"]);
@@ -91,12 +89,14 @@ public sealed class HostedSpringBootConfigurationTest
     [Fact]
     public void GenericHostConfiguresIConfiguration_CmdLine()
     {
-        IHostBuilder hostBuilder = Host.CreateDefaultBuilder([
+        string[] args =
+        [
             "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination",
             "Spring.Cloud.Stream.Bindings.Input.Group=testGroup"
-        ]);
+        ];
 
-        hostBuilder.ConfigureAppConfiguration((context, configurationBuilder) => configurationBuilder.AddSpringBootFromCommandLine(context.Configuration));
+        IHostBuilder hostBuilder = Host.CreateDefaultBuilder(args);
+        hostBuilder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddSpringBootFromCommandLine(args));
 
         using IHost host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
@@ -126,12 +126,14 @@ public sealed class HostedSpringBootConfigurationTest
     [Fact]
     public async Task WebApplicationConfiguresIConfiguration_CmdLine()
     {
-        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create([
+        string[] args =
+        [
             "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination",
             "Spring.Cloud.Stream.Bindings.Input.Group=testGroup"
-        ]);
+        ];
 
-        hostBuilder.Configuration.AddSpringBootFromCommandLine(hostBuilder.Configuration);
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create(args);
+        hostBuilder.Configuration.AddSpringBootFromCommandLine(args);
 
         await using WebApplication host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
