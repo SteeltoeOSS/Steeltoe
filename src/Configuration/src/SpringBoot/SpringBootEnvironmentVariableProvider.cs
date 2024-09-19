@@ -49,6 +49,7 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
             return;
         }
 
+        var data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
         string? json = _springApplicationJson ?? Environment.GetEnvironmentVariable(SpringApplicationJson);
 
         if (!string.IsNullOrEmpty(json))
@@ -56,18 +57,19 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
             Source.Stream = GetStream(json);
             base.Load();
 
-            foreach (string key in Data.Keys.ToArray())
+            foreach (string key in Data.Keys)
             {
                 string? value = Data[key];
 
-                if (key.Contains('.') && value != null)
+                if (value != null)
                 {
-                    string newKey = key.Replace('.', ':');
-                    Data[newKey] = value;
+                    string newKey = key.Contains('.') ? key.Replace('.', ':') : key;
+                    data[newKey] = value;
                 }
             }
         }
 
+        Data = data;
         _loaded = true;
     }
 

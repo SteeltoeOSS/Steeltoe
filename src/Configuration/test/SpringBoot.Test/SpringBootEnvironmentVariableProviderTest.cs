@@ -18,10 +18,11 @@ public sealed class SpringBootEnvironmentVariableProviderTest
             """);
 
         provider.Load();
-        provider.TryGet("management:metrics:tags:application:type", out string? value);
 
-        Assert.NotNull(value);
-        Assert.Equal("${spring.cloud.dataflow.stream.app.type:unknown}", value);
+        provider.TryGet("management:metrics:tags:application:type", out string? value).Should().BeTrue();
+        value.Should().Be("${spring.cloud.dataflow.stream.app.type:unknown}");
+
+        provider.TryGet("management.metrics.tags.application.type", out _).Should().BeFalse();
     }
 
     [Fact]
@@ -36,19 +37,90 @@ public sealed class SpringBootEnvironmentVariableProviderTest
                 }
               },
               "l.m.n": "o",
-              "p": null
+              "p": "q",
+              "r": null,
+              "s.t": null,
+              "u": {
+              },
+              "v.w": {
+              }
             }
             """;
 
         var provider = new SpringBootEnvironmentVariableProvider(configString);
-
         provider.Load();
-        provider.TryGet("a:b:c:e:f:i:j", out string? value);
-        Assert.NotNull(value);
-        Assert.Equal("k", value);
-        provider.TryGet("l:m:n", out value);
-        Assert.NotNull(value);
-        Assert.Equal("o", value);
+
+        provider.TryGet("a:b:c:e:f:g", out string? value).Should().BeTrue();
+        value.Should().Be("h");
+
+        provider.TryGet("a:b:c:e:f:i:j", out value).Should().BeTrue();
+        value.Should().Be("k");
+
+        provider.TryGet("l:m:n", out value).Should().BeTrue();
+        value.Should().Be("o");
+
+        provider.TryGet("p", out value).Should().BeTrue();
+        value.Should().Be("q");
+
+        provider.TryGet("r", out value).Should().BeTrue();
+        value.Should().BeEmpty();
+
+        provider.TryGet("s:t", out value).Should().BeTrue();
+        value.Should().BeEmpty();
+
+        provider.TryGet("u", out _).Should().BeFalse();
+
+        provider.TryGet("v:w", out _).Should().BeFalse();
+    }
+
+    [Fact]
+    public void TryGet_Array()
+    {
+        const string configString = """
+            {
+              "a.b.c": [{
+                "e.f": {
+                  "g": "h",
+                  "i.j": "k"
+                }
+              }, {
+                "l.m.n": "o",
+                "p": "q"
+              }, {
+                "r": null,
+                "s.t": null,
+                "u": {
+                },
+                "v.w": {
+                }
+              }]
+            }
+            """;
+
+        var provider = new SpringBootEnvironmentVariableProvider(configString);
+        provider.Load();
+
+        provider.TryGet("a:b:c:0:e:f:g", out string? value).Should().BeTrue();
+        value.Should().Be("h");
+
+        provider.TryGet("a:b:c:0:e:f:i:j", out value).Should().BeTrue();
+        value.Should().Be("k");
+
+        provider.TryGet("a:b:c:1:l:m:n", out value).Should().BeTrue();
+        value.Should().Be("o");
+
+        provider.TryGet("a:b:c:1:p", out value).Should().BeTrue();
+        value.Should().Be("q");
+
+        provider.TryGet("a:b:c:2:r", out value).Should().BeTrue();
+        value.Should().BeEmpty();
+
+        provider.TryGet("a:b:c:2:s:t", out value).Should().BeTrue();
+        value.Should().BeEmpty();
+
+        provider.TryGet("a:b:c:3:u", out _).Should().BeFalse();
+
+        provider.TryGet("a:b:c:3:v:w", out _).Should().BeFalse();
     }
 
     [Fact]
