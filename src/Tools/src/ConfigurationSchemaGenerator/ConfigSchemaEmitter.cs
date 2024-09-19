@@ -548,7 +548,8 @@ internal sealed partial class ConfigSchemaEmitter(SchemaGenerationSpec spec, Com
     {
         if (element.Name == "para" || element.Name == "p")
         {
-            return $"<br/><br/>{element.Value}<br/><br/>";
+            var innerText = string.Join(string.Empty, element.Nodes().Select(node => GetNodeText(node)));
+            return $"<br/><br/>{innerText}<br/><br/>";
         }
 
         if (element.Name == "br")
