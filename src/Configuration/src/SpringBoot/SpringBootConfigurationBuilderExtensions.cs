@@ -11,8 +11,8 @@ namespace Steeltoe.Configuration.SpringBoot;
 public static class SpringBootConfigurationBuilderExtensions
 {
     /// <summary>
-    /// Adds a configuration source to the <see cref="ConfigurationBuilder" /> that reads from the SPRING_BOOT_APPLICATION environment variable and expands
-    /// the child keys found within. Configuration keys in '.' delimited style are also converted to a format understood by .NET.
+    /// Adds a configuration source to the <see cref="ConfigurationBuilder" /> that reads JSON from the SPRING_BOOT_APPLICATION environment variable and
+    /// expands the child keys found within. Any '.' delimiters in configuration keys are converted to ':', which is the separator used by .NET.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
@@ -26,8 +26,8 @@ public static class SpringBootConfigurationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds a configuration source to the <see cref="ConfigurationBuilder" /> that reads from the SPRING_BOOT_APPLICATION environment variable and expands
-    /// the child keys found within. Configuration keys in '.' delimited style are also converted to a format understood by .NET.
+    /// Adds a configuration source to the <see cref="ConfigurationBuilder" /> that reads JSON from the SPRING_BOOT_APPLICATION environment variable and
+    /// expands the child keys found within. Any '.' delimiters in configuration keys are converted to ':', which is the separator used by .NET.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
@@ -52,8 +52,8 @@ public static class SpringBootConfigurationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds a configuration source to the <see cref="ConfigurationBuilder" /> that reads from the command-line and expands the child keys found within.
-    /// Configuration keys in '.' delimited style are also converted to a format understood by .NET.
+    /// Adds a configuration source to the <see cref="ConfigurationBuilder" /> that reads from the command-line and expands the child keys found within. Any
+    /// '.' delimiters in configuration keys are converted to ':', which is the separator used by .NET.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
@@ -70,8 +70,8 @@ public static class SpringBootConfigurationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds a configuration source to the <see cref="ConfigurationBuilder" /> that reads from the command-line and expands the child keys found within.
-    /// Configuration keys in '.' delimited style are also converted to a format understood by .NET.
+    /// Adds a configuration source to the <see cref="ConfigurationBuilder" /> that reads from the command-line and expands the child keys found within. Any
+    /// '.' delimiters in configuration keys are converted to ':', which is the separator used by .NET.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
