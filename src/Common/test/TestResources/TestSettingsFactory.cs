@@ -31,6 +31,12 @@ public static class TestSettingsFactory
             settings["management:endpoints:actuator:exposure:include:0"] = "*";
         }
 
+        if (configurations.HasFlag(FastTestConfigurations.Connectors))
+        {
+            settings["Steeltoe:Client:Mysql:Default:ConnectionString"] = "host=unknown.host.some";
+            settings["Steeltoe:Client:RabbitMQ:Default:ConnectionString"] = "amqp://unknown.host.some";
+        }
+
         return settings.ToImmutableDictionary();
     }
 
