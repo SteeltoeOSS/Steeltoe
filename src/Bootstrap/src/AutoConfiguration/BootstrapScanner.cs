@@ -13,6 +13,7 @@ using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Encryption;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
+using Steeltoe.Configuration.SpringBoot;
 using Steeltoe.Connectors.CosmosDb;
 using Steeltoe.Connectors.CosmosDb.DynamicTypeAccess;
 using Steeltoe.Connectors.MongoDb;
@@ -73,6 +74,7 @@ internal sealed class BootstrapScanner
         }
 
         WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblyNames.ConfigurationRandomValue);
+        WireIfLoaded(WireSpringBootProvider, SteeltoeAssemblyNames.ConfigurationSpringBoot);
         WireIfLoaded(WireDecryptionProvider, SteeltoeAssemblyNames.ConfigurationEncryption);
         WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblyNames.ConfigurationPlaceholder);
         WireIfLoaded(WireConnectors, SteeltoeAssemblyNames.Connectors);
@@ -110,6 +112,16 @@ internal sealed class BootstrapScanner
         _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddRandomValueSource(_loggerFactory));
 
         _logger.LogInformation("Configured random value configuration provider");
+    }
+
+    private void WireSpringBootProvider()
+    {
+        _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddSpringBootFromEnvironmentVariable(_loggerFactory));
+
+        string[] args = Environment.GetCommandLineArgs().Skip(1).ToArray();
+        _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddSpringBootFromCommandLine(args, _loggerFactory));
+
+        _logger.LogInformation("Configured Spring Boot configuration provider");
     }
 
     private void WireDecryptionProvider()

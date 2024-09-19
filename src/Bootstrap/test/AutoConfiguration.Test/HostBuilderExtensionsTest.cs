@@ -30,6 +30,7 @@ using Steeltoe.Configuration.Encryption;
 using Steeltoe.Configuration.Kubernetes.ServiceBindings;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
+using Steeltoe.Configuration.SpringBoot;
 using Steeltoe.Connectors;
 using Steeltoe.Connectors.CosmosDb;
 using Steeltoe.Connectors.MongoDb;
@@ -84,6 +85,17 @@ public sealed class HostBuilderExtensionsTest
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationRandomValue, hostBuilderType);
 
         AssertRandomValueConfigurationIsAutowired(hostWrapper);
+    }
+
+    [Theory]
+    [InlineData(HostBuilderType.Host)]
+    [InlineData(HostBuilderType.WebHost)]
+    [InlineData(HostBuilderType.WebApplication)]
+    public async Task SpringBootConfiguration_IsAutowired(HostBuilderType hostBuilderType)
+    {
+        await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationSpringBoot, hostBuilderType);
+
+        AssertSpringBootConfigurationIsAutowired(hostWrapper);
     }
 
     [Theory]
@@ -243,6 +255,7 @@ public sealed class HostBuilderExtensionsTest
         AssertConfigServerConfigurationIsAutowired(hostWrapper);
         AssertCloudFoundryConfigurationIsAutowired(hostWrapper);
         AssertRandomValueConfigurationIsAutowired(hostWrapper);
+        AssertSpringBootConfigurationIsAutowired(hostWrapper);
         AssertEncryptionConfigurationIsAutowired(hostWrapper);
         AssertPlaceholderResolverIsAutowired(hostWrapper);
         AssertConnectorsAreAutowired(hostWrapper);
@@ -278,6 +291,14 @@ public sealed class HostBuilderExtensionsTest
         var configuration = hostWrapper.Services.GetRequiredService<IConfiguration>();
 
         configuration.EnumerateProviders<RandomValueProvider>().Should().HaveCount(1);
+    }
+
+    private static void AssertSpringBootConfigurationIsAutowired(HostWrapper hostWrapper)
+    {
+        var configuration = hostWrapper.Services.GetRequiredService<IConfiguration>();
+
+        configuration.EnumerateProviders<SpringBootEnvironmentVariableProvider>().Should().HaveCount(1);
+        configuration.EnumerateProviders<SpringBootCommandLineProvider>().Should().HaveCount(1);
     }
 
     private static void AssertEncryptionConfigurationIsAutowired(HostWrapper hostWrapper)

@@ -19,6 +19,7 @@
     <ProjectReference Include="..\..\..\Configuration\src\Encryption\Steeltoe.Configuration.Encryption.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Configuration\src\RandomValue\Steeltoe.Configuration.RandomValue.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Configuration\src\Placeholder\Steeltoe.Configuration.Placeholder.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Configuration\src\SpringBoot\Steeltoe.Configuration.SpringBoot.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Connectors\src\Connectors\Steeltoe.Connectors.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Discovery\src\Configuration\Steeltoe.Discovery.Configuration.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Discovery\src\Consul\Steeltoe.Discovery.Consul.csproj" PrivateAssets="All" />
