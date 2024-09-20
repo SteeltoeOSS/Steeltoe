@@ -10,7 +10,7 @@ internal abstract class ConfigurationContributor(IConfiguration? configuration)
 {
     protected IConfiguration? Configuration { get; set; } = configuration;
 
-    protected void Contribute(IInfoBuilder builder, string prefix, bool keepPrefix)
+    protected void Contribute(InfoBuilder builder, string prefix, bool keepPrefix)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentException.ThrowIfNullOrEmpty(prefix);

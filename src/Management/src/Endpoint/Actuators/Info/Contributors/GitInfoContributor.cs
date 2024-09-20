@@ -33,7 +33,7 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
         _logger = logger;
     }
 
-    public async Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
+    public async Task ContributeAsync(InfoBuilder builder, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(builder);
 

@@ -6,5 +6,5 @@ namespace Steeltoe.Management.Endpoint.Actuators.Info;
 
 public interface IInfoContributor
 {
-    Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken);
+    Task ContributeAsync(InfoBuilder builder, CancellationToken cancellationToken);
 }

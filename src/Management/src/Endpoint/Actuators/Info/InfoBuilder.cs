@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.Info;
 
-public sealed class InfoBuilder : IInfoBuilder
+public sealed class InfoBuilder
 {
     private readonly Dictionary<string, object> _info = [];
 
@@ -13,7 +13,7 @@ public sealed class InfoBuilder : IInfoBuilder
         return _info;
     }
 
-    public IInfoBuilder WithInfo(string key, object value)
+    public InfoBuilder WithInfo(string key, object value)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
 
@@ -22,7 +22,7 @@ public sealed class InfoBuilder : IInfoBuilder
         return this;
     }
 
-    public IInfoBuilder WithInfo(IDictionary<string, object> details)
+    public InfoBuilder WithInfo(IDictionary<string, object> details)
     {
         ArgumentNullException.ThrowIfNull(details);
 
