@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 using Steeltoe.Management.Endpoint.Configuration;
@@ -70,25 +69,22 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task ThreadDumpActuatorV2_ReturnsExpectedData()
     {
-        if (Platform.IsWindows)
-        {
-            IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
-            builder.UseStartup<Startup>();
-            builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
-            using IWebHost host = builder.Build();
-            await host.StartAsync();
+        using IWebHost host = builder.Build();
+        await host.StartAsync();
 
-            using HttpClient client = host.GetTestClient();
-            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/threaddump"));
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        using HttpClient client = host.GetTestClient();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/threaddump"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            string json = await response.Content.ReadAsStringAsync();
-            Assert.NotNull(json);
-            Assert.NotEqual("{}", json);
-            Assert.StartsWith("{", json, StringComparison.Ordinal);
-            Assert.EndsWith("}", json, StringComparison.Ordinal);
-        }
+        string json = await response.Content.ReadAsStringAsync();
+        Assert.NotNull(json);
+        Assert.NotEqual("{}", json);
+        Assert.StartsWith("{", json, StringComparison.Ordinal);
+        Assert.EndsWith("}", json, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
@@ -178,30 +177,24 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddHeapDumpActuator_IWebHostBuilder()
     {
-        if (Platform.IsWindows)
-        {
-            IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
-            hostBuilder.AddHeapDumpActuator();
-            using IWebHost host = hostBuilder.Build();
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.AddHeapDumpActuator();
+        using IWebHost host = hostBuilder.Build();
 
-            host.Services.GetService<IHeapDumpEndpointHandler>().Should().NotBeNull();
-            host.Services.GetServices<IStartupFilter>().OfType<AllActuatorsStartupFilter>().Should().ContainSingle();
-        }
+        host.Services.GetService<IHeapDumpEndpointHandler>().Should().NotBeNull();
+        host.Services.GetServices<IStartupFilter>().OfType<AllActuatorsStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
     public async Task AddHeapDumpActuator_IWebHostBuilder_IStartupFilterFires()
     {
-        if (Platform.IsWindows)
-        {
-            IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
-            hostBuilder.AddHeapDumpActuator();
-            using IWebHost host = hostBuilder.Start();
+        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        hostBuilder.AddHeapDumpActuator();
+        using IWebHost host = hostBuilder.Start();
 
-            var requestUri = new Uri("/actuator/heapdump", UriKind.Relative);
-            HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
+        var requestUri = new Uri("/actuator/heapdump", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
@@ -385,30 +378,24 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddThreadDumpActuator_IWebHostBuilder()
     {
-        if (Platform.IsWindows)
-        {
-            IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
-            hostBuilder.AddThreadDumpActuator();
-            using IWebHost host = hostBuilder.Build();
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.AddThreadDumpActuator();
+        using IWebHost host = hostBuilder.Build();
 
-            host.Services.GetService<IThreadDumpEndpointHandler>().Should().NotBeNull();
-            host.Services.GetServices<IStartupFilter>().OfType<AllActuatorsStartupFilter>().Should().ContainSingle();
-        }
+        host.Services.GetService<IThreadDumpEndpointHandler>().Should().NotBeNull();
+        host.Services.GetServices<IStartupFilter>().OfType<AllActuatorsStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
     public async Task AddThreadDumpActuator_IWebHostBuilder_IStartupFilterFires()
     {
-        if (Platform.IsWindows)
-        {
-            IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
-            hostBuilder.AddThreadDumpActuator();
-            using IWebHost host = hostBuilder.Start();
+        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        hostBuilder.AddThreadDumpActuator();
+        using IWebHost host = hostBuilder.Start();
 
-            var requestUri = new Uri("/actuator/threaddump", UriKind.Relative);
-            HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
+        var requestUri = new Uri("/actuator/threaddump", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]

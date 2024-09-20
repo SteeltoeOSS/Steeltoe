@@ -2,11 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 using Xunit.Abstractions;
 
@@ -19,50 +17,21 @@ public sealed class HeapDumpEndpointTest(ITestOutputHelper testOutputHelper) : B
     [Fact]
     public async Task Invoke_CreatesDump()
     {
+        using var testContext = new TestContext(_testOutputHelper);
+
         IOptionsMonitor<HeapDumpEndpointOptions> options = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions>();
 
-        if (Platform.IsWindows && RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase))
+        testContext.AdditionalServices = (services, _) =>
         {
-            using var testContext = new TestContext(_testOutputHelper);
+            services.AddHeapDumpActuator();
+            services.AddSingleton(serviceProvider => new HeapDumper(options, serviceProvider.GetRequiredService<ILogger<HeapDumper>>()));
+        };
 
-            testContext.AdditionalServices = (services, _) =>
-            {
-                services.AddHeapDumpActuator();
+        var handler = testContext.GetRequiredService<IHeapDumpEndpointHandler>();
 
-                services.AddSingleton(sp => new HeapDumper(options, sp.GetRequiredService<ILogger<HeapDumper>>()));
-            };
-
-            var handler = testContext.GetRequiredService<IHeapDumpEndpointHandler>();
-
-            string? result = await handler.InvokeAsync(null, CancellationToken.None);
-            Assert.NotNull(result);
-            Assert.True(File.Exists(result));
-            File.Delete(result);
-        }
-        else if (!Platform.IsOSX)
-        {
-            if (typeof(object).Assembly.GetType("System.Index") != null)
-            {
-                using var testContext = new TestContext(_testOutputHelper);
-
-                testContext.AdditionalServices = (services, _) =>
-                {
-                    services.AddHeapDumpActuator();
-
-                    services.AddSingleton(sp => new HeapDumper(options, sp.GetRequiredService<ILogger<HeapDumper>>()));
-                };
-
-                var handler = testContext.GetRequiredService<IHeapDumpEndpointHandler>();
-
-                string? result = await handler.InvokeAsync(null, CancellationToken.None);
-                Assert.NotNull(result);
-                Assert.True(File.Exists(result));
-                File.Delete(result);
-            }
-        }
-        else if (Platform.IsWindows || Platform.IsLinux)
-        {
-            throw new PlatformNotSupportedException();
-        }
+        string? result = await handler.InvokeAsync(null, CancellationToken.None);
+        Assert.NotNull(result);
+        Assert.True(File.Exists(result));
+        File.Delete(result);
     }
 }
