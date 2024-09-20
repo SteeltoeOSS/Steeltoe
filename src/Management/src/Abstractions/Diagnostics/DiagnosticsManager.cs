@@ -23,7 +23,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
     private IDisposable? _listenersSubscription;
 #pragma warning restore S1450 // Private fields only used as local variables in methods should become local variables
 
-    private volatile int _started;
+    private int _started;
 
     public DiagnosticsManager(IOptionsMonitor<MetricsObserverOptions> observerOptions, IEnumerable<IRuntimeDiagnosticSource> runtimeSources,
         IEnumerable<IDiagnosticObserver> observers, IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger)
