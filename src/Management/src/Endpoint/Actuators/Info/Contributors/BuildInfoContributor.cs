@@ -11,7 +11,7 @@ internal sealed class BuildInfoContributor : IInfoContributor
     private readonly Assembly _applicationAssembly = Assembly.GetEntryAssembly()!;
     private readonly Assembly _steeltoeAssembly = typeof(BuildInfoContributor).Assembly;
 
-    public Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
+    public Task ContributeAsync(InfoBuilder builder, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(builder);
 

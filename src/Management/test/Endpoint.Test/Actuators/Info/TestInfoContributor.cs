@@ -16,7 +16,7 @@ internal sealed class TestInfoContributor(bool throws) : IInfoContributor
     {
     }
 
-    public Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
+    public Task ContributeAsync(InfoBuilder builder, CancellationToken cancellationToken)
     {
         if (Throws)
         {

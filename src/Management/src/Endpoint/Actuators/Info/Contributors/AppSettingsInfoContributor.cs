@@ -10,7 +10,7 @@ internal sealed class AppSettingsInfoContributor(IConfiguration? configuration) 
 {
     private const string AppsettingsPrefix = "info";
 
-    public Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
+    public Task ContributeAsync(InfoBuilder builder, CancellationToken cancellationToken)
     {
         Contribute(builder, AppsettingsPrefix, false);
         return Task.CompletedTask;
