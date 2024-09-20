@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Management.Endpoint.Actuators.Trace;
+namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
-public sealed class TraceSession
+public sealed class HttpExchangeSession
 {
     public string Id { get; }
 
-    public TraceSession(string id)
+    public HttpExchangeSession(string id)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
 

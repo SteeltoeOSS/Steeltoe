@@ -68,19 +68,36 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
 
         foreach (ApiDescription description in apiContext.Results)
         {
-            var descriptor = (ControllerActionDescriptor)description.ActionDescriptor;
-            AspNetCoreRouteDetails details = GetRouteDetails(description);
-            string controllerTypeName = descriptor.ControllerTypeInfo.FullName!;
-            mappingDescriptions.TryGetValue(controllerTypeName, out IList<RouteMappingDescription>? descriptions);
-
-            if (descriptions == null)
+            if (description.ActionDescriptor is ControllerActionDescriptor descriptor)
             {
-                descriptions = new List<RouteMappingDescription>();
-                mappingDescriptions.Add(controllerTypeName, descriptions);
-            }
+                string controllerTypeName = descriptor.ControllerTypeInfo.FullName!;
+                AspNetCoreRouteDetails details = GetRouteDetails(description);
+                mappingDescriptions.TryGetValue(controllerTypeName, out IList<RouteMappingDescription>? descriptions);
 
-            var routeMappingDescription = new RouteMappingDescription(descriptor.MethodInfo, details);
-            descriptions.Add(routeMappingDescription);
+                if (descriptions == null)
+                {
+                    descriptions = new List<RouteMappingDescription>();
+                    mappingDescriptions.Add(controllerTypeName, descriptions);
+                }
+
+                var routeMappingDescription = new RouteMappingDescription(descriptor.MethodInfo, details);
+                descriptions.Add(routeMappingDescription);
+            }
+            else
+            {
+                const string controllerTypeName = "UnknownController";
+                AspNetCoreRouteDetails details = GetRouteDetails(description);
+                mappingDescriptions.TryGetValue(controllerTypeName, out IList<RouteMappingDescription>? descriptions);
+
+                if (descriptions == null)
+                {
+                    descriptions = new List<RouteMappingDescription>();
+                    mappingDescriptions.Add(controllerTypeName, descriptions);
+                }
+
+                var routeMappingDescription = new RouteMappingDescription(description.ActionDescriptor.DisplayName ?? description.ActionDescriptor.Id, details);
+                descriptions.Add(routeMappingDescription);
+            }
         }
 
         foreach (ActionDescriptor descriptor in apiContext.Actions)
@@ -121,8 +138,14 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         }
         else
         {
-            var descriptor = (ControllerActionDescriptor)description.ActionDescriptor;
-            routeTemplate = $"/{descriptor.ControllerName}/{descriptor.ActionName}";
+            if (description.ActionDescriptor is ControllerActionDescriptor descriptor)
+            {
+                routeTemplate = $"/{descriptor.ControllerName}/{descriptor.ActionName}";
+            }
+            else
+            {
+                routeTemplate = description.RelativePath ?? description.ToString()!;
+            }
         }
 
         List<string> httpMethods = GetHttpMethods(description);

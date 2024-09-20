@@ -2,19 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Management.Endpoint.Actuators.Trace;
+using Microsoft.Extensions.Primitives;
 
-public sealed class TraceRequest
+namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
+
+public sealed class HttpExchangeRequest
 {
     public string Method { get; }
-    public string Uri { get; }
-    public IDictionary<string, IList<string?>> Headers { get; }
+    public Uri Uri { get; }
+    public IDictionary<string, StringValues> Headers { get; }
     public string? RemoteAddress { get; }
 
-    public TraceRequest(string method, string uri, IDictionary<string, IList<string?>> headers, string? remoteAddress)
+    public HttpExchangeRequest(string method, Uri uri, IDictionary<string, StringValues> headers, string? remoteAddress)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(method);
-        ArgumentException.ThrowIfNullOrWhiteSpace(uri);
+        ArgumentNullException.ThrowIfNull(uri);
         ArgumentNullException.ThrowIfNull(headers);
 
         Method = method;

@@ -4,7 +4,7 @@
 
 using System.Security.Principal;
 
-namespace Steeltoe.Management.Endpoint.Test.Actuators.Trace;
+namespace Steeltoe.Management.Endpoint.Test.Actuators.HttpExchanges;
 
 internal sealed class MyIdentity : IIdentity
 {

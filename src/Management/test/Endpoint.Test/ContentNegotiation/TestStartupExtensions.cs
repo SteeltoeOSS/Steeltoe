@@ -18,7 +18,7 @@ internal static class TestStartupExtensions
             EndpointName.Metrics => builder.UseStartup<MetricsStartup>(),
             EndpointName.Loggers => builder.UseStartup<LoggersStartup>(),
             EndpointName.Health => builder.UseStartup<HealthStartup>(),
-            EndpointName.Trace => builder.UseStartup<TraceStartup>(),
+            EndpointName.HttpExchanges => builder.UseStartup<HttpExchangeStartup>(),
             EndpointName.DbMigrations => builder.UseStartup<DbMigrationsStartup>(),
             EndpointName.Environment => builder.UseStartup<EnvironmentStartup>(),
             EndpointName.Mappings => builder.UseStartup<MappingsStartup>(),

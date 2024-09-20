@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Management.Endpoint.Actuators.Trace;
+namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
-public sealed class TracePrincipal
+public sealed class HttpExchangePrincipal
 {
     public string Name { get; }
 
-    public TracePrincipal(string name)
+    public HttpExchangePrincipal(string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 

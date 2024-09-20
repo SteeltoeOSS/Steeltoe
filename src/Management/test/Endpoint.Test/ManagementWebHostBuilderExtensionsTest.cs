@@ -20,6 +20,7 @@ using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
+using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
@@ -28,7 +29,6 @@ using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
-using Steeltoe.Management.Endpoint.Actuators.Trace;
 using Steeltoe.Management.Endpoint.ManagementPort;
 using Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
 using Steeltoe.Management.Endpoint.Test.Actuators.Info;
@@ -399,26 +399,26 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     }
 
     [Fact]
-    public void AddTraceActuator_IWebHostBuilder()
+    public void AddHttpExchangesActuator_IWebHostBuilder()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
-        hostBuilder.AddTraceActuator();
+        hostBuilder.AddHttpExchangesActuator();
         using IWebHost host = hostBuilder.Build();
 
-        host.Services.GetService<IHttpTraceEndpointHandler>().Should().NotBeNull();
+        host.Services.GetService<IHttpExchangesEndpointHandler>().Should().NotBeNull();
         host.Services.GetServices<IStartupFilter>().OfType<AllActuatorsStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
-    public async Task AddTraceActuator_IWebHostBuilder_IStartupFilterFires()
+    public async Task AddHttpExchangesActuator_IWebHostBuilder_IStartupFilterFires()
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
-        hostBuilder.AddTraceActuator();
+        hostBuilder.AddHttpExchangesActuator();
         using IWebHost host = hostBuilder.Start();
 
-        var requestUri = new Uri("/actuator/httptrace", UriKind.Relative);
+        var requestUri = new Uri("/actuator/httpexchanges", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]

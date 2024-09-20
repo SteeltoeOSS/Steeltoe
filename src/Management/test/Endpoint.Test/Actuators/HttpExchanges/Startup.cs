@@ -5,16 +5,16 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
-using Steeltoe.Management.Endpoint.Actuators.Trace;
+using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
-namespace Steeltoe.Management.Endpoint.Test.Actuators.Trace;
+namespace Steeltoe.Management.Endpoint.Test.Actuators.HttpExchanges;
 
 public sealed class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddCloudFoundryActuator();
-        services.AddTraceActuator();
+        services.AddHttpExchangesActuator();
     }
 
     public void Configure(IApplicationBuilder app)

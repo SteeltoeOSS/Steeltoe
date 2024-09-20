@@ -4,17 +4,17 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
-using Steeltoe.Management.Endpoint.Actuators.Trace;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
-public sealed class TraceStartup
+public sealed class HttpExchangeStartup
 {
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHypermediaActuator();
-        services.AddTraceActuator();
+        services.AddHttpExchangesActuator();
     }
 
     public void Configure(IApplicationBuilder app)

@@ -12,7 +12,7 @@ public enum EndpointName
     Metrics,
     Loggers,
     Health,
-    Trace,
+    HttpExchanges,
     DbMigrations,
     Environment,
     Mappings,

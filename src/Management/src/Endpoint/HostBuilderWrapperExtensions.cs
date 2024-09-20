@@ -11,6 +11,7 @@ using Steeltoe.Management.Endpoint.Actuators.DbMigrations;
 using Steeltoe.Management.Endpoint.Actuators.Environment;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
+using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
@@ -19,7 +20,6 @@ using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
-using Steeltoe.Management.Endpoint.Actuators.Trace;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -100,9 +100,9 @@ internal static class HostBuilderWrapperExtensions
         RegisterActuatorEndpoints(wrapper, null);
     }
 
-    public static void AddTraceActuator(this HostBuilderWrapper wrapper, MediaTypeVersion mediaTypeVersion)
+    public static void AddHttpExchangeActuator(this HostBuilderWrapper wrapper)
     {
-        wrapper.ConfigureServices(services => services.AddTraceActuator(mediaTypeVersion));
+        wrapper.ConfigureServices(services => services.AddHttpExchangesActuator());
         RegisterActuatorEndpoints(wrapper, null);
     }
 

@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 
-namespace Steeltoe.Management.Endpoint.Test.Actuators.Trace;
+namespace Steeltoe.Management.Endpoint.Test.Actuators.HttpExchanges;
 
 internal sealed class SessionFeature : ISessionFeature
 {

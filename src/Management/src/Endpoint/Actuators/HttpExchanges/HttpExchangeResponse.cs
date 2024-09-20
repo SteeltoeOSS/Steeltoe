@@ -2,14 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Management.Endpoint.Actuators.Trace;
+using Microsoft.Extensions.Primitives;
 
-public sealed class TraceResponse
+namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
+
+public sealed class HttpExchangeResponse
 {
     public int Status { get; }
-    public IDictionary<string, IList<string?>> Headers { get; }
+    public IDictionary<string, StringValues> Headers { get; }
 
-    public TraceResponse(int status, IDictionary<string, IList<string?>> headers)
+    public HttpExchangeResponse(int status, IDictionary<string, StringValues> headers)
     {
         ArgumentNullException.ThrowIfNull(headers);
 

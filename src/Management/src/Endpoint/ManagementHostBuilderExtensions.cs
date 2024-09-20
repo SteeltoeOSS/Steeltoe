@@ -238,7 +238,7 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Trace actuator to the application.
+    /// Adds the HttpExchange actuator to the application.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IHostBuilder" /> to configure.
@@ -246,29 +246,12 @@ public static class ManagementHostBuilderExtensions
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static IHostBuilder AddTraceActuator(this IHostBuilder builder)
-    {
-        return AddTraceActuator(builder, MediaTypeVersion.V2);
-    }
-
-    /// <summary>
-    /// Adds the Trace actuator to the application.
-    /// </summary>
-    /// <param name="builder">
-    /// The <see cref="IHostBuilder" /> to configure.
-    /// </param>
-    /// <param name="mediaTypeVersion">
-    /// Specify the media type version to use in the response.
-    /// </param>
-    /// <returns>
-    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
-    /// </returns>
-    public static IHostBuilder AddTraceActuator(this IHostBuilder builder, MediaTypeVersion mediaTypeVersion)
+    public static IHostBuilder AddHttpExchangesActuator(this IHostBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
-        wrapper.AddTraceActuator(mediaTypeVersion);
+        wrapper.AddHttpExchangeActuator();
 
         return builder;
     }

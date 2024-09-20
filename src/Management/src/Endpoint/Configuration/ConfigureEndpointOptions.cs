@@ -33,7 +33,7 @@ internal abstract class ConfigureEndpointOptions<T> : IConfigureOptionsWithKey<T
         ConfigureAtKey(Configuration, _prefix, _id, options);
     }
 
-    protected static void ConfigureAtKey(IConfiguration configuration, string configurationKey, string endpointId, T options)
+    private static void ConfigureAtKey(IConfiguration configuration, string configurationKey, string endpointId, T options)
     {
         ArgumentNullException.ThrowIfNull(options);
 

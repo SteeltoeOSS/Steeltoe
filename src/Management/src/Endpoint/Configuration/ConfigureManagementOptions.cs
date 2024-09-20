@@ -6,7 +6,6 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Actuators.Services;
-using Steeltoe.Management.Endpoint.Actuators.Trace;
 
 namespace Steeltoe.Management.Endpoint.Configuration;
 
@@ -69,11 +68,6 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
         if (!options.SerializerOptions.Converters.Any(converter => converter is HealthConverter or HealthConverterV3))
         {
             options.SerializerOptions.Converters.Add(new HealthConverter());
-        }
-
-        if (!options.SerializerOptions.Converters.OfType<HttpTraceResultConverter>().Any())
-        {
-            options.SerializerOptions.Converters.Add(new HttpTraceResultConverter());
         }
 
         if (!options.SerializerOptions.Converters.OfType<ServiceRegistrationsJsonConverter>().Any())

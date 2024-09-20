@@ -15,6 +15,7 @@ using Steeltoe.Management.Endpoint.Actuators.DbMigrations;
 using Steeltoe.Management.Endpoint.Actuators.Environment;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
+using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
@@ -23,7 +24,6 @@ using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
-using Steeltoe.Management.Endpoint.Actuators.Trace;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.ManagementPort;
 
@@ -98,7 +98,7 @@ public static class ActuatorServiceCollectionExtensions
         services.AddInfoActuator();
         services.AddHealthActuator();
         services.AddLoggersActuator();
-        services.AddTraceActuator(version);
+        services.AddHttpExchangesActuator();
         services.AddMappingsActuator();
         services.AddMetricsActuator();
         services.AddRefreshActuator();

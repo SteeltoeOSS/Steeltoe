@@ -32,6 +32,7 @@ static Steeltoe.Management.Endpoint.Actuators.Health.EndpointServiceCollectionEx
 static Steeltoe.Management.Endpoint.Actuators.Health.EndpointServiceCollectionExtensions.AddHealthContributor<T>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Health.ServiceProviderExtensions.InitializeAvailability(this System.IServiceProvider! serviceProvider) -> System.IServiceProvider!
 static Steeltoe.Management.Endpoint.Actuators.HeapDump.EndpointServiceCollectionExtensions.AddHeapDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.HttpExchanges.EndpointServiceCollectionExtensions.AddHttpExchangesActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Hypermedia.EndpointServiceCollectionExtensions.AddHypermediaActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Info.EndpointServiceCollectionExtensions.AddInfoActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Info.EndpointServiceCollectionExtensions.AddInfoContributor(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Type! infoContributorType) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
@@ -45,8 +46,6 @@ static Steeltoe.Management.Endpoint.Actuators.RouteMappings.RouteBuilderExtensio
 static Steeltoe.Management.Endpoint.Actuators.Services.EndpointServiceCollectionExtensions.AddServicesActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.ThreadDump.EndpointServiceCollectionExtensions.AddThreadDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.ThreadDump.EndpointServiceCollectionExtensions.AddThreadDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.Actuators.Trace.EndpointServiceCollectionExtensions.AddTraceActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.Actuators.Trace.EndpointServiceCollectionExtensions.AddTraceActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.ActivateActuatorEndpoints(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
@@ -61,6 +60,7 @@ static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.A
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddEnvironmentActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddHealthActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddHeapDumpActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
+static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddHttpExchangesActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddHypermediaActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddInfoActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddLoggersActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
@@ -70,8 +70,6 @@ static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.A
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddServicesActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddThreadDumpActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddThreadDumpActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddTraceActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddTraceActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddAllActuators(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddAllActuators(this Microsoft.Extensions.Hosting.IHostBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddAllActuators(this Microsoft.Extensions.Hosting.IHostBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.Hosting.IHostBuilder!
@@ -80,6 +78,7 @@ static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddDbMigrati
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddEnvironmentActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHealthActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHeapDumpActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
+static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHttpExchangesActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHypermediaActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddInfoActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddLoggersActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
@@ -89,8 +88,6 @@ static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddRefreshAc
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddServicesActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddThreadDumpActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddThreadDumpActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddTraceActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddTraceActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddAllActuators(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddAllActuators(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddAllActuators(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
@@ -99,6 +96,7 @@ static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddDbMigr
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddEnvironmentActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHealthActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHeapDumpActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
+static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHttpExchangesActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHypermediaActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddInfoActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddLoggersActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
@@ -108,8 +106,6 @@ static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddRefres
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddServicesActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddThreadDumpActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddThreadDumpActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddTraceActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddTraceActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.SpringBootAdminClient.ServiceCollectionExtensions.AddSpringBootAdminClient(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 Steeltoe.Management.Endpoint.ActuatorConventionBuilder
 Steeltoe.Management.Endpoint.ActuatorConventionBuilder.ActuatorConventionBuilder() -> void
@@ -235,6 +231,61 @@ Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumper.DumpHeapToFile(System
 Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumper.HeapDumper(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions!>! optionsMonitor, Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumper!>! logger) -> void
 Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumper.HeapDumper(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions!>! optionsMonitor, string? basePathOverride, Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumper!>! logger) -> void
 Steeltoe.Management.Endpoint.Actuators.HeapDump.IHeapDumpEndpointHandler
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.EndpointServiceCollectionExtensions
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.HttpExchange(Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest! request, Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeResponse! response, System.DateTime timestamp, Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal? principal, Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeSession? session, System.TimeSpan timeTaken) -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Principal.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal?
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Request.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest!
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Response.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeResponse!
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Session.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeSession?
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Timestamp.get -> System.DateTime
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.TimeTaken.get -> System.TimeSpan
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest.Headers.get -> System.Collections.Generic.IDictionary<string!, Microsoft.Extensions.Primitives.StringValues>!
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest.HttpExchangeRequest(string! method, System.Uri! uri, System.Collections.Generic.IDictionary<string!, Microsoft.Extensions.Primitives.StringValues>! headers, string? remoteAddress) -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest.Method.get -> string!
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest.RemoteAddress.get -> string?
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest.Uri.get -> System.Uri!
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeResponse
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeResponse.Headers.get -> System.Collections.Generic.IDictionary<string!, Microsoft.Extensions.Primitives.StringValues>!
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeResponse.HttpExchangeResponse(int status, System.Collections.Generic.IDictionary<string!, Microsoft.Extensions.Primitives.StringValues>! headers) -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeResponse.Status.get -> int
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.Capacity.get -> int
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.Capacity.set -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.HttpExchangesEndpointOptions() -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludePathInfo.get -> bool
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludePathInfo.set -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludeQueryString.get -> bool
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludeQueryString.set -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludeRemoteAddress.get -> bool
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludeRemoteAddress.set -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludeRequestHeaders.get -> bool
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludeRequestHeaders.set -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludeResponseHeaders.get -> bool
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludeResponseHeaders.set -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludeSessionId.get -> bool
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludeSessionId.set -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludeTimeTaken.get -> bool
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludeTimeTaken.set -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludeUserPrincipal.get -> bool
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.IncludeUserPrincipal.set -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.RequestHeaders.get -> System.Collections.Generic.HashSet<string!>!
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.ResponseHeaders.get -> System.Collections.Generic.HashSet<string!>!
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.Reverse.get -> bool
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.Reverse.set -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeSession
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeSession.HttpExchangeSession(string! id) -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeSession.Id.get -> string!
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesResult
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesResult.Exchanges.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange!>!
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesResult.HttpExchangesResult(System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange!>! exchanges) -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.IHttpExchangesEndpointHandler
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.IHttpExchangesRepository
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.IHttpExchangesRepository.GetHttpExchanges() -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesResult!
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal.Name.get -> string!
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal.HttpExchangePrincipal(string! name) -> void
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.HypermediaEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.HypermediaEndpointOptions.HypermediaEndpointOptions() -> void
@@ -442,70 +493,6 @@ Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedCount.get -> 
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedCount.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.get -> long
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.set -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.EndpointServiceCollectionExtensions
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.HttpTrace(Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest! request, Steeltoe.Management.Endpoint.Actuators.Trace.TraceResponse! response, long timestamp, Steeltoe.Management.Endpoint.Actuators.Trace.TracePrincipal? principal, Steeltoe.Management.Endpoint.Actuators.Trace.TraceSession? session, double timeTaken) -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.Principal.get -> Steeltoe.Management.Endpoint.Actuators.Trace.TracePrincipal?
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.Request.get -> Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest!
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.Response.get -> Steeltoe.Management.Endpoint.Actuators.Trace.TraceResponse!
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.Session.get -> Steeltoe.Management.Endpoint.Actuators.Trace.TraceSession?
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.Timestamp.get -> long
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace.TimeTaken.get -> long
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTraceResult
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTraceResult.HttpTraceResult() -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTraceResultV1
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTraceResultV1.HttpTraceResultV1(System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.Trace.TraceResult!>! traces) -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTraceResultV1.Traces.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.Trace.TraceResult!>!
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTraceResultV2
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTraceResultV2.HttpTraceResultV2(System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace!>! traces) -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.HttpTraceResultV2.Traces.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.Trace.HttpTrace!>!
-Steeltoe.Management.Endpoint.Actuators.Trace.IHttpTraceEndpointHandler
-Steeltoe.Management.Endpoint.Actuators.Trace.IHttpTraceRepository
-Steeltoe.Management.Endpoint.Actuators.Trace.IHttpTraceRepository.GetTraces() -> Steeltoe.Management.Endpoint.Actuators.Trace.HttpTraceResult!
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddAuthType.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddAuthType.set -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddParameters.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddParameters.set -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddPathInfo.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddPathInfo.set -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddQueryString.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddQueryString.set -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddRemoteAddress.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddRemoteAddress.set -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddRequestHeaders.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddRequestHeaders.set -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddResponseHeaders.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddResponseHeaders.set -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddSessionId.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddSessionId.set -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddTimeTaken.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddTimeTaken.set -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddUserPrincipal.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.AddUserPrincipal.set -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.Capacity.get -> int
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.Capacity.set -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceEndpointOptions.TraceEndpointOptions() -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TracePrincipal
-Steeltoe.Management.Endpoint.Actuators.Trace.TracePrincipal.Name.get -> string!
-Steeltoe.Management.Endpoint.Actuators.Trace.TracePrincipal.TracePrincipal(string! name) -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest.Headers.get -> System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<string?>!>!
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest.Method.get -> string!
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest.RemoteAddress.get -> string?
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest.TraceRequest(string! method, string! uri, System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<string?>!>! headers, string? remoteAddress) -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceRequest.Uri.get -> string!
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceResponse
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceResponse.Headers.get -> System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<string?>!>!
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceResponse.Status.get -> int
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceResponse.TraceResponse(int status, System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<string?>!>! headers) -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceResult
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceResult.Info.get -> System.Collections.Generic.IDictionary<string!, object?>!
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceResult.TimeStamp.get -> long
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceResult.TraceResult(long timestamp, System.Collections.Generic.IDictionary<string!, object?>! info) -> void
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceSession
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceSession.Id.get -> string!
-Steeltoe.Management.Endpoint.Actuators.Trace.TraceSession.TraceSession(string! id) -> void
 Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions
 Steeltoe.Management.Endpoint.AllActuatorsStartupFilter
 Steeltoe.Management.Endpoint.AllActuatorsStartupFilter.AllActuatorsStartupFilter(Steeltoe.Management.Endpoint.ActuatorConventionBuilder! conventionBuilder) -> void
