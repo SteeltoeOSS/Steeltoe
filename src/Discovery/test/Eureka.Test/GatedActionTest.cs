@@ -6,12 +6,12 @@ namespace Steeltoe.Discovery.Eureka.Test;
 
 public sealed class GatedActionTest
 {
-    private volatile int _timerFuncCount;
+    private int _timerFuncCount;
 
     [Fact]
     public async Task Run_Enforces_SingleActiveTask()
     {
-        _timerFuncCount = 0;
+        Interlocked.Exchange(ref _timerFuncCount, 0);
         var timedTask = new GatedAction(TimerFunc);
         await using var timer = new Timer(_ => timedTask.Run(), null, 10, 100);
         await Task.Delay(1000);
