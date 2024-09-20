@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
@@ -141,20 +140,17 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddHeapDumpActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        if (Platform.IsWindows)
-        {
-            WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
-            hostBuilder.AddHeapDumpActuator();
+        WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
+        hostBuilder.AddHeapDumpActuator();
 
-            await using WebApplication host = hostBuilder.Build();
-            host.UseRouting();
-            await host.StartAsync();
+        await using WebApplication host = hostBuilder.Build();
+        host.UseRouting();
+        await host.StartAsync();
 
-            Assert.Single(host.Services.GetServices<IHeapDumpEndpointHandler>());
-            Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-            HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/heapdump", UriKind.Relative));
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
+        Assert.Single(host.Services.GetServices<IHeapDumpEndpointHandler>());
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
+        HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/heapdump", UriKind.Relative));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
@@ -275,20 +271,17 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddThreadDumpActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        if (Platform.IsWindows)
-        {
-            WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
-            hostBuilder.AddThreadDumpActuator();
+        WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
+        hostBuilder.AddThreadDumpActuator();
 
-            await using WebApplication host = hostBuilder.Build();
-            host.UseRouting();
-            await host.StartAsync();
+        await using WebApplication host = hostBuilder.Build();
+        host.UseRouting();
+        await host.StartAsync();
 
-            Assert.Single(host.Services.GetServices<IThreadDumpEndpointHandler>());
-            Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-            HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/threaddump", UriKind.Relative));
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
+        Assert.Single(host.Services.GetServices<IThreadDumpEndpointHandler>());
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
+        HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/threaddump", UriKind.Relative));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
