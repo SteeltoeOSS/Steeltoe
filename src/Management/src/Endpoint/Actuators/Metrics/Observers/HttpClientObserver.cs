@@ -13,14 +13,14 @@ using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Metrics.Observers;
 
-internal sealed class HttpClientCoreObserver : MetricsObserver
+internal sealed class HttpClientObserver : MetricsObserver
 {
     private const string StatusTagKey = "status";
     private const string UriTagKey = "uri";
     private const string MethodTagKey = "method";
     private const string ClientTagKey = "clientName";
     private const string DiagnosticName = "HttpHandlerDiagnosticListener";
-    private const string DefaultObserverName = "HttpClientCoreObserver";
+    private const string DefaultObserverName = "HttpClientObserver";
 
     private const string StopEventName = "System.Net.Http.HttpRequestOut.Stop";
     private const string ExceptionEvent = "System.Net.Http.Exception";
@@ -28,7 +28,7 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
     private readonly Histogram<double> _clientCountMeasure;
     private readonly ILogger _logger;
 
-    public HttpClientCoreObserver(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILoggerFactory loggerFactory)
+    public HttpClientObserver(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILoggerFactory loggerFactory)
         : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(optionsMonitor);
@@ -42,12 +42,12 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
 
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.time");
         _clientCountMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.count");
-        _logger = loggerFactory.CreateLogger<HttpClientCoreObserver>();
+        _logger = loggerFactory.CreateLogger<HttpClientObserver>();
     }
 
     public override void ProcessEvent(string eventName, object? value)
     {
-        if (value == null)
+        if (value == null || (eventName != StopEventName && eventName != ExceptionEvent))
         {
             return;
         }
@@ -107,7 +107,7 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
         }
     }
 
-    private Dictionary<string, object?> GetLabels(HttpRequestMessage request, HttpResponseMessage? response, TaskStatus taskStatus)
+    private static Dictionary<string, object?> GetLabels(HttpRequestMessage request, HttpResponseMessage? response, TaskStatus taskStatus)
     {
         string uri = request.RequestUri!.GetComponents(UriComponents.PathAndQuery, UriFormat.UriEscaped);
         string statusCode = GetStatusCode(response, taskStatus);
@@ -122,24 +122,19 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
         };
     }
 
-    private string GetStatusCode(HttpResponseMessage? response, TaskStatus taskStatus)
+    private static string GetStatusCode(HttpResponseMessage? response, TaskStatus taskStatus)
     {
-        if (response != null)
+        if (response == null)
         {
-            int value = (int)response.StatusCode;
-            return value.ToString(CultureInfo.InvariantCulture);
+            return taskStatus switch
+            {
+                TaskStatus.Faulted => "CLIENT_FAULT",
+                TaskStatus.Canceled => "CLIENT_CANCELED",
+                _ => "CLIENT_ERROR"
+            };
         }
 
-        if (taskStatus == TaskStatus.Faulted)
-        {
-            return "CLIENT_FAULT";
-        }
-
-        if (taskStatus == TaskStatus.Canceled)
-        {
-            return "CLIENT_CANCELED";
-        }
-
-        return "CLIENT_ERROR";
+        int value = (int)response.StatusCode;
+        return value.ToString(CultureInfo.InvariantCulture);
     }
 }
