@@ -238,7 +238,7 @@ public static class ManagementHostApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the HttpExchange actuator to the application.
+    /// Adds the HttpExchanges actuator to the application.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IHostApplicationBuilder" /> to configure.
