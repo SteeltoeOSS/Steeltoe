@@ -25,6 +25,8 @@ public sealed class HttpExchangesEndpointOptionsTest : BaseTest
         options.IncludeSessionId.Should().BeFalse();
         options.IncludeTimeTaken.Should().BeTrue();
         options.Reverse.Should().BeTrue();
+        options.RequestHeaders.Should().HaveCount(26);
+        options.ResponseHeaders.Should().HaveCount(19);
     }
 
     [Fact]

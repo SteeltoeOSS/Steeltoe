@@ -85,8 +85,8 @@ internal sealed class HttpExchangesDiagnosticObserver : DiagnosticObserver, IHtt
         ArgumentNullException.ThrowIfNull(current);
         ArgumentNullException.ThrowIfNull(context);
 
-        HttpExchange trace = GetHttpExchange(context, current.Duration);
-        Queue.Enqueue(trace);
+        HttpExchange exchange = GetHttpExchange(context, current.Duration);
+        Queue.Enqueue(exchange);
 
         if (Queue.Count > _optionsMonitor.CurrentValue.Capacity)
         {
@@ -140,7 +140,7 @@ internal sealed class HttpExchangesDiagnosticObserver : DiagnosticObserver, IHtt
 
     private static Dictionary<string, StringValues> GetHeaders(IHeaderDictionary headers)
     {
-        var result = new Dictionary<string, StringValues>();
+        var result = new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
 
         foreach ((string key, StringValues value) in headers)
         {
@@ -152,7 +152,7 @@ internal sealed class HttpExchangesDiagnosticObserver : DiagnosticObserver, IHtt
 
     private static Dictionary<string, StringValues> FilterHeaders(IDictionary<string, StringValues> headers, HashSet<string> allowedHeaders)
     {
-        var filteredHeaders = new Dictionary<string, StringValues>();
+        var filteredHeaders = new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
 
         foreach ((string key, StringValues value) in headers)
         {
@@ -164,7 +164,7 @@ internal sealed class HttpExchangesDiagnosticObserver : DiagnosticObserver, IHtt
 
     private static bool HeaderShouldBeRedacted(string currentHeader, HashSet<string> allowedHeaders)
     {
-        return !allowedHeaders.Any(header => header.Equals(currentHeader, StringComparison.OrdinalIgnoreCase));
+        return !allowedHeaders.Contains(currentHeader);
     }
 
     internal static HttpExchangePrincipal? GetUserPrincipal(HttpContext context)
