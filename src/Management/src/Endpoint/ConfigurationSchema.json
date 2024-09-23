@@ -375,7 +375,7 @@
                 },
                 "Capacity": {
                   "type": "integer",
-                  "description": "Gets or sets a value indicating how many traces should be stored. Default value is 100."
+                  "description": "Gets or sets a value indicating how many HTTP exchanges should be stored. Default value: 100."
                 },
                 "Enabled": {
                   "type": "boolean",

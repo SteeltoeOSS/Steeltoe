@@ -75,11 +75,6 @@ internal sealed class HttpExchangesDiagnosticObserver : DiagnosticObserver, IHtt
         }
     }
 
-    internal static HttpContext? GetHttpContextPropertyValue(object instance)
-    {
-        return GetPropertyOrDefault<HttpContext>(instance, "HttpContext");
-    }
-
     private void RecordHttpExchange(Activity current, HttpContext context)
     {
         ArgumentNullException.ThrowIfNull(current);
@@ -111,10 +106,8 @@ internal sealed class HttpExchangesDiagnosticObserver : DiagnosticObserver, IHtt
         return filteredUri.Uri;
     }
 
-    private HttpExchange GetHttpExchange(HttpContext context, TimeSpan duration)
+    private static HttpExchange GetHttpExchange(HttpContext context, TimeSpan duration)
     {
-        HttpExchangesEndpointOptions options = _optionsMonitor.CurrentValue;
-
         var requestUri = new Uri(context.Request.GetEncodedUrl());
         Dictionary<string, StringValues> requestHeaders = GetHeaders(context.Request.Headers);
 
@@ -126,12 +119,7 @@ internal sealed class HttpExchangesDiagnosticObserver : DiagnosticObserver, IHtt
 
         HttpExchangePrincipal? principal = GetUserPrincipal(context);
 
-        string? sessionId = null;
-
-        if (options.IncludeSessionId)
-        {
-            sessionId = GetSessionId(context);
-        }
+        string? sessionId = GetSessionId(context);
 
         HttpExchangeSession? session = sessionId == null ? null : new HttpExchangeSession(sessionId);
 
@@ -167,7 +155,7 @@ internal sealed class HttpExchangesDiagnosticObserver : DiagnosticObserver, IHtt
         return !allowedHeaders.Contains(currentHeader);
     }
 
-    internal static HttpExchangePrincipal? GetUserPrincipal(HttpContext context)
+    private static HttpExchangePrincipal? GetUserPrincipal(HttpContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
 
@@ -176,7 +164,7 @@ internal sealed class HttpExchangesDiagnosticObserver : DiagnosticObserver, IHtt
         return username == null ? null : new HttpExchangePrincipal(username);
     }
 
-    internal static string? GetSessionId(HttpContext context)
+    private static string? GetSessionId(HttpContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
 

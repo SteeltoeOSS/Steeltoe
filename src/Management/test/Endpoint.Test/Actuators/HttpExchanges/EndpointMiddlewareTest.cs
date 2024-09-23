@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +23,28 @@ public sealed class EndpointMiddlewareTest : BaseTest
     };
 
     [Fact]
+    public async Task HttpExchangesActuator_DoesNotCaptureAuthInUri()
+    {
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(AppSettings);
+        builder.AddHttpExchangesActuator();
+        await using WebApplication host = builder.Build();
+
+        host.UseRouting();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
+
+        var requestUri = new Uri("http://username:password@localhost/actuator/httpexchanges");
+        _ = await httpClient.GetAsync(requestUri);
+        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string json = await response.Content.ReadAsStringAsync();
+        json.Should().NotContain("username").And.NotContain("password");
+        json.Should().Contain("http://localhost:80/actuator/httpexchanges");
+    }
+
+    [Fact]
     public async Task HttpExchangesActuator_ReturnsExpectedData()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
@@ -36,8 +59,15 @@ public sealed class EndpointMiddlewareTest : BaseTest
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/httpexchanges"));
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
+        var httpExchanges = await response.Content.ReadFromJsonAsync<HttpExchangesResult>();
+        httpExchanges!.Exchanges.Should().BeEmpty();
+
+        response = await httpClient.GetAsync(new Uri("http://localhost/actuator/httpexchanges"));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         string json = await response.Content.ReadAsStringAsync();
-        json.Should().Be("{\"exchanges\":[]}");
+        json.Should().NotContain("username").And.NotContain("password");
+        json.Should().Contain("http://localhost:80/actuator/httpexchanges");
+        json.Should().Contain($"\"timestamp\":\"{DateTime.Now.Date:yyyy-MM-dd}");
     }
 
     [Fact]

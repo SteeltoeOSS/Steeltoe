@@ -16,7 +16,7 @@ public sealed class HttpExchangesEndpointTest(ITestOutputHelper testOutputHelper
     public async Task HttpExchangeEndpointHandler_CallsHttpExchangeRepository()
     {
         using var testContext = new TestContext(_testOutputHelper);
-        var repository = new TestHttpExchangeRepository();
+        var repository = new TestHttpExchangesRepository();
 
         testContext.AdditionalServices = (services, _) =>
         {

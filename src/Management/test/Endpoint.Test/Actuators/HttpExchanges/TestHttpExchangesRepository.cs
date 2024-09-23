@@ -6,7 +6,7 @@ using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.HttpExchanges;
 
-internal sealed class TestHttpExchangeRepository : IHttpExchangesRepository
+internal sealed class TestHttpExchangesRepository : IHttpExchangesRepository
 {
     public bool GetHttpExchangesCalled { get; private set; }
 

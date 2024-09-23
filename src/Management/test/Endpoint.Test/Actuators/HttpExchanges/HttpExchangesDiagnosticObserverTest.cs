@@ -5,7 +5,6 @@
 using System.Diagnostics;
 using System.Net;
 using System.Security.Claims;
-using System.Xml;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -18,71 +17,6 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.HttpExchanges;
 
 public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
 {
-    [Fact]
-    public void GetSessionId_NoSession_ReturnsExpected()
-    {
-        HttpContext context = CreateRequest();
-        string? result = HttpExchangesDiagnosticObserver.GetSessionId(context);
-        result.Should().BeNull();
-    }
-
-    [Fact]
-    public void GetSessionId_WithSession_ReturnsExpected()
-    {
-        HttpContext context = CreateRequest();
-
-        ISessionFeature sessionFeature = new SessionFeature(new TestSession());
-
-        context.Features.Set(sessionFeature);
-
-        string? result = HttpExchangesDiagnosticObserver.GetSessionId(context);
-        result.Should().Be("TestSessionId");
-    }
-
-    [Fact]
-    public void GetUserPrincipal_NotAuthenticated_ReturnsExpected()
-    {
-        HttpContext context = CreateRequest();
-        HttpExchangePrincipal? result = HttpExchangesDiagnosticObserver.GetUserPrincipal(context);
-        result.Should().BeNull();
-    }
-
-    [Fact]
-    public void GetUserPrincipal_Authenticated_ReturnsExpected()
-    {
-        HttpContext context = CreateRequest();
-
-        context.User = new ClaimsPrincipal(new MyIdentity());
-        HttpExchangePrincipal? result = HttpExchangesDiagnosticObserver.GetUserPrincipal(context);
-        result?.Name.Should().Be("MyTestName");
-    }
-
-    [Fact]
-    public void GetProperty_NoProperties_ReturnsExpected()
-    {
-        HttpContext? context = HttpExchangesDiagnosticObserver.GetHttpContextPropertyValue(new
-        {
-            foo = "bar"
-        });
-
-        context.Should().BeNull();
-    }
-
-    [Fact]
-    public void GetProperty_WithProperties_ReturnsExpected()
-    {
-        GetOptionsMonitorFromSettings<HttpExchangesEndpointOptions, ConfigureHttpExchangesEndpointOptions>();
-
-        HttpContext expectedContext = CreateRequest();
-
-        HttpContext? context = HttpExchangesDiagnosticObserver.GetHttpContextPropertyValue(new
-        {
-            HttpContext = expectedContext
-        });
-
-        context.Should().BeSameAs(expectedContext);
-    }
-
     [Fact]
     public void ProcessEvent_IgnoresUnprocessableEvents()
     {

@@ -11,27 +11,27 @@ namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 internal sealed class HttpExchangesEndpointHandler : IHttpExchangesEndpointHandler
 {
     private readonly IOptionsMonitor<HttpExchangesEndpointOptions> _optionsMonitor;
-    private readonly IHttpExchangesRepository _httpExchangeRepository;
+    private readonly IHttpExchangesRepository _httpExchangesRepository;
     private readonly ILogger<HttpExchangesEndpointHandler> _logger;
 
     public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
-    public HttpExchangesEndpointHandler(IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor, IHttpExchangesRepository httpExchangeRepository,
+    public HttpExchangesEndpointHandler(IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor, IHttpExchangesRepository httpExchangesRepository,
         ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(optionsMonitor);
-        ArgumentNullException.ThrowIfNull(httpExchangeRepository);
+        ArgumentNullException.ThrowIfNull(httpExchangesRepository);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _optionsMonitor = optionsMonitor;
-        _httpExchangeRepository = httpExchangeRepository;
+        _httpExchangesRepository = httpExchangesRepository;
         _logger = loggerFactory.CreateLogger<HttpExchangesEndpointHandler>();
     }
 
     public Task<HttpExchangesResult> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Fetching Http Exchanges");
-        HttpExchangesResult result = _httpExchangeRepository.GetHttpExchanges();
+        HttpExchangesResult result = _httpExchangesRepository.GetHttpExchanges();
         return Task.FromResult(result);
     }
 }

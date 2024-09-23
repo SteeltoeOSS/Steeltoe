@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.HttpExchanges;
@@ -48,16 +47,11 @@ public sealed class HttpExchangesEndpointOptionsTest : BaseTest
             ["management:endpoints:httpExchanges:includeRemoteAddress"] = "true",
             ["management:endpoints:httpExchanges:includeSessionId"] = "true",
             ["management:endpoints:httpExchanges:reverse"] = "false",
-            ["management:endpoints:cloudfoundry:enabled"] = "true"
+            ["management:endpoints:httpExchanges:requestHeaders:0"] = "some-extra-request-header-to-allow",
+            ["management:endpoints:httpExchanges:responseHeaders:0"] = "some-extra-response-header-to-allow"
         };
 
         var endpointOptions = GetOptionsFromSettings<HttpExchangesEndpointOptions>(appsettings);
-        var cloudFoundryEndpointOptions = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appsettings);
-
-        cloudFoundryEndpointOptions.Enabled.Should().BeTrue();
-        cloudFoundryEndpointOptions.Id.Should().Be(string.Empty);
-        cloudFoundryEndpointOptions.Path.Should().Be(string.Empty);
-        cloudFoundryEndpointOptions.ValidateCertificates.Should().BeTrue();
 
         endpointOptions.Enabled.Should().BeTrue();
         endpointOptions.Id.Should().Be("httpexchanges");
@@ -72,5 +66,7 @@ public sealed class HttpExchangesEndpointOptionsTest : BaseTest
         endpointOptions.IncludeRemoteAddress.Should().BeTrue();
         endpointOptions.IncludeSessionId.Should().BeTrue();
         endpointOptions.Reverse.Should().BeFalse();
+        endpointOptions.RequestHeaders.Should().HaveCount(27);
+        endpointOptions.ResponseHeaders.Should().HaveCount(20);
     }
 }
