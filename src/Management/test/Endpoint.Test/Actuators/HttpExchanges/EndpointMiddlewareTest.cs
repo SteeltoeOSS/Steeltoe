@@ -67,7 +67,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         string json = await response.Content.ReadAsStringAsync();
         json.Should().NotContain("username").And.NotContain("password");
         json.Should().Contain("http://localhost:80/actuator/httpexchanges");
-        json.Should().Contain($"\"timestamp\":\"{DateTime.Now.Date:yyyy-MM-dd}");
+        json.Should().Contain($"\"timestamp\":\"{DateTime.UtcNow.Date:yyyy-MM-dd}");
     }
 
     [Fact]
