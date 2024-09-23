@@ -197,6 +197,6 @@ internal sealed class RandomValueProvider : ConfigurationProvider
     {
         byte[] bytes = new byte[16];
         Random.Shared.NextBytes(bytes);
-        return BitConverter.ToString(bytes).Replace("-", string.Empty, StringComparison.Ordinal);
+        return Convert.ToHexString(bytes);
     }
 }

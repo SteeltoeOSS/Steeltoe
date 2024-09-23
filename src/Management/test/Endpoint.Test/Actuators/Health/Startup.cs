@@ -32,19 +32,19 @@ public sealed class Startup
         switch (_configuration.GetValue<string?>("HealthCheckType"))
         {
             case "down":
-                services.RemoveAll(typeof(IHealthContributor));
+                services.RemoveAll<IHealthContributor>();
                 services.AddHealthContributor<DownContributor>();
                 break;
             case "out":
-                services.RemoveAll(typeof(IHealthContributor));
+                services.RemoveAll<IHealthContributor>();
                 services.AddHealthContributor<OutOfServiceContributor>();
                 break;
             case "unknown":
-                services.RemoveAll(typeof(IHealthContributor));
+                services.RemoveAll<IHealthContributor>();
                 services.AddHealthContributor<UnknownContributor>();
                 break;
             case "disabled":
-                services.RemoveAll(typeof(IHealthContributor));
+                services.RemoveAll<IHealthContributor>();
                 services.AddHealthContributor<DisabledContributor>();
                 break;
             case "default":

@@ -25,7 +25,7 @@ public sealed class DynamicSerilogLoggerProviderTest
         using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
-        ILogger logger = factory.CreateLogger(typeof(TestClass));
+        ILogger logger = factory.CreateLogger<TestClass>();
 
         logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
         logger.IsEnabled(LogLevel.Error).Should().BeTrue();
@@ -43,7 +43,7 @@ public sealed class DynamicSerilogLoggerProviderTest
         using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
-        _ = factory.CreateLogger(typeof(TestClass));
+        _ = factory.CreateLogger<TestClass>();
 
         string[] configurations = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
 
@@ -63,7 +63,7 @@ public sealed class DynamicSerilogLoggerProviderTest
         using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
-        _ = factory.CreateLogger(typeof(TestClass));
+        _ = factory.CreateLogger<TestClass>();
 
         string[] configurations = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
 
@@ -78,7 +78,7 @@ public sealed class DynamicSerilogLoggerProviderTest
         using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
-        factory.CreateLogger(typeof(TestClass));
+        factory.CreateLogger<TestClass>();
 
         string[] configurations = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
 
@@ -109,7 +109,7 @@ public sealed class DynamicSerilogLoggerProviderTest
         using var factory = new LoggerFactory();
         factory.AddProvider(provider);
 
-        ILogger logger = factory.CreateLogger(typeof(TestClass));
+        ILogger logger = factory.CreateLogger<TestClass>();
 
         provider.SetLogLevel("A", LogLevel.Debug);
 
@@ -253,7 +253,7 @@ public sealed class DynamicSerilogLoggerProviderTest
         var provider = new DynamicSerilogLoggerProvider(GetConfigurationFromFile(), []);
         using var factory = new LoggerFactory();
         factory.AddProvider(provider);
-        ILogger logger = factory.CreateLogger(typeof(TestClass));
+        ILogger logger = factory.CreateLogger<TestClass>();
 
         using (LogContext.PushProperty("A", 1))
         {
@@ -288,7 +288,7 @@ public sealed class DynamicSerilogLoggerProviderTest
         var provider = new DynamicSerilogLoggerProvider(GetConfigurationFromFile(), []);
         using var factory = new LoggerFactory();
         factory.AddProvider(provider);
-        ILogger logger = factory.CreateLogger(typeof(TestClass));
+        ILogger logger = factory.CreateLogger<TestClass>();
 
         logger.LogInformation("Info {@TestInfo}", new
         {
@@ -308,7 +308,7 @@ public sealed class DynamicSerilogLoggerProviderTest
         var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
         using var factory = new LoggerFactory();
         factory.AddProvider(provider);
-        ILogger logger = factory.CreateLogger(typeof(TestClass));
+        ILogger logger = factory.CreateLogger<TestClass>();
 
         // act I - log at all levels, expect Info and above to work
         WriteLogEntries(logger);

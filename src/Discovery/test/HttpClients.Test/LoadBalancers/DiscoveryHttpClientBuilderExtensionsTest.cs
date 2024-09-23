@@ -85,7 +85,7 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
     public async Task AddLoadBalancerT_CanBeUsedWithAnHttpClient()
     {
         var services = new ServiceCollection();
-        services.AddSingleton(typeof(FakeLoadBalancer));
+        services.AddSingleton<FakeLoadBalancer>();
         services.AddHttpClient("test").AddServiceDiscovery<FakeLoadBalancer>();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -103,7 +103,7 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddConfigurationDiscoveryClient();
-        services.AddSingleton(typeof(FakeLoadBalancer));
+        services.AddSingleton<FakeLoadBalancer>();
 
         services.AddHttpClient("testRandom").AddServiceDiscovery<RandomLoadBalancer>();
         services.AddHttpClient("testRandom2").AddServiceDiscovery<RandomLoadBalancer>();

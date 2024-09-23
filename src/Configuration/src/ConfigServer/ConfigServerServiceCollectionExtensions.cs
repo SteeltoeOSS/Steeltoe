@@ -47,7 +47,7 @@ public static class ConfigServerServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IHealthContributor), typeof(ConfigServerHealthContributor)));
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHealthContributor, ConfigServerHealthContributor>());
 
         return services;
     }

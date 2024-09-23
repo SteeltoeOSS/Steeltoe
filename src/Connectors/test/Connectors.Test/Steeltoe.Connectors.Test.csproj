@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net9.0</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -13,7 +13,7 @@
     <PackageReference Include="MongoDB.Driver" Version="$(MongoDbDriverVersion)" />
     <PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />
     <PackageReference Include="MySql.Data" Version="$(MySqlDataVersion)" />
-    <PackageReference Include="Npgsql" Version="$(EntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="Npgsql" Version="$(NpgsqlTestVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientTestVersion)" />
   </ItemGroup>
 
