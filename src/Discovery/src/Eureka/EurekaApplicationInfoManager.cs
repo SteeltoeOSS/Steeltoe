@@ -18,7 +18,7 @@ public sealed class EurekaApplicationInfoManager : IDisposable
     private readonly IOptionsMonitor<EurekaInstanceOptions> _instanceOptionsMonitor;
     private readonly IDisposable? _instanceOptionsChangeToken;
     private readonly ILogger<EurekaApplicationInfoManager> _logger;
-    private readonly object _instanceWriteLock = new();
+    private readonly Lock _instanceWriteLock = new();
 
     // Readers must never be blocked, as it may delay the periodic heartbeat.
     // Updates from user code must be synchronized with configuration changes.

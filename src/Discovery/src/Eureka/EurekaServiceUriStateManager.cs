@@ -17,7 +17,7 @@ public sealed class EurekaServiceUriStateManager
     private readonly IOptionsMonitor<EurekaClientOptions> _optionsMonitor;
     private readonly ILogger<EurekaServiceUriStateManager> _logger;
 
-    private readonly object _lockObject = new();
+    private readonly Lock _lockObject = new();
     private readonly HashSet<Uri> _failedServiceUris = [];
     private Uri? _lastWorkingServiceUri;
 

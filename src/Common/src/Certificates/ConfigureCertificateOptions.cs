@@ -44,10 +44,14 @@ internal sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certi
 
         options.Certificate = privateKeyFilePath != null && File.Exists(privateKeyFilePath)
             ? X509Certificate2.CreateFromPemFile(certificateFilePath, privateKeyFilePath)
+#pragma warning disable SYSLIB0057 // Type or member is obsolete
             : new X509Certificate2(certificateFilePath);
+#pragma warning restore SYSLIB0057 // Type or member is obsolete
 
         X509Certificate2[] certificateChain = CertificateRegex.Matches(File.ReadAllText(certificateFilePath))
+#pragma warning disable SYSLIB0057 // Type or member is obsolete
             .Select(x => new X509Certificate2(Encoding.ASCII.GetBytes(x.Value))).ToArray();
+#pragma warning restore SYSLIB0057 // Type or member is obsolete
 
         foreach (X509Certificate2 issuer in certificateChain.Skip(1))
         {

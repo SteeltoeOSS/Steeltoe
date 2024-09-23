@@ -25,7 +25,7 @@ public sealed class BootstrapLoggerFactory : ILoggerFactory
         }).Build());
     };
 
-    private readonly object _lock = new();
+    private readonly Lock _lock = new();
     private readonly Dictionary<string, UpgradableLogger> _loggersByCategoryName = [];
     private ILoggerFactory _innerFactory;
 

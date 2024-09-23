@@ -17,7 +17,7 @@ internal sealed class MetricsExporter
     private readonly MetricsCollection<IList<MetricSample>> _metricSamples = new();
     private readonly MetricsCollection<IList<MetricTag>> _availableTags = new();
 
-    private readonly object _collectionLock = new();
+    private readonly Lock _collectionLock = new();
     private MetricsCollection<IList<MetricSample>> _lastCollectionSamples = new();
     private MetricsCollection<IList<MetricTag>> _lastAvailableTags = new();
     private DateTime _lastCollection = DateTime.MinValue;

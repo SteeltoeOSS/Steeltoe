@@ -25,7 +25,7 @@ public sealed class Connector<TOptions, TConnection> : IDisposable
     private readonly bool _useSingletonConnection;
     private readonly IOptionsMonitor<TOptions> _optionsMonitor;
 
-    private readonly object _singletonLock = new();
+    private readonly Lock _singletonLock = new();
     private ConnectionWithOptionsSnapshot? _singletonSnapshot;
     private bool _singletonIsDisposed;
 

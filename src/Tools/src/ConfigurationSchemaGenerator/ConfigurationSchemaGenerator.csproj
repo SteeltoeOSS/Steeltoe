@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -10,6 +10,7 @@
     -->
     <NoWarn>$(NoWarn);CS1570;CS1591</NoWarn>
     <!--<DefineConstants>$(DefineConstants);LAUNCH_DEBUGGER</DefineConstants>-->
+    <NuGetAuditMode>direct</NuGetAuditMode>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />

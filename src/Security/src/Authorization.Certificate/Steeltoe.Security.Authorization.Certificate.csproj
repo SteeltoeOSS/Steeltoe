@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net9.0</TargetFrameworks>
     <Description>This package provides support for authorization with client certificates.</Description>
     <PackageTags>aspnetcore;authorization;security;x509;certificate;mutualtls</PackageTags>
     <IsPackable>true</IsPackable>

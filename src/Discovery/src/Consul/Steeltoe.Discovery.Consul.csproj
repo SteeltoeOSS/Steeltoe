@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net9.0</TargetFrameworks>
     <Description>Steeltoe compatibility package for service discovery and registration with Hashicorp Consul</Description>
     <PackageTags>service-discovery;service-registry;Consul;hashicorp</PackageTags>
     <IsPackable>true</IsPackable>

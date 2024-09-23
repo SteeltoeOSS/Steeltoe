@@ -17,7 +17,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo;
 /// </summary>
 public sealed class ApplicationInfoCollection : IReadOnlyCollection<ApplicationInfo>
 {
-    private readonly object _addRemoveInstanceLock = new();
+    private readonly Lock _addRemoveInstanceLock = new();
 
     internal ConcurrentDictionary<string, ApplicationInfo> ApplicationMap { get; } = new();
     internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> VipInstanceMap { get; } = new();

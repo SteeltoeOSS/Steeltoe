@@ -15,7 +15,7 @@ public sealed class CapturingLoggerProvider : ILoggerProvider
     private static readonly Func<string, LogLevel, bool> DefaultFilter = (_, _) => true;
     private readonly Func<string, LogLevel, bool> _filter;
 
-    private readonly object _lockObject = new();
+    private readonly Lock _lockObject = new();
     private readonly List<string> _messages = [];
 
     public CapturingLoggerProvider()

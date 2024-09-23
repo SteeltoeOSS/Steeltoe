@@ -15,7 +15,7 @@ namespace Steeltoe.Logging.DynamicSerilog;
 /// </summary>
 public sealed class DynamicSerilogLoggerProvider : DynamicLoggerProvider
 {
-    private static readonly object LoggerLock = new();
+    private static readonly Lock LoggerLock = new();
     private static Logger? _serilogLogger;
     private readonly IDisposable? _optionsChangeListener;
 
