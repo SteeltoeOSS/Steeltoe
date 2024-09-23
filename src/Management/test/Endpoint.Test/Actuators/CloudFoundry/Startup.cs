@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
-using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
