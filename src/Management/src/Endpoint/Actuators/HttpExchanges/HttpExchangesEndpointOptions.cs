@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 public sealed class HttpExchangesEndpointOptions : EndpointOptions
 {
     /// <summary>
-    /// Gets or sets a value indicating how many traces should be stored. Default value is 100.
+    /// Gets or sets a value indicating how many HTTP exchanges should be stored. Default value: 100.
     /// </summary>
     public int Capacity { get; set; } = -1;
 

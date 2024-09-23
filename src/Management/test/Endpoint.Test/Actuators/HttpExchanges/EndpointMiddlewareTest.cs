@@ -31,7 +31,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         host.UseRouting();
         await host.StartAsync();
-        HttpClient httpClient = host.GetTestClient();
+        using HttpClient httpClient = host.GetTestClient();
 
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/httpexchanges"));
         response.StatusCode.Should().Be(HttpStatusCode.OK);

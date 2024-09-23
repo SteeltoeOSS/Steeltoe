@@ -9,12 +9,12 @@ using Steeltoe.Management.Endpoint.Middleware;
 namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
 /// <summary>
-/// Add services used by the HttpExchange actuator.
+/// Add services used by the HttpExchanges actuator.
 /// </summary>
 internal static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the services used by the HttpExchange actuator.
+    /// Adds the services used by the HttpExchanges actuator.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
