@@ -9,8 +9,8 @@ namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
 public sealed class HttpExchange
 {
-    [JsonPropertyName("TimeTaken")]
-    internal string SerializedTimeTaken => XmlConvert.ToString(TimeTaken);
+    [JsonPropertyName("timeTaken")]
+    public string SerializedTimeTaken => XmlConvert.ToString(TimeTaken);
 
     public DateTime Timestamp { get; }
     public HttpExchangePrincipal? Principal { get; }

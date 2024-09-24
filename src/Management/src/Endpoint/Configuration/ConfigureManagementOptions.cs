@@ -4,6 +4,7 @@
 
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Json;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Actuators.Services;
 
@@ -51,6 +52,7 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
     private static void ConfigureSerializerOptions(ManagementOptions options)
     {
         options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.SerializerOptions.AddJsonIgnoreEmptyCollection();
 
         foreach (string converterTypeName in options.CustomJsonConverters)
         {

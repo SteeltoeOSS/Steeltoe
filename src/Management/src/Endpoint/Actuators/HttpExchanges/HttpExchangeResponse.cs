@@ -3,12 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common.Json;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
 public sealed class HttpExchangeResponse
 {
     public int Status { get; }
+
+    [JsonIgnoreEmptyCollection]
     public IDictionary<string, StringValues> Headers { get; }
 
     public HttpExchangeResponse(int status, IDictionary<string, StringValues> headers)
