@@ -20,10 +20,10 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
     [Fact]
     public void ProcessEvent_IgnoresUnprocessableEvents()
     {
-        IOptionsMonitor<HttpExchangesEndpointOptions> option =
+        IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor =
             GetOptionsMonitorFromSettings<HttpExchangesEndpointOptions, ConfigureHttpExchangesEndpointOptions>();
 
-        var observer = new HttpExchangesDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, NullLoggerFactory.Instance);
 
         // No current activity, event ignored
         observer.ProcessEvent("foobar", null);
@@ -49,10 +49,10 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
     {
         using var listener = new DiagnosticListener("Microsoft.AspNetCore");
 
-        IOptionsMonitor<HttpExchangesEndpointOptions> option =
+        IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor =
             GetOptionsMonitorFromSettings<HttpExchangesEndpointOptions, ConfigureHttpExchangesEndpointOptions>();
 
-        using var observer = new HttpExchangesDiagnosticObserver(option, NullLoggerFactory.Instance);
+        using var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, NullLoggerFactory.Instance);
         observer.Subscribe(listener);
 
         HttpContext context = CreateRequest();
@@ -76,10 +76,10 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
     [Fact]
     public void ProcessEvent_AddsToQueue()
     {
-        IOptionsMonitor<HttpExchangesEndpointOptions> option =
+        IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor =
             GetOptionsMonitorFromSettings<HttpExchangesEndpointOptions, ConfigureHttpExchangesEndpointOptions>();
 
-        var observer = new HttpExchangesDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, NullLoggerFactory.Instance);
 
         var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
         current.Start();
@@ -97,10 +97,10 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
     [Fact]
     public void ProcessEvent_HonorsCapacity()
     {
-        IOptionsMonitor<HttpExchangesEndpointOptions> option =
+        IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor =
             GetOptionsMonitorFromSettings<HttpExchangesEndpointOptions, ConfigureHttpExchangesEndpointOptions>();
 
-        var observer = new HttpExchangesDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, NullLoggerFactory.Instance);
         var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
         current.Start();
 
@@ -111,7 +111,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
             observer.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", context);
         }
 
-        observer.Queue.Count.Should().Be(option.CurrentValue.Capacity);
+        observer.Queue.Should().HaveCount(optionsMonitor.CurrentValue.Capacity);
     }
 
     [Fact]
@@ -119,10 +119,10 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
     {
         using var listener = new DiagnosticListener("test");
 
-        IOptionsMonitor<HttpExchangesEndpointOptions> option =
+        IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor =
             GetOptionsMonitorFromSettings<HttpExchangesEndpointOptions, ConfigureHttpExchangesEndpointOptions>();
 
-        var observer = new HttpExchangesDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, NullLoggerFactory.Instance);
         var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
         current.Start();
 
@@ -133,13 +133,13 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
             observer.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", context);
         }
 
-        observer.Queue.Count.Should().Be(option.CurrentValue.Capacity);
+        observer.Queue.Should().HaveCount(optionsMonitor.CurrentValue.Capacity);
         HttpExchangesResult result = observer.GetHttpExchanges();
-        result.Exchanges.Count.Should().Be(option.CurrentValue.Capacity);
-        observer.Queue.Count.Should().Be(option.CurrentValue.Capacity);
+        result.Exchanges.Should().HaveCount(optionsMonitor.CurrentValue.Capacity);
+        observer.Queue.Should().HaveCount(optionsMonitor.CurrentValue.Capacity);
         result.Exchanges[0].Request.Uri.Query.Should().Be("?requestNumber=199");
 
-        option.CurrentValue.Reverse = false;
+        optionsMonitor.CurrentValue.Reverse = false;
         result = observer.GetHttpExchanges();
         result.Exchanges[0].Request.Uri.Query.Should().EndWith("requestNumber=100");
     }
@@ -173,7 +173,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
 
         observer.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", context);
 
-        observer.Queue.Count.Should().Be(1);
+        observer.Queue.Should().HaveCount(1);
         HttpExchange queuedExchange = observer.Queue.First();
 
         queuedExchange.Should().NotBeNull();
@@ -186,9 +186,11 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
         queuedExchange.Response.Headers["HeaderA"][0].Should().Be("headerAValue");
         queuedExchange.Response.Headers["HeaderB"][0].Should().Be("headerBValue");
         queuedExchange.Response.Headers[HeaderNames.SetCookie][0].Should().Be("some-value-that-should-be-redacted");
-        queuedExchange.Principal?.Name.Should().Be("MyTestName");
+        queuedExchange.Principal.Should().NotBeNull();
+        queuedExchange.Principal!.Name.Should().Be("MyTestName");
         queuedExchange.Request.RemoteAddress.Should().Be("127.0.0.1");
-        queuedExchange.Session?.Id.Should().Be("TestSessionId");
+        queuedExchange.Session.Should().NotBeNull();
+        queuedExchange.Session!.Id.Should().Be("TestSessionId");
 
         HttpExchange filteredHeaders = observer.GetHttpExchanges().Exchanges[0];
         filteredHeaders.Should().NotBeNull();
@@ -202,9 +204,11 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
         filteredHeaders.Response.Headers["HeaderA"][0].Should().Be(HttpExchangesDiagnosticObserver.Redacted);
         filteredHeaders.Response.Headers["HeaderB"][0].Should().Be("headerBValue");
         filteredHeaders.Response.Headers[HeaderNames.SetCookie][0].Should().Be(HttpExchangesDiagnosticObserver.Redacted);
-        filteredHeaders.Principal?.Name.Should().Be("MyTestName");
+        filteredHeaders.Principal.Should().NotBeNull();
+        filteredHeaders.Principal!.Name.Should().Be("MyTestName");
         filteredHeaders.Request.RemoteAddress.Should().Be("127.0.0.1");
-        filteredHeaders.Session?.Id.Should().Be("TestSessionId");
+        filteredHeaders.Session.Should().NotBeNull();
+        filteredHeaders.Session!.Id.Should().Be("TestSessionId");
 
         optionsMonitor.CurrentValue.RequestHeaders.Add(HeaderNames.Authorization);
         optionsMonitor.CurrentValue.RequestHeaders.Add("header1");

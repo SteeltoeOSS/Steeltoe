@@ -4,6 +4,8 @@
 
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Xml;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -26,51 +28,57 @@ public sealed class EndpointMiddlewareTest : BaseTest
     };
 
     [Fact]
-    public async Task HttpExchangesActuator_DoesNotCaptureAuthInUri()
-    {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(AppSettings);
-        builder.AddHttpExchangesActuator();
-        await using WebApplication host = builder.Build();
-
-        host.UseRouting();
-        await host.StartAsync();
-        using HttpClient httpClient = host.GetTestClient();
-
-        var requestUri = new Uri("http://username:password@localhost/actuator/httpexchanges");
-        _ = await httpClient.GetAsync(requestUri);
-        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        string json = await response.Content.ReadAsStringAsync();
-        json.Should().NotContain("username").And.NotContain("password");
-        json.Should().Contain("http://localhost:80/actuator/httpexchanges");
-    }
-
-    [Fact]
     public async Task HttpExchangesActuator_ReturnsExpectedData()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.AddHttpExchangesActuator();
         await using WebApplication host = builder.Build();
-
         host.UseRouting();
+        host.MapGet("/hello", () => "Hello World!");
         await host.StartAsync();
-        using HttpClient httpClient = host.GetTestClient();
+        using var httpClient = new HttpClient();
+#pragma warning disable S4005 // "System.Uri" arguments should be used instead of strings
+        // S4005 disabled so that we can test basic auth in uri
+        HttpResponseMessage helloResponse = await httpClient.GetAsync("http://username:password@localhost:5000/hello?someQuery=value");
+#pragma warning restore S4005 // "System.Uri" arguments should be used instead of strings
+        helloResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri("http://localhost:5000/actuator/httpexchanges"));
+        actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var actuatorRootElement = await actuatorResponse.Content.ReadFromJsonAsync<JsonElement>();
+        JsonElement[] exchangesArray = [.. actuatorRootElement.GetProperty("exchanges").EnumerateArray()];
+        exchangesArray.Should().HaveCount(1);
+        JsonElement testExchange = exchangesArray[0];
+        string requestTimestamp = testExchange.GetProperty("timestamp").ToString();
+        requestTimestamp.Should().StartWith($"{DateTime.UtcNow.Date:yyyy-MM-dd}T");
+        requestTimestamp.Should().EndWith("Z");
+        string requestTimeTaken = testExchange.GetProperty("timeTaken").ToString();
+        var timeTaken = XmlConvert.ToTimeSpan(requestTimeTaken);
+        timeTaken.Should().BeGreaterThan(TimeSpan.Zero).And.BeLessThan(TimeSpan.FromSeconds(1));
+        testExchange.Invoking(jsonElement => jsonElement.GetProperty("principal")).Should().Throw<KeyNotFoundException>();
+        testExchange.Invoking(jsonElement => jsonElement.GetProperty("session")).Should().Throw<KeyNotFoundException>();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/httpexchanges"));
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        JsonElement request = testExchange.GetProperty("request");
+        string requestMethod = request.GetProperty("method").ToString();
+        requestMethod.Should().Be("GET");
+        string requestUri = request.GetProperty("uri").ToString();
+        requestUri.Should().Be("http://localhost:5000/hello?someQuery=value");
+        JsonElement requestHeaders = request.GetProperty("headers");
+        JsonElement[] hostHeader = [.. requestHeaders.GetProperty("Host").EnumerateArray()];
+        hostHeader.Should().HaveCount(1);
+        hostHeader[0].ToString().Should().Be("localhost:5000");
+        request.Invoking(jsonElement => jsonElement.GetProperty("remoteAddress")).Should().Throw<KeyNotFoundException>();
 
-        var httpExchanges = await response.Content.ReadFromJsonAsync<HttpExchangesResult>();
-        httpExchanges!.Exchanges.Should().BeEmpty();
-
-        response = await httpClient.GetAsync(new Uri("http://localhost/actuator/httpexchanges"));
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        string json = await response.Content.ReadAsStringAsync();
-        json.Should().NotContain("username").And.NotContain("password");
-        json.Should().Contain("http://localhost:80/actuator/httpexchanges");
-        json.Should().Contain($"\"timestamp\":\"{DateTime.UtcNow.Date:yyyy-MM-dd}");
+        JsonElement response = testExchange.GetProperty("response");
+        string responseStatus = response.GetProperty("status").ToString();
+        responseStatus.Should().Be("200");
+        JsonElement responseHeaders = response.GetProperty("headers");
+        JsonElement[] contentTypeHeader = [.. responseHeaders.GetProperty("Content-Type").EnumerateArray()];
+        contentTypeHeader.Should().HaveCount(1);
+        contentTypeHeader[0].ToString().Should().Be("text/plain; charset=utf-8");
+        JsonElement[] serverHeader = [.. responseHeaders.GetProperty("Server").EnumerateArray()];
+        serverHeader.Should().HaveCount(1);
+        serverHeader[0].ToString().Should().Be("Kestrel");
     }
 
     [Fact]

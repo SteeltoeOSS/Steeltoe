@@ -237,6 +237,7 @@ Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.HttpExchange(S
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Principal.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal?
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Request.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest!
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Response.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeResponse!
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.SerializedTimeTaken.get -> string!
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Session.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeSession?
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Timestamp.get -> System.DateTime
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.TimeTaken.get -> System.TimeSpan

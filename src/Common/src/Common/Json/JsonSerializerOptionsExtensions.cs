@@ -41,11 +41,7 @@ public static class JsonSerializerOptionsExtensions
         {
             if (property.AttributeProvider != null && property.AttributeProvider.IsDefined(typeof(JsonIgnoreEmptyCollectionAttribute), true))
             {
-                property.ShouldSerialize = (_, value) =>
-                {
-                    var enumerable = value as IEnumerable;
-                    return enumerable == null || enumerable.Cast<object>().Any();
-                };
+                property.ShouldSerialize = (_, value) => value is not IEnumerable enumerable || enumerable.Cast<object>().Any();
             }
         }
     }
