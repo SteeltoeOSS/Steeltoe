@@ -36,14 +36,22 @@ public static class EndpointServiceCollectionExtensions
         return services;
     }
 
+    /// <summary>
+    /// Adds metrics observers to the service container.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddMetricsObservers(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         services.ConfigureOptionsWithChangeTokenSource<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientCoreObserver>());
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientDesktopObserver>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientObserver>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IRuntimeDiagnosticSource, ClrRuntimeObserver>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
 

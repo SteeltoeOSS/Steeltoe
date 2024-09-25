@@ -59,12 +59,15 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using HttpClient client = host.GetTestClient();
         var links = await client.GetFromJsonAsync<Links>("http://localhost/cloudfoundryapplication", SerializerOptions);
+        links.Should().NotBeNull();
 
-        Assert.NotNull(links);
-        Assert.True(links.Entries.ContainsKey("self"));
-        Assert.Equal("http://localhost/cloudfoundryapplication", links.Entries["self"].Href);
-        Assert.True(links.Entries.ContainsKey("info"));
-        Assert.Equal("http://localhost/cloudfoundryapplication/info", links.Entries["info"].Href);
+        links!.Entries.Should().ContainKeys([
+            "self",
+            "info"
+        ]);
+
+        links.Entries["self"].Href.Should().Be("http://localhost/cloudfoundryapplication");
+        links.Entries["info"].Href.Should().Be("http://localhost/cloudfoundryapplication/info");
     }
 
     [Fact]

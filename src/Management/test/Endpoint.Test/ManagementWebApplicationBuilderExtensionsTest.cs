@@ -20,6 +20,7 @@ using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
+using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
@@ -28,7 +29,6 @@ using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
-using Steeltoe.Management.Endpoint.Actuators.Trace;
 using Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -285,19 +285,20 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     }
 
     [Fact]
-    public async Task AddTraceActuator_WebApplicationBuilder_IStartupFilterFires()
+    public async Task AddHttpExchangesActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
-        hostBuilder.AddTraceActuator();
+        hostBuilder.AddHttpExchangesActuator();
 
         await using WebApplication host = hostBuilder.Build();
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<IHttpTraceEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-        HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/httptrace", UriKind.Relative));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        host.Services.GetServices<IHttpExchangesEndpointHandler>().Should().ContainSingle();
+        host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter).Should().ContainSingle();
+        using HttpClient httpClient = host.GetTestClient();
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator/httpexchanges", UriKind.Relative));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -418,7 +419,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
         HttpClient client = host.GetTestClient();
 
-        // these requests hit the "RequireAuthorization" policy and will only pass if _testServerWithSecureRouting is used
+        // these requests hit the "RequireAuthorization" policy and will only pass if GetTestWebAppWithSecureRouting is used
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

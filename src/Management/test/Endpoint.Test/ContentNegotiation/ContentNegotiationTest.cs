@@ -29,7 +29,7 @@ public sealed class ContentNegotiationTest
                 (EndpointName.Metrics, "http://localhost/actuator/metrics"),
                 (EndpointName.Loggers, "http://localhost/actuator/loggers"),
                 (EndpointName.Health, "http://localhost/actuator/health"),
-                (EndpointName.Trace, "http://localhost/actuator/httptrace"),
+                (EndpointName.HttpExchanges, "http://localhost/actuator/httpexchanges"),
                 (EndpointName.Environment, "http://localhost/actuator/env"),
                 (EndpointName.Mappings, "http://localhost/actuator/mappings"),
                 (EndpointName.Refresh, "http://localhost/actuator/refresh")

@@ -22,8 +22,8 @@ public sealed class ApplicationInstanceCertificateTest
         if (shouldParse)
         {
             instanceCertificate.Should().NotBeNull();
-            instanceCertificate?.OrganizationId.Should().Be(expectedOrgId);
-            instanceCertificate?.SpaceId.Should().Be(expectedSpaceId);
+            instanceCertificate!.OrganizationId.Should().Be(expectedOrgId);
+            instanceCertificate.SpaceId.Should().Be(expectedSpaceId);
         }
         else
         {

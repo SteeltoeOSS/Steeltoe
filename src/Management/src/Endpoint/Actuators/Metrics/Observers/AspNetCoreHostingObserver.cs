@@ -49,7 +49,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
 
     public override void ProcessEvent(string eventName, object? value)
     {
-        if (value == null)
+        if (value == null || eventName != StopEventName)
         {
             return;
         }
@@ -61,19 +61,14 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
             return;
         }
 
-        if (eventName == StopEventName)
+        _logger.LogTrace("HandleStopEvent start {Thread}", System.Environment.CurrentManagedThreadId);
+
+        if (value is HttpContext httpContext)
         {
-            _logger.LogTrace("HandleStopEvent start {Thread}", System.Environment.CurrentManagedThreadId);
-
-            var context = GetPropertyOrDefault<HttpContext>(value, "HttpContext");
-
-            if (context != null)
-            {
-                HandleStopEvent(current, context);
-            }
-
-            _logger.LogTrace("HandleStopEvent finish {Thread}", System.Environment.CurrentManagedThreadId);
+            HandleStopEvent(current, httpContext);
         }
+
+        _logger.LogTrace("HandleStopEvent finish {Thread}", System.Environment.CurrentManagedThreadId);
     }
 
     private void HandleStopEvent(Activity current, HttpContext context)
@@ -109,15 +104,10 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
         };
     }
 
-    internal string GetExceptionTypeName(HttpContext context)
+    internal static string GetExceptionTypeName(HttpContext context)
     {
         var exception = context.Features.Get<IExceptionHandlerFeature>();
 
-        if (exception != null)
-        {
-            return exception.Error.GetType().Name;
-        }
-
-        return "None";
+        return exception != null ? exception.Error.GetType().Name : "None";
     }
 }

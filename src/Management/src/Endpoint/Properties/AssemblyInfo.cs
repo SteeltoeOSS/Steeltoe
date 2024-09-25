@@ -12,6 +12,7 @@ using Steeltoe.Management.Endpoint.Actuators.Environment;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
+using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
@@ -20,7 +21,6 @@ using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
-using Steeltoe.Management.Endpoint.Actuators.Trace;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
@@ -41,8 +41,7 @@ using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 [assembly: ConfigurationSchema("Management:Endpoints:Mappings", typeof(RouteMappingsEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Services", typeof(ServicesEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Dump", typeof(ThreadDumpEndpointOptions))]
-[assembly: ConfigurationSchema("Management:Endpoints:Trace", typeof(TraceEndpointOptions))]
-[assembly: ConfigurationSchema("Management:Endpoints:HttpTrace", typeof(TraceEndpointOptions))]
+[assembly: ConfigurationSchema("Management:Endpoints:HttpExchanges", typeof(HttpExchangesEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Actuator", typeof(HypermediaEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Actuator:Exposure", typeof(Exposure))]
 [assembly: ConfigurationSchema("Management:Endpoints:Web:Exposure", typeof(Exposure))]

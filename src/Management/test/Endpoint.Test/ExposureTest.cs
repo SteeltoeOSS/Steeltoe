@@ -25,7 +25,7 @@ public sealed class ExposureTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:exposure:include:0"] = "httptrace",
+            ["management:endpoints:exposure:include:0"] = "httpexchanges",
             ["management:endpoints:exposure:include:1"] = "dbmigrations",
             ["management:endpoints:exposure:exclude:0"] = "trace",
             ["management:endpoints:exposure:exclude:1"] = "env"
@@ -60,20 +60,18 @@ public sealed class ExposureTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:actuator:exposure:include:0"] = "httptrace",
+            ["management:endpoints:actuator:exposure:include:0"] = "httpexchanges",
             ["management:endpoints:actuator:exposure:include:1"] = "dbmigrations",
-            ["management:endpoints:actuator:exposure:exclude:0"] = "trace",
-            ["management:endpoints:actuator:exposure:exclude:1"] = "env"
+            ["management:endpoints:actuator:exposure:exclude:0"] = "env"
         };
 
         var options = GetOptionsFromSettings<ManagementOptions>(appSettings);
 
         options.Exposure.Include.Should().HaveCount(2);
-        options.Exposure.Include.Should().Contain("httptrace");
+        options.Exposure.Include.Should().Contain("httpexchanges");
         options.Exposure.Include.Should().Contain("dbmigrations");
 
-        options.Exposure.Exclude.Should().HaveCount(2);
-        options.Exposure.Exclude.Should().Contain("trace");
+        options.Exposure.Exclude.Should().HaveCount(1);
         options.Exposure.Exclude.Should().Contain("env");
     }
 
@@ -104,10 +102,9 @@ public sealed class ExposureTest : BaseTest
         {
             ["management:endpoints:web:exposure:include"] = "heapdump, env",
             ["management:endpoints:web:exposure:exclude"] = "dbmigrations, info",
-            ["management:endpoints:actuator:exposure:include:0"] = "httptrace",
+            ["management:endpoints:actuator:exposure:include:0"] = "httpexchanges",
             ["management:endpoints:actuator:exposure:include:1"] = "dbmigrations",
-            ["management:endpoints:actuator:exposure:exclude:0"] = "trace",
-            ["management:endpoints:actuator:exposure:exclude:1"] = "env"
+            ["management:endpoints:actuator:exposure:exclude:0"] = "env"
         };
 
         var options = GetOptionsFromSettings<ManagementOptions>(appSettings);
@@ -115,13 +112,12 @@ public sealed class ExposureTest : BaseTest
         options.Exposure.Include.Should().HaveCount(4);
         options.Exposure.Include.Should().Contain("heapdump");
         options.Exposure.Include.Should().Contain("env");
-        options.Exposure.Include.Should().Contain("httptrace");
+        options.Exposure.Include.Should().Contain("httpexchanges");
         options.Exposure.Include.Should().Contain("dbmigrations");
 
-        options.Exposure.Exclude.Should().HaveCount(4);
+        options.Exposure.Exclude.Should().HaveCount(3);
         options.Exposure.Exclude.Should().Contain("dbmigrations");
         options.Exposure.Exclude.Should().Contain("info");
-        options.Exposure.Exclude.Should().Contain("trace");
         options.Exposure.Exclude.Should().Contain("env");
     }
 

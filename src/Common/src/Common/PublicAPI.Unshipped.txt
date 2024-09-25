@@ -3,6 +3,7 @@ override Steeltoe.Common.CasingConventions.SnakeCaseAllCapsEnumMemberJsonConvert
 override Steeltoe.Common.CasingConventions.SnakeCaseAllCapsEnumMemberJsonConverter.CreateConverter(System.Type! typeToConvert, System.Text.Json.JsonSerializerOptions! options) -> System.Text.Json.Serialization.JsonConverter!
 static Steeltoe.Common.CasingConventions.EnumExtensions.ToSnakeCaseString<TEnum>(this TEnum value, Steeltoe.Common.CasingConventions.SnakeCaseStyle style) -> string!
 static Steeltoe.Common.Extensions.ServiceCollectionExtensions.AddApplicationInstanceInfo(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Common.Json.JsonSerializerOptionsExtensions.AddJsonIgnoreEmptyCollection(this System.Text.Json.JsonSerializerOptions! options) -> System.Text.Json.JsonSerializerOptions!
 static Steeltoe.Common.Platform.IsCloudFoundry.get -> bool
 static Steeltoe.Common.Platform.IsCloudHosted.get -> bool
 static Steeltoe.Common.Platform.IsContainerized.get -> bool
@@ -54,6 +55,9 @@ Steeltoe.Common.IApplicationInstanceInfo
 Steeltoe.Common.IApplicationInstanceInfo.ApplicationName.get -> string?
 Steeltoe.Common.IApplicationTask
 Steeltoe.Common.IApplicationTask.RunAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+Steeltoe.Common.Json.JsonIgnoreEmptyCollectionAttribute
+Steeltoe.Common.Json.JsonIgnoreEmptyCollectionAttribute.JsonIgnoreEmptyCollectionAttribute() -> void
+Steeltoe.Common.Json.JsonSerializerOptionsExtensions
 Steeltoe.Common.Net.InetOptions
 Steeltoe.Common.Net.InetOptions.DefaultHostname.get -> string?
 Steeltoe.Common.Net.InetOptions.DefaultHostname.set -> void

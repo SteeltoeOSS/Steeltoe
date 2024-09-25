@@ -21,6 +21,7 @@ using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
+using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
@@ -29,7 +30,6 @@ using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
-using Steeltoe.Management.Endpoint.Actuators.Trace;
 using Steeltoe.Management.Endpoint.ManagementPort;
 using Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
 using Steeltoe.Management.Endpoint.Test.Actuators.Info;
@@ -424,28 +424,28 @@ public sealed class ManagementHostBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddTraceActuator_IHostBuilder()
+    public void AddHttpExchangesActuator_IHostBuilder()
     {
         IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
-        hostBuilder.AddTraceActuator();
+        hostBuilder.AddHttpExchangesActuator();
         using IHost host = hostBuilder.Build();
 
-        host.Services.GetService<IHttpTraceEndpointHandler>().Should().NotBeNull();
+        host.Services.GetService<IHttpExchangesEndpointHandler>().Should().NotBeNull();
         host.Services.GetServices<IStartupFilter>().OfType<AllActuatorsStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
-    public async Task AddTraceActuator_IHostBuilder_IStartupFilterFires()
+    public async Task AddHttpExchangesActuator_IHostBuilder_IStartupFilterFires()
     {
         IHostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
         hostBuilder.ConfigureWebHost(ConfigureWebHostWithAllActuatorsExposed);
-        hostBuilder.AddTraceActuator();
+        hostBuilder.AddHttpExchangesActuator();
 
         using IHost host = await hostBuilder.StartAsync();
 
-        var requestUri = new Uri("/actuator/httptrace", UriKind.Relative);
+        var requestUri = new Uri("/actuator/httpexchanges", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]

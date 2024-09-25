@@ -38,19 +38,14 @@ public sealed class AspNetCoreHostingObserverTest : BaseTest
     [Fact]
     public void GetException_ReturnsExpected()
     {
-        IOptionsMonitor<MetricsObserverOptions> options = GetOptionsMonitorFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
-        var observer = new AspNetCoreHostingObserver(options, NullLoggerFactory.Instance);
-
         HttpContext context = GetHttpRequestMessage();
-        string exceptionTypeName = observer.GetExceptionTypeName(context);
+        string exceptionTypeName = AspNetCoreHostingObserver.GetExceptionTypeName(context);
         Assert.Equal("None", exceptionTypeName);
-
-        context = GetHttpRequestMessage();
 
         var exceptionHandlerFeature = new ExceptionHandlerFeature(new InvalidOperationException());
 
         context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
-        exceptionTypeName = observer.GetExceptionTypeName(context);
+        exceptionTypeName = AspNetCoreHostingObserver.GetExceptionTypeName(context);
         Assert.Equal("InvalidOperationException", exceptionTypeName);
     }
 
@@ -75,7 +70,7 @@ public sealed class AspNetCoreHostingObserverTest : BaseTest
         Assert.Contains(KeyValuePair.Create("method", (object?)"GET"), tagContext);
     }
 
-    private HttpContext GetHttpRequestMessage(string method = "GET", string path = "/foobar")
+    private static HttpContext GetHttpRequestMessage(string method = "GET", string path = "/foobar")
     {
         HttpContext context = new DefaultHttpContext
         {
