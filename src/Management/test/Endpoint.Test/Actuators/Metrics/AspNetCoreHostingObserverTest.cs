@@ -42,8 +42,6 @@ public sealed class AspNetCoreHostingObserverTest : BaseTest
         string exceptionTypeName = AspNetCoreHostingObserver.GetExceptionTypeName(context);
         Assert.Equal("None", exceptionTypeName);
 
-        context = GetHttpRequestMessage();
-
         var exceptionHandlerFeature = new ExceptionHandlerFeature(new InvalidOperationException());
 
         context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);

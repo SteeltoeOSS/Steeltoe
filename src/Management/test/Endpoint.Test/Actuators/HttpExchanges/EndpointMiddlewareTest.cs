@@ -38,10 +38,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         host.MapGet("/hello", () => "Hello World!");
         await host.StartAsync();
         using var httpClient = new HttpClient();
-#pragma warning disable S4005 // "System.Uri" arguments should be used instead of strings
-        // S4005 disabled so that we can test basic auth in uri
-        HttpResponseMessage helloResponse = await httpClient.GetAsync("http://username:password@localhost:5000/hello?someQuery=value");
-#pragma warning restore S4005 // "System.Uri" arguments should be used instead of strings
+        HttpResponseMessage helloResponse = await httpClient.GetAsync(new Uri("http://localhost:5000/hello?someQuery=value"));
         helloResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri("http://localhost:5000/actuator/httpexchanges"));
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
