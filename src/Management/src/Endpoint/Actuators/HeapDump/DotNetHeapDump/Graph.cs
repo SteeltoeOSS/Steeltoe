@@ -265,8 +265,9 @@ namespace Graphs
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("Graph of {0} nodes and {1} types.  Size={2:f3}MB SizeOfDescription={3:f3}MB",
-                NodeIndexLimit, NodeTypeIndexLimit, TotalSize / 1000000.0, SizeOfGraphDescription() / 1000000.0);
+            // Removed existing code to workaround https://github.com/SonarSource/sonar-dotnet/issues/9670.
+            // CRITICAL: With this change, this method doesn't work correctly anymore, but at least it unblocks compilation.
+            return string.Empty;
         }
         // Performance 
         /// <summary>
