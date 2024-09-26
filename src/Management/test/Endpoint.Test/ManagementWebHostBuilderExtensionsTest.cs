@@ -37,23 +37,6 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
 {
-    private IWebHostBuilder WebHostBuilderWithAllActuatorsExposed { get; } = TestWebHostBuilderFactory.Create()
-        .Configure(applicationBuilder => applicationBuilder.UseRouting()).ConfigureAppConfiguration(configurationBuilder =>
-            configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["management:endpoints:actuator:exposure:include:0"] = "*"
-            }));
-
-    private IWebHostBuilder WebHostBuilderWithSecureRouting { get; } = TestWebHostBuilderFactory.Create().ConfigureServices(services =>
-    {
-        services.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
-            TestAuthHandler.AuthenticationScheme, _ =>
-            {
-            });
-
-        services.AddAuthorizationBuilder().AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read"));
-    }).Configure(applicationBuilder => applicationBuilder.UseRouting().UseAuthentication().UseAuthorization());
-
     [Fact]
     public void AddDbMigrationsActuator_IWebHostBuilder()
     {
@@ -68,7 +51,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddDbMigrationsActuator_IWebHostBuilder_IStartupFilterFires()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddDbMigrationsActuator();
 
         using IWebHost host = hostBuilder.Build();
@@ -94,7 +77,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddEnvironmentActuator_IWebHostBuilder_IStartupFilterFires()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddEnvironmentActuator();
 
         using IWebHost host = hostBuilder.Build();
@@ -147,7 +130,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddHealthActuator_IWebHostBuilder_IStartupFilterFires()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddHealthActuator();
 
         using IWebHost host = hostBuilder.Build();
@@ -162,7 +145,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddHealthActuator_IWebHostBuilder_IStartupFilterFireRegistersAvailabilityEvents()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddHealthActuator();
 
         using IWebHost host = hostBuilder.Build();
@@ -198,7 +181,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddHeapDumpActuator_IWebHostBuilder_IStartupFilterFires()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddHeapDumpActuator();
 
         using IWebHost host = hostBuilder.Build();
@@ -224,7 +207,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddHypermediaActuator_IWebHostBuilder_IStartupFilterFires()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddHypermediaActuator();
 
         using IWebHost host = hostBuilder.Build();
@@ -263,7 +246,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddInfoActuator_IWebHostBuilder_IStartupFilterFires()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddInfoActuator();
 
         using IWebHost host = hostBuilder.Build();
@@ -289,7 +272,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddLoggersActuator_IWebHostBuilder_IStartupFilterFires()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddLoggersActuator();
 
         using IWebHost host = hostBuilder.Build();
@@ -305,7 +288,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public async Task AddLoggers_IWebHostBuilder_MultipleLoggersScenario1()
     {
         // Add Serilog + DynamicConsole = runs OK
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.ConfigureLogging(builder => builder.AddDynamicSerilog().AddDynamicConsole());
         hostBuilder.AddLoggersActuator();
 
@@ -322,7 +305,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     public void AddLoggers_IWebHostBuilder_MultipleLoggersScenario2()
     {
         // Add DynamicConsole + Serilog = throws exception
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.ConfigureLogging(builder => builder.AddDynamicConsole().AddDynamicSerilog());
         hostBuilder.AddLoggersActuator();
 
@@ -345,7 +328,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddMappingsActuator_IWebHostBuilder_IStartupFilterFires()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddMappingsActuator();
 
         using IWebHost host = hostBuilder.Build();
@@ -371,7 +354,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddMetricsActuator_IWebHostBuilder_IStartupFilterFires()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddMetricsActuator();
 
         using IWebHost host = hostBuilder.Build();
@@ -397,7 +380,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddRefreshActuator_IWebHostBuilder_IStartupFilterFires()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddRefreshActuator();
 
         using IWebHost host = hostBuilder.Build();
@@ -423,7 +406,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddThreadDumpActuator_IWebHostBuilder_IStartupFilterFires()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddThreadDumpActuator();
 
         using IWebHost host = hostBuilder.Build();
@@ -449,7 +432,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddHttpExchangesActuator_IWebHostBuilder_IStartupFilterFires()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddHttpExchangesActuator();
 
         using IWebHost host = hostBuilder.Build();
@@ -475,7 +458,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddServicesActuator_IWebHostBuilder_IStartupFilterFires()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddServicesActuator();
 
         using IWebHost host = hostBuilder.Build();
@@ -501,7 +484,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddAllActuators_IWebHostBuilder_IStartupFilterFires()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddAllActuators();
 
         using IWebHost host = hostBuilder.Build();
@@ -519,7 +502,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddAllActuatorsWithConventions_IWebHostBuilder_IStartupFilterFires()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithSecureRouting;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithSecureRouting();
         hostBuilder.AddAllActuators(builder => builder.RequireAuthorization("TestAuth"));
 
         using IWebHost host = hostBuilder.Build();
@@ -550,7 +533,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "some"); // Allow routing to /cloudfoundryapplication
 
-        IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
         hostBuilder.AddCloudFoundryActuator();
 
         using IWebHost host = hostBuilder.Build();
@@ -565,7 +548,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddSeveralActuators_IWebHostBuilder_NoConflict()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithSecureRouting;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithSecureRouting();
         hostBuilder.AddHypermediaActuator();
         hostBuilder.AddInfoActuator();
         hostBuilder.AddHealthActuator();
@@ -591,7 +574,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public async Task AddSeveralActuators_IWebHostBuilder_PrefersEndpointConfiguration()
     {
-        IWebHostBuilder hostBuilder = WebHostBuilderWithSecureRouting;
+        IWebHostBuilder hostBuilder = GetWebHostBuilderWithSecureRouting();
 
         hostBuilder.ConfigureServices(services => services.ActivateActuatorEndpoints().RequireAuthorization("TestAuth"));
 
@@ -616,5 +599,42 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response = await httpClient.GetAsync(new Uri("/actuator/health", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    private static IWebHostBuilder GetWebHostBuilderWithAllActuatorsExposed()
+    {
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
+
+        builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["management:endpoints:actuator:exposure:include:0"] = "*"
+        }));
+
+        return builder;
+    }
+
+    private static IWebHostBuilder GetWebHostBuilderWithSecureRouting()
+    {
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+
+        builder.ConfigureServices(services =>
+        {
+            services.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                TestAuthHandler.AuthenticationScheme, _ =>
+                {
+                });
+
+            services.AddAuthorizationBuilder().AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read"));
+        });
+
+        builder.Configure(applicationBuilder =>
+        {
+            applicationBuilder.UseRouting();
+            applicationBuilder.UseAuthentication();
+            applicationBuilder.UseAuthorization();
+        });
+
+        return builder;
     }
 }

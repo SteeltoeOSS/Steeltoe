@@ -75,9 +75,8 @@ public sealed class MetricsEndpointTest : BaseTest
                 Assert.NotNull(result);
 
                 Assert.IsType<MetricsResponse>(result);
-                MetricsResponse response = result;
-                Assert.NotNull(response.Names);
-                Assert.Empty(response.Names);
+                Assert.NotNull(result.Names);
+                Assert.Empty(result.Names);
             }
             finally
             {

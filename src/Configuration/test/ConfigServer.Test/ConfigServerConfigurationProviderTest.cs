@@ -20,11 +20,6 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class ConfigServerConfigurationProviderTest
 {
-    private readonly ConfigServerClientOptions _commonOptions = new()
-    {
-        Name = "myName"
-    };
-
     [Fact]
     public void DefaultConstructor_InitializedWithDefaultSettings()
     {
@@ -276,7 +271,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
@@ -302,7 +297,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
@@ -501,7 +496,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         options.Label = "label,testlabel";
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
@@ -547,7 +542,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
@@ -589,7 +584,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         options.Uri = "http://localhost:8888, http://localhost:8888";
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
@@ -620,7 +615,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         options.Uri = "http://localhost:8888, http://localhost:8888";
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
@@ -647,7 +642,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
@@ -673,7 +668,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
@@ -684,7 +679,7 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsNotFoundStatus__DoesNotContinueChecking_FailFastEnabled()
     {
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
         options.Uri = "http://localhost:8888,http://localhost:8888";
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -726,7 +721,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
@@ -755,7 +750,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
         options.Uri = "http://localhost:8888, http://localhost:8888, http://localhost:8888";
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
@@ -842,7 +837,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
@@ -892,7 +887,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
@@ -1409,7 +1404,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
-        ConfigServerClientOptions clientOptions = _commonOptions;
+        ConfigServerClientOptions clientOptions = GetCommonOptions();
 
         using IWebHost app = builder.Build();
         await app.StartAsync();
@@ -1447,6 +1442,14 @@ public sealed class ConfigServerConfigurationProviderTest
         Assert.NotNull(testOptions);
         Assert.Equal("my-app", testOptions.Name);
         Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", testOptions.Version);
+    }
+
+    private ConfigServerClientOptions GetCommonOptions()
+    {
+        return new ConfigServerClientOptions
+        {
+            Name = "myName"
+        };
     }
 
     private static string GetEncodedUserPassword(string user, string password)
