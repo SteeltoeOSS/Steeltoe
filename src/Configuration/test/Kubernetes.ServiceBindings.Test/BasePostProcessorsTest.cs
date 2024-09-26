@@ -50,7 +50,8 @@ public abstract class BasePostProcessorsTest
         return new TestPostProcessorConfigurationProvider(source);
     }
 
-    private sealed class TestPostProcessorConfigurationProvider(PostProcessorConfigurationSource source) : PostProcessorConfigurationProvider(source);
+    private sealed class TestPostProcessorConfigurationProvider(PostProcessorConfigurationSource source)
+        : PostProcessorConfigurationProvider(source);
 
     private sealed class TestPostProcessorConfigurationSource : PostProcessorConfigurationSource;
 }

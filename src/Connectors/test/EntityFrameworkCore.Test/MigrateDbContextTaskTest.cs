@@ -31,7 +31,8 @@ public sealed class MigrateDbContextTaskTest
         TestMigrator.HasMigrated.Should().BeTrue();
     }
 
-    private sealed class TestMigrateDbContext(DbContextOptions options) : DbContext(options)
+    private sealed class TestMigrateDbContext(DbContextOptions options)
+        : DbContext(options)
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

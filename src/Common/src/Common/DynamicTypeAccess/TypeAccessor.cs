@@ -7,7 +7,8 @@ namespace Steeltoe.Common.DynamicTypeAccess;
 /// <summary>
 /// Provides reflection-based access to static members of a <see cref="System.Type" />.
 /// </summary>
-internal sealed class TypeAccessor(Type type) : ReflectionAccessor(type)
+internal sealed class TypeAccessor(Type type)
+    : ReflectionAccessor(type)
 {
     public Type Type { get; } = type;
 
