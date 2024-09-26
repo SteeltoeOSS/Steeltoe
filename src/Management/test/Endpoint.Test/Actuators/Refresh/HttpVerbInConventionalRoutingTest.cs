@@ -30,9 +30,7 @@ public sealed class HttpVerbInConventionalRoutingTest
         app.UseMvc(routes => routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"));
         await app.StartAsync();
 
-        using TestServer testServer = app.GetTestServer();
-        using HttpClient httpClient = testServer.CreateClient();
-
+        using HttpClient httpClient = app.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
@@ -60,9 +58,7 @@ public sealed class HttpVerbInConventionalRoutingTest
         app.UseMvc(routes => routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"));
         await app.StartAsync();
 
-        using TestServer testServer = app.GetTestServer();
-        using HttpClient httpClient = testServer.CreateClient();
-
+        using HttpClient httpClient = app.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
@@ -90,9 +86,7 @@ public sealed class HttpVerbInConventionalRoutingTest
         app.UseMvc(routes => routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"));
         await app.StartAsync();
 
-        using TestServer testServer = app.GetTestServer();
-        using HttpClient httpClient = testServer.CreateClient();
-
+        using HttpClient httpClient = app.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
@@ -121,9 +115,7 @@ public sealed class HttpVerbInConventionalRoutingTest
         app.UseMvc(routes => routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"));
         await app.StartAsync();
 
-        using TestServer testServer = app.GetTestServer();
-        using HttpClient httpClient = testServer.CreateClient();
-
+        using HttpClient httpClient = app.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);

@@ -70,10 +70,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddDbMigrationsActuator();
-        using IWebHost host = hostBuilder.Start();
+
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/actuator/dbmigrations", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -93,10 +96,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddEnvironmentActuator();
-        using IWebHost host = hostBuilder.Start();
+
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/actuator/env", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -143,10 +149,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddHealthActuator();
-        using IWebHost host = hostBuilder.Start();
+
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/actuator/health", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -155,13 +164,14 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddHealthActuator();
-        using IWebHost host = hostBuilder.Start();
 
-        HttpClient client = host.GetTestClient();
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         // request liveness & readiness in order to validate the ApplicationAvailability has been set as expected
-        HttpResponseMessage livenessResult = await client.GetAsync(new Uri("actuator/health/liveness", UriKind.Relative));
-        HttpResponseMessage readinessResult = await client.GetAsync(new Uri("actuator/health/readiness", UriKind.Relative));
+        HttpResponseMessage livenessResult = await httpClient.GetAsync(new Uri("actuator/health/liveness", UriKind.Relative));
+        HttpResponseMessage readinessResult = await httpClient.GetAsync(new Uri("actuator/health/readiness", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, livenessResult.StatusCode);
         Assert.Contains("\"LivenessState\":\"CORRECT\"", await livenessResult.Content.ReadAsStringAsync(), StringComparison.Ordinal);
         Assert.Equal(HttpStatusCode.OK, readinessResult.StatusCode);
@@ -190,10 +200,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddHeapDumpActuator();
-        using IWebHost host = hostBuilder.Start();
+
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/actuator/heapdump", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -213,10 +226,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddHypermediaActuator();
-        using IWebHost host = hostBuilder.Start();
+
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/actuator", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -249,10 +265,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddInfoActuator();
-        using IWebHost host = hostBuilder.Start();
+
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/actuator/info", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -272,10 +291,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddLoggersActuator();
-        using IWebHost host = hostBuilder.Start();
+
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/actuator/loggers", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -286,10 +308,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.ConfigureLogging(builder => builder.AddDynamicSerilog().AddDynamicConsole());
         hostBuilder.AddLoggersActuator();
-        using IWebHost host = hostBuilder.Start();
+
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/actuator/loggers", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -301,7 +326,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         hostBuilder.ConfigureLogging(builder => builder.AddDynamicConsole().AddDynamicSerilog());
         hostBuilder.AddLoggersActuator();
 
-        var exception = Assert.Throws<InvalidOperationException>(() => hostBuilder.Start());
+        var exception = Assert.Throws<InvalidOperationException>(hostBuilder.Build);
 
         Assert.Contains("An IDynamicLoggerProvider has already been configured! Call 'AddDynamicSerilog' earlier", exception.Message, StringComparison.Ordinal);
     }
@@ -322,10 +347,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddMappingsActuator();
-        using IWebHost host = hostBuilder.Start();
+
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/actuator/mappings", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -345,10 +373,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddMetricsActuator();
-        using IWebHost host = hostBuilder.Start();
+
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -368,10 +399,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddRefreshActuator();
-        using IWebHost host = hostBuilder.Start();
+
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().PostAsync(requestUri, null);
+        HttpResponseMessage response = await httpClient.PostAsync(requestUri, null);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -391,10 +425,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddThreadDumpActuator();
-        using IWebHost host = hostBuilder.Start();
+
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/actuator/threaddump", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -414,10 +451,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddHttpExchangesActuator();
-        using IWebHost host = hostBuilder.Start();
+
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/actuator/httpexchanges", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -437,10 +477,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddServicesActuator();
-        using IWebHost host = hostBuilder.Start();
+
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/actuator/beans", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -460,15 +503,16 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddAllActuators();
-        using IWebHost host = hostBuilder.Start();
 
-        HttpClient client = host.GetTestServer().CreateClient();
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
+        response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));
+        response = await httpClient.GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -477,15 +521,16 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = WebHostBuilderWithSecureRouting;
         hostBuilder.AddAllActuators(builder => builder.RequireAuthorization("TestAuth"));
-        using IWebHost host = hostBuilder.Start();
 
-        HttpClient client = host.GetTestServer().CreateClient();
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));
+        response = await httpClient.GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync(new Uri("/actuator/health", UriKind.Relative));
+        response = await httpClient.GetAsync(new Uri("/actuator/health", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -507,10 +552,13 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
 
         IWebHostBuilder hostBuilder = WebHostBuilderWithAllActuatorsExposed;
         hostBuilder.AddCloudFoundryActuator();
-        using IWebHost host = hostBuilder.Start();
+
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/cloudfoundryapplication", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
     }
 
@@ -522,20 +570,21 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         hostBuilder.AddInfoActuator();
         hostBuilder.AddHealthActuator();
         hostBuilder.AddAllActuators(builder => builder.RequireAuthorization("TestAuth"));
-        using IWebHost host = hostBuilder.Start();
 
-        HttpClient client = host.GetTestServer().CreateClient();
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         IStartupFilter[] startupFilters = host.Services.GetServices<IStartupFilter>().ToArray();
         startupFilters.Should().HaveCount(2);
         startupFilters.Should().ContainSingle(filter => filter is AllActuatorsStartupFilter);
         startupFilters.Should().ContainSingle(filter => filter is ManagementPortStartupFilter);
 
-        HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));
+        response = await httpClient.GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync(new Uri("/actuator/health", UriKind.Relative));
+        response = await httpClient.GetAsync(new Uri("/actuator/health", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -551,8 +600,9 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         hostBuilder.AddInfoActuator();
         hostBuilder.AddHealthActuator();
 
-        using IWebHost host = hostBuilder.Start();
-        HttpClient client = host.GetTestServer().CreateClient();
+        using IWebHost host = hostBuilder.Build();
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
         IStartupFilter[] startupFilters = host.Services.GetServices<IStartupFilter>().ToArray();
         startupFilters.Should().HaveCount(2);
@@ -560,11 +610,11 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         startupFilters.Should().ContainSingle(filter => filter is ManagementPortStartupFilter);
 
         // these requests hit the "RequireAuthorization" policy and will only pass if WebHostBuilderWithSecureRouting is used
-        HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));
+        response = await httpClient.GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync(new Uri("/actuator/health", UriKind.Relative));
+        response = await httpClient.GetAsync(new Uri("/actuator/health", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 }
