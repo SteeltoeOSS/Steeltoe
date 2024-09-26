@@ -294,13 +294,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         await using WebApplication app = builder.Build();
         app.UseRouting();
-
         await app.StartAsync();
 
-        using TestServer server = app.GetTestServer();
-        using HttpClient client = server.CreateClient();
-
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/env"));
+        using HttpClient httpClient = app.GetTestClient();
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"));
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string json = await response.Content.ReadAsStringAsync();
@@ -363,7 +360,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         fileProvider.NotifyChanged();
 
-        response = await client.GetAsync(new Uri("http://localhost/actuator/env"));
+        response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"));
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         json = await response.Content.ReadAsStringAsync();

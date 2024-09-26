@@ -107,21 +107,21 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         object optionsMonitor = host.Services.GetRequiredService(optionsMonitorType);
         var options = (EndpointOptions)((dynamic)optionsMonitor).CurrentValue;
 
-        using TestServer server = host.GetTestServer();
-
         ManagementOptions managementOptions = host.Services.GetRequiredService<IOptionsMonitor<ManagementOptions>>().CurrentValue;
         string path = options.GetPathMatchPattern(managementOptions, managementOptions.Path);
         path = path.Replace("metrics/{**_}", "metrics", StringComparison.Ordinal);
         Assert.NotNull(path);
         HttpResponseMessage response;
 
+        using HttpClient httpClient = host.GetTestClient();
+
         if (options.AllowedVerbs.Contains("Get"))
         {
-            response = await server.CreateClient().GetAsync(new Uri(path, UriKind.RelativeOrAbsolute));
+            response = await httpClient.GetAsync(new Uri(path, UriKind.RelativeOrAbsolute));
         }
         else
         {
-            response = await server.CreateClient().PostAsync(new Uri(path, UriKind.RelativeOrAbsolute), null);
+            response = await httpClient.PostAsync(new Uri(path, UriKind.RelativeOrAbsolute), null);
         }
 
         Assert.True(expectedSuccess == response.IsSuccessStatusCode,

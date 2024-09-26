@@ -31,9 +31,7 @@ public sealed class HttpVerbInEndpointRoutingTest
         app.MapDefaultControllerRoute();
         await app.StartAsync();
 
-        using TestServer testServer = app.GetTestServer();
-        using HttpClient httpClient = testServer.CreateClient();
-
+        using HttpClient httpClient = app.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
@@ -62,9 +60,7 @@ public sealed class HttpVerbInEndpointRoutingTest
         app.MapDefaultControllerRoute();
         await app.StartAsync();
 
-        using TestServer testServer = app.GetTestServer();
-        using HttpClient httpClient = testServer.CreateClient();
-
+        using HttpClient httpClient = app.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
@@ -93,9 +89,7 @@ public sealed class HttpVerbInEndpointRoutingTest
         app.MapDefaultControllerRoute();
         await app.StartAsync();
 
-        using TestServer testServer = app.GetTestServer();
-        using HttpClient httpClient = testServer.CreateClient();
-
+        using HttpClient httpClient = app.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
@@ -125,9 +119,7 @@ public sealed class HttpVerbInEndpointRoutingTest
         app.MapDefaultControllerRoute();
         await app.StartAsync();
 
-        using TestServer testServer = app.GetTestServer();
-        using HttpClient httpClient = testServer.CreateClient();
-
+        using HttpClient httpClient = app.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);

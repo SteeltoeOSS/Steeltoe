@@ -21,7 +21,7 @@ public sealed class CertificateHttpClientBuilderExtensionsTest
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
         using IHost host = await GetHostBuilder().StartAsync();
         var factory = host.Services.GetRequiredService<IHttpClientFactory>();
-        HttpClient client = factory.CreateClient("test");
+        using HttpClient client = factory.CreateClient("test");
 
         client.Should().NotBeNull();
         client.DefaultRequestHeaders.Contains("X-Client-Cert").Should().BeTrue();
@@ -39,7 +39,7 @@ public sealed class CertificateHttpClientBuilderExtensionsTest
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
         using IHost host = await GetHostBuilder(customCertificateHeader).StartAsync();
         var factory = host.Services.GetRequiredService<IHttpClientFactory>();
-        HttpClient client = factory.CreateClient("test");
+        using HttpClient client = factory.CreateClient("test");
 
         client.Should().NotBeNull();
         client.DefaultRequestHeaders.Contains(customCertificateHeader).Should().BeTrue();
