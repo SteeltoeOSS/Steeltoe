@@ -18,7 +18,7 @@ internal sealed class RabbitMQHealthContributor : IHealthContributor, IDisposabl
     private readonly ConnectionFactoryInterfaceShim _connectionFactoryInterfaceShim;
     private ConnectionInterfaceShim? _connectionInterfaceShim;
 
-    public string Id { get; } = "RabbitMQ";
+    public string Id => "RabbitMQ";
     public string Host { get; }
     public string? ServiceName { get; set; }
 

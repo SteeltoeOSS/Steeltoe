@@ -19,7 +19,7 @@ internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
     private ConnectionMultiplexerInterfaceShim? _connectionMultiplexerInterfaceShim;
     private DatabaseInterfaceShim? _databaseInterfaceShim;
 
-    public string Id { get; } = "Redis";
+    public string Id => "Redis";
     public string Host { get; }
     public string? ServiceName { get; set; }
 
