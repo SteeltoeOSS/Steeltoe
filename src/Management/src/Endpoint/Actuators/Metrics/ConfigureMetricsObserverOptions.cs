@@ -13,7 +13,7 @@ internal sealed class ConfigureMetricsObserverOptions : IConfigureOptionsWithKey
     private const string ManagementMetricsPrefix = "management:metrics:observer";
 
     internal const string DefaultIngressIgnorePattern =
-        "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|.*\\.gif";
+        @"/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\.png|.*\.css|.*\.js|.*\.html|/favicon.ico|.*\.gif";
 
     internal const string DefaultEgressIgnorePattern = "/api/v2/spans|/v2/apps/.*/permissions";
     private readonly IConfiguration _configuration;

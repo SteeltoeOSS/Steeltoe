@@ -40,7 +40,7 @@ public sealed class DiskSpaceContributorTest : BaseTest
     {
         var optionsMonitor = TestOptionsMonitor.Create(new DiskSpaceContributorOptions
         {
-            Path = OperatingSystem.IsWindows() ? "C:\\does-not-exist" : "/does/not/exist"
+            Path = OperatingSystem.IsWindows() ? @"C:\does-not-exist" : "/does/not/exist"
         });
 
         var contributor = new DiskSpaceContributor(optionsMonitor);
@@ -55,10 +55,10 @@ public sealed class DiskSpaceContributorTest : BaseTest
     }
 
     [Theory]
-    [InlineData("C:\\", "C:\\", PlatformID.Win32NT)]
-    [InlineData("C:\\Windows\\System32", "C:\\", PlatformID.Win32NT)]
-    [InlineData("C:\\Windows\\System32\\", "C:\\", PlatformID.Win32NT)]
-    [InlineData("c:\\WINDOWS\\SYSTEM32\\", "C:\\", PlatformID.Win32NT)]
+    [InlineData(@"C:\", @"C:\", PlatformID.Win32NT)]
+    [InlineData(@"C:\Windows\System32", @"C:\", PlatformID.Win32NT)]
+    [InlineData(@"C:\Windows\System32\", @"C:\", PlatformID.Win32NT)]
+    [InlineData(@"c:\WINDOWS\SYSTEM32\", @"C:\", PlatformID.Win32NT)]
     [InlineData("/", "/", PlatformID.Unix, PlatformID.MacOSX)]
     [InlineData("/dev", "/dev", PlatformID.Unix, PlatformID.MacOSX)]
     [InlineData("/dev/", "/dev", PlatformID.Unix, PlatformID.MacOSX)]
@@ -88,8 +88,8 @@ public sealed class DiskSpaceContributorTest : BaseTest
         DriveInfo[] systemDrives = OperatingSystem.IsWindows()
             ?
             [
-                new DriveInfo("C:\\"),
-                new DriveInfo("D:\\")
+                new DriveInfo(@"C:\"),
+                new DriveInfo(@"D:\")
             ]
             :
             [
