@@ -13,7 +13,7 @@ public sealed class PlatformTest
     {
         Assert.False(Platform.IsCloudFoundry);
 
-        using (new EnvironmentVariableScope("VCAP_APPLICATION", "somevalue"))
+        using (new EnvironmentVariableScope("VCAP_APPLICATION", "{}"))
         {
             Assert.True(Platform.IsCloudFoundry);
         }
@@ -26,7 +26,7 @@ public sealed class PlatformTest
     {
         Assert.False(Platform.IsKubernetes);
 
-        using (new EnvironmentVariableScope("KUBERNETES_SERVICE_HOST", "somevalue"))
+        using (new EnvironmentVariableScope("KUBERNETES_SERVICE_HOST", "some"))
         {
             Assert.True(Platform.IsKubernetes);
         }

@@ -50,15 +50,15 @@ public sealed class HealthEndpointOptionsTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:health:claim:type"] = "claimtype",
-            ["management:endpoints:health:claim:value"] = "claimvalue",
-            ["management:endpoints:health:role"] = "roleclaimvalue"
+            ["management:endpoints:health:claim:type"] = "claim-type",
+            ["management:endpoints:health:claim:value"] = "claim-value",
+            ["management:endpoints:health:role"] = "role-claim-value"
         };
 
         HealthEndpointOptions options = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appSettings);
         Assert.NotNull(options.Claim);
-        Assert.Equal("claimtype", options.Claim.Type);
-        Assert.Equal("claimvalue", options.Claim.Value);
+        Assert.Equal("claim-type", options.Claim.Type);
+        Assert.Equal("claim-value", options.Claim.Value);
     }
 
     [Fact]
@@ -66,13 +66,13 @@ public sealed class HealthEndpointOptionsTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:health:role"] = "roleclaimvalue"
+            ["management:endpoints:health:role"] = "role-claim-value"
         };
 
         HealthEndpointOptions options = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appSettings);
         Assert.NotNull(options.Claim);
         Assert.Equal(ClaimTypes.Role, options.Claim.Type);
-        Assert.Equal("roleclaimvalue", options.Claim.Value);
+        Assert.Equal("role-claim-value", options.Claim.Value);
     }
 
     [Fact]

@@ -26,7 +26,7 @@ public sealed class CloudFoundryEndpointOptionsTest : BaseTest
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:info:enabled"] = "true",
-            ["management:endpoints:cloudfoundry:validatecertificates"] = "false",
+            ["management:endpoints:cloudfoundry:validateCertificates"] = "false",
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 

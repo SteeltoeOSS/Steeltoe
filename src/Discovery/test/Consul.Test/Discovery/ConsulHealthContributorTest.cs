@@ -17,7 +17,7 @@ public sealed class ConsulHealthContributorTest
     public async Task GetLeaderStatusAsync_ReturnsExpected()
     {
         var statusMoq = new Mock<IStatusEndpoint>();
-        statusMoq.Setup(endpoint => endpoint.Leader(default)).Returns(Task.FromResult("thestatus"));
+        statusMoq.Setup(endpoint => endpoint.Leader(default)).Returns(Task.FromResult("the-status"));
 
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Status).Returns(statusMoq.Object);
@@ -26,7 +26,7 @@ public sealed class ConsulHealthContributorTest
         var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
         string result = await healthContributor.GetLeaderStatusAsync(CancellationToken.None);
 
-        Assert.Equal("thestatus", result);
+        Assert.Equal("the-status", result);
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public sealed class ConsulHealthContributorTest
         };
 
         var statusMoq = new Mock<IStatusEndpoint>();
-        statusMoq.Setup(endpoint => endpoint.Leader(default)).Returns(Task.FromResult("thestatus"));
+        statusMoq.Setup(endpoint => endpoint.Leader(default)).Returns(Task.FromResult("the-status"));
 
         var catalogMoq = new Mock<ICatalogEndpoint>();
         catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, default)).Returns(Task.FromResult(queryResult));

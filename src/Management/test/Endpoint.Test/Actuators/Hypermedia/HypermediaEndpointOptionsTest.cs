@@ -28,7 +28,7 @@ public sealed class HypermediaEndpointOptionsTest : BaseTest
             ["management:endpoints:info:enabled"] = "true",
             ["management:endpoints:info:path"] = "infopath",
 
-            ["management:endpoints:cloudfoundry:validatecertificates"] = "false",
+            ["management:endpoints:cloudfoundry:validateCertificates"] = "false",
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 

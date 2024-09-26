@@ -73,7 +73,7 @@ public sealed class CloudFoundryApplicationOptionsTest
     {
         const string vcapApplicationJson = """
             {
-                "cf_api": "https://api.system.testcloud.com",
+                "cf_api": "https://api.system.test-cloud.com",
                 "application_id": "fa05c1a9-0fc1-4fbd-bae1-139850dec7a3",
                 "application_name": "my-app",
                 "application_uris": [
@@ -121,7 +121,7 @@ public sealed class CloudFoundryApplicationOptionsTest
         options.Uris[0].Should().Be("my-app.10.244.0.34.xip.io");
         options.Uris[1].Should().Be("my-app2.10.244.0.34.xip.io");
         options.ApplicationVersion.Should().Be("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca");
-        options.Api.Should().Be("https://api.system.testcloud.com");
+        options.Api.Should().Be("https://api.system.test-cloud.com");
         options.Limits.Should().NotBeNull();
         options.Limits!.Disk.Should().Be(1024);
         options.Limits!.FileDescriptor.Should().Be(16384);

@@ -89,7 +89,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         var appSettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" },
-            { "spring:cloud:inet:defaulthostname", "fromtest" },
+            { "spring:cloud:inet:defaultHostname", "from-test" },
             { "spring:cloud:inet:skipReverseDnsLookup", "true" },
             { "eureka:client:shouldFetchRegistry", "false" },
             { "eureka:client:shouldRegisterWithEureka", "false" },
@@ -114,7 +114,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         IServiceInstance? serviceInstance = discoveryClients[0].GetLocalServiceInstance();
         Assert.NotNull(serviceInstance);
-        Assert.Equal("fromtest", serviceInstance.Host);
+        Assert.Equal("from-test", serviceInstance.Host);
     }
 
     [Fact]
@@ -195,13 +195,13 @@ public sealed class RegisterMultipleDiscoveryClientsTest
                 },
                 "application_name": "spring-cloud-broker",
                 "application_uris": [
-                  "spring-cloud-broker.apps.testcloud.com"
+                  "spring-cloud-broker.apps.test-cloud.com"
                 ],
                 "name": "spring-cloud-broker",
                 "space_name": "p-spring-cloud-services",
                 "space_id": "65b73473-94cc-4640-b462-7ad52838b4ae",
                 "uris": [
-                    "spring-cloud-broker.apps.testcloud.com"
+                    "spring-cloud-broker.apps.test-cloud.com"
                 ],
                 "users": null,
                 "version": "07e112f7-2f71-4f5a-8a34-db51dbed30a3",
@@ -215,10 +215,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
                 "p-service-registry": [
                 {
                     "credentials": {
-                        "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com",
+                        "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.test-cloud.com",
                         "client_id": "p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe",
                         "client_secret": "dCsdoiuklicS",
-                        "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                        "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
                     },
                     "syslog_drain_url": null,
                     "label": "p-service-registry",
@@ -262,10 +262,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         var clientOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
         EurekaClientOptions clientOptions = clientOptionsMonitor.CurrentValue;
 
-        clientOptions.EurekaServerServiceUrls.Should().Be("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/");
+        clientOptions.EurekaServerServiceUrls.Should().Be("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.test-cloud.com/eureka/");
         clientOptions.ClientId.Should().Be("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe");
         clientOptions.ClientSecret.Should().Be("dCsdoiuklicS");
-        clientOptions.AccessTokenUri.Should().Be("https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token");
+        clientOptions.AccessTokenUri.Should().Be("https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token");
         clientOptions.Enabled.Should().BeTrue();
     }
 
@@ -281,13 +281,13 @@ public sealed class RegisterMultipleDiscoveryClientsTest
                 },
                 "application_name": "spring-cloud-broker",
                 "application_uris": [
-                  "spring-cloud-broker.apps.testcloud.com"
+                  "spring-cloud-broker.apps.test-cloud.com"
                 ],
                 "name": "spring-cloud-broker",
                 "space_name": "p-spring-cloud-services",
                 "space_id": "65b73473-94cc-4640-b462-7ad52838b4ae",
                 "uris": [
-                    "spring-cloud-broker.apps.testcloud.com"
+                    "spring-cloud-broker.apps.test-cloud.com"
                 ],
                 "users": null,
                 "version": "07e112f7-2f71-4f5a-8a34-db51dbed30a3",
@@ -301,7 +301,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
                 "p-service-registry": [
                 {
                     "credentials": {
-                        "uri": "https://eureka1.apps.testcloud.com"
+                        "uri": "https://eureka1.apps.test-cloud.com"
                     },
                     "syslog_drain_url": null,
                     "label": "p-service-registry",
@@ -317,7 +317,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
                 },
                 {
                     "credentials": {
-                        "uri": "https://eureka2.apps.testcloud.com"
+                        "uri": "https://eureka2.apps.test-cloud.com"
                     },
                     "syslog_drain_url": null,
                     "label": "p-service-registry",
@@ -361,7 +361,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         var clientOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
         EurekaClientOptions clientOptions = clientOptionsMonitor.CurrentValue;
 
-        clientOptions.EurekaServerServiceUrls.Should().Be("https://eureka1.apps.testcloud.com/eureka/");
+        clientOptions.EurekaServerServiceUrls.Should().Be("https://eureka1.apps.test-cloud.com/eureka/");
         clientOptions.Enabled.Should().BeTrue();
     }
 
@@ -377,13 +377,13 @@ public sealed class RegisterMultipleDiscoveryClientsTest
                 },
                 "application_name": "spring-cloud-broker",
                 "application_uris": [
-                    "spring-cloud-broker.apps.testcloud.com"
+                    "spring-cloud-broker.apps.test-cloud.com"
                 ],
                 "name": "spring-cloud-broker",
                 "space_name": "p-spring-cloud-services",
                 "space_id": "65b73473-94cc-4640-b462-7ad52838b4ae",
                 "uris": [
-                    "spring-cloud-broker.apps.testcloud.com"
+                    "spring-cloud-broker.apps.test-cloud.com"
                 ],
                 "users": null,
                 "version": "07e112f7-2f71-4f5a-8a34-db51dbed30a3",
@@ -397,10 +397,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
                 "p-service-registry": [
                 {
                     "credentials": {
-                        "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com",
+                        "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.test-cloud.com",
                         "client_id": "p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe",
                         "client_secret": "dCsdoiuklicS",
-                        "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                        "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
                     },
                     "syslog_drain_url": null,
                     "label": "p-service-registry",
@@ -416,10 +416,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
                 },
                 {
                     "credentials": {
-                        "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com",
+                        "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.test-cloud.com",
                         "client_id": "p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe",
                         "client_secret": "dCsdoiuklicS",
-                        "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                        "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
                     },
                     "syslog_drain_url": null,
                     "label": "p-service-registry",
@@ -465,13 +465,13 @@ public sealed class RegisterMultipleDiscoveryClientsTest
                 },
                 "application_name": "spring-cloud-broker",
                 "application_uris": [
-                  "spring-cloud-broker.apps.testcloud.com"
+                  "spring-cloud-broker.apps.test-cloud.com"
                 ],
                 "name": "spring-cloud-broker",
                 "space_name": "p-spring-cloud-services",
                 "space_id": "65b73473-94cc-4640-b462-7ad52838b4ae",
                 "uris": [
-                    "spring-cloud-broker.apps.testcloud.com"
+                    "spring-cloud-broker.apps.test-cloud.com"
                 ],
                 "users": null,
                 "version": "07e112f7-2f71-4f5a-8a34-db51dbed30a3",
@@ -485,10 +485,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
                 "p-service-registry": [
                 {
                     "credentials": {
-                        "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com",
+                        "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.test-cloud.com",
                         "client_id": "p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe",
                         "client_secret": "dCsdoiuklicS",
-                        "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                        "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
                     },
                     "syslog_drain_url": null,
                     "label": "p-service-registry",
@@ -562,11 +562,11 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         var handler = new DelegateToMockHttpClientHandler();
 
-        handler.Mock.Expect(HttpMethod.Post, "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token")
+        handler.Mock.Expect(HttpMethod.Post, "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token")
             .WithHeaders("Authorization", "Basic cC1zZXJ2aWNlLXJlZ2lzdHJ5LTA2ZTI4ZWZkLTI0YmUtNGNlMy05Nzg0LTg1NGVkOGQyYWNiZTpkQ3Nkb2l1a2xpY1M=")
             .WithFormData("grant_type=client_credentials").Respond("application/json", accessTokenResponse);
 
-        handler.Mock.Expect(HttpMethod.Get, "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/apps")
+        handler.Mock.Expect(HttpMethod.Get, "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.test-cloud.com/eureka/apps")
             .WithHeaders("Authorization", "Bearer secret").WithHeaders("X-Discovery-AllowRedirect", "false").Respond("application/json", applicationsResponse);
 
         await using WebApplication webApplication = builder.Build();
@@ -667,7 +667,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
                     "discovery": {
                         "register": false,
                         "deregister": false,
-                        "instanceid": "instanceid",
+                        "instanceId": "instance-id",
                         "port": 1234
                     }
                 }
@@ -710,7 +710,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         var appSettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" },
-            { "spring:cloud:inet:defaulthostname", "fromtest" },
+            { "spring:cloud:inet:defaultHostname", "from-test" },
             { "spring:cloud:inet:skipReverseDnsLookup", "true" },
             { "consul:discovery:UseNetworkInterfaces", "true" },
             { "consul:discovery:register", "false" },
@@ -736,7 +736,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         _ = serviceProvider.GetRequiredService<ConsulServiceRegistry>();
 
         var registration = serviceProvider.GetRequiredService<ConsulRegistration>();
-        Assert.Equal("fromtest", registration.Host);
+        Assert.Equal("from-test", registration.Host);
 
         _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
@@ -845,8 +845,8 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             {
                 "discovery": {
                     "services": [
-                        { "serviceId": "fruitService", "host": "fruitball", "port": 443, "isSecure": true },
-                        { "serviceId": "fruitService", "host": "fruitballer", "port": 8081 },
+                        { "serviceId": "fruitService", "host": "fruit-ball", "port": 443, "isSecure": true },
+                        { "serviceId": "fruitService", "host": "fruit-baller", "port": 8081 },
                         { "serviceId": "vegetableService", "host": "vegemite", "port": 443, "isSecure": true },
                         { "serviceId": "vegetableService", "host": "carrot", "port": 8081 },
                     ]

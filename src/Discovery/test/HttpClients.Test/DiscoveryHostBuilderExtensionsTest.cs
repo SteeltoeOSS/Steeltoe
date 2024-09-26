@@ -23,9 +23,9 @@ public sealed class DiscoveryHostBuilderExtensionsTest
 
     private static readonly Dictionary<string, string?> ConsulSettings = new()
     {
-        ["consul:discovery:serviceName"] = "testhost",
+        ["consul:discovery:serviceName"] = "test-host",
         ["consul:discovery:enabled"] = "true",
-        ["consul:discovery:failfast"] = "false",
+        ["consul:discovery:failFast"] = "false",
         ["consul:discovery:register"] = "false"
     };
 

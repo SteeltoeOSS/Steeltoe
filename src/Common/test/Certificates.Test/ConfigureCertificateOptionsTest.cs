@@ -32,7 +32,7 @@ public sealed class ConfigureCertificateOptionsTest
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
-            { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath", "doesnotexist.crt" }
+            { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath", "does-not-exist.crt" }
         }).Build();
 
         var configureOptions = new ConfigureCertificateOptions(configurationRoot);

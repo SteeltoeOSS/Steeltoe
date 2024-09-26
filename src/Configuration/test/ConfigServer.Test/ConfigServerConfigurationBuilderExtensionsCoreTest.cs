@@ -65,7 +65,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
                     "username": "myUsername",
                     "password": "myPassword",
                     "timeout": 10000,
-                    "token": "vaulttoken",
+                    "token": "vault-token",
                     "tokenRenewRate": 50000,
                     "disableTokenRenewal": true,
                     "tokenTtl": 50000,
@@ -111,7 +111,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         Assert.Equal(55555, options.Retry.MaxInterval);
         Assert.Equal(5.5, options.Retry.Multiplier);
         Assert.Equal(10000, options.Timeout);
-        Assert.Equal("vaulttoken", options.Token);
+        Assert.Equal("vault-token", options.Token);
         Assert.Null(options.AccessTokenUri);
         Assert.Null(options.ClientId);
         Assert.Null(options.ClientSecret);

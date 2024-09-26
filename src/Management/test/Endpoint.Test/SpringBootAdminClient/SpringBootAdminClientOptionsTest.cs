@@ -24,7 +24,7 @@ public sealed class SpringBootAdminClientOptionsTest : BaseTest
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:path"] = "/management",
-            ["management:endpoints:health:path"] = "myhealth",
+            ["management:endpoints:health:path"] = "my-health",
             ["URLS"] = "http://*:9999;http://+:7777;http://localhost:8080;https://localhost:8082",
             ["spring:boot:admin:client:url"] = "http://springbootadmin:9090",
             ["spring:boot:admin:client:metadata:user.name"] = "userName",
@@ -48,7 +48,7 @@ public sealed class SpringBootAdminClientOptionsTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["spring:boot:admin:client:basepath"] = "http://somehost"
+            ["spring:boot:admin:client:basePath"] = "http://somehost"
         };
 
         var options = GetOptionsFromSettings<SpringBootAdminClientOptions>(appSettings);

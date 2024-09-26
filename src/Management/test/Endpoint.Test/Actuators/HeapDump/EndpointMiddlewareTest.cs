@@ -22,8 +22,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
     private static readonly Dictionary<string, string?> AppSettings = new()
     {
         ["management:endpoints:enabled"] = "true",
-        ["management:endpoints:heapdump:enabled"] = "true",
-        ["management:endpoints:heapdump:heapdumptype"] = "gcdump",
+        ["management:endpoints:heapDump:enabled"] = "true",
+        ["management:endpoints:heapDump:heapDumpType"] = "gcdump",
         ["management:endpoints:actuator:exposure:include:0"] = "heapdump"
     };
 

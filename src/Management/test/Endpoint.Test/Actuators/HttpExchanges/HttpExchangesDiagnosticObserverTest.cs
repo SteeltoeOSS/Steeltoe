@@ -28,7 +28,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
         // No current activity, event ignored
         observer.ProcessEvent("foobar", null);
 
-        var current = new Activity("barfoo");
+        var current = new Activity("bar-foo");
         current.Start();
 
         // Activity current, but no value provided, event ignored
@@ -212,7 +212,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
 
         optionsMonitor.CurrentValue.RequestHeaders.Add(HeaderNames.Authorization);
         optionsMonitor.CurrentValue.RequestHeaders.Add("header1");
-        optionsMonitor.CurrentValue.ResponseHeaders.Add("headera");
+        optionsMonitor.CurrentValue.ResponseHeaders.Add("headerA");
         optionsMonitor.CurrentValue.ResponseHeaders.Add(HeaderNames.SetCookie);
 
         HttpExchange unfilteredHeaders = observer.GetHttpExchanges().Exchanges[0];

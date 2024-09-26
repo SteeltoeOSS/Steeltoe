@@ -24,11 +24,11 @@ public sealed class InfoEndpointOptionsTest : BaseTest
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management",
             ["management:endpoints:info:enabled"] = "false",
-            ["management:endpoints:info:id"] = "infomanagement"
+            ["management:endpoints:info:id"] = "info-management"
         };
 
         InfoEndpointOptions options = GetOptionsFromSettings<InfoEndpointOptions, ConfigureInfoEndpointOptions>(appSettings);
         Assert.False(options.Enabled);
-        Assert.Equal("infomanagement", options.Id);
+        Assert.Equal("info-management", options.Id);
     }
 }

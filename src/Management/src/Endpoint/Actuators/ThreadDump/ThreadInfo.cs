@@ -17,10 +17,10 @@ public sealed class ThreadInfo
     [JsonPropertyName("lockedMonitors")]
     public IList<object>? LockedMonitors { get; } // Not available
 
-    // ReSharper disable IdentifierTypo
+    // ReSharper disable once StringLiteralTypo
     [JsonPropertyName("lockedSynchronizers")]
+    // ReSharper disable once IdentifierTypo
     public IList<object>? LockedSynchronizers { get; } // Not available
-    // ReSharper restore IdentifierTypo
 
     [JsonPropertyName("lockInfo")]
     public object? LockInfo { get; set; }

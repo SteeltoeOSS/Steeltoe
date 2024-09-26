@@ -99,10 +99,10 @@ public sealed class CloudFoundryServicesOptionsTest
                     "plan": "standard",
                     "credentials": {
                         "http_api_uris": [
-                            "https://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@pivotal-rabbitmq.system.testcloud.com/api/"
+                            "https://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@pivotal-rabbitmq.system.test-cloud.com/api/"
                         ],
                         "ssl": false,
-                        "dashboard_url": "https://pivotal-rabbitmq.system.testcloud.com/#/login/268371bd-07e5-46f3-aec7-d1633ae20bbb/3fnpvbqm0djq5jl9fp6fc697f4",
+                        "dashboard_url": "https://pivotal-rabbitmq.system.test-cloud.com/#/login/268371bd-07e5-46f3-aec7-d1633ae20bbb/3fnpvbqm0djq5jl9fp6fc697f4",
                         "password": "3fnpvbqm0djq5jl9fp6fc697f4",
                         "protocols": {
                             "management": {
@@ -134,7 +134,7 @@ public sealed class CloudFoundryServicesOptionsTest
                             "192.168.0.97"
                             ],
                         "vhost": "2260a117-cf28-4725-86dd-37b3b8971052",
-                        "http_api_uri": "https://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@pivotal-rabbitmq.system.testcloud.com/api/",
+                        "http_api_uri": "https://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@pivotal-rabbitmq.system.test-cloud.com/api/",
                         "uri": "amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97/2260a117-cf28-4725-86dd-37b3b8971052",
                         "uris": [
                             "amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97/2260a117-cf28-4725-86dd-37b3b8971052"
@@ -172,7 +172,7 @@ public sealed class CloudFoundryServicesOptionsTest
         service.Credentials.Should().HaveCount(12);
 
         service.Credentials.Should().ContainKey("dashboard_url").WhoseValue.Value.Should()
-            .Be("https://pivotal-rabbitmq.system.testcloud.com/#/login/268371bd-07e5-46f3-aec7-d1633ae20bbb/3fnpvbqm0djq5jl9fp6fc697f4");
+            .Be("https://pivotal-rabbitmq.system.test-cloud.com/#/login/268371bd-07e5-46f3-aec7-d1633ae20bbb/3fnpvbqm0djq5jl9fp6fc697f4");
 
         service.Credentials.Should().ContainKey("username").WhoseValue.Value.Should().Be("268371bd-07e5-46f3-aec7-d1633ae20bbb");
         service.Credentials.Should().ContainKey("password").WhoseValue.Value.Should().Be("3fnpvbqm0djq5jl9fp6fc697f4");

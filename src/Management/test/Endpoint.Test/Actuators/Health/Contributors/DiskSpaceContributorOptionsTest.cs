@@ -21,9 +21,9 @@ public sealed class DiskSpaceContributorOptionsTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:health:diskspace:enabled"] = "true",
-            ["management:endpoints:health:diskspace:path"] = "foobar",
-            ["management:endpoints:health:diskspace:threshold"] = "5"
+            ["management:endpoints:health:diskSpace:enabled"] = "true",
+            ["management:endpoints:health:diskSpace:path"] = "foobar",
+            ["management:endpoints:health:diskSpace:threshold"] = "5"
         };
 
         var options = GetOptionsFromSettings<DiskSpaceContributorOptions>(appSettings);

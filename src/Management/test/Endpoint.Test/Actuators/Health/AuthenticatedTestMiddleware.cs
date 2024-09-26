@@ -15,7 +15,7 @@ internal sealed class AuthenticatedTestMiddleware(RequestDelegate? next)
     {
         var claimsIdentity = new ClaimsIdentity(new List<Claim>
         {
-            new("healthdetails", "show")
+            new("health-details", "show")
         }, "TestAuthentication");
 
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);

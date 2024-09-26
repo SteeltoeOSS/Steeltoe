@@ -17,7 +17,7 @@ public sealed class TracingLogProcessorTest
     [Fact]
     public void Process_NoCurrentSpan_DoesNothing()
     {
-        using TracerProvider openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
+        using TracerProvider openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracer-name").Build();
         var optionsMonitor = new TestOptionsMonitor<TracingOptions>();
         var processor = new TracingLogProcessor(optionsMonitor);
 
@@ -29,7 +29,7 @@ public sealed class TracingLogProcessorTest
     [Fact]
     public void Process_CurrentSpan_ReturnsExpected()
     {
-        using TracerProvider openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
+        using TracerProvider openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracer-name").Build();
 
         var appSettings = new Dictionary<string, string?>
         {
@@ -38,7 +38,7 @@ public sealed class TracingLogProcessorTest
 
         TestOptionsMonitor<TracingOptions> optionsMonitor = GetTracingOptionsMonitor(appSettings);
         var processor = new TracingLogProcessor(optionsMonitor);
-        Tracer tracer = TracerProvider.Default.GetTracer("tracername");
+        Tracer tracer = TracerProvider.Default.GetTracer("tracer-name");
         TelemetrySpan span = tracer.StartActiveSpan("spanName");
 
         string result = processor.Process("InputLogMessage");
@@ -73,8 +73,8 @@ public sealed class TracingLogProcessorTest
         };
 
         TestOptionsMonitor<TracingOptions> optionsMonitor = GetTracingOptionsMonitor(appSettings);
-        using TracerProvider openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
-        Tracer tracer = TracerProvider.Default.GetTracer("tracername");
+        using TracerProvider openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracer-name").Build();
+        Tracer tracer = TracerProvider.Default.GetTracer("tracer-name");
         TelemetrySpan span = tracer.StartActiveSpan("spanName");
         var processor = new TracingLogProcessor(optionsMonitor);
 

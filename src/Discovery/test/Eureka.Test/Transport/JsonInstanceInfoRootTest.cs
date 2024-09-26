@@ -31,7 +31,7 @@ public sealed class JsonInstanceInfoRootTest
                 },
                 "homePageUrl": "http://DESKTOP-GNQ5SUT:80/",
                 "statusPageUrl": "http://DESKTOP-GNQ5SUT:80/Status",
-                "healthCheckUrl": "http://DESKTOP-GNQ5SUT:80/healthcheck",
+                "healthCheckUrl": "http://DESKTOP-GNQ5SUT:80/health-check",
                 "secureHealthCheckUrl": null,
                 "vipAddress": "DESKTOP-GNQ5SUT:80",
                 "secureVipAddress": "DESKTOP-GNQ5SUT:443",
@@ -71,7 +71,7 @@ public sealed class JsonInstanceInfoRootTest
 
         // Random check some values
         Assert.Equal(ActionType.Added, result.Instance.ActionType);
-        Assert.Equal("http://DESKTOP-GNQ5SUT:80/healthcheck", result.Instance.HealthCheckUrl);
+        Assert.Equal("http://DESKTOP-GNQ5SUT:80/health-check", result.Instance.HealthCheckUrl);
         Assert.Equal("FOOBAR", result.Instance.AppName);
     }
 }

@@ -61,7 +61,7 @@ public sealed class ConfigServerClientOptionsTest
                     "health": {
                       "enabled": true
                     },
-                    "failfast": "true"
+                    "failFast": "true"
                   }
                 }
               }

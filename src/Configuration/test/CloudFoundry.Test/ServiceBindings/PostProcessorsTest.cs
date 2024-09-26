@@ -50,9 +50,9 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("credentials:name", "test-database"),
             Tuple.Create("credentials:username", "test-username"),
             Tuple.Create("credentials:password", "test-password"),
-            Tuple.Create("credentials:sslcert", "test-ssl-cert"),
-            Tuple.Create("credentials:sslkey", "test-ssl-key"),
-            Tuple.Create("credentials:sslrootcert", "test-ssl-root-cert")
+            Tuple.Create("credentials:sslCert", "test-ssl-cert"),
+            Tuple.Create("credentials:sslKey", "test-ssl-key"),
+            Tuple.Create("credentials:sslRootCert", "test-ssl-root-cert")
         ];
 
         Dictionary<string, string?> configurationData =

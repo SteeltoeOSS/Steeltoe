@@ -155,7 +155,7 @@ public sealed class MetricsEndpointTest : BaseTest
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["management:endpoints:metrics:includedmetrics:0"] = "AdditionalTestMeter:AdditionalInstrument"
+                ["management:endpoints:metrics:includedMetrics:0"] = "AdditionalTestMeter:AdditionalInstrument"
             });
         };
 

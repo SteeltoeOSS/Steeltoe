@@ -28,7 +28,7 @@ public sealed class ManagementOptionsTest : BaseTest
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management",
             ["management:endpoints:info:enabled"] = "true",
-            ["management:endpoints:info:id"] = "/infomanagement"
+            ["management:endpoints:info:id"] = "/info-management"
         };
 
         ManagementOptions options = GetOptionsMonitorFromSettings<ManagementOptions>(appSettings).CurrentValue;

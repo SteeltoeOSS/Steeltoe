@@ -21,7 +21,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
         Dictionary<string, string?> appSettings = new()
         {
             { "spring:application:name", "myName" },
-            { "spring:cloud:inet:defaulthostname", "fromtest" },
+            { "spring:cloud:inet:defaultHostName", "from-test" },
             { "spring:cloud:inet:skipReverseDnsLookup", "true" },
             { "consul:discovery:UseNetworkInterfaces", "true" },
             { "consul:discovery:register", "false" },

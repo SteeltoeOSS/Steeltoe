@@ -21,10 +21,10 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
               ],
               "plan": "standard",
               "credentials": {
-                "uri": "https://config-eafc353b-77e2-4dcc-b52a-25777e996ed9.apps.testcloud.com",
+                "uri": "https://config-eafc353b-77e2-4dcc-b52a-25777e996ed9.apps.test-cloud.com",
                 "client_id": "p-config-server-9bff4c87-7ffd-4536-9e76-e67ea3ec81d0",
                 "client_secret": "AJUAjyxP3nO9",
-                "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
               }
             }
           ],
@@ -40,10 +40,10 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
               ],
               "plan": "standard",
               "credentials": {
-                "uri": "https://eureka-f4b98d1c-3166-4741-b691-79abba5b2d51.apps.testcloud.com",
+                "uri": "https://eureka-f4b98d1c-3166-4741-b691-79abba5b2d51.apps.test-cloud.com",
                 "client_id": "p-service-registry-9121b185-cd3b-497c-99f7-8e8064d4a6f0",
                 "client_secret": "3Rv1U79siLDa",
-                "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
               }
             }
           ],
@@ -97,7 +97,7 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
               "binding_guid": "c2d303a8-8d4f-48ce-916a-74c0305e30b2",
               "binding_name": null,
               "credentials": {
-                "auth_domain": "https://login.system.testcloud.com",
+                "auth_domain": "https://login.system.test-cloud.com",
                 "grant_types": [
                   "authorization_code",
                   "client_credentials"
@@ -162,12 +162,12 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
         IConfigurationSection section = configurationRoot.GetRequiredSection("vcap:services");
 
         section.GetValue<string>("p-config-server:0:name").Should().Be("myConfigServer");
-        section.GetValue<string>("p-config-server:0:credentials:uri").Should().Be("https://config-eafc353b-77e2-4dcc-b52a-25777e996ed9.apps.testcloud.com");
+        section.GetValue<string>("p-config-server:0:credentials:uri").Should().Be("https://config-eafc353b-77e2-4dcc-b52a-25777e996ed9.apps.test-cloud.com");
         section.GetValue<string>("p-service-registry:0:name").Should().Be("myServiceRegistry");
-        section.GetValue<string>("p-service-registry:0:credentials:uri").Should().Be("https://eureka-f4b98d1c-3166-4741-b691-79abba5b2d51.apps.testcloud.com");
+        section.GetValue<string>("p-service-registry:0:credentials:uri").Should().Be("https://eureka-f4b98d1c-3166-4741-b691-79abba5b2d51.apps.test-cloud.com");
         section.GetValue<string>("p-mysql:1:name").Should().Be("mySql2");
         section.GetValue<string>("p-identity:0:name").Should().Be("mySSOService");
-        section.GetValue<string>("p-identity:0:credentials:auth_domain").Should().Be("https://login.system.testcloud.com");
+        section.GetValue<string>("p-identity:0:credentials:auth_domain").Should().Be("https://login.system.test-cloud.com");
 
         section.GetValue<string>("p-mysql:1:credentials:uri").Should()
             .Be("mysql://gxXQb2pMbzFsZQW8:lvMkGf6oJQvKSOwn@192.168.0.97:3306/cf_b2d83697_5fa1_4a51_991b_975c9d7e5515?reconnect=true");

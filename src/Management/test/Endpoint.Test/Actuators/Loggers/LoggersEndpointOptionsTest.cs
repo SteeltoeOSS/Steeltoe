@@ -25,7 +25,7 @@ public sealed class LoggersEndpointOptionsTest : BaseTest
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:loggers:enabled"] = "false",
-            ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
+            ["management:endpoints:cloudfoundry:validateCertificates"] = "true",
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 

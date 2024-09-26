@@ -27,8 +27,8 @@ public sealed class HeapDumpEndpointOptionsTest : BaseTest
 
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:loggers:enabled"] = "false",
-            ["management:endpoints:heapdump:enabled"] = "true",
-            ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
+            ["management:endpoints:heapDump:enabled"] = "true",
+            ["management:endpoints:cloudfoundry:validateCertificates"] = "true",
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 

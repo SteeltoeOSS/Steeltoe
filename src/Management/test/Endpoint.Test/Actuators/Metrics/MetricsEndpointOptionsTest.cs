@@ -24,11 +24,11 @@ public sealed class MetricsEndpointOptionsTest : BaseTest
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management",
             ["management:endpoints:metrics:enabled"] = "false",
-            ["management:endpoints:metrics:id"] = "metricsmanagement"
+            ["management:endpoints:metrics:id"] = "metrics-management"
         };
 
         MetricsEndpointOptions options = GetOptionsFromSettings<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>(appSettings);
         Assert.False(options.Enabled);
-        Assert.Equal("metricsmanagement", options.Id);
+        Assert.Equal("metrics-management", options.Id);
     }
 }

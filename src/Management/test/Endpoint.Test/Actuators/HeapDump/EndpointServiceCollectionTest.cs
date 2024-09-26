@@ -19,8 +19,8 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
-            ["management:endpoints:heapdump:enabled"] = "false",
-            ["management:endpoints:heapdump:HeapDumpType"] = "Normal"
+            ["management:endpoints:heapDump:enabled"] = "false",
+            ["management:endpoints:heapDump:HeapDumpType"] = "Normal"
         };
 
         var configurationBuilder = new ConfigurationBuilder();

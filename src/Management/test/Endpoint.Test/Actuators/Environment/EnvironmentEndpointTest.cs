@@ -66,9 +66,9 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:loggers:enabled"] = "false",
-            ["management:endpoints:heapdump:enabled"] = "true",
-            ["management:endpoints:heapdump:sensitive"] = "true",
-            ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
+            ["management:endpoints:heapDump:enabled"] = "true",
+            ["management:endpoints:heapDump:sensitive"] = "true",
+            ["management:endpoints:cloudfoundry:validateCertificates"] = "true",
             ["management:endpoints:cloudfoundry:enabled"] = "true",
             ["common"] = "appSettings",
             ["CharSize"] = "should not duplicate"
@@ -127,8 +127,8 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:loggers:enabled"] = "false",
-            ["management:endpoints:heapdump:enabled"] = "true",
-            ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
+            ["management:endpoints:heapDump:enabled"] = "true",
+            ["management:endpoints:cloudfoundry:validateCertificates"] = "true",
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
@@ -156,8 +156,8 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
         IDictionary<string, PropertyValueDescriptor> props = desc.Properties;
         Assert.NotNull(props);
         Assert.Equal(6, props.Count);
-        Assert.Contains("management:endpoints:cloudfoundry:validatecertificates", props.Keys);
-        PropertyValueDescriptor prop = props["management:endpoints:cloudfoundry:validatecertificates"];
+        Assert.Contains("management:endpoints:cloudfoundry:validateCertificates", props.Keys);
+        PropertyValueDescriptor prop = props["management:endpoints:cloudfoundry:validateCertificates"];
         Assert.NotNull(prop);
         Assert.Equal("true", prop.Value);
         Assert.Null(prop.Origin);
@@ -205,8 +205,8 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:loggers:enabled"] = "false",
-            ["management:endpoints:heapdump:enabled"] = "true",
-            ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
+            ["management:endpoints:heapDump:enabled"] = "true",
+            ["management:endpoints:cloudfoundry:validateCertificates"] = "true",
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
@@ -248,14 +248,14 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["password"] = "mysecret",
-            ["secret"] = "mysecret",
-            ["key"] = "mysecret",
-            ["token"] = "mysecret",
-            ["my_credentials"] = "mysecret",
-            ["credentials_of"] = "mysecret",
-            ["my_credentialsof"] = "mysecret",
-            ["vcap_services"] = "mysecret"
+            ["password"] = "my-secret",
+            ["secret"] = "my-secret",
+            ["key"] = "my-secret",
+            ["token"] = "my-secret",
+            ["my_credentials"] = "my-secret",
+            ["credentials_of"] = "my-secret",
+            ["my_credentialsOf"] = "my-secret",
+            ["vcap_services"] = "my-secret"
         };
 
         using var testContext = new TestContext(_testOutputHelper);
@@ -296,7 +296,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:env:keysToSanitize:0"] = "credentials",
-            ["password"] = "mysecret"
+            ["password"] = "my-secret"
         };
 
         using var testContext = new TestContext(_testOutputHelper);
@@ -322,6 +322,6 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
         Assert.NotNull(props);
         Assert.Contains("password", props.Keys);
         Assert.NotNull(props["password"]);
-        Assert.Equal("mysecret", props["password"].Value);
+        Assert.Equal("my-secret", props["password"].Value);
     }
 }

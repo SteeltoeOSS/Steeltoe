@@ -17,8 +17,8 @@ public sealed class MetricTagTest : BaseTest
             "tagValue"
         };
 
-        var metricTag = new MetricTag("tagname", tags);
-        Assert.Equal("tagname", metricTag.Tag);
+        var metricTag = new MetricTag("tagName", tags);
+        Assert.Equal("tagName", metricTag.Tag);
         Assert.Same(tags, metricTag.Values);
     }
 
@@ -30,12 +30,12 @@ public sealed class MetricTagTest : BaseTest
             "tagValue"
         };
 
-        var metricTag = new MetricTag("tagname", tags);
+        var metricTag = new MetricTag("tagName", tags);
         string result = Serialize(metricTag);
 
         result.Should().BeJson("""
             {
-              "tag": "tagname",
+              "tag": "tagName",
               "values": [
                 "tagValue"
               ]

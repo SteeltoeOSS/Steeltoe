@@ -96,10 +96,10 @@ public sealed class EurekaServiceCollectionExtensionsTest
               "p-service-registry": [
                 {
                   "credentials": {
-                    "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com",
+                    "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.test-cloud.com",
                     "client_id": "p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe",
                     "client_secret": "dCsdoiuklicS",
-                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
                   },
                   "syslog_drain_url": null,
                   "label": "p-service-registry",
@@ -126,13 +126,13 @@ public sealed class EurekaServiceCollectionExtensionsTest
                 },
                 "application_name": "spring-cloud-broker",
                 "application_uris": [
-                    "spring-cloud-broker.apps.testcloud.com"
+                    "spring-cloud-broker.apps.test-cloud.com"
                 ],
                 "name": "spring-cloud-broker",
                 "space_name": "p-spring-cloud-services",
                 "space_id": "65b73473-94cc-4640-b462-7ad52838b4ae",
                 "uris": [
-                    "spring-cloud-broker.apps.testcloud.com"
+                    "spring-cloud-broker.apps.test-cloud.com"
                 ],
                 "users": null,
                 "version": "07e112f7-2f71-4f5a-8a34-db51dbed30a3",
@@ -168,8 +168,8 @@ public sealed class EurekaServiceCollectionExtensionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "eureka:instance:healthcheckurlpath", "/customHealth" },
-            { "eureka:instance:statuspageurlpath", "/customStatus" }
+            { "eureka:instance:healthCheckUrlPath", "/customHealth" },
+            { "eureka:instance:statusPageUrlPath", "/customStatus" }
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
