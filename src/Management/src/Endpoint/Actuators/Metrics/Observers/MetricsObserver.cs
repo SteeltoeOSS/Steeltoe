@@ -8,8 +8,8 @@ using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Metrics.Observers;
 
-internal abstract class MetricsObserver(string observerName, string diagnosticName, ILoggerFactory loggerFactory) : DiagnosticObserver(observerName,
-    diagnosticName, loggerFactory)
+internal abstract class MetricsObserver(string observerName, string diagnosticName, ILoggerFactory loggerFactory)
+    : DiagnosticObserver(observerName, diagnosticName, loggerFactory)
 {
     private Regex? _pathMatcher;
 

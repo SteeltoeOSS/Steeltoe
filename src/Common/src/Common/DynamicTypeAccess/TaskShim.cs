@@ -11,7 +11,8 @@ namespace Steeltoe.Common.DynamicTypeAccess;
 /// <typeparam name="TResult">
 /// The type of the result produced by the underlying task.
 /// </typeparam>
-internal sealed class TaskShim<TResult>(object instance) : Shim(Wrap(instance)), IDisposable
+internal sealed class TaskShim<TResult>(object instance)
+    : Shim(Wrap(instance)), IDisposable
 {
     public override Task Instance => (Task)base.Instance;
 

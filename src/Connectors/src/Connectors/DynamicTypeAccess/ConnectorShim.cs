@@ -6,7 +6,8 @@ using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.DynamicTypeAccess;
 
-internal sealed class ConnectorShim<TOptions>(Type connectionType, object instance) : Shim(CreateAccessor(connectionType, instance)), IDisposable
+internal sealed class ConnectorShim<TOptions>(Type connectionType, object instance)
+    : Shim(CreateAccessor(connectionType, instance)), IDisposable
     where TOptions : ConnectionStringOptions
 {
     public override IDisposable Instance => (IDisposable)base.Instance;

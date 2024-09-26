@@ -6,7 +6,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Info.Contributors;
 
-internal sealed class AppSettingsInfoContributor(IConfiguration? configuration) : ConfigurationContributor(configuration), IInfoContributor
+internal sealed class AppSettingsInfoContributor(IConfiguration? configuration)
+    : ConfigurationContributor(configuration), IInfoContributor
 {
     private const string AppsettingsPrefix = "info";
 

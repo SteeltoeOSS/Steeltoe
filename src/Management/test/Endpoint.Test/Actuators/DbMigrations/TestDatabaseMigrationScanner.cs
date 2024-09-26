@@ -33,5 +33,6 @@ internal sealed class TestDatabaseMigrationScanner : IDatabaseMigrationScanner
         return ["migration"];
     }
 
-    private sealed class TestDbException(string message) : DbException(message);
+    private sealed class TestDbException(string message)
+        : DbException(message);
 }
