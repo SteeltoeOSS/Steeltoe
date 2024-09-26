@@ -67,6 +67,12 @@ jobs:
   - script: docker run -d --name configserver -p 8888:8888 steeltoe.azurecr.io/config-server --spring.cloud.config.server.git.default-label=main; sleep 10s
     condition: eq(${{parameters.runConfigServer}}, 'true')
     displayName: Start Config Server
+  - task: PowerShell@2
+    displayName: Dump env
+    inputs:
+      targetType: 'inline'
+      script: |
+        gci env: | Format-Table -Wrap -AutoSize
   - task: DotNetCoreCLI@2
     displayName: dotnet test net9.0
     inputs:
