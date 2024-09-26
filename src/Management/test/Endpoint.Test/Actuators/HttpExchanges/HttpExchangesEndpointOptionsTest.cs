@@ -31,7 +31,7 @@ public sealed class HttpExchangesEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -51,7 +51,7 @@ public sealed class HttpExchangesEndpointOptionsTest : BaseTest
             ["management:endpoints:httpExchanges:responseHeaders:0"] = "some-extra-response-header-to-allow"
         };
 
-        var endpointOptions = GetOptionsFromSettings<HttpExchangesEndpointOptions>(appsettings);
+        var endpointOptions = GetOptionsFromSettings<HttpExchangesEndpointOptions>(appSettings);
 
         endpointOptions.Enabled.Should().BeTrue();
         endpointOptions.Id.Should().Be("httpexchanges");

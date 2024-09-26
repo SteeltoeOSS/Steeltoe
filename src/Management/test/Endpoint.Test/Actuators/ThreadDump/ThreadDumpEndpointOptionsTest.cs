@@ -21,7 +21,7 @@ public sealed class ThreadDumpEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:loggers:enabled"] = "false",
@@ -31,10 +31,10 @@ public sealed class ThreadDumpEndpointOptionsTest : BaseTest
         };
 
         IOptionsMonitor<ThreadDumpEndpointOptions> optionsMonitor =
-            GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptions>(appsettings);
+            GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptions>(appSettings);
 
         CloudFoundryEndpointOptions cloudFoundryEndpointOptions =
-            GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
+            GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appSettings);
 
         ThreadDumpEndpointOptions options = optionsMonitor.CurrentValue;
         Assert.True(cloudFoundryEndpointOptions.Enabled);
@@ -50,7 +50,7 @@ public sealed class ThreadDumpEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectlyV1()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:loggers:enabled"] = "false",
@@ -60,10 +60,10 @@ public sealed class ThreadDumpEndpointOptionsTest : BaseTest
         };
 
         IOptionsMonitor<ThreadDumpEndpointOptions> optionsMonitor =
-            GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>(appsettings);
+            GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>(appSettings);
 
         CloudFoundryEndpointOptions cloudFoundryEndpointOptions =
-            GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
+            GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appSettings);
 
         ThreadDumpEndpointOptions options = optionsMonitor.CurrentValue;
         Assert.True(cloudFoundryEndpointOptions.Enabled);

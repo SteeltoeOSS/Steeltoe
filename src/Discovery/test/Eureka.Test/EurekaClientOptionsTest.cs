@@ -41,7 +41,7 @@ public sealed class EurekaClientOptionsTest
     [Fact]
     public void Constructor_ConfiguresEurekaDiscovery_Correctly()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
               "eureka": {
                 "client": {
@@ -99,7 +99,7 @@ public sealed class EurekaClientOptionsTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();

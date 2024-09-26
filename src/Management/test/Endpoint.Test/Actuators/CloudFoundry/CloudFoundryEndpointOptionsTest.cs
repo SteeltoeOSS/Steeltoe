@@ -21,7 +21,7 @@ public sealed class CloudFoundryEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -30,8 +30,8 @@ public sealed class CloudFoundryEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        var infoEndpointOptions = GetOptionsFromSettings<InfoEndpointOptions>(appsettings);
-        var cloudFoundryEndpointOptions = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appsettings);
+        var infoEndpointOptions = GetOptionsFromSettings<InfoEndpointOptions>(appSettings);
+        var cloudFoundryEndpointOptions = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appSettings);
 
         Assert.True(cloudFoundryEndpointOptions.Enabled);
         Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Id);

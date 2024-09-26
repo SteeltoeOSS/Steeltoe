@@ -15,7 +15,7 @@ public sealed class RefreshEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     [Fact]
     public async Task Invoke_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -34,7 +34,7 @@ public sealed class RefreshEndpointTest(ITestOutputHelper testOutputHelper) : Ba
 
         testContext.AdditionalConfiguration = configuration =>
         {
-            configuration.AddInMemoryCollection(appsettings);
+            configuration.AddInMemoryCollection(appSettings);
         };
 
         var handler = testContext.GetRequiredService<IRefreshEndpointHandler>();

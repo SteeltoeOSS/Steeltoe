@@ -107,7 +107,7 @@ public sealed class ConfigurationDiscoveryClientTest
     [Fact]
     public async Task AddConfigurationDiscoveryClient_AddsClientWithOptions()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
                 "discovery": {
                     "services": [
@@ -121,7 +121,7 @@ public sealed class ConfigurationDiscoveryClientTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();

@@ -61,7 +61,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
     [Fact]
     public void GetPropertySourceDescriptor_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -70,13 +70,13 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
             ["management:endpoints:heapdump:sensitive"] = "true",
             ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
             ["management:endpoints:cloudfoundry:enabled"] = "true",
-            ["common"] = "appsettings",
+            ["common"] = "appSettings",
             ["CharSize"] = "should not duplicate"
         };
 
-        var otherAppsettings = new Dictionary<string, string?>
+        var otherAppSettings = new Dictionary<string, string?>
         {
-            ["common"] = "otherAppsettings",
+            ["common"] = "otherAppSettings",
             ["charSize"] = "should not duplicate"
         };
 
@@ -90,20 +90,20 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
 
         testContext.AdditionalConfiguration = configuration =>
         {
-            configuration.AddInMemoryCollection(appsettings);
-            configuration.AddInMemoryCollection(otherAppsettings);
+            configuration.AddInMemoryCollection(appSettings);
+            configuration.AddInMemoryCollection(otherAppSettings);
         };
 
         var handler = (EnvironmentEndpointHandler)testContext.GetRequiredService<IEnvironmentEndpointHandler>();
 
-        IConfigurationProvider appsettingsProvider = testContext.Configuration.Providers.ElementAt(0);
-        PropertySourceDescriptor appsettingsDesc = handler.GetPropertySourceDescriptor(appsettingsProvider);
+        IConfigurationProvider appSettingsProvider = testContext.Configuration.Providers.ElementAt(0);
+        PropertySourceDescriptor descriptor = handler.GetPropertySourceDescriptor(appSettingsProvider);
 
-        IConfigurationProvider otherAppsettingsProvider = testContext.Configuration.Providers.ElementAt(1);
-        PropertySourceDescriptor otherAppsettingsDesc = handler.GetPropertySourceDescriptor(otherAppsettingsProvider);
+        IConfigurationProvider otherAppSettingsProvider = testContext.Configuration.Providers.ElementAt(1);
+        PropertySourceDescriptor otherDescriptor = handler.GetPropertySourceDescriptor(otherAppSettingsProvider);
 
-        Assert.Equal("MemoryConfigurationProvider", appsettingsDesc.Name);
-        IDictionary<string, PropertyValueDescriptor> props = appsettingsDesc.Properties;
+        Assert.Equal("MemoryConfigurationProvider", descriptor.Name);
+        IDictionary<string, PropertyValueDescriptor> props = descriptor.Properties;
         Assert.NotNull(props);
         Assert.Equal(9, props.Count);
         Assert.Contains("management:endpoints:enabled", props.Keys);
@@ -112,17 +112,17 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
         Assert.Equal("false", prop.Value);
         Assert.Null(prop.Origin);
 
-        IDictionary<string, PropertyValueDescriptor> otherProps = otherAppsettingsDesc.Properties;
+        IDictionary<string, PropertyValueDescriptor> otherProps = otherDescriptor.Properties;
         PropertyValueDescriptor appSettingsCommonProp = props["common"];
         PropertyValueDescriptor otherAppSettingCommonProp = otherProps["common"];
-        Assert.Equal("appsettings", appSettingsCommonProp.Value);
-        Assert.Equal("otherAppsettings", otherAppSettingCommonProp.Value);
+        Assert.Equal("appSettings", appSettingsCommonProp.Value);
+        Assert.Equal("otherAppSettings", otherAppSettingCommonProp.Value);
     }
 
     [Fact]
     public void GetPropertySources_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -142,7 +142,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
 
         testContext.AdditionalConfiguration = configuration =>
         {
-            configuration.AddInMemoryCollection(appsettings);
+            configuration.AddInMemoryCollection(appSettings);
         };
 
         var handler = (EnvironmentEndpointHandler)testContext.GetRequiredService<IEnvironmentEndpointHandler>();
@@ -166,7 +166,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
     [Fact]
     public void GetPropertySources_ReturnsExpected_WithPlaceholders()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["appsManagerBase"] = "${management:endpoints:path}"
@@ -182,7 +182,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
 
         testContext.AdditionalConfiguration = configuration =>
         {
-            configuration.AddInMemoryCollection(appsettings);
+            configuration.AddInMemoryCollection(appSettings);
             configuration.AddPlaceholderResolver();
         };
 
@@ -200,7 +200,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
     [Fact]
     public async Task Invoke_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -220,7 +220,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
 
         testContext.AdditionalConfiguration = configuration =>
         {
-            configuration.AddInMemoryCollection(appsettings);
+            configuration.AddInMemoryCollection(appSettings);
         };
 
         var handler = testContext.GetRequiredService<IEnvironmentEndpointHandler>();
@@ -246,7 +246,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
     [Fact]
     public async Task Sanitized_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["password"] = "mysecret",
             ["secret"] = "mysecret",
@@ -268,7 +268,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
 
         testContext.AdditionalConfiguration = configuration =>
         {
-            configuration.AddInMemoryCollection(appsettings);
+            configuration.AddInMemoryCollection(appSettings);
         };
 
         var handler = testContext.GetRequiredService<IEnvironmentEndpointHandler>();
@@ -281,7 +281,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
         IDictionary<string, PropertyValueDescriptor> props = desc.Properties;
         Assert.NotNull(props);
 
-        foreach (string key in appsettings.Keys)
+        foreach (string key in appSettings.Keys)
         {
             Assert.Contains(key, props.Keys);
             Assert.NotNull(props[key]);
@@ -293,7 +293,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
     [Fact]
     public async Task Sanitized_NonDefault_WhenSet()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:env:keysToSanitize:0"] = "credentials",
             ["password"] = "mysecret"
@@ -309,7 +309,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
 
         testContext.AdditionalConfiguration = configuration =>
         {
-            configuration.AddInMemoryCollection(appsettings);
+            configuration.AddInMemoryCollection(appSettings);
         };
 
         var handler = testContext.GetRequiredService<IEnvironmentEndpointHandler>();

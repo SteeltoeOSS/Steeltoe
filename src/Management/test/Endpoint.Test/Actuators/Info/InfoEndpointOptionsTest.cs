@@ -19,7 +19,7 @@ public sealed class InfoEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management",
@@ -27,7 +27,7 @@ public sealed class InfoEndpointOptionsTest : BaseTest
             ["management:endpoints:info:id"] = "infomanagement"
         };
 
-        InfoEndpointOptions options = GetOptionsFromSettings<InfoEndpointOptions, ConfigureInfoEndpointOptions>(appsettings);
+        InfoEndpointOptions options = GetOptionsFromSettings<InfoEndpointOptions, ConfigureInfoEndpointOptions>(appSettings);
         Assert.False(options.Enabled);
         Assert.Equal("infomanagement", options.Id);
     }

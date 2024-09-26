@@ -103,32 +103,32 @@ public sealed class ConsulRegistrationTest
     [Fact]
     public void AppName_SetAsExpected()
     {
-        var appsettings = new Dictionary<string, string?>();
+        var appSettings = new Dictionary<string, string?>();
 
         // default value is assembly name
-        ConsulRegistration registration = TestRegistrationFactory.Create(appsettings);
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
         Assert.Equal(Assembly.GetEntryAssembly()!.GetName().Name!.Replace('.', '-'), registration.ServiceId);
 
         // followed by spring:application:name
-        appsettings.Add("spring:application:name", "SpringApplicationName");
-        registration = TestRegistrationFactory.Create(appsettings);
+        appSettings.Add("spring:application:name", "SpringApplicationName");
+        registration = TestRegistrationFactory.Create(appSettings);
         Assert.Equal("SpringApplicationName", registration.ServiceId);
 
         // Consul-discovery is the highest priority
-        appsettings.Add("consul:discovery:serviceName", "ConsulDiscoveryServiceName");
-        registration = TestRegistrationFactory.Create(appsettings);
+        appSettings.Add("consul:discovery:serviceName", "ConsulDiscoveryServiceName");
+        registration = TestRegistrationFactory.Create(appSettings);
         Assert.Equal("ConsulDiscoveryServiceName", registration.ServiceId);
     }
 
     [Fact]
     public void GetDefaultInstanceId_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             { "consul:discovery:serviceName", "serviceName" }
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appsettings);
+        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
         Assert.StartsWith("serviceName-", registration.InstanceId, StringComparison.Ordinal);
     }
 

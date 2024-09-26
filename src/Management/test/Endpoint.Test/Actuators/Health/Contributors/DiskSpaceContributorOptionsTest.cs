@@ -19,14 +19,14 @@ public sealed class DiskSpaceContributorOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:health:diskspace:enabled"] = "true",
             ["management:endpoints:health:diskspace:path"] = "foobar",
             ["management:endpoints:health:diskspace:threshold"] = "5"
         };
 
-        var options = GetOptionsFromSettings<DiskSpaceContributorOptions>(appsettings);
+        var options = GetOptionsFromSettings<DiskSpaceContributorOptions>(appSettings);
 
         Assert.True(options.Enabled);
         Assert.Equal("foobar", options.Path);

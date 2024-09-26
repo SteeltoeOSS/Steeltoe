@@ -17,7 +17,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     {
         var services = new ServiceCollection();
 
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -25,7 +25,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         };
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
+        configurationBuilder.AddInMemoryCollection(appSettings);
         IConfiguration configuration = configurationBuilder.Build();
 
         services.AddLogging(builder =>

@@ -12,7 +12,7 @@ namespace Steeltoe.Logging.DynamicSerilog.Test;
 
 public sealed class SerilogDynamicLoggingBuilderTest
 {
-    private static readonly Dictionary<string, string?> Appsettings = new()
+    private static readonly Dictionary<string, string?> AppSettings = new()
     {
         ["Serilog:MinimumLevel:Default"] = "Verbose",
         ["Serilog:MinimumLevel:Override:Microsoft"] = "Warning",
@@ -57,7 +57,7 @@ public sealed class SerilogDynamicLoggingBuilderTest
     [Fact]
     public async Task DynamicLevelSetting_WorksWith_ConsoleFilters()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(AppSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton(configuration);
@@ -88,7 +88,7 @@ public sealed class SerilogDynamicLoggingBuilderTest
     [Fact]
     public async Task AddDynamicSerilogPreservesDefaultLoggerWhenTrue()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(AppSettings).Build();
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
@@ -103,7 +103,7 @@ public sealed class SerilogDynamicLoggingBuilderTest
     [Fact]
     public async Task AddDynamicConsole_AddsAllLoggerProviders()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(AppSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton(configuration);
@@ -123,7 +123,7 @@ public sealed class SerilogDynamicLoggingBuilderTest
     [Fact]
     public void AddDynamicConsole_AddsLoggerProvider_DisposeTwiceSucceeds()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(AppSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton(configuration);
@@ -141,7 +141,7 @@ public sealed class SerilogDynamicLoggingBuilderTest
     [Fact]
     public async Task AddDynamicConsole_WithConfigurationParam_AddsServices()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(AppSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton(configuration);

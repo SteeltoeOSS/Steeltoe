@@ -23,7 +23,7 @@ public sealed class ManagementOptionsTest : BaseTest
     [Fact]
     public void BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management",
@@ -31,7 +31,7 @@ public sealed class ManagementOptionsTest : BaseTest
             ["management:endpoints:info:id"] = "/infomanagement"
         };
 
-        ManagementOptions options = GetOptionsMonitorFromSettings<ManagementOptions>(appsettings).CurrentValue;
+        ManagementOptions options = GetOptionsMonitorFromSettings<ManagementOptions>(appSettings).CurrentValue;
         Assert.False(options.Enabled);
         Assert.Equal("/management", options.Path);
     }

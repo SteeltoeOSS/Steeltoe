@@ -21,7 +21,7 @@ public sealed class HeapDumpEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
 
@@ -32,8 +32,8 @@ public sealed class HeapDumpEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        var heapDumpEndpointOptions = GetOptionsFromSettings<HeapDumpEndpointOptions>(appsettings);
-        var cloudFoundryEndpointOptions = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appsettings);
+        var heapDumpEndpointOptions = GetOptionsFromSettings<HeapDumpEndpointOptions>(appSettings);
+        var cloudFoundryEndpointOptions = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appSettings);
 
         Assert.True(cloudFoundryEndpointOptions.Enabled);
         Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Id);

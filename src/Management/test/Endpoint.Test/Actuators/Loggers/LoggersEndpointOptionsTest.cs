@@ -21,7 +21,7 @@ public sealed class LoggersEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:loggers:enabled"] = "false",
@@ -30,10 +30,10 @@ public sealed class LoggersEndpointOptionsTest : BaseTest
         };
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
+        configurationBuilder.AddInMemoryCollection(appSettings);
 
-        var loggersEndpointOptions = GetOptionsFromSettings<LoggersEndpointOptions>(appsettings);
-        var cloudFoundryEndpointOptions = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appsettings);
+        var loggersEndpointOptions = GetOptionsFromSettings<LoggersEndpointOptions>(appSettings);
+        var cloudFoundryEndpointOptions = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appSettings);
 
         Assert.True(cloudFoundryEndpointOptions.Enabled);
         Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Id);

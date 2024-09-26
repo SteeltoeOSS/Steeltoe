@@ -42,7 +42,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     [Fact]
     public async Task WithEurekaConfiguration_AddsDiscoveryClient()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
                 "spring": {
                     "application": {
@@ -60,7 +60,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
@@ -86,7 +86,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     [Fact]
     public async Task WithEurekaInetConfiguration_AddsDiscoveryClient()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" },
             { "spring:cloud:inet:defaulthostname", "fromtest" },
@@ -96,7 +96,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             { "eureka:instance:UseNetworkInterfaces", "true" }
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton(configuration);
@@ -655,7 +655,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     [Fact]
     public async Task WithConsulConfiguration_AddsDiscoveryClient()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
                 "spring": {
                     "application": {
@@ -675,7 +675,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
@@ -707,7 +707,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     [Fact]
     public async Task WithConsulInetConfiguration_AddsDiscoveryClient()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" },
             { "spring:cloud:inet:defaulthostname", "fromtest" },
@@ -717,7 +717,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             { "consul:discovery:deregister", "false" }
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton(configuration);
@@ -745,7 +745,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     [Fact]
     public async Task WithConsulUrlConfiguration_AddsDiscoveryClient()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" },
             { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" },
@@ -753,7 +753,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             { "consul:discovery:deregister", "false" }
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton(configuration);
@@ -781,7 +781,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     [Fact]
     public async Task WithConsul_UrlBypassWorks()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" },
             { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" },
@@ -790,7 +790,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             { "Consul:Discovery:UseAspNetCoreUrls", "false" }
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton(configuration);
@@ -811,7 +811,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     [Fact]
     public async Task WithConsul_PreferPortOverUrl()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" },
             { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" },
@@ -820,7 +820,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             { "Consul:Discovery:Port", "8080" }
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
@@ -841,7 +841,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     [Fact]
     public async Task WithAppConfiguration_AddsAndWorks()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
                 "discovery": {
                     "services": [
@@ -855,7 +855,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
 
         IConfiguration configuration = new ConfigurationBuilder().SetBasePath(Path.GetDirectoryName(path)!).AddJsonFile(Path.GetFileName(path)).Build();
 

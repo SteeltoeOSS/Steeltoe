@@ -11,9 +11,9 @@ public sealed class SpringBootAdminClientOptionsTest : BaseTest
     [Fact]
     public void ConstructorFailsWithoutBaseAppUrl()
     {
-        var appsettings = new Dictionary<string, string?>();
+        var appSettings = new Dictionary<string, string?>();
 
-        var exception = Assert.Throws<InvalidOperationException>(() => GetOptionsFromSettings<SpringBootAdminClientOptions>(appsettings));
+        var exception = Assert.Throws<InvalidOperationException>(() => GetOptionsFromSettings<SpringBootAdminClientOptions>(appSettings));
 
         Assert.Equal("Please set spring:boot:admin:client:BasePath in order to register with Spring Boot Admin", exception.Message);
     }
@@ -21,7 +21,7 @@ public sealed class SpringBootAdminClientOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfiguration()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:path"] = "/management",
             ["management:endpoints:health:path"] = "myhealth",
@@ -32,7 +32,7 @@ public sealed class SpringBootAdminClientOptionsTest : BaseTest
             ["spring:application:name"] = "MySteeltoeApplication"
         };
 
-        var options = GetOptionsFromSettings<SpringBootAdminClientOptions>(appsettings);
+        var options = GetOptionsFromSettings<SpringBootAdminClientOptions>(appSettings);
 
         Assert.NotNull(options);
         Assert.Equal("MySteeltoeApplication", options.ApplicationName);
@@ -46,12 +46,12 @@ public sealed class SpringBootAdminClientOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsFallBack()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["spring:boot:admin:client:basepath"] = "http://somehost"
         };
 
-        var options = GetOptionsFromSettings<SpringBootAdminClientOptions>(appsettings);
+        var options = GetOptionsFromSettings<SpringBootAdminClientOptions>(appSettings);
 
         Assert.NotNull(options);
         Assert.NotNull(options.ApplicationName);

@@ -24,7 +24,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
     [Trait("Category", "Integration")]
     public void SpringCloudConfigServer_ReturnsExpectedDefaultData()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
                 "spring": {
                   "application": {
@@ -42,7 +42,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
@@ -65,7 +65,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
     public async Task SpringCloudConfigServer_ReturnsExpectedDefaultData_AsInjectedOptions()
     {
         // These settings match the default java config server
-        const string appsettings = """
+        const string appSettings = """
             {
                 "spring": {
                   "application": {
@@ -86,7 +86,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
@@ -298,7 +298,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
     [Trait("Category", "Integration")]
     public void SpringCloudConfigServer_DiscoveryFirst_ReturnsExpectedDefaultData()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
                 "spring": {
                   "application": {
@@ -324,7 +324,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
@@ -347,7 +347,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
     public async Task SpringCloudConfigServer_WithHealthEnabled_ReturnsHealth()
     {
         // These settings match the default java config server
-        const string appsettings = """
+        const string appSettings = """
             {
                 "spring": {
                   "application": {
@@ -368,7 +368,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
