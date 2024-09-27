@@ -212,7 +212,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
 
         optionsMonitor.CurrentValue.RequestHeaders.Add(HeaderNames.Authorization);
         optionsMonitor.CurrentValue.RequestHeaders.Add("header1");
-        optionsMonitor.CurrentValue.ResponseHeaders.Add("headerA");
+        optionsMonitor.CurrentValue.ResponseHeaders.Add("headera"); // tests case-insensitivity
         optionsMonitor.CurrentValue.ResponseHeaders.Add(HeaderNames.SetCookie);
 
         HttpExchange unfilteredHeaders = observer.GetHttpExchanges().Exchanges[0];
