@@ -109,9 +109,30 @@ public sealed class RedisDataProtectionBuilderExtensionsTest
         databaseMock.Setup(database => database.HashGetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue[]>(), It.IsAny<CommandFlags>())).Returns(
             (RedisKey key, RedisValue[] _, CommandFlags _) => Task.FromResult(GetRedisValues(key)));
 
+#if NET9_0_OR_GREATER
+        databaseMock.Setup(database => database.HashSetAsync(It.IsAny<RedisKey>(), It.IsAny<HashEntry[]>(), It.IsAny<CommandFlags>())).Returns(
+            (RedisKey key, HashEntry[] hashFields, CommandFlags _) =>
+            {
+                byte[] data = hashFields[2].Value!;
+                innerStore[key!] = data;
+                return Task.CompletedTask;
+            });
+#else
+        // Use the following for .NET 8 and below.
+        /*
         databaseMock.Setup(database =>
             database.ScriptEvaluateAsync(It.IsAny<string>(), It.IsAny<RedisKey[]?>(), It.IsAny<RedisValue[]?>(), It.IsAny<CommandFlags>())).Returns(
-            (string _, RedisKey[]? keys, RedisValue[]? values, CommandFlags _) => Task.FromResult(SetRedisValues(keys, values)));
+            (string _, RedisKey[]? keys, RedisValue[]? values, CommandFlags _) =>
+            {
+                RedisKey key = keys![0];
+                byte[] data = values![3]!;
+                innerStore[key!] = data;
+
+                var result = RedisResult.Create(key);
+                return Task.FromResult(result);
+            });
+        */
+#endif
 
         var connectionMultiplexerMock = new Mock<IConnectionMultiplexer>();
         connectionMultiplexerMock.Setup(connectionMultiplexer => connectionMultiplexer.Configuration).Returns(connectionString!);
@@ -138,12 +159,6 @@ public sealed class RedisDataProtectionBuilderExtensionsTest
                     default,
                     default
                 ];
-        }
-
-        RedisResult SetRedisValues(RedisKey[]? keys, RedisValue[]? values)
-        {
-            innerStore[keys![0]!] = values![3]!;
-            return RedisResult.Create(keys[0]);
         }
     }
 }
