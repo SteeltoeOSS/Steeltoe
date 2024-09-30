@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using OpenTelemetry.Metrics;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Actuators.Metrics;
 using Steeltoe.Management.Wavefront.Exporters;
 
 namespace Steeltoe.Management.Wavefront;
@@ -33,11 +32,9 @@ public static class WavefrontExtensions
         services.AddHostedService<DiagnosticsService>();
 
         services.ConfigureOptionsWithChangeTokenSource<WavefrontExporterOptions, ConfigureWavefrontExporterOptions>();
-        services.AddMetricsObservers();
 
         services.AddOpenTelemetry().WithMetrics(builder =>
         {
-            builder.AddMeter(SteeltoeMetrics.InstrumentationName);
             builder.AddWavefrontExporter();
         });
 

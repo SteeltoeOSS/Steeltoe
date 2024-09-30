@@ -24,7 +24,6 @@ using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
-using Steeltoe.Management.Endpoint.Actuators.Metrics;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
@@ -336,32 +335,6 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using HttpClient httpClient = host.GetTestClient();
 
         var requestUri = new Uri("/actuator/mappings", UriKind.Relative);
-        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-    }
-
-    [Fact]
-    public void AddMetricsActuator_IWebHostBuilder()
-    {
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
-        hostBuilder.AddMetricsActuator();
-        using IWebHost host = hostBuilder.Build();
-
-        host.Services.GetService<IMetricsEndpointHandler>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<AllActuatorsStartupFilter>().Should().ContainSingle();
-    }
-
-    [Fact]
-    public async Task AddMetricsActuator_IWebHostBuilder_IStartupFilterFires()
-    {
-        IWebHostBuilder hostBuilder = GetWebHostBuilderWithAllActuatorsExposed();
-        hostBuilder.AddMetricsActuator();
-
-        using IWebHost host = hostBuilder.Build();
-        await host.StartAsync();
-        using HttpClient httpClient = host.GetTestClient();
-
-        var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
         HttpResponseMessage response = await httpClient.GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }

@@ -15,7 +15,6 @@ internal static class TestStartupExtensions
             EndpointName.Cloudfoundry => builder.UseStartup<CloudFoundryStartup>(),
             EndpointName.Hypermedia => builder.UseStartup<HyperMediaStartup>(),
             EndpointName.Info => builder.UseStartup<InfoStartup>(),
-            EndpointName.Metrics => builder.UseStartup<MetricsStartup>(),
             EndpointName.Loggers => builder.UseStartup<LoggersStartup>(),
             EndpointName.Health => builder.UseStartup<HealthStartup>(),
             EndpointName.HttpExchanges => builder.UseStartup<HttpExchangeStartup>(),

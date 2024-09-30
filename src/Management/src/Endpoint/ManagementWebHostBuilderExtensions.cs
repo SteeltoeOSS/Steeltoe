@@ -164,25 +164,6 @@ public static class ManagementWebHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Metrics actuator to the application.
-    /// </summary>
-    /// <param name="builder">
-    /// The <see cref="IWebHostBuilder" /> to configure.
-    /// </param>
-    /// <returns>
-    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
-    /// </returns>
-    public static IWebHostBuilder AddMetricsActuator(this IWebHostBuilder builder)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
-        wrapper.AddMetricsActuator();
-
-        return builder;
-    }
-
-    /// <summary>
     /// Adds the Refresh actuator to the application.
     /// </summary>
     /// <param name="builder">
