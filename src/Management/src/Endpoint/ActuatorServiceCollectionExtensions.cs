@@ -19,7 +19,6 @@ using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
-using Steeltoe.Management.Endpoint.Actuators.Metrics;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
@@ -100,7 +99,6 @@ public static class ActuatorServiceCollectionExtensions
         services.AddLoggersActuator();
         services.AddHttpExchangesActuator();
         services.AddMappingsActuator();
-        services.AddMetricsActuator();
         services.AddRefreshActuator();
         services.AddServicesActuator();
 

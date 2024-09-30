@@ -15,7 +15,6 @@ using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
-using Steeltoe.Management.Endpoint.Actuators.Metrics;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
@@ -79,12 +78,6 @@ internal static class HostBuilderWrapperExtensions
     public static void AddMappingsActuator(this HostBuilderWrapper wrapper)
     {
         wrapper.ConfigureServices(services => services.AddMappingsActuator());
-        RegisterActuatorEndpoints(wrapper, null);
-    }
-
-    public static void AddMetricsActuator(this HostBuilderWrapper wrapper)
-    {
-        wrapper.ConfigureServices(services => services.AddMetricsActuator());
         RegisterActuatorEndpoints(wrapper, null);
     }
 
