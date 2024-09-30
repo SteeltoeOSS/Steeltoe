@@ -50,7 +50,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            { "management:endpoints:health:showdetails", "whenauthorized" }
+            { "management:endpoints:health:showDetails", "whenAuthorized" }
         };
 
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -77,8 +77,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            { "management:endpoints:health:showdetails", "whenauthorized" },
-            { "management:endpoints:health:claim:type", "healthdetails" },
+            { "management:endpoints:health:showDetails", "whenAuthorized" },
+            { "management:endpoints:health:claim:type", "health-details" },
             { "management:endpoints:health:claim:value", "show" }
         };
 
@@ -138,7 +138,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            { "management:endpoints:customjsonconverters:0", typeof(HealthConverterV3).FullName! }
+            { "management:endpoints:customJsonConverters:0", typeof(HealthConverterV3).FullName! }
         };
 
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -202,7 +202,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            ["management:endpoints:health:diskspace:enabled"] = "false"
+            ["management:endpoints:health:diskSpace:enabled"] = "false"
         };
 
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();

@@ -65,13 +65,13 @@ public sealed class ActuatorServiceCollectionExtensionsTest
                 },
                 "application_name": "spring-cloud-broker",
                 "application_uris": [
-                    "spring-cloud-broker.apps.testcloud.com"
+                    "spring-cloud-broker.apps.test-cloud.com"
                 ],
                 "name": "spring-cloud-broker",
                 "space_name": "p-spring-cloud-services",
                 "space_id": "65b73473-94cc-4640-b462-7ad52838b4ae",
                 "uris": [
-                    "spring-cloud-broker.apps.testcloud.com"
+                    "spring-cloud-broker.apps.test-cloud.com"
                 ],
                 "users": null,
                 "version": "07e112f7-2f71-4f5a-8a34-db51dbed30a3",

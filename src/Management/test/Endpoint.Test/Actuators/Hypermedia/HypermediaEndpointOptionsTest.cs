@@ -20,7 +20,7 @@ public sealed class HypermediaEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
 
@@ -28,11 +28,11 @@ public sealed class HypermediaEndpointOptionsTest : BaseTest
             ["management:endpoints:info:enabled"] = "true",
             ["management:endpoints:info:path"] = "infopath",
 
-            ["management:endpoints:cloudfoundry:validatecertificates"] = "false",
+            ["management:endpoints:cloudfoundry:validateCertificates"] = "false",
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        InfoEndpointOptions options = GetOptionsFromSettings<InfoEndpointOptions, ConfigureInfoEndpointOptions>(appsettings);
+        InfoEndpointOptions options = GetOptionsFromSettings<InfoEndpointOptions, ConfigureInfoEndpointOptions>(appSettings);
 
         Assert.Equal("info", options.Id);
         Assert.Equal("infopath", options.Path);

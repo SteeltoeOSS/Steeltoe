@@ -9,11 +9,11 @@ namespace Steeltoe.Management.Endpoint.Actuators.Info.Contributors;
 internal sealed class AppSettingsInfoContributor(IConfiguration? configuration)
     : ConfigurationContributor(configuration), IInfoContributor
 {
-    private const string AppsettingsPrefix = "info";
+    private const string AppSettingsPrefix = "info";
 
     public Task ContributeAsync(InfoBuilder builder, CancellationToken cancellationToken)
     {
-        Contribute(builder, AppsettingsPrefix, false);
+        Contribute(builder, AppSettingsPrefix, false);
         return Task.CompletedTask;
     }
 }

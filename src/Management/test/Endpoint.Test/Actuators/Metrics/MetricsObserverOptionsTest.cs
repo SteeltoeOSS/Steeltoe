@@ -28,7 +28,7 @@ public sealed class MetricsObserverOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:metrics:observer:ingressIgnorePattern"] = "pattern",
             ["management:metrics:observer:egressIgnorePattern"] = "pattern",
@@ -41,7 +41,7 @@ public sealed class MetricsObserverOptionsTest : BaseTest
             ["management:metrics:observer:httpClientDesktop"] = "true"
         };
 
-        MetricsObserverOptions options = GetOptionsFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>(appsettings);
+        MetricsObserverOptions options = GetOptionsFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>(appSettings);
 
         Assert.Equal("pattern", options.IngressIgnorePattern);
         Assert.Equal("pattern", options.EgressIgnorePattern);

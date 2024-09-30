@@ -143,14 +143,12 @@ internal sealed class EventCounterListener : EventListener
         string? counterDisplayUnit = null;
         string? counterDisplayName = null;
 
-        foreach (KeyValuePair<string, object?> payload in eventPayload)
+        foreach ((string key, object? value) in eventPayload)
         {
-            string key = payload.Key;
-
             switch (key)
             {
                 case var _ when key.Equals("Name", StringComparison.OrdinalIgnoreCase):
-                    counterName = payload.Value?.ToString() ?? string.Empty;
+                    counterName = value?.ToString() ?? string.Empty;
                     IList<string> includedMetrics = _optionsMonitor.CurrentValue.IncludedMetrics;
                     IList<string> excludedMetrics = _optionsMonitor.CurrentValue.ExcludedMetrics;
 
@@ -161,27 +159,27 @@ internal sealed class EventCounterListener : EventListener
 
                     break;
                 case var _ when key.Equals("DisplayName", StringComparison.OrdinalIgnoreCase):
-                    counterDisplayName = payload.Value?.ToString();
+                    counterDisplayName = value?.ToString();
                     labelSet.Add(KeyValuePair.Create("DisplayName", (object?)counterDisplayName));
                     break;
                 case var _ when key.Equals("DisplayUnits", StringComparison.OrdinalIgnoreCase):
-                    counterDisplayUnit = payload.Value?.ToString();
+                    counterDisplayUnit = value?.ToString();
                     labelSet.Add(KeyValuePair.Create("DisplayUnits", (object?)counterDisplayUnit));
                     break;
                 case var _ when key.Equals("Mean", StringComparison.OrdinalIgnoreCase):
-                    doubleValue = Convert.ToDouble(payload.Value, CultureInfo.InvariantCulture);
+                    doubleValue = Convert.ToDouble(value, CultureInfo.InvariantCulture);
                     break;
                 case var _ when key.Equals("Increment", StringComparison.OrdinalIgnoreCase):
-                    longValue = Convert.ToInt64(payload.Value, CultureInfo.InvariantCulture);
+                    longValue = Convert.ToInt64(value, CultureInfo.InvariantCulture);
                     break;
                 case var _ when key.Equals("IntervalSec", StringComparison.OrdinalIgnoreCase):
-                    doubleValue = Convert.ToDouble(payload.Value, CultureInfo.InvariantCulture);
+                    doubleValue = Convert.ToDouble(value, CultureInfo.InvariantCulture);
                     break;
                 case var _ when key.Equals("Count", StringComparison.OrdinalIgnoreCase):
-                    longValue = Convert.ToInt64(payload.Value, CultureInfo.InvariantCulture);
+                    longValue = Convert.ToInt64(value, CultureInfo.InvariantCulture);
                     break;
                 case var _ when key.Equals("Metadata", StringComparison.OrdinalIgnoreCase):
-                    string? metadata = payload.Value?.ToString();
+                    string? metadata = value?.ToString();
 
                     if (!string.IsNullOrEmpty(metadata))
                     {

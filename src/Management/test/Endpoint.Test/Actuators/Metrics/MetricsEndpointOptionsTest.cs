@@ -19,16 +19,16 @@ public sealed class MetricsEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management",
             ["management:endpoints:metrics:enabled"] = "false",
-            ["management:endpoints:metrics:id"] = "metricsmanagement"
+            ["management:endpoints:metrics:id"] = "metrics-management"
         };
 
-        MetricsEndpointOptions options = GetOptionsFromSettings<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>(appsettings);
+        MetricsEndpointOptions options = GetOptionsFromSettings<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>(appSettings);
         Assert.False(options.Enabled);
-        Assert.Equal("metricsmanagement", options.Id);
+        Assert.Equal("metrics-management", options.Id);
     }
 }

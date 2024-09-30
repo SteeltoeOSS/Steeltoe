@@ -96,10 +96,10 @@ public sealed class CloudFoundryConfigurationProviderTest
                     "tags": ["configuration","spring-cloud"],
                     "plan": "standard",
                     "credentials": {
-                        "uri": "https://config-eafc353b-77e2-4dcc-b52a-25777e996ed9.apps.testcloud.com",
+                        "uri": "https://config-eafc353b-77e2-4dcc-b52a-25777e996ed9.apps.test-cloud.com",
                         "client_id": "p-config-server-9bff4c87-7ffd-4536-9e76-e67ea3ec81d0",
                         "client_secret": "AJUAjyxP3nO9",
-                        "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                        "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
                     }
                 }],
                 "p-service-registry": [{
@@ -113,10 +113,10 @@ public sealed class CloudFoundryConfigurationProviderTest
                     ],
                     "plan": "standard",
                     "credentials": {
-                        "uri": "https://eureka-f4b98d1c-3166-4741-b691-79abba5b2d51.apps.testcloud.com",
+                        "uri": "https://eureka-f4b98d1c-3166-4741-b691-79abba5b2d51.apps.test-cloud.com",
                         "client_id": "p-service-registry-9121b185-cd3b-497c-99f7-8e8064d4a6f0",
                         "client_secret": "3Rv1U79siLDa",
-                        "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                        "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
                     }
                 }],
                 "p-mysql": [{
@@ -158,10 +158,10 @@ public sealed class CloudFoundryConfigurationProviderTest
         provider.Load();
         IDictionary<string, string?> properties = provider.Properties;
         Assert.Equal("myConfigServer", properties["vcap:services:p-config-server:0:name"]);
-        Assert.Equal("https://config-eafc353b-77e2-4dcc-b52a-25777e996ed9.apps.testcloud.com", properties["vcap:services:p-config-server:0:credentials:uri"]);
+        Assert.Equal("https://config-eafc353b-77e2-4dcc-b52a-25777e996ed9.apps.test-cloud.com", properties["vcap:services:p-config-server:0:credentials:uri"]);
         Assert.Equal("myServiceRegistry", properties["vcap:services:p-service-registry:0:name"]);
 
-        Assert.Equal("https://eureka-f4b98d1c-3166-4741-b691-79abba5b2d51.apps.testcloud.com",
+        Assert.Equal("https://eureka-f4b98d1c-3166-4741-b691-79abba5b2d51.apps.test-cloud.com",
             properties["vcap:services:p-service-registry:0:credentials:uri"]);
 
         Assert.Equal("mySql1", properties["vcap:services:p-mysql:0:name"]);

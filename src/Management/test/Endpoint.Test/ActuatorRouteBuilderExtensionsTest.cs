@@ -46,7 +46,7 @@ public sealed class ActuatorRouteBuilderExtensionsTest
     [MemberData(nameof(EndpointOptionsTypes))]
     public async Task MapTestAuthFail(Type endpointOptionsType)
     {
-        IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "invalidscope"));
+        IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "invalid-scope"));
         await ActAndAssertAsync(hostBuilder, endpointOptionsType, false);
     }
 

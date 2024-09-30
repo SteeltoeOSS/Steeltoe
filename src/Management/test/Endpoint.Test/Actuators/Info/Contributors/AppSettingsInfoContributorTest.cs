@@ -24,7 +24,7 @@ public sealed class AppSettingsInfoContributorTest : BaseTest
     [Fact]
     public async Task ContributeWithNullBuilderThrows()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["info:application:name"] = "foobar",
             ["info:application:version"] = "1.0.0",
@@ -35,7 +35,7 @@ public sealed class AppSettingsInfoContributorTest : BaseTest
         };
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
+        configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         var settings = new AppSettingsInfoContributor(configurationRoot);
 
@@ -45,7 +45,7 @@ public sealed class AppSettingsInfoContributorTest : BaseTest
     [Fact]
     public void ContributeAddsToBuilder()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["info:application:name"] = "foobar",
             ["info:application:version"] = "1.0.0",
@@ -58,7 +58,7 @@ public sealed class AppSettingsInfoContributorTest : BaseTest
         };
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
+        configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         var settings = new AppSettingsInfoContributor(configurationRoot);
 

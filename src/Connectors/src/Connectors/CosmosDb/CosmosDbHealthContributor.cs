@@ -19,7 +19,7 @@ internal sealed class CosmosDbHealthContributor : IHealthContributor, IDisposabl
     private readonly ILogger<CosmosDbHealthContributor> _logger;
     private CosmosClientShim? _cosmosClientShim;
 
-    public string Id { get; } = "CosmosDB";
+    public string Id => "CosmosDB";
     public string Host => _clientFactory.HostName;
     public string ServiceName { get; }
 

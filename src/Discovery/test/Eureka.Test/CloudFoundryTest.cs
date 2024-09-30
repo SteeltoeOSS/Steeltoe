@@ -140,13 +140,13 @@ public sealed class CloudFoundryTest
               },
               "application_name": "foo",
               "application_uris": [
-                "foo.apps.testcloud.com"
+                "foo.apps.test-cloud.com"
               ],
               "name": "foo",
               "space_name": "test",
               "space_id": "98c627e7-f559-46a4-9032-88cab63f8249",
               "uris": [
-                "foo.apps.testcloud.com"
+                "foo.apps.test-cloud.com"
               ],
               "users": null,
               "version": "4a439db9-4a82-47a3-aeea-8240465cff8e",
@@ -161,10 +161,10 @@ public sealed class CloudFoundryTest
               "p-config-server": [
                 {
                   "credentials": {
-                    "uri": "https://config-de211817-2e99-4c57-89e8-31fa7ca6a276.apps.testcloud.com",
+                    "uri": "https://config-de211817-2e99-4c57-89e8-31fa7ca6a276.apps.test-cloud.com",
                     "client_id": "p-config-server-8f49dd26-e6cd-47a6-b2a0-7655cea20333",
                     "client_secret": "vBDjqIf7XthT",
-                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
                   },
                   "syslog_drain_url": null,
                   "label": "p-config-server",
@@ -180,10 +180,10 @@ public sealed class CloudFoundryTest
               "p-service-registry": [
                 {
                   "credentials": {
-                    "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com",
+                    "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.test-cloud.com",
                     "client_id": "p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe",
                     "client_secret": "dCsdoiuklicS",
-                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
                   },
                   "syslog_drain_url": null,
                   "label": "p-service-registry",
@@ -234,7 +234,7 @@ public sealed class CloudFoundryTest
                   "instanceId": "instanceId",
                   "appGroup": "appGroup",
                   "instanceEnabledOnInit": true,
-                  "hostname": "myhostname",
+                  "hostname": "my-hostname",
                   "port": 100,
                   "securePort": 100,
                   "nonSecurePortEnabled": true,
@@ -282,7 +282,7 @@ public sealed class CloudFoundryTest
         Assert.Equal("proxyPassword", clientOptions.EurekaServer.ProxyPassword);
         Assert.Equal("proxyUserName", clientOptions.EurekaServer.ProxyUserName);
         Assert.Equal(100, clientOptions.EurekaServer.ConnectTimeoutSeconds);
-        Assert.Equal("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/", clientOptions.EurekaServerServiceUrls);
+        Assert.Equal("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.test-cloud.com/eureka/", clientOptions.EurekaServerServiceUrls);
         Assert.Equal(100, clientOptions.RegistryFetchIntervalSeconds);
         Assert.Equal("registryRefreshSingleVipAddress", clientOptions.RegistryRefreshSingleVipAddress);
         Assert.True(clientOptions.IsFetchDeltaDisabled);
@@ -290,7 +290,7 @@ public sealed class CloudFoundryTest
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
         Assert.False(clientOptions.ShouldRegisterWithEureka);
-        Assert.Equal("https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token", clientOptions.AccessTokenUri);
+        Assert.Equal("https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token", clientOptions.AccessTokenUri);
         Assert.Equal("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe", clientOptions.ClientId);
         Assert.Equal("dCsdoiuklicS", clientOptions.ClientSecret);
 
@@ -298,12 +298,12 @@ public sealed class CloudFoundryTest
         EurekaInstanceOptions instanceOptions = instanceOptionsMonitor.CurrentValue;
 
         Assert.Equal("hostname", instanceOptions.RegistrationMethod);
-        Assert.Equal("myhostname:instance_id", instanceOptions.InstanceId);
+        Assert.Equal("my-hostname:instance_id", instanceOptions.InstanceId);
         Assert.Equal("foo", instanceOptions.AppName);
         Assert.Equal("appGroup", instanceOptions.AppGroupName);
         Assert.True(instanceOptions.IsInstanceEnabledOnInit);
         Assert.Equal(100, instanceOptions.NonSecurePort);
-        Assert.Equal("myhostname", instanceOptions.HostName);
+        Assert.Equal("my-hostname", instanceOptions.HostName);
         Assert.Equal(100, instanceOptions.SecurePort);
         Assert.True(instanceOptions.IsNonSecurePortEnabled);
         Assert.True(instanceOptions.IsSecurePortEnabled);
@@ -341,13 +341,13 @@ public sealed class CloudFoundryTest
               },
               "application_name": "foo",
               "application_uris": [
-                "foo.apps.testcloud.com"
+                "foo.apps.test-cloud.com"
               ],
               "name": "foo",
               "space_name": "test",
               "space_id": "98c627e7-f559-46a4-9032-88cab63f8249",
               "uris": [
-                "foo.apps.testcloud.com"
+                "foo.apps.test-cloud.com"
               ],
               "users": null,
               "version": "4a439db9-4a82-47a3-aeea-8240465cff8e",
@@ -362,10 +362,10 @@ public sealed class CloudFoundryTest
               "p-config-server": [
                 {
                   "credentials": {
-                    "uri": "https://config-de211817-2e99-4c57-89e8-31fa7ca6a276.apps.testcloud.com",
+                    "uri": "https://config-de211817-2e99-4c57-89e8-31fa7ca6a276.apps.test-cloud.com",
                     "client_id": "p-config-server-8f49dd26-e6cd-47a6-b2a0-7655cea20333",
                     "client_secret": "vBDjqIf7XthT",
-                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
                   },
                   "syslog_drain_url": null,
                   "label": "p-config-server",
@@ -381,10 +381,10 @@ public sealed class CloudFoundryTest
               "p-service-registry": [
                 {
                   "credentials": {
-                    "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com",
+                    "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.test-cloud.com",
                     "client_id": "p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe",
                     "client_secret": "dCsdoiuklicS",
-                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
                   },
                   "syslog_drain_url": null,
                   "label": "p-service-registry",
@@ -429,7 +429,7 @@ public sealed class CloudFoundryTest
                   "instanceId": "instanceId",
                   "appGroup": "appGroup",
                   "instanceEnabledOnInit": true,
-                  "hostname": "myhostname",
+                  "hostname": "my-hostname",
                   "port": 100,
                   "securePort": 100,
                   "nonSecurePortEnabled": true,
@@ -477,7 +477,7 @@ public sealed class CloudFoundryTest
         Assert.Equal("proxyPassword", clientOptions.EurekaServer.ProxyPassword);
         Assert.Equal("proxyUserName", clientOptions.EurekaServer.ProxyUserName);
         Assert.Equal(100, clientOptions.EurekaServer.ConnectTimeoutSeconds);
-        Assert.Equal("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/", clientOptions.EurekaServerServiceUrls);
+        Assert.Equal("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.test-cloud.com/eureka/", clientOptions.EurekaServerServiceUrls);
         Assert.Equal(100, clientOptions.RegistryFetchIntervalSeconds);
         Assert.Equal("registryRefreshSingleVipAddress", clientOptions.RegistryRefreshSingleVipAddress);
         Assert.True(clientOptions.IsFetchDeltaDisabled);
@@ -485,7 +485,7 @@ public sealed class CloudFoundryTest
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
         Assert.False(clientOptions.ShouldRegisterWithEureka);
-        Assert.Equal("https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token", clientOptions.AccessTokenUri);
+        Assert.Equal("https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token", clientOptions.AccessTokenUri);
         Assert.Equal("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe", clientOptions.ClientId);
         Assert.Equal("dCsdoiuklicS", clientOptions.ClientSecret);
 
@@ -493,12 +493,12 @@ public sealed class CloudFoundryTest
         EurekaInstanceOptions instanceOptions = instanceOptionsMonitor.CurrentValue;
 
         Assert.Equal("route", instanceOptions.RegistrationMethod);
-        Assert.Equal("foo.apps.testcloud.com:instance_id", instanceOptions.InstanceId);
+        Assert.Equal("foo.apps.test-cloud.com:instance_id", instanceOptions.InstanceId);
         Assert.Equal("foo", instanceOptions.AppName);
         Assert.Equal("appGroup", instanceOptions.AppGroupName);
         Assert.True(instanceOptions.IsInstanceEnabledOnInit);
         Assert.Equal(80, instanceOptions.NonSecurePort);
-        Assert.Equal("foo.apps.testcloud.com", instanceOptions.HostName);
+        Assert.Equal("foo.apps.test-cloud.com", instanceOptions.HostName);
         Assert.Equal(443, instanceOptions.SecurePort);
         Assert.True(instanceOptions.IsNonSecurePortEnabled);
         Assert.True(instanceOptions.IsSecurePortEnabled);
@@ -537,13 +537,13 @@ public sealed class CloudFoundryTest
               },
               "application_name": "foo",
               "application_uris": [
-                "foo.apps.testcloud.com"
+                "foo.apps.test-cloud.com"
               ],
               "name": "foo",
               "space_name": "test",
               "space_id": "98c627e7-f559-46a4-9032-88cab63f8249",
               "uris": [
-                "foo.apps.testcloud.com"
+                "foo.apps.test-cloud.com"
               ],
               "users": null,
               "version": "4a439db9-4a82-47a3-aeea-8240465cff8e",
@@ -558,10 +558,10 @@ public sealed class CloudFoundryTest
               "p-config-server": [
                 {
                   "credentials": {
-                    "uri": "https://config-de211817-2e99-4c57-89e8-31fa7ca6a276.apps.testcloud.com",
+                    "uri": "https://config-de211817-2e99-4c57-89e8-31fa7ca6a276.apps.test-cloud.com",
                     "client_id": "p-config-server-8f49dd26-e6cd-47a6-b2a0-7655cea20333",
                     "client_secret": "vBDjqIf7XthT",
-                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
                   },
                   "syslog_drain_url": null,
                   "label": "p-config-server",
@@ -577,10 +577,10 @@ public sealed class CloudFoundryTest
               "p-service-registry": [
                 {
                   "credentials": {
-                    "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com",
+                    "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.test-cloud.com",
                     "client_id": "p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe",
                     "client_secret": "dCsdoiuklicS",
-                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
                   },
                   "syslog_drain_url": null,
                   "label": "p-service-registry",
@@ -626,7 +626,7 @@ public sealed class CloudFoundryTest
                   "appName": "appName",
                   "appGroup": "appGroup",
                   "instanceEnabledOnInit": true,
-                  "hostname": "myhostname",
+                  "hostname": "my-hostname",
                   "port": 100,
                   "securePort": 100,
                   "nonSecurePortEnabled": true,
@@ -674,7 +674,7 @@ public sealed class CloudFoundryTest
         Assert.Equal("proxyPassword", clientOptions.EurekaServer.ProxyPassword);
         Assert.Equal("proxyUserName", clientOptions.EurekaServer.ProxyUserName);
         Assert.Equal(100, clientOptions.EurekaServer.ConnectTimeoutSeconds);
-        Assert.Equal("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/", clientOptions.EurekaServerServiceUrls);
+        Assert.Equal("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.test-cloud.com/eureka/", clientOptions.EurekaServerServiceUrls);
         Assert.Equal(100, clientOptions.RegistryFetchIntervalSeconds);
         Assert.Equal("registryRefreshSingleVipAddress", clientOptions.RegistryRefreshSingleVipAddress);
         Assert.True(clientOptions.IsFetchDeltaDisabled);
@@ -682,7 +682,7 @@ public sealed class CloudFoundryTest
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
         Assert.False(clientOptions.ShouldRegisterWithEureka);
-        Assert.Equal("https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token", clientOptions.AccessTokenUri);
+        Assert.Equal("https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token", clientOptions.AccessTokenUri);
         Assert.Equal("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe", clientOptions.ClientId);
         Assert.Equal("dCsdoiuklicS", clientOptions.ClientSecret);
 
@@ -690,12 +690,12 @@ public sealed class CloudFoundryTest
         EurekaInstanceOptions instanceOptions = instanceOptionsMonitor.CurrentValue;
 
         Assert.Equal("hostname", instanceOptions.RegistrationMethod);
-        Assert.Equal("myhostname:instance_id", instanceOptions.InstanceId);
+        Assert.Equal("my-hostname:instance_id", instanceOptions.InstanceId);
         Assert.Equal("appName", instanceOptions.AppName);
         Assert.Equal("appGroup", instanceOptions.AppGroupName);
         Assert.True(instanceOptions.IsInstanceEnabledOnInit);
         Assert.Equal(100, instanceOptions.NonSecurePort);
-        Assert.Equal("myhostname", instanceOptions.HostName);
+        Assert.Equal("my-hostname", instanceOptions.HostName);
         Assert.Equal(100, instanceOptions.SecurePort);
         Assert.True(instanceOptions.IsNonSecurePortEnabled);
         Assert.True(instanceOptions.IsSecurePortEnabled);
@@ -741,7 +741,7 @@ public sealed class CloudFoundryTest
               "p-service-registry": [
                 {
                   "credentials": {
-                    "uri": "https://eureka.apps.testcloud.com"
+                    "uri": "https://eureka.apps.test-cloud.com"
                   },
                   "label": "p-service-registry",
                   "name": "myDiscoveryService",

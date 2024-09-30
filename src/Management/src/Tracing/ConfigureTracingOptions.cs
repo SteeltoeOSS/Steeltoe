@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Tracing;
 
 internal sealed class ConfigureTracingOptions : IConfigureOptions<TracingOptions>
 {
-    private const string DefaultIngressIgnorePattern = "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|.*\\.gif";
+    private const string DefaultIngressIgnorePattern = @"/actuator/.*|/cloudfoundryapplication/.*|.*\.png|.*\.css|.*\.js|.*\.html|/favicon.ico|.*\.gif";
     private const string DefaultEgressIgnorePattern = "/api/v2/spans|/v2/apps/.*/permissions|/eureka/*";
 
     private readonly IConfiguration _configuration;

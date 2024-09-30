@@ -24,7 +24,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
     [Trait("Category", "Integration")]
     public void SpringCloudConfigServer_ReturnsExpectedDefaultData()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
                 "spring": {
                   "application": {
@@ -34,7 +34,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
                     "config": {
                         "uri": "http://localhost:8888",
                         "env": "development",
-                        "failfast": "true"
+                        "failFast": "true"
                     }
                   }
                 }
@@ -42,7 +42,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
@@ -65,7 +65,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
     public async Task SpringCloudConfigServer_ReturnsExpectedDefaultData_AsInjectedOptions()
     {
         // These settings match the default java config server
-        const string appsettings = """
+        const string appSettings = """
             {
                 "spring": {
                   "application": {
@@ -78,7 +78,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
                         "health": {
                             "enabled": true
                         },
-                        "failfast": "true"
+                        "failFast": "true"
                     }
                   }
                 }
@@ -86,7 +86,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
@@ -169,7 +169,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
                     "cloud": {
                         "config": {
                             "validateCertificates": false,
-                            "failfast": "true"
+                            "failFast": "true"
                         }
                     }
                 }
@@ -202,7 +202,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         Assert.Equal("spamfrom foo developmentSpring Cloud Sampleshttps://github.com/spring-cloud-samples", result);
     }
 
-    [Fact(Skip = "Requires matching PCF environment with SCCS provisioned")]
+    [Fact(Skip = "Requires matching PCF environment with Spring Cloud Config Server provisioned")]
     [Trait("Category", "Integration")]
     public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv()
     {
@@ -217,14 +217,14 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
                 "application_version": "ef087dfd-2955-4854-86c1-4a2cf30e05b3",
                 "application_name": "test",
                 "application_uris": [
-                "test.apps.testcloud.com"
+                "test.apps.test-cloud.com"
                 ],
                 "version": "ef087dfd-2955-4854-86c1-4a2cf30e05b3",
                 "name": "test",
                 "space_name": "development",
                 "space_id": "ff257d70-eeed-4487-9d6c-4ac709f76aea",
                 "uris": [
-                "test.apps.testcloud.com"
+                "test.apps.test-cloud.com"
                 ],
                 "users": null
             }
@@ -242,10 +242,10 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
                     ],
                     "plan": "standard",
                     "credentials": {
-                    "uri": "https://config-5b3af2c9-754f-4eb6-9d4b-da50d33d5a5f.apps.testcloud.com",
+                    "uri": "https://config-5b3af2c9-754f-4eb6-9d4b-da50d33d5a5f.apps.test-cloud.com",
                     "client_id": "p-config-server-690772bc-2820-4a2c-9c76-6d8ccf8e8de5",
                     "client_secret": "Ib9RFhVPuLub",
-                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
                     }
                 }
                 ]
@@ -261,7 +261,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
                     "cloud": {
                         "config": {
                             "validate_certificates": false,
-                            "failfast": "true"
+                            "failFast": "true"
                         }
                     }
                 }
@@ -298,7 +298,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
     [Trait("Category", "Integration")]
     public void SpringCloudConfigServer_DiscoveryFirst_ReturnsExpectedDefaultData()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
                 "spring": {
                   "application": {
@@ -308,7 +308,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
                     "config": {
                         "uri": "http://localhost:8888",
                         "env": "development",
-                        "failfast": "true",
+                        "failFast": "true",
                         "discovery": {
                             "enabled": true
                         }
@@ -324,7 +324,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
@@ -347,7 +347,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
     public async Task SpringCloudConfigServer_WithHealthEnabled_ReturnsHealth()
     {
         // These settings match the default java config server
-        const string appsettings = """
+        const string appSettings = """
             {
                 "spring": {
                   "application": {
@@ -360,7 +360,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
                         "health": {
                             "enabled": true
                         },
-                        "failfast": "true"
+                        "failFast": "true"
                     }
                   }
                 }
@@ -368,7 +368,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 

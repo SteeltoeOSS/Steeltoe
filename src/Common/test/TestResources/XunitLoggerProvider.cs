@@ -70,6 +70,7 @@ public sealed class XunitLoggerProvider : ILoggerProvider
         {
             return logLevel switch
             {
+                // ReSharper disable StringLiteralTypo
                 LogLevel.Trace => "TRCE",
                 LogLevel.Debug => "DBUG",
                 LogLevel.Information => "INFO",
@@ -77,6 +78,7 @@ public sealed class XunitLoggerProvider : ILoggerProvider
                 LogLevel.Error => "FAIL",
                 LogLevel.Critical => "CRIT",
                 LogLevel.None => "NONE",
+                // ReSharper restore StringLiteralTypo
                 _ => throw new ArgumentOutOfRangeException(nameof(logLevel))
             };
         }

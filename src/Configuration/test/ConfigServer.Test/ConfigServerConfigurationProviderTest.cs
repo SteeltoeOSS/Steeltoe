@@ -20,11 +20,6 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class ConfigServerConfigurationProviderTest
 {
-    private readonly ConfigServerClientOptions _commonOptions = new()
-    {
-        Name = "myName"
-    };
-
     [Fact]
     public void DefaultConstructor_InitializedWithDefaultSettings()
     {
@@ -194,14 +189,14 @@ public sealed class ConfigServerConfigurationProviderTest
     {
         var environment = new ConfigEnvironment
         {
-            Name = "testname",
-            Label = "testlabel",
+            Name = "test-name",
+            Label = "test-label",
             Profiles =
             {
                 "Production"
             },
-            Version = "testversion",
-            State = "teststate",
+            Version = "test-version",
+            State = "test-state",
             PropertySources =
             {
                 new PropertySource
@@ -220,12 +215,12 @@ public sealed class ConfigServerConfigurationProviderTest
 
         var env = await content.ReadFromJsonAsync<ConfigEnvironment>(ConfigServerConfigurationProvider.SerializerOptions);
         Assert.NotNull(env);
-        Assert.Equal("testname", env.Name);
+        Assert.Equal("test-name", env.Name);
         Assert.NotNull(env.Profiles);
         Assert.Single(env.Profiles);
-        Assert.Equal("testlabel", env.Label);
-        Assert.Equal("testversion", env.Version);
-        Assert.Equal("teststate", env.State);
+        Assert.Equal("test-label", env.Label);
+        Assert.Equal("test-version", env.Version);
+        Assert.Equal("test-state", env.State);
         Assert.NotNull(env.PropertySources);
         Assert.Single(env.PropertySources);
         Assert.Equal("source", env.PropertySources[0].Name);
@@ -276,7 +271,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
@@ -302,7 +297,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
@@ -319,12 +314,12 @@ public sealed class ConfigServerConfigurationProviderTest
         // Arrange
         const string environment = """
             {
-              "name": "testname",
+              "name": "test-name",
               "profiles": [
                 "Production"
               ],
-              "label": "testlabel",
-              "version": "testversion",
+              "label": "test-label",
+              "version": "test-version",
               "propertySources": []
             }
             """;
@@ -332,7 +327,7 @@ public sealed class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
-        TestConfigServerStartup.Label = "testlabel";
+        TestConfigServerStartup.Label = "test-label";
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
@@ -346,7 +341,7 @@ public sealed class ConfigServerConfigurationProviderTest
         {
             Name = "myName",
             PollingInterval = TimeSpan.FromMilliseconds(300),
-            Label = "label,testlabel"
+            Label = "label,test-label"
         };
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
@@ -366,12 +361,12 @@ public sealed class ConfigServerConfigurationProviderTest
         // Arrange
         const string environment = """
             {
-              "name": "testname",
+              "name": "test-name",
               "profiles": [
                 "Production"
               ],
-              "label": "testlabel",
-              "version": "testversion",
+              "label": "test-label",
+              "version": "test-version",
               "propertySources": []
             }
             """;
@@ -381,7 +376,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         // Initial requests succeed, but later requests return 400 status code so that an exception is thrown during polling
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 2).Concat(Enumerable.Repeat(400, 100)).ToArray();
-        TestConfigServerStartup.Label = "testlabel";
+        TestConfigServerStartup.Label = "test-label";
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
@@ -396,7 +391,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Name = "myName",
             PollingInterval = TimeSpan.FromMilliseconds(300),
             FailFast = true,
-            Label = "testlabel"
+            Label = "test-label"
         };
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
@@ -419,12 +414,12 @@ public sealed class ConfigServerConfigurationProviderTest
         // Arrange
         const string environment = """
             {
-              "name": "testname",
+              "name": "test-name",
               "profiles": [
                 "Production"
               ],
-              "label": "testlabel",
-              "version": "testversion",
+              "label": "test-label",
+              "version": "test-version",
               "propertySources": []
             }
             """;
@@ -432,7 +427,7 @@ public sealed class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
-        TestConfigServerStartup.Label = "testlabel";
+        TestConfigServerStartup.Label = "test-label";
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
@@ -447,7 +442,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Name = "myName",
             Enabled = false,
             PollingInterval = TimeSpan.FromMilliseconds(300),
-            Label = "label,testlabel"
+            Label = "label,test-label"
         };
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
@@ -464,12 +459,12 @@ public sealed class ConfigServerConfigurationProviderTest
     {
         const string environment = """
             {
-              "name": "testname",
+              "name": "test-name",
               "profiles": [
                 "Production"
               ],
-              "label": "testlabel",
-              "version": "testversion",
+              "label": "test-label",
+              "version": "test-version",
               "propertySources": [
                 {
                   "name": "source",
@@ -491,7 +486,7 @@ public sealed class ConfigServerConfigurationProviderTest
             200
         ];
 
-        TestConfigServerStartup.Label = "testlabel";
+        TestConfigServerStartup.Label = "test-label";
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
@@ -501,8 +496,8 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
-        options.Label = "label,testlabel";
+        ConfigServerClientOptions options = GetCommonOptions();
+        options.Label = "label,test-label";
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
@@ -510,7 +505,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal(2, TestConfigServerStartup.RequestCount);
-        Assert.Equal($"/{options.Name}/{options.Environment}/testlabel", TestConfigServerStartup.LastRequest.Path.Value);
+        Assert.Equal($"/{options.Name}/{options.Environment}/test-label", TestConfigServerStartup.LastRequest.Path.Value);
     }
 
     [Fact]
@@ -518,12 +513,12 @@ public sealed class ConfigServerConfigurationProviderTest
     {
         const string environment = """
             {
-              "name": "testname",
+              "name": "test-name",
               "profiles": [
                 "Production"
               ],
-              "label": "testlabel",
-              "version": "testversion",
+              "label": "test-label",
+              "version": "test-version",
               "propertySources": [
                 {
                   "name": "source",
@@ -547,7 +542,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
@@ -555,11 +550,11 @@ public sealed class ConfigServerConfigurationProviderTest
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.NotNull(env);
-        Assert.Equal("testname", env.Name);
+        Assert.Equal("test-name", env.Name);
         Assert.NotNull(env.Profiles);
         Assert.Single(env.Profiles);
-        Assert.Equal("testlabel", env.Label);
-        Assert.Equal("testversion", env.Version);
+        Assert.Equal("test-label", env.Label);
+        Assert.Equal("test-version", env.Version);
         Assert.NotNull(env.PropertySources);
         Assert.Single(env.PropertySources);
         Assert.Equal("source", env.PropertySources[0].Name);
@@ -589,7 +584,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         options.Uri = "http://localhost:8888, http://localhost:8888";
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
@@ -620,7 +615,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         options.Uri = "http://localhost:8888, http://localhost:8888";
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
@@ -647,7 +642,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
@@ -673,7 +668,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
@@ -684,7 +679,7 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsNotFoundStatus__DoesNotContinueChecking_FailFastEnabled()
     {
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
         options.Uri = "http://localhost:8888,http://localhost:8888";
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -726,7 +721,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
@@ -755,7 +750,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
         options.Uri = "http://localhost:8888, http://localhost:8888, http://localhost:8888";
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
@@ -813,12 +808,12 @@ public sealed class ConfigServerConfigurationProviderTest
     {
         const string environment = """
             {
-              "name": "testname",
+              "name": "test-name",
               "profiles": [
                 "Production"
               ],
-              "label": "testlabel",
-              "version": "testversion",
+              "label": "test-label",
+              "version": "test-version",
               "propertySources": [
                 {
                   "name": "source",
@@ -842,7 +837,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
@@ -861,12 +856,12 @@ public sealed class ConfigServerConfigurationProviderTest
     {
         const string environment = """
             {
-              "name": "testname",
+              "name": "test-name",
               "profiles": [
                 "Production"
               ],
-              "label": "testlabel",
-              "version": "testversion",
+              "label": "test-label",
+              "version": "test-version",
               "propertySources": [
                 {
                   "name": "source",
@@ -892,7 +887,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientOptions options = _commonOptions;
+        ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
@@ -911,12 +906,12 @@ public sealed class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.Response = """
         {
-          "name": "testname",
+          "name": "test-name",
           "profiles": [
             "Production"
           ],
-          "label": "testlabel",
-          "version": "testversion",
+          "label": "test-label",
+          "version": "test-version",
           "propertySources": [
             {
               "name": "source",
@@ -1385,12 +1380,12 @@ public sealed class ConfigServerConfigurationProviderTest
     {
         const string environment = """
             {
-              "name": "testname",
+              "name": "test-name",
               "profiles": [
                 "Production"
               ],
-              "label": "testlabel",
-              "version": "testversion",
+              "label": "test-label",
+              "version": "test-version",
               "propertySources": [
                 {
                   "name": "source",
@@ -1409,7 +1404,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
-        ConfigServerClientOptions clientOptions = _commonOptions;
+        ConfigServerClientOptions clientOptions = GetCommonOptions();
 
         using IWebHost app = builder.Build();
         await app.StartAsync();
@@ -1447,6 +1442,14 @@ public sealed class ConfigServerConfigurationProviderTest
         Assert.NotNull(testOptions);
         Assert.Equal("my-app", testOptions.Name);
         Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", testOptions.Version);
+    }
+
+    private ConfigServerClientOptions GetCommonOptions()
+    {
+        return new ConfigServerClientOptions
+        {
+            Name = "myName"
+        };
     }
 
     private static string GetEncodedUserPassword(string user, string password)

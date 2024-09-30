@@ -68,16 +68,6 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
                 tags.All(tag => sample.Tags != null && sample.Tags.Any(sampleTag => tag.Key == sampleTag.Key && tag.Value == sampleTag.Value))).ToArray();
         }
 
-        static MetricSample SumAggregator(MetricSample current, MetricSample next)
-        {
-            return new MetricSample(current.Statistic, current.Value + next.Value, current.Tags);
-        }
-
-        static MetricSample MaxAggregator(MetricSample current, MetricSample next)
-        {
-            return new MetricSample(current.Statistic, current.Value > next.Value ? current.Value : next.Value, current.Tags);
-        }
-
         try
         {
             MetricSample[] rateSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Rate).ToArray();
@@ -132,6 +122,16 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
         }
 
         return sampleList;
+
+        static MetricSample SumAggregator(MetricSample current, MetricSample next)
+        {
+            return new MetricSample(current.Statistic, current.Value + next.Value, current.Tags);
+        }
+
+        static MetricSample MaxAggregator(MetricSample current, MetricSample next)
+        {
+            return new MetricSample(current.Statistic, current.Value > next.Value ? current.Value : next.Value, current.Tags);
+        }
     }
 
     private static MetricsResponse GetMetric(MetricsRequest request, IList<MetricSample> metricSamples, IList<MetricTag> availableTags)

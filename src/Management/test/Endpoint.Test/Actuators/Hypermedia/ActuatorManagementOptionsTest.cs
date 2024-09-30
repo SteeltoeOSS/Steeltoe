@@ -34,13 +34,13 @@ public sealed class ActuatorManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management"
         };
 
-        var options = GetOptionsFromSettings<ManagementOptions>(appsettings);
+        var options = GetOptionsFromSettings<ManagementOptions>(appSettings);
 
         Assert.Equal("/management", options.Path);
         Assert.False(options.Enabled);
@@ -53,7 +53,7 @@ public sealed class ActuatorManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly_OnCF()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management"
@@ -61,7 +61,7 @@ public sealed class ActuatorManagementOptionsTest : BaseTest
 
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "something");
 
-        var options = GetOptionsFromSettings<ManagementOptions>(appsettings);
+        var options = GetOptionsFromSettings<ManagementOptions>(appSettings);
 
         Assert.Equal("/management", options.Path);
         Assert.False(options.Enabled);

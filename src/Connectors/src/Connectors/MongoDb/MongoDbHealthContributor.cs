@@ -18,7 +18,7 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
     private readonly ILogger<MongoDbHealthContributor> _logger;
     private MongoClientInterfaceShim? _mongoClientShim;
 
-    public string Id { get; } = "MongoDB";
+    public string Id => "MongoDB";
     public string Host => _clientFactory.HostName;
     public string ServiceName { get; }
 

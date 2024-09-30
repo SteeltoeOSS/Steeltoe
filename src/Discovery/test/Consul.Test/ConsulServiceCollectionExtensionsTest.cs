@@ -18,10 +18,10 @@ public sealed class ConsulServiceCollectionExtensionsTest
     [Fact]
     public async Task AddConsulDiscoveryClient_UsesConsul()
     {
-        Dictionary<string, string?> appsettings = new()
+        Dictionary<string, string?> appSettings = new()
         {
             { "spring:application:name", "myName" },
-            { "spring:cloud:inet:defaulthostname", "fromtest" },
+            { "spring:cloud:inet:defaultHostName", "from-test" },
             { "spring:cloud:inet:skipReverseDnsLookup", "true" },
             { "consul:discovery:UseNetworkInterfaces", "true" },
             { "consul:discovery:register", "false" },
@@ -29,7 +29,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
             { "consul:host", "http://testhost:8500" }
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);

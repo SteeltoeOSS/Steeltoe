@@ -20,7 +20,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         ["management:endpoints:enabled"] = "false",
         ["management:endpoints:path"] = "/management",
         ["management:endpoints:info:enabled"] = "true",
-        ["management:endpoints:info:id"] = "infomanagement",
+        ["management:endpoints:info:id"] = "info-management",
         ["management:endpoints:actuator:exposure:include:0"] = "*",
         ["info:application:name"] = "foobar",
         ["info:application:version"] = "1.0.0'",
@@ -46,7 +46,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using HttpClient client = app.GetTestClient();
 
-        var dictionary = await client.GetFromJsonAsync<Dictionary<string, Dictionary<string, JsonElement>>>("http://localhost/management/infomanagement",
+        var dictionary = await client.GetFromJsonAsync<Dictionary<string, Dictionary<string, JsonElement>>>("http://localhost/management/info-management",
             SerializerOptions);
 
         Assert.NotNull(dictionary);

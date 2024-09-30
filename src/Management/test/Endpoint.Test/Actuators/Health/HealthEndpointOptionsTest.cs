@@ -24,7 +24,7 @@ public sealed class HealthEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:health:enabled"] = "true",
             ["management:endpoints:health:requiredPermissions"] = "FULL",
@@ -33,7 +33,7 @@ public sealed class HealthEndpointOptionsTest : BaseTest
             ["management:endpoints:health:groups:rEadinEss:include"] = "diskSpace"
         };
 
-        HealthEndpointOptions options = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appsettings);
+        HealthEndpointOptions options = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appSettings);
 
         Assert.True(options.Enabled);
         Assert.Equal("health", options.Id);
@@ -48,42 +48,42 @@ public sealed class HealthEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsClaimCorrectly()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:health:claim:type"] = "claimtype",
-            ["management:endpoints:health:claim:value"] = "claimvalue",
-            ["management:endpoints:health:role"] = "roleclaimvalue"
+            ["management:endpoints:health:claim:type"] = "claim-type",
+            ["management:endpoints:health:claim:value"] = "claim-value",
+            ["management:endpoints:health:role"] = "role-claim-value"
         };
 
-        HealthEndpointOptions options = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appsettings);
+        HealthEndpointOptions options = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appSettings);
         Assert.NotNull(options.Claim);
-        Assert.Equal("claimtype", options.Claim.Type);
-        Assert.Equal("claimvalue", options.Claim.Value);
+        Assert.Equal("claim-type", options.Claim.Type);
+        Assert.Equal("claim-value", options.Claim.Value);
     }
 
     [Fact]
     public void Constructor_BindsRoleCorrectly()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:health:role"] = "roleclaimvalue"
+            ["management:endpoints:health:role"] = "role-claim-value"
         };
 
-        HealthEndpointOptions options = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appsettings);
+        HealthEndpointOptions options = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appSettings);
         Assert.NotNull(options.Claim);
         Assert.Equal(ClaimTypes.Role, options.Claim.Type);
-        Assert.Equal("roleclaimvalue", options.Claim.Value);
+        Assert.Equal("role-claim-value", options.Claim.Value);
     }
 
     [Fact]
     public void CanClearDefaultGroups()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:health:groups::include"] = string.Empty
         };
 
-        HealthEndpointOptions options = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appsettings);
+        HealthEndpointOptions options = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appSettings);
 
         options.Groups.Should().BeEmpty();
     }

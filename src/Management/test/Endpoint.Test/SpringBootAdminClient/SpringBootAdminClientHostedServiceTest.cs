@@ -22,7 +22,7 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:path"] = "/management",
-            ["management:endpoints:health:path"] = "myhealth",
+            ["management:endpoints:health:path"] = "my-health",
             ["URLS"] = "http://localhost:8080;https://localhost:8082",
             ["spring:boot:admin:client:url"] = "http://springbootadmin:9090",
             ["spring:application:name"] = "MySteeltoeApplication"
@@ -55,7 +55,7 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:path"] = "/management",
-            ["management:endpoints:health:path"] = "myhealth",
+            ["management:endpoints:health:path"] = "my-health",
             ["URLS"] = "http://localhost:8080;https://localhost:8082",
             ["spring:boot:admin:client:url"] = "http://springbootadmin:9090",
             ["spring:application:name"] = "MySteeltoeApplication"

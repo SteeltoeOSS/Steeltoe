@@ -14,7 +14,7 @@ namespace Steeltoe.Logging.DynamicLogger.Test;
 
 public sealed class LoggingBuilderExtensionsTest
 {
-    private static readonly Dictionary<string, string?> Appsettings = new()
+    private static readonly Dictionary<string, string?> AppSettings = new()
     {
         ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:Console:LogLevel:Default"] = "Information",
@@ -58,7 +58,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public async Task DynamicLevelSetting_WorksWith_ConsoleFilters()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(AppSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
 
@@ -95,7 +95,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public async Task AddConsole_Works_WithAddConfiguration()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(AppSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
 
@@ -120,7 +120,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public async Task AddDynamicConsole_Works_WithAddConfiguration()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(AppSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
 
@@ -145,7 +145,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public async Task DynamicLevelSetting_ParameterlessAddDynamic_NotBrokenByAddConfiguration()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(AppSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
 
@@ -184,7 +184,7 @@ public sealed class LoggingBuilderExtensionsTest
     {
         using var console = new ConsoleOutputBorrower();
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(AppSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>();
@@ -209,7 +209,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public async Task AddDynamicConsole_AddsAllLoggerProviders()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(AppSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
 
@@ -232,7 +232,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public void AddDynamicConsole_AddsLoggerProvider_DisposeTwiceSucceeds()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(AppSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
 
@@ -254,7 +254,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public async Task DynamicLevelSetting_ParameterlessAddDynamic_AddsConsoleOptions()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(AppSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
 

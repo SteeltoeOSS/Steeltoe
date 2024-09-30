@@ -19,7 +19,7 @@ internal static class NativeMethods
     internal static extern int WNetCancelConnection2(string name, int flags, bool force);
 
     /// <summary>
-    /// The NETRESOURCE structure contains information about a network resource. More info on NetResource:
+    /// The NetResource structure contains information about a network resource. More info on NetResource:
     /// <seealso href="https://msdn.microsoft.com/en-us/c53d078e-188a-4371-bdb9-fc023bc0c1ba" />.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]

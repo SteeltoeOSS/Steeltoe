@@ -11,9 +11,9 @@ namespace Steeltoe.Configuration.ConfigServer;
 
 internal sealed class ConfigureConfigServerClientOptions : IConfigureOptions<ConfigServerClientOptions>
 {
-    private const string VcapServicesConfigserverCredentialsPrefix = "vcap:services:p-config-server:0:credentials";
-    private const string VcapServicesConfigserver30CredentialsPrefix = "vcap:services:p.config-server:0:credentials";
-    private const string VcapServicesConfigserverCredentialsAltPrefix = "vcap:services:config-server:0:credentials";
+    private const string VcapServicesConfigServerCredentialsPrefix = "vcap:services:p-config-server:0:credentials";
+    private const string VcapServicesConfigServer30CredentialsPrefix = "vcap:services:p.config-server:0:credentials";
+    private const string VcapServicesConfigServerCredentialsAltPrefix = "vcap:services:config-server:0:credentials";
 
     private readonly IConfiguration _configuration;
 
@@ -37,9 +37,9 @@ internal sealed class ConfigureConfigServerClientOptions : IConfigureOptions<Con
     private void OverrideFromVcapServicesCredentials(ConfigServerClientOptions options)
     {
         VcapServicesConfigServerCredentialsOptions credentialsOptions = new();
-        _configuration.GetSection(VcapServicesConfigserverCredentialsAltPrefix).Bind(credentialsOptions);
-        _configuration.GetSection(VcapServicesConfigserver30CredentialsPrefix).Bind(credentialsOptions);
-        _configuration.GetSection(VcapServicesConfigserverCredentialsPrefix).Bind(credentialsOptions);
+        _configuration.GetSection(VcapServicesConfigServerCredentialsAltPrefix).Bind(credentialsOptions);
+        _configuration.GetSection(VcapServicesConfigServer30CredentialsPrefix).Bind(credentialsOptions);
+        _configuration.GetSection(VcapServicesConfigServerCredentialsPrefix).Bind(credentialsOptions);
 
         options.Uri = credentialsOptions.Uri ?? options.Uri;
         options.ClientId = credentialsOptions.ClientId ?? options.ClientId;

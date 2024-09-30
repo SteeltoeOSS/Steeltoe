@@ -15,13 +15,13 @@ public sealed class RefreshEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     [Fact]
     public async Task Invoke_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:loggers:enabled"] = "false",
-            ["management:endpoints:heapdump:enabled"] = "true",
-            ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
+            ["management:endpoints:heapDump:enabled"] = "true",
+            ["management:endpoints:cloudfoundry:validateCertificates"] = "true",
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
@@ -34,7 +34,7 @@ public sealed class RefreshEndpointTest(ITestOutputHelper testOutputHelper) : Ba
 
         testContext.AdditionalConfiguration = configuration =>
         {
-            configuration.AddInMemoryCollection(appsettings);
+            configuration.AddInMemoryCollection(appSettings);
         };
 
         var handler = testContext.GetRequiredService<IRefreshEndpointHandler>();

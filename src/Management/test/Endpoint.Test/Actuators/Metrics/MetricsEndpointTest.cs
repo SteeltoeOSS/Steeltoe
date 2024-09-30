@@ -75,9 +75,8 @@ public sealed class MetricsEndpointTest : BaseTest
                 Assert.NotNull(result);
 
                 Assert.IsType<MetricsResponse>(result);
-                MetricsResponse response = result;
-                Assert.NotNull(response.Names);
-                Assert.Empty(response.Names);
+                Assert.NotNull(result.Names);
+                Assert.Empty(result.Names);
             }
             finally
             {
@@ -156,7 +155,7 @@ public sealed class MetricsEndpointTest : BaseTest
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["management:endpoints:metrics:includedmetrics:0"] = "AdditionalTestMeter:AdditionalInstrument"
+                ["management:endpoints:metrics:includedMetrics:0"] = "AdditionalTestMeter:AdditionalInstrument"
             });
         };
 

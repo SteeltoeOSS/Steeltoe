@@ -44,7 +44,7 @@ public sealed class ConfigServerClientOptionsTest
         IServiceCollection services = new ServiceCollection();
         services.AddOptions();
 
-        const string appsettings = """
+        const string appSettings = """
             {
               "spring": {
                 "application": {
@@ -61,7 +61,7 @@ public sealed class ConfigServerClientOptionsTest
                     "health": {
                       "enabled": true
                     },
-                    "failfast": "true"
+                    "failFast": "true"
                   }
                 }
               }
@@ -69,7 +69,7 @@ public sealed class ConfigServerClientOptionsTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var builder = new ConfigurationBuilder();

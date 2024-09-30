@@ -41,7 +41,7 @@ public sealed class EurekaClientOptionsTest
     [Fact]
     public void Constructor_ConfiguresEurekaDiscovery_Correctly()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
               "eureka": {
                 "client": {
@@ -99,7 +99,7 @@ public sealed class EurekaClientOptionsTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
@@ -139,7 +139,7 @@ public sealed class EurekaClientOptionsTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "eureka:client:serviceurl", "http://testhost/eureka" }
+            { "eureka:client:serviceUrl", "http://testhost/eureka" }
         };
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
@@ -159,7 +159,7 @@ public sealed class EurekaClientOptionsTest
         var appSettings = new Dictionary<string, string?>
         {
             { "spring:cloud:discovery:enabled", "false" },
-            { "eureka:client:serviceurl", "http://testhost/eureka" }
+            { "eureka:client:serviceUrl", "http://testhost/eureka" }
         };
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
@@ -263,7 +263,7 @@ public sealed class EurekaClientOptionsTest
         {
             { "spring:cloud:discovery:enabled", "false" },
             { "eureka:client:enabled", "true" },
-            { "eureka:client:serviceurl", "http://testhost/eureka" }
+            { "eureka:client:serviceUrl", "http://testhost/eureka" }
         };
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());

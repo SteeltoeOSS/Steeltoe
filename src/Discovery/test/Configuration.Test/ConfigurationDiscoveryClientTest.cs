@@ -23,20 +23,20 @@ public sealed class ConfigurationDiscoveryClientTest
                 new ConfigurationServiceInstance
                 {
                     ServiceId = "fruitService",
-                    Host = "fruitball",
+                    Host = "fruit-ball",
                     Port = 443,
                     IsSecure = true
                 },
                 new ConfigurationServiceInstance
                 {
                     ServiceId = "fruitService",
-                    Host = "fruitballer",
+                    Host = "fruit-baller",
                     Port = 8081
                 },
                 new ConfigurationServiceInstance
                 {
                     ServiceId = "fruitService",
-                    Host = "fruitballerz",
+                    Host = "fruit-ballers",
                     Port = 8082
                 },
                 new ConfigurationServiceInstance
@@ -84,7 +84,7 @@ public sealed class ConfigurationDiscoveryClientTest
                 new ConfigurationServiceInstance
                 {
                     ServiceId = "fruitService",
-                    Host = "fruitball",
+                    Host = "fruit-ball",
                     Port = 443,
                     IsSecure = true
                 }
@@ -97,7 +97,7 @@ public sealed class ConfigurationDiscoveryClientTest
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);
 
         Assert.Single(fruitInstances);
-        Assert.Equal("fruitball", fruitInstances[0].Host);
+        Assert.Equal("fruit-ball", fruitInstances[0].Host);
 
         options.Services[0].Host = "updatedValue";
 
@@ -107,12 +107,12 @@ public sealed class ConfigurationDiscoveryClientTest
     [Fact]
     public async Task AddConfigurationDiscoveryClient_AddsClientWithOptions()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
                 "discovery": {
                     "services": [
-                        { "serviceId": "fruitService", "host": "fruitball", "port": 443, "isSecure": true },
-                        { "serviceId": "fruitService", "host": "fruitballer", "port": 8081 },
+                        { "serviceId": "fruitService", "host": "fruit-ball", "port": 443, "isSecure": true },
+                        { "serviceId": "fruitService", "host": "fruit-baller", "port": 8081 },
                         { "serviceId": "vegetableService", "host": "vegemite", "port": 443, "isSecure": true },
                         { "serviceId": "vegetableService", "host": "carrot", "port": 8081 },
                     ]
@@ -121,7 +121,7 @@ public sealed class ConfigurationDiscoveryClientTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();

@@ -122,7 +122,7 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact(Skip = "Integration test - Requires local SQL Server instance")]
     public async Task SQLServer_Integration_Is_Connected_Returns_Up_Status()
     {
-        DbConnection connection = new SqlConnection("Server=(localdb)\\mssqllocaldb");
+        DbConnection connection = new SqlConnection(@"Server=(localdb)\mssqllocaldb");
 
         using var healthContributor = new RelationalDatabaseHealthContributor(connection, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {

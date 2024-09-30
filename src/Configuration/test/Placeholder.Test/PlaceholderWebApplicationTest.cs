@@ -26,7 +26,7 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
     [Fact]
     public async Task Reloads_options_on_change()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
               "TestRoot": {
                 "AppName": "AppOne"
@@ -36,7 +36,7 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
 
         const string fileName = "appsettings.json";
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(fileName, appsettings);
+        string path = sandbox.CreateFile(fileName, appSettings);
 
         var memorySettings = new Dictionary<string, string?>
         {
@@ -122,11 +122,11 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
     [Fact]
     public async Task Can_substitute_across_multiple_sources()
     {
-        const string appsettingsJsonFileName = "appsettings.json";
-        const string appsettingsXmlFileName = "appsettings.xml";
-        const string appsettingsIniFileName = "appsettings.ini";
+        const string appSettingsJsonFileName = "appsettings.json";
+        const string appSettingsXmlFileName = "appsettings.xml";
+        const string appSettingsIniFileName = "appsettings.ini";
 
-        const string appsettingsJsonContent = """
+        const string appSettingsJsonContent = """
             {
               "JsonTestRoot": {
                 "JsonSubLevel": {
@@ -137,7 +137,7 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
             }
             """;
 
-        const string appsettingsXmlContent = """
+        const string appSettingsXmlContent = """
             <settings>
             	<XmlTestRoot>
             		<XmlSubLevel>
@@ -148,29 +148,29 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
             </settings>
             """;
 
-        const string appsettingsIniContent = """
+        const string appSettingsIniContent = """
             [IniTestRoot:IniSubLevel]
             IniKey=IniValue
             CmdSource=IniTo${CmdTestRoot:CmdSubLevel:CmdKey}
             """;
 
-        string[] appsettingsCommandLine =
+        string[] appSettingsCommandLine =
         [
             "--CmdTestRoot:CmdSubLevel:CmdKey=CmdValue",
             "--CmdTestRoot:CmdSubLevel:JsonSource=CmdTo${JsonTestRoot:JsonSubLevel:JsonKey}"
         ];
 
         using var sandbox = new Sandbox();
-        sandbox.CreateFile(appsettingsJsonFileName, appsettingsJsonContent);
-        sandbox.CreateFile(appsettingsXmlFileName, appsettingsXmlContent);
-        sandbox.CreateFile(appsettingsIniFileName, appsettingsIniContent);
+        sandbox.CreateFile(appSettingsJsonFileName, appSettingsJsonContent);
+        sandbox.CreateFile(appSettingsXmlFileName, appSettingsXmlContent);
+        sandbox.CreateFile(appSettingsIniFileName, appSettingsIniContent);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.SetBasePath(sandbox.FullPath);
-        builder.Configuration.AddJsonFile(appsettingsJsonFileName);
-        builder.Configuration.AddXmlFile(appsettingsXmlFileName);
-        builder.Configuration.AddIniFile(appsettingsIniFileName);
-        builder.Configuration.AddCommandLine(appsettingsCommandLine);
+        builder.Configuration.AddJsonFile(appSettingsJsonFileName);
+        builder.Configuration.AddXmlFile(appSettingsXmlFileName);
+        builder.Configuration.AddIniFile(appSettingsIniFileName);
+        builder.Configuration.AddCommandLine(appSettingsCommandLine);
         builder.Configuration.AddPlaceholderResolver(_loggerFactory);
 
         await using WebApplication app = builder.Build();

@@ -50,7 +50,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_JsonAppSettingsConfiguresClient()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
               "spring": {
                 "application": {
@@ -65,7 +65,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
                     "username": "myUsername",
                     "password": "myPassword",
                     "timeout": 10000,
-                    "token": "vaulttoken",
+                    "token": "vault-token",
                     "tokenRenewRate": 50000,
                     "disableTokenRenewal": true,
                     "tokenTtl": 50000,
@@ -83,7 +83,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
@@ -111,7 +111,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         Assert.Equal(55555, options.Retry.MaxInterval);
         Assert.Equal(5.5, options.Retry.Multiplier);
         Assert.Equal(10000, options.Timeout);
-        Assert.Equal("vaulttoken", options.Token);
+        Assert.Equal("vault-token", options.Token);
         Assert.Null(options.AccessTokenUri);
         Assert.Null(options.ClientId);
         Assert.Null(options.ClientSecret);
@@ -123,7 +123,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_ValidateCertificates_DisablesCertValidation()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
               "spring": {
                 "cloud": {
@@ -137,7 +137,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
@@ -157,7 +157,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_Validate_Certificates_DisablesCertValidation()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
               "spring": {
                 "cloud": {
@@ -171,7 +171,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
@@ -191,7 +191,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_XmlAppSettingsConfiguresClient()
     {
-        const string appsettings = """
+        const string appSettings = """
             <settings>
             	<spring>
             		<cloud>
@@ -210,7 +210,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.xml", appsettings);
+        string path = sandbox.CreateFile("appsettings.xml", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
@@ -240,7 +240,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_IniAppSettingsConfiguresClient()
     {
-        const string appsettings = """
+        const string appSettings = """
             [spring:cloud:config]
                 uri=https://foo.com:9999
                 enabled=false
@@ -252,7 +252,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.ini", appsettings);
+        string path = sandbox.CreateFile("appsettings.ini", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
@@ -282,7 +282,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_CommandLineAppSettingsConfiguresClient()
     {
-        string[] appsettings =
+        string[] appSettings =
         [
             "spring:cloud:config:enabled=false",
             "--spring:cloud:config:failFast=false",
@@ -298,7 +298,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         ];
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddCommandLine(appsettings);
+        configurationBuilder.AddCommandLine(appSettings);
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
@@ -322,7 +322,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_SubstitutesPlaceholders()
     {
-        const string appsettings = """
+        const string appSettings = """
             {
               "foo": {
                 "bar": {
@@ -349,7 +349,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
 
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
@@ -433,7 +433,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             }
             """;
 
-        const string appsettings = """
+        const string appSettings = """
             {
               "spring": {
                 "application": {
@@ -444,8 +444,8 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string appsettingsPath = sandbox.CreateFile("appsettings.json", appsettings);
-        string appSettingsFileName = Path.GetFileName(appsettingsPath);
+        string appSettingsPath = sandbox.CreateFile("appsettings.json", appSettings);
+        string appSettingsFileName = Path.GetFileName(appSettingsPath);
 
         string vcapAppPath = sandbox.CreateFile("vcapapp.json", vcapApplication);
         string vcapAppFileName = Path.GetFileName(vcapAppPath);
@@ -541,7 +541,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             }
             """;
 
-        const string appsettings = """
+        const string appSettings = """
             {
               "spring": {
                 "application": {
@@ -552,7 +552,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string appSettingsPath = sandbox.CreateFile("appsettings.json", appsettings);
+        string appSettingsPath = sandbox.CreateFile("appsettings.json", appSettings);
         string appSettingsFileName = Path.GetFileName(appSettingsPath);
 
         string vcapAppPath = sandbox.CreateFile("vcapapp.json", vcapApplication);
