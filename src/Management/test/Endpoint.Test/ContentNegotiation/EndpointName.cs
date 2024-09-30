@@ -9,7 +9,6 @@ public enum EndpointName
     Cloudfoundry,
     Hypermedia,
     Info,
-    Metrics,
     Loggers,
     Health,
     HttpExchanges,

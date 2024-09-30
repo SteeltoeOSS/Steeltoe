@@ -8,7 +8,6 @@ using Microsoft.Extensions.Options;
 using OpenTelemetry.Metrics;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Actuators.Metrics;
 using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Prometheus;
@@ -32,7 +31,6 @@ public static class PrometheusExtensions
 
         services.AddOpenTelemetry().WithMetrics(builder =>
         {
-            builder.AddMeter(SteeltoeMetrics.InstrumentationName);
             builder.AddPrometheusExporter();
         });
 

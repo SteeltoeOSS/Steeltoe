@@ -25,7 +25,6 @@ public sealed class ContentNegotiationTest
                 (EndpointName.Hypermedia, "http://localhost/actuator"),
                 (EndpointName.Cloudfoundry, "http://localhost/cloudfoundryapplication"),
                 (EndpointName.Info, "http://localhost/actuator/info"),
-                (EndpointName.Metrics, "http://localhost/actuator/metrics"),
                 (EndpointName.Loggers, "http://localhost/actuator/loggers"),
                 (EndpointName.Health, "http://localhost/actuator/health"),
                 (EndpointName.HttpExchanges, "http://localhost/actuator/httpexchanges"),

@@ -563,57 +563,6 @@
                 }
               }
             },
-            "Metrics": {
-              "type": "object",
-              "properties": {
-                "AllowedVerbs": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
-                },
-                "CacheDurationMilliseconds": {
-                  "type": "integer",
-                  "description": "Gets or sets the duration (in milliseconds) that metrics are cached for. Default value: 500."
-                },
-                "Enabled": {
-                  "type": "boolean",
-                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
-                },
-                "Id": {
-                  "type": "string",
-                  "description": "Gets or sets the unique ID of this endpoint."
-                },
-                "IncludedMetrics": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "Gets the names of additional metrics to include. See the list at https://learn.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters."
-                },
-                "MaxHistograms": {
-                  "type": "integer",
-                  "description": "Gets or sets the maximum number of histograms to return. Default value: 100."
-                },
-                "MaxTimeSeries": {
-                  "type": "integer",
-                  "description": "Gets or sets the maximum number of time series to return. Default value: 100."
-                },
-                "Path": {
-                  "type": "string",
-                  "description": "Gets or sets the relative path at which this endpoint is exposed."
-                },
-                "RequiredPermissions": {
-                  "enum": [
-                    "None",
-                    "Restricted",
-                    "Full"
-                  ],
-                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
-                }
-              }
-            },
             "Path": {
               "type": "string",
               "description": "Gets or sets the HTTP request path at which management endpoints are exposed. Default value: /actuator."
