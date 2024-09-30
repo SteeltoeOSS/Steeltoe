@@ -16,7 +16,7 @@ namespace Steeltoe.Connectors.EntityFrameworkCore.Test.MySql.Oracle;
 
 public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 {
-    [Fact]
+    [Fact(Skip = "A NuGet package compatible with EF Core 9 isn't available yet.")]
     public async Task Registers_connection_string_for_default_service_binding()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
@@ -41,7 +41,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         connectionString.Should().Be("server=localhost;database=myDb;user id=steeltoe;password=steeltoe;connectiontimeout=15;Use Compression=false");
     }
 
-    [Fact]
+    [Fact(Skip = "A NuGet package compatible with EF Core 9 isn't available yet.")]
     public async Task Registers_connection_string_for_named_service_binding()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
