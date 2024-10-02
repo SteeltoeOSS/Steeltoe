@@ -53,9 +53,12 @@ internal sealed class PeriodicHeartbeat : IAsyncDisposable
                 }
             }
         }
-        catch (OperationCanceledException exception)
+        catch (OperationCanceledException)
         {
-            _logger.LogDebug(exception, "Stop sending periodic Consul heartbeats for '{ServiceId}'.", _serviceId);
+#pragma warning disable S6667 // Logging in a catch clause should pass the caught exception as a parameter.
+            // Justification: The exception contains no useful information. Logging it suggests something crashed, while this is expected behavior.
+            _logger.LogDebug("Stop sending periodic Consul heartbeats for '{ServiceId}'.", _serviceId);
+#pragma warning restore S6667 // Logging in a catch clause should pass the caught exception as a parameter.
         }
     }
 
