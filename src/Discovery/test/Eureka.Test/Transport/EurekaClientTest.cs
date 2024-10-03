@@ -159,11 +159,10 @@ public sealed class EurekaClientTest
 
         IList<string> logMessages = capturingLoggerProvider.GetAll();
 
-        logMessages.Should().BeEquivalentTo([
+        logMessages.Should().BeEquivalentTo(
             $"DBUG {typeof(EurekaClient).FullName}: Sending POST request to 'http://host-that-does-not-exist.net:9999/apps/FOOBAR' with body: " +
             """{"instance":{"instanceId":"some","app":"FOOBAR","ipAddr":"127.0.0.1","port":{"@enabled":"true","$":8080},"securePort":{"@enabled":"false","$":9090},"dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},"hostName":"localhost","overriddenstatus":"UNKNOWN","metadata":{"@class":"java.util.Collections$EmptyMap"},"lastUpdatedTimestamp":"1708427732823","lastDirtyTimestamp":"1708427732823"}}.""",
-            $"WARN {typeof(EurekaClient).FullName}: Failed to execute HTTP POST request to 'http://host-that-does-not-exist.net:9999/apps/FOOBAR' in attempt 1."
-        ]);
+            $"WARN {typeof(EurekaClient).FullName}: Failed to execute HTTP POST request to 'http://host-that-does-not-exist.net:9999/apps/FOOBAR' in attempt 1.");
     }
 
     [Fact]

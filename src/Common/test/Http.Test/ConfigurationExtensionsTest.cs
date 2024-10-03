@@ -21,10 +21,7 @@ public sealed class ConfigurationExtensionsTest
 
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
-        addresses.Should().BeEquivalentTo([
-            "http://localhost:8888",
-            "https://localhost:9999"
-        ]);
+        addresses.Should().BeEquivalentTo("http://localhost:8888", "https://localhost:9999");
     }
 
     [Fact]
@@ -40,10 +37,7 @@ public sealed class ConfigurationExtensionsTest
 
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
-        addresses.Should().BeEquivalentTo([
-            "http://localhost:8888",
-            "https://127.0.0.1:9999"
-        ]);
+        addresses.Should().BeEquivalentTo("http://localhost:8888", "https://127.0.0.1:9999");
     }
 
     [Fact]
@@ -60,10 +54,7 @@ public sealed class ConfigurationExtensionsTest
 
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
-        addresses.Should().BeEquivalentTo([
-            "http://*:5555",
-            "https://*:6666"
-        ]);
+        addresses.Should().BeEquivalentTo("http://*:5555", "https://*:6666");
     }
 
     [Fact]
@@ -81,10 +72,7 @@ public sealed class ConfigurationExtensionsTest
 
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
-        addresses.Should().BeEquivalentTo([
-            "http://[::1]:8888",
-            "https://192.168.1.1:9999"
-        ]);
+        addresses.Should().BeEquivalentTo("http://[::1]:8888", "https://192.168.1.1:9999");
     }
 
     [Fact]
@@ -114,11 +102,7 @@ public sealed class ConfigurationExtensionsTest
 
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
-        addresses.Should().BeEquivalentTo([
-            "http://localhost:5555",
-            "https://+:6666",
-            "https://api.domain.org:7777"
-        ]);
+        addresses.Should().BeEquivalentTo("http://localhost:5555", "https://+:6666", "https://api.domain.org:7777");
     }
 
     [Fact]
@@ -143,7 +127,7 @@ public sealed class ConfigurationExtensionsTest
 
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
-        addresses.Should().BeEquivalentTo(["http://localhost:5555"]);
+        addresses.Should().BeEquivalentTo("http://localhost:5555");
     }
 
     [Fact]
@@ -154,10 +138,7 @@ public sealed class ConfigurationExtensionsTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
-        addresses.Should().BeEquivalentTo([
-            "http://+:8888",
-            "https://some.domain.org:9999"
-        ]);
+        addresses.Should().BeEquivalentTo("http://+:8888", "https://some.domain.org:9999");
     }
 
     [Fact]
@@ -169,10 +150,7 @@ public sealed class ConfigurationExtensionsTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
-        addresses.Should().BeEquivalentTo([
-            "http://*:6666",
-            "https://*:7777"
-        ]);
+        addresses.Should().BeEquivalentTo("http://*:6666", "https://*:7777");
     }
 
     [Fact]
@@ -187,11 +165,7 @@ public sealed class ConfigurationExtensionsTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
-        addresses.Should().BeEquivalentTo([
-            "http://*:7777",
-            "http://localhost:8888",
-            "https://*:9999"
-        ]);
+        addresses.Should().BeEquivalentTo("http://*:7777", "http://localhost:8888", "https://*:9999");
     }
 
     [Fact]
@@ -208,10 +182,7 @@ public sealed class ConfigurationExtensionsTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
-        addresses.Should().BeEquivalentTo([
-            "http://*:6666",
-            "https://*:7777"
-        ]);
+        addresses.Should().BeEquivalentTo("http://*:6666", "https://*:7777");
     }
 
     [Fact]
@@ -220,7 +191,7 @@ public sealed class ConfigurationExtensionsTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
-        addresses.Should().BeEquivalentTo(["http://localhost:5000"]);
+        addresses.Should().BeEquivalentTo("http://localhost:5000");
     }
 
     [Fact]
@@ -234,7 +205,7 @@ public sealed class ConfigurationExtensionsTest
 
         ICollection<string> addresses = configuration.GetListenAddresses();
 
-        addresses.Should().BeEquivalentTo(["http://localhost:5000"]);
+        addresses.Should().BeEquivalentTo("http://localhost:5000");
     }
 
     [Fact]
@@ -250,6 +221,6 @@ public sealed class ConfigurationExtensionsTest
 
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
-        addresses.Should().BeEquivalentTo(["http://localhost:5000"]);
+        addresses.Should().BeEquivalentTo("http://localhost:5000");
     }
 }

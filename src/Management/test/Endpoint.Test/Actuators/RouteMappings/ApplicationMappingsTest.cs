@@ -33,7 +33,7 @@ public sealed class ApplicationMappingsTest : BaseTest
         List<string> contentTypes = ["application/json"];
         var routeDetails = new AspNetCoreRouteDetails("/Home/Index", httpMethods, contentTypes, contentTypes, Array.Empty<string>(), Array.Empty<string>());
 
-        List<RouteMappingDescription> mappingDescriptions = [new RouteMappingDescription("foobar", routeDetails)];
+        List<RouteMappingDescription> mappingDescriptions = [new("foobar", routeDetails)];
 
         var mappingDictionary = new Dictionary<string, IList<RouteMappingDescription>>
         {

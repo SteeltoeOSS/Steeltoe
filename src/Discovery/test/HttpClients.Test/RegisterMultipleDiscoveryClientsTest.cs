@@ -448,9 +448,8 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         IList<string> logMessages = capturingLoggerProvider.GetAll();
 
-        logMessages.Should().BeEquivalentTo([
-            $"WARN {typeof(EurekaCloudFoundryPostProcessor).FullName}: Multiple Eureka service bindings found, which is not supported. Using the first binding from VCAP_SERVICES."
-        ]);
+        logMessages.Should().BeEquivalentTo(
+            $"WARN {typeof(EurekaCloudFoundryPostProcessor).FullName}: Multiple Eureka service bindings found, which is not supported. Using the first binding from VCAP_SERVICES.");
     }
 
     [Fact]

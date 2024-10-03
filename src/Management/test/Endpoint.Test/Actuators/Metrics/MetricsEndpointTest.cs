@@ -418,7 +418,7 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.Equal(allKeysSum, sample.Value);
             Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
-            List<KeyValuePair<string, string>> aTags = [new KeyValuePair<string, string>("a", "v1")];
+            List<KeyValuePair<string, string>> aTags = [new("a", "v1")];
 
             IList<MetricSample> result = handler.GetMetricSamplesByTags(measurements, "test.test1", aTags);
             Assert.NotNull(result);
@@ -428,7 +428,7 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.Equal(allKeysSum + aSum, sample.Value);
             Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
-            List<KeyValuePair<string, string>> bTags = [new KeyValuePair<string, string>("b", "v1")];
+            List<KeyValuePair<string, string>> bTags = [new("b", "v1")];
 
             result = handler.GetMetricSamplesByTags(measurements, "test.test1", bTags);
 
@@ -440,7 +440,7 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.Equal(allKeysSum + bSum, sample.Value);
             Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
-            List<KeyValuePair<string, string>> cTags = [new KeyValuePair<string, string>("c", "v1")];
+            List<KeyValuePair<string, string>> cTags = [new("c", "v1")];
 
             result = handler.GetMetricSamplesByTags(measurements, "test.test1", cTags);
             Assert.NotNull(result);
@@ -452,8 +452,8 @@ public sealed class MetricsEndpointTest : BaseTest
 
             List<KeyValuePair<string, string>> abTags =
             [
-                new KeyValuePair<string, string>("a", "v1"),
-                new KeyValuePair<string, string>("b", "v1")
+                new("a", "v1"),
+                new("b", "v1")
             ];
 
             result = handler.GetMetricSamplesByTags(measurements, "test.test1", abTags);
@@ -467,8 +467,8 @@ public sealed class MetricsEndpointTest : BaseTest
 
             List<KeyValuePair<string, string>> acTags =
             [
-                new KeyValuePair<string, string>("a", "v1"),
-                new KeyValuePair<string, string>("c", "v1")
+                new("a", "v1"),
+                new("c", "v1")
             ];
 
             result = handler.GetMetricSamplesByTags(measurements, "test.test1", acTags);
@@ -483,8 +483,8 @@ public sealed class MetricsEndpointTest : BaseTest
 
             List<KeyValuePair<string, string>> bcTags =
             [
-                new KeyValuePair<string, string>("b", "v1"),
-                new KeyValuePair<string, string>("c", "v1")
+                new("b", "v1"),
+                new("c", "v1")
             ];
 
             result = handler.GetMetricSamplesByTags(measurements, "test.test1", bcTags);

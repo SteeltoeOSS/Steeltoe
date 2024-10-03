@@ -14,7 +14,7 @@ public sealed class ServiceBindingMapperTest
             { "test-source-key", "test-source-value" }
         };
 
-        var mapper = new ServiceBindingMapper(source, string.Empty, []);
+        var mapper = new ServiceBindingMapper(source, string.Empty);
         string? newValue = mapper.MapFromTo("test-source-key", "test-destination-key");
 
         newValue.Should().Be("test-source-value");
@@ -25,7 +25,7 @@ public sealed class ServiceBindingMapperTest
     public void MapFromTo_NotPresent_SetNull()
     {
         var source = new Dictionary<string, string?>();
-        var mapper = new ServiceBindingMapper(source, string.Empty, []);
+        var mapper = new ServiceBindingMapper(source, string.Empty);
         string? newValue = mapper.MapFromTo("test-source-key", "test-destination-key");
 
         newValue.Should().BeNull();
@@ -42,7 +42,7 @@ public sealed class ServiceBindingMapperTest
             { "test-source-key-3", "test-source-value-3" }
         };
 
-        var mapper = new ServiceBindingMapper(source, string.Empty, []);
+        var mapper = new ServiceBindingMapper(source, string.Empty);
         mapper.MapFromTo("test-source-key-1", "test-destination-key");
         mapper.MapFromTo("test-source-key-2", "test-destination-key");
         mapper.MapFromTo("test-source-key-3", "test-destination-key");
@@ -59,7 +59,7 @@ public sealed class ServiceBindingMapperTest
             { "test-source-key", "test-source-value-2" }
         };
 
-        var mapper = new ServiceBindingMapper(source, string.Empty, []);
+        var mapper = new ServiceBindingMapper(source, string.Empty);
         string? newValue = mapper.MapFromAppendTo("test-source-key", "test-destination-key", " AND ");
 
         newValue.Should().Be("test-source-value-1 AND test-source-value-2");
@@ -74,7 +74,7 @@ public sealed class ServiceBindingMapperTest
             { "test-destination-key", "test-source-value" }
         };
 
-        var mapper = new ServiceBindingMapper(source, string.Empty, []);
+        var mapper = new ServiceBindingMapper(source, string.Empty);
         string? newValue = mapper.MapFromAppendTo("test-source-key", "test-destination-key", " AND ");
 
         newValue.Should().BeNull();
@@ -89,7 +89,7 @@ public sealed class ServiceBindingMapperTest
             { "test-source-key", "test-source-value" }
         };
 
-        var mapper = new ServiceBindingMapper(source, string.Empty, []);
+        var mapper = new ServiceBindingMapper(source, string.Empty);
         string? newValue = mapper.MapFromAppendTo("test-source-key", "test-destination-key", " AND ");
 
         newValue.Should().BeNull();
@@ -104,7 +104,7 @@ public sealed class ServiceBindingMapperTest
             { "test-source-key", "test-source-value" }
         };
 
-        var mapper = new ServiceBindingMapper(source, string.Empty, []);
+        var mapper = new ServiceBindingMapper(source, string.Empty);
         string? tempPath = mapper.MapFromToFile("test-source-key", "test-destination-key");
 
         tempPath.Should().NotBeNull();
@@ -118,7 +118,7 @@ public sealed class ServiceBindingMapperTest
     public void MapFromToFile_NotPresent_SetNull()
     {
         var source = new Dictionary<string, string?>();
-        var mapper = new ServiceBindingMapper(source, string.Empty, []);
+        var mapper = new ServiceBindingMapper(source, string.Empty);
         string? tempPath = mapper.MapFromToFile("test-source-key", "test-destination-key");
 
         tempPath.Should().BeNull();

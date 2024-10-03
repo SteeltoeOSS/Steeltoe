@@ -14,6 +14,7 @@ internal sealed partial class DecryptionConfigurationProvider(
     : CompositeConfigurationProvider(providers, loggerFactory)
 {
     private readonly ILogger<DecryptionConfigurationProvider> _logger = loggerFactory.CreateLogger<DecryptionConfigurationProvider>();
+    private ITextDecryptor? _textDecryptor = textDecryptor;
 
     [GeneratedRegex("^{cipher}({key:(?<alias>.*)})?(?<cipher>.*)$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture, 1000)]
     private static partial Regex CipherRegex();
@@ -47,8 +48,8 @@ internal sealed partial class DecryptionConfigurationProvider(
 
     private ITextDecryptor EnsureDecryptor(IConfigurationRoot configurationRoot)
     {
-        textDecryptor ??= ConfigServerDecryptionSettings.CreateTextDecryptor(configurationRoot);
-        return textDecryptor;
+        _textDecryptor ??= ConfigServerDecryptionSettings.CreateTextDecryptor(configurationRoot);
+        return _textDecryptor;
     }
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Decrypted value '{CipherValue}' at key '{Key}' to '{PlainTextValue}'.")]

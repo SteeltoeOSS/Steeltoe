@@ -165,9 +165,8 @@ public sealed class TaskHostExtensionsTest
 
         IList<string> logMessages = capturingLoggerProvider.GetAll();
 
-        logMessages.Should().BeEquivalentTo([
-            "FAIL Steeltoe.Management.Tasks.CloudFoundryTasks: No task with name 'DoesNotExist' is registered in the service container."
-        ]);
+        logMessages.Should().BeEquivalentTo(
+            "FAIL Steeltoe.Management.Tasks.CloudFoundryTasks: No task with name 'DoesNotExist' is registered in the service container.");
     }
 
     [Fact]

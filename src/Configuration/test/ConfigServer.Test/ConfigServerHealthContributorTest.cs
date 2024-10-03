@@ -258,11 +258,11 @@ public sealed class ConfigServerHealthContributorTest
 
         List<PropertySource> sources =
         [
-            new PropertySource
+            new()
             {
                 Name = "foo"
             },
-            new PropertySource
+            new()
             {
                 Name = "bar"
             }

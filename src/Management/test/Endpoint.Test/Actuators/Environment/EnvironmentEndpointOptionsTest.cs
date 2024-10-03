@@ -40,7 +40,7 @@ public sealed class EnvironmentEndpointOptionsTest : BaseTest
         EnvironmentEndpointOptions options = GetOptionsFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>(appSettings);
 
         options.Id.Should().Be("env");
-        options.KeysToSanitize.Should().BeEquivalentTo([]);
+        options.KeysToSanitize.Should().BeEmpty();
         options.RequiredPermissions.Should().Be(EndpointPermissions.Restricted);
     }
 
@@ -55,7 +55,7 @@ public sealed class EnvironmentEndpointOptionsTest : BaseTest
         EnvironmentEndpointOptions options = GetOptionsFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>(appSettings);
 
         options.Id.Should().Be("env");
-        options.KeysToSanitize.Should().BeEquivalentTo(["accessToken"]);
+        options.KeysToSanitize.Should().BeEquivalentTo("accessToken");
         options.RequiredPermissions.Should().Be(EndpointPermissions.Restricted);
     }
 }

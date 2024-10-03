@@ -279,14 +279,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
         result.Should().NotBeNull();
         result!.Request.Method.Should().Be("GET");
         result.Request.Uri.Should().Be("http://localhost:1111/myPath?foo=bar&bar=foo");
-
-        result.Request.Headers.Should().ContainKeys([
-            HeaderNames.Accept,
-            HeaderNames.Authorization,
-            HeaderNames.UserAgent,
-            "Header1",
-            "Header2"
-        ]);
+        result.Request.Headers.Should().ContainKeys(HeaderNames.Accept, HeaderNames.Authorization, HeaderNames.UserAgent, "Header1", "Header2");
 
         return result;
     }
