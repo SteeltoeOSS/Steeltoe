@@ -21,6 +21,7 @@
   </Rules>
   <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
     <Rule Id="S100" Action="Warning" />
+    <Rule Id="S104" Action="Warning" />
     <Rule Id="S106" Action="Warning" />
     <Rule Id="S1067" Action="Warning" />
     <Rule Id="S107" Action="Info" />
