@@ -65,7 +65,7 @@ public sealed class EventPipeThreadDumper
             _logger.LogDebug("Starting thread dump");
 
             var client = new DiagnosticsClient(System.Environment.ProcessId);
-            List<EventPipeProvider> providers = [new EventPipeProvider("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)];
+            List<EventPipeProvider> providers = [new("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)];
 
             using EventPipeSession session = client.StartEventPipeSession(providers);
             await DumpThreadsAsync(session, results, cancellationToken);

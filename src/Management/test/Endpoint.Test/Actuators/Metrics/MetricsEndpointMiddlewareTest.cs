@@ -48,26 +48,28 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
 
         HttpContext context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?foo=key:value");
         IList<KeyValuePair<string, string>> result = middleware.ParseTags(context1.Request.Query);
-        Assert.NotNull(result);
         Assert.Empty(result);
 
         HttpContext context2 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?tag=key:value");
         result = middleware.ParseTags(context2.Request.Query);
-        Assert.NotNull(result);
         Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
 
         HttpContext context3 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?tag=key:value&foo=key:value&tag=key1:value1");
         result = middleware.ParseTags(context3.Request.Query);
-        Assert.NotNull(result);
         Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
         Assert.Contains(new KeyValuePair<string, string>("key1", "value1"), result);
         Assert.Equal(2, result.Count);
 
         HttpContext context4 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?tag=key:value&foo=key:value&tag=key:value");
         result = middleware.ParseTags(context4.Request.Query);
-        Assert.NotNull(result);
         Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
         Assert.Single(result);
+
+        HttpContext context5 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?tag=key:value1&foo=key:value&tag=key:value2");
+        result = middleware.ParseTags(context5.Request.Query);
+        Assert.Contains(new KeyValuePair<string, string>("key", "value1"), result);
+        Assert.Contains(new KeyValuePair<string, string>("key", "value2"), result);
+        Assert.Equal(2, result.Count);
     }
 
     [Fact]

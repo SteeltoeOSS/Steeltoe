@@ -30,7 +30,7 @@ public sealed class EnvironmentDescriptorTest : BaseTest
             { "key2", new PropertyValueDescriptor(false) }
         };
 
-        List<PropertySourceDescriptor> propertySourceDescriptors = [new PropertySourceDescriptor("name", properties)];
+        List<PropertySourceDescriptor> propertySourceDescriptors = [new("name", properties)];
 
         var environmentDescriptor = new EnvironmentResponse(profiles, propertySourceDescriptors);
         string result = Serialize(environmentDescriptor);

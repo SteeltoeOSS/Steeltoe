@@ -62,32 +62,50 @@ internal sealed class MetricsEndpointMiddleware(
 
     internal IList<KeyValuePair<string, string>> ParseTags(IQueryCollection query)
     {
-        List<KeyValuePair<string, string>> results = [];
-
-        foreach (KeyValuePair<string, StringValues> parameter in query)
+        if (query.Count == 0 || !query.Keys.Any(key => key.Equals("tag", StringComparison.OrdinalIgnoreCase)))
         {
-            if (parameter.Key.Equals("tag", StringComparison.OrdinalIgnoreCase))
-            {
-                foreach (string? value in parameter.Value)
-                {
-                    KeyValuePair<string, string>? pair = ParseTag(value);
+            return Array.Empty<KeyValuePair<string, string>>();
+        }
 
-                    if (pair != null && !results.Contains(pair.Value))
+        Dictionary<string, HashSet<string>> tagValuesByName = new();
+
+        foreach (KeyValuePair<string, StringValues> parameter in query.Where(parameter => parameter.Key.Equals("tag", StringComparison.OrdinalIgnoreCase)))
+        {
+            foreach (string? parameterValue in parameter.Value)
+            {
+                KeyValuePair<string, string>? tag = ParseTag(parameterValue);
+
+                if (tag != null)
+                {
+                    if (!tagValuesByName.TryGetValue(tag.Value.Key, out HashSet<string>? tagValues))
                     {
-                        results.Add(pair.Value);
+                        tagValues = [];
+                        tagValuesByName[tag.Value.Key] = tagValues;
                     }
+
+                    tagValues.Add(tag.Value.Value);
                 }
             }
         }
 
-        return results;
+        List<KeyValuePair<string, string>> result = [];
+
+        foreach ((string tagName, HashSet<string> tagValues) in tagValuesByName)
+        {
+            foreach (string tagValue in tagValues)
+            {
+                result.Add(new KeyValuePair<string, string>(tagName, tagValue));
+            }
+        }
+
+        return result;
     }
 
     internal KeyValuePair<string, string>? ParseTag(string? tag)
     {
         if (tag != null)
         {
-            string[] segments = tag.Split([':'], 2);
+            string[] segments = tag.Split(':', 2);
 
             if (segments.Length == 2)
             {

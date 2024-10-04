@@ -494,8 +494,7 @@ public sealed class InstanceInfo
                 OverriddenStatus != previousInstance.OverriddenStatus || HomePageUrl != previousInstance.HomePageUrl ||
                 StatusPageUrl != previousInstance.StatusPageUrl || HealthCheckUrl != previousInstance.HealthCheckUrl ||
                 SecureHealthCheckUrl != previousInstance.SecureHealthCheckUrl || !Equals(LeaseInfo, previousInstance.LeaseInfo) ||
-                IsCoordinatingDiscoveryServer != previousInstance.IsCoordinatingDiscoveryServer ||
-                (!ReferenceEquals(Metadata, previousInstance.Metadata) && !Metadata.SequenceEqual(previousInstance.Metadata)) ||
+                IsCoordinatingDiscoveryServer != previousInstance.IsCoordinatingDiscoveryServer || !IsMetadataEqual(Metadata, previousInstance.Metadata) ||
                 ActionType != previousInstance.ActionType || AutoScalingGroupName != previousInstance.AutoScalingGroupName ||
                 CountryId != previousInstance.CountryId || Sid != previousInstance.Sid;
 #pragma warning restore S1067 // Expressions should not be too complex
@@ -510,7 +509,8 @@ public sealed class InstanceInfo
         ArgumentNullException.ThrowIfNull(newMetadata);
 
         newMetadata = WithoutEmptyMetadataValues(newMetadata);
-        bool hasChanged = !ReferenceEquals(Metadata, newMetadata) && !Metadata.SequenceEqual(newMetadata);
+
+        bool hasChanged = !ReferenceEquals(Metadata, newMetadata) && !IsMetadataEqual(Metadata, newMetadata);
 
         if (hasChanged)
         {
@@ -554,5 +554,28 @@ public sealed class InstanceInfo
         }
 
         return EmptyMetadata;
+    }
+
+    private static bool IsMetadataEqual(IReadOnlyDictionary<string, string?> left, IReadOnlyDictionary<string, string?> right)
+    {
+        // We're intentionally ignoring the key comparer here (which may be case-insensitive), because we want to know when keys have changed in case.
+        // The same applies to changes in the ordering of metadata entries.
+
+        return ReferenceEquals(left, right) || left.SequenceEqual(right, KeyValuePairEqualityComparer<string, string?>.Instance);
+    }
+
+    private sealed class KeyValuePairEqualityComparer<TKey, TValue> : IEqualityComparer<KeyValuePair<TKey, TValue>>
+    {
+        public static KeyValuePairEqualityComparer<TKey, TValue> Instance { get; } = new();
+
+        public bool Equals(KeyValuePair<TKey, TValue> x, KeyValuePair<TKey, TValue> y)
+        {
+            return EqualityComparer<TKey>.Default.Equals(x.Key, y.Key) && EqualityComparer<TValue>.Default.Equals(x.Value, y.Value);
+        }
+
+        public int GetHashCode(KeyValuePair<TKey, TValue> obj)
+        {
+            return HashCode.Combine(obj.Key, obj.Value);
+        }
     }
 }

@@ -122,10 +122,7 @@ public sealed class CertificateAuthorizationTest
         builder.Services.AddAuthentication().AddCertificate();
 
         builder.Services.AddAuthorizationBuilder().AddOrgAndSpacePolicies().AddDefaultPolicy("sameOrgAndSpace",
-            policyBuilder => policyBuilder.AddRequirements([
-                new SameOrgRequirement(),
-                new SameSpaceRequirement()
-            ]));
+            policyBuilder => policyBuilder.AddRequirements(new SameOrgRequirement(), new SameSpaceRequirement()));
 
         await using WebApplication application = builder.Build();
         application.UseCertificateAuthorization();

@@ -79,7 +79,7 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
 
         if (Interlocked.CompareExchange(ref _isRunning, Running, NotRunning) == NotRunning)
         {
-            if (Options is { IsRetryEnabled: true, FailFast: true, Retry: not null })
+            if (Options is { IsRetryEnabled: true, FailFast: true })
             {
                 await DoWithRetryAsync(RegisterAsync, Options.Retry, cancellationToken);
             }

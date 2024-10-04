@@ -12,11 +12,11 @@ public sealed class MetricsResponseTest : BaseTest
     [Fact]
     public void Constructor_SetsValues()
     {
-        List<MetricSample> samples = [new MetricSample(MetricStatistic.TotalTime, 100.00, null)];
+        List<MetricSample> samples = [new(MetricStatistic.TotalTime, 100.00, null)];
 
         List<MetricTag> tags =
         [
-            new MetricTag("tag", new HashSet<string>
+            new("tag", new HashSet<string>
             {
                 "tagValue"
             })
@@ -31,11 +31,11 @@ public sealed class MetricsResponseTest : BaseTest
     [Fact]
     public void JsonSerialization_ReturnsExpected()
     {
-        List<MetricSample> samples = [new MetricSample(MetricStatistic.TotalTime, 100.1, null)];
+        List<MetricSample> samples = [new(MetricStatistic.TotalTime, 100.1, null)];
 
         List<MetricTag> tags =
         [
-            new MetricTag("tag", new HashSet<string>
+            new("tag", new HashSet<string>
             {
                 "tagValue"
             })
