@@ -64,6 +64,26 @@ public sealed class PropertyPlaceholderHelperTest
     }
 
     [Fact]
+    public void ResolvePlaceholders_ResolvesSinglePlaceholder_ResolvesPlaceholderInDefault()
+    {
+        const string text = "foo=${foo?${myDefault}}";
+
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["myDefault"] = "empty"
+        };
+
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(appSettings);
+        IConfiguration configuration = builder.Build();
+
+        var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
+
+        string? result = helper.ResolvePlaceholders(text, configuration);
+        Assert.Equal("foo=empty", result);
+    }
+
+    [Fact]
     public void ResolvePlaceholders_ResolvesSingleSpringPlaceholder()
     {
         const string text = "foo=${foo.bar}";
