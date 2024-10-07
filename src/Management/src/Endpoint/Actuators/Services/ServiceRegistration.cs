@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Services;
 
@@ -20,6 +21,9 @@ public sealed class ServiceRegistration
     [JsonPropertyName("type")]
     public string Type { get; }
 
+    [JsonPropertyName("key")]
+    public string? Key { get; }
+
     [JsonPropertyName("resource")]
     public string AssemblyName { get; }
 
@@ -32,25 +36,28 @@ public sealed class ServiceRegistration
 
         Name = descriptor.ServiceType.FullName!;
         Scope = descriptor.Lifetime.ToString();
-        Type = GetImplementationType(descriptor).ToString();
+        Type = GetEffectiveImplementationType(descriptor).ToString();
+        Key = descriptor.ServiceKey?.ToString();
         AssemblyName = descriptor.ServiceType.Assembly.FullName!;
         Dependencies = GetDependencies(descriptor);
     }
 
-    private static Type GetImplementationType(ServiceDescriptor descriptor)
+    private static Type GetEffectiveImplementationType(ServiceDescriptor descriptor)
     {
-        return descriptor.ImplementationInstance?.GetType() ?? descriptor.ImplementationType ?? descriptor.ServiceType;
+        return descriptor.SafeGetImplementationInstance()?.GetType() ?? descriptor.SafeGetImplementationType() ?? descriptor.ServiceType;
     }
 
     private static ISet<string> GetDependencies(ServiceDescriptor descriptor)
     {
-        if (descriptor.ImplementationType == null)
+        Type? implementationType = descriptor.SafeGetImplementationType();
+
+        if (implementationType == null)
         {
             return ImmutableHashSet<string>.Empty;
         }
 
         HashSet<string> dependencies = [];
-        ConstructorInfo[] constructors = descriptor.ImplementationType.GetConstructors();
+        ConstructorInfo[] constructors = implementationType.GetConstructors();
 
         ConstructorInfo? preferredConstructor = Array.Find(constructors,
             constructor => constructor.GetCustomAttribute(typeof(ActivatorUtilitiesConstructorAttribute)) != null);
