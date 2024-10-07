@@ -47,7 +47,7 @@ public sealed class MetricsObserverOptions
     public bool EventCounterEvents { get; set; }
 
     /// <summary>
-    /// Gets or sets how often to export, in seconds, when <see cref="EventCounterEvents" /> is set to <c>true</c>. Default value: 1.
+    /// Gets or sets how often to export (in seconds) when <see cref="EventCounterEvents" /> is set to <c>true</c>. Default value: 1.
     /// </summary>
     public int? EventCounterIntervalSec { get; set; } = 1;
 

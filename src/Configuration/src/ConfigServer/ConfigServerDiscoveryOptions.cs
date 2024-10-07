@@ -10,12 +10,12 @@ namespace Steeltoe.Configuration.ConfigServer;
 public sealed class ConfigServerDiscoveryOptions
 {
     /// <summary>
-    /// Gets or sets a value indicating whether discovery first behavior is enabled. Default value: false.
+    /// Gets or sets a value indicating whether the discovery-first feature is enabled. Default value: false.
     /// </summary>
     public bool Enabled { get; set; }
 
     /// <summary>
-    /// Gets or sets a value of the service ID used during discovery first behavior. Default value: "configserver".
+    /// Gets or sets the Service ID of the Config Server to use during discovery-first. Default value: "configserver".
     /// </summary>
     public string? ServiceId { get; set; } = "configserver";
 }

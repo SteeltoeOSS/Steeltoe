@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.Metrics;
 public sealed class MetricsEndpointOptions : EndpointOptions
 {
     /// <summary>
-    /// Gets or sets the duration in milliseconds that metrics are cached for. Default value: 500.
+    /// Gets or sets the duration (in milliseconds) that metrics are cached for. Default value: 500.
     /// </summary>
     public int CacheDurationMilliseconds { get; set; } = 500;
 
@@ -24,7 +24,8 @@ public sealed class MetricsEndpointOptions : EndpointOptions
     public int MaxHistograms { get; set; } = 100;
 
     /// <summary>
-    /// Gets the names of metrics to include.
+    /// Gets the names of additional metrics to include. See the list at
+    /// <see href="https://learn.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters" />.
     /// </summary>
     public IList<string> IncludedMetrics { get; } = new List<string>();
 

@@ -94,7 +94,7 @@
                 },
                 "ApplicationId": {
                   "type": "string",
-                  "description": "Gets or sets the GUID identifying the app."
+                  "description": "Gets or sets the GUID identifying the app, used in permission checks."
                 },
                 "CloudFoundryApi": {
                   "type": "string",
@@ -405,35 +405,35 @@
                 },
                 "IncludePathInfo": {
                   "type": "boolean",
-                  "description": "Gets or sets a value indicating whether the request path should be included in traces. Default value: true."
+                  "description": "Gets or sets a value indicating whether the path from the HTTP request URL should be returned. Default value: true."
                 },
                 "IncludeQueryString": {
                   "type": "boolean",
-                  "description": "Gets or sets a value indicating whether the request querystring should be included in traces. Default value: true."
+                  "description": "Gets or sets a value indicating whether the query string parameters from the request URL should be returned. Default value: true."
                 },
                 "IncludeRemoteAddress": {
                   "type": "boolean",
-                  "description": "Gets or sets a value indicating whether the IP address of the request's sender should be included in traces. Default value: false."
+                  "description": "Gets or sets a value indicating whether the IP address of the request's sender should be returned. Default value: false."
                 },
                 "IncludeRequestHeaders": {
                   "type": "boolean",
-                  "description": "Gets or sets a value indicating whether HTTP headers from the request should be included in traces. Default value: true.\n\nIf a request header is not present in the 'Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.RequestHeaders', the header name will be logged with a redacted value. Request headers can contain authentication tokens, or private information which may have regulatory concerns under GDPR and other laws. Arbitrary request headers should not be logged unless logs are secure and access controlled and the privacy impact assessed."
+                  "description": "Gets or sets a value indicating whether headers from the HTTP request should be returned. Default value: true.\n\nIf a request header is not present in the 'Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.RequestHeaders', the header name will be logged with a redacted value. Request headers can contain authentication tokens, or private information which may have regulatory concerns under GDPR and other laws. Arbitrary request headers should not be logged unless logs are secure and access controlled and the privacy impact assessed."
                 },
                 "IncludeResponseHeaders": {
                   "type": "boolean",
-                  "description": "Gets or sets a value indicating whether HTTP headers from the response should be included in traces. Default value: true.\n\nIf a response header is not present in the 'Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.ResponseHeaders', the header name will be logged with a redacted value."
+                  "description": "Gets or sets a value indicating whether headers from the HTTP response should be returned. Default value: true.\n\nIf a response header is not present in the 'Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.ResponseHeaders', the header name will be logged with a redacted value."
                 },
                 "IncludeSessionId": {
                   "type": "boolean",
-                  "description": "Gets or sets a value indicating whether the user's session ID should be included in traces. Default value: false."
+                  "description": "Gets or sets a value indicating whether the user's session ID should be returned. Default value: false."
                 },
                 "IncludeTimeTaken": {
                   "type": "boolean",
-                  "description": "Gets or sets a value indicating whether the time taken to process the request should be included in traces. Default value: true."
+                  "description": "Gets or sets a value indicating whether the time taken to process the request should be returned. Default value: true."
                 },
                 "IncludeUserPrincipal": {
                   "type": "boolean",
-                  "description": "Gets or sets a value indicating whether the name of the user principal making the request should be included in traces. Default value: false."
+                  "description": "Gets or sets a value indicating whether the username of the 'System.Security.Claims.ClaimsPrincipal' should be returned. Default value: false."
                 },
                 "Path": {
                   "type": "string",
@@ -575,7 +575,7 @@
                 },
                 "CacheDurationMilliseconds": {
                   "type": "integer",
-                  "description": "Gets or sets the duration in milliseconds that metrics are cached for. Default value: 500."
+                  "description": "Gets or sets the duration (in milliseconds) that metrics are cached for. Default value: 500."
                 },
                 "Enabled": {
                   "type": "boolean",
@@ -590,7 +590,7 @@
                   "items": {
                     "type": "string"
                   },
-                  "description": "Gets the names of metrics to include."
+                  "description": "Gets the names of additional metrics to include. See the list at https://learn.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters."
                 },
                 "MaxHistograms": {
                   "type": "integer",
@@ -777,7 +777,7 @@
             },
             "SslEnabled": {
               "type": "boolean",
-              "description": "Gets or sets a value indicating whether 'Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Port' applies to HTTP or HTTPS requests."
+              "description": "Gets or sets a value indicating whether 'Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Port' applies to HTTP or HTTPS requests. Default value: false."
             },
             "UseStatusCodeFromResponse": {
               "type": "boolean",
@@ -831,7 +831,7 @@
                 },
                 "EventCounterIntervalSec": {
                   "type": "integer",
-                  "description": "Gets or sets how often to export, in seconds, when 'Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterEvents' is set to true. Default value: 1."
+                  "description": "Gets or sets how often to export (in seconds) when 'Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterEvents' is set to true. Default value: 1."
                 },
                 "ExcludedMetrics": {
                   "type": "array",

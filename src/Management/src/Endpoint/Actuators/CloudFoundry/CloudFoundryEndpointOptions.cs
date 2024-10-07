@@ -16,7 +16,7 @@ public sealed class CloudFoundryEndpointOptions : EndpointOptions, IValidateCert
     public bool ValidateCertificates { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the GUID identifying the app.
+    /// Gets or sets the GUID identifying the app, used in permission checks.
     /// </summary>
     public string? ApplicationId { get; set; }
 

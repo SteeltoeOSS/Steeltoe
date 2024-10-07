@@ -15,7 +15,7 @@ public sealed class ConfigServerHealthOptions
     public bool Enabled { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the health check cache time-to-live, in milliseconds. Default value: 300_000 (5 minutes).
+    /// Gets or sets the health check cache time-to-live (in milliseconds). Default value: 300_000 (5 minutes).
     /// </summary>
     public long TimeToLive { get; set; } = 300_000;
 }

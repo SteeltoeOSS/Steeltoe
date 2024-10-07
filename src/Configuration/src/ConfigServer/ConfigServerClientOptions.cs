@@ -38,7 +38,7 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     public string? Environment { get; set; } = "Production";
 
     /// <summary>
-    /// Gets or sets the label used when accessing configuration data.
+    /// Gets or sets a comma-delimited list of labels to request from the server.
     /// </summary>
     public string? Label { get; set; }
 
@@ -63,12 +63,12 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     public string? Password { get; set; }
 
     /// <summary>
-    /// Gets or sets the token used for Vault.
+    /// Gets or sets the HashiCorp Vault authentication token.
     /// </summary>
     public string? Token { get; set; }
 
     /// <summary>
-    /// Gets or sets the request timeout in milliseconds. Default value: 60_000 (1 minute).
+    /// Gets or sets the request timeout (in milliseconds). Default value: 60_000 (1 minute).
     /// </summary>
     public int Timeout { get; set; } = 60_000;
 
@@ -124,17 +124,17 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     public string? ClientId { get; set; }
 
     /// <summary>
-    /// Gets or sets the vault token time-to-live in milliseconds. Default value: 300_000 (5 minutes).
+    /// Gets or sets the HashiCorp Vault token time-to-live (in milliseconds). Default value: 300_000 (5 minutes).
     /// </summary>
     public int TokenTtl { get; set; } = 300_000;
 
     /// <summary>
-    /// Gets or sets the vault token renew rate in milliseconds. Default value: 60_000 (1 minute).
+    /// Gets or sets the vault token renew rate (in milliseconds). Default value: 60_000 (1 minute).
     /// </summary>
     public int TokenRenewRate { get; set; } = 60_000;
 
     /// <summary>
-    /// Gets or sets a value indicating whether periodic token renewal should occur. Default value: false.
+    /// Gets or sets a value indicating whether periodic HashiCorp Vault token renewal should occur. Default value: false.
     /// </summary>
     public bool DisableTokenRenewal { get; set; }
 

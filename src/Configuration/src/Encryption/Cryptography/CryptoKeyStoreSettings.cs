@@ -10,12 +10,12 @@ namespace Steeltoe.Configuration.Encryption.Cryptography;
 internal sealed class CryptoKeyStoreSettings
 {
     /// <summary>
-    /// Gets or sets the location of the keystore.
+    /// Gets or sets the location of the keystore file.
     /// </summary>
     public string? Location { get; set; }
 
     /// <summary>
-    /// Gets or sets the keystore password.
+    /// Gets or sets the password that locks the keystore.
     /// </summary>
     public string? Password { get; set; }
 

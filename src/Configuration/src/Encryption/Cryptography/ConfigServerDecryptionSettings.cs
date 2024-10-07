@@ -28,7 +28,7 @@ internal sealed class ConfigServerDecryptionSettings
     public CryptoKeyStoreSettings KeyStore { get; } = new();
 
     /// <summary>
-    /// Gets or sets the cryptographic key.
+    /// Gets or sets the symmetric cryptographic key.
     /// </summary>
     public string? Key { get; set; }
 

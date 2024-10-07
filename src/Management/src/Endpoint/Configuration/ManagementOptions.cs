@@ -39,7 +39,7 @@ public sealed class ManagementOptions
     public string? Port { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether <see cref="Port" /> applies to HTTP or HTTPS requests.
+    /// Gets or sets a value indicating whether <see cref="Port" /> applies to HTTP or HTTPS requests. Default value: false.
     /// </summary>
     public bool SslEnabled { get; set; }
 

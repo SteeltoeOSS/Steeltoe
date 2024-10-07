@@ -5,12 +5,12 @@
 namespace Steeltoe.Common;
 
 /// <summary>
-/// A runnable task bundled with the assembly that can be executed on-demand.
+/// A runnable asynchronous task bundled with the assembly that can be executed on-demand.
 /// </summary>
 public interface IApplicationTask
 {
     /// <summary>
-    /// Executes this task.
+    /// Executes this task asynchronously.
     /// </summary>
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.
