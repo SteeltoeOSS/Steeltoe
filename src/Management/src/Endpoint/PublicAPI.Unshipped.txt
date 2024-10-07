@@ -241,6 +241,9 @@ Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.SerializedTime
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Session.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeSession?
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Timestamp.get -> System.DateTime
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.TimeTaken.get -> System.TimeSpan
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal.HttpExchangePrincipal(string! name) -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal.Name.get -> string!
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest.Headers.get -> System.Collections.Generic.IDictionary<string!, Microsoft.Extensions.Primitives.StringValues>!
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest.HttpExchangeRequest(string! method, System.Uri! uri, System.Collections.Generic.IDictionary<string!, Microsoft.Extensions.Primitives.StringValues>! headers, string? remoteAddress) -> void
@@ -284,9 +287,6 @@ Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesResult.HttpExc
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.IHttpExchangesEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.IHttpExchangesRepository
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.IHttpExchangesRepository.GetHttpExchanges() -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesResult!
-Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal
-Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal.Name.get -> string!
-Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal.HttpExchangePrincipal(string! name) -> void
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.HypermediaEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.HypermediaEndpointOptions.HypermediaEndpointOptions() -> void
@@ -428,6 +428,7 @@ Steeltoe.Management.Endpoint.Actuators.Services.IServicesEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration
 Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.AssemblyName.get -> string!
 Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.Dependencies.get -> System.Collections.Generic.ISet<string!>!
+Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.Key.get -> string?
 Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.Scope.get -> string!
 Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.ServiceRegistration(Microsoft.Extensions.DependencyInjection.ServiceDescriptor! descriptor) -> void
 Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.Type.get -> string!

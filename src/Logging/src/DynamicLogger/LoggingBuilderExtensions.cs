@@ -49,7 +49,7 @@ public static class LoggingBuilderExtensions
 
     private static void EnsureConsoleLoggingIsRegistered(ILoggingBuilder builder)
     {
-        if (builder.Services.All(descriptor => descriptor.ImplementationType != typeof(ConsoleLoggerProvider)))
+        if (builder.Services.All(descriptor => descriptor.SafeGetImplementationType() != typeof(ConsoleLoggerProvider)))
         {
             builder.AddConsole();
         }
@@ -58,7 +58,7 @@ public static class LoggingBuilderExtensions
     private static void UpdateConsoleLoggerProviderRegistration(IServiceCollection services)
     {
         // Remove the original ConsoleLoggerProvider registration as ILoggerProvider to prevent duplicate logging.
-        ServiceDescriptor? descriptor = services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
+        ServiceDescriptor? descriptor = services.FirstOrDefault(descriptor => descriptor.SafeGetImplementationType() == typeof(ConsoleLoggerProvider));
 
         if (descriptor != null)
         {
