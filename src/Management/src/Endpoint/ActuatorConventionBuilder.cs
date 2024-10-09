@@ -6,24 +6,25 @@ using Microsoft.AspNetCore.Builder;
 
 namespace Steeltoe.Management.Endpoint;
 
-public sealed class ActuatorConventionBuilder : IEndpointConventionBuilder
+/// <summary>
+/// Captures conventions for actuator endpoints and applies them to the builders returned from ASP.NET MapMethods() calls.
+/// </summary>
+internal abstract class ActuatorConventionBuilder : IEndpointConventionBuilder
 {
-    private readonly List<IEndpointConventionBuilder> _builders = [];
+    /// <summary>
+    /// Adds a convention to the builder. This interface implementation is called by ASP.NET extension methods, such as
+    /// <see cref="AuthorizationEndpointConventionBuilderExtensions.RequireAuthorization{TBuilder}(TBuilder)" />.
+    /// </summary>
+    /// <param name="convention">
+    /// The convention to add.
+    /// </param>
+    public abstract void Add(Action<EndpointBuilder> convention);
 
-    public void Add(Action<EndpointBuilder> convention)
-    {
-        ArgumentNullException.ThrowIfNull(convention);
-
-        foreach (IEndpointConventionBuilder builder in _builders)
-        {
-            builder.Add(convention);
-        }
-    }
-
-    public void Add(IEndpointConventionBuilder builder)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        _builders.Add(builder);
-    }
+    /// <summary>
+    /// Captures a convention builder, which is returned from ASP.NET MapMethods() for a single actuator endpoint.
+    /// </summary>
+    /// <param name="builder">
+    /// The builder returned from MapMethods().
+    /// </param>
+    public abstract void TrackTarget(IEndpointConventionBuilder builder);
 }

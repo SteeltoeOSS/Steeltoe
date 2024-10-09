@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -21,36 +22,44 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public sealed class ActuatorRouteBuilderExtensionsTest
 {
-    public static TheoryData<Type> EndpointOptionsTypes
+    public static TheoryData<RegistrationMode, Type> EndpointTestData
     {
         get
         {
-            List<Type> endpointOptionsType = typeof(ConfigureEndpointOptions<>).Assembly.GetTypes()
+            List<Type> endpointOptionsTypes = typeof(ConfigureEndpointOptions<>).Assembly.GetTypes()
                 .Where(type => type.IsAssignableTo(typeof(EndpointOptions)) && type != typeof(CloudFoundryEndpointOptions)).ToList();
 
-            TheoryData<Type> theoryData = [];
-            endpointOptionsType.ForEach(theoryData.Add);
+            TheoryData<RegistrationMode, Type> theoryData = [];
+
+            foreach (Type endpointOptionsType in endpointOptionsTypes)
+            {
+                foreach (RegistrationMode mode in Enum.GetValues<RegistrationMode>())
+                {
+                    theoryData.Add(mode, endpointOptionsType);
+                }
+            }
+
             return theoryData;
         }
     }
 
     [Theory]
-    [MemberData(nameof(EndpointOptionsTypes))]
-    public async Task MapTestAuthSuccess(Type endpointOptionsType)
+    [MemberData(nameof(EndpointTestData))]
+    public async Task MapTestAuthSuccess(RegistrationMode mode, Type endpointOptionsType)
     {
-        IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "actuators.read"));
+        IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "actuators.read"), mode);
         await ActAndAssertAsync(hostBuilder, endpointOptionsType, true);
     }
 
     [Theory]
-    [MemberData(nameof(EndpointOptionsTypes))]
-    public async Task MapTestAuthFail(Type endpointOptionsType)
+    [MemberData(nameof(EndpointTestData))]
+    public async Task MapTestAuthFail(RegistrationMode mode, Type endpointOptionsType)
     {
-        IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "invalid-scope"));
+        IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "invalid-scope"), mode);
         await ActAndAssertAsync(hostBuilder, endpointOptionsType, false);
     }
 
-    private static IHostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction)
+    private static IHostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction, RegistrationMode mode)
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -63,7 +72,15 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 
         hostBuilder.ConfigureServices(services =>
         {
-            services.AddAllActuators();
+            if (mode == RegistrationMode.Services)
+            {
+                services.AddAllActuators();
+                services.ActivateActuatorEndpoints().RequireAuthorization("TestAuth");
+            }
+            else if (mode == RegistrationMode.UseEndpoints)
+            {
+                services.AddAllActuators();
+            }
 
             services.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.AuthenticationScheme, _ =>
@@ -90,16 +107,25 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapAllActuators().RequireAuthorization("TestAuth");
+                    if (mode == RegistrationMode.UseEndpoints)
+                    {
+                        endpoints.MapAllActuators().RequireAuthorization("TestAuth");
+                    }
+
                     endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
                 });
             });
         });
 
+        if (mode == RegistrationMode.HostBuilder)
+        {
+            hostBuilder.AddAllActuators(configureEndpoints => configureEndpoints.RequireAuthorization("TestAuth"));
+        }
+
         return hostBuilder;
     }
 
-    private async Task ActAndAssertAsync(IHostBuilder builder, Type endpointOptionsType, bool expectedSuccess)
+    private async Task ActAndAssertAsync(IHostBuilder builder, Type endpointOptionsType, bool expectSuccess)
     {
         using IHost host = await builder.StartAsync();
 
@@ -110,7 +136,6 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         ManagementOptions managementOptions = host.Services.GetRequiredService<IOptionsMonitor<ManagementOptions>>().CurrentValue;
         string path = options.GetPathMatchPattern(managementOptions, managementOptions.Path);
         path = path.Replace("metrics/{**_}", "metrics", StringComparison.Ordinal);
-        Assert.NotNull(path);
         HttpResponseMessage response;
 
         using HttpClient httpClient = host.GetTestClient();
@@ -124,7 +149,13 @@ public sealed class ActuatorRouteBuilderExtensionsTest
             response = await httpClient.PostAsync(new Uri(path, UriKind.RelativeOrAbsolute), null);
         }
 
-        Assert.True(expectedSuccess == response.IsSuccessStatusCode,
-            $"Expected {(expectedSuccess ? "success" : "failure")}, but got {response.StatusCode} for {path} and type {options}");
+        response.StatusCode.Should().Be(expectSuccess ? HttpStatusCode.OK : HttpStatusCode.Forbidden);
+    }
+
+    public enum RegistrationMode
+    {
+        HostBuilder,
+        Services,
+        UseEndpoints
     }
 }

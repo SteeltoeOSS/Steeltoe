@@ -127,8 +127,12 @@ internal static class HostBuilderWrapperExtensions
     {
         wrapper.ConfigureServices(services =>
         {
-            IEndpointConventionBuilder conventionBuilder = services.ActivateActuatorEndpoints();
-            configureEndpoints?.Invoke(conventionBuilder);
+            DeferredActuatorConventionBuilder conventionBuilder = services.InnerActivateActuatorEndpoints();
+
+            if (configureEndpoints != null)
+            {
+                conventionBuilder.AddConfigure(configureEndpoints);
+            }
         });
     }
 }

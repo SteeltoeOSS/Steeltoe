@@ -17,11 +17,11 @@ public static class ActuatorRouteBuilderExtensions
     /// The <see cref="IEndpointRouteBuilder" /> to add routes to.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// A <see cref="IEndpointConventionBuilder" /> that can be used to further customize the actuator endpoints.
     /// </returns>
     public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder builder)
     {
-        return MapAllActuators(builder, null);
+        return MapAllActuators(builder, new ImmediateActuatorConventionBuilder());
     }
 
     /// <summary>
@@ -31,20 +31,20 @@ public static class ActuatorRouteBuilderExtensions
     /// The <see cref="IEndpointRouteBuilder" /> to add routes to.
     /// </param>
     /// <param name="conventionBuilder">
-    /// An optional builder to customize endpoints.
+    /// The builder to customize all mapped endpoints.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="routeBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="conventionBuilder" /> that can be used to further customize the actuator endpoints.
     /// </returns>
-    public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder routeBuilder, ActuatorConventionBuilder? conventionBuilder)
+    internal static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder routeBuilder, ActuatorConventionBuilder conventionBuilder)
     {
         ArgumentNullException.ThrowIfNull(routeBuilder);
+        ArgumentNullException.ThrowIfNull(conventionBuilder);
 
         IServiceProvider serviceProvider = routeBuilder.ServiceProvider;
 
         using IServiceScope scope = serviceProvider.CreateScope();
         var mapper = scope.ServiceProvider.GetRequiredService<ActuatorEndpointMapper>();
-        conventionBuilder ??= new ActuatorConventionBuilder();
 
         mapper.Map(routeBuilder, conventionBuilder);
         return conventionBuilder;

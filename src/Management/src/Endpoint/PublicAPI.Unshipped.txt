@@ -20,7 +20,6 @@ static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.Liven
 static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessState.AcceptingTraffic -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessState!
 static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessState.RefusingTraffic -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessState!
 static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder! builder) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
-static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder! routeBuilder, Steeltoe.Management.Endpoint.ActuatorConventionBuilder? conventionBuilder) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
 static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IRouteBuilder! builder) -> Microsoft.AspNetCore.Routing.IRouteBuilder!
 static Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundrySecurityServiceCollectionExtensions.AddCloudFoundrySecurity(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.CloudFoundry.EndpointApplicationBuilderExtensions.UseCloudFoundrySecurity(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
@@ -107,10 +106,6 @@ static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddServic
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddThreadDumpActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddThreadDumpActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.SpringBootAdminClient.ServiceCollectionExtensions.AddSpringBootAdminClient(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-Steeltoe.Management.Endpoint.ActuatorConventionBuilder
-Steeltoe.Management.Endpoint.ActuatorConventionBuilder.ActuatorConventionBuilder() -> void
-Steeltoe.Management.Endpoint.ActuatorConventionBuilder.Add(Microsoft.AspNetCore.Builder.IEndpointConventionBuilder! builder) -> void
-Steeltoe.Management.Endpoint.ActuatorConventionBuilder.Add(System.Action<Microsoft.AspNetCore.Builder.EndpointBuilder!>! convention) -> void
 Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.Api.get -> string?
@@ -497,7 +492,6 @@ Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.get -> l
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.set -> void
 Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions
 Steeltoe.Management.Endpoint.AllActuatorsStartupFilter
-Steeltoe.Management.Endpoint.AllActuatorsStartupFilter.AllActuatorsStartupFilter(Steeltoe.Management.Endpoint.ActuatorConventionBuilder! conventionBuilder) -> void
 Steeltoe.Management.Endpoint.AllActuatorsStartupFilter.Configure(System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>? next) -> System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>!
 Steeltoe.Management.Endpoint.Configuration.Exposure
 Steeltoe.Management.Endpoint.Configuration.Exposure.Exclude.get -> System.Collections.Generic.IList<string!>!

@@ -17,9 +17,9 @@ namespace Steeltoe.Management.Endpoint;
 
 public sealed class AllActuatorsStartupFilter : IStartupFilter
 {
-    private readonly ActuatorConventionBuilder _conventionBuilder;
+    private readonly DeferredActuatorConventionBuilder _conventionBuilder;
 
-    public AllActuatorsStartupFilter(ActuatorConventionBuilder conventionBuilder)
+    internal AllActuatorsStartupFilter(DeferredActuatorConventionBuilder conventionBuilder)
     {
         ArgumentNullException.ThrowIfNull(conventionBuilder);
 
