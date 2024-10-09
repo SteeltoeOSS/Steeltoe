@@ -141,7 +141,7 @@ public static class ActuatorServiceCollectionExtensions
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <returns>
-    /// A <see cref="IEndpointConventionBuilder" /> that can be used to further customize the actuator endpoints.
+    /// An <see cref="IEndpointConventionBuilder" /> that can be used to further customize the actuator endpoints.
     /// </returns>
     public static IEndpointConventionBuilder ActivateActuatorEndpoints(this IServiceCollection services)
     {
