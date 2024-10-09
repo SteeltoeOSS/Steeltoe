@@ -2,9 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Environment;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Configuration;
@@ -75,6 +79,156 @@ public sealed class ConfigureOptionsTest
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ManagementOptions>>();
         optionsMonitor.CurrentValue.Port.Should().Be("9999");
+    }
+
+    [Fact]
+    public async Task CanTurnOffEndpointAtRuntimeFromExposureConfiguration()
+    {
+        const string fileName = "appsettings.json";
+        MemoryFileProvider fileProvider = new();
+
+        fileProvider.IncludeFile(fileName, """
+        {
+            "Management:Endpoints:Actuator:Exposure:Include:0": "env"
+        }
+        """);
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
+        builder.AddAllActuators();
+
+        await using WebApplication app = builder.Build();
+        app.UseRouting();
+        await app.StartAsync();
+
+        using HttpClient httpClient = app.GetTestClient();
+        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        response1.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        fileProvider.ReplaceFile(fileName, """
+        {
+            "Management:Endpoints:Actuator:Exposure:Include:0": "env",
+            "Management:Endpoints:Actuator:Exposure:Exclude:0": "*"
+        }
+        """);
+
+        fileProvider.NotifyChanged();
+
+        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        response2.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task CanTurnOnEndpointAtRuntimeFromExposureConfiguration()
+    {
+        const string fileName = "appsettings.json";
+        MemoryFileProvider fileProvider = new();
+
+        fileProvider.IncludeFile(fileName, """
+        {
+            "Management:Endpoints:Actuator:Exposure:Include:0": "env",
+            "Management:Endpoints:Actuator:Exposure:Exclude:0": "*"
+        }
+        """);
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
+        builder.AddAllActuators();
+
+        await using WebApplication app = builder.Build();
+        app.UseRouting();
+        await app.StartAsync();
+
+        using HttpClient httpClient = app.GetTestClient();
+        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        response1.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        fileProvider.ReplaceFile(fileName, """
+        {
+            "Management:Endpoints:Actuator:Exposure:Include:0": "env"
+        }
+        """);
+
+        fileProvider.NotifyChanged();
+
+        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        response2.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task CanTurnOffEndpointAtRuntimeFromEndpointConfiguration()
+    {
+        const string fileName = "appsettings.json";
+        MemoryFileProvider fileProvider = new();
+
+        fileProvider.IncludeFile(fileName, """
+        {
+            "Management:Endpoints:Actuator:Exposure:Include:0": "env",
+            "Management:Endpoints:Env:Enabled": "true"
+        }
+        """);
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
+        builder.AddAllActuators();
+
+        await using WebApplication app = builder.Build();
+        app.UseRouting();
+        await app.StartAsync();
+
+        using HttpClient httpClient = app.GetTestClient();
+        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        response1.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        fileProvider.ReplaceFile(fileName, """
+        {
+            "Management:Endpoints:Actuator:Exposure:Include:0": "env",
+            "Management:Endpoints:Env:Enabled": "false"
+        }
+        """);
+
+        fileProvider.NotifyChanged();
+
+        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        response2.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task CanTurnOnEndpointAtRuntimeFromEndpointConfiguration()
+    {
+        const string fileName = "appsettings.json";
+        MemoryFileProvider fileProvider = new();
+
+        fileProvider.IncludeFile(fileName, """
+        {
+            "Management:Endpoints:Actuator:Exposure:Include:0": "env",
+            "Management:Endpoints:Env:Enabled": "false"
+        }
+        """);
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
+        builder.AddAllActuators();
+
+        await using WebApplication app = builder.Build();
+        app.UseRouting();
+        await app.StartAsync();
+
+        using HttpClient httpClient = app.GetTestClient();
+        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        response1.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        fileProvider.ReplaceFile(fileName, """
+        {
+            "Management:Endpoints:Actuator:Exposure:Include:0": "env",
+            "Management:Endpoints:Env:Enabled": "true"
+        }
+        """);
+
+        fileProvider.NotifyChanged();
+
+        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        response2.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     private sealed class CustomManagementOptionsConfigurer : IConfigureOptions<ManagementOptions>
