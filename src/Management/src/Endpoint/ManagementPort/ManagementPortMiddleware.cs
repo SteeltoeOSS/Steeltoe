@@ -72,8 +72,7 @@ internal sealed class ManagementPortMiddleware
             defaultPort = context.Request.Scheme == "http" ? 80 : 443;
         }
 
-        _logger.LogWarning("Access to {Path} on port {Port} denied because 'Management:Endpoints:Port' is set to {ManagementPort}.",
-            context.Request.Path,
+        _logger.LogWarning("Access to {Path} on port {Port} denied because 'Management:Endpoints:Port' is set to {ManagementPort}.", context.Request.Path,
             defaultPort ?? context.Request.Host.Port, managementPort);
 
         context.Response.StatusCode = StatusCodes.Status404NotFound;
