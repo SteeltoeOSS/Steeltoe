@@ -141,13 +141,18 @@ public static class ActuatorServiceCollectionExtensions
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// An <see cref="IEndpointConventionBuilder" /> that can be used to further customize the actuator endpoints.
     /// </returns>
     public static IEndpointConventionBuilder ActivateActuatorEndpoints(this IServiceCollection services)
     {
+        return InnerActivateActuatorEndpoints(services);
+    }
+
+    internal static DeferredActuatorConventionBuilder InnerActivateActuatorEndpoints(this IServiceCollection services)
+    {
         ArgumentNullException.ThrowIfNull(services);
 
-        var actuatorConventionBuilder = new ActuatorConventionBuilder();
+        var actuatorConventionBuilder = new DeferredActuatorConventionBuilder();
 
         services.TryAddEnumerable(
             ServiceDescriptor.Transient<IStartupFilter, AllActuatorsStartupFilter>(_ => new AllActuatorsStartupFilter(actuatorConventionBuilder)));

@@ -37,10 +37,10 @@ internal sealed class ActuatorEndpointMapper
         _logger = logger;
     }
 
-    public void Map(IEndpointRouteBuilder endpointRouteBuilder, ActuatorConventionBuilder conventionBuilder)
+    public void Map(IEndpointRouteBuilder endpointRouteBuilder, ActuatorConventionBuilder actuatorConventionBuilder)
     {
         ArgumentNullException.ThrowIfNull(endpointRouteBuilder);
-        ArgumentNullException.ThrowIfNull(conventionBuilder);
+        ArgumentNullException.ThrowIfNull(actuatorConventionBuilder);
 
         InnerMap(middleware => endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middleware.GetType()).Build(),
             (middleware, requestPath, pipeline) =>
@@ -50,7 +50,7 @@ internal sealed class ActuatorEndpointMapper
                 if (allowedVerbs.Count > 0)
                 {
                     IEndpointConventionBuilder endpointConventionBuilder = endpointRouteBuilder.MapMethods(requestPath, allowedVerbs, pipeline);
-                    conventionBuilder.Add(endpointConventionBuilder);
+                    actuatorConventionBuilder.TrackTarget(endpointConventionBuilder);
                 }
             });
     }
