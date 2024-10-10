@@ -51,7 +51,7 @@ public static class ConfigurationServiceCollectionExtensions
 
         services.AddOptions<ConfigurationDiscoveryOptions>().BindConfiguration(ConfigurationDiscoveryOptions.ConfigurationPrefix);
 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IDiscoveryClient), typeof(ConfigurationDiscoveryClient)));
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiscoveryClient, ConfigurationDiscoveryClient>());
         services.AddHostedService<DiscoveryClientHostedService>();
 
         return services;
