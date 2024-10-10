@@ -60,5 +60,10 @@ public sealed class MigrateDbContextTaskTest
         {
             throw new NotImplementedException();
         }
+
+        public bool HasPendingModelChanges()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
