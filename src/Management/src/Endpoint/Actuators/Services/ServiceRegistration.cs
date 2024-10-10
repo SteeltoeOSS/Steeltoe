@@ -60,7 +60,7 @@ public sealed class ServiceRegistration
         ConstructorInfo[] constructors = implementationType.GetConstructors();
 
         ConstructorInfo? preferredConstructor = Array.Find(constructors,
-            constructor => constructor.GetCustomAttribute(typeof(ActivatorUtilitiesConstructorAttribute)) != null);
+            constructor => constructor.GetCustomAttribute<ActivatorUtilitiesConstructorAttribute>() != null);
 
         if (preferredConstructor != null)
         {
