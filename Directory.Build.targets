@@ -78,7 +78,8 @@
 
   <Target Name="CalculateConfigurationSchemaGeneratorPath">
     <MSBuild Projects="$(ConfigurationSchemaGeneratorProjectPath)"
-             Targets="GetTargetPath">
+             Targets="GetTargetPath"
+             RemoveProperties="TargetFramework">
       <Output TaskParameter="TargetOutputs" PropertyName="ConfigurationSchemaGeneratorPath" />
     </MSBuild>
   </Target>
@@ -92,8 +93,8 @@
           Outputs="$(GeneratedConfigurationSchemaOutputPath)">
 
     <PropertyGroup>
-      <GeneratorCommandLine>dotnet exec $(ConfigurationSchemaGeneratorPath)</GeneratorCommandLine>
-      <GeneratorCommandLine>$(GeneratorCommandLine) @$(ConfigurationSchemaGeneratorRspPath)</GeneratorCommandLine>
+      <GeneratorCommandLine>dotnet exec "$(ConfigurationSchemaGeneratorPath)"</GeneratorCommandLine>
+      <GeneratorCommandLine>$(GeneratorCommandLine) @"$(ConfigurationSchemaGeneratorRspPath)"</GeneratorCommandLine>
     </PropertyGroup>
 
     <Message Importance="High" Text="Running ConfigurationSchemaGenerator for project: $(MSBuildProjectName)" />
