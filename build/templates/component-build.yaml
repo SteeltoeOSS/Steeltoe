@@ -30,6 +30,11 @@ jobs:
     displayName: Install .NET 8
     inputs:
       version: 8.0.x
+  - task: UseDotNet@2
+    displayName: Install .NET 9
+    inputs:
+      version: 9.0.x
+      includePreviewVersions: true
   - task: DotNetCoreCLI@2
     displayName: Install Nerdbank.GitVersioning tool
     condition: eq('${{parameters.OS}}', 'macOS')
@@ -63,12 +68,18 @@ jobs:
   - script: docker run -d --name configserver -p 8888:8888 steeltoe.azurecr.io/config-server --spring.cloud.config.server.git.default-label=main; sleep 10s
     condition: eq(${{parameters.runConfigServer}}, 'true')
     displayName: Start Config Server
+  - task: PowerShell@2
+    displayName: Dump env
+    inputs:
+      targetType: 'inline'
+      script: |
+        gci env: | Format-Table -Wrap -AutoSize
   - task: DotNetCoreCLI@2
-    displayName: dotnet test net8.0
+    displayName: dotnet test net9.0
     inputs:
       command: test
       projects: $(SolutionFile)
-      arguments: -f net8.0 ${{parameters.skipFilter}} $(CommonTestArgs)
+      arguments: -f net9.0 ${{parameters.skipFilter}} $(CommonTestArgs)
       publishTestResults: false
   - task: CopyFiles@2
     condition: failed()
