@@ -17,7 +17,8 @@ public static class ActuatorRouteBuilderExtensions
     /// The <see cref="IEndpointRouteBuilder" /> to add routes to.
     /// </param>
     /// <returns>
-    /// An <see cref="IEndpointConventionBuilder" /> that can be used to further customize the actuator endpoints.
+    /// An <see cref="IEndpointConventionBuilder" /> that can be used to further customize the actuator endpoints. Beware that only the <i>first</i> time
+    /// this method is called, its continuation methods will have an effect.
     /// </returns>
     public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder builder)
     {
@@ -34,7 +35,8 @@ public static class ActuatorRouteBuilderExtensions
     /// The builder to customize all mapped endpoints.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="conventionBuilder" /> that can be used to further customize the actuator endpoints.
+    /// The incoming <paramref name="conventionBuilder" /> that can be used to further customize the actuator endpoints. Beware that only the <i>first</i>
+    /// time this method is called, its continuation methods will have an effect.
     /// </returns>
     internal static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder routeBuilder, ActuatorConventionBuilder conventionBuilder)
     {

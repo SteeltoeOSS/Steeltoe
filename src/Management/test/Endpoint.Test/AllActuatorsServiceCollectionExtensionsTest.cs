@@ -13,7 +13,7 @@ using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public sealed class ActuatorServiceCollectionExtensionsTest
+public sealed class AllActuatorsServiceCollectionExtensionsTest
 {
     [Fact]
     public void AddAllActuators_ConfiguresCorsDefaults()

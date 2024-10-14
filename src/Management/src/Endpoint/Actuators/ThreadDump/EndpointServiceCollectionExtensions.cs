@@ -2,7 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
@@ -38,8 +41,33 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddCommonActuatorServices();
-        services.AddThreadDumpActuatorServices(version);
+        if (version == MediaTypeVersion.V1)
+        {
+            services
+                .AddCoreActuatorServicesAsSingleton<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1, ThreadDumpEndpointMiddleware,
+                    IThreadDumpEndpointHandler, ThreadDumpEndpointHandler, object?, IList<ThreadInfo>>();
+        }
+        else
+        {
+            services
+                .AddCoreActuatorServicesAsSingleton<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptions, ThreadDumpEndpointMiddleware,
+                    IThreadDumpEndpointHandler, ThreadDumpEndpointHandler, object?, IList<ThreadInfo>>();
+        }
+
+        if (version == MediaTypeVersion.V2)
+        {
+            services.PostConfigure<ManagementOptions>(managementOptions =>
+            {
+                JsonSerializerOptions serializerOptions = managementOptions.SerializerOptions;
+
+                if (!serializerOptions.Converters.Any(converter => converter is ThreadDumpV2Converter))
+                {
+                    serializerOptions.Converters.Add(new ThreadDumpV2Converter());
+                }
+            });
+        }
+
+        services.TryAddSingleton<EventPipeThreadDumper>();
 
         return services;
     }

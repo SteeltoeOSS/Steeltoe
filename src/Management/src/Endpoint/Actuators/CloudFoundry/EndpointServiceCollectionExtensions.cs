@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
@@ -21,8 +22,9 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddCommonActuatorServices();
-        services.AddCloudFoundryActuatorServices();
+        services
+            .AddCoreActuatorServicesAsSingleton<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions, CloudFoundryEndpointMiddleware,
+                ICloudFoundryEndpointHandler, CloudFoundryEndpointHandler, string, Links>();
 
         return services;
     }

@@ -24,10 +24,11 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.TryAddSingleton<IHostEnvironment>(provider => provider.GetRequiredService<IWebHostEnvironment>());
+        services.TryAddSingleton<IHostEnvironment>(serviceProvider => serviceProvider.GetRequiredService<IWebHostEnvironment>());
 
-        services.AddCommonActuatorServices();
-        services.AddEnvironmentActuatorServices();
+        services
+            .AddCoreActuatorServicesAsSingleton<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions, EnvironmentEndpointMiddleware,
+                IEnvironmentEndpointHandler, EnvironmentEndpointHandler, object?, EnvironmentResponse>();
 
         return services;
     }

@@ -21,8 +21,11 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddCommonActuatorServices();
-        services.AddServicesActuatorServices();
+        services.AddSingleton(services);
+
+        services
+            .AddCoreActuatorServicesAsSingleton<ServicesEndpointOptions, ConfigureServicesEndpointOptions, ServicesEndpointMiddleware, IServicesEndpointHandler,
+                ServicesEndpointHandler, object?, IList<ServiceRegistration>>();
 
         return services;
     }

@@ -22,10 +22,11 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddHeapDumpActuatorServices();
+        services
+            .AddCoreActuatorServicesAsSingleton<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions, HeapDumpEndpointMiddleware, IHeapDumpEndpointHandler,
+                HeapDumpEndpointHandler, object?, string?>();
 
         services.TryAddSingleton<HeapDumper>();
-        services.AddCommonActuatorServices();
 
         return services;
     }
