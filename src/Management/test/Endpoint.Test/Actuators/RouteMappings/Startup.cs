@@ -48,7 +48,7 @@ public sealed class Startup
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapAllActuators();
+                endpoints.MapActuators();
             });
         }
         else
@@ -56,7 +56,7 @@ public sealed class Startup
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                routes.MapAllActuators();
+                routes.MapActuators();
                 routes.AddRoutesToMappingsActuator();
             });
         }

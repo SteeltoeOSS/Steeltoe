@@ -49,11 +49,11 @@ public sealed class AllActuatorsStartupFilter : IStartupFilter
 
             if (isEndpointRoutingEnabled)
             {
-                app.UseEndpoints(endpoints => endpoints.MapAllActuators(_conventionBuilder));
+                app.UseEndpoints(endpoints => endpoints.MapActuators(_conventionBuilder));
             }
             else
             {
-                app.UseMvc(routeBuilder => routeBuilder.MapAllActuators());
+                app.UseMvc(routeBuilder => routeBuilder.MapActuators());
             }
 
             app.ApplicationServices.InitializeAvailability();

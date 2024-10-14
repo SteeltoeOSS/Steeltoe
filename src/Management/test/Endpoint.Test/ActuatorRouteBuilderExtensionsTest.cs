@@ -118,7 +118,7 @@ public sealed class ActuatorRouteBuilderExtensionsTest
                 {
                     app.UseEndpoints(endpoints =>
                     {
-                        endpoints.MapAllActuators().RequireAuthorization("TestAuth");
+                        endpoints.MapActuators().RequireAuthorization("TestAuth");
                     });
                 }
             });

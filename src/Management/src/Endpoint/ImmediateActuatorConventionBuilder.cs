@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Builder;
 namespace Steeltoe.Management.Endpoint;
 
 /// <summary>
-/// Used by IEndpointRouteBuilder.MapAllActuators(). <see cref="TrackTarget" /> executes BEFORE any optional <see cref="Add" /> calls.
+/// Used by IApplicationBuilder.UseActuators() and IEndpointRouteBuilder.MapActuators(). <see cref="TrackTarget" /> executes BEFORE any optional
+/// <see cref="Add" /> calls.
 /// </summary>
 internal sealed class ImmediateActuatorConventionBuilder : ActuatorConventionBuilder
 {

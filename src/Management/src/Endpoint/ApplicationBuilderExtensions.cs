@@ -54,13 +54,13 @@ public static class ApplicationBuilderExtensions
             builder.UseEndpoints(endpoints =>
             {
                 var conventionBuilder = new ImmediateActuatorConventionBuilder();
-                endpoints.MapAllActuators(conventionBuilder);
+                endpoints.MapActuators(conventionBuilder);
                 configureEndpoints?.Invoke(conventionBuilder);
             });
         }
         else
         {
-            builder.UseMvc(routeBuilder => routeBuilder.MapAllActuators());
+            builder.UseMvc(routeBuilder => routeBuilder.MapActuators());
         }
 
         return builder;
