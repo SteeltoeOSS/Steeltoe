@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
+using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health;
 
@@ -29,10 +30,23 @@ public static class EndpointServiceCollectionExtensions
             .AddCoreActuatorServicesAsScoped<HealthEndpointOptions, ConfigureHealthEndpointOptions, HealthEndpointMiddleware, IHealthEndpointHandler,
                 HealthEndpointHandler, HealthEndpointRequest, HealthEndpointResponse>();
 
+        RegisterJsonConverter(services);
+
         services.TryAddSingleton<IHealthAggregator, HealthAggregator>();
         RegisterDefaultHealthContributors(services);
 
         return services;
+    }
+
+    private static void RegisterJsonConverter(IServiceCollection services)
+    {
+        services.PostConfigure<ManagementOptions>(managementOptions =>
+        {
+            if (!managementOptions.SerializerOptions.Converters.Any(converter => converter is HealthConverter or HealthConverterV3))
+            {
+                managementOptions.SerializerOptions.Converters.Add(new HealthConverter());
+            }
+        });
     }
 
     private static void RegisterDefaultHealthContributors(IServiceCollection services)
