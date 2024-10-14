@@ -32,7 +32,7 @@ public sealed class MapActuatorsStartupFilter : IStartupFilter
         {
             if (app.ApplicationServices.GetService<ICorsService>() != null)
             {
-                app.UseCors("SteeltoeManagement");
+                app.UseCors(CorsServiceCollectionExtensions.ActuatorsCorsPolicyName);
             }
 
             if (Platform.IsCloudFoundry)

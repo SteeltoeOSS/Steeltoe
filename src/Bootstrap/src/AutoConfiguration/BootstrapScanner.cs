@@ -248,7 +248,7 @@ internal sealed class BootstrapScanner
 
     private void WireAllActuators()
     {
-        _wrapper.AddAllActuators(null, MediaTypeVersion.V2, null);
+        _wrapper.AddAllActuators(null, MediaTypeVersion.V2);
 
         _logger.LogInformation("Configured actuators");
     }

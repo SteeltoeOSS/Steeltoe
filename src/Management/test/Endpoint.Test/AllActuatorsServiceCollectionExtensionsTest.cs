@@ -26,9 +26,10 @@ public sealed class AllActuatorsServiceCollectionExtensionsTest
         var options = host.Services.GetService<IOptions<CorsOptions>>();
 
         Assert.NotNull(options);
-        CorsPolicy? policy = options.Value.GetPolicy("SteeltoeManagement");
+        CorsPolicy? policy = options.Value.GetPolicy(CorsServiceCollectionExtensions.ActuatorsCorsPolicyName);
         Assert.NotNull(policy);
         Assert.True(policy.IsOriginAllowed("*"));
+        Assert.Equal(2, policy.Methods.Count);
         Assert.Contains(policy.Methods, method => method == "GET");
         Assert.Contains(policy.Methods, method => method == "POST");
     }
@@ -38,19 +39,47 @@ public sealed class AllActuatorsServiceCollectionExtensionsTest
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
-        hostBuilder.ConfigureServices(services => services.AddAllActuators(myPolicy => myPolicy.WithOrigins("http://google.com")));
+
+        hostBuilder.ConfigureServices(services =>
+        {
+            services.AddActuatorsCorsPolicy(myPolicy => myPolicy.WithOrigins("http://google.com"));
+            services.AddAllActuators();
+        });
+
         using IWebHost host = hostBuilder.Build();
 
         var options = host.Services.GetService<IOptions<CorsOptions>>();
 
         Assert.NotNull(options);
-        CorsPolicy? policy = options.Value.GetPolicy("SteeltoeManagement");
+        CorsPolicy? policy = options.Value.GetPolicy(CorsServiceCollectionExtensions.ActuatorsCorsPolicyName);
         Assert.NotNull(policy);
         Assert.True(policy.IsOriginAllowed("http://google.com"));
         Assert.False(policy.IsOriginAllowed("http://bing.com"));
         Assert.False(policy.IsOriginAllowed("*"));
+        Assert.Equal(2, policy.Methods.Count);
         Assert.Contains(policy.Methods, method => method == "GET");
         Assert.Contains(policy.Methods, method => method == "POST");
+    }
+
+    [Fact]
+    public void AddAllActuators_ConfiguresCorsCustom_ThrowsWhenTooLate()
+    {
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
+
+        hostBuilder.ConfigureServices(services =>
+        {
+            services.AddAllActuators();
+            services.AddActuatorsCorsPolicy(myPolicy => myPolicy.WithOrigins("http://google.com"));
+        });
+
+        using IWebHost host = hostBuilder.Build();
+        var options = host.Services.GetRequiredService<IOptions<CorsOptions>>();
+
+        Action action = () => _ = options.Value;
+
+        action.Should().ThrowExactly<InvalidOperationException>()
+            .WithMessage("A CORS policy for actuator endpoints has already been configured. Call 'AddActuatorsCorsPolicy()' before adding actuators.");
     }
 
     [Fact]
