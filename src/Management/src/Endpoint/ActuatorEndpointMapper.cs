@@ -79,7 +79,7 @@ internal sealed class ActuatorEndpointMapper
         // Map Cloudfoundry context
         if (Platform.IsCloudFoundry)
         {
-            IEnumerable<IEndpointMiddleware> cloudFoundryMiddlewares = _middlewares.Where(middleware => middleware is not ActuatorHypermediaEndpointMiddleware);
+            IEnumerable<IEndpointMiddleware> cloudFoundryMiddlewares = _middlewares.Where(middleware => middleware is not HypermediaEndpointMiddleware);
             MapEndpoints(collection, ConfigureManagementOptions.DefaultCloudFoundryPath, cloudFoundryMiddlewares, createPipeline, applyMapping);
         }
     }

@@ -30,8 +30,8 @@ internal static class ServiceCollectionExtensions
 
         services.TryAddSingleton<IActuatorEndpointHandler, ActuatorEndpointHandler>();
 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ActuatorHypermediaEndpointMiddleware>());
-        services.AddSingleton<ActuatorHypermediaEndpointMiddleware>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, HypermediaEndpointMiddleware>());
+        services.AddSingleton<HypermediaEndpointMiddleware>();
 
         return services;
     }

@@ -11,11 +11,11 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 
-internal sealed class ActuatorHypermediaEndpointMiddleware(
+internal sealed class HypermediaEndpointMiddleware(
     IActuatorEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
     : EndpointMiddleware<string, Links>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    private readonly ILogger _logger = loggerFactory.CreateLogger<ActuatorHypermediaEndpointMiddleware>();
+    private readonly ILogger _logger = loggerFactory.CreateLogger<HypermediaEndpointMiddleware>();
 
     protected override async Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
