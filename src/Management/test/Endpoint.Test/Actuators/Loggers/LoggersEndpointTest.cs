@@ -5,7 +5,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Logging;
-using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
 using Xunit.Abstractions;
 
@@ -23,7 +22,6 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IDynamicLoggerProvider, TestLogProvider>();
-            services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuator();
         };
 
@@ -39,12 +37,7 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     public async Task GetLoggerConfiguration_ReturnsExpected()
     {
         using var testContext = new TestContext(_testOutputHelper);
-
-        testContext.AdditionalServices = (services, _) =>
-        {
-            services.AddLogging(builder => builder.AddDynamicConsole());
-            services.AddLoggersActuator();
-        };
+        testContext.AdditionalServices = (services, _) => services.AddLoggersActuator();
 
         var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
 
@@ -75,7 +68,6 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IDynamicLoggerProvider, TestLogProvider>();
-            services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuator();
         };
 
@@ -96,12 +88,7 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     public async Task SetLogLevel_ReturnsExpected()
     {
         using var testContext = new TestContext(_testOutputHelper);
-
-        testContext.AdditionalServices = (services, _) =>
-        {
-            services.AddLogging(builder => builder.AddDynamicConsole());
-            services.AddLoggersActuator();
-        };
+        testContext.AdditionalServices = (services, _) => services.AddLoggersActuator();
 
         var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
 

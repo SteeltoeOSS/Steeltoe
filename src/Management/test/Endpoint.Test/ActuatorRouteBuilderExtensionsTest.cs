@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
@@ -68,7 +67,6 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         };
 
         IHostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
-        hostBuilder.ConfigureLogging(builder => builder.AddDynamicConsole());
         hostBuilder.ConfigureAppConfiguration(configure => configure.AddInMemoryCollection(appSettings));
 
         hostBuilder.ConfigureServices(services =>
