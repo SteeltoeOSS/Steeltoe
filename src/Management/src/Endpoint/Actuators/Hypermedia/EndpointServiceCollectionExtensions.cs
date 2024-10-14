@@ -21,8 +21,9 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddCommonActuatorServices();
-        services.AddHypermediaActuatorServices();
+        services
+            .AddCoreActuatorServicesAsSingleton<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions, HypermediaEndpointMiddleware,
+                IActuatorEndpointHandler, ActuatorEndpointHandler, string, Links>();
 
         return services;
     }

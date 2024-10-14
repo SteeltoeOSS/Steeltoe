@@ -25,12 +25,11 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddCommonActuatorServices();
-        services.AddHealthActuatorServices();
+        services
+            .AddCoreActuatorServicesAsScoped<HealthEndpointOptions, ConfigureHealthEndpointOptions, HealthEndpointMiddleware, IHealthEndpointHandler,
+                HealthEndpointHandler, HealthEndpointRequest, HealthEndpointResponse>();
 
         services.TryAddSingleton<IHealthAggregator, HealthAggregator>();
-        services.TryAddSingleton<ApplicationAvailability>();
-
         RegisterDefaultHealthContributors(services);
 
         return services;
@@ -38,7 +37,10 @@ public static class EndpointServiceCollectionExtensions
 
     private static void RegisterDefaultHealthContributors(IServiceCollection services)
     {
+        services.ConfigureOptionsWithChangeTokenSource<DiskSpaceContributorOptions, ConfigureDiskSpaceContributorOptions>();
         AddHealthContributor<DiskSpaceContributor>(services);
+
+        services.TryAddSingleton<ApplicationAvailability>();
         AddHealthContributor<LivenessHealthContributor>(services);
         AddHealthContributor<ReadinessHealthContributor>(services);
     }

@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the HttpExchanges actuator to the service container.
+    /// Adds the HTTP exchanges actuator to the service container.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
@@ -23,14 +23,15 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
-        services.AddHostedService<DiagnosticsService>();
-        services.AddCommonActuatorServices();
-        services.AddHttpExchangesActuatorServices();
+        services
+            .AddCoreActuatorServicesAsSingleton<HttpExchangesEndpointOptions, ConfigureHttpExchangesEndpointOptions, HttpExchangesEndpointMiddleware,
+                IHttpExchangesEndpointHandler, HttpExchangesEndpointHandler, object?, HttpExchangesResult>();
+
+        services.AddDiagnosticsManager();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpExchangesDiagnosticObserver>());
 
-        services.TryAddSingleton<IHttpExchangesRepository>(provider =>
-            provider.GetServices<IDiagnosticObserver>().OfType<HttpExchangesDiagnosticObserver>().Single());
+        services.TryAddSingleton<IHttpExchangesRepository>(serviceProvider =>
+            serviceProvider.GetServices<IDiagnosticObserver>().OfType<HttpExchangesDiagnosticObserver>().Single());
 
         return services;
     }

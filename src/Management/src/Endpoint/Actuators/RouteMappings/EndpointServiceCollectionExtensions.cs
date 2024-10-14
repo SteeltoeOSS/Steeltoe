@@ -22,8 +22,9 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddCommonActuatorServices();
-        services.AddMappingsActuatorServices();
+        services
+            .AddCoreActuatorServicesAsSingleton<RouteMappingsEndpointOptions, ConfigureRouteMappingsEndpointOptions, RouteMappingsEndpointMiddleware,
+                IRouteMappingsEndpointHandler, RouteMappingsEndpointHandler, object?, RouteMappingsResponse>();
 
         services.AddEndpointsApiExplorer();
         services.TryAddSingleton<RouterMappings>();

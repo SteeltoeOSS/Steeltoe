@@ -23,8 +23,9 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddCommonActuatorServices();
-        services.AddInfoActuatorServices();
+        services
+            .AddCoreActuatorServicesAsSingleton<InfoEndpointOptions, ConfigureInfoEndpointOptions, InfoEndpointMiddleware, IInfoEndpointHandler, InfoEndpointHandler,
+                object?, IDictionary<string, object>>();
 
         RegisterDefaultInfoContributors(services);
 

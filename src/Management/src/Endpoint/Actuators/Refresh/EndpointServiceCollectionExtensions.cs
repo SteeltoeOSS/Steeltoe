@@ -21,8 +21,9 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddCommonActuatorServices();
-        services.AddRefreshActuatorServices();
+        services
+            .AddCoreActuatorServicesAsSingleton<RefreshEndpointOptions, ConfigureRefreshEndpointOptions, RefreshEndpointMiddleware, IRefreshEndpointHandler,
+                RefreshEndpointHandler, object?, IList<string>>();
 
         return services;
     }

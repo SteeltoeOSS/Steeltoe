@@ -45,12 +45,13 @@ static Steeltoe.Management.Endpoint.Actuators.RouteMappings.RouteBuilderExtensio
 static Steeltoe.Management.Endpoint.Actuators.Services.EndpointServiceCollectionExtensions.AddServicesActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.ThreadDump.EndpointServiceCollectionExtensions.AddThreadDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.ThreadDump.EndpointServiceCollectionExtensions.AddThreadDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.ActivateActuatorEndpoints(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
-static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddCommonActuatorServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.AllActuatorsServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.AllActuatorsServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.AllActuatorsServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.AllActuatorsServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions.ActivateActuatorEndpoints(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
+static Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions.AddCoreActuatorServicesAsScoped<TEndpointOptions, TConfigureEndpointOptions, TMiddleware, TEndpointHandlerInterface, TEndpointHandler, TArgument, TResult>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions.AddCoreActuatorServicesAsSingleton<TEndpointOptions, TConfigureEndpointOptions, TMiddleware, TEndpointHandlerInterface, TEndpointHandler, TArgument, TResult>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddAllActuators(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddAllActuators(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddAllActuators(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
@@ -490,13 +491,15 @@ Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedCount.get -> 
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedCount.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.get -> long
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.set -> void
-Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions
+Steeltoe.Management.Endpoint.AllActuatorsServiceCollectionExtensions
 Steeltoe.Management.Endpoint.AllActuatorsStartupFilter
 Steeltoe.Management.Endpoint.AllActuatorsStartupFilter.Configure(System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>? next) -> System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>!
 Steeltoe.Management.Endpoint.Configuration.Exposure
 Steeltoe.Management.Endpoint.Configuration.Exposure.Exclude.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.Configuration.Exposure.Exposure() -> void
 Steeltoe.Management.Endpoint.Configuration.Exposure.Include.get -> System.Collections.Generic.IList<string!>!
+Steeltoe.Management.Endpoint.Configuration.IConfigureOptionsWithKey<T>
+Steeltoe.Management.Endpoint.Configuration.IConfigureOptionsWithKey<T>.ConfigurationKey.get -> string!
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.CustomJsonConverters.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Enabled.get -> bool?
@@ -512,6 +515,7 @@ Steeltoe.Management.Endpoint.Configuration.ManagementOptions.SslEnabled.get -> b
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.SslEnabled.set -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.UseStatusCodeFromResponse.get -> bool
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.UseStatusCodeFromResponse.set -> void
+Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions
 Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>
 Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>.InvokeAsync(TArgument argument, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>!
 Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>.Options.get -> Steeltoe.Management.Configuration.EndpointOptions!

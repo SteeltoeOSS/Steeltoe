@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Steeltoe.Management.Endpoint.Actuators.DbMigrations;
 
@@ -21,8 +22,11 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddCommonActuatorServices();
-        services.AddDbMigrationsActuatorServices();
+        services.TryAddSingleton<IDatabaseMigrationScanner, DatabaseMigrationScanner>();
+
+        services
+            .AddCoreActuatorServicesAsSingleton<DbMigrationsEndpointOptions, ConfigureDbMigrationsEndpointOptions, DbMigrationsEndpointMiddleware,
+                IDbMigrationsEndpointHandler, DbMigrationsEndpointHandler, object?, Dictionary<string, DbMigrationsDescriptor>>();
 
         return services;
     }

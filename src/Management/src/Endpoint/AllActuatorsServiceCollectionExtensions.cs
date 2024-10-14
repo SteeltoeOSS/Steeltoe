@@ -2,14 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.DbMigrations;
 using Steeltoe.Management.Endpoint.Actuators.Environment;
@@ -24,45 +19,11 @@ using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
-using Steeltoe.Management.Endpoint.Configuration;
-using Steeltoe.Management.Endpoint.ManagementPort;
 
 namespace Steeltoe.Management.Endpoint;
 
-public static class ActuatorServiceCollectionExtensions
+public static class AllActuatorsServiceCollectionExtensions
 {
-    public static IServiceCollection AddCommonActuatorServices(this IServiceCollection services)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-
-        services.AddRouting();
-        services.TryAddScoped<ActuatorEndpointMapper>();
-
-        services.ConfigureOptionsWithChangeTokenSource<ManagementOptions, ConfigureManagementOptions>();
-
-        return services;
-    }
-
-    internal static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
-        where TOptions : EndpointOptions
-        where TConfigureOptions : class, IConfigureOptionsWithKey<TOptions>
-    {
-        ArgumentNullException.ThrowIfNull(services);
-
-        services.ConfigureOptionsWithChangeTokenSource<TOptions, TConfigureOptions>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointOptionsMonitorProvider, EndpointOptionsMonitorProvider<TOptions>>());
-    }
-
-    internal static void ConfigureOptionsWithChangeTokenSource<TOptions, TConfigureOptions>(this IServiceCollection services)
-        where TOptions : class
-        where TConfigureOptions : class, IConfigureOptionsWithKey<TOptions>
-    {
-        services.AddOptions();
-        services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<TOptions>, TConfigureOptions>());
-
-        services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>, ConfigurationChangeTokenSource<TOptions>>();
-    }
-
     public static IServiceCollection AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
         return AddAllActuators(services, MediaTypeVersion.V2, buildCorsPolicy);
@@ -132,33 +93,5 @@ public static class ActuatorServiceCollectionExtensions
                 }
             });
         });
-    }
-
-    /// <summary>
-    /// Registers <see cref="IStartupFilter" />s that will map all configured actuators, initialize health, etc.
-    /// </summary>
-    /// <param name="services">
-    /// The <see cref="IServiceCollection" /> to add services to.
-    /// </param>
-    /// <returns>
-    /// An <see cref="IEndpointConventionBuilder" /> that can be used to further customize the actuator endpoints.
-    /// </returns>
-    public static IEndpointConventionBuilder ActivateActuatorEndpoints(this IServiceCollection services)
-    {
-        return InnerActivateActuatorEndpoints(services);
-    }
-
-    internal static DeferredActuatorConventionBuilder InnerActivateActuatorEndpoints(this IServiceCollection services)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-
-        var actuatorConventionBuilder = new DeferredActuatorConventionBuilder();
-
-        services.TryAddEnumerable(
-            ServiceDescriptor.Transient<IStartupFilter, AllActuatorsStartupFilter>(_ => new AllActuatorsStartupFilter(actuatorConventionBuilder)));
-
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, ManagementPortStartupFilter>());
-
-        return actuatorConventionBuilder;
     }
 }

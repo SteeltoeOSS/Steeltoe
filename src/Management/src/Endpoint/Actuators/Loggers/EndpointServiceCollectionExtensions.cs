@@ -21,8 +21,9 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddCommonActuatorServices();
-        services.AddLoggersActuatorServices();
+        services
+            .AddCoreActuatorServicesAsSingleton<LoggersEndpointOptions, ConfigureLoggersEndpointOptions, LoggersEndpointMiddleware, ILoggersEndpointHandler,
+                LoggersEndpointHandler, LoggersRequest, LoggersResponse>();
 
         return services;
     }
