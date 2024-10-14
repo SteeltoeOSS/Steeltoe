@@ -15,11 +15,11 @@ using Steeltoe.Management.Endpoint.ManagementPort;
 
 namespace Steeltoe.Management.Endpoint;
 
-public sealed class AllActuatorsStartupFilter : IStartupFilter
+public sealed class MapActuatorsStartupFilter : IStartupFilter
 {
     private readonly DeferredActuatorConventionBuilder _conventionBuilder;
 
-    internal AllActuatorsStartupFilter(DeferredActuatorConventionBuilder conventionBuilder)
+    internal MapActuatorsStartupFilter(DeferredActuatorConventionBuilder conventionBuilder)
     {
         ArgumentNullException.ThrowIfNull(conventionBuilder);
 
