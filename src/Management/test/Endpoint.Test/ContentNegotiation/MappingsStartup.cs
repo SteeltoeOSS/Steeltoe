@@ -14,7 +14,7 @@ public sealed class MappingsStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHypermediaActuator();
-        services.AddMappingsActuator();
+        services.AddRouteMappingsActuator();
     }
 
     public void Configure(IApplicationBuilder app)

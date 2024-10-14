@@ -468,7 +468,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureServices(services =>
         {
             services.AddMvc(options => options.EnableEndpointRouting = false);
-            services.AddMappingsActuator();
+            services.AddRouteMappingsActuator();
         });
 
         builder.Configure(app =>

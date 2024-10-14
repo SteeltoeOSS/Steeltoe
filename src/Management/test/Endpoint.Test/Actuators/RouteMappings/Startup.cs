@@ -27,7 +27,7 @@ public sealed class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddCloudFoundryActuator();
-        services.AddMappingsActuator();
+        services.AddRouteMappingsActuator();
         services.AddRefreshActuator();
 
         services.AddMvc(options =>
