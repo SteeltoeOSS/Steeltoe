@@ -27,7 +27,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         IConfiguration configuration = configurationBuilder.Build();
         services.AddSingleton(configuration);
 
-        services.AddMappingsActuator();
+        services.AddRouteMappingsActuator();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<RouteMappingsEndpointOptions>>();

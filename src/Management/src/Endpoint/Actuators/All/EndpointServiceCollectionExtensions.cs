@@ -68,7 +68,7 @@ public static class EndpointServiceCollectionExtensions
         services.AddHealthActuator();
         services.AddLoggersActuator();
         services.AddHttpExchangesActuator();
-        services.AddMappingsActuator();
+        services.AddRouteMappingsActuator();
         services.AddMetricsActuator();
         services.AddRefreshActuator();
         services.AddServicesActuator();

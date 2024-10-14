@@ -78,7 +78,7 @@ internal static class HostBuilderWrapperExtensions
 
     public static void AddMappingsActuator(this HostBuilderWrapper wrapper)
     {
-        wrapper.ConfigureServices(services => services.AddMappingsActuator());
+        wrapper.ConfigureServices(services => services.AddRouteMappingsActuator());
         RegisterActuatorEndpoints(wrapper, null);
     }
 

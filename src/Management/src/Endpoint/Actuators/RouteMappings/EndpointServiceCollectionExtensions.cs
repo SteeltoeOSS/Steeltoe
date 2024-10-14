@@ -18,7 +18,7 @@ public static class EndpointServiceCollectionExtensions
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
-    public static IServiceCollection AddMappingsActuator(this IServiceCollection services)
+    public static IServiceCollection AddRouteMappingsActuator(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
