@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common.Hosting;
-using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.DbMigrations;
@@ -28,7 +27,6 @@ internal static class HostBuilderWrapperExtensions
     public static void AddAllActuators(this HostBuilderWrapper wrapper, Action<IEndpointConventionBuilder>? configureEndpoints,
         MediaTypeVersion mediaTypeVersion)
     {
-        wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
         wrapper.ConfigureServices(services => services.AddAllActuators(mediaTypeVersion));
         RegisterActuatorEndpoints(wrapper, configureEndpoints);
     }
@@ -71,7 +69,6 @@ internal static class HostBuilderWrapperExtensions
 
     public static void AddLoggersActuator(this HostBuilderWrapper wrapper)
     {
-        wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
         wrapper.ConfigureServices(services => services.AddLoggersActuator());
         RegisterActuatorEndpoints(wrapper, null);
     }

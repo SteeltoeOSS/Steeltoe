@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
@@ -20,7 +19,6 @@ public sealed class AllActuatorsServiceCollectionExtensionsTest
     public void AddAllActuators_ConfiguresCorsDefaults()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
-        hostBuilder.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
         hostBuilder.ConfigureServices(services => services.AddAllActuators());
         using IWebHost host = hostBuilder.Build();
 
@@ -39,7 +37,6 @@ public sealed class AllActuatorsServiceCollectionExtensionsTest
     public void AddAllActuators_ConfiguresCorsCustom()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
-        hostBuilder.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
 
         hostBuilder.ConfigureServices(services =>
         {
@@ -66,7 +63,6 @@ public sealed class AllActuatorsServiceCollectionExtensionsTest
     public void AddAllActuators_ConfiguresCorsCustom_ThrowsWhenTooLate()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
-        hostBuilder.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
 
         hostBuilder.ConfigureServices(services =>
         {
@@ -112,7 +108,6 @@ public sealed class AllActuatorsServiceCollectionExtensionsTest
 
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddCloudFoundry());
-        hostBuilder.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
         hostBuilder.ConfigureServices(services => services.AddAllActuators());
         using IWebHost host = hostBuilder.Build();
 
@@ -124,7 +119,6 @@ public sealed class AllActuatorsServiceCollectionExtensionsTest
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddCloudFoundry());
-        hostBuilder.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
         hostBuilder.ConfigureServices(services => services.AddAllActuators());
 
         using IWebHost host = hostBuilder.Build();
