@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
@@ -24,11 +23,6 @@ namespace Steeltoe.Management.Endpoint;
 
 public static class AllActuatorsServiceCollectionExtensions
 {
-    public static IServiceCollection AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy)
-    {
-        return AddAllActuators(services, MediaTypeVersion.V2, buildCorsPolicy);
-    }
-
     public static IServiceCollection AddAllActuators(this IServiceCollection services)
     {
         return AddAllActuators(services, MediaTypeVersion.V2);
@@ -36,14 +30,7 @@ public static class AllActuatorsServiceCollectionExtensions
 
     public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version)
     {
-        return AddAllActuators(services, version, null);
-    }
-
-    public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version, Action<CorsPolicyBuilder>? buildCorsPolicy)
-    {
         ArgumentNullException.ThrowIfNull(services);
-
-        services.AddSteeltoeCors(buildCorsPolicy);
 
         if (Platform.IsCloudFoundry)
         {
@@ -66,32 +53,5 @@ public static class AllActuatorsServiceCollectionExtensions
         services.AddServicesActuator();
 
         return services;
-    }
-
-    private static void AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy = null)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-
-        services.AddCors(setup =>
-        {
-            setup.AddPolicy("SteeltoeManagement", policy =>
-            {
-                policy.WithMethods("GET", "POST");
-
-                if (Platform.IsCloudFoundry)
-                {
-                    policy.WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type", "Content-Disposition");
-                }
-
-                if (buildCorsPolicy != null)
-                {
-                    buildCorsPolicy(policy);
-                }
-                else
-                {
-                    policy.AllowAnyOrigin();
-                }
-            });
-        });
     }
 }

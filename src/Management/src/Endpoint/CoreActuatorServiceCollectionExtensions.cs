@@ -128,6 +128,8 @@ public static class CoreActuatorServiceCollectionExtensions
         services.TryAddScoped<ActuatorEndpointMapper>();
 
         services.ConfigureOptionsWithChangeTokenSource<ManagementOptions, ConfigureManagementOptions>();
+
+        services.AddActuatorsCorsPolicy();
     }
 
     internal static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)

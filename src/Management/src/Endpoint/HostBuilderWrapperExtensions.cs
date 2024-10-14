@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
@@ -26,10 +25,10 @@ namespace Steeltoe.Management.Endpoint;
 internal static class HostBuilderWrapperExtensions
 {
     public static void AddAllActuators(this HostBuilderWrapper wrapper, Action<IEndpointConventionBuilder>? configureEndpoints,
-        MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder>? buildCorsPolicy)
+        MediaTypeVersion mediaTypeVersion)
     {
         wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
-        wrapper.ConfigureServices(services => services.AddAllActuators(mediaTypeVersion, buildCorsPolicy));
+        wrapper.ConfigureServices(services => services.AddAllActuators(mediaTypeVersion));
         RegisterActuatorEndpoints(wrapper, configureEndpoints);
     }
 

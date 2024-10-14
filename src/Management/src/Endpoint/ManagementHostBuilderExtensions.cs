@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Hosting;
 
@@ -328,7 +327,7 @@ public static class ManagementHostBuilderExtensions
     /// </returns>
     public static IHostBuilder AddAllActuators(this IHostBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints)
     {
-        return AddAllActuators(builder, configureEndpoints, MediaTypeVersion.V2, null);
+        return AddAllActuators(builder, configureEndpoints, MediaTypeVersion.V2);
     }
 
     /// <summary>
@@ -343,9 +342,6 @@ public static class ManagementHostBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    /// <param name="buildCorsPolicy">
-    /// Customize the CORS policy.
-    /// </param>
     /// <remarks>
     /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
     /// </remarks>
@@ -353,12 +349,12 @@ public static class ManagementHostBuilderExtensions
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddAllActuators(this IHostBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints,
-        MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder>? buildCorsPolicy)
+        MediaTypeVersion mediaTypeVersion)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
-        wrapper.AddAllActuators(configureEndpoints, mediaTypeVersion, buildCorsPolicy);
+        wrapper.AddAllActuators(configureEndpoints, mediaTypeVersion);
 
         return builder;
     }
