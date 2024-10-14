@@ -494,8 +494,6 @@ Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedCount.set -> 
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.get -> long
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.set -> void
 Steeltoe.Management.Endpoint.AllActuatorsServiceCollectionExtensions
-Steeltoe.Management.Endpoint.AllActuatorsStartupFilter
-Steeltoe.Management.Endpoint.AllActuatorsStartupFilter.Configure(System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>? next) -> System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>!
 Steeltoe.Management.Endpoint.ApplicationBuilderExtensions
 Steeltoe.Management.Endpoint.Configuration.Exposure
 Steeltoe.Management.Endpoint.Configuration.Exposure.Exclude.get -> System.Collections.Generic.IList<string!>!
@@ -525,6 +523,8 @@ Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>.Options.get ->
 Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions
 Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions
 Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions
+Steeltoe.Management.Endpoint.MapActuatorsStartupFilter
+Steeltoe.Management.Endpoint.MapActuatorsStartupFilter.Configure(System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>? next) -> System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>!
 Steeltoe.Management.Endpoint.MediaTypeVersion
 Steeltoe.Management.Endpoint.MediaTypeVersion.V1 = 0 -> Steeltoe.Management.Endpoint.MediaTypeVersion
 Steeltoe.Management.Endpoint.MediaTypeVersion.V2 = 1 -> Steeltoe.Management.Endpoint.MediaTypeVersion

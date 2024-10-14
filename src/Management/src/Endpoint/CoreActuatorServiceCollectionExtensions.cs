@@ -172,7 +172,7 @@ public static class CoreActuatorServiceCollectionExtensions
         var actuatorConventionBuilder = new DeferredActuatorConventionBuilder();
 
         services.TryAddEnumerable(
-            ServiceDescriptor.Transient<IStartupFilter, AllActuatorsStartupFilter>(_ => new AllActuatorsStartupFilter(actuatorConventionBuilder)));
+            ServiceDescriptor.Transient<IStartupFilter, MapActuatorsStartupFilter>(_ => new MapActuatorsStartupFilter(actuatorConventionBuilder)));
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, ManagementPortStartupFilter>());
 
