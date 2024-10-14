@@ -17,7 +17,6 @@ public sealed class StartupWithSecurity
         services.AddCloudFoundryActuator();
         services.AddHypermediaActuator();
         services.AddInfoActuator();
-        services.AddCloudFoundrySecurity();
     }
 
     public void Configure(IApplicationBuilder app)

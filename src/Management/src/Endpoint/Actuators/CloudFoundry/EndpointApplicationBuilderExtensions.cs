@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 public static class EndpointApplicationBuilderExtensions
 {
     /// <summary>
-    /// Add CloudFoundry Security Middleware.
+    /// Adds a middleware that provides Cloud Foundry security.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IApplicationBuilder" /> to configure.
@@ -25,7 +25,7 @@ public static class EndpointApplicationBuilderExtensions
         if (builder.ApplicationServices.GetService<PermissionsProvider>() == null)
         {
             throw new InvalidOperationException(
-                $"Please call IServiceCollection.{nameof(CloudFoundrySecurityServiceCollectionExtensions.AddCloudFoundrySecurity)} first.");
+                $"Please call {nameof(IServiceCollection)}.{nameof(EndpointServiceCollectionExtensions.AddCloudFoundryActuator)} first.");
         }
 
         builder.UseMiddleware<CloudFoundrySecurityMiddleware>();
