@@ -24,10 +24,6 @@ public sealed class StartupWithSecurity
     {
         app.UseCloudFoundrySecurity();
         app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapAllActuators();
-        });
+        app.UseActuators();
     }
 }

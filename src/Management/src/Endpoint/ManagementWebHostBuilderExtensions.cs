@@ -315,7 +315,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <param name="configureEndpoints">
-    /// <see cref="IEndpointConventionBuilder" />.
+    /// Enables to customize the mapped endpoints. Useful for tailoring auth requirements.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
@@ -332,7 +332,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <param name="configureEndpoints">
-    /// <see cref="IEndpointConventionBuilder" />.
+    /// Enables to customize the mapped endpoints. Useful for tailoring auth requirements.
     /// </param>
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.

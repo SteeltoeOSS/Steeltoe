@@ -4,6 +4,7 @@
 
 using System.Net;
 using System.Text;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -22,14 +24,6 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.RouteMappings;
 
 public sealed class EndpointMiddlewareTest : BaseTest
 {
-    private static readonly Dictionary<string, string?> AppSettings = new()
-    {
-        ["Logging:Console:IncludeScopes"] = "false",
-        ["Logging:LogLevel:Default"] = "Warning",
-        ["Logging:LogLevel:Steeltoe"] = "Information",
-        ["management:endpoints:enabled"] = "true"
-    };
-
     [Fact]
     public void RoutesByPathAndVerb()
     {
@@ -52,8 +46,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<RouteMappingsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<RouteMappingsEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(AppSettings);
         var routerMappings = new RouterMappings();
         var mockActionDescriptorCollectionProvider = new Mock<IActionDescriptorCollectionProvider>();
 
@@ -91,7 +83,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task MappingsActuator_EndpointRouting_ReturnsExpectedData()
     {
-        var appSettings = new Dictionary<string, string?>(AppSettings)
+        var appSettings = new Dictionary<string, string?>
         {
             { "management:endpoints:actuator:exposure:include:0", "*" }
         };
@@ -178,7 +170,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task MappingsActuator_EndpointRouting_CanTurnOffAllVerbs()
     {
-        var appSettings = new Dictionary<string, string?>(AppSettings)
+        var appSettings = new Dictionary<string, string?>
         {
             { "management:endpoints:actuator:exposure:include:0", "*" },
             { "management:endpoints:refresh:allowedVerbs:0", string.Empty }
@@ -266,7 +258,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task MappingsActuator_ConventionalRouting_ReturnsExpectedData()
     {
-        var appSettings = new Dictionary<string, string?>(AppSettings)
+        var appSettings = new Dictionary<string, string?>
         {
             { "management:endpoints:actuator:exposure:include:0", "*" },
             { "TestUsesEndpointRouting", "False" }
@@ -368,7 +360,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task MappingsActuator_ConventionalRouting_CanTurnOffAllVerbs()
     {
-        var appSettings = new Dictionary<string, string?>(AppSettings)
+        var appSettings = new Dictionary<string, string?>
         {
             { "management:endpoints:actuator:exposure:include:0", "*" },
             { "management:endpoints:refresh:allowedVerbs:0", string.Empty },
@@ -462,6 +454,33 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         response = await client.PostAsync(new Uri("http://localhost/actuator/refresh"), null);
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task MappingsActuator_ConventionalRouting_ThrowsForCallback()
+    {
+        Action<IEndpointConventionBuilder> configureEndpointsCallback = _ =>
+        {
+        };
+
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+
+        builder.ConfigureServices(services =>
+        {
+            services.AddMvc(options => options.EnableEndpointRouting = false);
+            services.AddMappingsActuator();
+        });
+
+        builder.Configure(app =>
+        {
+            app.UseActuators(configureEndpointsCallback);
+        });
+
+        using IWebHost host = builder.Build();
+
+        Func<Task> action = async () => await host.StartAsync();
+
+        await action.Should().ThrowExactlyAsync<NotSupportedException>().WithMessage("Customizing endpoints is only supported when using endpoint routing.");
     }
 
     private HttpContext CreateRequest(string method, string path)

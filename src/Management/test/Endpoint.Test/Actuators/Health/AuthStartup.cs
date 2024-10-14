@@ -19,12 +19,6 @@ public sealed class AuthStartup
     {
         app.UseMiddleware<AuthenticatedTestMiddleware>();
         app.UseRouting();
-
-        MapHealthActuator(app);
-    }
-
-    public static void MapHealthActuator(IApplicationBuilder app)
-    {
-        app.UseEndpoints(endpoints => endpoints.MapAllActuators());
+        app.UseActuators();
     }
 }

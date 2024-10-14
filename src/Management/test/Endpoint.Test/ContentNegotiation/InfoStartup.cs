@@ -20,10 +20,6 @@ public sealed class InfoStartup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapAllActuators();
-        });
+        app.UseActuators();
     }
 }
