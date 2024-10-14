@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Logging.DynamicLogger;
+using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.DbMigrations;
 using Steeltoe.Management.Endpoint.Actuators.Environment;

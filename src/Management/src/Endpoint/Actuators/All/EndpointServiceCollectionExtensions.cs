@@ -19,15 +19,36 @@ using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
-namespace Steeltoe.Management.Endpoint;
+namespace Steeltoe.Management.Endpoint.Actuators.All;
 
-public static class AllActuatorsServiceCollectionExtensions
+public static class EndpointServiceCollectionExtensions
 {
+    /// <summary>
+    /// Adds all Steeltoe actuators to the service container.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddAllActuators(this IServiceCollection services)
     {
         return AddAllActuators(services, MediaTypeVersion.V2);
     }
 
+    /// <summary>
+    /// Adds all Steeltoe actuators to the service container.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="version">
+    /// The default media version that is used by actuators that support multiple versions.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version)
     {
         ArgumentNullException.ThrowIfNull(services);

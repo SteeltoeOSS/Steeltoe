@@ -16,7 +16,7 @@ using Steeltoe.Common.Net;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
-using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Actuators.All;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
