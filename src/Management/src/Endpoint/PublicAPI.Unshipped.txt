@@ -49,6 +49,8 @@ static Steeltoe.Management.Endpoint.AllActuatorsServiceCollectionExtensions.AddA
 static Steeltoe.Management.Endpoint.AllActuatorsServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.AllActuatorsServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.AllActuatorsServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.ApplicationBuilderExtensions.UseActuators(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
+static Steeltoe.Management.Endpoint.ApplicationBuilderExtensions.UseActuators(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
 static Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions.ActivateActuatorEndpoints(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
 static Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions.AddCoreActuatorServicesAsScoped<TEndpointOptions, TConfigureEndpointOptions, TMiddleware, TEndpointHandlerInterface, TEndpointHandler, TArgument, TResult>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions.AddCoreActuatorServicesAsSingleton<TEndpointOptions, TConfigureEndpointOptions, TMiddleware, TEndpointHandlerInterface, TEndpointHandler, TArgument, TResult>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
@@ -494,6 +496,7 @@ Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.set -> v
 Steeltoe.Management.Endpoint.AllActuatorsServiceCollectionExtensions
 Steeltoe.Management.Endpoint.AllActuatorsStartupFilter
 Steeltoe.Management.Endpoint.AllActuatorsStartupFilter.Configure(System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>? next) -> System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>!
+Steeltoe.Management.Endpoint.ApplicationBuilderExtensions
 Steeltoe.Management.Endpoint.Configuration.Exposure
 Steeltoe.Management.Endpoint.Configuration.Exposure.Exclude.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.Configuration.Exposure.Exposure() -> void

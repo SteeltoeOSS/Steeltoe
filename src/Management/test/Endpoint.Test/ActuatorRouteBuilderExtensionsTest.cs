@@ -77,7 +77,7 @@ public sealed class ActuatorRouteBuilderExtensionsTest
                 services.AddAllActuators();
                 services.ActivateActuatorEndpoints().RequireAuthorization("TestAuth");
             }
-            else if (mode == RegistrationMode.UseEndpoints)
+            else if (mode is RegistrationMode.UseEndpoints or RegistrationMode.MapEndpoints)
             {
                 services.AddAllActuators();
             }
@@ -107,13 +107,20 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 
                 app.UseEndpoints(endpoints =>
                 {
-                    if (mode == RegistrationMode.UseEndpoints)
-                    {
-                        endpoints.MapAllActuators().RequireAuthorization("TestAuth");
-                    }
-
                     endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
                 });
+
+                if (mode == RegistrationMode.UseEndpoints)
+                {
+                    app.UseActuators(endpoints => endpoints.RequireAuthorization("TestAuth"));
+                }
+                else if (mode == RegistrationMode.MapEndpoints)
+                {
+                    app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapAllActuators().RequireAuthorization("TestAuth");
+                    });
+                }
             });
         });
 
@@ -156,6 +163,7 @@ public sealed class ActuatorRouteBuilderExtensionsTest
     {
         HostBuilder,
         Services,
-        UseEndpoints
+        UseEndpoints,
+        MapEndpoints
     }
 }

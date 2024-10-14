@@ -20,6 +20,6 @@ public sealed class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-        app.UseEndpoints(_ => app.UseEndpoints(builder => builder.MapAllActuators()));
+        app.UseActuators();
     }
 }
