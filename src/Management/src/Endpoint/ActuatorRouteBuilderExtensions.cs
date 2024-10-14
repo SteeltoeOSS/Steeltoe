@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint;
 public static class ActuatorRouteBuilderExtensions
 {
     /// <summary>
-    /// Maps all actuators, when using ASP.NET attribute-based endpoint routing.
+    /// Maps the registered actuators, when using ASP.NET attribute-based endpoint routing.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IEndpointRouteBuilder" /> to add routes to.
@@ -20,13 +20,13 @@ public static class ActuatorRouteBuilderExtensions
     /// An <see cref="IEndpointConventionBuilder" /> that can be used to further customize the actuator endpoints. Beware that only the <i>first</i> time
     /// this method is called, its continuation methods will have an effect.
     /// </returns>
-    public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder builder)
+    public static IEndpointConventionBuilder MapActuators(this IEndpointRouteBuilder builder)
     {
-        return MapAllActuators(builder, new ImmediateActuatorConventionBuilder());
+        return MapActuators(builder, new ImmediateActuatorConventionBuilder());
     }
 
     /// <summary>
-    /// Maps all actuators, when using ASP.NET attribute-based endpoint routing.
+    /// Maps the registered actuators, when using ASP.NET attribute-based endpoint routing.
     /// </summary>
     /// <param name="routeBuilder">
     /// The <see cref="IEndpointRouteBuilder" /> to add routes to.
@@ -38,7 +38,7 @@ public static class ActuatorRouteBuilderExtensions
     /// The incoming <paramref name="conventionBuilder" /> that can be used to further customize the actuator endpoints. Beware that only the <i>first</i>
     /// time this method is called, its continuation methods will have an effect.
     /// </returns>
-    internal static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder routeBuilder, ActuatorConventionBuilder conventionBuilder)
+    internal static IEndpointConventionBuilder MapActuators(this IEndpointRouteBuilder routeBuilder, ActuatorConventionBuilder conventionBuilder)
     {
         ArgumentNullException.ThrowIfNull(routeBuilder);
         ArgumentNullException.ThrowIfNull(conventionBuilder);
@@ -53,7 +53,7 @@ public static class ActuatorRouteBuilderExtensions
     }
 
     /// <summary>
-    /// Maps all actuators, when using ASP.NET conventional routing.
+    /// Maps the registered actuators, when using ASP.NET conventional routing.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IRouteBuilder" /> to add routes to.
@@ -61,7 +61,7 @@ public static class ActuatorRouteBuilderExtensions
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static IRouteBuilder MapAllActuators(this IRouteBuilder builder)
+    public static IRouteBuilder MapActuators(this IRouteBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
