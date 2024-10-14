@@ -34,52 +34,24 @@ internal static class ServiceCollectionExtensions
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MetricsEndpointMiddleware>());
         services.TryAddSingleton<MetricsEndpointMiddleware>();
 
-        services.TryAddSingleton(provider =>
-        {
-            MetricsEndpointOptions options = provider.GetRequiredService<IOptionsMonitor<MetricsEndpointOptions>>().CurrentValue;
-            return CreateMetricsExporterOptionsFrom(options);
-        });
-
-        services.TryAddSingleton(provider =>
-        {
-            var exporterOptions = provider.GetRequiredService<MetricsExporterOptions>();
-            return new MetricsExporter(exporterOptions);
-        });
-
+        services.TryAddSingleton<MetricsExporter>();
         services.AddSteeltoeCollector();
 
         return services;
-    }
-
-    private static MetricsExporterOptions CreateMetricsExporterOptionsFrom(MetricsEndpointOptions endpointOptions)
-    {
-        var exporterOptions = new MetricsExporterOptions
-        {
-            CacheDurationMilliseconds = endpointOptions.CacheDurationMilliseconds,
-            MaxTimeSeries = endpointOptions.MaxTimeSeries,
-            MaxHistograms = endpointOptions.MaxHistograms
-        };
-
-        foreach (string metric in endpointOptions.IncludedMetrics)
-        {
-            exporterOptions.IncludedMetrics.Add(metric);
-        }
-
-        return exporterOptions;
     }
 
     public static IServiceCollection AddSteeltoeCollector(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        return services.AddSingleton(provider =>
+        return services.AddSingleton(serviceProvider =>
         {
-            var exporter = provider.GetRequiredService<MetricsExporter>();
+            var exporter = serviceProvider.GetRequiredService<MetricsExporter>();
 
-            var exporterOptions = provider.GetRequiredService<MetricsExporterOptions>();
-            var logger = provider.GetRequiredService<ILogger<MetricsExporter>>();
+            MetricsEndpointOptions endpointOptions = serviceProvider.GetRequiredService<IOptionsMonitor<MetricsEndpointOptions>>().CurrentValue;
+            var logger = serviceProvider.GetRequiredService<ILogger<MetricsExporter>>();
 
-            var aggregationManager = new AggregationManager(exporterOptions.MaxTimeSeries, exporterOptions.MaxHistograms, exporter.AddMetrics,
+            var aggregationManager = new AggregationManager(endpointOptions.MaxTimeSeries, endpointOptions.MaxHistograms, exporter.AddMetrics,
                 (intervalStartTime, nextIntervalStartTime) => logger.LogTrace("Begin collection from {IntervalStartTime} to {NextIntervalStartTime}",
                     intervalStartTime, nextIntervalStartTime),
                 (intervalStartTime, nextIntervalStartTime) => logger.LogTrace("End collection from {IntervalStartTime} to {NextIntervalStartTime}",
@@ -89,14 +61,14 @@ internal static class ServiceCollectionExtensions
                 instrument => logger.LogTrace("Instrument {InstrumentName} published for {MeterName}", instrument.Name, instrument.Meter.Name),
                 () => logger.LogTrace("Steeltoe metrics collector started."), exception => logger.LogError(exception, "An error occurred while collecting"),
                 () => logger.LogWarning("Cannot collect any more time series because the configured limit of {MaxTimeSeries} was reached",
-                    exporterOptions.MaxTimeSeries),
+                    endpointOptions.MaxTimeSeries),
                 () => logger.LogWarning("Cannot collect any more Histograms because the configured limit of {MaxHistograms} was reached",
-                    exporterOptions.MaxHistograms), exception => logger.LogError(exception, "An error occurred while collecting observable instruments"));
+                    endpointOptions.MaxHistograms), exception => logger.LogError(exception, "An error occurred while collecting observable instruments"));
 
             exporter.SetCollect(aggregationManager.Collect);
             aggregationManager.Include(SteeltoeMetrics.InstrumentationName); // Default to Steeltoe Metrics
 
-            foreach (string filter in exporterOptions.IncludedMetrics)
+            foreach (string filter in endpointOptions.IncludedMetrics)
             {
                 string[] filterParts = filter.Split(':');
 
