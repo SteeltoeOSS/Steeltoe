@@ -31,7 +31,7 @@ public static class EndpointServiceCollectionExtensions
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="version">
-    /// The media version to use.
+    /// The media version to use. This also determines where configuration for this actuator is read from.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
