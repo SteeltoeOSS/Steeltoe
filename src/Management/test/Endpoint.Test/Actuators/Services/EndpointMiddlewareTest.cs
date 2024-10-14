@@ -10,8 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Services;
 using Steeltoe.Management.Endpoint.Configuration;
@@ -33,16 +31,21 @@ public sealed class EndpointMiddlewareTest(ITestOutputHelper testOutputHelper) :
     [Fact]
     public async Task HandleServicesRequestAsync_ReturnsExpected()
     {
-        IOptionsMonitor<ServicesEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<ServicesEndpointOptions>();
-        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>(AppSettings);
+        IServiceCollection testServices = new ServiceCollection();
+        testServices.AddScoped<IServicesEndpointHandler, ServicesEndpointHandler>();
+        testServices.AddTransient<ServicesEndpointOptions>();
+        testServices.AddSingleton<Startup>();
+
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(AppSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddScoped<IServicesEndpointHandler, ServicesEndpointHandler>();
-        services.AddTransient<ServicesEndpointOptions>();
-        services.AddSingleton<Startup>();
+        services.AddSingleton(configuration);
+        services.AddLogging();
+        services.AddSingleton(testServices);
+        services.AddServicesActuator();
 
-        var handler = new ServicesEndpointHandler(endpointOptionsMonitor, services);
-        var middleware = new ServicesEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var middleware = serviceProvider.GetRequiredService<ServicesEndpointMiddleware>();
 
         HttpContext httpContext = CreateHttpContextForRequest("GET", "/beans");
         await middleware.InvokeAsync(httpContext, null);
