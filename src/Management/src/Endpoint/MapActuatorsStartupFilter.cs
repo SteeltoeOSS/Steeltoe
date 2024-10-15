@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.ManagementPort;
@@ -35,7 +34,7 @@ public sealed class MapActuatorsStartupFilter : IStartupFilter
                 app.UseCors(CorsServiceCollectionExtensions.ActuatorsCorsPolicyName);
             }
 
-            if (Platform.IsCloudFoundry)
+            if (app.ApplicationServices.GetService<PermissionsProvider>() != null)
             {
                 app.UseCloudFoundrySecurity();
             }
