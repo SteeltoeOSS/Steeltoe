@@ -576,7 +576,11 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = GetWebHostBuilderWithSecureRouting();
 
-        hostBuilder.ConfigureServices(services => services.ActivateActuatorEndpoints().RequireAuthorization("TestAuth"));
+        hostBuilder.ConfigureServices(services =>
+        {
+            services.ActivateActuatorEndpoints();
+            services.ConfigureActuatorEndpoints(endpoints => endpoints.RequireAuthorization("TestAuth"));
+        });
 
         // each of these will try to add their own MapActuatorsStartupFilter but should no-op in favor of the above
         hostBuilder.AddHypermediaActuator();

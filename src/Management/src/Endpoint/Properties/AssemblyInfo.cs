@@ -50,6 +50,7 @@ using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
+[assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Prometheus")]

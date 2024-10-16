@@ -14,24 +14,15 @@ using Steeltoe.Management.Endpoint.ManagementPort;
 
 namespace Steeltoe.Management.Endpoint;
 
-public sealed class MapActuatorsStartupFilter : IStartupFilter
+internal sealed class MapActuatorsStartupFilter : IStartupFilter
 {
-    private readonly DeferredActuatorConventionBuilder _conventionBuilder;
-
-    internal MapActuatorsStartupFilter(DeferredActuatorConventionBuilder conventionBuilder)
-    {
-        ArgumentNullException.ThrowIfNull(conventionBuilder);
-
-        _conventionBuilder = conventionBuilder;
-    }
-
     public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder>? next)
     {
         return app =>
         {
             if (app.ApplicationServices.GetService<ICorsService>() != null)
             {
-                app.UseCors(CorsServiceCollectionExtensions.ActuatorsCorsPolicyName);
+                app.UseCors(ActuatorCorsServiceCollectionExtensions.PolicyName);
             }
 
             if (app.ApplicationServices.GetService<PermissionsProvider>() != null)
@@ -48,7 +39,7 @@ public sealed class MapActuatorsStartupFilter : IStartupFilter
 
             if (isEndpointRoutingEnabled)
             {
-                app.UseEndpoints(endpoints => endpoints.MapActuators(_conventionBuilder));
+                app.UseActuators();
             }
             else
             {

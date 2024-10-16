@@ -19,13 +19,16 @@ namespace Steeltoe.Management.Endpoint;
 internal sealed class ActuatorEndpointMapper
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
+    private readonly IOptionsMonitor<ActuatorConventionOptions> _conventionOptionsMonitor;
     private readonly IEndpointMiddleware[] _middlewares;
     private readonly ILogger<ActuatorEndpointMapper> _logger;
 
-    public ActuatorEndpointMapper(IOptionsMonitor<ManagementOptions> managementOptionsMonitor, IEnumerable<IEndpointMiddleware> middlewares,
+    public ActuatorEndpointMapper(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+        IOptionsMonitor<ActuatorConventionOptions> conventionOptionsMonitor, IEnumerable<IEndpointMiddleware> middlewares,
         ILogger<ActuatorEndpointMapper> logger)
     {
         ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(conventionOptionsMonitor);
         ArgumentNullException.ThrowIfNull(middlewares);
         ArgumentNullException.ThrowIfNull(logger);
 
@@ -33,6 +36,7 @@ internal sealed class ActuatorEndpointMapper
         ArgumentGuard.ElementsNotNull(middlewareArray);
 
         _managementOptionsMonitor = managementOptionsMonitor;
+        _conventionOptionsMonitor = conventionOptionsMonitor;
         _middlewares = middlewareArray;
         _logger = logger;
     }
@@ -50,6 +54,12 @@ internal sealed class ActuatorEndpointMapper
                 if (allowedVerbs.Count > 0)
                 {
                     IEndpointConventionBuilder endpointConventionBuilder = endpointRouteBuilder.MapMethods(requestPath, allowedVerbs, pipeline);
+
+                    foreach (Action<IEndpointConventionBuilder> configureAction in _conventionOptionsMonitor.CurrentValue.ConfigureActions)
+                    {
+                        configureAction(endpointConventionBuilder);
+                    }
+
                     actuatorConventionBuilder.TrackTarget(endpointConventionBuilder);
                 }
             });

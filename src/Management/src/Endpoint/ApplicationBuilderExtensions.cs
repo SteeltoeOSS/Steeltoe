@@ -32,7 +32,7 @@ public static class ApplicationBuilderExtensions
     /// The <see cref="IApplicationBuilder" />.
     /// </param>
     /// <param name="configureEndpoints">
-    /// Enables to customize the mapped endpoints. Useful for tailoring auth requirements.
+    /// Takes an <see cref="IEndpointConventionBuilder" /> to customize the mapped endpoints. Useful for tailoring auth requirements.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
@@ -53,8 +53,7 @@ public static class ApplicationBuilderExtensions
         {
             builder.UseEndpoints(endpoints =>
             {
-                var conventionBuilder = new ImmediateActuatorConventionBuilder();
-                endpoints.MapActuators(conventionBuilder);
+                IEndpointConventionBuilder conventionBuilder = endpoints.MapActuators();
                 configureEndpoints?.Invoke(conventionBuilder);
             });
         }

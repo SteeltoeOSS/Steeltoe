@@ -74,7 +74,8 @@ public sealed class ActuatorRouteBuilderExtensionsTest
             if (mode == RegistrationMode.Services)
             {
                 services.AddAllActuators();
-                services.ActivateActuatorEndpoints().RequireAuthorization("TestAuth");
+                services.ActivateActuatorEndpoints();
+                services.ConfigureActuatorEndpoints(endpoints => endpoints.RequireAuthorization("TestAuth"));
             }
             else if (mode is RegistrationMode.UseEndpoints or RegistrationMode.MapEndpoints)
             {

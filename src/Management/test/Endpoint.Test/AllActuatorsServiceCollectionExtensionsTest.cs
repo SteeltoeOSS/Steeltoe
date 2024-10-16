@@ -25,7 +25,7 @@ public sealed class AllActuatorsServiceCollectionExtensionsTest
         var options = host.Services.GetService<IOptions<CorsOptions>>();
 
         Assert.NotNull(options);
-        CorsPolicy? policy = options.Value.GetPolicy(CorsServiceCollectionExtensions.ActuatorsCorsPolicyName);
+        CorsPolicy? policy = options.Value.GetPolicy(ActuatorCorsServiceCollectionExtensions.PolicyName);
         Assert.NotNull(policy);
         Assert.True(policy.IsOriginAllowed("*"));
         Assert.Equal(2, policy.Methods.Count);
@@ -49,7 +49,7 @@ public sealed class AllActuatorsServiceCollectionExtensionsTest
         var options = host.Services.GetService<IOptions<CorsOptions>>();
 
         Assert.NotNull(options);
-        CorsPolicy? policy = options.Value.GetPolicy(CorsServiceCollectionExtensions.ActuatorsCorsPolicyName);
+        CorsPolicy? policy = options.Value.GetPolicy(ActuatorCorsServiceCollectionExtensions.PolicyName);
         Assert.NotNull(policy);
         Assert.True(policy.IsOriginAllowed("http://google.com"));
         Assert.False(policy.IsOriginAllowed("http://bing.com"));

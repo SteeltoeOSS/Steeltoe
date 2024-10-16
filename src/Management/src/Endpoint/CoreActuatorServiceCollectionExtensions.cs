@@ -159,25 +159,37 @@ public static class CoreActuatorServiceCollectionExtensions
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <returns>
-    /// An <see cref="IEndpointConventionBuilder" /> that can be used to further customize the actuator endpoints. Beware that only the <i>first</i> time
-    /// this method is called, its continuation methods will have an effect.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
-    public static IEndpointConventionBuilder ActivateActuatorEndpoints(this IServiceCollection services)
-    {
-        return InnerActivateActuatorEndpoints(services);
-    }
-
-    internal static DeferredActuatorConventionBuilder InnerActivateActuatorEndpoints(this IServiceCollection services)
+    public static IServiceCollection ActivateActuatorEndpoints(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        var actuatorConventionBuilder = new DeferredActuatorConventionBuilder();
-
-        services.TryAddEnumerable(
-            ServiceDescriptor.Transient<IStartupFilter, MapActuatorsStartupFilter>(_ => new MapActuatorsStartupFilter(actuatorConventionBuilder)));
-
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, ManagementPortStartupFilter>());
+        services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, MapActuatorsStartupFilter>());
 
-        return actuatorConventionBuilder;
+        return services;
+    }
+
+    /// <summary>
+    /// Configures an <see cref="Action{IEndpointConventionBuilder}" /> to customize the mapped actuator endpoints.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configureEndpoints">
+    /// Takes an <see cref="IEndpointConventionBuilder" /> to customize the mapped endpoints. Useful for tailoring auth requirements.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection ConfigureActuatorEndpoints(this IServiceCollection services, Action<IEndpointConventionBuilder> configureEndpoints)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configureEndpoints);
+
+        services.Configure<ActuatorConventionOptions>(options => options.ConfigureActions.Add(configureEndpoints));
+
+        return services;
     }
 }
