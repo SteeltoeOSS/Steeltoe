@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -126,10 +127,8 @@ public static class CoreActuatorServiceCollectionExtensions
     {
         services.AddRouting();
         services.TryAddScoped<ActuatorEndpointMapper>();
-
+        services.TryAddSingleton<IConfigureOptions<CorsOptions>, ConfigureActuatorsCorsPolicyOptions>();
         services.ConfigureOptionsWithChangeTokenSource<ManagementOptions, ConfigureManagementOptions>();
-
-        services.AddActuatorsCorsPolicy();
     }
 
     internal static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
@@ -189,6 +188,29 @@ public static class CoreActuatorServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configureEndpoints);
 
         services.Configure<ActuatorConventionOptions>(options => options.ConfigureActions.Add(configureEndpoints));
+
+        return services;
+    }
+
+    /// <summary>
+    /// Configures an <see cref="Action{CorsPolicyBuilder}" /> to customize the Cross-Origin Resource Sharing (CORS) policy that applies to all actuator
+    /// endpoints.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configureCorsPolicy">
+    /// Takes an <see cref="CorsPolicyBuilder" /> to customize the policy. Useful to restrict access.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection ConfigureActuatorsCorsPolicy(this IServiceCollection services, Action<CorsPolicyBuilder> configureCorsPolicy)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configureCorsPolicy);
+
+        services.Configure<ActuatorsCorsPolicyOptions>(options => options.ConfigureActions.Add(configureCorsPolicy));
 
         return services;
     }
