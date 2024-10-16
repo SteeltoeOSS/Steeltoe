@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.Health;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.ManagementPort;
 
 namespace Steeltoe.Management.Endpoint;
@@ -22,7 +23,7 @@ internal sealed class MapActuatorsStartupFilter : IStartupFilter
         {
             if (app.ApplicationServices.GetService<ICorsService>() != null)
             {
-                app.UseCors(ActuatorCorsServiceCollectionExtensions.PolicyName);
+                app.UseCors(ActuatorsCorsPolicyOptions.PolicyName);
             }
 
             if (app.ApplicationServices.GetService<PermissionsProvider>() != null)
