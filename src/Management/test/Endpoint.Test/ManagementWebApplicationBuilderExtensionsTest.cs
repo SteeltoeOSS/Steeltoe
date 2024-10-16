@@ -440,7 +440,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
             builder.AddHypermediaActuator();
             builder.AddInfoActuator();
             builder.AddHealthActuator();
-            builder.Services.ActivateActuatorEndpoints().RequireAuthorization("TestAuth");
+            builder.Services.ActivateActuatorEndpoints();
+            builder.Services.ConfigureActuatorEndpoints(endpoints => endpoints.RequireAuthorization("TestAuth"));
+
         });
 
         await host.StartAsync();

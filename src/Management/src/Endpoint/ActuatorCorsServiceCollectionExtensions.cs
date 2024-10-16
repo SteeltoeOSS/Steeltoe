@@ -9,9 +9,9 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint;
 
-public static class CorsServiceCollectionExtensions
+public static class ActuatorCorsServiceCollectionExtensions
 {
-    internal const string ActuatorsCorsPolicyName = "ActuatorsCorsPolicy";
+    internal const string PolicyName = "ActuatorsCorsPolicy";
 
     /// <summary>
     /// Configures a Cross-Origin Resource Sharing (CORS) policy for actuator endpoints. The policy applies to all actuator endpoints.
@@ -45,7 +45,7 @@ public static class CorsServiceCollectionExtensions
 
         services.AddOptions<CorsOptions>().Configure<IEnumerable<IEndpointOptionsMonitorProvider>>((options, endpointOptionsMonitorProviders) =>
         {
-            if (options.GetPolicy(ActuatorsCorsPolicyName) != null)
+            if (options.GetPolicy(PolicyName) != null)
             {
                 if (configureCorsPolicy != null)
                 {
@@ -56,7 +56,7 @@ public static class CorsServiceCollectionExtensions
                 return;
             }
 
-            options.AddPolicy(ActuatorsCorsPolicyName, policyBuilder =>
+            options.AddPolicy(PolicyName, policyBuilder =>
             {
                 string[] methods = GetEndpointMethods(endpointOptionsMonitorProviders);
                 policyBuilder.WithMethods(methods);

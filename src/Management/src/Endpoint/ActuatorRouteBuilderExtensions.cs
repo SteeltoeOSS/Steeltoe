@@ -17,38 +17,19 @@ public static class ActuatorRouteBuilderExtensions
     /// The <see cref="IEndpointRouteBuilder" /> to add routes to.
     /// </param>
     /// <returns>
-    /// An <see cref="IEndpointConventionBuilder" /> that can be used to further customize the actuator endpoints. Beware that only the <i>first</i> time
-    /// this method is called, its continuation methods will have an effect.
+    /// An <see cref="IEndpointConventionBuilder" /> that can be used to further customize the actuator endpoints.
     /// </returns>
     public static IEndpointConventionBuilder MapActuators(this IEndpointRouteBuilder builder)
     {
-        return MapActuators(builder, new ImmediateActuatorConventionBuilder());
-    }
+        ArgumentNullException.ThrowIfNull(builder);
 
-    /// <summary>
-    /// Maps the registered actuators, when using ASP.NET attribute-based endpoint routing.
-    /// </summary>
-    /// <param name="routeBuilder">
-    /// The <see cref="IEndpointRouteBuilder" /> to add routes to.
-    /// </param>
-    /// <param name="conventionBuilder">
-    /// The builder to customize all mapped endpoints.
-    /// </param>
-    /// <returns>
-    /// The incoming <paramref name="conventionBuilder" /> that can be used to further customize the actuator endpoints. Beware that only the <i>first</i>
-    /// time this method is called, its continuation methods will have an effect.
-    /// </returns>
-    internal static IEndpointConventionBuilder MapActuators(this IEndpointRouteBuilder routeBuilder, ActuatorConventionBuilder conventionBuilder)
-    {
-        ArgumentNullException.ThrowIfNull(routeBuilder);
-        ArgumentNullException.ThrowIfNull(conventionBuilder);
-
-        IServiceProvider serviceProvider = routeBuilder.ServiceProvider;
+        IServiceProvider serviceProvider = builder.ServiceProvider;
 
         using IServiceScope scope = serviceProvider.CreateScope();
         var mapper = scope.ServiceProvider.GetRequiredService<ActuatorEndpointMapper>();
 
-        mapper.Map(routeBuilder, conventionBuilder);
+        var conventionBuilder = new ActuatorConventionBuilder();
+        mapper.Map(builder, conventionBuilder);
         return conventionBuilder;
     }
 

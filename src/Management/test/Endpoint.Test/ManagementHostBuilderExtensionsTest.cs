@@ -589,10 +589,16 @@ public sealed class ManagementHostBuilderExtensionsTest
         IHostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
         hostBuilder.ConfigureWebHost(ConfigureWebHostWithSecureRouting);
 
-        hostBuilder.ConfigureServices(services => services.ActivateActuatorEndpoints().RequireAuthorization("TestAuth"))
+        hostBuilder.ConfigureServices(services =>
+        {
+            services.ActivateActuatorEndpoints();
+            services.ConfigureActuatorEndpoints(endpoints => endpoints.RequireAuthorization("TestAuth"));
+        });
 
-            // each of these will try to add their own MapActuatorsStartupFilter but should no-op in favor of the above
-            .AddHypermediaActuator().AddInfoActuator().AddHealthActuator();
+        // each of these will try to add their own MapActuatorsStartupFilter but should no-op in favor of the above
+        hostBuilder.AddHypermediaActuator();
+        hostBuilder.AddInfoActuator();
+        hostBuilder.AddHealthActuator();
 
         using IHost host = await hostBuilder.StartAsync();
         using HttpClient httpClient = host.GetTestClient();
