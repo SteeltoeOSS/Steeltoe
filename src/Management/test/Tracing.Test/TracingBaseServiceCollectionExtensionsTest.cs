@@ -42,9 +42,6 @@ public sealed class TracingBaseServiceCollectionExtensionsTest : TestBase
 
         var zipkinOptions = serviceProvider.GetRequiredService<IOptions<ZipkinExporterOptions>>();
         Assert.NotNull(zipkinOptions.Value.Endpoint);
-
-        var jaegerOptions = serviceProvider.GetRequiredService<IOptions<JaegerExporterOptions>>();
-        Assert.NotNull(jaegerOptions.Value.Endpoint);
     }
 
     [Fact]

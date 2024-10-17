@@ -66,17 +66,11 @@ public static class TracingBaseServiceCollectionExtensions
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDynamicMessageProcessor, TracingLogProcessor>());
 
         bool exportToZipkin = AssemblyLoader.IsAssemblyLoaded("OpenTelemetry.Exporter.Zipkin");
-        bool exportToJaeger = AssemblyLoader.IsAssemblyLoaded("OpenTelemetry.Exporter.Jaeger");
         bool exportToOpenTelemetryProtocol = AssemblyLoader.IsAssemblyLoaded("OpenTelemetry.Exporter.OpenTelemetryProtocol");
 
         if (exportToZipkin)
         {
             ConfigureZipkinOptions(services);
-        }
-
-        if (exportToJaeger)
-        {
-            ConfigureJaegerOptions(services);
         }
 
         if (exportToOpenTelemetryProtocol)
@@ -91,11 +85,6 @@ public static class TracingBaseServiceCollectionExtensions
             if (exportToZipkin)
             {
                 AddZipkinExporter(tracerProviderBuilder);
-            }
-
-            if (exportToJaeger)
-            {
-                AddJaegerExporter(tracerProviderBuilder);
             }
 
             if (exportToOpenTelemetryProtocol)
@@ -128,8 +117,8 @@ public static class TracingBaseServiceCollectionExtensions
             ILogger logger = serviceProvider.GetRequiredService<ILoggerFactory>()
                 .CreateLogger($"{typeof(TracingBaseServiceCollectionExtensions).Namespace}.Setup");
 
-            logger.LogTrace("Found Zipkin exporter: {ExportToZipkin}. Found Jaeger exporter: {ExportToJaeger}. Found OTLP exporter: {ExportToOtlp}.",
-                exportToZipkin, exportToJaeger, exportToOpenTelemetryProtocol);
+            logger.LogTrace("Found Zipkin exporter: {ExportToZipkin}. Found OTLP exporter: {ExportToOtlp}.",
+                exportToZipkin, exportToOpenTelemetryProtocol);
 
             tracerProviderBuilder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(tracingOptions.Name!));
 
@@ -178,27 +167,6 @@ public static class TracingBaseServiceCollectionExtensions
     private static void AddZipkinExporter(TracerProviderBuilder builder)
     {
         builder.AddZipkinExporter();
-    }
-
-    private static void ConfigureJaegerOptions(IServiceCollection services)
-    {
-        services.AddOptions<JaegerExporterOptions>().PostConfigure<IOptionsMonitor<TracingOptions>>((jaegerExporterOptions, tracingOptionsMonitor) =>
-        {
-            TracingOptions tracingOptions = tracingOptionsMonitor.CurrentValue;
-
-            jaegerExporterOptions.MaxPayloadSizeInBytes = tracingOptions.MaxPayloadSizeInBytes;
-
-            if (tracingOptions.ExporterEndpoint != null)
-            {
-                jaegerExporterOptions.AgentHost = tracingOptions.ExporterEndpoint.Host;
-                jaegerExporterOptions.AgentPort = tracingOptions.ExporterEndpoint.Port;
-            }
-        });
-    }
-
-    private static void AddJaegerExporter(TracerProviderBuilder builder)
-    {
-        builder.AddJaegerExporter();
     }
 
     private static void ConfigureOpenTelemetryProtocolOptions(IServiceCollection services)
