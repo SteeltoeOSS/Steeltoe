@@ -11,7 +11,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Configuration;
-using Steeltoe.Management.Endpoint.ManagementPort;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -31,7 +30,7 @@ internal sealed class MapActuatorsStartupFilter : IStartupFilter
                 app.UseCloudFoundrySecurity();
             }
 
-            app.UseMiddleware<ManagementPortMiddleware>();
+            app.UseManagementPort();
 
             next?.Invoke(app);
 
