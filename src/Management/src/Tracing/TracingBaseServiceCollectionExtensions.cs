@@ -117,8 +117,7 @@ public static class TracingBaseServiceCollectionExtensions
             ILogger logger = serviceProvider.GetRequiredService<ILoggerFactory>()
                 .CreateLogger($"{typeof(TracingBaseServiceCollectionExtensions).Namespace}.Setup");
 
-            logger.LogTrace("Found Zipkin exporter: {ExportToZipkin}. Found OTLP exporter: {ExportToOtlp}.",
-                exportToZipkin, exportToOpenTelemetryProtocol);
+            logger.LogTrace("Found Zipkin exporter: {ExportToZipkin}. Found OTLP exporter: {ExportToOtlp}.", exportToZipkin, exportToOpenTelemetryProtocol);
 
             tracerProviderBuilder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(tracingOptions.Name!));
 
