@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="$(OpenTelemetryVersion)" />
-    <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="$(OpenTelemetryExporterJaegerVersion)" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="$(OpenTelemetryVersion)" />
   </ItemGroup>
 

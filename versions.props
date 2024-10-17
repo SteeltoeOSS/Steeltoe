@@ -57,7 +57,6 @@
       8.0.*
     </FoundationalVersion>
     <MicrosoftIdentityModelVersion>7.6.*</MicrosoftIdentityModelVersion>
-    <OpenTelemetryExporterJaegerVersion>1.6.*-*</OpenTelemetryExporterJaegerVersion>
     <OpenTelemetryExporterPrometheusVersion>1.9.*-*</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryVersion>1.9.*</OpenTelemetryVersion>
     <SerilogVersion>8.0.*</SerilogVersion>
