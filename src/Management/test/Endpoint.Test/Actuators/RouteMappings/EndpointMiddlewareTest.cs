@@ -473,7 +473,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         builder.Configure(app =>
         {
-            app.UseActuators(configureEndpointsCallback);
+            app.UseActuatorEndpoints(configureEndpointsCallback);
         });
 
         using IWebHost host = builder.Build();

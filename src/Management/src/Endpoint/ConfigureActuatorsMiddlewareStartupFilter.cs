@@ -16,7 +16,11 @@ internal sealed class ConfigureActuatorsMiddlewareStartupFilter : IStartupFilter
     {
         return app =>
         {
-            app.UseCors();
+            // According to https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing, apps typically don't need to call UseRouting; if not
+            // explicitly called, UseRouting is implicitly inserted as the first middleware to execute.
+            // However, UseActuatorEndpoints currently fails without an explicit call to UseRouting, and
+            // https://learn.microsoft.com/en-us/aspnet/core/security/cors states that UseCors must be placed after UseRouting.
+            // The ordering used here allows for next() to call UseAuthentication/UseAuthorization, which must be placed between UseRouting and UseActuatorEndpoints.
 
             app.UseManagementPort();
 
@@ -25,9 +29,12 @@ internal sealed class ConfigureActuatorsMiddlewareStartupFilter : IStartupFilter
                 app.UseCloudFoundrySecurity();
             }
 
+            app.UseRouting();
+            app.UseActuatorsCorsPolicy();
+
             next?.Invoke(app);
 
-            app.UseActuators();
+            app.UseActuatorEndpoints();
 
             app.ApplicationServices.InitializeAvailability();
         };

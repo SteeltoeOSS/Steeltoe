@@ -19,6 +19,6 @@ public sealed class AuthStartup
     {
         app.UseMiddleware<AuthenticatedTestMiddleware>();
         app.UseRouting();
-        app.UseActuators();
+        app.UseActuatorEndpoints();
     }
 }

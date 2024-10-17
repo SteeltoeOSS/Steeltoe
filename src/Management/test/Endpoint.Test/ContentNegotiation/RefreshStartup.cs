@@ -20,6 +20,6 @@ public sealed class RefreshStartup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-        app.UseActuators();
+        app.UseActuatorEndpoints();
     }
 }

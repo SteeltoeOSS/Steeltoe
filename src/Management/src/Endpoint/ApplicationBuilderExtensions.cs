@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.ManagementPort;
 
 namespace Steeltoe.Management.Endpoint;
@@ -21,9 +22,9 @@ public static class ApplicationBuilderExtensions
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static IApplicationBuilder UseActuators(this IApplicationBuilder builder)
+    public static IApplicationBuilder UseActuatorEndpoints(this IApplicationBuilder builder)
     {
-        return UseActuators(builder, null);
+        return UseActuatorEndpoints(builder, null);
     }
 
     /// <summary>
@@ -38,7 +39,7 @@ public static class ApplicationBuilderExtensions
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static IApplicationBuilder UseActuators(this IApplicationBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints)
+    public static IApplicationBuilder UseActuatorEndpoints(this IApplicationBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -84,5 +85,23 @@ public static class ApplicationBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
 
         return builder.UseMiddleware<ManagementPortMiddleware>();
+    }
+
+    /// <summary>
+    /// Calls app.UseCors(), passing in the actuators Cross-Origin Resource Sharing (CORS) policy.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IApplicationBuilder" />.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IApplicationBuilder UseActuatorsCorsPolicy(this IApplicationBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        builder.UseCors(ActuatorsCorsPolicyOptions.PolicyName);
+
+        return builder;
     }
 }

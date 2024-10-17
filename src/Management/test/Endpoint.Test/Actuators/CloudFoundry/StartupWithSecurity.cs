@@ -23,6 +23,6 @@ public sealed class StartupWithSecurity
     {
         app.UseCloudFoundrySecurity();
         app.UseRouting();
-        app.UseActuators();
+        app.UseActuatorEndpoints();
     }
 }

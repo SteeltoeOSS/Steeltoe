@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint;
 /// <summary>
 /// Captures conventions for actuator endpoints and applies them to the builders returned from ASP.NET MapMethods() calls.
 /// <para>
-/// Used by IApplicationBuilder.UseActuators() and IEndpointRouteBuilder.MapActuators(). <see cref="TrackTarget" /> executes BEFORE any optional
+/// Used by IApplicationBuilder.UseActuatorEndpoints() and IEndpointRouteBuilder.MapActuators(). <see cref="TrackTarget" /> executes BEFORE any optional
 /// <see cref="Add" /> calls.
 /// </para>
 /// </summary>
