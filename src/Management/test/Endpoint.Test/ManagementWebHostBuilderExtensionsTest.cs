@@ -45,7 +45,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using IWebHost host = hostBuilder.Build();
 
         host.Services.GetService<IDbMigrationsEndpointHandler>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().ContainSingle();
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using IWebHost host = hostBuilder.Build();
 
         host.Services.GetService<IEnvironmentEndpointHandler>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().ContainSingle();
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         hostBuilder.AddHealthActuator();
         using IWebHost host = hostBuilder.Build();
 
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().HaveCount(1);
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().HaveCount(1);
         host.Services.GetService<IHealthAggregator>().Should().NotBeNull();
 
         await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
@@ -118,7 +118,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         hostBuilder.ConfigureServices(services => services.AddHealthContributor<DownContributor>());
         using IWebHost host = hostBuilder.Build();
 
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().HaveCount(1);
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().HaveCount(1);
         host.Services.GetService<IHealthAggregator>().Should().NotBeNull();
 
         await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
@@ -175,7 +175,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using IWebHost host = hostBuilder.Build();
 
         host.Services.GetService<IHeapDumpEndpointHandler>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().ContainSingle();
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
@@ -201,7 +201,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using IWebHost host = hostBuilder.Build();
 
         host.Services.GetService<IActuatorEndpointHandler>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().ContainSingle();
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
@@ -227,7 +227,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using IWebHost host = hostBuilder.Build();
 
         Assert.NotNull(host.Services.GetService<IInfoEndpointHandler>());
-        Assert.NotNull(host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().FirstOrDefault());
+        Assert.NotNull(host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().FirstOrDefault());
     }
 
     [Fact]
@@ -239,7 +239,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using IWebHost host = hostBuilder.Build();
 
         Assert.NotNull(host.Services.GetService<IInfoEndpointHandler>());
-        Assert.NotNull(host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().FirstOrDefault());
+        Assert.NotNull(host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().FirstOrDefault());
         Assert.NotNull(host.Services.GetServices<IInfoContributor>().OfType<TestInfoContributor>().FirstOrDefault());
     }
 
@@ -266,7 +266,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using IWebHost host = hostBuilder.Build();
 
         host.Services.GetService<ILoggersEndpointHandler>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().ContainSingle();
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
@@ -322,7 +322,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using IWebHost host = hostBuilder.Build();
 
         host.Services.GetService<RouterMappings>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().ContainSingle();
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
@@ -348,7 +348,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using IWebHost host = hostBuilder.Build();
 
         host.Services.GetService<IMetricsEndpointHandler>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().ContainSingle();
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
@@ -374,7 +374,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using IWebHost host = hostBuilder.Build();
 
         host.Services.GetService<IRefreshEndpointHandler>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().ContainSingle();
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
@@ -400,7 +400,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using IWebHost host = hostBuilder.Build();
 
         host.Services.GetService<IThreadDumpEndpointHandler>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().ContainSingle();
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
@@ -426,7 +426,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using IWebHost host = hostBuilder.Build();
 
         host.Services.GetService<IHttpExchangesEndpointHandler>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().ContainSingle();
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
@@ -452,7 +452,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using IWebHost host = hostBuilder.Build();
 
         host.Services.GetService<IServicesEndpointHandler>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().ContainSingle();
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
@@ -478,7 +478,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using IWebHost host = hostBuilder.Build();
 
         host.Services.GetService<ICloudFoundryEndpointHandler>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().ContainSingle();
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
@@ -525,7 +525,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using IWebHost host = hostBuilder.Build();
 
         host.Services.GetService<IActuatorEndpointHandler>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().ContainSingle();
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
     }
 
     [Fact]
@@ -560,7 +560,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
 
         IStartupFilter[] startupFilters = host.Services.GetServices<IStartupFilter>().ToArray();
         startupFilters.Should().HaveCount(2);
-        startupFilters.Should().ContainSingle(filter => filter is MapActuatorsStartupFilter);
+        startupFilters.Should().ContainSingle(filter => filter is ConfigureActuatorsMiddlewareStartupFilter);
         startupFilters.Should().ContainSingle(filter => filter is ManagementPortStartupFilter);
 
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative));
@@ -582,7 +582,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
             services.ConfigureActuatorEndpoints(endpoints => endpoints.RequireAuthorization("TestAuth"));
         });
 
-        // each of these will try to add their own MapActuatorsStartupFilter but should no-op in favor of the above
+        // each of these will try to add their own ConfigureActuatorsMiddlewareStartupFilter but should no-op in favor of the above
         hostBuilder.AddHypermediaActuator();
         hostBuilder.AddInfoActuator();
         hostBuilder.AddHealthActuator();
@@ -593,7 +593,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
 
         IStartupFilter[] startupFilters = host.Services.GetServices<IStartupFilter>().ToArray();
         startupFilters.Should().HaveCount(2);
-        startupFilters.Should().ContainSingle(filter => filter is MapActuatorsStartupFilter);
+        startupFilters.Should().ContainSingle(filter => filter is ConfigureActuatorsMiddlewareStartupFilter);
         startupFilters.Should().ContainSingle(filter => filter is ManagementPortStartupFilter);
 
         // these requests hit the "RequireAuthorization" policy and will only pass if WebHostBuilderWithSecureRouting is used

@@ -127,7 +127,10 @@ public static class CoreActuatorServiceCollectionExtensions
     {
         services.AddRouting();
         services.TryAddScoped<ActuatorEndpointMapper>();
+
+        services.AddCors();
         services.TryAddSingleton<IConfigureOptions<CorsOptions>, ConfigureActuatorsCorsPolicyOptions>();
+
         services.ConfigureOptionsWithChangeTokenSource<ManagementOptions, ConfigureManagementOptions>();
     }
 
@@ -165,7 +168,7 @@ public static class CoreActuatorServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, ManagementPortStartupFilter>());
-        services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, MapActuatorsStartupFilter>());
+        services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, ConfigureActuatorsMiddlewareStartupFilter>());
 
         return services;
     }

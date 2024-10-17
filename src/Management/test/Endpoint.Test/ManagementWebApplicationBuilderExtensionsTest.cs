@@ -51,7 +51,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IDbMigrationsEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter));
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter));
 
         using HttpClient httpClient = host.GetTestClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator/dbmigrations", UriKind.Relative));
@@ -69,7 +69,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IEnvironmentEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter));
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter));
 
         using HttpClient httpClient = host.GetTestClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
@@ -86,7 +86,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
 
         scope.ServiceProvider.GetService<IHealthEndpointHandler>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().HaveCount(1);
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().HaveCount(1);
         host.Services.GetService<IHealthAggregator>().Should().NotBeNull();
 
         IHealthContributor[] healthContributors = scope.ServiceProvider.GetServices<IHealthContributor>().ToArray();
@@ -107,7 +107,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
 
         scope.ServiceProvider.GetService<IHealthEndpointHandler>().Should().NotBeNull();
-        host.Services.GetServices<IStartupFilter>().OfType<MapActuatorsStartupFilter>().Should().HaveCount(1);
+        host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().HaveCount(1);
         host.Services.GetService<IHealthAggregator>().Should().NotBeNull();
 
         scope.ServiceProvider.GetServices<IHealthContributor>().OfType<DownContributor>().Should().HaveCount(1);
@@ -152,7 +152,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IHeapDumpEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter));
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter));
 
         using HttpClient httpClient = host.GetTestClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator/heapdump", UriKind.Relative));
@@ -170,7 +170,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IActuatorEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter));
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter));
 
         using HttpClient httpClient = host.GetTestClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative));
@@ -189,7 +189,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IInfoEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter));
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter));
 
         using HttpClient httpClient = host.GetTestClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator/info", UriKind.Relative));
@@ -207,7 +207,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<ILoggersEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter));
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter));
 
         using HttpClient httpClient = host.GetTestClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator/loggers", UriKind.Relative));
@@ -243,7 +243,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<RouterMappings>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter));
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter));
 
         using HttpClient httpClient = host.GetTestClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator/mappings", UriKind.Relative));
@@ -261,7 +261,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IMetricsEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter));
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter));
 
         using HttpClient httpClient = host.GetTestClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator/metrics", UriKind.Relative));
@@ -279,7 +279,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IRefreshEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter));
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter));
 
         using HttpClient httpClient = host.GetTestClient();
         HttpResponseMessage response = await httpClient.PostAsync(new Uri("/actuator/refresh", UriKind.Relative), null);
@@ -297,7 +297,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IThreadDumpEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter));
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter));
 
         using HttpClient httpClient = host.GetTestClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator/threaddump", UriKind.Relative));
@@ -315,7 +315,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
 
         host.Services.GetServices<IHttpExchangesEndpointHandler>().Should().ContainSingle();
-        host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter).Should().ContainSingle();
+        host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter).Should().ContainSingle();
 
         using HttpClient httpClient = host.GetTestClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator/httpexchanges", UriKind.Relative));
@@ -333,7 +333,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IServicesEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter));
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter));
 
         using HttpClient httpClient = host.GetTestClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator/beans", UriKind.Relative));
@@ -349,7 +349,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await using WebApplication host = hostBuilder.Build();
 
         Assert.NotNull(host.Services.GetService<ICloudFoundryEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter));
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter));
     }
 
     [Fact]
@@ -363,7 +363,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IActuatorEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter));
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter));
 
         using HttpClient httpClient = host.GetTestClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative));
@@ -421,7 +421,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
 
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter));
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter));
 
         using HttpClient httpClient = host.GetTestClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative));
@@ -448,7 +448,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
 
         // these requests hit the "RequireAuthorization" policy and will only pass if GetTestWebAppWithSecureRouting is used
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is MapActuatorsStartupFilter));
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is ConfigureActuatorsMiddlewareStartupFilter));
 
         using HttpClient httpClient = host.GetTestClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative));
