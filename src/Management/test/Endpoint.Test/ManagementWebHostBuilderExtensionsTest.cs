@@ -578,14 +578,11 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
 
         hostBuilder.ConfigureServices(services =>
         {
-            services.ActivateActuatorEndpoints();
+            services.AddHypermediaActuator();
+            services.AddInfoActuator();
+            services.AddHealthActuator();
             services.ConfigureActuatorEndpoints(endpoints => endpoints.RequireAuthorization("TestAuth"));
         });
-
-        // each of these will try to add their own ConfigureActuatorsMiddlewareStartupFilter but should no-op in favor of the above
-        hostBuilder.AddHypermediaActuator();
-        hostBuilder.AddInfoActuator();
-        hostBuilder.AddHealthActuator();
 
         using IWebHost host = hostBuilder.Build();
         await host.StartAsync();

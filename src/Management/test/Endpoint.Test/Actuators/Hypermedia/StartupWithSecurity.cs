@@ -19,6 +19,5 @@ public sealed class StartupWithSecurity
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseRouting();
     }
 }

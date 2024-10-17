@@ -47,11 +47,15 @@ public static class CoreActuatorServiceCollectionExtensions
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
+    /// <param name="configureMiddleware">
+    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires to
+    /// manually add the appropriate middleware for actuators to work correctly.
+    /// </param>
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddCoreActuatorServicesAsSingleton<TEndpointOptions, TConfigureEndpointOptions, TMiddleware, TEndpointHandlerInterface,
-        TEndpointHandler, TArgument, TResult>(this IServiceCollection services)
+        TEndpointHandler, TArgument, TResult>(this IServiceCollection services, bool configureMiddleware)
         where TEndpointOptions : EndpointOptions
         where TConfigureEndpointOptions : class, IConfigureOptionsWithKey<TEndpointOptions>
         where TMiddleware : class, IEndpointMiddleware
@@ -60,7 +64,7 @@ public static class CoreActuatorServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        AddCommonActuatorServices(services);
+        AddCommonActuatorServices(services, configureMiddleware);
 
         services.ConfigureEndpointOptions<TEndpointOptions, TConfigureEndpointOptions>();
         services.TryAddSingleton<TEndpointHandlerInterface, TEndpointHandler>();
@@ -100,11 +104,15 @@ public static class CoreActuatorServiceCollectionExtensions
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
+    /// <param name="configureMiddleware">
+    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires to
+    /// manually add the appropriate middleware for actuators to work correctly.
+    /// </param>
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddCoreActuatorServicesAsScoped<TEndpointOptions, TConfigureEndpointOptions, TMiddleware, TEndpointHandlerInterface,
-        TEndpointHandler, TArgument, TResult>(this IServiceCollection services)
+        TEndpointHandler, TArgument, TResult>(this IServiceCollection services, bool configureMiddleware)
         where TEndpointOptions : EndpointOptions
         where TConfigureEndpointOptions : class, IConfigureOptionsWithKey<TEndpointOptions>
         where TMiddleware : class, IEndpointMiddleware
@@ -113,7 +121,7 @@ public static class CoreActuatorServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        AddCommonActuatorServices(services);
+        AddCommonActuatorServices(services, configureMiddleware);
 
         services.ConfigureEndpointOptions<TEndpointOptions, TConfigureEndpointOptions>();
         services.TryAddScoped<TEndpointHandlerInterface, TEndpointHandler>();
@@ -123,7 +131,7 @@ public static class CoreActuatorServiceCollectionExtensions
         return services;
     }
 
-    private static void AddCommonActuatorServices(IServiceCollection services)
+    private static void AddCommonActuatorServices(IServiceCollection services, bool configureMiddleware)
     {
         services.AddRouting();
         services.TryAddScoped<ActuatorEndpointMapper>();
@@ -132,6 +140,13 @@ public static class CoreActuatorServiceCollectionExtensions
         services.TryAddSingleton<IConfigureOptions<CorsOptions>, ConfigureActuatorsCorsPolicyOptions>();
 
         services.ConfigureOptionsWithChangeTokenSource<ManagementOptions, ConfigureManagementOptions>();
+
+        if (configureMiddleware)
+        {
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, ConfigureActuatorsMiddlewareStartupFilter>());
+        }
+
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, ManagementPortStartupFilter>());
     }
 
     internal static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
@@ -152,25 +167,6 @@ public static class CoreActuatorServiceCollectionExtensions
         services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<TOptions>, TConfigureOptions>());
 
         services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>, ConfigurationChangeTokenSource<TOptions>>();
-    }
-
-    /// <summary>
-    /// Registers an <see cref="IStartupFilter" /> that maps all configured actuators, initializes health, etc.
-    /// </summary>
-    /// <param name="services">
-    /// The <see cref="IServiceCollection" /> to add services to.
-    /// </param>
-    /// <returns>
-    /// The incoming <paramref name="services" /> so that additional calls can be chained.
-    /// </returns>
-    public static IServiceCollection ActivateActuatorEndpoints(this IServiceCollection services)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, ManagementPortStartupFilter>());
-        services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, ConfigureActuatorsMiddlewareStartupFilter>());
-
-        return services;
     }
 
     /// <summary>

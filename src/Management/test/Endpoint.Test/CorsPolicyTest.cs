@@ -23,7 +23,6 @@ public sealed class CorsPolicyTest
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddInfoActuator();
-        builder.Services.ActivateActuatorEndpoints();
         await using WebApplication app = builder.Build();
 
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
@@ -50,7 +49,6 @@ public sealed class CorsPolicyTest
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddRefreshActuator();
-        builder.Services.ActivateActuatorEndpoints();
         await using WebApplication app = builder.Build();
 
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
@@ -80,7 +78,6 @@ public sealed class CorsPolicyTest
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddInfoActuator();
-        builder.Services.ActivateActuatorEndpoints();
         builder.Services.ConfigureActuatorsCorsPolicy(policy => policy.WithOrigins("http://example.api.com"));
         await using WebApplication app = builder.Build();
 
@@ -119,7 +116,6 @@ public sealed class CorsPolicyTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddRefreshActuator();
-        builder.Services.ActivateActuatorEndpoints();
         builder.Services.ConfigureActuatorsCorsPolicy(policy => policy.AllowAnyOrigin().SetPreflightMaxAge(TimeSpan.FromSeconds(preflightMaxAge)));
         await using WebApplication app = builder.Build();
 
@@ -178,7 +174,6 @@ public sealed class CorsPolicyTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundry();
         builder.Services.AddInfoActuator();
-        builder.Services.ActivateActuatorEndpoints();
         await using WebApplication app = builder.Build();
 
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;

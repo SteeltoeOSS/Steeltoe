@@ -12,7 +12,7 @@ public sealed class CloudFoundryStartup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddCloudFoundryActuator();
+        services.AddCloudFoundryActuator(false);
     }
 
     public void Configure(IApplicationBuilder app)

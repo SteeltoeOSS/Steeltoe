@@ -19,7 +19,5 @@ public sealed class HealthStartup
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseRouting();
-        app.UseActuatorEndpoints();
     }
 }

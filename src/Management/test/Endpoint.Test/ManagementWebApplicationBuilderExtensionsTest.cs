@@ -437,12 +437,10 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     {
         await using WebApplication host = GetTestWebAppWithSecureRouting(builder =>
         {
-            builder.AddHypermediaActuator();
-            builder.AddInfoActuator();
-            builder.AddHealthActuator();
-            builder.Services.ActivateActuatorEndpoints();
+            builder.Services.AddHypermediaActuator();
+            builder.Services.AddInfoActuator();
+            builder.Services.AddHealthActuator();
             builder.Services.ConfigureActuatorEndpoints(endpoints => endpoints.RequireAuthorization("TestAuth"));
-
         });
 
         await host.StartAsync();

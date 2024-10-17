@@ -21,8 +21,5 @@ public sealed class StartupWithSecurity
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseCloudFoundrySecurity();
-        app.UseRouting();
-        app.UseActuatorEndpoints();
     }
 }

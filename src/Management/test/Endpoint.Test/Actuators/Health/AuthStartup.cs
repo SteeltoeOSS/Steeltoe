@@ -18,7 +18,5 @@ public sealed class AuthStartup
     public void Configure(IApplicationBuilder app)
     {
         app.UseMiddleware<AuthenticatedTestMiddleware>();
-        app.UseRouting();
-        app.UseActuatorEndpoints();
     }
 }

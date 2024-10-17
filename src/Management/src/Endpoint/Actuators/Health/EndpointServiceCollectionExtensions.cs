@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.Health;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the health actuator to the service container.
+    /// Adds the health actuator to the service container and configures the ASP.NET middleware pipeline.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
@@ -24,11 +24,29 @@ public static class EndpointServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddHealthActuator(this IServiceCollection services)
     {
+        return AddHealthActuator(services, true);
+    }
+
+    /// <summary>
+    /// Adds the health actuator to the service container.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configureMiddleware">
+    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires to manually
+    /// add the appropriate middleware for actuators to work correctly.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddHealthActuator(this IServiceCollection services, bool configureMiddleware)
+    {
         ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddCoreActuatorServicesAsScoped<HealthEndpointOptions, ConfigureHealthEndpointOptions, HealthEndpointMiddleware, IHealthEndpointHandler,
-                HealthEndpointHandler, HealthEndpointRequest, HealthEndpointResponse>();
+                HealthEndpointHandler, HealthEndpointRequest, HealthEndpointResponse>(configureMiddleware);
 
         RegisterJsonConverter(services);
 

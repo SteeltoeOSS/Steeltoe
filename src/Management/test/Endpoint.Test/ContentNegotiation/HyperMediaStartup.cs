@@ -17,7 +17,5 @@ public sealed class HyperMediaStartup
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseRouting();
-        app.UseActuatorEndpoints();
     }
 }

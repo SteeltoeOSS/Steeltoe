@@ -24,7 +24,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.All;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds all Steeltoe actuators to the service container.
+    /// Adds all Steeltoe actuators to the service container and configures the ASP.NET middleware pipeline.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
@@ -34,7 +34,25 @@ public static class EndpointServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddAllActuators(this IServiceCollection services)
     {
-        return AddAllActuators(services, MediaTypeVersion.V2);
+        return AddAllActuators(services, true);
+    }
+
+    /// <summary>
+    /// Adds all Steeltoe actuators to the service container.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configureMiddleware">
+    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires to
+    /// manually add the appropriate middleware for actuators to work correctly.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddAllActuators(this IServiceCollection services, bool configureMiddleware)
+    {
+        return AddAllActuators(services, MediaTypeVersion.V2, configureMiddleware);
     }
 
     /// <summary>
@@ -46,10 +64,14 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="version">
     /// The default media version that is used by actuators that support multiple versions.
     /// </param>
+    /// <param name="configureMiddleware">
+    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires to
+    /// manually add the appropriate middleware for actuators to work correctly.
+    /// </param>
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
-    public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version)
+    public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version, bool configureMiddleware)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -58,19 +80,19 @@ public static class EndpointServiceCollectionExtensions
             services.AddCloudFoundryActuator();
         }
 
-        services.AddHypermediaActuator();
-        services.AddThreadDumpActuator(version);
-        services.AddHeapDumpActuator();
-        services.AddDbMigrationsActuator();
-        services.AddEnvironmentActuator();
-        services.AddInfoActuator();
-        services.AddHealthActuator();
-        services.AddLoggersActuator();
-        services.AddHttpExchangesActuator();
-        services.AddRouteMappingsActuator();
-        services.AddMetricsActuator();
-        services.AddRefreshActuator();
-        services.AddServicesActuator();
+        services.AddHypermediaActuator(configureMiddleware);
+        services.AddThreadDumpActuator(version, configureMiddleware);
+        services.AddHeapDumpActuator(configureMiddleware);
+        services.AddDbMigrationsActuator(configureMiddleware);
+        services.AddEnvironmentActuator(configureMiddleware);
+        services.AddInfoActuator(configureMiddleware);
+        services.AddHealthActuator(configureMiddleware);
+        services.AddLoggersActuator(configureMiddleware);
+        services.AddHttpExchangesActuator(configureMiddleware);
+        services.AddRouteMappingsActuator(configureMiddleware);
+        services.AddMetricsActuator(configureMiddleware);
+        services.AddRefreshActuator(configureMiddleware);
+        services.AddServicesActuator(configureMiddleware);
 
         return services;
     }
