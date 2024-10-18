@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
-using Steeltoe.Management.Endpoint.Actuators.Health;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -35,8 +34,6 @@ internal sealed class ConfigureActuatorsMiddlewareStartupFilter : IStartupFilter
             next?.Invoke(app);
 
             app.UseActuatorEndpoints();
-
-            app.ApplicationServices.InitializeAvailability();
         };
     }
 }

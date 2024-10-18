@@ -580,9 +580,10 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         using HttpClient httpClient = host.GetTestClient();
 
         IStartupFilter[] startupFilters = host.Services.GetServices<IStartupFilter>().ToArray();
-        startupFilters.Should().HaveCount(2);
+        startupFilters.Should().HaveCount(3);
         startupFilters.Should().ContainSingle(filter => filter is ConfigureActuatorsMiddlewareStartupFilter);
         startupFilters.Should().ContainSingle(filter => filter is ManagementPortStartupFilter);
+        startupFilters.Should().ContainSingle(filter => filter is AvailabilityStartupFilter);
 
         // these requests hit the "RequireAuthorization" policy and will only pass if WebHostBuilderWithSecureRouting is used
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative));

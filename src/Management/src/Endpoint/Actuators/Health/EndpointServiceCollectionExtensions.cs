@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common.HealthChecks;
@@ -73,6 +74,7 @@ public static class EndpointServiceCollectionExtensions
         AddHealthContributor<DiskSpaceContributor>(services);
 
         services.TryAddSingleton<ApplicationAvailability>();
+        services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, AvailabilityStartupFilter>());
         AddHealthContributor<LivenessHealthContributor>(services);
         AddHealthContributor<ReadinessHealthContributor>(services);
     }

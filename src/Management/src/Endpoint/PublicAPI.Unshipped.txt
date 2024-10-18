@@ -35,7 +35,6 @@ static Steeltoe.Management.Endpoint.Actuators.Health.EndpointServiceCollectionEx
 static Steeltoe.Management.Endpoint.Actuators.Health.EndpointServiceCollectionExtensions.AddHealthActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Health.EndpointServiceCollectionExtensions.AddHealthContributor(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Type! healthContributorType) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Health.EndpointServiceCollectionExtensions.AddHealthContributor<T>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.Actuators.Health.ServiceProviderExtensions.InitializeAvailability(this System.IServiceProvider! serviceProvider) -> System.IServiceProvider!
 static Steeltoe.Management.Endpoint.Actuators.HeapDump.EndpointServiceCollectionExtensions.AddHeapDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.HeapDump.EndpointServiceCollectionExtensions.AddHeapDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.HttpExchanges.EndpointServiceCollectionExtensions.AddHttpExchangesActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
@@ -175,7 +174,6 @@ Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions.HealthGroupOpti
 Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions.Include.get -> string?
 Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions.Include.set -> void
 Steeltoe.Management.Endpoint.Actuators.Health.IHealthEndpointHandler
-Steeltoe.Management.Endpoint.Actuators.Health.ServiceProviderExtensions
 Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
 Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails.Always = 0 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
 Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails.Never = 1 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
