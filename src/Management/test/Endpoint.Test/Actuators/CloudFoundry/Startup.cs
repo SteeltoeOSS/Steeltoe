@@ -13,17 +13,13 @@ public sealed class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddCloudFoundryActuator();
-        services.AddInfoActuator();
+        services.AddCloudFoundryActuator(false);
+        services.AddInfoActuator(false);
     }
 
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapAllActuators();
-        });
+        app.UseActuatorEndpoints();
     }
 }

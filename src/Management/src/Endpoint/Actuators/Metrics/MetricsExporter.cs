@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.Metrics;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Actuators.Metrics.SystemDiagnosticsMetrics;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Metrics;
@@ -12,10 +13,10 @@ namespace Steeltoe.Management.Endpoint.Actuators.Metrics;
 /// </summary>
 internal sealed class MetricsExporter
 {
+    private readonly IOptionsMonitor<MetricsEndpointOptions> _optionsMonitor;
     private readonly MetricsCollection<IList<MetricSample>> _metricSamples = new();
     private readonly MetricsCollection<IList<MetricTag>> _availableTags = new();
 
-    private readonly int _cacheDurationMilliseconds;
     private readonly object _collectionLock = new();
     private MetricsCollection<IList<MetricSample>> _lastCollectionSamples = new();
     private MetricsCollection<IList<MetricTag>> _lastAvailableTags = new();
@@ -25,14 +26,14 @@ internal sealed class MetricsExporter
     /// <summary>
     /// Initializes a new instance of the <see cref="MetricsExporter" /> class.
     /// </summary>
-    /// <param name="options">
-    /// Options for the exporter.
+    /// <param name="optionsMonitor">
+    /// Provides access to <see cref="MetricsEndpointOptions" />.
     /// </param>
-    public MetricsExporter(MetricsExporterOptions options)
+    public MetricsExporter(IOptionsMonitor<MetricsEndpointOptions> optionsMonitor)
     {
-        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
 
-        _cacheDurationMilliseconds = options.CacheDurationMilliseconds;
+        _optionsMonitor = optionsMonitor;
     }
 
     public void SetCollect(Action collect)
@@ -49,9 +50,11 @@ internal sealed class MetricsExporter
             throw new InvalidOperationException("Call SetCollect() first.");
         }
 
+        int cacheDurationMilliseconds = _optionsMonitor.CurrentValue.CacheDurationMilliseconds;
+
         lock (_collectionLock)
         {
-            if (DateTime.UtcNow > _lastCollection.AddMilliseconds(_cacheDurationMilliseconds))
+            if (DateTime.UtcNow > _lastCollection.AddMilliseconds(cacheDurationMilliseconds))
             {
                 _metricSamples.Clear();
                 _availableTags.Clear();

@@ -23,6 +23,8 @@ internal sealed class TestInfoContributor(bool throws) : IInfoContributor
             throw new InvalidOperationException();
         }
 
+        builder.WithInfo("IsTest", "True");
+
         Called = true;
         return Task.CompletedTask;
     }

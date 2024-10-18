@@ -14,12 +14,14 @@ internal sealed class ConfigureCloudFoundryEndpointOptions(IConfiguration config
     private const string VcapApplicationIdKey = "vcap:application:application_id";
     private const string VcapApplicationCloudfoundryApiKey = "vcap:application:cf_api";
 
+    private readonly IConfiguration _configuration = configuration;
+
     public override void Configure(CloudFoundryEndpointOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
 
         base.Configure(options);
-        options.ApplicationId ??= Configuration[VcapApplicationIdKey];
-        options.Api ??= Configuration[VcapApplicationCloudfoundryApiKey];
+        options.ApplicationId ??= _configuration[VcapApplicationIdKey];
+        options.Api ??= _configuration[VcapApplicationCloudfoundryApiKey];
     }
 }

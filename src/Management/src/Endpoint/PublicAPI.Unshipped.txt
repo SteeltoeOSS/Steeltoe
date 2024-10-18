@@ -19,94 +19,57 @@ static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.Liven
 static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState.Correct -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState!
 static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessState.AcceptingTraffic -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessState!
 static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessState.RefusingTraffic -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessState!
-static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder! builder) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
-static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IRouteBuilder! builder) -> Microsoft.AspNetCore.Routing.IRouteBuilder!
-static Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundrySecurityServiceCollectionExtensions.AddCloudFoundrySecurity(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapActuators(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder! builder) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
+static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapActuators(this Microsoft.AspNetCore.Routing.IRouteBuilder! builder) -> Microsoft.AspNetCore.Routing.IRouteBuilder!
+static Steeltoe.Management.Endpoint.Actuators.All.EndpointServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.All.EndpointServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.All.EndpointServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.CloudFoundry.EndpointApplicationBuilderExtensions.UseCloudFoundrySecurity(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
 static Steeltoe.Management.Endpoint.Actuators.CloudFoundry.EndpointServiceCollectionExtensions.AddCloudFoundryActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.CloudFoundry.EndpointServiceCollectionExtensions.AddCloudFoundryActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.DbMigrations.EndpointServiceCollectionExtensions.AddDbMigrationsActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.DbMigrations.EndpointServiceCollectionExtensions.AddDbMigrationsActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Environment.EndpointServiceCollectionExtensions.AddEnvironmentActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.Environment.EndpointServiceCollectionExtensions.AddEnvironmentActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Health.EndpointServiceCollectionExtensions.AddHealthActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.Health.EndpointServiceCollectionExtensions.AddHealthActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Health.EndpointServiceCollectionExtensions.AddHealthContributor(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Type! healthContributorType) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Health.EndpointServiceCollectionExtensions.AddHealthContributor<T>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.Actuators.Health.ServiceProviderExtensions.InitializeAvailability(this System.IServiceProvider! serviceProvider) -> System.IServiceProvider!
 static Steeltoe.Management.Endpoint.Actuators.HeapDump.EndpointServiceCollectionExtensions.AddHeapDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.HeapDump.EndpointServiceCollectionExtensions.AddHeapDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.HttpExchanges.EndpointServiceCollectionExtensions.AddHttpExchangesActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.HttpExchanges.EndpointServiceCollectionExtensions.AddHttpExchangesActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Hypermedia.EndpointServiceCollectionExtensions.AddHypermediaActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.Hypermedia.EndpointServiceCollectionExtensions.AddHypermediaActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Info.EndpointServiceCollectionExtensions.AddInfoActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.Info.EndpointServiceCollectionExtensions.AddInfoActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Info.EndpointServiceCollectionExtensions.AddInfoContributor(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Type! infoContributorType) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Info.EndpointServiceCollectionExtensions.AddInfoContributor<T>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Loggers.EndpointServiceCollectionExtensions.AddLoggersActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.Loggers.EndpointServiceCollectionExtensions.AddLoggersActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Metrics.EndpointServiceCollectionExtensions.AddMetricsActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.Metrics.EndpointServiceCollectionExtensions.AddMetricsActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Metrics.EndpointServiceCollectionExtensions.AddMetricsObservers(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Refresh.EndpointServiceCollectionExtensions.AddRefreshActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.Actuators.RouteMappings.EndpointServiceCollectionExtensions.AddMappingsActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.Refresh.EndpointServiceCollectionExtensions.AddRefreshActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.RouteMappings.EndpointServiceCollectionExtensions.AddRouteMappingsActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.RouteMappings.EndpointServiceCollectionExtensions.AddRouteMappingsActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.RouteMappings.RouteBuilderExtensions.AddRoutesToMappingsActuator(this Microsoft.AspNetCore.Routing.IRouteBuilder! builder) -> Microsoft.AspNetCore.Routing.IRouteBuilder!
 static Steeltoe.Management.Endpoint.Actuators.Services.EndpointServiceCollectionExtensions.AddServicesActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.Services.EndpointServiceCollectionExtensions.AddServicesActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.ThreadDump.EndpointServiceCollectionExtensions.AddThreadDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.Actuators.ThreadDump.EndpointServiceCollectionExtensions.AddThreadDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.ActivateActuatorEndpoints(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
-static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddCommonActuatorServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddAllActuators(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddAllActuators(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddAllActuators(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddCloudFoundryActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddDbMigrationsActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddEnvironmentActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddHealthActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddHeapDumpActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddHttpExchangesActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddHypermediaActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddInfoActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddLoggersActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddMappingsActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddMetricsActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddRefreshActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddServicesActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddThreadDumpActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddThreadDumpActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddAllActuators(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddAllActuators(this Microsoft.Extensions.Hosting.IHostBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddAllActuators(this Microsoft.Extensions.Hosting.IHostBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddCloudFoundryActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddDbMigrationsActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddEnvironmentActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHealthActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHeapDumpActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHttpExchangesActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHypermediaActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddInfoActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddLoggersActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddMappingsActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddMetricsActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddRefreshActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddServicesActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddThreadDumpActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddThreadDumpActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddAllActuators(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddAllActuators(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddAllActuators(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddCloudFoundryActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddDbMigrationsActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddEnvironmentActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHealthActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHeapDumpActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHttpExchangesActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHypermediaActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddInfoActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddLoggersActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddMappingsActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddMetricsActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddRefreshActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddServicesActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddThreadDumpActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddThreadDumpActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, Steeltoe.Management.Endpoint.MediaTypeVersion mediaTypeVersion) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
+static Steeltoe.Management.Endpoint.Actuators.ThreadDump.EndpointServiceCollectionExtensions.AddThreadDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.ThreadDump.EndpointServiceCollectionExtensions.AddThreadDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.ApplicationBuilderExtensions.UseActuatorEndpoints(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
+static Steeltoe.Management.Endpoint.ApplicationBuilderExtensions.UseActuatorEndpoints(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
+static Steeltoe.Management.Endpoint.ApplicationBuilderExtensions.UseActuatorsCorsPolicy(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
+static Steeltoe.Management.Endpoint.ApplicationBuilderExtensions.UseManagementPort(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
+static Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions.AddCoreActuatorServices<TEndpointOptions, TConfigureEndpointOptions, TMiddleware, TEndpointHandlerInterface, TEndpointHandler, TArgument, TResult>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions.ConfigureActuatorEndpoints(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>! configureEndpoints) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions.ConfigureActuatorsCorsPolicy(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>! configureCorsPolicy) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.SpringBootAdminClient.ServiceCollectionExtensions.AddSpringBootAdminClient(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions
+Steeltoe.Management.Endpoint.Actuators.All.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.Api.get -> string?
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.Api.set -> void
@@ -115,7 +78,6 @@ Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.CloudFoundryEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.ValidateCertificates.get -> bool
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundryEndpointOptions.ValidateCertificates.set -> void
-Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundrySecurityServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.EndpointApplicationBuilderExtensions
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.CloudFoundry.ICloudFoundryEndpointHandler
@@ -211,7 +173,6 @@ Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions.HealthGroupOpti
 Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions.Include.get -> string?
 Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions.Include.set -> void
 Steeltoe.Management.Endpoint.Actuators.Health.IHealthEndpointHandler
-Steeltoe.Management.Endpoint.Actuators.Health.ServiceProviderExtensions
 Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
 Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails.Always = 0 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
 Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails.Never = 1 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
@@ -490,13 +451,16 @@ Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedCount.get -> 
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedCount.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.get -> long
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.set -> void
-Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions
-Steeltoe.Management.Endpoint.AllActuatorsStartupFilter
-Steeltoe.Management.Endpoint.AllActuatorsStartupFilter.Configure(System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>? next) -> System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>!
+Steeltoe.Management.Endpoint.ApplicationBuilderExtensions
+Steeltoe.Management.Endpoint.Configuration.ConfigureEndpointOptions<TOptions>
+Steeltoe.Management.Endpoint.Configuration.ConfigureEndpointOptions<TOptions>.ConfigurationKey.get -> string!
+Steeltoe.Management.Endpoint.Configuration.ConfigureEndpointOptions<TOptions>.ConfigureEndpointOptions(Microsoft.Extensions.Configuration.IConfiguration! configuration, string! configurationKey, string! id) -> void
 Steeltoe.Management.Endpoint.Configuration.Exposure
 Steeltoe.Management.Endpoint.Configuration.Exposure.Exclude.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.Configuration.Exposure.Exposure() -> void
 Steeltoe.Management.Endpoint.Configuration.Exposure.Include.get -> System.Collections.Generic.IList<string!>!
+Steeltoe.Management.Endpoint.Configuration.IConfigureOptionsWithKey<T>
+Steeltoe.Management.Endpoint.Configuration.IConfigureOptionsWithKey<T>.ConfigurationKey.get -> string!
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.CustomJsonConverters.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Enabled.get -> bool?
@@ -512,12 +476,10 @@ Steeltoe.Management.Endpoint.Configuration.ManagementOptions.SslEnabled.get -> b
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.SslEnabled.set -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.UseStatusCodeFromResponse.get -> bool
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.UseStatusCodeFromResponse.set -> void
+Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions
 Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>
 Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>.InvokeAsync(TArgument argument, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>!
 Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>.Options.get -> Steeltoe.Management.Configuration.EndpointOptions!
-Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions
-Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions
-Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions
 Steeltoe.Management.Endpoint.MediaTypeVersion
 Steeltoe.Management.Endpoint.MediaTypeVersion.V1 = 0 -> Steeltoe.Management.Endpoint.MediaTypeVersion
 Steeltoe.Management.Endpoint.MediaTypeVersion.V2 = 1 -> Steeltoe.Management.Endpoint.MediaTypeVersion
@@ -544,5 +506,6 @@ Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Url.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.get -> bool
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.set -> void
+virtual Steeltoe.Management.Endpoint.Configuration.ConfigureEndpointOptions<TOptions>.Configure(TOptions! options) -> void
 virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ShouldInvoke(Microsoft.AspNetCore.Http.PathString requestPath) -> bool
 virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.WriteResponseAsync(TResult result, Microsoft.AspNetCore.Http.HttpContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!

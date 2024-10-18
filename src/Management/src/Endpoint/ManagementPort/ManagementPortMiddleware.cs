@@ -10,6 +10,9 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.ManagementPort;
 
+/// <summary>
+/// Blocks access to actuator endpoints on ports other than the management port. Blocks access to non-actuator endpoints on the management port.
+/// </summary>
 internal sealed class ManagementPortMiddleware
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;

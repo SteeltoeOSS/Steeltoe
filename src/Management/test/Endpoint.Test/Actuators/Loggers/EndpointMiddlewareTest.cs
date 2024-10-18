@@ -34,12 +34,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
-
-        builder.ConfigureLogging((context, loggingBuilder) =>
-        {
-            loggingBuilder.AddConfiguration(context.Configuration);
-            loggingBuilder.AddDynamicConsole();
-        });
+        builder.ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddConfiguration(context.Configuration));
 
         using IWebHost host = builder.Build();
         await host.StartAsync();
@@ -59,12 +54,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
-
-        builder.ConfigureLogging((context, loggingBuilder) =>
-        {
-            loggingBuilder.AddConfiguration(context.Configuration);
-            loggingBuilder.AddDynamicConsole();
-        });
+        builder.ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddConfiguration(context.Configuration));
 
         using IWebHost host = builder.Build();
         await host.StartAsync();
@@ -81,12 +71,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
-
-        builder.ConfigureLogging((context, loggingBuilder) =>
-        {
-            loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
-            loggingBuilder.AddDynamicConsole();
-        });
+        builder.ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging")));
 
         using IWebHost host = builder.Build();
         await host.StartAsync();
@@ -111,12 +96,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
-
-        builder.ConfigureLogging((context, loggingBuilder) =>
-        {
-            loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
-            loggingBuilder.AddDynamicConsole();
-        });
+        builder.ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging")));
 
         using IWebHost host = builder.Build();
         await host.StartAsync();
@@ -136,12 +116,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
-
-        builder.ConfigureLogging((context, loggingBuilder) =>
-        {
-            loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
-            loggingBuilder.AddDynamicConsole();
-        });
+        builder.ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging")));
 
         using IWebHost host = builder.Build();
         await host.StartAsync();

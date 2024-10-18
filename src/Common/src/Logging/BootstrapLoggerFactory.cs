@@ -92,7 +92,19 @@ public sealed class BootstrapLoggerFactory : ILoggerFactory
         {
             if (!_loggersByCategoryName.TryGetValue(categoryName, out UpgradableLogger? logger))
             {
-                ILogger innerLogger = _innerFactory.CreateLogger(categoryName);
+                ILogger innerLogger;
+
+                try
+                {
+                    innerLogger = _innerFactory.CreateLogger(categoryName);
+                }
+                catch (ObjectDisposedException)
+                {
+                    // This happens when multiple tests are running in parallel, each creating their own service container, but sharing a single BootstrapLoggerFactory instance.
+                    // When the first service container gets disposed, it disposes its contained BootstrapLoggerFactory instance, which makes subsequent tests fail.
+                    throw new InvalidOperationException($"{nameof(BootstrapLoggerFactory)} is not thread-safe. Do not share a single instance.");
+                }
+
                 logger = new UpgradableLogger(innerLogger, categoryName);
                 _loggersByCategoryName.Add(categoryName, logger);
             }

@@ -111,7 +111,7 @@ public sealed class HealthAggregatorTest : BaseTest
 
         Assert.NotNull(result);
         Assert.Equal(SteeltoeHealthStatus.Up, result.Status);
-        Assert.Contains("Up-9", result.Details.Keys);
+        Assert.Contains("alwaysUp-9", result.Details.Keys);
     }
 
     [Fact]

@@ -14,12 +14,10 @@ public sealed class StartupV1
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddCloudFoundryActuator();
-        services.AddThreadDumpActuator(MediaTypeVersion.V1);
+        services.AddThreadDumpActuator(MediaTypeVersion.V1, false);
     }
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseRouting();
-        app.UseEndpoints(endpoints => endpoints.MapAllActuators());
     }
 }

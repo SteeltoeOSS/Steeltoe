@@ -39,7 +39,7 @@ public static class PrometheusExtensions
         return services;
     }
 
-    public static IApplicationBuilder MapPrometheusActuator(this IApplicationBuilder builder)
+    public static IApplicationBuilder UsePrometheusActuator(this IApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 

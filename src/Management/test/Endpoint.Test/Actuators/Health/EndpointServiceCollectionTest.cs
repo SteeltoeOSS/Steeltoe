@@ -35,15 +35,14 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddSingleton(configuration);
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        using IServiceScope scope = serviceProvider.CreateScope();
 
-        var handler = scope.ServiceProvider.GetService<IHealthEndpointHandler>();
+        var handler = serviceProvider.GetService<IHealthEndpointHandler>();
         Assert.NotNull(handler);
 
         var aggregator = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(aggregator);
 
-        IEnumerable<IHealthContributor> contributors = scope.ServiceProvider.GetServices<IHealthContributor>();
+        IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
         Assert.NotEmpty(contributors);
     }
 
@@ -69,15 +68,14 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         services.Configure<HealthCheckServiceOptions>(configuration);
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        using IServiceScope scope = serviceProvider.CreateScope();
 
-        var handler = scope.ServiceProvider.GetService<IHealthEndpointHandler>();
+        var handler = serviceProvider.GetService<IHealthEndpointHandler>();
         Assert.NotNull(handler);
 
         var aggregator = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(aggregator);
 
-        IEnumerable<IHealthContributor> contributors = scope.ServiceProvider.GetServices<IHealthContributor>();
+        IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
         Assert.Equal(3, contributors.Count());
 
         var availability = serviceProvider.GetService<ApplicationAvailability>();
@@ -92,9 +90,8 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddHealthContributor<TestHealthContributor>();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        using IServiceScope scope = serviceProvider.CreateScope();
 
-        IEnumerable<IHealthContributor> contributors = scope.ServiceProvider.GetServices<IHealthContributor>();
+        IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
         Assert.Single(contributors);
     }
 }

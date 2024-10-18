@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Loggers;
@@ -15,8 +13,6 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     [Fact]
     public async Task AddLoggersActuator_AddsCorrectServices()
     {
-        var services = new ServiceCollection();
-
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
@@ -28,12 +24,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfiguration configuration = configurationBuilder.Build();
 
-        services.AddLogging(builder =>
-        {
-            builder.AddConfiguration(configuration);
-            builder.AddDynamicConsole();
-        });
-
+        var services = new ServiceCollection();
         services.AddLoggersActuator();
         services.AddSingleton(configuration);
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);

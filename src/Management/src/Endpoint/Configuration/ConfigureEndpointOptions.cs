@@ -7,39 +7,32 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Configuration;
 
-internal abstract class ConfigureEndpointOptions<T> : IConfigureOptionsWithKey<T>
-    where T : EndpointOptions
+public abstract class ConfigureEndpointOptions<TOptions> : IConfigureOptionsWithKey<TOptions>
+    where TOptions : EndpointOptions
 {
-    private readonly string _prefix;
     private readonly string _id;
+    private readonly IConfiguration _configuration;
 
-    string IConfigureOptionsWithKey<T>.ConfigurationKey => _prefix;
+    public string ConfigurationKey { get; }
 
-    protected IConfiguration Configuration { get; }
-
-    protected ConfigureEndpointOptions(IConfiguration configuration, string prefix, string id)
+    protected ConfigureEndpointOptions(IConfiguration configuration, string configurationKey, string id)
     {
         ArgumentNullException.ThrowIfNull(configuration);
-        ArgumentException.ThrowIfNullOrEmpty(prefix);
+        ArgumentException.ThrowIfNullOrEmpty(configurationKey);
         ArgumentNullException.ThrowIfNull(id);
 
-        Configuration = configuration;
-        _prefix = prefix;
+        _configuration = configuration;
+        ConfigurationKey = configurationKey;
         _id = id;
     }
 
-    public virtual void Configure(T options)
-    {
-        ConfigureAtKey(Configuration, _prefix, _id, options);
-    }
-
-    private static void ConfigureAtKey(IConfiguration configuration, string configurationKey, string endpointId, T options)
+    public virtual void Configure(TOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        configuration.GetSection(configurationKey).Bind(options);
+        _configuration.GetSection(ConfigurationKey).Bind(options);
 
-        options.Id ??= endpointId;
+        options.Id ??= _id;
 
         if (options.AllowedVerbs.Count == 0)
         {

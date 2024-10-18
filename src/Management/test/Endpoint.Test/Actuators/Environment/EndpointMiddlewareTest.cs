@@ -290,10 +290,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.Sources.Clear();
         builder.Configuration.AddJsonFile(fileProvider, appSettingsJsonFileName, false, true);
-        builder.AddEnvironmentActuator();
+        builder.Services.AddEnvironmentActuator();
 
         await using WebApplication app = builder.Build();
-        app.UseRouting();
         await app.StartAsync();
 
         using HttpClient httpClient = app.GetTestClient();

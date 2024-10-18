@@ -284,11 +284,9 @@ public sealed class LoggingBuilderExtensionsTest
         });
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var formatterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<SimpleConsoleFormatterOptions>>();
 
-        using IServiceScope scope = serviceProvider.CreateScope();
-        var formatterOptions = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<SimpleConsoleFormatterOptions>>();
-
-        formatterOptions.Value.ColorBehavior.Should().NotBe(LoggerColorBehavior.Disabled);
+        formatterOptions.CurrentValue.ColorBehavior.Should().NotBe(LoggerColorBehavior.Disabled);
     }
 
     [Fact]

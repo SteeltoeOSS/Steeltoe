@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Endpoint.Configuration;
 
-internal interface IConfigureOptionsWithKey<in T> : IConfigureOptions<T>
+public interface IConfigureOptionsWithKey<in T> : IConfigureOptions<T>
     where T : class
 {
     string ConfigurationKey { get; }

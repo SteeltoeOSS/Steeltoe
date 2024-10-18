@@ -15,7 +15,6 @@ namespace Steeltoe.Bootstrap.AutoConfiguration;
 public static class WebHostBuilderExtensions
 {
     private static readonly IReadOnlySet<string> EmptySet = ImmutableHashSet<string>.Empty;
-    private static readonly ILoggerFactory DefaultLoggerFactory = BootstrapLoggerFactory.CreateConsole();
 
     /// <summary>
     /// Automatically configures Steeltoe packages that have been added to your project as NuGet references.
@@ -28,7 +27,7 @@ public static class WebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddSteeltoe(this IWebHostBuilder builder)
     {
-        return AddSteeltoe(builder, EmptySet, DefaultLoggerFactory);
+        return AddSteeltoe(builder, EmptySet, BootstrapLoggerFactory.CreateConsole());
     }
 
     /// <summary>
@@ -45,7 +44,7 @@ public static class WebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddSteeltoe(this IWebHostBuilder builder, IReadOnlySet<string> assemblyNamesToExclude)
     {
-        return AddSteeltoe(builder, assemblyNamesToExclude, DefaultLoggerFactory);
+        return AddSteeltoe(builder, assemblyNamesToExclude, BootstrapLoggerFactory.CreateConsole());
     }
 
     /// <summary>

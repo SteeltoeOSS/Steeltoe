@@ -20,14 +20,14 @@ internal sealed class ThreadDumpV2Converter : JsonConverter<IList<ThreadInfo>>
 
         writer.WriteStartObject();
         writer.WritePropertyName("threads");
-        writer.WriteStartObject();
+        writer.WriteStartArray();
 
         foreach (ThreadInfo threadInfo in value)
         {
             JsonSerializer.Serialize(writer, threadInfo, options);
         }
 
-        writer.WriteEndObject();
+        writer.WriteEndArray();
         writer.WriteEndObject();
     }
 }

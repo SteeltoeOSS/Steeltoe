@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 
-namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
+namespace Steeltoe.Common.TestResources;
 
-internal sealed class HostWrapper : IAsyncDisposable
+public sealed class HostWrapper : IAsyncDisposable
 {
     private readonly IHost? _host;
     private readonly IWebHost? _webHost;
@@ -55,6 +55,11 @@ internal sealed class HostWrapper : IAsyncDisposable
     public Task StartAsync()
     {
         return _host?.StartAsync() ?? _webHost?.StartAsync() ?? _webApplication?.StartAsync() ?? throw new NotSupportedException();
+    }
+
+    public Task StopAsync()
+    {
+        return _host?.StopAsync() ?? _webHost?.StopAsync() ?? _webApplication?.StopAsync() ?? throw new NotSupportedException();
     }
 
     public async ValueTask DisposeAsync()

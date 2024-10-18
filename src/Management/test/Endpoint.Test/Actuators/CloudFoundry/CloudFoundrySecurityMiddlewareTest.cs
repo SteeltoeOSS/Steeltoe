@@ -325,7 +325,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
         var services = new ServiceCollection();
-        services.AddCloudFoundrySecurity();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var permissionsProvider = serviceProvider.GetRequiredService<PermissionsProvider>();
 
@@ -349,7 +350,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
         var services = new ServiceCollection();
-        services.AddCloudFoundrySecurity();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var permissionsProvider = serviceProvider.GetRequiredService<PermissionsProvider>();
 
@@ -370,7 +372,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         await using WebApplication app = builder.Build();
 
         Action action = () => app.UseCloudFoundrySecurity();
-        action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Please call IServiceCollection.AddCloudFoundrySecurity first.");
+        action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Please call IServiceCollection.AddCloudFoundryActuator first.");
     }
 
     protected override void Dispose(bool disposing)

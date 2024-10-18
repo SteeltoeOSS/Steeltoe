@@ -10,7 +10,7 @@ internal sealed class UpContributor : IHealthContributor
 {
     private readonly int? _sleepTime;
 
-    public string Id => "Up";
+    public string Id => "alwaysUp";
 
     internal UpContributor(int? sleepTime = null)
     {

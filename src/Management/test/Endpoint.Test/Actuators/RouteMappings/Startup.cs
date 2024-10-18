@@ -27,7 +27,7 @@ public sealed class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddCloudFoundryActuator();
-        services.AddMappingsActuator();
+        services.AddRouteMappingsActuator();
         services.AddRefreshActuator();
 
         services.AddMvc(options =>
@@ -48,7 +48,6 @@ public sealed class Startup
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapAllActuators();
             });
         }
         else
@@ -56,7 +55,7 @@ public sealed class Startup
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                routes.MapAllActuators();
+                routes.MapActuators();
                 routes.AddRoutesToMappingsActuator();
             });
         }

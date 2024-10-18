@@ -72,8 +72,8 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
         string? value = configurationRoot["random:int[4,10]"];
         Assert.NotNull(value);
-        int val = int.Parse(value, CultureInfo.InvariantCulture);
-        Assert.InRange(val, 4, 10);
+        int number = int.Parse(value, CultureInfo.InvariantCulture);
+        Assert.InRange(number, 4, 10);
     }
 
     [Fact]
@@ -87,8 +87,8 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
         string? value = configurationRoot["random:int(10)"];
         Assert.NotNull(value);
-        int val = int.Parse(value, CultureInfo.InvariantCulture);
-        Assert.InRange(val, 0, 10);
+        int number = int.Parse(value, CultureInfo.InvariantCulture);
+        Assert.InRange(number, 0, 10);
     }
 
     [Fact]
@@ -115,8 +115,8 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
         string? value = configurationRoot["random:long[4,10]"];
         Assert.NotNull(value);
-        int val = int.Parse(value, CultureInfo.InvariantCulture);
-        Assert.InRange(val, 4, 10);
+        int number = int.Parse(value, CultureInfo.InvariantCulture);
+        Assert.InRange(number, 4, 10);
     }
 
     [Fact]
@@ -130,7 +130,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
         string? value = configurationRoot["random:long(10)"];
         Assert.NotNull(value);
-        int val = int.Parse(value, CultureInfo.InvariantCulture);
-        Assert.InRange(val, 0, 10);
+        int number = int.Parse(value, CultureInfo.InvariantCulture);
+        Assert.InRange(number, 0, 10);
     }
 }

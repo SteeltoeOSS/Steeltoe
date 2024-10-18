@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Management.Endpoint.Actuators.Refresh;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Refresh;
 
@@ -24,7 +25,7 @@ public sealed class HttpVerbInConventionalRoutingTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
-        builder.AddRefreshActuator();
+        builder.Services.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
         app.UseMvc(routes => routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"));
@@ -52,7 +53,7 @@ public sealed class HttpVerbInConventionalRoutingTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
-        builder.AddRefreshActuator();
+        builder.Services.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
         app.UseMvc(routes => routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"));
@@ -80,7 +81,7 @@ public sealed class HttpVerbInConventionalRoutingTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
-        builder.AddRefreshActuator();
+        builder.Services.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
         app.UseMvc(routes => routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"));
@@ -109,7 +110,7 @@ public sealed class HttpVerbInConventionalRoutingTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
-        builder.AddRefreshActuator();
+        builder.Services.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
         app.UseMvc(routes => routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"));
