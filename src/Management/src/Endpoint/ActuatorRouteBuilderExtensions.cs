@@ -24,9 +24,7 @@ public static class ActuatorRouteBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
 
         IServiceProvider serviceProvider = builder.ServiceProvider;
-
-        using IServiceScope scope = serviceProvider.CreateScope();
-        var mapper = scope.ServiceProvider.GetRequiredService<ActuatorEndpointMapper>();
+        var mapper = serviceProvider.GetRequiredService<ActuatorEndpointMapper>();
 
         var conventionBuilder = new ActuatorConventionBuilder();
         mapper.Map(builder, conventionBuilder);
@@ -47,9 +45,7 @@ public static class ActuatorRouteBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
 
         IServiceProvider serviceProvider = builder.ServiceProvider;
-
-        using IServiceScope scope = serviceProvider.CreateScope();
-        var mapper = scope.ServiceProvider.GetRequiredService<ActuatorEndpointMapper>();
+        var mapper = serviceProvider.GetRequiredService<ActuatorEndpointMapper>();
 
         mapper.Map(builder);
         return builder;

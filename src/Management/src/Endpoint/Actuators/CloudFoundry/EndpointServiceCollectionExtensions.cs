@@ -33,8 +33,8 @@ public static class EndpointServiceCollectionExtensions
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configureMiddleware">
-    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires to manually
-    /// add the appropriate middleware for actuators to work correctly.
+    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires to
+    /// manually add the appropriate middleware for actuators to work correctly.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
@@ -43,9 +43,8 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services
-            .AddCoreActuatorServicesAsSingleton<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions, CloudFoundryEndpointMiddleware,
-                ICloudFoundryEndpointHandler, CloudFoundryEndpointHandler, string, Links>(configureMiddleware);
+        services.AddCoreActuatorServices<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions, CloudFoundryEndpointMiddleware,
+            ICloudFoundryEndpointHandler, CloudFoundryEndpointHandler, string, Links>(configureMiddleware);
 
         AddCloudFoundrySecurity(services);
 

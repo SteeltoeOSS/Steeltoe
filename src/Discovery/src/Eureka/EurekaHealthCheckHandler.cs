@@ -44,9 +44,7 @@ internal sealed class EurekaHealthCheckHandler : IHealthCheckHandler
 
     public async Task<InstanceStatus> GetStatusAsync(bool hasFirstHeartbeatCompleted, CancellationToken cancellationToken)
     {
-        await using AsyncServiceScope serviceScope = _serviceProvider.CreateAsyncScope();
-
-        List<IHealthContributor> healthContributors = serviceScope.ServiceProvider.GetServices<IHealthContributor>().ToList();
+        List<IHealthContributor> healthContributors = _serviceProvider.GetServices<IHealthContributor>().ToList();
         ICollection<HealthCheckRegistration> registrations = _healthOptionsMonitor.CurrentValue.Registrations;
 
         if (!hasFirstHeartbeatCompleted)
@@ -56,7 +54,7 @@ internal sealed class EurekaHealthCheckHandler : IHealthCheckHandler
             healthContributors.RemoveAll(contributor => contributor is EurekaServerHealthContributor);
         }
 
-        HealthCheckResult result = await _healthAggregator.AggregateAsync(healthContributors, registrations, serviceScope.ServiceProvider, cancellationToken);
+        HealthCheckResult result = await _healthAggregator.AggregateAsync(healthContributors, registrations, _serviceProvider, cancellationToken);
 
         return AggregateStatus(result);
     }

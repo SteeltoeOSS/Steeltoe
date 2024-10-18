@@ -35,7 +35,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
             services.RemoveAll<IHealthContributor>();
         };
 
-        var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
+        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
 
         HealthEndpointRequest healthRequest = GetHealthRequest();
 
@@ -63,7 +63,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
             services.AddHealthActuator();
         };
 
-        var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
+        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
         HealthEndpointRequest healthRequest = GetHealthRequest();
         await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
@@ -87,7 +87,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
             services.AddHealthActuator();
         };
 
-        var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
+        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
 
         using var source = new CancellationTokenSource();
         await source.CancelAsync();
@@ -117,7 +117,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
             services.AddHealthActuator();
         };
 
-        var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
+        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
 
         HealthEndpointRequest healthRequest = GetHealthRequest();
         HealthEndpointResponse info = await handler.InvokeAsync(healthRequest, CancellationToken.None);
@@ -151,7 +151,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
             services.AddHealthActuator();
         };
 
-        var handler = (HealthEndpointHandler)testContext.GetRequiredScopedService<IHealthEndpointHandler>();
+        var handler = (HealthEndpointHandler)testContext.GetRequiredService<IHealthEndpointHandler>();
 
         Assert.Equal(503, handler.GetStatusCode(new HealthEndpointResponse
         {
@@ -193,7 +193,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
             services.AddHealthActuator();
         };
 
-        var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
+        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
         appAvailability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, null);
 
         var healthRequest = new HealthEndpointRequest("liVeness", true);
@@ -226,7 +226,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
             services.AddHealthActuator();
         };
 
-        var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
+        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
         appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
         var healthRequest = new HealthEndpointRequest("readiness", true);
@@ -288,7 +288,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
             services.AddHealthActuator();
         };
 
-        var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
+        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
 
         var healthRequest = new HealthEndpointRequest("iNvaLid", true);
 

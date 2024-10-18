@@ -54,7 +54,7 @@ public static class CoreActuatorServiceCollectionExtensions
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
-    public static IServiceCollection AddCoreActuatorServicesAsSingleton<TEndpointOptions, TConfigureEndpointOptions, TMiddleware, TEndpointHandlerInterface,
+    public static IServiceCollection AddCoreActuatorServices<TEndpointOptions, TConfigureEndpointOptions, TMiddleware, TEndpointHandlerInterface,
         TEndpointHandler, TArgument, TResult>(this IServiceCollection services, bool configureMiddleware)
         where TEndpointOptions : EndpointOptions
         where TConfigureEndpointOptions : class, IConfigureOptionsWithKey<TEndpointOptions>
@@ -74,67 +74,10 @@ public static class CoreActuatorServiceCollectionExtensions
         return services;
     }
 
-    /// <summary>
-    /// Registers endpoint options configuration, middleware, and handler as scoped services.
-    /// </summary>
-    /// <para>
-    /// This low-level extension method is intended to be called when implementing custom actuator endpoints.
-    /// </para>
-    /// <typeparam name="TEndpointOptions">
-    /// The actuator-specific <see cref="EndpointOptions" /> to configure.
-    /// </typeparam>
-    /// <typeparam name="TConfigureEndpointOptions">
-    /// The actuator-specific <see cref="EndpointOptions" /> configurer.
-    /// </typeparam>
-    /// <typeparam name="TMiddleware">
-    /// The actuator-specific <see cref="IEndpointMiddleware" />.
-    /// </typeparam>
-    /// <typeparam name="TEndpointHandlerInterface">
-    /// The actuator-specific <see cref="IEndpointHandler{TArgument, TResult}" /> interface.
-    /// </typeparam>
-    /// <typeparam name="TEndpointHandler">
-    /// The actuator-specific <see cref="IEndpointHandler{TArgument, TResult}" /> implementation.
-    /// </typeparam>
-    /// <typeparam name="TArgument">
-    /// The actuator-specific endpoint handler input type.
-    /// </typeparam>
-    /// <typeparam name="TResult">
-    /// The actuator-specific endpoint handler output type.
-    /// </typeparam>
-    /// <param name="services">
-    /// The <see cref="IServiceCollection" /> to add services to.
-    /// </param>
-    /// <param name="configureMiddleware">
-    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires to
-    /// manually add the appropriate middleware for actuators to work correctly.
-    /// </param>
-    /// <returns>
-    /// The incoming <paramref name="services" /> so that additional calls can be chained.
-    /// </returns>
-    public static IServiceCollection AddCoreActuatorServicesAsScoped<TEndpointOptions, TConfigureEndpointOptions, TMiddleware, TEndpointHandlerInterface,
-        TEndpointHandler, TArgument, TResult>(this IServiceCollection services, bool configureMiddleware)
-        where TEndpointOptions : EndpointOptions
-        where TConfigureEndpointOptions : class, IConfigureOptionsWithKey<TEndpointOptions>
-        where TMiddleware : class, IEndpointMiddleware
-        where TEndpointHandlerInterface : class, IEndpointHandler<TArgument, TResult>
-        where TEndpointHandler : class, TEndpointHandlerInterface
-    {
-        ArgumentNullException.ThrowIfNull(services);
-
-        AddCommonActuatorServices(services, configureMiddleware);
-
-        services.ConfigureEndpointOptions<TEndpointOptions, TConfigureEndpointOptions>();
-        services.TryAddScoped<TEndpointHandlerInterface, TEndpointHandler>();
-        services.AddScoped<TMiddleware>();
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IEndpointMiddleware, TMiddleware>());
-
-        return services;
-    }
-
     private static void AddCommonActuatorServices(IServiceCollection services, bool configureMiddleware)
     {
         services.AddRouting();
-        services.TryAddScoped<ActuatorEndpointMapper>();
+        services.TryAddSingleton<ActuatorEndpointMapper>();
 
         services.AddCors();
         services.TryAddSingleton<IConfigureOptions<CorsOptions>, ConfigureActuatorsCorsPolicyOptions>();

@@ -132,12 +132,9 @@ public sealed class ManagementHostBuilderExtensionsTest
 
         host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().HaveCount(1);
         host.Services.GetService<IHealthAggregator>().Should().NotBeNull();
+        host.Services.GetService<IHealthEndpointHandler>().Should().NotBeNull();
 
-        await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
-
-        scope.ServiceProvider.GetService<IHealthEndpointHandler>().Should().NotBeNull();
-
-        IHealthContributor[] healthContributors = scope.ServiceProvider.GetServices<IHealthContributor>().ToArray();
+        IHealthContributor[] healthContributors = host.Services.GetServices<IHealthContributor>().ToArray();
         healthContributors.Should().HaveCount(3);
         healthContributors.Should().ContainSingle(contributor => contributor is DiskSpaceContributor);
         healthContributors.Should().ContainSingle(contributor => contributor is LivenessHealthContributor);
@@ -159,12 +156,8 @@ public sealed class ManagementHostBuilderExtensionsTest
 
         host.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().HaveCount(1);
         host.Services.GetService<IHealthAggregator>().Should().NotBeNull();
-
-        await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
-
-        scope.ServiceProvider.GetService<IHealthEndpointHandler>().Should().NotBeNull();
-
-        scope.ServiceProvider.GetServices<IHealthContributor>().OfType<DownContributor>().Should().HaveCount(1);
+        host.Services.GetService<IHealthEndpointHandler>().Should().NotBeNull();
+        host.Services.GetServices<IHealthContributor>().OfType<DownContributor>().Should().HaveCount(1);
     }
 
     [Fact]

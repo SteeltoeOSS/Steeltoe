@@ -43,9 +43,8 @@ public static class EndpointServiceCollectionExtensions
 
         services.TryAddSingleton(services);
 
-        services
-            .AddCoreActuatorServicesAsSingleton<ServicesEndpointOptions, ConfigureServicesEndpointOptions, ServicesEndpointMiddleware, IServicesEndpointHandler,
-                ServicesEndpointHandler, object?, IList<ServiceRegistration>>(configureMiddleware);
+        services.AddCoreActuatorServices<ServicesEndpointOptions, ConfigureServicesEndpointOptions, ServicesEndpointMiddleware, IServicesEndpointHandler,
+            ServicesEndpointHandler, object?, IList<ServiceRegistration>>(configureMiddleware);
 
         RegisterJsonConverter(services);
 

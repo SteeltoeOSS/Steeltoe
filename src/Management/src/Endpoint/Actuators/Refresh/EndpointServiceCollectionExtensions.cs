@@ -39,9 +39,8 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services
-            .AddCoreActuatorServicesAsSingleton<RefreshEndpointOptions, ConfigureRefreshEndpointOptions, RefreshEndpointMiddleware, IRefreshEndpointHandler,
-                RefreshEndpointHandler, object?, IList<string>>(configureMiddleware);
+        services.AddCoreActuatorServices<RefreshEndpointOptions, ConfigureRefreshEndpointOptions, RefreshEndpointMiddleware, IRefreshEndpointHandler,
+            RefreshEndpointHandler, object?, IList<string>>(configureMiddleware);
 
         return services;
     }

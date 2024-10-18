@@ -64,15 +64,13 @@ public static class EndpointServiceCollectionExtensions
 
         if (version == MediaTypeVersion.V1)
         {
-            services
-                .AddCoreActuatorServicesAsSingleton<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1, ThreadDumpEndpointMiddleware,
-                    IThreadDumpEndpointHandler, ThreadDumpEndpointHandler, object?, IList<ThreadInfo>>(configureMiddleware);
+            services.AddCoreActuatorServices<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1, ThreadDumpEndpointMiddleware,
+                IThreadDumpEndpointHandler, ThreadDumpEndpointHandler, object?, IList<ThreadInfo>>(configureMiddleware);
         }
         else
         {
-            services
-                .AddCoreActuatorServicesAsSingleton<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptions, ThreadDumpEndpointMiddleware,
-                    IThreadDumpEndpointHandler, ThreadDumpEndpointHandler, object?, IList<ThreadInfo>>(configureMiddleware);
+            services.AddCoreActuatorServices<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptions, ThreadDumpEndpointMiddleware,
+                IThreadDumpEndpointHandler, ThreadDumpEndpointHandler, object?, IList<ThreadInfo>>(configureMiddleware);
         }
 
         RegisterJsonConverter(services, version);

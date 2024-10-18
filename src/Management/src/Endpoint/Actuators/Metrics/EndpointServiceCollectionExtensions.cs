@@ -48,9 +48,8 @@ public static class EndpointServiceCollectionExtensions
 
         services.AddDiagnosticsManager();
 
-        services
-            .AddCoreActuatorServicesAsSingleton<MetricsEndpointOptions, ConfigureMetricsEndpointOptions, MetricsEndpointMiddleware, IMetricsEndpointHandler,
-                MetricsEndpointHandler, MetricsRequest?, MetricsResponse?>(configureMiddleware);
+        services.AddCoreActuatorServices<MetricsEndpointOptions, ConfigureMetricsEndpointOptions, MetricsEndpointMiddleware, IMetricsEndpointHandler,
+            MetricsEndpointHandler, MetricsRequest?, MetricsResponse?>(configureMiddleware);
 
         services.TryAddSingleton<MetricsExporter>();
 

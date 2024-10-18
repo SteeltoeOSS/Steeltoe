@@ -40,9 +40,8 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services
-            .AddCoreActuatorServicesAsSingleton<RouteMappingsEndpointOptions, ConfigureRouteMappingsEndpointOptions, RouteMappingsEndpointMiddleware,
-                IRouteMappingsEndpointHandler, RouteMappingsEndpointHandler, object?, RouteMappingsResponse>(configureMiddleware);
+        services.AddCoreActuatorServices<RouteMappingsEndpointOptions, ConfigureRouteMappingsEndpointOptions, RouteMappingsEndpointMiddleware,
+            IRouteMappingsEndpointHandler, RouteMappingsEndpointHandler, object?, RouteMappingsResponse>(configureMiddleware);
 
         services.AddEndpointsApiExplorer();
         services.TryAddSingleton<RouterMappings>();
