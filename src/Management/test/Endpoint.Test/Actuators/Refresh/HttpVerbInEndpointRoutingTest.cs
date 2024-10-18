@@ -28,7 +28,6 @@ public sealed class HttpVerbInEndpointRoutingTest
         builder.Services.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
-        app.UseRouting();
         app.MapDefaultControllerRoute();
         await app.StartAsync();
 
@@ -57,7 +56,6 @@ public sealed class HttpVerbInEndpointRoutingTest
         builder.Services.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
-        app.UseRouting();
         app.MapDefaultControllerRoute();
         await app.StartAsync();
 
@@ -86,7 +84,6 @@ public sealed class HttpVerbInEndpointRoutingTest
         builder.Services.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
-        app.UseRouting();
         app.MapDefaultControllerRoute();
         await app.StartAsync();
 
@@ -116,7 +113,6 @@ public sealed class HttpVerbInEndpointRoutingTest
         builder.Services.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
-        app.UseRouting();
         app.MapDefaultControllerRoute();
         await app.StartAsync();
 

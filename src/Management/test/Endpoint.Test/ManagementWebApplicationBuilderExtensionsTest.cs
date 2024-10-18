@@ -48,7 +48,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddDbMigrationsActuator();
 
         await using WebApplication host = hostBuilder.Build();
-        host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IDbMigrationsEndpointHandler>());
@@ -66,7 +65,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddEnvironmentActuator();
 
         await using WebApplication host = hostBuilder.Build();
-        host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IEnvironmentEndpointHandler>());
@@ -121,7 +119,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddHealthActuator();
 
         await using WebApplication host = hostBuilder.Build();
-        host.UseRouting();
         await host.StartAsync();
 
         using HttpClient httpClient = host.GetTestClient();
@@ -149,7 +146,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddHeapDumpActuator();
 
         await using WebApplication host = hostBuilder.Build();
-        host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IHeapDumpEndpointHandler>());
@@ -167,7 +163,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddHypermediaActuator();
 
         await using WebApplication host = hostBuilder.Build();
-        host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IActuatorEndpointHandler>());
@@ -185,8 +180,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddInfoActuator();
 
         await using WebApplication host = hostBuilder.Build();
-
-        host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IInfoEndpointHandler>());
@@ -204,7 +197,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddLoggersActuator();
 
         await using WebApplication host = hostBuilder.Build();
-        host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<ILoggersEndpointHandler>());
@@ -225,7 +217,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddLoggersActuator();
 
         await using WebApplication host = hostBuilder.Build();
-        host.UseRouting();
         await host.StartAsync();
 
         using HttpClient httpClient = host.GetTestClient();
@@ -240,7 +231,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddRouteMappingsActuator();
 
         await using WebApplication host = hostBuilder.Build();
-        host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<RouterMappings>());
@@ -258,7 +248,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddMetricsActuator();
 
         await using WebApplication host = hostBuilder.Build();
-        host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IMetricsEndpointHandler>());
@@ -276,7 +265,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddRefreshActuator();
 
         await using WebApplication host = hostBuilder.Build();
-        host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IRefreshEndpointHandler>());
@@ -294,7 +282,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddThreadDumpActuator();
 
         await using WebApplication host = hostBuilder.Build();
-        host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IThreadDumpEndpointHandler>());
@@ -312,7 +299,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddHttpExchangesActuator();
 
         await using WebApplication host = hostBuilder.Build();
-        host.UseRouting();
         await host.StartAsync();
 
         host.Services.GetServices<IHttpExchangesEndpointHandler>().Should().ContainSingle();
@@ -330,7 +316,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddServicesActuator();
 
         await using WebApplication host = hostBuilder.Build();
-        host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IServicesEndpointHandler>());
@@ -360,7 +345,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddAllActuators();
 
         await using WebApplication host = hostBuilder.Build();
-        host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IActuatorEndpointHandler>());
@@ -404,7 +388,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         hostBuilder.Services.AddCloudFoundryActuator();
 
         await using WebApplication host = hostBuilder.Build();
-        host.UseRouting();
         await host.StartAsync();
 
         using HttpClient httpClient = host.GetTestClient();
@@ -459,7 +442,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         builder.Services.AddAuthorizationBuilder().AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read"));
 
         WebApplication app = builder.Build();
-        app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
 

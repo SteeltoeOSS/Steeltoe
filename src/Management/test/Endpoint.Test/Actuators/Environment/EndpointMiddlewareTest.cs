@@ -293,7 +293,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.Services.AddEnvironmentActuator();
 
         await using WebApplication app = builder.Build();
-        app.UseRouting();
         await app.StartAsync();
 
         using HttpClient httpClient = app.GetTestClient();

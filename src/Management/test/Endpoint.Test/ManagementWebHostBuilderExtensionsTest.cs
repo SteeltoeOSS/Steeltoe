@@ -596,12 +596,16 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     private static IWebHostBuilder GetWebHostBuilderWithAllActuatorsExposed()
     {
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
 
-        builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?>
+        builder.ConfigureAppConfiguration(configurationBuilder =>
         {
-            ["management:endpoints:actuator:exposure:include:0"] = "*"
-        }));
+            var appSettingsWithAllActuatorsExposed = new Dictionary<string, string?>
+            {
+                ["management:endpoints:actuator:exposure:include:0"] = "*"
+            };
+
+            configurationBuilder.AddInMemoryCollection(appSettingsWithAllActuatorsExposed);
+        });
 
         return builder;
     }
@@ -622,7 +626,6 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
 
         builder.Configure(applicationBuilder =>
         {
-            applicationBuilder.UseRouting();
             applicationBuilder.UseAuthentication();
             applicationBuilder.UseAuthorization();
         });

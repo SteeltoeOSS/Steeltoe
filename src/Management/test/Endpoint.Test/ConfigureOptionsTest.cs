@@ -99,7 +99,6 @@ public sealed class ConfigureOptionsTest
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
-        app.UseRouting();
         await app.StartAsync();
 
         using HttpClient httpClient = app.GetTestClient();
@@ -137,7 +136,6 @@ public sealed class ConfigureOptionsTest
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
-        app.UseRouting();
         await app.StartAsync();
 
         using HttpClient httpClient = app.GetTestClient();
@@ -174,7 +172,6 @@ public sealed class ConfigureOptionsTest
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
-        app.UseRouting();
         await app.StartAsync();
 
         using HttpClient httpClient = app.GetTestClient();
@@ -212,7 +209,6 @@ public sealed class ConfigureOptionsTest
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
-        app.UseRouting();
         await app.StartAsync();
 
         using HttpClient httpClient = app.GetTestClient();

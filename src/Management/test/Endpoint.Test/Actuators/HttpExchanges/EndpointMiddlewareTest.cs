@@ -34,7 +34,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHttpExchangesActuator();
         await using WebApplication host = builder.Build();
-        host.UseRouting();
         host.MapGet("/hello", () => "Hello World!");
         await host.StartAsync();
         using var httpClient = new HttpClient();
@@ -101,7 +100,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.Services.AddHttpExchangesActuator();
         await using WebApplication host = builder.Build();
 
-        host.UseRouting();
         await host.StartAsync();
 
         var observer = (HttpExchangesDiagnosticObserver)host.Services.GetRequiredService<IHttpExchangesRepository>();
@@ -179,7 +177,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.Services.AddHttpExchangesActuator();
         await using WebApplication host = builder.Build();
 
-        host.UseRouting();
         await host.StartAsync();
 
         var observer = (HttpExchangesDiagnosticObserver)host.Services.GetRequiredService<IHttpExchangesRepository>();

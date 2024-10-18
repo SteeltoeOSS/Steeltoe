@@ -41,12 +41,15 @@ public sealed class ManagementHostBuilderExtensionsTest
 {
     private static readonly Action<IWebHostBuilder> ConfigureWebHostWithAllActuatorsExposed = builder =>
     {
-        builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
-
-        builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?>
+        builder.ConfigureAppConfiguration(configurationBuilder =>
         {
-            ["management:endpoints:actuator:exposure:include:0"] = "*"
-        }));
+            var appSettingsWithAllActuatorsExposed = new Dictionary<string, string?>
+            {
+                ["management:endpoints:actuator:exposure:include:0"] = "*"
+            };
+
+            configurationBuilder.AddInMemoryCollection(appSettingsWithAllActuatorsExposed);
+        });
     };
 
     private static readonly Action<IWebHostBuilder> ConfigureWebHostWithSecureRouting = builder =>
@@ -63,7 +66,6 @@ public sealed class ManagementHostBuilderExtensionsTest
 
         builder.Configure(applicationBuilder =>
         {
-            applicationBuilder.UseRouting();
             applicationBuilder.UseAuthentication();
             applicationBuilder.UseAuthorization();
         });
