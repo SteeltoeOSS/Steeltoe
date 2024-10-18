@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.RouteMappings;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public async Task AddMappingsActuator_AddsCorrectServices()
+    public async Task AddRouteMappingsActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 

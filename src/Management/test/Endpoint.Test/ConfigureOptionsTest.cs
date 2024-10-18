@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.Environment;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Configuration;
@@ -95,7 +96,7 @@ public sealed class ConfigureOptionsTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
-        builder.AddAllActuators();
+        builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
         app.UseRouting();
@@ -133,7 +134,7 @@ public sealed class ConfigureOptionsTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
-        builder.AddAllActuators();
+        builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
         app.UseRouting();
@@ -170,7 +171,7 @@ public sealed class ConfigureOptionsTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
-        builder.AddAllActuators();
+        builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
         app.UseRouting();
@@ -208,7 +209,7 @@ public sealed class ConfigureOptionsTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
-        builder.AddAllActuators();
+        builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
         app.UseRouting();

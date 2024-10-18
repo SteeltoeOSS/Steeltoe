@@ -41,7 +41,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task HandleMappingsRequestAsync_MvcNotUsed_NoRoutes_ReturnsExpected()
+    public async Task HandleRequestAsync_MvcNotUsed_NoRoutes_ReturnsExpected()
     {
         IOptionsMonitor<RouteMappingsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<RouteMappingsEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
@@ -81,7 +81,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task MappingsActuator_EndpointRouting_ReturnsExpectedData()
+    public async Task RouteMappingsActuator_EndpointRouting_ReturnsExpectedData()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -168,7 +168,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task MappingsActuator_EndpointRouting_CanTurnOffAllVerbs()
+    public async Task RouteMappingsActuator_EndpointRouting_CanTurnOffAllVerbs()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -256,7 +256,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task MappingsActuator_ConventionalRouting_ReturnsExpectedData()
+    public async Task RouteMappingsActuator_ConventionalRouting_ReturnsExpectedData()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -358,7 +358,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task MappingsActuator_ConventionalRouting_CanTurnOffAllVerbs()
+    public async Task RouteMappingsActuator_ConventionalRouting_CanTurnOffAllVerbs()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -457,7 +457,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task MappingsActuator_ConventionalRouting_ThrowsForCallback()
+    public async Task RouteMappingsActuator_ConventionalRouting_ThrowsForCallback()
     {
         Action<IEndpointConventionBuilder> configureEndpointsCallback = _ =>
         {

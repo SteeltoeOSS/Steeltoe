@@ -32,7 +32,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(AppSettings);
-        builder.AddHttpExchangesActuator();
+        builder.Services.AddHttpExchangesActuator();
         await using WebApplication host = builder.Build();
         host.UseRouting();
         host.MapGet("/hello", () => "Hello World!");
@@ -98,7 +98,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddHttpExchangesActuator();
+        builder.Services.AddHttpExchangesActuator();
         await using WebApplication host = builder.Build();
 
         host.UseRouting();
@@ -176,7 +176,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddHttpExchangesActuator();
+        builder.Services.AddHttpExchangesActuator();
         await using WebApplication host = builder.Build();
 
         host.UseRouting();

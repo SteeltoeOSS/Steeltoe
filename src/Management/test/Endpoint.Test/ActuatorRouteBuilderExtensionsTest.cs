@@ -123,11 +123,6 @@ public sealed class ActuatorRouteBuilderExtensionsTest
             });
         });
 
-        if (mode == RegistrationMode.HostBuilder)
-        {
-            hostBuilder.AddAllActuators(configureEndpoints => configureEndpoints.RequireAuthorization("TestAuth"));
-        }
-
         return hostBuilder;
     }
 
@@ -160,7 +155,6 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 
     public enum RegistrationMode
     {
-        HostBuilder,
         Services,
         UseEndpoints,
         MapEndpoints
