@@ -452,6 +452,9 @@ Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedCount.set -> 
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.get -> long
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.set -> void
 Steeltoe.Management.Endpoint.ApplicationBuilderExtensions
+Steeltoe.Management.Endpoint.Configuration.ConfigureEndpointOptions<TOptions>
+Steeltoe.Management.Endpoint.Configuration.ConfigureEndpointOptions<TOptions>.ConfigurationKey.get -> string!
+Steeltoe.Management.Endpoint.Configuration.ConfigureEndpointOptions<TOptions>.ConfigureEndpointOptions(Microsoft.Extensions.Configuration.IConfiguration! configuration, string! configurationKey, string! id) -> void
 Steeltoe.Management.Endpoint.Configuration.Exposure
 Steeltoe.Management.Endpoint.Configuration.Exposure.Exclude.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.Configuration.Exposure.Exposure() -> void
@@ -503,5 +506,6 @@ Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Url.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.get -> bool
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.set -> void
+virtual Steeltoe.Management.Endpoint.Configuration.ConfigureEndpointOptions<TOptions>.Configure(TOptions! options) -> void
 virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ShouldInvoke(Microsoft.AspNetCore.Http.PathString requestPath) -> bool
 virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.WriteResponseAsync(TResult result, Microsoft.AspNetCore.Http.HttpContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
