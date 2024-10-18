@@ -306,7 +306,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         options.CurrentValue.Groups.Add("msft", new HealthGroupOptions
         {
-            Include = "up,privatememory"
+            Include = "alwaysUp,privatememory"
         });
 
         List<IHealthContributor> contributors =
@@ -324,7 +324,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
         Assert.Equal(2, result.Details.Keys.Count);
-        Assert.Contains("Up", result.Details.Keys);
+        Assert.Contains("alwaysUp", result.Details.Keys);
         Assert.Contains("privatememory", result.Details.Keys);
         Assert.Equal(3, result.Groups.Count);
     }
