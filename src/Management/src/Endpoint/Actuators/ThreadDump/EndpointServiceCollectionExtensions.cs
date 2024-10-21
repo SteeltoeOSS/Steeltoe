@@ -31,8 +31,8 @@ public static class EndpointServiceCollectionExtensions
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configureMiddleware">
-    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires to
-    /// manually add the appropriate middleware for actuators to work correctly.
+    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires
+    /// manual addition of the appropriate middleware for actuators to work correctly.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
@@ -52,8 +52,8 @@ public static class EndpointServiceCollectionExtensions
     /// The media version to use. This also determines where configuration for this actuator is read from.
     /// </param>
     /// <param name="configureMiddleware">
-    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires to
-    /// manually add the appropriate middleware for actuators to work correctly.
+    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires
+    /// manual addition of the appropriate middleware for actuators to work correctly.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
