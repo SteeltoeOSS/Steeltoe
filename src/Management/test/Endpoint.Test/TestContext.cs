@@ -82,13 +82,6 @@ internal sealed class TestContext : IDisposable
         return ServiceProvider.GetRequiredService<T>();
     }
 
-    public T GetRequiredScopedService<T>()
-        where T : notnull
-    {
-        using IServiceScope scope = ServiceProvider.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<T>();
-    }
-
     public IEnumerable<T> GetServices<T>()
     {
         return ServiceProvider.GetServices<T>();

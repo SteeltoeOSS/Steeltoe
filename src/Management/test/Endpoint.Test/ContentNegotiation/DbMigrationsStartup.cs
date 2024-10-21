@@ -19,11 +19,5 @@ public sealed class DbMigrationsStartup
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapAllActuators();
-        });
     }
 }

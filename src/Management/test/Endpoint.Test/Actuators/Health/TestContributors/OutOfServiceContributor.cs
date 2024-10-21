@@ -8,7 +8,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
 
 internal sealed class OutOfServiceContributor : IHealthContributor
 {
-    public string Id => "Out";
+    public string Id => "alwaysOutOfService";
 
     public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {

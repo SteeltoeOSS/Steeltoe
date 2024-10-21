@@ -120,10 +120,9 @@ public sealed class EurekaApplicationsHealthContributorTest
         services.AddEurekaDiscoveryClient();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        using IServiceScope scope = serviceProvider.CreateScope();
 
         EurekaApplicationsHealthContributor contributor =
-            scope.ServiceProvider.GetServices<IHealthContributor>().OfType<EurekaApplicationsHealthContributor>().Single();
+            serviceProvider.GetServices<IHealthContributor>().OfType<EurekaApplicationsHealthContributor>().Single();
 
         var clientOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
 

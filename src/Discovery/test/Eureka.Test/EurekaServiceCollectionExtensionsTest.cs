@@ -13,7 +13,7 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.Configuration;
-using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Actuators.All;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 

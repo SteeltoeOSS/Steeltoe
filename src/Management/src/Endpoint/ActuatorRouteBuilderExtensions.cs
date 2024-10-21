@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint;
 public static class ActuatorRouteBuilderExtensions
 {
     /// <summary>
-    /// Maps all actuators, when using ASP.NET attribute-based endpoint routing.
+    /// Maps the registered actuators, when using ASP.NET attribute-based endpoint routing.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IEndpointRouteBuilder" /> to add routes to.
@@ -19,39 +19,20 @@ public static class ActuatorRouteBuilderExtensions
     /// <returns>
     /// An <see cref="IEndpointConventionBuilder" /> that can be used to further customize the actuator endpoints.
     /// </returns>
-    public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder builder)
+    public static IEndpointConventionBuilder MapActuators(this IEndpointRouteBuilder builder)
     {
-        return MapAllActuators(builder, new ImmediateActuatorConventionBuilder());
-    }
+        ArgumentNullException.ThrowIfNull(builder);
 
-    /// <summary>
-    /// Maps all actuators, when using ASP.NET attribute-based endpoint routing.
-    /// </summary>
-    /// <param name="routeBuilder">
-    /// The <see cref="IEndpointRouteBuilder" /> to add routes to.
-    /// </param>
-    /// <param name="conventionBuilder">
-    /// The builder to customize all mapped endpoints.
-    /// </param>
-    /// <returns>
-    /// The incoming <paramref name="conventionBuilder" /> that can be used to further customize the actuator endpoints.
-    /// </returns>
-    internal static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder routeBuilder, ActuatorConventionBuilder conventionBuilder)
-    {
-        ArgumentNullException.ThrowIfNull(routeBuilder);
-        ArgumentNullException.ThrowIfNull(conventionBuilder);
+        IServiceProvider serviceProvider = builder.ServiceProvider;
+        var mapper = serviceProvider.GetRequiredService<ActuatorEndpointMapper>();
 
-        IServiceProvider serviceProvider = routeBuilder.ServiceProvider;
-
-        using IServiceScope scope = serviceProvider.CreateScope();
-        var mapper = scope.ServiceProvider.GetRequiredService<ActuatorEndpointMapper>();
-
-        mapper.Map(routeBuilder, conventionBuilder);
+        var conventionBuilder = new ActuatorConventionBuilder();
+        mapper.Map(builder, conventionBuilder);
         return conventionBuilder;
     }
 
     /// <summary>
-    /// Maps all actuators, when using ASP.NET conventional routing.
+    /// Maps the registered actuators, when using ASP.NET conventional routing.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IRouteBuilder" /> to add routes to.
@@ -59,14 +40,12 @@ public static class ActuatorRouteBuilderExtensions
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static IRouteBuilder MapAllActuators(this IRouteBuilder builder)
+    public static IRouteBuilder MapActuators(this IRouteBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
         IServiceProvider serviceProvider = builder.ServiceProvider;
-
-        using IServiceScope scope = serviceProvider.CreateScope();
-        var mapper = scope.ServiceProvider.GetRequiredService<ActuatorEndpointMapper>();
+        var mapper = serviceProvider.GetRequiredService<ActuatorEndpointMapper>();
 
         mapper.Map(builder);
         return builder;

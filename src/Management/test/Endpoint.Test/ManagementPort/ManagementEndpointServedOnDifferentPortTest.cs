@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Management.Endpoint.Actuators.All;
 
 namespace Steeltoe.Management.Endpoint.Test.ManagementPort;
 
@@ -773,7 +774,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddAllActuators();
+        builder.Services.AddAllActuators();
 
         WebApplication app = builder.Build();
         configureApp?.Invoke(app);

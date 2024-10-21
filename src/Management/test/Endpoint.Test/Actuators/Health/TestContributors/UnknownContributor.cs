@@ -8,7 +8,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
 
 internal sealed class UnknownContributor : IHealthContributor
 {
-    public string Id => "Unknown";
+    public string Id => "alwaysUnknown";
 
     public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {

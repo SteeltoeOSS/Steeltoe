@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Logging.DynamicLogger;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
@@ -78,14 +77,6 @@ public sealed class ContentNegotiationTest
         IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartupForEndpoint(endpointName);
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
-
-        if (endpointName == EndpointName.Loggers)
-        {
-            builder.ConfigureLogging(loggingBuilder =>
-            {
-                loggingBuilder.AddDynamicConsole();
-            });
-        }
 
         using IWebHost host = builder.Build();
         await host.StartAsync();

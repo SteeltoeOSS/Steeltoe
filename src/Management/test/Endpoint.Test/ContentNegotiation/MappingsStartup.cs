@@ -14,16 +14,10 @@ public sealed class MappingsStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHypermediaActuator();
-        services.AddMappingsActuator();
+        services.AddRouteMappingsActuator();
     }
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapAllActuators();
-        });
     }
 }

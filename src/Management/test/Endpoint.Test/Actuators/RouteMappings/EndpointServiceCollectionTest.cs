@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.RouteMappings;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public async Task AddMappingsActuator_AddsCorrectServices()
+    public async Task AddRouteMappingsActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
@@ -27,7 +27,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         IConfiguration configuration = configurationBuilder.Build();
         services.AddSingleton(configuration);
 
-        services.AddMappingsActuator();
+        services.AddRouteMappingsActuator();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<RouteMappingsEndpointOptions>>();

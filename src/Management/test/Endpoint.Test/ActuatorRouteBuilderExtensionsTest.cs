@@ -13,8 +13,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Configuration;
+using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Configuration;
 
@@ -67,7 +67,6 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         };
 
         IHostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
-        hostBuilder.ConfigureLogging(builder => builder.AddDynamicConsole());
         hostBuilder.ConfigureAppConfiguration(configure => configure.AddInMemoryCollection(appSettings));
 
         hostBuilder.ConfigureServices(services =>
@@ -75,11 +74,11 @@ public sealed class ActuatorRouteBuilderExtensionsTest
             if (mode == RegistrationMode.Services)
             {
                 services.AddAllActuators();
-                services.ActivateActuatorEndpoints().RequireAuthorization("TestAuth");
+                services.ConfigureActuatorEndpoints(endpoints => endpoints.RequireAuthorization("TestAuth"));
             }
-            else if (mode == RegistrationMode.UseEndpoints)
+            else if (mode is RegistrationMode.UseEndpoints or RegistrationMode.MapEndpoints)
             {
-                services.AddAllActuators();
+                services.AddAllActuators(false);
             }
 
             services.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
@@ -107,20 +106,22 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 
                 app.UseEndpoints(endpoints =>
                 {
-                    if (mode == RegistrationMode.UseEndpoints)
-                    {
-                        endpoints.MapAllActuators().RequireAuthorization("TestAuth");
-                    }
-
                     endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
                 });
+
+                if (mode == RegistrationMode.UseEndpoints)
+                {
+                    app.UseActuatorEndpoints(endpoints => endpoints.RequireAuthorization("TestAuth"));
+                }
+                else if (mode == RegistrationMode.MapEndpoints)
+                {
+                    app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapActuators().RequireAuthorization("TestAuth");
+                    });
+                }
             });
         });
-
-        if (mode == RegistrationMode.HostBuilder)
-        {
-            hostBuilder.AddAllActuators(configureEndpoints => configureEndpoints.RequireAuthorization("TestAuth"));
-        }
 
         return hostBuilder;
     }
@@ -154,8 +155,8 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 
     public enum RegistrationMode
     {
-        HostBuilder,
         Services,
-        UseEndpoints
+        UseEndpoints,
+        MapEndpoints
     }
 }

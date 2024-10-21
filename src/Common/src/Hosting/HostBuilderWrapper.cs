@@ -19,7 +19,6 @@ internal sealed class HostBuilderWrapper
 {
     private readonly List<Action<HostBuilderContextWrapper, IServiceCollection>> _configureServicesActions = [];
     private readonly List<Action<HostBuilderContextWrapper, IConfigurationBuilder>> _configureAppConfigurationActions = [];
-    private readonly List<Action<HostBuilderContextWrapper, ILoggingBuilder>> _configureLoggingActions = [];
     private readonly object _innerBuilder;
 
     private HostBuilderWrapper(object innerBuilder)
@@ -45,12 +44,6 @@ internal sealed class HostBuilderWrapper
             InvokeDeferredActions(wrapper._configureAppConfigurationActions, contextWrapper, configurationBuilder);
         });
 
-        builder.ConfigureLogging((context, loggingBuilder) =>
-        {
-            HostBuilderContextWrapper contextWrapper = HostBuilderContextWrapper.Wrap(context);
-            InvokeDeferredActions(wrapper._configureLoggingActions, contextWrapper, loggingBuilder);
-        });
-
         return wrapper;
     }
 
@@ -60,22 +53,16 @@ internal sealed class HostBuilderWrapper
 
         var wrapper = new HostBuilderWrapper(builder);
 
-        builder.ConfigureServices((context, services) =>
-        {
-            HostBuilderContextWrapper contextWrapper = HostBuilderContextWrapper.Wrap(context);
-            InvokeDeferredActions(wrapper._configureServicesActions, contextWrapper, services);
-        });
-
         builder.ConfigureAppConfiguration((context, configurationBuilder) =>
         {
             HostBuilderContextWrapper contextWrapper = HostBuilderContextWrapper.Wrap(context);
             InvokeDeferredActions(wrapper._configureAppConfigurationActions, contextWrapper, configurationBuilder);
         });
 
-        builder.ConfigureLogging((context, loggingBuilder) =>
+        builder.ConfigureServices((context, services) =>
         {
             HostBuilderContextWrapper contextWrapper = HostBuilderContextWrapper.Wrap(context);
-            InvokeDeferredActions(wrapper._configureLoggingActions, contextWrapper, loggingBuilder);
+            InvokeDeferredActions(wrapper._configureServicesActions, contextWrapper, services);
         });
 
         return wrapper;
@@ -165,7 +152,7 @@ internal sealed class HostBuilderWrapper
         }
         else
         {
-            _configureLoggingActions.Add(configureAction);
+            _configureServicesActions.Add((contextWrapper, collection) => collection.AddLogging(builder => configureAction(contextWrapper, builder)));
         }
 
         return this;

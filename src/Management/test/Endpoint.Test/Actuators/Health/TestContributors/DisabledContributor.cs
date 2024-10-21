@@ -8,7 +8,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
 
 internal sealed class DisabledContributor : IHealthContributor
 {
-    public string Id => "Disabled";
+    public string Id => "alwaysDisabled";
 
     public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {

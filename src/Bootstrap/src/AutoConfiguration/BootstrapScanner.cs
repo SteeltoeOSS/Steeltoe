@@ -33,7 +33,7 @@ using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Logging.DynamicSerilog;
-using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Prometheus;
 using Steeltoe.Management.Tracing;
 using Steeltoe.Management.Wavefront;
@@ -248,7 +248,7 @@ internal sealed class BootstrapScanner
 
     private void WireAllActuators()
     {
-        _wrapper.AddAllActuators(null, MediaTypeVersion.V2, null);
+        _wrapper.ConfigureServices(services => services.AddAllActuators());
 
         _logger.LogInformation("Configured actuators");
     }

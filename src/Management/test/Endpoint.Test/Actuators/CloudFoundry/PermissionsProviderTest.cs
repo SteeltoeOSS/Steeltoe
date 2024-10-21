@@ -50,7 +50,7 @@ public sealed class PermissionsProviderTest : BaseTest
         IOptionsMonitor<CloudFoundryEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
 
         var services = new ServiceCollection();
-        services.AddCloudFoundrySecurity();
+        services.AddCloudFoundryActuator();
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
 

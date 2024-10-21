@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Metrics;
@@ -29,8 +28,7 @@ public static class WavefrontExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
-        services.AddHostedService<DiagnosticsService>();
+        services.AddDiagnosticsManager();
 
         services.ConfigureOptionsWithChangeTokenSource<WavefrontExporterOptions, ConfigureWavefrontExporterOptions>();
         services.AddMetricsObservers();
