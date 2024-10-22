@@ -96,7 +96,7 @@ public sealed class ConfigurationChangeDetectionTest
     [Fact]
     public void Applies_local_configuration_changes_using_WebHostBuilder()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
 
         const string fileName = "appsettings.json";
 
@@ -178,7 +178,7 @@ public sealed class ConfigurationChangeDetectionTest
     [Fact]
     public void Applies_local_configuration_changes_using_HostBuilder()
     {
-        IHostBuilder builder = TestHostBuilderFactory.Create();
+        HostBuilder builder = TestHostBuilderFactory.Create();
 
         const string fileName = "appsettings.json";
 

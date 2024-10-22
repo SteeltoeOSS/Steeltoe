@@ -16,16 +16,17 @@ internal static class HostBuilderWrapperExtensions
     {
         return hostBuilderType switch
         {
-            HostBuilderType.Host => CreateHost(configureHostBuilder),
-            HostBuilderType.WebHost => CreateWebHost(configureHostBuilder),
-            HostBuilderType.WebApplication => CreateWebApplication(configureHostBuilder),
+            HostBuilderType.Host => CreateFromHostBuilder(configureHostBuilder),
+            HostBuilderType.WebHost => CreateFromWebHostBuilder(configureHostBuilder),
+            HostBuilderType.WebApplication => CreateFromWebApplicationBuilder(configureHostBuilder),
+            HostBuilderType.HostApplication => CreateFromHostApplicationBuilder(configureHostBuilder),
             _ => throw new NotSupportedException()
         };
     }
 
-    private static HostWrapper CreateHost(Action<HostBuilderWrapper> configureHostBuilder)
+    private static HostWrapper CreateFromHostBuilder(Action<HostBuilderWrapper> configureHostBuilder)
     {
-        IHostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
+        HostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
 
         HostBuilderWrapper hostBuilderWrapper = HostBuilderWrapper.Wrap(hostBuilder);
         configureHostBuilder(hostBuilderWrapper);
@@ -34,9 +35,9 @@ internal static class HostBuilderWrapperExtensions
         return HostWrapper.Wrap(host);
     }
 
-    private static HostWrapper CreateWebHost(Action<HostBuilderWrapper> configureHostBuilder)
+    private static HostWrapper CreateFromWebHostBuilder(Action<HostBuilderWrapper> configureHostBuilder)
     {
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
 
         HostBuilderWrapper hostBuilderWrapper = HostBuilderWrapper.Wrap(hostBuilder);
         configureHostBuilder(hostBuilderWrapper);
@@ -45,7 +46,7 @@ internal static class HostBuilderWrapperExtensions
         return HostWrapper.Wrap(host);
     }
 
-    private static HostWrapper CreateWebApplication(Action<HostBuilderWrapper> configureHostBuilder)
+    private static HostWrapper CreateFromWebApplicationBuilder(Action<HostBuilderWrapper> configureHostBuilder)
     {
         WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
 
@@ -53,6 +54,17 @@ internal static class HostBuilderWrapperExtensions
         configureHostBuilder(hostBuilderWrapper);
 
         WebApplication host = hostBuilder.Build();
+        return HostWrapper.Wrap(host);
+    }
+
+    private static HostWrapper CreateFromHostApplicationBuilder(Action<HostBuilderWrapper> configureHostBuilder)
+    {
+        HostApplicationBuilder hostBuilder = TestHostApplicationBuilderFactory.Create();
+
+        HostBuilderWrapper hostBuilderWrapper = HostBuilderWrapper.Wrap(hostBuilder);
+        configureHostBuilder(hostBuilderWrapper);
+
+        IHost host = hostBuilder.Build();
         return HostWrapper.Wrap(host);
     }
 }

@@ -92,7 +92,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task EnvironmentActuator_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
@@ -160,7 +160,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task EnvironmentActuator_withPlaceholderDecryption_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
 
         builder.ConfigureAppConfiguration((_, configuration) =>

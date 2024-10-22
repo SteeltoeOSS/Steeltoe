@@ -90,7 +90,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseEnvironment("development");
         builder.UseStartup<TestServerStartup>();
 
@@ -181,7 +181,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseEnvironment("development");
         builder.UseStartup<TestServerStartup>();
 
@@ -273,7 +273,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseEnvironment("development");
         builder.UseStartup<TestServerStartup>();
 
@@ -372,7 +372,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestServerStartup>();
 
         builder.ConfigureAppConfiguration(configurationBuilder =>

@@ -47,9 +47,9 @@ public sealed class CertificateHttpClientBuilderExtensionsTest
         certificateHeader.Should().Be(Convert.ToBase64String(certificateBytes));
     }
 
-    private static IHostBuilder GetHostBuilder(string? certificateHeaderName = null)
+    private static HostBuilder GetHostBuilder(string? certificateHeaderName = null)
     {
-        IHostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
+        HostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate());
 
         hostBuilder.ConfigureServices(services =>

@@ -19,7 +19,7 @@ public sealed class HostedSpringBootConfigurationTest
     {
         using var scope = new EnvironmentVariableScope("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddSpringBootFromEnvironmentVariable());
 
         using IWebHost app = hostBuilder.Build();
@@ -38,7 +38,7 @@ public sealed class HostedSpringBootConfigurationTest
             "Spring.Cloud.Stream.Bindings.Input.Group=testGroup"
         ];
 
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddSpringBootFromCommandLine(args));
 
         using IWebHost app = hostBuilder.Build();
@@ -56,7 +56,7 @@ public sealed class HostedSpringBootConfigurationTest
     {
         using var scope = new EnvironmentVariableScope("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
-        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+        HostBuilder hostBuilder = TestHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddSpringBootFromEnvironmentVariable());
 
         using IHost host = hostBuilder.Build();
@@ -71,7 +71,7 @@ public sealed class HostedSpringBootConfigurationTest
     {
         using var scope = new EnvironmentVariableScope("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
-        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+        HostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
         hostBuilder.ConfigureAppConfiguration(configurationBuilder =>
         {

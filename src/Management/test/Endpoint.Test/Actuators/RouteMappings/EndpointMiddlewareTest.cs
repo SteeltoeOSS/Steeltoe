@@ -88,7 +88,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:actuator:exposure:include:0", "*" }
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
@@ -176,7 +176,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:refresh:allowedVerbs:0", string.Empty }
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
@@ -264,7 +264,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "TestUsesEndpointRouting", "False" }
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
@@ -367,7 +367,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "TestUsesEndpointRouting", "False" }
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
@@ -463,7 +463,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         {
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
 
         builder.ConfigureServices(services =>
         {

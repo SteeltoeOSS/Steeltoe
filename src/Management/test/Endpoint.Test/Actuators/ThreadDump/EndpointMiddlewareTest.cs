@@ -48,7 +48,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task ThreadDumpActuatorV1_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<StartupV1>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
@@ -69,7 +69,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task ThreadDumpActuator_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 

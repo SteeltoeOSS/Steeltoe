@@ -26,7 +26,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HealthActuator_ReturnsOnlyStatus()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
@@ -53,7 +53,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:health:showDetails", "whenAuthorized" }
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<AuthStartup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
@@ -82,7 +82,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:health:claim:value", "show" }
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<AuthStartup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
@@ -111,7 +111,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings);
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
@@ -141,7 +141,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:customJsonConverters:0", typeof(HealthConverterV3).FullName! }
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
@@ -174,7 +174,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             ["HealthCheckType"] = "default"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
@@ -205,7 +205,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             ["management:endpoints:health:diskSpace:enabled"] = "false"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
@@ -231,7 +231,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings);
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
@@ -262,7 +262,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [InlineData("default", HttpStatusCode.OK, "\"status\":\"UP\"")]
     public async Task GetStatusCode_ReturnsExpected(string? healthCheckType, HttpStatusCode expectedStatusCode, string expectedJson)
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
 
         builder.ConfigureAppConfiguration((_, configuration) =>
@@ -291,7 +291,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task GetStatusCode_OverrideUseStatusCodeFromResponseInConfiguration_ReturnsExpected()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
 
         builder.ConfigureAppConfiguration((_, configuration) =>
@@ -322,7 +322,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task GetStatusCode_OverrideUseStatusCodeFromResponseInHeader_ReturnsExpected()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
 
         builder.ConfigureAppConfiguration((_, configuration) =>
@@ -356,7 +356,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task GetStatusCode_MicrosoftAggregator_ReturnsExpected()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
 
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(new Dictionary<string, string?>(_appSettings)
@@ -379,7 +379,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task GetStatusCode_InvalidGroupName_Returns404()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
 
         using IWebHost app = builder.Build();

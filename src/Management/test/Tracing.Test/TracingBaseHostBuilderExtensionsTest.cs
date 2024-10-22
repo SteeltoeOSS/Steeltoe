@@ -13,7 +13,7 @@ public sealed class TracingBaseHostBuilderExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracing_ConfiguresExpectedDefaults()
     {
-        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+        HostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
         hostBuilder.ConfigureServices(services =>
         {

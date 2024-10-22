@@ -41,7 +41,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["info:NET:ASPNET:version"] = "2.0.0"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<StartupWithSecurity>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
@@ -72,7 +72,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:application_id"] = "foobar"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<StartupWithSecurity>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
@@ -104,7 +104,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<StartupWithSecurity>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
@@ -136,7 +136,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<StartupWithSecurity>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
@@ -167,7 +167,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["info:NET:ASPNET:version"] = "2.0.0"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<StartupWithSecurity>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
@@ -200,7 +200,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<StartupWithSecurity>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
@@ -233,7 +233,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<StartupWithSecurity>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
@@ -267,7 +267,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<StartupWithSecurity>();
 
         builder.ConfigureAppConfiguration((_, configuration) =>
@@ -303,7 +303,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<StartupWithSecurity>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 

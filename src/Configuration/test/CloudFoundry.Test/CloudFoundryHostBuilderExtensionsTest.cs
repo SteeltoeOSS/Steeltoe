@@ -17,7 +17,7 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
     [Fact]
     public void HostAddCloudFoundryConfiguration_Adds()
     {
-        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+        HostBuilder hostBuilder = TestHostBuilderFactory.Create();
         hostBuilder.AddCloudFoundryConfiguration();
         using IHost host = hostBuilder.Build();
 
@@ -31,7 +31,7 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
     [Fact]
     public void WebHostAddCloudFoundryConfiguration_Adds()
     {
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.AddCloudFoundryConfiguration();
         using IWebHost host = hostBuilder.Build();
 
@@ -46,6 +46,18 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
         WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
         hostBuilder.AddCloudFoundryConfiguration();
         await using WebApplication host = hostBuilder.Build();
+
+        var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
+
+        Assert.Single(configurationRoot.EnumerateProviders<CloudFoundryConfigurationProvider>());
+    }
+
+    [Fact]
+    public void HostApplicationAddCloudFoundryConfiguration_Adds()
+    {
+        HostApplicationBuilder hostBuilder = TestHostApplicationBuilderFactory.Create();
+        hostBuilder.AddCloudFoundryConfiguration();
+        using IHost host = hostBuilder.Build();
 
         var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
 

@@ -92,7 +92,7 @@ public sealed class EndpointMiddlewareTest(ITestOutputHelper testOutputHelper) :
     [Fact]
     public async Task ServicesActuator_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 

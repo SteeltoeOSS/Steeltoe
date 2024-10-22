@@ -22,7 +22,7 @@ public static class TestHostBuilderFactory
         options.ValidateOnBuild = true;
     };
 
-    public static IHostBuilder Create()
+    public static HostBuilder Create()
     {
         var builder = new HostBuilder();
         ConfigureBuilder(builder, false, false);
@@ -30,7 +30,7 @@ public static class TestHostBuilderFactory
         return builder;
     }
 
-    public static IHostBuilder CreateWeb()
+    public static HostBuilder CreateWeb()
     {
         var builder = new HostBuilder();
         ConfigureBuilder(builder, true, true);

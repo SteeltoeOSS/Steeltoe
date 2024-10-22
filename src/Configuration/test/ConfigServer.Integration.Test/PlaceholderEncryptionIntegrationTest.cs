@@ -32,7 +32,7 @@ public sealed class PlaceholderEncryptionIntegrationTest
             { "placeholder", "${encrypted}" }
         };
 
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
 
         hostBuilder.ConfigureAppConfiguration(configurationBuilder =>
         {
@@ -67,7 +67,7 @@ public sealed class PlaceholderEncryptionIntegrationTest
             { "placeholder", "${encrypted}" }
         };
 
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
 
         hostBuilder.ConfigureAppConfiguration(configurationBuilder =>
         {

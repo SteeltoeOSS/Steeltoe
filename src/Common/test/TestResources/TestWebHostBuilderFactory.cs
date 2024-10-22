@@ -21,12 +21,12 @@ public static class TestWebHostBuilderFactory
         options.ValidateOnBuild = true;
     };
 
-    public static IWebHostBuilder Create()
+    public static WebHostBuilder Create()
     {
         return Create(true);
     }
 
-    public static IWebHostBuilder Create(bool useTestServer)
+    public static WebHostBuilder Create(bool useTestServer)
     {
         var builder = new WebHostBuilder();
         ConfigureBuilder(builder, useTestServer);

@@ -47,7 +47,7 @@ public sealed class WavefrontMetricsTest
             { "management:metrics:export:wavefront:apiToken", "testToken" }
         };
 
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appSettings));
         hostBuilder.ConfigureServices(services => services.AddWavefrontMetrics());
 
@@ -75,7 +75,7 @@ public sealed class WavefrontMetricsTest
             { "management:metrics:export:wavefront:apiToken", string.Empty } // Should not throw
         };
 
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appSettings));
         hostBuilder.ConfigureServices(services => services.AddWavefrontMetrics());
 

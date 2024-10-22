@@ -150,6 +150,26 @@ public sealed class TaskHostExtensionsTest
     }
 
     [Fact]
+    public async Task WebApplication_CanRegisterMultipleTasks()
+    {
+        const string taskName = "ScopedTest";
+        string[] args = [$"RunTask={taskName}"];
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
+
+        builder.Services.AddSingleton<TaskApplicationState>();
+        builder.Services.AddTask<TestApplicationTask>(taskName);
+        builder.Services.AddTask<ThrowingApplicationTask>("other");
+
+        WebApplication app = builder.Build();
+        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
+
+        await app.RunWithTasksAsync(CancellationToken.None);
+
+        sharedState.HasExecuted.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task WebApplication_LogsErrorOnUnknownTask()
     {
         string[] args = ["RunTask=DoesNotExist"];
@@ -210,12 +230,30 @@ public sealed class TaskHostExtensionsTest
     }
 
     [Fact]
+    public async Task ApplicationHost_ExecutesScopedTask()
+    {
+        const string taskName = "ScopedTest";
+        string[] args = [$"RunTask={taskName}"];
+
+        HostApplicationBuilder builder = TestHostApplicationBuilderFactory.Create(args);
+        builder.Services.AddSingleton<TaskApplicationState>();
+        builder.Services.AddTask<TestApplicationTask>(taskName);
+
+        IHost app = builder.Build();
+        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
+
+        await app.RunWithTasksAsync(CancellationToken.None);
+
+        sharedState.HasExecuted.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task WebHost_ExecutesScopedTask()
     {
         const string taskName = "ScopedTest";
         string[] args = [$"RunTask={taskName}"];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddCommandLine(args));
 
         builder.ConfigureServices(services =>
@@ -238,7 +276,7 @@ public sealed class TaskHostExtensionsTest
         const string taskName = "ScopedTest";
         string[] args = [$"RunTask={taskName}"];
 
-        IHostBuilder builder = TestHostBuilderFactory.Create();
+        HostBuilder builder = TestHostBuilderFactory.Create();
         builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddCommandLine(args));
 
         builder.ConfigureServices(services =>

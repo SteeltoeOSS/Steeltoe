@@ -59,14 +59,14 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         await ActAndAssertAsync(hostBuilder, endpointOptionsType, false);
     }
 
-    private static IHostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction, RegistrationMode mode)
+    private static HostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction, RegistrationMode mode)
     {
         var appSettings = new Dictionary<string, string?>
         {
             { "management:endpoints:actuator:exposure:include:0", "*" }
         };
 
-        IHostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
+        HostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
         hostBuilder.ConfigureAppConfiguration(configure => configure.AddInMemoryCollection(appSettings));
 
         hostBuilder.ConfigureServices(services =>

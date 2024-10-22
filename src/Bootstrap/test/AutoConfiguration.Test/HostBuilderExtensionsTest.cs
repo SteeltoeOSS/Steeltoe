@@ -58,6 +58,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task ConfigServerConfiguration_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationConfigServer, hostBuilderType);
@@ -69,6 +70,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task CloudFoundryConfiguration_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationCloudFoundry, hostBuilderType);
@@ -80,6 +82,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task RandomValueConfiguration_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationRandomValue, hostBuilderType);
@@ -91,6 +94,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task SpringBootConfiguration_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationSpringBoot, hostBuilderType);
@@ -102,6 +106,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task EncryptionConfiguration_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationEncryption, hostBuilderType);
@@ -113,6 +118,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task PlaceholderResolver_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationPlaceholder, hostBuilderType);
@@ -124,6 +130,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task Connectors_AreAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.Connectors, hostBuilderType);
@@ -135,6 +142,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task SqlServerConnector_NotAutowiredIfDependenciesExcluded(HostBuilderType hostBuilderType)
     {
         var exclusions = new HashSet<string>(SteeltoeAssemblyNames.All);
@@ -151,6 +159,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task DynamicSerilog_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.LoggingDynamicSerilog, hostBuilderType);
@@ -162,6 +171,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task DynamicConsoleLogger_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.LoggingDynamicLogger, hostBuilderType);
@@ -173,6 +183,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task ServiceDiscoveryClients_AreAutowired(HostBuilderType hostBuilderType)
     {
         var assembliesToInclude = new HashSet<string>
@@ -192,6 +203,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task Prometheus_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementPrometheus, hostBuilderType);
@@ -203,6 +215,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task WavefrontMetricsExporter_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementWavefront, hostBuilderType);
@@ -214,6 +227,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task WavefrontTraceExporter_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementTracing, hostBuilderType);
@@ -225,6 +239,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task AllActuators_AreAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementEndpoint, hostBuilderType);
@@ -237,6 +252,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task Tracing_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementTracing, hostBuilderType);
@@ -248,6 +264,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task Everything_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetExcluding(new HashSet<string>(), hostBuilderType);
@@ -388,26 +405,29 @@ public sealed class HostBuilderExtensionsTest
         hostWrapper.Services.GetServices<IActuatorEndpointHandler>().Should().HaveCount(1);
         hostWrapper.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().HaveCount(1);
 
-        using HttpClient httpClient = hostWrapper.GetTestClient();
+        if (hostWrapper.Services.GetService<IServer>() != null)
+        {
+            using HttpClient httpClient = hostWrapper.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative));
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+            HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative));
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        response = await httpClient.GetAsync(new Uri("/actuator/info", UriKind.Relative));
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response = await httpClient.GetAsync(new Uri("/actuator/info", UriKind.Relative));
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        response = await httpClient.GetAsync(new Uri("/actuator/health", UriKind.Relative));
-        response.StatusCode.Should().Be(expectHealthy ? HttpStatusCode.OK : HttpStatusCode.ServiceUnavailable);
+            response = await httpClient.GetAsync(new Uri("/actuator/health", UriKind.Relative));
+            response.StatusCode.Should().Be(expectHealthy ? HttpStatusCode.OK : HttpStatusCode.ServiceUnavailable);
 
-        response = await httpClient.GetAsync(new Uri("/actuator/health/liveness", UriKind.Relative));
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        string responseContent = await response.Content.ReadAsStringAsync();
-        responseContent.Should().Contain("""LivenessState":"CORRECT""");
+            response = await httpClient.GetAsync(new Uri("/actuator/health/liveness", UriKind.Relative));
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            responseContent.Should().Contain("""LivenessState":"CORRECT""");
 
-        response = await httpClient.GetAsync(new Uri("/actuator/health/readiness", UriKind.Relative));
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        responseContent = await response.Content.ReadAsStringAsync();
-        responseContent.Should().Contain("""ReadinessState":"ACCEPTING_TRAFFIC""");
+            response = await httpClient.GetAsync(new Uri("/actuator/health/readiness", UriKind.Relative));
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            responseContent = await response.Content.ReadAsStringAsync();
+            responseContent.Should().Contain("""ReadinessState":"ACCEPTING_TRAFFIC""");
+        }
     }
 
     private static void AssertTracingIsAutowired(HostWrapper hostWrapper)
@@ -444,16 +464,17 @@ public sealed class HostBuilderExtensionsTest
         {
             return hostBuilderType switch
             {
-                HostBuilderType.Host => HostWrapper.Wrap(GetHostExcluding(assemblyNamesToExclude)),
-                HostBuilderType.WebHost => HostWrapper.Wrap(GetWebHostExcluding(assemblyNamesToExclude)),
-                HostBuilderType.WebApplication => HostWrapper.Wrap(GetWebApplicationExcluding(assemblyNamesToExclude)),
+                HostBuilderType.Host => HostWrapper.Wrap(GetExcludingFromHostBuilder(assemblyNamesToExclude)),
+                HostBuilderType.WebHost => HostWrapper.Wrap(GetExcludingFromWebHostBuilder(assemblyNamesToExclude)),
+                HostBuilderType.WebApplication => HostWrapper.Wrap(GetExcludingFromWebApplicationBuilder(assemblyNamesToExclude)),
+                HostBuilderType.HostApplication => HostWrapper.Wrap(GetExcludingFromHostApplicationBuilder(assemblyNamesToExclude)),
                 _ => throw new NotSupportedException()
             };
         }
 
-        private static IHost GetHostExcluding(IReadOnlySet<string> assemblyNamesToExclude)
+        private static IHost GetExcludingFromHostBuilder(IReadOnlySet<string> assemblyNamesToExclude)
         {
-            IHostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
+            HostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
 
             hostBuilder.ConfigureWebHost(builder =>
             {
@@ -465,9 +486,9 @@ public sealed class HostBuilderExtensionsTest
             return hostBuilder.Build();
         }
 
-        private static IWebHost GetWebHostExcluding(IReadOnlySet<string> assemblyNamesToExclude)
+        private static IWebHost GetExcludingFromWebHostBuilder(IReadOnlySet<string> assemblyNamesToExclude)
         {
-            IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+            WebHostBuilder builder = TestWebHostBuilderFactory.Create();
             builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.Add(FastTestConfigurations.All));
             builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
             builder.AddSteeltoe(assemblyNamesToExclude);
@@ -475,7 +496,7 @@ public sealed class HostBuilderExtensionsTest
             return builder.Build();
         }
 
-        private static WebApplication GetWebApplicationExcluding(IReadOnlySet<string> assemblyNamesToExclude)
+        private static WebApplication GetExcludingFromWebApplicationBuilder(IReadOnlySet<string> assemblyNamesToExclude)
         {
             WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
             builder.Configuration.Add(FastTestConfigurations.All);
@@ -485,6 +506,15 @@ public sealed class HostBuilderExtensionsTest
             host.UseRouting();
 
             return host;
+        }
+
+        private static IHost GetExcludingFromHostApplicationBuilder(IReadOnlySet<string> assemblyNamesToExclude)
+        {
+            HostApplicationBuilder builder = TestHostApplicationBuilderFactory.Create();
+            builder.Configuration.Add(FastTestConfigurations.All);
+            builder.AddSteeltoe(assemblyNamesToExclude);
+
+            return builder.Build();
         }
     }
 }

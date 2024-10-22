@@ -50,6 +50,40 @@ public sealed class HostBuilderWrapperTest
     }
 
     [Fact]
+    public void HostApplicationBuilder_Wraps()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["foo"] = "bar"
+        };
+
+        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
+
+        HostApplicationBuilder builder = TestHostApplicationBuilderFactory.Create();
+
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());
+        wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddProvider(capturingLoggerProvider));
+        wrapper.ConfigureServices((contextWrapper, _) => contextWrapper.HostEnvironment.ApplicationName = "TestApp");
+
+        using IHost app = builder.Build();
+
+        app.Services.GetService<InjectableType>().Should().NotBeNull();
+        var configuration = app.Services.GetRequiredService<IConfiguration>();
+        configuration.GetValue<string>("foo").Should().Be("bar");
+
+        var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+        ILogger logger = loggerFactory.CreateLogger("Test");
+
+        logger.LogInformation("LogLine");
+        capturingLoggerProvider.GetAll().Should().Contain("INFO Test: LogLine");
+
+        var hostEnvironment = app.Services.GetRequiredService<IHostEnvironment>();
+        hostEnvironment.ApplicationName.Should().Be("TestApp");
+    }
+
+    [Fact]
     public void WebHostBuilder_Wraps()
     {
         var appSettings = new Dictionary<string, string?>
@@ -59,7 +93,7 @@ public sealed class HostBuilderWrapperTest
 
         var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());
@@ -96,7 +130,7 @@ public sealed class HostBuilderWrapperTest
 
         var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
-        IHostBuilder builder = TestHostBuilderFactory.CreateWeb();
+        HostBuilder builder = TestHostBuilderFactory.CreateWeb();
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());

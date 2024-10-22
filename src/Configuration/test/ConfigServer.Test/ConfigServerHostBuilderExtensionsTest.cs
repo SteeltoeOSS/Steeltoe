@@ -18,7 +18,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_WebHost_AddsConfigServer()
     {
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(builder => builder.Add(FastTestConfigurations.ConfigServer));
         hostBuilder.UseStartup<TestConfigServerStartup>();
         hostBuilder.AddConfigServer();
@@ -33,7 +33,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_IHostBuilder_AddsConfigServer()
     {
-        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+        HostBuilder hostBuilder = TestHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(builder => builder.Add(FastTestConfigurations.ConfigServer));
         hostBuilder.AddConfigServer();
 
@@ -64,6 +64,25 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     }
 
     [Fact]
+    public void AddConfigServer_HostApplicationBuilder_AddsConfigServer()
+    {
+        HostApplicationBuilder hostBuilder = TestHostApplicationBuilderFactory.Create();
+
+        hostBuilder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["spring:cloud:config:enabled"] = "false"
+        });
+
+        hostBuilder.AddConfigServer();
+
+        using IHost host = hostBuilder.Build();
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
+
+        Assert.Single(configuration.EnumerateProviders<CloudFoundryConfigurationProvider>());
+        Assert.Single(configuration.EnumerateProviders<ConfigServerConfigurationProvider>());
+    }
+
+    [Fact]
     public void AddConfigServer_HostBuilder_DisposesTimer()
     {
         var appSettings = new Dictionary<string, string?>
@@ -71,7 +90,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
             ["spring:cloud:config:pollingInterval"] = TimeSpan.FromSeconds(1).ToString()
         };
 
-        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+        HostBuilder hostBuilder = TestHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
         hostBuilder.AddConfigServer();
 
@@ -95,13 +114,13 @@ public sealed class ConfigServerHostBuilderExtensionsTest
             ["spring:cloud:config:pollingInterval"] = TimeSpan.FromSeconds(1).ToString()
         };
 
-        IWebHostBuilder webHostBuilder = TestWebHostBuilderFactory.Create();
-        webHostBuilder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        webHostBuilder.AddConfigServer();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        builder.AddConfigServer();
 
         ConfigServerConfigurationProvider provider;
 
-        using (IWebHost webHost = webHostBuilder.Build())
+        using (IWebHost webHost = builder.Build())
         {
             var configurationRoot = (IConfigurationRoot)webHost.Services.GetRequiredService<IConfiguration>();
             provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
@@ -127,6 +146,30 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
 
         await using (WebApplication host = hostBuilder.Build())
+        {
+            _ = host.Services.GetRequiredService<IConfiguration>();
+        }
+
+        FieldInfo refreshTimerField = provider.GetType().GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        refreshTimerField.GetValue(provider).Should().BeNull();
+    }
+
+    [Fact]
+    public void AddConfigServer_HostApplicationBuilder_DisposesTimer()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["spring:cloud:config:pollingInterval"] = TimeSpan.FromSeconds(1).ToString()
+        };
+
+        HostApplicationBuilder hostBuilder = TestHostApplicationBuilderFactory.Create();
+        hostBuilder.Configuration.AddInMemoryCollection(appSettings);
+        hostBuilder.AddConfigServer();
+
+        var configurationRoot = (IConfigurationRoot)hostBuilder.Configuration;
+        ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
+
+        using (IHost host = hostBuilder.Build())
         {
             _ = host.Services.GetRequiredService<IConfiguration>();
         }
