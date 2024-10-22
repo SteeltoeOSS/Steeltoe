@@ -44,6 +44,16 @@ public sealed class EmptyAutoConfigurationTest
     }
 
     [Fact]
+    public void Loads_without_any_Steeltoe_references_using_HostApplicationBuilder()
+    {
+        HostApplicationBuilder builder = TestHostApplicationBuilderFactory.Create();
+
+        Action action = () => builder.AddSteeltoe();
+
+        action.Should().NotThrow();
+    }
+
+    [Fact]
     public void Loads_without_any_Steeltoe_references_using_WebHostBuilder()
     {
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();

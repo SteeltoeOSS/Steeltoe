@@ -150,6 +150,26 @@ public sealed class TaskHostExtensionsTest
     }
 
     [Fact]
+    public async Task WebApplication_CanRegisterMultipleTasks()
+    {
+        const string taskName = "ScopedTest";
+        string[] args = [$"RunTask={taskName}"];
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
+
+        builder.Services.AddSingleton<TaskApplicationState>();
+        builder.Services.AddTask<TestApplicationTask>(taskName);
+        builder.Services.AddTask<ThrowingApplicationTask>("other");
+
+        WebApplication app = builder.Build();
+        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
+
+        await app.RunWithTasksAsync(CancellationToken.None);
+
+        sharedState.HasExecuted.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task WebApplication_LogsErrorOnUnknownTask()
     {
         string[] args = ["RunTask=DoesNotExist"];
@@ -207,6 +227,24 @@ public sealed class TaskHostExtensionsTest
         Action action = () => _ = app.Services.GetRequiredService<ILoggerFactory>();
 
         action.Should().ThrowExactly<ObjectDisposedException>();
+    }
+
+    [Fact]
+    public async Task ApplicationHost_ExecutesScopedTask()
+    {
+        const string taskName = "ScopedTest";
+        string[] args = [$"RunTask={taskName}"];
+
+        HostApplicationBuilder builder = TestHostApplicationBuilderFactory.Create(args);
+        builder.Services.AddSingleton<TaskApplicationState>();
+        builder.Services.AddTask<TestApplicationTask>(taskName);
+
+        IHost app = builder.Build();
+        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
+
+        await app.RunWithTasksAsync(CancellationToken.None);
+
+        sharedState.HasExecuted.Should().BeTrue();
     }
 
     [Fact]

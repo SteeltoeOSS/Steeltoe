@@ -64,12 +64,20 @@ public sealed class HostWrapper : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        _host?.Dispose();
-        _webHost?.Dispose();
+        await DisposeAsync(_host);
+        await DisposeAsync(_webHost);
+        await DisposeAsync(_webApplication);
+    }
 
-        if (_webApplication != null)
+    private static async ValueTask DisposeAsync(IDisposable? disposable)
+    {
+        if (disposable is IAsyncDisposable asyncDisposable)
         {
-            await _webApplication.DisposeAsync();
+            await asyncDisposable.DisposeAsync();
+        }
+        else
+        {
+            disposable?.Dispose();
         }
     }
 }

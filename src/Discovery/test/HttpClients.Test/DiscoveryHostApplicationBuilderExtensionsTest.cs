@@ -12,7 +12,7 @@ using Steeltoe.Discovery.Eureka;
 
 namespace Steeltoe.Discovery.HttpClients.Test;
 
-public sealed class DiscoveryHostBuilderExtensionsTest
+public sealed class DiscoveryHostApplicationBuilderExtensionsTest
 {
     private static readonly Dictionary<string, string?> EurekaSettings = new()
     {
@@ -30,12 +30,11 @@ public sealed class DiscoveryHostBuilderExtensionsTest
     };
 
     [Fact]
-    public void AddEurekaDiscoveryClient_HostBuilder_AddsServiceDiscovery_Eureka()
+    public void AddEurekaDiscoveryClient_HostApplicationBuilder_AddsServiceDiscovery_Eureka()
     {
-        HostBuilder hostBuilder = TestHostBuilderFactory.Create();
-        hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
-
-        hostBuilder.ConfigureServices(services => services.AddEurekaDiscoveryClient());
+        HostApplicationBuilder hostBuilder = TestHostApplicationBuilderFactory.Create();
+        hostBuilder.Configuration.AddInMemoryCollection(EurekaSettings);
+        hostBuilder.Services.AddEurekaDiscoveryClient();
 
         using IHost host = hostBuilder.Build();
 
@@ -48,24 +47,24 @@ public sealed class DiscoveryHostBuilderExtensionsTest
     }
 
     [Fact]
-    public async Task AddEurekaDiscoveryClient_HostBuilder_StartsUp()
+    public async Task AddEurekaDiscoveryClient_HostApplicationBuilder_StartsUp()
     {
-        HostBuilder hostBuilder = TestHostBuilderFactory.Create();
-        hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
+        HostApplicationBuilder hostBuilder = TestHostApplicationBuilderFactory.Create();
+        hostBuilder.Configuration.AddInMemoryCollection(EurekaSettings);
+        hostBuilder.Services.AddEurekaDiscoveryClient();
 
-        hostBuilder.ConfigureServices(services => services.AddEurekaDiscoveryClient());
+        using IHost host = hostBuilder.Build();
 
-        Func<Task> action = async () => await hostBuilder.StartAsync();
+        Func<Task> action = async () => await host.StartAsync();
         await action.Should().NotThrowAsync();
     }
 
     [Fact]
-    public void AddConsulDiscoveryClient_HostBuilder_AddsServiceDiscovery_Consul()
+    public void AddConsulDiscoveryClient_HostApplicationBuilder_AddsServiceDiscovery_Consul()
     {
-        HostBuilder hostBuilder = TestHostBuilderFactory.Create();
-        hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ConsulSettings));
-
-        hostBuilder.ConfigureServices(services => services.AddConsulDiscoveryClient());
+        HostApplicationBuilder hostBuilder = TestHostApplicationBuilderFactory.Create();
+        hostBuilder.Configuration.AddInMemoryCollection(ConsulSettings);
+        hostBuilder.Services.AddConsulDiscoveryClient();
 
         using IHost host = hostBuilder.Build();
 

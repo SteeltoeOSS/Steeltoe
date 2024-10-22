@@ -51,4 +51,16 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
 
         Assert.Single(configurationRoot.EnumerateProviders<CloudFoundryConfigurationProvider>());
     }
+
+    [Fact]
+    public void HostApplicationAddCloudFoundryConfiguration_Adds()
+    {
+        HostApplicationBuilder hostBuilder = TestHostApplicationBuilderFactory.Create();
+        hostBuilder.AddCloudFoundryConfiguration();
+        using IHost host = hostBuilder.Build();
+
+        var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
+
+        Assert.Single(configurationRoot.EnumerateProviders<CloudFoundryConfigurationProvider>());
+    }
 }
