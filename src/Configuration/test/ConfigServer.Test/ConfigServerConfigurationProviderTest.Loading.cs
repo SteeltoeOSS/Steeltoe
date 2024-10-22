@@ -46,7 +46,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.ReturnStatus = [500];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -72,7 +72,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.ReturnStatus = [204];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -112,7 +112,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Response = environment;
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
         TestConfigServerStartup.Label = "test-label";
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -161,7 +161,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         // Initial requests succeed, but later requests return 400 status code so that an exception is thrown during polling
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 2).Concat(Enumerable.Repeat(400, 100)).ToArray();
         TestConfigServerStartup.Label = "test-label";
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -212,7 +212,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Response = environment;
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
         TestConfigServerStartup.Label = "test-label";
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -271,7 +271,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         ];
 
         TestConfigServerStartup.Label = "test-label";
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -317,7 +317,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -359,7 +359,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             200
         ];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -390,7 +390,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             200
         ];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -417,7 +417,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.ReturnStatus = [404];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -443,7 +443,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.ReturnStatus = [404];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -466,7 +466,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
         options.Uri = "http://localhost:8888,http://localhost:8888";
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -496,7 +496,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.ReturnStatus = [500];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -525,7 +525,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             500
         ];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -559,7 +559,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             500
         ];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -612,7 +612,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -662,7 +662,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
@@ -829,7 +829,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
 
         ConfigServerClientOptions clientOptions = GetCommonOptions();

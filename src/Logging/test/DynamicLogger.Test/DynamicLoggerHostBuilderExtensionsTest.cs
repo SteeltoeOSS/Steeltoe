@@ -16,7 +16,7 @@ public sealed class DynamicLoggerHostBuilderExtensionsTest
     [Fact]
     public void AddDynamicLogging_IHostBuilder_AddsDynamicLogging()
     {
-        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+        HostBuilder hostBuilder = TestHostBuilderFactory.Create();
         hostBuilder.ConfigureLogging(builder => builder.AddDynamicConsole());
 
         using IHost host = hostBuilder.Build();
@@ -29,7 +29,7 @@ public sealed class DynamicLoggerHostBuilderExtensionsTest
     [Fact]
     public void AddDynamicLogging_IHostBuilder_RemovesConsoleLogging()
     {
-        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+        HostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
         hostBuilder.ConfigureLogging(builder =>
         {
@@ -47,7 +47,7 @@ public sealed class DynamicLoggerHostBuilderExtensionsTest
     [Fact]
     public void AddDynamicLogging_IHostBuilder_RemovesConsoleLoggingDefaultBuilder()
     {
-        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+        HostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
         hostBuilder.ConfigureLogging(builder =>
         {

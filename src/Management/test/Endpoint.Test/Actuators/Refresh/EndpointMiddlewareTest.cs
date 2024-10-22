@@ -74,7 +74,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         var appSettings = new Dictionary<string, string?>(AppSettings);
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 

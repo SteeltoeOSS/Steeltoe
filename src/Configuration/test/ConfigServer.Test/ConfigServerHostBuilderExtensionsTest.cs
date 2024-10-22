@@ -18,7 +18,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_WebHost_AddsConfigServer()
     {
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(builder => builder.Add(FastTestConfigurations.ConfigServer));
         hostBuilder.UseStartup<TestConfigServerStartup>();
         hostBuilder.AddConfigServer();
@@ -33,7 +33,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_IHostBuilder_AddsConfigServer()
     {
-        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+        HostBuilder hostBuilder = TestHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(builder => builder.Add(FastTestConfigurations.ConfigServer));
         hostBuilder.AddConfigServer();
 
@@ -71,7 +71,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
             ["spring:cloud:config:pollingInterval"] = TimeSpan.FromSeconds(1).ToString()
         };
 
-        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+        HostBuilder hostBuilder = TestHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
         hostBuilder.AddConfigServer();
 
@@ -95,13 +95,13 @@ public sealed class ConfigServerHostBuilderExtensionsTest
             ["spring:cloud:config:pollingInterval"] = TimeSpan.FromSeconds(1).ToString()
         };
 
-        IWebHostBuilder webHostBuilder = TestWebHostBuilderFactory.Create();
-        webHostBuilder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        webHostBuilder.AddConfigServer();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        builder.AddConfigServer();
 
         ConfigServerConfigurationProvider provider;
 
-        using (IWebHost webHost = webHostBuilder.Build())
+        using (IWebHost webHost = builder.Build())
         {
             var configurationRoot = (IConfigurationRoot)webHost.Services.GetRequiredService<IConfiguration>();
             provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();

@@ -59,7 +59,7 @@ public sealed class HostBuilderWrapperTest
 
         var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());
@@ -96,7 +96,7 @@ public sealed class HostBuilderWrapperTest
 
         var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
-        IHostBuilder builder = TestHostBuilderFactory.CreateWeb();
+        HostBuilder builder = TestHostBuilderFactory.CreateWeb();
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());

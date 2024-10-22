@@ -26,7 +26,7 @@ public sealed class SerilogWebHostBuilderTest
     {
         var testSink = new TestSink();
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
 
         builder.AddDynamicSerilog((_, loggerConfiguration) => loggerConfiguration.MinimumLevel.Error().Enrich.WithExceptionDetails().MinimumLevel
@@ -52,7 +52,7 @@ public sealed class SerilogWebHostBuilderTest
             { "Serilog:WriteTo:Name", "TestSink" }
         };
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
         builder.UseStartup<Startup>();
         builder.AddDynamicSerilog();

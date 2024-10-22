@@ -185,9 +185,9 @@ public sealed class CertificateAuthorizationTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    private IHostBuilder GetHostBuilder()
+    private HostBuilder GetHostBuilder()
     {
-        IHostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
+        HostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate(Certificates.ServerOrgId, Certificates.ServerSpaceId));
         hostBuilder.ConfigureWebHost(builder => builder.UseStartup<TestServerCertificateStartup>());
         return hostBuilder;

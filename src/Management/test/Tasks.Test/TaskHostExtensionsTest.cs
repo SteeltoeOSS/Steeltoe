@@ -215,7 +215,7 @@ public sealed class TaskHostExtensionsTest
         const string taskName = "ScopedTest";
         string[] args = [$"RunTask={taskName}"];
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddCommandLine(args));
 
         builder.ConfigureServices(services =>
@@ -238,7 +238,7 @@ public sealed class TaskHostExtensionsTest
         const string taskName = "ScopedTest";
         string[] args = [$"RunTask={taskName}"];
 
-        IHostBuilder builder = TestHostBuilderFactory.Create();
+        HostBuilder builder = TestHostBuilderFactory.Create();
         builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddCommandLine(args));
 
         builder.ConfigureServices(services =>

@@ -453,7 +453,7 @@ public sealed class HostBuilderExtensionsTest
 
         private static IHost GetHostExcluding(IReadOnlySet<string> assemblyNamesToExclude)
         {
-            IHostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
+            HostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
 
             hostBuilder.ConfigureWebHost(builder =>
             {
@@ -467,7 +467,7 @@ public sealed class HostBuilderExtensionsTest
 
         private static IWebHost GetWebHostExcluding(IReadOnlySet<string> assemblyNamesToExclude)
         {
-            IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+            WebHostBuilder builder = TestWebHostBuilderFactory.Create();
             builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.Add(FastTestConfigurations.All));
             builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
             builder.AddSteeltoe(assemblyNamesToExclude);

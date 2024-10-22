@@ -35,7 +35,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [InlineData("http://somehost:8080", "http://somehost:8080", "http")]
     public async Task CloudFoundryEndpointMiddleware_ReturnsExpectedData(string requestUriString, string calculatedHost, string xForwarded)
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
@@ -56,7 +56,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HypermediaEndpointMiddleware_ServiceContractNotBroken()
     {
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
@@ -89,7 +89,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         _appSettings.Add("Management:Endpoints:Path", "/");
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 

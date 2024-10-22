@@ -17,7 +17,7 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
     [Fact]
     public void HostAddCloudFoundryConfiguration_Adds()
     {
-        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+        HostBuilder hostBuilder = TestHostBuilderFactory.Create();
         hostBuilder.AddCloudFoundryConfiguration();
         using IHost host = hostBuilder.Build();
 
@@ -31,7 +31,7 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
     [Fact]
     public void WebHostAddCloudFoundryConfiguration_Adds()
     {
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.AddCloudFoundryConfiguration();
         using IWebHost host = hostBuilder.Build();
 

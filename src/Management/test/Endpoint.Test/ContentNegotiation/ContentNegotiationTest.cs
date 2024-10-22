@@ -74,7 +74,7 @@ public sealed class ContentNegotiationTest
         string name = endpointName == EndpointName.Cloudfoundry ? "VCAP_APPLICATION" : "unused";
         using var scope = new EnvironmentVariableScope(name, "some"); // Allow routing to /cloudfoundryapplication
 
-        IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartupForEndpoint(endpointName);
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 

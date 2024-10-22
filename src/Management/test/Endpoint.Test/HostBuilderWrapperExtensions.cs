@@ -25,7 +25,7 @@ internal static class HostBuilderWrapperExtensions
 
     private static HostWrapper CreateHost(Action<HostBuilderWrapper> configureHostBuilder)
     {
-        IHostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
+        HostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
 
         HostBuilderWrapper hostBuilderWrapper = HostBuilderWrapper.Wrap(hostBuilder);
         configureHostBuilder(hostBuilderWrapper);
@@ -36,7 +36,7 @@ internal static class HostBuilderWrapperExtensions
 
     private static HostWrapper CreateWebHost(Action<HostBuilderWrapper> configureHostBuilder)
     {
-        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
 
         HostBuilderWrapper hostBuilderWrapper = HostBuilderWrapper.Wrap(hostBuilder);
         configureHostBuilder(hostBuilderWrapper);
