@@ -5,8 +5,6 @@
 using System.Net;
 using Consul;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -72,7 +70,6 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddOptions();
-        services.AddSingleton<IServer, TestServer>();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
         services.AddEurekaDiscoveryClient();
 
@@ -102,7 +99,6 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddSingleton(configuration);
         services.AddLogging();
         services.AddOptions();
-        services.AddSingleton<IServer, TestServer>();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
         services.AddEurekaDiscoveryClient();
 

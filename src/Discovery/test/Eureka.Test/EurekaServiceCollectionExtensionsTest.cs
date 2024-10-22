@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,7 +24,6 @@ public sealed class EurekaServiceCollectionExtensionsTest
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
-        services.AddSingleton<IServer, TestServer>();
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider provider = services.BuildServiceProvider(true);
@@ -48,7 +45,6 @@ public sealed class EurekaServiceCollectionExtensionsTest
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
-        services.AddSingleton<IServer, TestServer>();
         services.AddAllActuators();
         services.AddEurekaDiscoveryClient();
 
@@ -73,7 +69,6 @@ public sealed class EurekaServiceCollectionExtensionsTest
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
-        services.AddSingleton<IServer, TestServer>();
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -152,7 +147,6 @@ public sealed class EurekaServiceCollectionExtensionsTest
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
-        services.AddSingleton<IServer, TestServer>();
         services.AddAllActuators();
         services.AddEurekaDiscoveryClient();
 
@@ -176,7 +170,6 @@ public sealed class EurekaServiceCollectionExtensionsTest
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
-        services.AddSingleton<IServer, TestServer>();
         services.AddAllActuators();
         services.AddEurekaDiscoveryClient();
 
@@ -222,7 +215,6 @@ public sealed class EurekaServiceCollectionExtensionsTest
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
-        services.AddSingleton<IServer, TestServer>();
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);

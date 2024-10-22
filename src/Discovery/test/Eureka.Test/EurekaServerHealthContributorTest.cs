@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Globalization;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -181,7 +179,6 @@ public sealed class EurekaServerHealthContributorTest
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
-        services.AddSingleton<IServer, TestServer>();
 
         services.AddOptions<EurekaClientOptions>().Configure(options =>
         {
