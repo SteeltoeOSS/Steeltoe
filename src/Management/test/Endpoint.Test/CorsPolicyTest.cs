@@ -197,7 +197,6 @@ public sealed class CorsPolicyTest
         response.Headers.GetValues("Access-Control-Allow-Origin").Should().HaveCount(1).And.Contain("*");
     }
 
-
     [Fact]
     public async Task DefaultActuatorsCorsPolicyFiresBeforeCloudFoundrySecurity()
     {
@@ -218,7 +217,10 @@ public sealed class CorsPolicyTest
         corsResponse.Headers.Should().ContainKey("Access-Control-Allow-Origin");
         corsResponse.Headers.GetValues("Access-Control-Allow-Origin").Should().HaveCount(1).And.Contain("*");
         corsResponse.Headers.Should().ContainKey("Access-Control-Allow-Headers");
-        corsResponse.Headers.GetValues("Access-Control-Allow-Headers").Should().HaveCount(1).And.Contain("Authorization,X-Cf-App-Instance,Content-Type,Content-Disposition");
+
+        corsResponse.Headers.GetValues("Access-Control-Allow-Headers").Should().HaveCount(1).And
+            .Contain("Authorization,X-Cf-App-Instance,Content-Type,Content-Disposition");
+
         corsResponse.Headers.Should().ContainKey("Access-Control-Allow-Methods");
         corsResponse.Headers.GetValues("Access-Control-Allow-Methods").Should().HaveCount(1).And.Contain("GET");
 
