@@ -77,7 +77,7 @@ public static class EndpointServiceCollectionExtensions
 
         if (Platform.IsCloudFoundry)
         {
-            services.AddCloudFoundryActuator();
+            services.AddCloudFoundryActuator(configureMiddleware);
         }
 
         services.AddHypermediaActuator(configureMiddleware);

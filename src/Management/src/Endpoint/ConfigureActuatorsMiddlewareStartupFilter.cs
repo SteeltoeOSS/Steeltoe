@@ -23,13 +23,13 @@ internal sealed class ConfigureActuatorsMiddlewareStartupFilter : IStartupFilter
 
             app.UseManagementPort();
 
+            app.UseRouting();
+            app.UseActuatorsCorsPolicy();
+
             if (app.ApplicationServices.GetService<ICloudFoundryEndpointHandler>() != null)
             {
                 app.UseCloudFoundrySecurity();
             }
-
-            app.UseRouting();
-            app.UseActuatorsCorsPolicy();
 
             next?.Invoke(app);
 
