@@ -205,9 +205,9 @@ public sealed class CorsPolicyTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddCloudFoundryActuator();
         await using WebApplication app = builder.Build();
-        
+
         await app.StartAsync();
-        
+
         using HttpClient httpClient = app.GetTestClient();
         var corsRequest = new HttpRequestMessage(HttpMethod.Options, new Uri("http://localhost/cloudfoundryapplication"));
         corsRequest.Headers.Add("access-control-request-method", "GET");
