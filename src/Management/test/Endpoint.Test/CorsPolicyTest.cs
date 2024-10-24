@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Configuration;
@@ -194,5 +195,42 @@ public sealed class CorsPolicyTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Headers.Should().ContainKey("Access-Control-Allow-Origin");
         response.Headers.GetValues("Access-Control-Allow-Origin").Should().HaveCount(1).And.Contain("*");
+    }
+
+    [Fact]
+    public async Task DefaultActuatorsCorsPolicyFiresBeforeCloudFoundrySecurity()
+    {
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Services.AddCloudFoundryActuator();
+        await using WebApplication app = builder.Build();
+
+        await app.StartAsync();
+
+        using HttpClient httpClient = app.GetTestClient();
+        var corsRequest = new HttpRequestMessage(HttpMethod.Options, new Uri("http://localhost/cloudfoundryapplication"));
+        corsRequest.Headers.Add("access-control-request-method", "GET");
+        corsRequest.Headers.Add("access-control-request-headers", "authorization");
+        corsRequest.Headers.Add("origin", "http://example.api.com");
+        HttpResponseMessage corsResponse = await httpClient.SendAsync(corsRequest);
+
+        corsResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        corsResponse.Headers.Should().ContainKey("Access-Control-Allow-Origin");
+        corsResponse.Headers.GetValues("Access-Control-Allow-Origin").Should().HaveCount(1).And.Contain("*");
+        corsResponse.Headers.Should().ContainKey("Access-Control-Allow-Headers");
+
+        corsResponse.Headers.GetValues("Access-Control-Allow-Headers").Should().HaveCount(1).And
+            .Contain("Authorization,X-Cf-App-Instance,Content-Type,Content-Disposition");
+
+        corsResponse.Headers.Should().ContainKey("Access-Control-Allow-Methods");
+        corsResponse.Headers.GetValues("Access-Control-Allow-Methods").Should().HaveCount(1).And.Contain("GET");
+
+        var actuatorRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
+        actuatorRequest.Headers.Add("Origin", "http://example.api.com");
+        HttpResponseMessage response = await httpClient.SendAsync(actuatorRequest);
+
+        // Returns ServiceUnavailable because UseCloudFoundrySecurity is invoked, but not fully mocked
+        response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
     }
 }
