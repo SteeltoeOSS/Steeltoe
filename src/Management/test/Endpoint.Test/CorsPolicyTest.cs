@@ -205,7 +205,9 @@ public sealed class CorsPolicyTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddCloudFoundryActuator();
         await using WebApplication app = builder.Build();
+        
         await app.StartAsync();
+        
         using HttpClient httpClient = app.GetTestClient();
         var corsRequest = new HttpRequestMessage(HttpMethod.Options, new Uri("http://localhost/cloudfoundryapplication"));
         corsRequest.Headers.Add("access-control-request-method", "GET");
@@ -224,9 +226,9 @@ public sealed class CorsPolicyTest
         corsResponse.Headers.Should().ContainKey("Access-Control-Allow-Methods");
         corsResponse.Headers.GetValues("Access-Control-Allow-Methods").Should().HaveCount(1).And.Contain("GET");
 
-        var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
-        request.Headers.Add("Origin", "http://example.api.com");
-        HttpResponseMessage response = await httpClient.SendAsync(request);
+        var actuatorRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
+        actuatorRequest.Headers.Add("Origin", "http://example.api.com");
+        HttpResponseMessage response = await httpClient.SendAsync(actuatorRequest);
 
         // Returns ServiceUnavailable because UseCloudFoundrySecurity is invoked, but not fully mocked
         response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
