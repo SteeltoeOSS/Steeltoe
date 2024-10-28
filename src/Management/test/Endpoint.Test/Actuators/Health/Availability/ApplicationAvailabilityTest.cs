@@ -72,15 +72,15 @@ public sealed class ApplicationAvailabilityTest
         Assert.Equal(ReadinessState.AcceptingTraffic, _lastReadinessState);
     }
 
-    private void Availability_ReadinessChanged(object? sender, EventArgs args)
+    private void Availability_ReadinessChanged(object? sender, AvailabilityEventArgs args)
     {
         _readinessChanges++;
-        _lastReadinessState = (ReadinessState)((AvailabilityEventArgs)args).NewState;
+        _lastReadinessState = (ReadinessState)args.NewState;
     }
 
-    private void Availability_LivenessChanged(object? sender, EventArgs args)
+    private void Availability_LivenessChanged(object? sender, AvailabilityEventArgs args)
     {
         _livenessChanges++;
-        _lastLivenessState = (LivenessState)((AvailabilityEventArgs)args).NewState;
+        _lastLivenessState = (LivenessState)args.NewState;
     }
 }
