@@ -78,7 +78,7 @@ jobs:
       projects: src/Steeltoe.All.sln
       feedsToUse: config
       nugetConfigPath: nuget.config
-  - task: SonarCloudPrepare@1
+  - task: SonarCloudPrepare@3
     condition: eq(variables['sonarAnalyze'], 'true')
     displayName: Prepare analysis on SonarCloud
     inputs:
@@ -130,7 +130,7 @@ jobs:
       testResultsFormat: VSTest
       testResultsFiles: '*.trx'
       mergeTestResults: true
-  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
+  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@5
     condition: and(succeededOrFailed(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
     displayName: Consolidate coverage for this job
     inputs:
@@ -141,10 +141,10 @@ jobs:
     condition: and(succeeded(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
     displayName: Publish code coverage artifacts
     artifact: coverageResults-$(Agent.JobName)
-  - task: SonarCloudAnalyze@1
+  - task: SonarCloudAnalyze@3
     condition: and(succeededOrFailed(), eq(variables['sonarAnalyze'], 'true'))
     displayName: Run code analysis
-  - task: SonarCloudPublish@1
+  - task: SonarCloudPublish@3
     condition: and(succeededOrFailed(), eq(variables['sonarAnalyze'], 'true'))
     displayName: Publish quality gate result
 - job: Wrap_up
@@ -163,14 +163,14 @@ jobs:
     condition: succeededOrFailed()
     displayName: Download test coverage results from Windows
     continueOnError: true
-  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
+  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@5
     condition: succeededOrFailed()
     displayName: Consolidate code coverage results
     inputs:
       reports: $(Pipeline.Workspace)/**/Cobertura.xml
       targetdir: $(Build.ArtifactStagingDirectory)/CodeCoverage
       reporttypes: Cobertura
-  - task: PublishCodeCoverageResults@1
+  - task: PublishCodeCoverageResults@2
     condition: succeededOrFailed()
     displayName: Publish code coverage to Azure DevOps
     inputs:
