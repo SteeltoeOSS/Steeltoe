@@ -170,7 +170,7 @@ jobs:
       reports: $(Pipeline.Workspace)/**/Cobertura.xml
       targetdir: $(Build.ArtifactStagingDirectory)/CodeCoverage
       reporttypes: Cobertura
-  - task: PublishCodeCoverageResults@2
+  - task: PublishCodeCoverageResults@1
     condition: succeededOrFailed()
     displayName: Publish code coverage to Azure DevOps
     inputs:
