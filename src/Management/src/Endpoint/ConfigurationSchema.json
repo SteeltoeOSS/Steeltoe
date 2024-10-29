@@ -302,9 +302,27 @@
                   "type": "string",
                   "description": "Gets or sets the unique ID of this endpoint."
                 },
+                "Liveness": {
+                  "type": "object",
+                  "properties": {
+                    "Enabled": {
+                      "type": "boolean",
+                      "description": "Gets or sets a value indicating whether to enable the liveness contributor. Default value: true."
+                    }
+                  }
+                },
                 "Path": {
                   "type": "string",
                   "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "Readiness": {
+                  "type": "object",
+                  "properties": {
+                    "Enabled": {
+                      "type": "boolean",
+                      "description": "Gets or sets a value indicating whether to enable the readiness contributor. Default value: true."
+                    }
+                  }
                 },
                 "RequiredPermissions": {
                   "enum": [

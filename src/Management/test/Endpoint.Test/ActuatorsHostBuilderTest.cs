@@ -161,6 +161,35 @@ public sealed class ActuatorsHostBuilderTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    public async Task HealthActuatorWithoutDefaultContributors(HostBuilderType hostBuilderType)
+    {
+        var appSettings = new Dictionary<string, string?>(AppSettings)
+        {
+            ["Management:Endpoints:Health:DiskSpace:Enabled"] = "false",
+            ["Management:Endpoints:Health:Liveness:Enabled"] = "false",
+            ["Management:Endpoints:Health:Readiness:Enabled"] = "false"
+        };
+
+        await using HostWrapper host = hostBuilderType.Build(builder =>
+        {
+            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+            builder.ConfigureServices(services => services.AddHealthActuator());
+        });
+
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
+
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string responseText = await response.Content.ReadAsStringAsync();
+        responseText.Should().Be("""{"status":"UNKNOWN"}""");
+    }
+
+    [Theory]
+    [InlineData(HostBuilderType.Host)]
+    [InlineData(HostBuilderType.WebHost)]
+    [InlineData(HostBuilderType.WebApplication)]
     public async Task HealthActuatorWithExtraContributor(HostBuilderType hostBuilderType)
     {
         await using HostWrapper host = hostBuilderType.Build(builder =>

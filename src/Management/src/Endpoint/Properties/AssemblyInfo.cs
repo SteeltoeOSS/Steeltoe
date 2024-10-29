@@ -10,6 +10,7 @@ using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.DbMigrations;
 using Steeltoe.Management.Endpoint.Actuators.Environment;
 using Steeltoe.Management.Endpoint.Actuators.Health;
+using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
@@ -33,6 +34,8 @@ using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 [assembly: ConfigurationSchema("Management:Endpoints:Env", typeof(EnvironmentEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Health", typeof(HealthEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Health:DiskSpace", typeof(DiskSpaceContributorOptions))]
+[assembly: ConfigurationSchema("Management:Endpoints:Health:Liveness", typeof(LivenessHealthContributorOptions))]
+[assembly: ConfigurationSchema("Management:Endpoints:Health:Readiness", typeof(ReadinessHealthContributorOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:HeapDump", typeof(HeapDumpEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Info", typeof(InfoEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Loggers", typeof(LoggersEndpointOptions))]

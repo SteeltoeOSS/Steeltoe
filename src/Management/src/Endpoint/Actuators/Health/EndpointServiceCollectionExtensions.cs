@@ -74,7 +74,11 @@ public static class EndpointServiceCollectionExtensions
 
         services.TryAddSingleton<ApplicationAvailability>();
         services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, AvailabilityStartupFilter>());
+
+        services.ConfigureOptionsWithChangeTokenSource<LivenessHealthContributorOptions, ConfigureLivenessHealthContributorOptions>();
         AddHealthContributor<LivenessHealthContributor>(services);
+
+        services.ConfigureOptionsWithChangeTokenSource<ReadinessHealthContributorOptions, ConfigureReadinessHealthContributorOptions>();
         AddHealthContributor<ReadinessHealthContributor>(services);
     }
 

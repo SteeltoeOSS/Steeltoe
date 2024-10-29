@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.Availability;
@@ -11,11 +12,12 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.Availability;
 public sealed class ReadinessHealthContributorTest
 {
     private readonly ApplicationAvailability _availability = new(NullLogger<ApplicationAvailability>.Instance);
+    private readonly TestOptionsMonitor<ReadinessHealthContributorOptions> _optionsMonitor = new();
 
     [Fact]
     public async Task HandlesUnknown()
     {
-        var contributor = new ReadinessHealthContributor(_availability, NullLoggerFactory.Instance);
+        var contributor = new ReadinessHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
@@ -27,7 +29,7 @@ public sealed class ReadinessHealthContributorTest
     public async Task HandlesAccepting()
     {
         _availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, "tests");
-        var contributor = new ReadinessHealthContributor(_availability, NullLoggerFactory.Instance);
+        var contributor = new ReadinessHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
@@ -39,7 +41,7 @@ public sealed class ReadinessHealthContributorTest
     public async Task HandlesRefusing()
     {
         _availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.RefusingTraffic, "tests");
-        var contributor = new ReadinessHealthContributor(_availability, NullLoggerFactory.Instance);
+        var contributor = new ReadinessHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
