@@ -33,17 +33,32 @@ internal sealed class HealthConverter : JsonConverter<HealthEndpointResponse>
             writer.WritePropertyName("details");
             writer.WriteStartObject();
 
-            foreach (KeyValuePair<string, object> detail in value.Details)
+            foreach ((string detailKey, object detailValue) in value.Details)
             {
-                writer.WritePropertyName(detail.Key);
+                writer.WritePropertyName(detailKey);
 
-                if (detail.Value is HealthCheckResult detailValue)
+                if (detailValue is HealthCheckResult result)
                 {
-                    JsonSerializer.Serialize(writer, detailValue.Details, options);
+                    var details = new Dictionary<string, object>
+                    {
+                        ["status"] = result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps)
+                    };
+
+                    if (result.Description != null)
+                    {
+                        details["description"] = result.Description;
+                    }
+
+                    foreach ((string resultKey, object resultValue) in result.Details)
+                    {
+                        details[resultKey] = resultValue;
+                    }
+
+                    JsonSerializer.Serialize(writer, details, options);
                 }
                 else
                 {
-                    JsonSerializer.Serialize(writer, detail.Value, options);
+                    JsonSerializer.Serialize(writer, detailValue, options);
                 }
             }
 

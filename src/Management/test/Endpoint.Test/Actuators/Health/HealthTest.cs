@@ -67,4 +67,42 @@ public sealed class HealthTest : BaseTest
             }
             """);
     }
+
+    [Fact]
+    public void Serialize_WithHealthCheckResult_ReturnsExpected()
+    {
+        var health = new HealthEndpointResponse
+        {
+            Status = HealthStatus.OutOfService,
+            Description = "Test",
+            Details =
+            {
+                ["ExampleContributor"] = new HealthCheckResult
+                {
+                    Status = HealthStatus.Unknown,
+                    Description = "ExampleDescription",
+                    Details =
+                    {
+                        ["ExampleMessage"] = "ExampleValue"
+                    }
+                }
+            }
+        };
+
+        string json = JsonSerializer.Serialize(health, SerializerOptions);
+
+        json.Should().BeJson("""
+            {
+              "status": "OUT_OF_SERVICE",
+              "description": "Test",
+              "details": {
+                "ExampleContributor": {
+                  "status": "UNKNOWN",
+                  "description": "ExampleDescription",
+                  "ExampleMessage": "ExampleValue"
+                }
+              }
+            }
+            """);
+    }
 }
