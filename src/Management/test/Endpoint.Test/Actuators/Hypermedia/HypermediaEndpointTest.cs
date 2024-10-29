@@ -27,13 +27,13 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
         var handler = testContext.GetRequiredService<IActuatorEndpointHandler>();
 
         Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
-        Assert.NotNull(links);
-        Assert.NotNull(links.Entries);
-        Assert.True(links.Entries.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", links.Entries["self"].Href);
-        Assert.True(links.Entries.ContainsKey("info"));
-        Assert.Equal("http://localhost:5000/foobar/info", links.Entries["info"].Href);
-        Assert.Equal(2, links.Entries.Count);
+        links.Should().NotBeNull();
+        links.Entries.Should().NotBeNull();
+        links.Entries.Should().ContainKey("self");
+        links.Entries["self"].Href.Should().Be("http://localhost:5000/foobar");
+        links.Entries.Should().ContainKey("info");
+        links.Entries["info"].Href.Should().Be("http://localhost:5000/foobar/info");
+        links.Entries.Count.Should().Be(2);
     }
 
     [Fact]
@@ -49,11 +49,11 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
         var handler = testContext.GetRequiredService<IActuatorEndpointHandler>();
 
         Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
-        Assert.NotNull(links);
-        Assert.NotNull(links.Entries);
-        Assert.True(links.Entries.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", links.Entries["self"].Href);
-        Assert.Single(links.Entries);
+        links.Should().NotBeNull();
+        links.Entries.Should().NotBeNull();
+        links.Entries.Should().ContainKey("self");
+        links.Entries["self"].Href.Should().Be("http://localhost:5000/foobar");
+        links.Entries.Should().ContainSingle();
     }
 
     [Fact]
@@ -78,12 +78,11 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
         var handler = testContext.GetRequiredService<IActuatorEndpointHandler>();
 
         Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
-        Assert.NotNull(links);
-        Assert.NotNull(links.Entries);
-        Assert.True(links.Entries.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", links.Entries["self"].Href);
-        Assert.False(links.Entries.ContainsKey("info"));
-        Assert.Single(links.Entries);
+        links.Should().NotBeNull();
+        links.Entries.Should().NotBeNull();
+        links.Entries.Should().ContainKey("self");
+        links.Entries["self"].Href.Should().Be("http://localhost:5000/foobar");
+        links.Entries.Should().ContainSingle();
     }
 
     [Fact]
@@ -109,8 +108,8 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
         var handler = testContext.GetRequiredService<IActuatorEndpointHandler>();
 
         Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
-        Assert.NotNull(links);
-        Assert.NotNull(links.Entries);
-        Assert.Empty(links.Entries);
+        links.Should().NotBeNull();
+        links.Entries.Should().NotBeNull();
+        links.Entries.Should().BeEmpty();
     }
 }

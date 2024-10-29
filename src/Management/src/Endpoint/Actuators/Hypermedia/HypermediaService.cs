@@ -65,30 +65,36 @@ internal sealed class HypermediaService
 
         Link? selfLink = null;
 
-        foreach (EndpointOptions endpointOptions in _endpointOptionsMonitorProviders.Select(provider => provider.Get()))
-        {
-            if (!endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue) || !endpointOptions.IsExposed(_managementOptionsMonitor.CurrentValue))
-            {
-                continue;
-            }
+        IEnumerable<EndpointOptions> enabledEndpointOptions = _endpointOptionsMonitorProviders.Select(provider => provider.Get())
+                                                                    .Where(endpointOptions => endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue));
 
+        var baseUri = new Uri(baseUrl);
+        bool skipExposureCheck = baseUri.PathAndQuery.StartsWith(ConfigureManagementOptions.DefaultCloudFoundryPath, StringComparison.Ordinal);
+
+        IEnumerable<EndpointOptions> enabledAndExposedEndpointOptions =
+            skipExposureCheck ? enabledEndpointOptions : enabledEndpointOptions.TakeWhile(endpointOptions => endpointOptions.IsExposed(_managementOptionsMonitor.CurrentValue));
+
+        foreach (EndpointOptions endpointOptions in enabledAndExposedEndpointOptions)
+        {
             if (endpointOptions.Id == _endpointOptions.Id)
             {
                 selfLink = new Link(baseUrl);
             }
             else
             {
-                if (!string.IsNullOrEmpty(endpointOptions.Id))
+                if (string.IsNullOrEmpty(endpointOptions.Id))
                 {
-                    if (!links.Entries.ContainsKey(endpointOptions.Id))
-                    {
-                        string linkPath = $"{baseUrl.TrimEnd('/')}/{endpointOptions.Path}";
-                        links.Entries.Add(endpointOptions.Id, new Link(linkPath));
-                    }
-                    else
-                    {
-                        _logger.LogWarning("Duplicate endpoint ID detected: {DuplicateEndpointId}", endpointOptions.Id);
-                    }
+                    continue;
+                }
+
+                if (!links.Entries.ContainsKey(endpointOptions.Id))
+                {
+                    string linkPath = $"{baseUrl.TrimEnd('/')}/{endpointOptions.Path}";
+                    links.Entries.Add(endpointOptions.Id, new Link(linkPath));
+                }
+                else
+                {
+                    _logger.LogWarning("Duplicate endpoint ID detected: {DuplicateEndpointId}", endpointOptions.Id);
                 }
             }
         }
