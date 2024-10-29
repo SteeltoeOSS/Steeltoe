@@ -112,8 +112,8 @@ Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailabili
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.GetAvailabilityState(string! availabilityType) -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityState?
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.GetLivenessState() -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityState?
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.GetReadinessState() -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityState?
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.LivenessChanged -> System.EventHandler?
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.ReadinessChanged -> System.EventHandler?
+Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.LivenessChanged -> System.EventHandler<Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityEventArgs!>?
+Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.ReadinessChanged -> System.EventHandler<Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityEventArgs!>?
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.SetAvailabilityState(string! availabilityType, Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityState! newState, string? caller) -> void
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityEventArgs
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityEventArgs.AvailabilityEventArgs(Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityState! availabilityState) -> void

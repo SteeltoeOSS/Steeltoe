@@ -14,8 +14,8 @@ public sealed class ApplicationAvailability
     private readonly Dictionary<string, AvailabilityState> _availabilityStates = [];
     private readonly ILogger<ApplicationAvailability> _logger;
 
-    public event EventHandler? LivenessChanged;
-    public event EventHandler? ReadinessChanged;
+    public event EventHandler<AvailabilityEventArgs>? LivenessChanged;
+    public event EventHandler<AvailabilityEventArgs>? ReadinessChanged;
 
     public ApplicationAvailability(ILogger<ApplicationAvailability> logger)
     {
