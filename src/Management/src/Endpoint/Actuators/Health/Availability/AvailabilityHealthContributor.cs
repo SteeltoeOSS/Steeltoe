@@ -12,6 +12,8 @@ public abstract class AvailabilityHealthContributor : IHealthContributor
     private readonly IDictionary<AvailabilityState, HealthStatus> _stateMappings;
     private readonly ILogger _logger;
 
+    protected abstract bool IsEnabled { get; }
+
     public abstract string Id { get; }
 
     protected AvailabilityHealthContributor(IDictionary<AvailabilityState, HealthStatus> stateMappings, ILoggerFactory loggerFactory)
@@ -25,8 +27,8 @@ public abstract class AvailabilityHealthContributor : IHealthContributor
 
     public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
-        HealthCheckResult result = Health();
-        return Task.FromResult<HealthCheckResult?>(result);
+        HealthCheckResult? result = IsEnabled ? Health() : null;
+        return Task.FromResult(result);
     }
 
     private HealthCheckResult Health()

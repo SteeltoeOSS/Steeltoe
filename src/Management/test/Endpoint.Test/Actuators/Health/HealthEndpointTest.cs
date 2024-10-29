@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
@@ -179,11 +180,12 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     {
         using var testContext = new TestContext(_testOutputHelper);
         var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
+        TestOptionsMonitor<LivenessHealthContributorOptions> optionsMonitor = new();
 
         List<IHealthContributor> contributors =
         [
             new DiskSpaceContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>()),
-            new LivenessHealthContributor(appAvailability, NullLoggerFactory.Instance)
+            new LivenessHealthContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
         ];
 
         testContext.AdditionalServices = (services, _) =>
@@ -210,13 +212,14 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     {
         using var testContext = new TestContext(_testOutputHelper);
         var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
+        TestOptionsMonitor<ReadinessHealthContributorOptions> optionsMonitor = new();
 
         List<IHealthContributor> contributors =
         [
             new UnknownContributor(),
             new DisabledContributor(),
             new UpContributor(),
-            new ReadinessHealthContributor(appAvailability, NullLoggerFactory.Instance)
+            new ReadinessHealthContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
         ];
 
         testContext.AdditionalServices = (services, _) =>
@@ -242,13 +245,14 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     public async Task InvokeWithReadinessGroupReturnsGroupResults2()
     {
         var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
+        TestOptionsMonitor<ReadinessHealthContributorOptions> optionsMonitor = new();
 
         List<IHealthContributor> contributors =
         [
             new UnknownContributor(),
             new DisabledContributor(),
             new UpContributor(),
-            new ReadinessHealthContributor(appAvailability, NullLoggerFactory.Instance)
+            new ReadinessHealthContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
         ];
 
         IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();

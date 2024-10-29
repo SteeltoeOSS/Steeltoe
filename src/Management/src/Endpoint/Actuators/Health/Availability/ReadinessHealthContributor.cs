@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Availability;
@@ -10,10 +11,14 @@ namespace Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 public sealed class ReadinessHealthContributor : AvailabilityHealthContributor
 {
     private readonly ApplicationAvailability _availability;
+    private readonly IOptionsMonitor<ReadinessHealthContributorOptions> _optionsMonitor;
+
+    protected override bool IsEnabled => _optionsMonitor.CurrentValue.Enabled;
 
     public override string Id => "readiness";
 
-    public ReadinessHealthContributor(ApplicationAvailability availability, ILoggerFactory loggerFactory)
+    public ReadinessHealthContributor(ApplicationAvailability availability, IOptionsMonitor<ReadinessHealthContributorOptions> optionsMonitor,
+        ILoggerFactory loggerFactory)
         : base(new Dictionary<AvailabilityState, HealthStatus>
         {
             { ReadinessState.AcceptingTraffic, HealthStatus.Up },
@@ -21,8 +26,10 @@ public sealed class ReadinessHealthContributor : AvailabilityHealthContributor
         }, loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(availability);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
 
         _availability = availability;
+        _optionsMonitor = optionsMonitor;
     }
 
     protected override AvailabilityState? GetState()
