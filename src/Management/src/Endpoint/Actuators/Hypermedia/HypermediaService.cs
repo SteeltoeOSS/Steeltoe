@@ -66,13 +66,14 @@ internal sealed class HypermediaService
         Link? selfLink = null;
 
         IEnumerable<EndpointOptions> enabledEndpointOptions = _endpointOptionsMonitorProviders.Select(provider => provider.Get())
-                                                                    .Where(endpointOptions => endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue));
+            .Where(endpointOptions => endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue));
 
         var baseUri = new Uri(baseUrl);
         bool skipExposureCheck = baseUri.PathAndQuery.StartsWith(ConfigureManagementOptions.DefaultCloudFoundryPath, StringComparison.Ordinal);
 
-        IEnumerable<EndpointOptions> enabledAndExposedEndpointOptions =
-            skipExposureCheck ? enabledEndpointOptions : enabledEndpointOptions.TakeWhile(endpointOptions => endpointOptions.IsExposed(_managementOptionsMonitor.CurrentValue));
+        IEnumerable<EndpointOptions> enabledAndExposedEndpointOptions = skipExposureCheck
+            ? enabledEndpointOptions
+            : enabledEndpointOptions.TakeWhile(endpointOptions => endpointOptions.IsExposed(_managementOptionsMonitor.CurrentValue));
 
         foreach (EndpointOptions endpointOptions in enabledAndExposedEndpointOptions)
         {
