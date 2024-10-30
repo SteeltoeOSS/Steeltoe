@@ -28,13 +28,9 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
         var handler = testContext.GetRequiredService<ICloudFoundryEndpointHandler>();
 
         Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
-        links.Should().NotBeNull();
-        links.Entries.Should().NotBeNull();
-        links.Entries.Should().ContainKey("self");
-        links.Entries["self"].Href.Should().Be("http://localhost:5000/foobar");
-        links.Entries.Should().ContainKey("info");
-        links.Entries["info"].Href.Should().Be("http://localhost:5000/foobar/info");
-        links.Entries.Count.Should().Be(2);
+        links.Entries.Should().Contain(entry => entry.Key == "self" && entry.Value.Href == "http://localhost:5000/foobar");
+        links.Entries.Should().Contain(entry => entry.Key == "info" && entry.Value.Href == "http://localhost:5000/foobar/info");
+        links.Entries.Should().HaveCount(2);
     }
 
     [Fact]
@@ -50,10 +46,7 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
         var handler = testContext.GetRequiredService<ICloudFoundryEndpointHandler>();
 
         Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
-        links.Should().NotBeNull();
-        links.Entries.Should().NotBeNull();
-        links.Entries.Should().ContainKey("self");
-        links.Entries["self"].Href.Should().Be("http://localhost:5000/foobar");
+        links.Entries.Should().Contain(entry => entry.Key == "self" && entry.Value.Href == "http://localhost:5000/foobar");
         links.Entries.Should().ContainSingle();
     }
 
@@ -79,13 +72,9 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
         var handler = testContext.GetRequiredService<ICloudFoundryEndpointHandler>();
 
         Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
-        links.Should().NotBeNull();
-        links.Entries.Should().NotBeNull();
-        links.Entries.Should().ContainKey("self");
-        links.Entries["self"].Href.Should().Be("http://localhost:5000/foobar");
-        links.Entries.Should().ContainKey("info");
-        links.Entries["info"].Href.Should().Be("http://localhost:5000/foobar/info");
-        links.Entries.Count.Should().Be(2);
+        links.Entries.Should().Contain(entry => entry.Key == "self" && entry.Value.Href == "http://localhost:5000/foobar");
+        links.Entries.Should().Contain(entry => entry.Key == "info" && entry.Value.Href == "http://localhost:5000/foobar/info");
+        links.Entries.Should().HaveCount(2);
     }
 
     [Fact]
