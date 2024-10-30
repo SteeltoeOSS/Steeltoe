@@ -98,7 +98,6 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
         };
 
         var middleware = testContext.GetRequiredService<CloudFoundryEndpointMiddleware>();
-        bool shouldInvoke = middleware.ShouldInvoke("/cloudfoundryapplication/info");
-        shouldInvoke.Should().BeFalse();
+        middleware.ShouldInvoke("/cloudfoundryapplication/info").Should().BeFalse();
     }
 }

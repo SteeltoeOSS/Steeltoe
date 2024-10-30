@@ -55,48 +55,37 @@ internal sealed class HypermediaService
         ArgumentException.ThrowIfNullOrWhiteSpace(baseUrl);
 
         var links = new Links();
+        ManagementOptions managementOptions = _managementOptionsMonitor.CurrentValue;
 
-        if (!_endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue))
+        if (!_endpointOptions.IsEnabled(managementOptions))
         {
             return links;
         }
 
-        _logger.LogTrace("Processing hypermedia for {ManagementOptions}", _managementOptionsMonitor.CurrentValue);
+        _logger.LogTrace("Processing hypermedia for {ManagementOptions}", managementOptions);
 
         Link? selfLink = null;
+        bool skipExposureCheck = PermissionsProvider.IsCloudFoundryRequest(new Uri(baseUrl).PathAndQuery);
 
-        IEnumerable<EndpointOptions> enabledEndpointOptions = _endpointOptionsMonitorProviders.Select(provider => provider.Get())
-            .Where(endpointOptions => endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue));
-
-        var baseUri = new Uri(baseUrl);
-        bool skipExposureCheck = baseUri.PathAndQuery.StartsWith(ConfigureManagementOptions.DefaultCloudFoundryPath, StringComparison.Ordinal);
-
-        IEnumerable<EndpointOptions> enabledAndExposedEndpointOptions = skipExposureCheck
-            ? enabledEndpointOptions
-            : enabledEndpointOptions.TakeWhile(endpointOptions => endpointOptions.IsExposed(_managementOptionsMonitor.CurrentValue));
-
-        foreach (EndpointOptions endpointOptions in enabledAndExposedEndpointOptions)
+        foreach (EndpointOptions endpointOptions in _endpointOptionsMonitorProviders.Select(provider => provider.Get()))
         {
+            if (!endpointOptions.IsEnabled(managementOptions))
+            {
+                continue;
+            }
+
+            if (!skipExposureCheck && !endpointOptions.IsExposed(managementOptions))
+            {
+                continue;
+            }
+
             if (endpointOptions.Id == _endpointOptions.Id)
             {
                 selfLink = new Link(baseUrl);
             }
             else
             {
-                if (string.IsNullOrEmpty(endpointOptions.Id))
-                {
-                    continue;
-                }
-
-                if (!links.Entries.ContainsKey(endpointOptions.Id))
-                {
-                    string linkPath = $"{baseUrl.TrimEnd('/')}/{endpointOptions.Path}";
-                    links.Entries.Add(endpointOptions.Id, new Link(linkPath));
-                }
-                else
-                {
-                    _logger.LogWarning("Duplicate endpoint ID detected: {DuplicateEndpointId}", endpointOptions.Id);
-                }
+                AddToLinkEntries(baseUrl, links, endpointOptions);
             }
         }
 
@@ -106,5 +95,21 @@ internal sealed class HypermediaService
         }
 
         return links;
+    }
+
+    private void AddToLinkEntries(string baseUrl, Links links, EndpointOptions endpointOptions)
+    {
+        if (!string.IsNullOrEmpty(endpointOptions.Id))
+        {
+            if (!links.Entries.ContainsKey(endpointOptions.Id))
+            {
+                string linkPath = $"{baseUrl.TrimEnd('/')}/{endpointOptions.Path}";
+                links.Entries.Add(endpointOptions.Id, new Link(linkPath));
+            }
+            else
+            {
+                _logger.LogWarning("Duplicate endpoint ID detected: {DuplicateEndpointId}", endpointOptions.Id);
+            }
+        }
     }
 }
