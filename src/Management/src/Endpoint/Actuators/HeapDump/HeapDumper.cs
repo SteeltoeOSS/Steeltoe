@@ -48,7 +48,7 @@ public sealed class HeapDumper
             {
                 _logger.LogInformation("Attempting to create a gcdump");
 
-                if (TryCollectMemoryGraph(processId, 30, true, out MemoryGraph memoryGraph, cancellationToken))
+                if (TryCollectMemoryGraph(processId, 30, out MemoryGraph memoryGraph, cancellationToken))
                 {
                     GCHeapDump.WriteMemoryGraph(memoryGraph, fileName, "dotnet-gcdump");
                     return fileName;
@@ -84,19 +84,28 @@ public sealed class HeapDumper
         return $"minidump-{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}-live.dmp";
     }
 
-    private bool TryCollectMemoryGraph(int processId, int timeout, bool verbose, out MemoryGraph memoryGraph, CancellationToken cancellationToken)
+    private bool TryCollectMemoryGraph(int processId, int timeout, out MemoryGraph memoryGraph, CancellationToken cancellationToken)
     {
-        var heapInfo = new DotNetHeapInfo();
-        TextWriter log = verbose ? Console.Out : TextWriter.Null;
+        bool succeeded = false;
+        using var logStream = new MemoryStream();
 
-        memoryGraph = new MemoryGraph(50_000);
-
-        if (!EventPipeDotNetHeapDumper.DumpFromEventPipe(cancellationToken, processId, memoryGraph, log, timeout, heapInfo))
+        using (TextWriter logWriter = new StreamWriter(logStream, leaveOpen: true))
         {
-            return false;
+            var heapInfo = new DotNetHeapInfo();
+            memoryGraph = new MemoryGraph(50_000);
+
+            if (EventPipeDotNetHeapDumper.DumpFromEventPipe(cancellationToken, processId, memoryGraph, logWriter, timeout, heapInfo))
+            {
+                memoryGraph.AllowReading();
+                succeeded = true;
+            }
         }
 
-        memoryGraph.AllowReading();
-        return true;
+        logStream.Seek(0, SeekOrigin.Begin);
+        using var logReader = new StreamReader(logStream);
+        string message = logReader.ReadToEnd();
+        _logger.LogDebug("{HeapDumpLog}", message);
+
+        return succeeded;
     }
 }

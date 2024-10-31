@@ -39,7 +39,7 @@ internal sealed class HeapDumpEndpointMiddleware(
         try
         {
             await using var inputStream = new FileStream(fileName, FileMode.Open);
-            var outputStream = new GZipStream(context.Response.Body, CompressionLevel.Fastest);
+            await using var outputStream = new GZipStream(context.Response.Body, CompressionLevel.Fastest, true);
             await inputStream.CopyToAsync(outputStream, cancellationToken);
         }
         finally
