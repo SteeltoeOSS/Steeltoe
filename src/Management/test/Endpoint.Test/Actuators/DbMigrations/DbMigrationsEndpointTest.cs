@@ -31,7 +31,7 @@ public sealed class DbMigrationsEndpointTest(ITestOutputHelper testOutputHelper)
 
         Action action = () => scanner.GetMigrations(dbContext);
 
-        action.Should().ThrowExactly<TargetInvocationException>().WithInnerException<InvalidOperationException>()
+        action.Should().ThrowExactly<TargetInvocationException>().WithInnerExceptionExactly<InvalidOperationException>()
             .WithMessage("*No database provider has been configured for this DbContext*");
     }
 
