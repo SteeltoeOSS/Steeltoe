@@ -14,7 +14,33 @@ namespace Steeltoe.Management.Tasks;
 public static class TaskHostExtensions
 {
     /// <summary>
-    /// Runs a web application and returns a <see cref="Task" /> that only completes when the cancellation token is triggered or shutdown is triggered.
+    /// Indicates whether <see cref="RunWithTasksAsync(IWebHost,CancellationToken)" /> will run an application task, instead of the regular application.
+    /// </summary>
+    /// <param name="host">
+    /// The <see cref="IWebHost" /> to run from.
+    /// </param>
+    public static bool HasApplicationTask(this IWebHost host)
+    {
+        ArgumentNullException.ThrowIfNull(host);
+
+        return FindTask(host.Services) != null;
+    }
+
+    /// <summary>
+    /// Indicates whether <see cref="RunWithTasksAsync(IHost,CancellationToken)" /> will run an application task, instead of the regular application.
+    /// </summary>
+    /// <param name="host">
+    /// The <see cref="IHost" /> to run from.
+    /// </param>
+    public static bool HasApplicationTask(this IHost host)
+    {
+        ArgumentNullException.ThrowIfNull(host);
+
+        return FindTask(host.Services) != null;
+    }
+
+    /// <summary>
+    /// Runs an application task if available, or runs the application normally otherwise.
     /// <para>
     /// To register your application task, use one of the extension methods in <see cref="TaskServiceCollectionExtensions" />. To execute the registered
     /// task, invoke the application with command-line argument "RunTask=taskName", where "taskName" is your task's name (case-sensitive).
@@ -44,7 +70,7 @@ public static class TaskHostExtensions
     }
 
     /// <summary>
-    /// Runs an application and returns a <see cref="Task" /> that only completes when the cancellation token is triggered or shutdown is triggered.
+    /// Runs an application task if available, or starts the application normally otherwise.
     /// <para>
     /// To register your application task, use one of the extension methods in <see cref="TaskServiceCollectionExtensions" />. To execute the registered
     /// task, invoke the application with command-line argument "RunTask=taskName", where "taskName" is your task's name (case-sensitive).
@@ -75,8 +101,7 @@ public static class TaskHostExtensions
 
     private static async Task<bool> FindAndRunTaskAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-        string? taskName = configuration.GetValue<string?>("RunTask");
+        string? taskName = FindTask(serviceProvider);
 
         if (taskName != null)
         {
@@ -87,6 +112,12 @@ public static class TaskHostExtensions
         }
 
         return false;
+    }
+
+    private static string? FindTask(IServiceProvider serviceProvider)
+    {
+        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+        return configuration.GetValue<string?>("RunTask");
     }
 
     private static async Task RunTaskAsync(string taskName, IServiceProvider serviceProvider, CancellationToken cancellationToken)

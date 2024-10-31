@@ -1,4 +1,6 @@
 #nullable enable
+static Steeltoe.Management.Tasks.TaskHostExtensions.HasApplicationTask(this Microsoft.AspNetCore.Hosting.IWebHost! host) -> bool
+static Steeltoe.Management.Tasks.TaskHostExtensions.HasApplicationTask(this Microsoft.Extensions.Hosting.IHost! host) -> bool
 static Steeltoe.Management.Tasks.TaskHostExtensions.RunWithTasksAsync(this Microsoft.AspNetCore.Hosting.IWebHost! host, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 static Steeltoe.Management.Tasks.TaskHostExtensions.RunWithTasksAsync(this Microsoft.Extensions.Hosting.IHost! host, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! taskName, Steeltoe.Common.IApplicationTask! task) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
