@@ -42,7 +42,7 @@ public sealed class InstanceInfoTest
             }
         };
 
-        instance.Metadata.Should().HaveCount(1);
+        instance.Metadata.Should().ContainSingle();
         instance.Metadata.Should().ContainSingle(pair => pair.Key == "key3" && pair.Value == "value");
     }
 

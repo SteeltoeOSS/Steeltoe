@@ -284,7 +284,7 @@ public sealed class CosmosDbConnectorTest
         namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
         namedOptions.Database.Should().Be(defaultOptions.Database);
 
-        app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
+        app.Services.GetServices<IHealthContributor>().Should().ContainSingle();
     }
 
     [Fact]
@@ -305,13 +305,13 @@ public sealed class CosmosDbConnectorTest
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<CosmosDbOptions, CosmosClient>>();
 
-        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().ContainSingle();
         connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
 
         CosmosDbOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
         defaultOptions.Database.Should().NotBeNullOrEmpty();
 
-        app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
+        app.Services.GetServices<IHealthContributor>().Should().ContainSingle();
     }
 }

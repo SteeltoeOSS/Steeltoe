@@ -52,7 +52,7 @@ public sealed class ConfigurationBuilderExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundryServiceBindings();
 
-        builder.Sources.Should().HaveCount(1);
+        builder.Sources.Should().ContainSingle();
         CloudFoundryServiceBindingConfigurationSource source = builder.Sources[0].Should().BeOfType<CloudFoundryServiceBindingConfigurationSource>().Subject;
         source.PostProcessors.Should().NotBeEmpty();
     }

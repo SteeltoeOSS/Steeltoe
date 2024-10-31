@@ -22,7 +22,7 @@ public sealed class DynamicLoggerHostBuilderExtensionsTest
         using IHost host = hostBuilder.Build();
         ILoggerProvider[] loggerProviders = host.Services.GetServices<ILoggerProvider>().ToArray();
 
-        loggerProviders.Should().HaveCount(1);
+        loggerProviders.Should().ContainSingle();
         loggerProviders[0].Should().BeOfType<DynamicConsoleLoggerProvider>();
     }
 
@@ -40,7 +40,7 @@ public sealed class DynamicLoggerHostBuilderExtensionsTest
         using IHost host = hostBuilder.Build();
         ILoggerProvider[] loggerProviders = host.Services.GetServices<ILoggerProvider>().ToArray();
 
-        loggerProviders.Should().HaveCount(1);
+        loggerProviders.Should().ContainSingle();
         loggerProviders[0].Should().BeOfType<DynamicConsoleLoggerProvider>();
     }
 

@@ -43,10 +43,10 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
         builder.AddDecryption();
         builder.AddConfigServer();
 
-        builder.EnumerateSources<ConfigServerConfigurationSource>().Should().HaveCount(1);
+        builder.EnumerateSources<ConfigServerConfigurationSource>().Should().ContainSingle();
 
         IConfigurationRoot configurationRoot = builder.Build();
 
-        configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Should().HaveCount(1);
+        configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Should().ContainSingle();
     }
 }

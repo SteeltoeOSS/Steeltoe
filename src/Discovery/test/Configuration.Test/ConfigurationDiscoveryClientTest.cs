@@ -165,7 +165,7 @@ public sealed class ConfigurationDiscoveryClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
-        discoveryClients.OfType<ConfigurationDiscoveryClient>().Should().HaveCount(1);
+        discoveryClients.OfType<ConfigurationDiscoveryClient>().Should().ContainSingle();
 
         ConfigurationDiscoveryClient[] configurationDiscoveryClients = serviceProvider.GetServices<ConfigurationDiscoveryClient>().ToArray();
         configurationDiscoveryClients.Should().BeEmpty();
@@ -184,6 +184,6 @@ public sealed class ConfigurationDiscoveryClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
-        hostedServices.OfType<DiscoveryClientHostedService>().Should().HaveCount(1);
+        hostedServices.OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 }

@@ -107,7 +107,7 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         await service.ProvideRuntimeReplacementsAsync([testDiscoveryClient], CancellationToken.None);
 
-        service.DiscoveryClients.Should().HaveCount(1);
+        service.DiscoveryClients.Should().ContainSingle();
         service.DiscoveryClients.First().Should().Be(testDiscoveryClient);
     }
 

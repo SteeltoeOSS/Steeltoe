@@ -292,7 +292,7 @@ public sealed class MongoDbConnectorTest
         namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
         namedOptions.Database.Should().Be(defaultOptions.Database);
 
-        app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
+        app.Services.GetServices<IHealthContributor>().Should().ContainSingle();
     }
 
     [Fact]
@@ -312,13 +312,13 @@ public sealed class MongoDbConnectorTest
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MongoDbOptions, IMongoClient>>();
 
-        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().ContainSingle();
         connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
 
         MongoDbOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
         defaultOptions.Database.Should().NotBeNullOrEmpty();
 
-        app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
+        app.Services.GetServices<IHealthContributor>().Should().ContainSingle();
     }
 }

@@ -28,7 +28,7 @@ public sealed class EndpointServiceCollectionExtensionsTest : BaseTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         serviceProvider.GetService<IDiagnosticsManager>().Should().NotBeNull();
-        serviceProvider.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Should().HaveCount(1);
+        serviceProvider.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Should().ContainSingle();
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<MetricsObserverOptions>>();
         optionsMonitor.CurrentValue.EgressIgnorePattern.Should().NotBeNullOrEmpty();

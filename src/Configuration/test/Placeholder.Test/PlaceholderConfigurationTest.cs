@@ -33,7 +33,7 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         builder.Add(testSourceB);
         builder.AddPlaceholderResolver(_loggerFactory);
 
-        builder.Sources.Should().HaveCount(1);
+        builder.Sources.Should().ContainSingle();
         PlaceholderConfigurationSource placeholderSource = builder.Sources[0].Should().BeOfType<PlaceholderConfigurationSource>().Subject;
 
         placeholderSource.Sources.Should().HaveCount(2);
@@ -242,18 +242,18 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         oneSection.Path.Should().Be("one");
         oneSection.Key.Should().Be("one");
         oneSection.Value.Should().Be("value1-test");
-        oneSection.GetChildren().Should().HaveCount(1);
+        oneSection.GetChildren().Should().ContainSingle();
 
         IConfigurationSection twoSection = oneSection.GetSection("two");
         twoSection.Path.Should().Be("one:two");
         twoSection.Key.Should().Be("two");
         twoSection.Value.Should().Be("value2-test");
-        twoSection.GetChildren().Should().HaveCount(1);
+        twoSection.GetChildren().Should().ContainSingle();
 
         IConfigurationSection threeSection = twoSection.GetSection("three");
         threeSection.Path.Should().Be("one:two:three");
         threeSection.Value.Should().Be("value3-test");
-        threeSection.GetChildren().Should().HaveCount(1);
+        threeSection.GetChildren().Should().ContainSingle();
 
         IConfigurationSection fourSection = threeSection.GetSection("four");
         fourSection.Path.Should().Be("one:two:three:four");
@@ -387,7 +387,7 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         {
             while (true)
             {
-                sources.Should().HaveCount(1);
+                sources.Should().ContainSingle();
 
                 if (index > 0)
                 {

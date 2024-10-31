@@ -31,7 +31,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
         HttpResponseMessage result = await invoker.SendAsync(httpRequestMessage, default);
 
         result.Headers.GetValues("requestUri").First().Should().Be("https://some-resolved-host:1234/api");
-        loadBalancer.Statistics.Should().HaveCount(1);
+        loadBalancer.Statistics.Should().ContainSingle();
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
 
         HttpResponseMessage result = await invoker.SendAsync(httpRequestMessage, default);
 
-        loadBalancer.Statistics.Should().HaveCount(1);
+        loadBalancer.Statistics.Should().ContainSingle();
         result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
         result.Headers.GetValues("requestUri").First().Should().Be("https://some-resolved-host:1234/api");
     }

@@ -198,9 +198,9 @@ public sealed class EurekaServiceCollectionExtensionsTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        serviceProvider.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>().Should().HaveCount(1);
-        serviceProvider.GetServices<EurekaDiscoveryClient>().Should().HaveCount(1);
-        serviceProvider.GetServices<IHealthContributor>().OfType<EurekaServerHealthContributor>().Should().HaveCount(1);
+        serviceProvider.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>().Should().ContainSingle();
+        serviceProvider.GetServices<EurekaDiscoveryClient>().Should().ContainSingle();
+        serviceProvider.GetServices<IHealthContributor>().OfType<EurekaServerHealthContributor>().Should().ContainSingle();
     }
 
     [Fact]
@@ -220,6 +220,6 @@ public sealed class EurekaServiceCollectionExtensionsTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
-        hostedServices.OfType<DiscoveryClientHostedService>().Should().HaveCount(1);
+        hostedServices.OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 }

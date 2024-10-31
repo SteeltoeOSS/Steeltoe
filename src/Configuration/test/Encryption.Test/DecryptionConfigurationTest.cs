@@ -30,7 +30,7 @@ public sealed class DecryptionConfigurationTest : IDisposable
         builder.AddInMemoryCollection();
         builder.AddDecryption(_loggerFactory);
 
-        builder.Sources.Should().HaveCount(1);
+        builder.Sources.Should().ContainSingle();
         DecryptionConfigurationSource decryptionSource = builder.Sources[0].Should().BeOfType<DecryptionConfigurationSource>().Subject;
 
         decryptionSource.Sources.Should().HaveCount(2);

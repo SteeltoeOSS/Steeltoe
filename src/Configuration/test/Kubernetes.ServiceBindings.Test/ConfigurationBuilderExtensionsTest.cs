@@ -14,7 +14,7 @@ public sealed class ConfigurationBuilderExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddKubernetesServiceBindings();
 
-        builder.Sources.Should().HaveCount(1);
+        builder.Sources.Should().ContainSingle();
         KubernetesServiceBindingConfigurationSource source = builder.Sources[0].Should().BeOfType<KubernetesServiceBindingConfigurationSource>().Subject;
         source.PostProcessors.Should().NotBeEmpty();
     }
