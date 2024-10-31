@@ -95,7 +95,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Create_WithPollingTimer()
     {
-        // Arrange
         const string environment = """
             {
               "name": "test-name",
@@ -142,7 +141,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Create_FailFastEnabledAndExceptionThrownDuringPolling_DoesNotCrash()
     {
-        // Arrange
         const string environment = """
             {
               "name": "test-name",
@@ -180,10 +178,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
 
-        // Act
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        // Assert
         Assert.True(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(60)));
         Assert.True(TestConfigServerStartup.RequestCount >= 1);
         await Task.Delay(1000);
@@ -195,7 +191,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Create_WithNonZeroPollingIntervalAndClientDisabled_PollingDisabled()
     {
-        // Arrange
         const string environment = """
             {
               "name": "test-name",
@@ -231,10 +226,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
 
-        // Act
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        // Assert
         Assert.False(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(2)));
     }
 
