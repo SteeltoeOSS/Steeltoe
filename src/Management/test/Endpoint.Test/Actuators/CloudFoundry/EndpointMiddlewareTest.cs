@@ -61,9 +61,20 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var links = await client.GetFromJsonAsync<Links>("http://localhost/cloudfoundryapplication", SerializerOptions);
 
         links.Should().NotBeNull();
-        links!.Entries.Should().ContainKeys("self", "info");
-        links.Entries["self"].Href.Should().Be("http://localhost/cloudfoundryapplication");
+        links!.Entries["beans"].Href.Should().Be("http://localhost/cloudfoundryapplication/beans");
+        links.Entries["dbmigrations"].Href.Should().Be("http://localhost/cloudfoundryapplication/dbmigrations");
+        links.Entries["env"].Href.Should().Be("http://localhost/cloudfoundryapplication/env");
+        links.Entries["health"].Href.Should().Be("http://localhost/cloudfoundryapplication/health");
+        links.Entries["heapdump"].Href.Should().Be("http://localhost/cloudfoundryapplication/heapdump");
+        links.Entries["httpexchanges"].Href.Should().Be("http://localhost/cloudfoundryapplication/httpexchanges");
         links.Entries["info"].Href.Should().Be("http://localhost/cloudfoundryapplication/info");
+        links.Entries["refresh"].Href.Should().Be("http://localhost/cloudfoundryapplication/refresh");
+        links.Entries["metrics"].Href.Should().Be("http://localhost/cloudfoundryapplication/metrics");
+        links.Entries["mappings"].Href.Should().Be("http://localhost/cloudfoundryapplication/mappings");
+        links.Entries["loggers"].Href.Should().Be("http://localhost/cloudfoundryapplication/loggers");
+        links.Entries["self"].Href.Should().Be("http://localhost/cloudfoundryapplication");
+        links.Entries["threaddump"].Href.Should().Be("http://localhost/cloudfoundryapplication/threaddump");
+        links.Entries.Should().HaveCount(13);
     }
 
     [Fact]
@@ -84,8 +95,52 @@ public sealed class EndpointMiddlewareTest : BaseTest
             {
               "type": "steeltoe",
               "_links": {
+                "threaddump": {
+                  "href": "http://localhost/cloudfoundryapplication/threaddump",
+                  "templated": false
+                },
+                "heapdump": {
+                  "href": "http://localhost/cloudfoundryapplication/heapdump",
+                  "templated": false
+                },
+                "dbmigrations": {
+                  "href": "http://localhost/cloudfoundryapplication/dbmigrations",
+                  "templated": false
+                },
+                "env": {
+                  "href": "http://localhost/cloudfoundryapplication/env",
+                  "templated": false
+                },
                 "info": {
                   "href": "http://localhost/cloudfoundryapplication/info",
+                  "templated": false
+                },
+                "health": {
+                  "href": "http://localhost/cloudfoundryapplication/health",
+                  "templated": false
+                },
+                "loggers": {
+                  "href": "http://localhost/cloudfoundryapplication/loggers",
+                  "templated": false
+                },
+                "httpexchanges": {
+                  "href": "http://localhost/cloudfoundryapplication/httpexchanges",
+                  "templated": false
+                },
+                "mappings": {
+                  "href": "http://localhost/cloudfoundryapplication/mappings",
+                  "templated": false
+                },
+                "metrics": {
+                  "href": "http://localhost/cloudfoundryapplication/metrics",
+                  "templated": false
+                },
+                "refresh": {
+                  "href": "http://localhost/cloudfoundryapplication/refresh",
+                  "templated": false
+                },
+                "beans": {
+                  "href": "http://localhost/cloudfoundryapplication/beans",
                   "templated": false
                 },
                 "self": {
@@ -110,8 +165,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         string response = await client.GetStringAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
 
-        Assert.Contains("2017-07-12T18:40:39Z", response, StringComparison.Ordinal);
-        Assert.Contains("2017-06-08T12:47:02Z", response, StringComparison.Ordinal);
+        response.Should().Contain("2017-07-12T18:40:39Z");
+        response.Should().Contain("2017-06-08T12:47:02Z");
     }
 
     [Fact]
@@ -132,10 +187,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         string response = await client.GetStringAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
 
-        Assert.Contains("1499884839000", response, StringComparison.Ordinal);
-        Assert.DoesNotContain("2017-07-12T18:40:39Z", response, StringComparison.Ordinal);
-        Assert.Contains("1496926022000", response, StringComparison.Ordinal);
-        Assert.DoesNotContain("2017-06-08T12:47:02Z", response, StringComparison.Ordinal);
+        response.Should().Contain("1499884839000");
+        response.Should().NotContain("2017-07-12T18:40:39Z");
+        response.Should().Contain("1496926022000");
+        response.Should().NotContain("2017-06-08T12:47:02Z");
     }
 
     protected override void Dispose(bool disposing)

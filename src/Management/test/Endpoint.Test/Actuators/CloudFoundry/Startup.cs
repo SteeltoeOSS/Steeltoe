@@ -4,8 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
-using Steeltoe.Management.Endpoint.Actuators.Info;
+using Steeltoe.Management.Endpoint.Actuators.All;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
 
@@ -13,8 +12,7 @@ public sealed class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddCloudFoundryActuator(false);
-        services.AddInfoActuator(false);
+        services.AddAllActuators(false);
     }
 
     public void Configure(IApplicationBuilder app)

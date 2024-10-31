@@ -62,7 +62,6 @@ public sealed class ActuatorsHostBuilderTest
         {
             builder.ConfigureAppConfiguration(configurationBuilder =>
             {
-                configurationBuilder.AddInMemoryCollection(AppSettings);
                 configurationBuilder.AddCloudFoundry();
             });
 
