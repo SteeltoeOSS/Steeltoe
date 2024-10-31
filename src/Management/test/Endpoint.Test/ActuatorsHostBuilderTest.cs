@@ -589,10 +589,10 @@ public sealed class ActuatorsHostBuilderTest
             });
         });
 
-        host.Services.GetServices<ActuatorEndpointMapper>().Should().HaveCount(1);
-        host.Services.GetServices<IConfigureOptions<CorsOptions>>().OfType<ConfigureActuatorsCorsPolicyOptions>().Should().HaveCount(1);
-        host.Services.GetServices<IConfigureOptions<ManagementOptions>>().Should().HaveCount(1);
-        host.Services.GetServices<IOptionsChangeTokenSource<ManagementOptions>>().Should().HaveCount(1);
+        host.Services.GetServices<ActuatorEndpointMapper>().Should().ContainSingle();
+        host.Services.GetServices<IConfigureOptions<CorsOptions>>().OfType<ConfigureActuatorsCorsPolicyOptions>().Should().ContainSingle();
+        host.Services.GetServices<IConfigureOptions<ManagementOptions>>().Should().ContainSingle();
+        host.Services.GetServices<IOptionsChangeTokenSource<ManagementOptions>>().Should().ContainSingle();
 
         host.Services.GetServices<IEndpointOptionsMonitorProvider>().Should().HaveCount(actuatorCount);
         host.Services.GetServices<IEndpointMiddleware>().Should().HaveCount(actuatorCount);
@@ -602,11 +602,11 @@ public sealed class ActuatorsHostBuilderTest
         startupFilters.Should().ContainSingle(filter => filter is ManagementPortStartupFilter);
         startupFilters.Should().ContainSingle(filter => filter is AvailabilityStartupFilter);
 
-        host.Services.GetServices<IConfigureOptions<InfoEndpointOptions>>().Should().HaveCount(1);
-        host.Services.GetServices<IOptionsChangeTokenSource<InfoEndpointOptions>>().Should().HaveCount(1);
-        host.Services.GetServices<IEndpointOptionsMonitorProvider>().OfType<EndpointOptionsMonitorProvider<InfoEndpointOptions>>().Should().HaveCount(1);
-        host.Services.GetServices<IInfoEndpointHandler>().OfType<InfoEndpointHandler>().Should().HaveCount(1);
-        host.Services.GetServices<InfoEndpointMiddleware>().Should().HaveCount(1);
-        host.Services.GetServices<IEndpointMiddleware>().OfType<InfoEndpointMiddleware>().Should().HaveCount(1);
+        host.Services.GetServices<IConfigureOptions<InfoEndpointOptions>>().Should().ContainSingle();
+        host.Services.GetServices<IOptionsChangeTokenSource<InfoEndpointOptions>>().Should().ContainSingle();
+        host.Services.GetServices<IEndpointOptionsMonitorProvider>().OfType<EndpointOptionsMonitorProvider<InfoEndpointOptions>>().Should().ContainSingle();
+        host.Services.GetServices<IInfoEndpointHandler>().OfType<InfoEndpointHandler>().Should().ContainSingle();
+        host.Services.GetServices<InfoEndpointMiddleware>().Should().ContainSingle();
+        host.Services.GetServices<IEndpointMiddleware>().OfType<InfoEndpointMiddleware>().Should().ContainSingle();
     }
 }

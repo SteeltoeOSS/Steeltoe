@@ -376,7 +376,7 @@ public sealed class RabbitMQConnectorTest
         RabbitMQOptions namedOptions = connectorFactory.Get("myRabbitMQService").Options;
         namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
 
-        app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
+        app.Services.GetServices<IHealthContributor>().Should().ContainSingle();
     }
 
     [Fact]
@@ -404,13 +404,13 @@ public sealed class RabbitMQConnectorTest
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
-        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().ContainSingle();
         connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
 
         RabbitMQOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
 
-        app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
+        app.Services.GetServices<IHealthContributor>().Should().ContainSingle();
     }
 
     [Fact]
@@ -441,7 +441,7 @@ public sealed class RabbitMQConnectorTest
         var connection = (FakeConnection)connectorFactory.Get().GetConnection();
         connection.ConnectionString.Should().BeNull();
 
-        app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
+        app.Services.GetServices<IHealthContributor>().Should().ContainSingle();
     }
 
     private sealed class FakeConnection(string? connectionString) : IConnection

@@ -225,7 +225,7 @@ public sealed class LoggingBuilderExtensionsTest
         dynamicLoggerProvider.Should().NotBeNull();
 
         ILoggerProvider[] loggerProviders = serviceProvider.GetServices<ILoggerProvider>().ToArray();
-        loggerProviders.Should().HaveCount(1);
+        loggerProviders.Should().ContainSingle();
         loggerProviders[0].Should().BeOfType<DynamicConsoleLoggerProvider>();
     }
 

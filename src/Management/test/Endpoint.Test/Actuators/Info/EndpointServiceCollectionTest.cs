@@ -50,6 +50,6 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        serviceProvider.GetServices<IInfoContributor>().OfType<TestInfoContributor>().Should().HaveCount(1);
+        serviceProvider.GetServices<IInfoContributor>().OfType<TestInfoContributor>().Should().ContainSingle();
     }
 }

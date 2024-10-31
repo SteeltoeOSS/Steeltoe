@@ -173,7 +173,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
 
         observer.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", context);
 
-        observer.Queue.Should().HaveCount(1);
+        observer.Queue.Should().ContainSingle();
         HttpExchange queuedExchange = observer.Queue.First();
 
         queuedExchange.Should().NotBeNull();

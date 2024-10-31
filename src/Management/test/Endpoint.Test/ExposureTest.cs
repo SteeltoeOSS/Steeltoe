@@ -71,7 +71,7 @@ public sealed class ExposureTest : BaseTest
         options.Exposure.Include.Should().Contain("httpexchanges");
         options.Exposure.Include.Should().Contain("dbmigrations");
 
-        options.Exposure.Exclude.Should().HaveCount(1);
+        options.Exposure.Exclude.Should().ContainSingle();
         options.Exposure.Exclude.Should().Contain("env");
     }
 
@@ -131,7 +131,7 @@ public sealed class ExposureTest : BaseTest
 
         var options = GetOptionsFromSettings<ManagementOptions>(appSettings);
 
-        options.Exposure.Include.Should().HaveCount(1);
+        options.Exposure.Include.Should().ContainSingle();
         options.Exposure.Include.Should().Contain("heapdump;env");
 
         options.Exposure.Exclude.Should().BeEmpty();

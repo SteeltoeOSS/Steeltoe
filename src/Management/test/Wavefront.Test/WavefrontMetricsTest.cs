@@ -55,10 +55,10 @@ public sealed class WavefrontMetricsTest
         await host.StartAsync();
 
         IEnumerable<IDiagnosticsManager> diagnosticsManagers = host.Services.GetServices<IDiagnosticsManager>();
-        diagnosticsManagers.Should().HaveCount(1);
+        diagnosticsManagers.Should().ContainSingle();
 
         IEnumerable<DiagnosticsService> diagnosticServices = host.Services.GetServices<IHostedService>().OfType<DiagnosticsService>();
-        diagnosticServices.Should().HaveCount(1);
+        diagnosticServices.Should().ContainSingle();
 
         var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<WavefrontExporterOptions>>();
         optionsMonitor.CurrentValue.ApiToken.Should().Be("testToken");

@@ -35,6 +35,6 @@ public sealed class DiscoveryHttpClientHandlerTest
         Func<Task<HttpResponseMessage>> action = async () => _ = await invoker.SendAsync(httpRequestMessage, default);
 
         await action.Should().ThrowExactlyAsync<HttpRequestException>();
-        loadBalancer.Statistics.Should().HaveCount(1);
+        loadBalancer.Statistics.Should().ContainSingle();
     }
 }

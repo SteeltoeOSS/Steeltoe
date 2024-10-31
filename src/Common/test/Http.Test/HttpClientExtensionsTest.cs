@@ -16,7 +16,7 @@ public sealed class HttpClientExtensionsTest
 
         httpClient.ConfigureForSteeltoe(TimeSpan.FromSeconds(5));
 
-        httpClient.DefaultRequestHeaders.UserAgent.Should().HaveCount(1);
+        httpClient.DefaultRequestHeaders.UserAgent.Should().ContainSingle();
         httpClient.DefaultRequestHeaders.UserAgent.ElementAt(0).ToString().Should().Be(HttpClientExtensions.SteeltoeUserAgent);
 
         httpClient.Timeout.Should().Be(TimeSpan.FromSeconds(5));
@@ -37,7 +37,7 @@ public sealed class HttpClientExtensionsTest
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
-        httpClient.DefaultRequestHeaders.UserAgent.Should().HaveCount(1);
+        httpClient.DefaultRequestHeaders.UserAgent.Should().ContainSingle();
         httpClient.DefaultRequestHeaders.UserAgent.ElementAt(0).ToString().Should().Be(HttpClientExtensions.SteeltoeUserAgent);
 
         accessToken.Should().Be("secret");
@@ -58,7 +58,7 @@ public sealed class HttpClientExtensionsTest
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
-        httpClient.DefaultRequestHeaders.UserAgent.Should().HaveCount(1);
+        httpClient.DefaultRequestHeaders.UserAgent.Should().ContainSingle();
         httpClient.DefaultRequestHeaders.UserAgent.ElementAt(0).ToString().Should().Be(HttpClientExtensions.SteeltoeUserAgent);
 
         accessToken.Should().Be("secret");

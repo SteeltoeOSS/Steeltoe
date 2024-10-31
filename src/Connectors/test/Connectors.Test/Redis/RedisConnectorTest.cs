@@ -326,7 +326,7 @@ public sealed class RedisConnectorTest
         RedisOptions namedOptions = connectorFactory.Get("myRedisService").Options;
         namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
 
-        app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
+        app.Services.GetServices<IHealthContributor>().Should().ContainSingle();
     }
 
     [Fact]
@@ -354,13 +354,13 @@ public sealed class RedisConnectorTest
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RedisOptions, IConnectionMultiplexer>>();
 
-        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().ContainSingle();
         connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
 
         RedisOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
 
-        app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
+        app.Services.GetServices<IHealthContributor>().Should().ContainSingle();
     }
 
     private static object GetMockedConnectionMultiplexer(string? connectionString)

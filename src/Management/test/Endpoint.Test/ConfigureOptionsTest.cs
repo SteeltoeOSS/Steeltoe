@@ -32,10 +32,10 @@ public sealed class ConfigureOptionsTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IConfigureOptions<ManagementOptions>[] configurers = serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>().ToArray();
-        configurers.Should().HaveCount(1);
+        configurers.Should().ContainSingle();
 
         IOptionsChangeTokenSource<ManagementOptions>[] tokenSources = serviceProvider.GetServices<IOptionsChangeTokenSource<ManagementOptions>>().ToArray();
-        tokenSources.Should().HaveCount(1);
+        tokenSources.Should().ContainSingle();
     }
 
     [Fact]
@@ -53,8 +53,8 @@ public sealed class ConfigureOptionsTest
 
         IConfigureOptions<ManagementOptions>[] configurers = serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>().ToArray();
         configurers.Should().HaveCount(2);
-        configurers.OfType<ConfigureManagementOptions>().Should().HaveCount(1);
-        configurers.OfType<CustomManagementOptionsConfigurer>().Should().HaveCount(1);
+        configurers.OfType<ConfigureManagementOptions>().Should().ContainSingle();
+        configurers.OfType<CustomManagementOptionsConfigurer>().Should().ContainSingle();
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ManagementOptions>>();
         optionsMonitor.CurrentValue.Port.Should().Be("9999");
@@ -75,8 +75,8 @@ public sealed class ConfigureOptionsTest
 
         IConfigureOptions<ManagementOptions>[] configurers = serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>().ToArray();
         configurers.Should().HaveCount(2);
-        configurers.OfType<ConfigureManagementOptions>().Should().HaveCount(1);
-        configurers.OfType<CustomManagementOptionsConfigurer>().Should().HaveCount(1);
+        configurers.OfType<ConfigureManagementOptions>().Should().ContainSingle();
+        configurers.OfType<CustomManagementOptionsConfigurer>().Should().ContainSingle();
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ManagementOptions>>();
         optionsMonitor.CurrentValue.Port.Should().Be("9999");

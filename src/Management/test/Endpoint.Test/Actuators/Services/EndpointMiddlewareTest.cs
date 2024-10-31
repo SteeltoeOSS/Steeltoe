@@ -134,7 +134,7 @@ public sealed class EndpointMiddlewareTest(ITestOutputHelper testOutputHelper) :
         endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath).Should()
             .Be("/cloudfoundryapplication/beans");
 
-        endpointOptions.AllowedVerbs.Should().HaveCount(1);
+        endpointOptions.AllowedVerbs.Should().ContainSingle();
         endpointOptions.AllowedVerbs[0].Should().Be("Get");
     }
 

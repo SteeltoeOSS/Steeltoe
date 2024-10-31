@@ -258,7 +258,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddConfigServer();
 
-        configurationBuilder.EnumerateSources<CloudFoundryConfigurationSource>().Should().HaveCount(1);
+        configurationBuilder.EnumerateSources<CloudFoundryConfigurationSource>().Should().ContainSingle();
     }
 
     [Fact]
@@ -268,7 +268,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         configurationBuilder.AddCloudFoundry(new OtherCloudFoundrySettingsReader());
         configurationBuilder.AddConfigServer();
 
-        configurationBuilder.EnumerateSources<CloudFoundryConfigurationSource>().Should().HaveCount(1);
+        configurationBuilder.EnumerateSources<CloudFoundryConfigurationSource>().Should().ContainSingle();
     }
 
     private sealed class OtherCloudFoundrySettingsReader : ICloudFoundrySettingsReader

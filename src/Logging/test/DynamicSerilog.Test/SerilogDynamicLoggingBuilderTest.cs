@@ -116,7 +116,7 @@ public sealed class SerilogDynamicLoggingBuilderTest
 
         dynamicLoggerProvider.Should().NotBeNull();
 
-        loggerProviders.Should().HaveCount(1);
+        loggerProviders.Should().ContainSingle();
         loggerProviders[0].Should().BeOfType<DynamicSerilogLoggerProvider>();
     }
 
@@ -154,7 +154,7 @@ public sealed class SerilogDynamicLoggingBuilderTest
 
         dynamicLoggerProvider.Should().NotBeNull();
 
-        logProviders.Should().HaveCount(1);
+        logProviders.Should().ContainSingle();
         logProviders[0].Should().BeOfType<DynamicSerilogLoggerProvider>();
     }
 

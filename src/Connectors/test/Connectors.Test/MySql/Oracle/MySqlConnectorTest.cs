@@ -303,7 +303,7 @@ public sealed class MySqlConnectorTest
         string? namedConnectionString = connectorFactory.Get("myMySqlServiceOne").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
-        app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
+        app.Services.GetServices<IHealthContributor>().Should().ContainSingle();
     }
 
     [Fact]
@@ -322,13 +322,13 @@ public sealed class MySqlConnectorTest
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>();
 
-        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().ContainSingle();
         connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
 
         string? defaultConnectionString = connectorFactory.Get().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNullOrEmpty();
 
-        app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
+        app.Services.GetServices<IHealthContributor>().Should().ContainSingle();
     }
 
     private static List<string> ExtractConnectionStringParameters(string? connectionString)

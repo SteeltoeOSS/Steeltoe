@@ -30,7 +30,7 @@ public sealed class CorsPolicyTest
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
         corsPolicy.Should().NotBeNull();
         corsPolicy!.AllowAnyOrigin.Should().BeTrue();
-        corsPolicy.Methods.Should().HaveCount(1);
+        corsPolicy.Methods.Should().ContainSingle();
         corsPolicy.Methods.Should().Contain("GET");
 
         await app.StartAsync();
@@ -42,7 +42,7 @@ public sealed class CorsPolicyTest
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Headers.Should().ContainKey("Access-Control-Allow-Origin");
-        response.Headers.GetValues("Access-Control-Allow-Origin").Should().HaveCount(1).And.Contain("*");
+        response.Headers.GetValues("Access-Control-Allow-Origin").Should().ContainSingle().And.Contain("*");
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public sealed class CorsPolicyTest
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
         corsPolicy.Should().NotBeNull();
         corsPolicy!.AllowAnyOrigin.Should().BeTrue();
-        corsPolicy.Methods.Should().HaveCount(1);
+        corsPolicy.Methods.Should().ContainSingle();
         corsPolicy.Methods.Should().Contain("POST");
 
         await app.StartAsync();
@@ -69,9 +69,9 @@ public sealed class CorsPolicyTest
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         response.Headers.Should().ContainKey("Access-Control-Allow-Origin");
-        response.Headers.GetValues("Access-Control-Allow-Origin").Should().HaveCount(1).And.Contain("*");
+        response.Headers.GetValues("Access-Control-Allow-Origin").Should().ContainSingle().And.Contain("*");
         response.Headers.Should().ContainKey("Access-Control-Allow-Methods");
-        response.Headers.GetValues("Access-Control-Allow-Methods").Should().HaveCount(1).And.Contain("POST");
+        response.Headers.GetValues("Access-Control-Allow-Methods").Should().ContainSingle().And.Contain("POST");
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public sealed class CorsPolicyTest
         corsPolicy!.AllowAnyOrigin.Should().BeFalse();
         corsPolicy.IsOriginAllowed("http://example.api.com").Should().BeTrue();
         corsPolicy.IsOriginAllowed("http://google.com").Should().BeFalse();
-        corsPolicy.Methods.Should().HaveCount(1);
+        corsPolicy.Methods.Should().ContainSingle();
         corsPolicy.Methods.Should().Contain("GET");
 
         await app.StartAsync();
@@ -100,7 +100,7 @@ public sealed class CorsPolicyTest
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Headers.Should().ContainKey("Access-Control-Allow-Origin");
-        response.Headers.GetValues("Access-Control-Allow-Origin").Should().HaveCount(1).And.Contain("http://example.api.com");
+        response.Headers.GetValues("Access-Control-Allow-Origin").Should().ContainSingle().And.Contain("http://example.api.com");
 
         request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/info"));
         request.Headers.Add("Origin", "http://google.com");
@@ -125,7 +125,7 @@ public sealed class CorsPolicyTest
         corsPolicy.Should().NotBeNull();
         corsPolicy!.AllowAnyOrigin.Should().BeTrue();
         corsPolicy.PreflightMaxAge.Should().Be(TimeSpan.FromSeconds(preflightMaxAge));
-        corsPolicy.Methods.Should().HaveCount(1);
+        corsPolicy.Methods.Should().ContainSingle();
         corsPolicy.Methods.Should().Contain("POST");
 
         await app.StartAsync();
@@ -138,11 +138,11 @@ public sealed class CorsPolicyTest
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         response.Headers.Should().ContainKey("Access-Control-Allow-Origin");
-        response.Headers.GetValues("Access-Control-Allow-Origin").Should().HaveCount(1).And.Contain("*");
+        response.Headers.GetValues("Access-Control-Allow-Origin").Should().ContainSingle().And.Contain("*");
         response.Headers.Should().ContainKey("Access-Control-Allow-Methods");
-        response.Headers.GetValues("Access-Control-Allow-Methods").Should().HaveCount(1).And.Contain("POST");
+        response.Headers.GetValues("Access-Control-Allow-Methods").Should().ContainSingle().And.Contain("POST");
         response.Headers.Should().ContainKey("Access-Control-Max-Age");
-        response.Headers.GetValues("Access-Control-Max-Age").Should().HaveCount(1).And.Contain($"{preflightMaxAge}");
+        response.Headers.GetValues("Access-Control-Max-Age").Should().ContainSingle().And.Contain($"{preflightMaxAge}");
     }
 
     [Fact]
@@ -181,7 +181,7 @@ public sealed class CorsPolicyTest
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
         corsPolicy.Should().NotBeNull();
         corsPolicy!.AllowAnyOrigin.Should().BeTrue();
-        corsPolicy.Methods.Should().HaveCount(1);
+        corsPolicy.Methods.Should().ContainSingle();
         corsPolicy.Methods.Should().Contain("GET");
         corsPolicy.Headers.Should().BeEquivalentTo("Authorization", "X-Cf-App-Instance", "Content-Type", "Content-Disposition");
 
@@ -194,7 +194,7 @@ public sealed class CorsPolicyTest
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Headers.Should().ContainKey("Access-Control-Allow-Origin");
-        response.Headers.GetValues("Access-Control-Allow-Origin").Should().HaveCount(1).And.Contain("*");
+        response.Headers.GetValues("Access-Control-Allow-Origin").Should().ContainSingle().And.Contain("*");
     }
 
     [Fact]
@@ -217,14 +217,14 @@ public sealed class CorsPolicyTest
 
         corsResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         corsResponse.Headers.Should().ContainKey("Access-Control-Allow-Origin");
-        corsResponse.Headers.GetValues("Access-Control-Allow-Origin").Should().HaveCount(1).And.Contain("*");
+        corsResponse.Headers.GetValues("Access-Control-Allow-Origin").Should().ContainSingle().And.Contain("*");
         corsResponse.Headers.Should().ContainKey("Access-Control-Allow-Headers");
 
-        corsResponse.Headers.GetValues("Access-Control-Allow-Headers").Should().HaveCount(1).And
+        corsResponse.Headers.GetValues("Access-Control-Allow-Headers").Should().ContainSingle().And
             .Contain("Authorization,X-Cf-App-Instance,Content-Type,Content-Disposition");
 
         corsResponse.Headers.Should().ContainKey("Access-Control-Allow-Methods");
-        corsResponse.Headers.GetValues("Access-Control-Allow-Methods").Should().HaveCount(1).And.Contain("GET");
+        corsResponse.Headers.GetValues("Access-Control-Allow-Methods").Should().ContainSingle().And.Contain("GET");
 
         var actuatorRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
         actuatorRequest.Headers.Add("Origin", "http://example.api.com");

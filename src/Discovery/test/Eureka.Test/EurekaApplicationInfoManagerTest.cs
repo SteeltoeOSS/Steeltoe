@@ -66,7 +66,7 @@ public sealed class EurekaApplicationInfoManagerTest
             ["key3"] = "value"
         });
 
-        appManager.Instance.Metadata.Should().HaveCount(1);
+        appManager.Instance.Metadata.Should().ContainSingle();
         appManager.Instance.Metadata.Should().ContainSingle(pair => pair.Key == "key3" && pair.Value == "value");
     }
 

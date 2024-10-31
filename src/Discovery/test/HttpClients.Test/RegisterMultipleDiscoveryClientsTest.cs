@@ -574,7 +574,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         handler.Mock.VerifyNoOutstandingExpectation();
 
         Assert.NotNull(apps);
-        apps.Should().HaveCount(1);
+        apps.Should().ContainSingle();
     }
 
     [Fact]
@@ -644,7 +644,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         handler.Mock.VerifyNoOutstandingExpectation();
 
         Assert.NotNull(apps);
-        apps.Should().HaveCount(1);
+        apps.Should().ContainSingle();
     }
 
     [Fact]
@@ -890,8 +890,8 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
         discoveryClients.Should().HaveCount(3);
 
-        serviceProvider.GetServices<IHealthContributor>().OfType<ConsulHealthContributor>().Should().HaveCount(1);
-        serviceProvider.GetServices<IHealthContributor>().OfType<EurekaServerHealthContributor>().Should().HaveCount(1);
+        serviceProvider.GetServices<IHealthContributor>().OfType<ConsulHealthContributor>().Should().ContainSingle();
+        serviceProvider.GetServices<IHealthContributor>().OfType<EurekaServerHealthContributor>().Should().ContainSingle();
         serviceProvider.GetServices<IHealthContributor>().OfType<EurekaApplicationsHealthContributor>().Should().BeEmpty();
     }
 

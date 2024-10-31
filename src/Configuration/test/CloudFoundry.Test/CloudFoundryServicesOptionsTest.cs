@@ -61,7 +61,7 @@ public sealed class CloudFoundryServicesOptionsTest
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryServicesOptions>>();
         CloudFoundryServicesOptions options = optionsMonitor.CurrentValue;
 
-        options.Services.Should().HaveCount(1);
+        options.Services.Should().ContainSingle();
         CloudFoundryService service = options.Services.Should().ContainKey("p-config-server").WhoseValue.Should().ContainSingle().Subject;
 
         service.Label.Should().Be("p-config-server");
@@ -158,7 +158,7 @@ public sealed class CloudFoundryServicesOptionsTest
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryServicesOptions>>();
         CloudFoundryServicesOptions options = optionsMonitor.CurrentValue;
 
-        options.Services.Should().HaveCount(1);
+        options.Services.Should().ContainSingle();
         CloudFoundryService service = options.Services.Should().ContainKey("p-rabbitmq").WhoseValue.Should().ContainSingle().Subject;
 
         service.Label.Should().Be("p-rabbitmq");
@@ -265,11 +265,11 @@ public sealed class CloudFoundryServicesOptionsTest
         allServices.Should().ContainSingle(service => service.Label == "p-config-server");
 
         IList<CloudFoundryService> typedServices1 = options.GetServicesOfType("p-mysql");
-        typedServices1.Should().HaveCount(1);
+        typedServices1.Should().ContainSingle();
         typedServices1.Should().ContainSingle(service => service.Label == "p-mysql");
 
         IList<CloudFoundryService> typedServices2 = options.GetServicesOfType("p-config-server");
-        typedServices2.Should().HaveCount(1);
+        typedServices2.Should().ContainSingle();
         typedServices2.Should().ContainSingle(service => service.Label == "p-config-server");
     }
 
@@ -326,7 +326,7 @@ public sealed class CloudFoundryServicesOptionsTest
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryServicesOptions>>();
         CloudFoundryServicesOptions options = optionsMonitor.CurrentValue;
 
-        options.Services.Should().HaveCount(1);
+        options.Services.Should().ContainSingle();
         options.Services.Should().ContainKey("p-mysql").WhoseValue.Should().HaveCount(2);
 
         CloudFoundryService service1 = options.Services["p-mysql"].Should().ContainSingle(service => service.Name == "mySql1").Subject;

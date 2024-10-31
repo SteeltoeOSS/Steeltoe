@@ -36,7 +36,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         Func<Task> action = async () => await provider.RemoteLoadAsync(["http://localhost:9999/app/profile"], null, CancellationToken.None);
 
-        (await action.Should().ThrowExactlyAsync<TaskCanceledException>()).WithInnerException<TimeoutException>();
+        (await action.Should().ThrowExactlyAsync<TaskCanceledException>()).WithInnerExceptionExactly<TimeoutException>();
     }
 
     [Fact]

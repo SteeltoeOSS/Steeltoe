@@ -14,7 +14,7 @@ public sealed class CloudFoundryConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddCloudFoundry();
 
-        configurationBuilder.EnumerateSources<CloudFoundryConfigurationSource>().Should().HaveCount(1);
+        configurationBuilder.EnumerateSources<CloudFoundryConfigurationSource>().Should().ContainSingle();
     }
 
     [Fact]

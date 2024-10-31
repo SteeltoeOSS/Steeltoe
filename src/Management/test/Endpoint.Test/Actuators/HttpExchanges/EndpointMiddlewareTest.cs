@@ -43,7 +43,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var actuatorRootElement = await actuatorResponse.Content.ReadFromJsonAsync<JsonElement>();
         JsonElement[] exchangesArray = [.. actuatorRootElement.GetProperty("exchanges").EnumerateArray()];
-        exchangesArray.Should().HaveCount(1);
+        exchangesArray.Should().ContainSingle();
         JsonElement testExchange = exchangesArray[0];
         string requestTimestamp = testExchange.GetProperty("timestamp").ToString();
         requestTimestamp.Should().StartWith($"{DateTime.UtcNow.Date:yyyy-MM-dd}T");
@@ -61,7 +61,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         requestUri.Should().Be("http://localhost:5000/hello?someQuery=value");
         JsonElement requestHeaders = request.GetProperty("headers");
         JsonElement[] hostHeader = [.. requestHeaders.GetProperty("Host").EnumerateArray()];
-        hostHeader.Should().HaveCount(1);
+        hostHeader.Should().ContainSingle();
         hostHeader[0].ToString().Should().Be("localhost:5000");
         request.Invoking(jsonElement => jsonElement.GetProperty("remoteAddress")).Should().Throw<KeyNotFoundException>();
 
@@ -70,10 +70,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
         responseStatus.Should().Be("200");
         JsonElement responseHeaders = response.GetProperty("headers");
         JsonElement[] contentTypeHeader = [.. responseHeaders.GetProperty("Content-Type").EnumerateArray()];
-        contentTypeHeader.Should().HaveCount(1);
+        contentTypeHeader.Should().ContainSingle();
         contentTypeHeader[0].ToString().Should().Be("text/plain; charset=utf-8");
         JsonElement[] serverHeader = [.. responseHeaders.GetProperty("Server").EnumerateArray()];
-        serverHeader.Should().HaveCount(1);
+        serverHeader.Should().ContainSingle();
         serverHeader[0].ToString().Should().Be("Kestrel");
     }
 

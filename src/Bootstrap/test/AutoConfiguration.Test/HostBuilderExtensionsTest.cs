@@ -292,44 +292,44 @@ public sealed class HostBuilderExtensionsTest
     {
         var configuration = hostWrapper.Services.GetRequiredService<IConfiguration>();
 
-        configuration.EnumerateProviders<CloudFoundryConfigurationProvider>().Should().HaveCount(1);
-        configuration.EnumerateProviders<ConfigServerConfigurationProvider>().Should().HaveCount(1);
+        configuration.EnumerateProviders<CloudFoundryConfigurationProvider>().Should().ContainSingle();
+        configuration.EnumerateProviders<ConfigServerConfigurationProvider>().Should().ContainSingle();
     }
 
     private static void AssertCloudFoundryConfigurationIsAutowired(HostWrapper hostWrapper)
     {
         var configuration = hostWrapper.Services.GetRequiredService<IConfiguration>();
 
-        configuration.EnumerateProviders<CloudFoundryConfigurationProvider>().Should().HaveCount(1);
+        configuration.EnumerateProviders<CloudFoundryConfigurationProvider>().Should().ContainSingle();
     }
 
     private static void AssertRandomValueConfigurationIsAutowired(HostWrapper hostWrapper)
     {
         var configuration = hostWrapper.Services.GetRequiredService<IConfiguration>();
 
-        configuration.EnumerateProviders<RandomValueProvider>().Should().HaveCount(1);
+        configuration.EnumerateProviders<RandomValueProvider>().Should().ContainSingle();
     }
 
     private static void AssertSpringBootConfigurationIsAutowired(HostWrapper hostWrapper)
     {
         var configuration = hostWrapper.Services.GetRequiredService<IConfiguration>();
 
-        configuration.EnumerateProviders<SpringBootEnvironmentVariableProvider>().Should().HaveCount(1);
-        configuration.EnumerateProviders<SpringBootCommandLineProvider>().Should().HaveCount(1);
+        configuration.EnumerateProviders<SpringBootEnvironmentVariableProvider>().Should().ContainSingle();
+        configuration.EnumerateProviders<SpringBootCommandLineProvider>().Should().ContainSingle();
     }
 
     private static void AssertEncryptionConfigurationIsAutowired(HostWrapper hostWrapper)
     {
         var configurationRoot = (IConfigurationRoot)hostWrapper.Services.GetRequiredService<IConfiguration>();
 
-        configurationRoot.EnumerateProviders<DecryptionConfigurationProvider>().Should().HaveCount(1);
+        configurationRoot.EnumerateProviders<DecryptionConfigurationProvider>().Should().ContainSingle();
     }
 
     private static void AssertPlaceholderResolverIsAutowired(HostWrapper hostWrapper)
     {
         var configurationRoot = (IConfigurationRoot)hostWrapper.Services.GetRequiredService<IConfiguration>();
 
-        configurationRoot.EnumerateProviders<PlaceholderConfigurationProvider>().Should().HaveCount(1);
+        configurationRoot.EnumerateProviders<PlaceholderConfigurationProvider>().Should().ContainSingle();
     }
 
     private static void AssertConnectorsAreAutowired(HostWrapper hostWrapper)
@@ -337,7 +337,7 @@ public sealed class HostBuilderExtensionsTest
         var configuration = hostWrapper.Services.GetRequiredService<IConfiguration>();
 
         configuration.EnumerateProviders<KubernetesServiceBindingConfigurationProvider>().Should().NotBeEmpty();
-        configuration.EnumerateProviders<CloudFoundryServiceBindingConfigurationProvider>().Should().HaveCount(1);
+        configuration.EnumerateProviders<CloudFoundryServiceBindingConfigurationProvider>().Should().ContainSingle();
 
         hostWrapper.Services.GetService<ConnectorFactory<CosmosDbOptions, CosmosClient>>().Should().NotBeNull();
         hostWrapper.Services.GetService<ConnectorFactory<MongoDbOptions, IMongoClient>>().Should().NotBeNull();
@@ -402,8 +402,8 @@ public sealed class HostBuilderExtensionsTest
 
     private static async Task AssertAllActuatorsAreAutowiredAsync(HostWrapper hostWrapper, bool expectHealthy)
     {
-        hostWrapper.Services.GetServices<IActuatorEndpointHandler>().Should().HaveCount(1);
-        hostWrapper.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().HaveCount(1);
+        hostWrapper.Services.GetServices<IActuatorEndpointHandler>().Should().ContainSingle();
+        hostWrapper.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
 
         if (hostWrapper.Services.GetService<IServer>() != null)
         {
