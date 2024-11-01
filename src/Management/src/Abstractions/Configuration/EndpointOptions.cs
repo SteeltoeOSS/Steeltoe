@@ -27,7 +27,7 @@ public abstract class EndpointOptions
     {
         get
         {
-            if (!string.IsNullOrEmpty(_path))
+            if (_path != null)
             {
                 return _path;
             }
