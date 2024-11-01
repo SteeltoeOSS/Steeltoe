@@ -48,9 +48,9 @@ public static class PrometheusExtensions
         PrometheusEndpointOptions? prometheusOptions = builder.ApplicationServices.GetServices<EndpointOptions>()
             .OfType<PrometheusEndpointOptions>().FirstOrDefault();
 
-        string root = managementOptions?.Path ?? "/actuator";
-        string id = prometheusOptions?.Id ?? "prometheus";
-        string path = root + "/" + id;
+        string basePath = managementOptions?.Path ?? "/actuator";
+        string endpointPath = prometheusOptions?.Path ?? "prometheus";
+        string path = $"{basePath}/{endpointPath}".Replace("//", "/", StringComparison.Ordinal);
 
         return builder.UseOpenTelemetryPrometheusScrapingEndpoint(path);
     }

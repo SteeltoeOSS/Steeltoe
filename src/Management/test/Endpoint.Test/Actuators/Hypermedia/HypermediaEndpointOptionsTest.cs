@@ -37,4 +37,19 @@ public sealed class HypermediaEndpointOptionsTest : BaseTest
         Assert.Equal("info", options.Id);
         Assert.Equal("infopath", options.Path);
     }
+
+    [Fact]
+    public void CanSetEmptyPathWithDifferentId()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Management:Endpoints:Actuator:Id"] = "some",
+            ["Management:Endpoints:Actuator:Path"] = string.Empty
+        };
+
+        HypermediaEndpointOptions options = GetOptionsFromSettings<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>(appSettings);
+
+        options.Id.Should().Be("some");
+        options.Path.Should().BeEmpty();
+    }
 }
