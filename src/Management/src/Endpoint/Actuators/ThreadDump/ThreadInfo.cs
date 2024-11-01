@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
+using Steeltoe.Common.CasingConventions;
 
 namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
@@ -44,6 +45,7 @@ public sealed class ThreadInfo
     public string? ThreadName { get; set; }
 
     [JsonPropertyName("threadState")]
+    [JsonConverter(typeof(SnakeCaseAllCapsEnumMemberJsonConverter))]
     public State ThreadState { get; set; }
 
     [JsonPropertyName("waitedCount")]
