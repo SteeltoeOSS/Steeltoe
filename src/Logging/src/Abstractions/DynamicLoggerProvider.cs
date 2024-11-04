@@ -123,7 +123,17 @@ public abstract class DynamicLoggerProvider : IDynamicLoggerProvider
             }
             else
             {
-                _effectiveFiltersPerCategory.TryRemove(nextName, out _);
+                LogLevel? configurationMinLevel = GetConfigurationMinLevel(nextName);
+
+                if (configurationMinLevel != null)
+                {
+                    filter = logLevel => logLevel >= configurationMinLevel;
+                    _effectiveFiltersPerCategory.TryUpdate(nextName, filter, nextFilter);
+                }
+                else
+                {
+                    _effectiveFiltersPerCategory.TryRemove(nextName, out _);
+                }
             }
         }
     }

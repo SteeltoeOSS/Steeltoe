@@ -10,6 +10,16 @@ namespace Steeltoe.Logging.DynamicLogger.Test;
 
 public sealed class DynamicConsoleLoggerProviderTest
 {
+    private static readonly List<LogLevel> LogLevelsInOrderOfVerbosity =
+    [
+        LogLevel.Trace,
+        LogLevel.Debug,
+        LogLevel.Information,
+        LogLevel.Warning,
+        LogLevel.Error,
+        LogLevel.Critical
+    ];
+
     [Fact]
     public void Create_CreatesLoggerWithCorrectFilters()
     {
@@ -244,6 +254,53 @@ public sealed class DynamicConsoleLoggerProviderTest
     }
 
     [Fact]
+    public void SetLogLevel_CanResetToConfigured()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Logging:LogLevel:A.B"] = "Error"
+        };
+
+        const string categoryName = "A.B";
+        const string subCategoryName = "A.B.C";
+
+        var provider = CreateLoggerProvider<DynamicConsoleLoggerProvider>(appSettings);
+        ILogger logger = provider.CreateLogger(categoryName);
+        ILogger subLogger = provider.CreateLogger(subCategoryName);
+        DynamicLoggerConfiguration configuration = GetConfigurationFromProvider(provider, categoryName);
+        DynamicLoggerConfiguration subConfiguration = GetConfigurationFromProvider(provider, subCategoryName);
+
+        GetLoggerMinLevel(logger).Should().Be(LogLevel.Error);
+        GetLoggerMinLevel(subLogger).Should().Be(LogLevel.Error);
+        configuration.ConfigurationMinLevel.Should().Be(LogLevel.Error);
+        configuration.EffectiveMinLevel.Should().Be(LogLevel.Error);
+        subConfiguration.ConfigurationMinLevel.Should().BeNull();
+        subConfiguration.EffectiveMinLevel.Should().Be(LogLevel.Error);
+
+        provider.SetLogLevel(categoryName, LogLevel.Trace);
+        configuration = GetConfigurationFromProvider(provider, categoryName);
+        subConfiguration = GetConfigurationFromProvider(provider, subCategoryName);
+
+        GetLoggerMinLevel(logger).Should().Be(LogLevel.Trace);
+        GetLoggerMinLevel(subLogger).Should().Be(LogLevel.Trace);
+        configuration.ConfigurationMinLevel.Should().Be(LogLevel.Error);
+        configuration.EffectiveMinLevel.Should().Be(LogLevel.Trace);
+        subConfiguration.ConfigurationMinLevel.Should().BeNull();
+        subConfiguration.EffectiveMinLevel.Should().Be(LogLevel.Trace);
+
+        provider.SetLogLevel(categoryName, null);
+        configuration = GetConfigurationFromProvider(provider, categoryName);
+        subConfiguration = GetConfigurationFromProvider(provider, subCategoryName);
+
+        GetLoggerMinLevel(logger).Should().Be(LogLevel.Error);
+        GetLoggerMinLevel(subLogger).Should().Be(LogLevel.Error);
+        configuration.ConfigurationMinLevel.Should().Be(LogLevel.Error);
+        configuration.EffectiveMinLevel.Should().Be(LogLevel.Error);
+        subConfiguration.ConfigurationMinLevel.Should().BeNull();
+        subConfiguration.EffectiveMinLevel.Should().Be(LogLevel.Error);
+    }
+
+    [Fact]
     public void SetLogLevel_WorksOnDefault()
     {
         var provider = CreateLoggerProvider<DynamicConsoleLoggerProvider>();
@@ -422,5 +479,24 @@ public sealed class DynamicConsoleLoggerProviderTest
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         return (TLoggerProvider)serviceProvider.GetRequiredService<ILoggerProvider>();
+    }
+
+    private static LogLevel GetLoggerMinLevel(ILogger logger)
+    {
+        foreach (LogLevel logLevel in LogLevelsInOrderOfVerbosity)
+        {
+            if (logger.IsEnabled(logLevel))
+            {
+                return logLevel;
+            }
+        }
+
+        return LogLevel.None;
+    }
+
+    private static DynamicLoggerConfiguration GetConfigurationFromProvider(DynamicLoggerProvider loggerProvider, string categoryName)
+    {
+        DynamicLoggerConfiguration configuration = loggerProvider.GetLoggerConfigurations().Single(configuration => configuration.CategoryName == categoryName);
+        return configuration;
     }
 }
