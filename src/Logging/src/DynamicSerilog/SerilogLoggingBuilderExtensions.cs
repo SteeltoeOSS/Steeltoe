@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace Steeltoe.Logging.DynamicSerilog;
@@ -79,32 +80,51 @@ public static class SerilogLoggingBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
+        if (!IsSerilogDynamicLoggerProviderAlreadyRegistered(builder))
+        {
+            AssertNoDynamicLoggerProviderRegistered(builder);
+
+            builder.AddFilter<DynamicSerilogLoggerProvider>(null, LogLevel.Trace);
+
+            if (!preserveDefaultConsole)
+            {
+                builder.ClearProviders();
+            }
+
+            ConfigureSerilogOptions(builder, serilogConfiguration);
+
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicSerilogLoggerProvider>());
+            builder.Services.AddSingleton(provider => provider.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().Single());
+        }
+
+        return builder;
+    }
+
+    private static bool IsSerilogDynamicLoggerProviderAlreadyRegistered(ILoggingBuilder builder)
+    {
+        return builder.Services.Any(descriptor =>
+            descriptor.ServiceType == typeof(ILoggerProvider) && descriptor.ImplementationType == typeof(DynamicSerilogLoggerProvider));
+    }
+
+    private static void AssertNoDynamicLoggerProviderRegistered(ILoggingBuilder builder)
+    {
         if (builder.Services.Any(descriptor => descriptor.ServiceType == typeof(IDynamicLoggerProvider)))
         {
             throw new InvalidOperationException(
-                "An IDynamicLoggerProvider has already been configured! Call 'AddDynamicSerilog' earlier in program startup (before adding Actuators) or remove duplicate IDynamicLoggerProvider entries.");
+                $"A different {nameof(IDynamicLoggerProvider)} has already been registered. Call '{nameof(AddDynamicSerilog)}' earlier during startup (before adding actuators).");
         }
+    }
 
-        builder.AddFilter<DynamicSerilogLoggerProvider>(null, LogLevel.Trace);
+    private static void ConfigureSerilogOptions(ILoggingBuilder builder, LoggerConfiguration? serilogConfiguration)
+    {
+        builder.Services.AddOptions<SerilogOptions>().Configure<IConfiguration>((options, configuration) => options.SetSerilogOptions(configuration));
 
-        if (!preserveDefaultConsole)
-        {
-            builder.ClearProviders();
-        }
+        builder.Services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<IOptionsChangeTokenSource<SerilogOptions>, ConfigurationChangeTokenSource<SerilogOptions>>());
 
         if (serilogConfiguration != null)
         {
-            builder.Services.AddSingleton(serilogConfiguration);
-            builder.Services.AddOptions<SerilogOptions>().Configure<LoggerConfiguration>((options, configuration) => options.SetSerilogOptions(configuration));
+            builder.Services.AddOptions<SerilogOptions>().Configure(options => options.SetSerilogOptions(serilogConfiguration));
         }
-        else
-        {
-            builder.Services.AddOptions<SerilogOptions>().Configure<IConfiguration>((options, configuration) => options.SetSerilogOptions(configuration));
-        }
-
-        builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicSerilogLoggerProvider>());
-        builder.Services.AddSingleton(provider => provider.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().Single());
-
-        return builder;
     }
 }

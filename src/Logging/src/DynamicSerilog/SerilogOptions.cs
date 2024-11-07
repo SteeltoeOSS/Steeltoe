@@ -46,10 +46,8 @@ public sealed class SerilogOptions
                 defaultLevel = level;
             }
 
-            MinimumLevel = new MinimumLevel
-            {
-                Default = defaultLevel
-            };
+            MinimumLevel ??= new MinimumLevel();
+            MinimumLevel.Default = defaultLevel;
         }
 
         _serilogConfiguration = new LoggerConfiguration().ReadFrom.Configuration(configuration).ClearLevels(MinimumLevel);

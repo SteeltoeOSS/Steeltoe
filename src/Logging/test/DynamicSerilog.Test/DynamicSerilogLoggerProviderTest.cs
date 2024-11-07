@@ -2,126 +2,33 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Text.RegularExpressions;
-using A.B.C.D;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog.Context;
 using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Logging.DynamicSerilog.Test;
 
-public sealed class DynamicSerilogLoggerProviderTest
+public sealed class DynamicSerilogLoggerProviderTest : IDisposable
 {
+    private readonly ConsoleOutput _consoleOutput = ConsoleOutput.Capture();
+
     public DynamicSerilogLoggerProviderTest()
     {
         DynamicSerilogLoggerProvider.ClearLogger();
     }
 
     [Fact]
-    public void Create_CreatesLoggerWithCorrectFilters()
+    public void CreatesLoggerWithCorrectFilters()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
-        using var factory = new LoggerFactory();
-        factory.AddProvider(provider);
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Serilog:MinimumLevel:Override:Fully.Qualified"] = DynamicLoggingTestContext.ToSerilogLevel(LogLevel.Warning)
+        };
 
-        ILogger logger = factory.CreateLogger<TestClass>();
-
-        logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Error).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Warning).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Information).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Debug).Should().BeFalse();
-        logger.IsEnabled(LogLevel.Trace).Should().BeFalse();
-        logger.IsEnabled(LogLevel.None).Should().BeFalse();
-    }
-
-    [Fact]
-    public void GetLoggerConfigurations_ReturnsExpected()
-    {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
-        using var factory = new LoggerFactory();
-        factory.AddProvider(provider);
-
-        _ = factory.CreateLogger<TestClass>();
-
-        string[] configurations = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
-
-        configurations.Should().HaveCount(6);
-        configurations.Should().Contain("Default: Information -> Information");
-        configurations.Should().Contain("A.B.C.D.TestClass: Information");
-        configurations.Should().Contain("A.B.C.D: Information");
-        configurations.Should().Contain("A.B.C: Information -> Information");
-        configurations.Should().Contain("A.B: Information");
-        configurations.Should().Contain("A: Information -> Information");
-    }
-
-    [Fact]
-    public void GetLoggerConfigurations_UsesMinLevelInformationByDefault()
-    {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
-        using var factory = new LoggerFactory();
-        factory.AddProvider(provider);
-
-        _ = factory.CreateLogger<TestClass>();
-
-        string[] configurations = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
-
-        configurations.Should().Contain("Default: Information -> Information");
-        configurations.Should().Contain("A.B.C.D.TestClass: Information");
-    }
-
-    [Fact]
-    public void GetLoggerConfigurations_ReturnsExpectedAfterSetLogLevel()
-    {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
-        using var factory = new LoggerFactory();
-        factory.AddProvider(provider);
-
-        factory.CreateLogger<TestClass>();
-
-        string[] configurations = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
-
-        configurations.Should().HaveCount(6);
-        configurations.Should().Contain("Default: Information -> Information");
-        configurations.Should().Contain("A.B.C.D.TestClass: Information");
-        configurations.Should().Contain("A.B.C.D: Information");
-        configurations.Should().Contain("A.B.C: Information -> Information");
-        configurations.Should().Contain("A.B: Information");
-        configurations.Should().Contain("A: Information -> Information");
-
-        provider.SetLogLevel("A.B", LogLevel.Trace);
-        configurations = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
-
-        configurations.Should().HaveCount(6);
-        configurations.Should().Contain("Default: Information -> Information");
-        configurations.Should().Contain("A.B.C.D.TestClass: Trace");
-        configurations.Should().Contain("A.B.C.D: Trace");
-        configurations.Should().Contain("A.B.C: Information -> Trace");
-        configurations.Should().Contain("A.B: Trace");
-        configurations.Should().Contain("A: Information -> Information");
-    }
-
-    [Fact]
-    public void SetLogLevel_UpdatesLogger()
-    {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
-        using var factory = new LoggerFactory();
-        factory.AddProvider(provider);
-
-        ILogger logger = factory.CreateLogger<TestClass>();
-
-        provider.SetLogLevel("A", LogLevel.Debug);
-
-        logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Error).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Warning).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Information).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Debug).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Trace).Should().BeFalse();
-        logger.IsEnabled(LogLevel.None).Should().BeFalse();
-
-        provider.SetLogLevel("A", LogLevel.Warning);
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        ILogger logger = provider.CreateLogger("Fully.Qualified.Name.For.Type");
 
         logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
         logger.IsEnabled(LogLevel.Error).Should().BeTrue();
@@ -133,127 +40,270 @@ public sealed class DynamicSerilogLoggerProviderTest
     }
 
     [Fact]
-    public void SetLogLevel_UpdatesNamespaceDescendants()
+    public void GetLogLevelsReturnsIntermediateCategories()
     {
-        // arrange (A* should log at Information)
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Serilog:MinimumLevel:Override:A"] = DynamicLoggingTestContext.ToSerilogLevel(LogLevel.Trace)
+        };
 
-        // act I: with original setup
-        ILogger childLogger = provider.CreateLogger("A.B.C");
-        ICollection<DynamicLoggerConfiguration> configurations = provider.GetLoggerConfigurations();
-        DynamicLoggerConfiguration tierOneNamespace = configurations.First(configuration => configuration.CategoryName == "A");
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        _ = provider.CreateLogger("A.B.C.D.Example");
 
-        // assert I: base namespace is in the response, correctly
-        tierOneNamespace.EffectiveMinLevel.Should().Be(LogLevel.Information);
+        string[] loggerStates = provider.GetLogLevels().Select(state => state.ToString()).ToArray();
 
-        // act II: set A.B* to log at Trace
-        provider.SetLogLevel("A.B", LogLevel.Trace);
-        configurations = provider.GetLoggerConfigurations();
-        tierOneNamespace = configurations.First(configuration => configuration.CategoryName == "A");
-        DynamicLoggerConfiguration tierTwoNamespace = configurations.First(configuration => configuration.CategoryName == "A.B");
+        loggerStates.Should().HaveCount(6);
+        loggerStates.Should().Contain("Default: Information");
+        loggerStates.Should().Contain("A: Trace");
+        loggerStates.Should().Contain("A.B: Trace");
+        loggerStates.Should().Contain("A.B.C: Trace");
+        loggerStates.Should().Contain("A.B.C.D: Trace");
+        loggerStates.Should().Contain("A.B.C.D.Example: Trace");
+    }
 
-        // assert II: base hasn't changed but the one set at runtime and all descendants (including a concrete logger) have
-        tierOneNamespace.EffectiveMinLevel.Should().Be(LogLevel.Information);
-        tierTwoNamespace.EffectiveMinLevel.Should().Be(LogLevel.Trace);
-        childLogger.IsEnabled(LogLevel.Trace).Should().BeTrue();
+    [Theory]
+    [InlineData(ConfigurationCategory.Parent, LogLevel.Error, LogLevel.Trace)]
+    [InlineData(ConfigurationCategory.Parent, LogLevel.Trace, LogLevel.Error)]
+    [InlineData(ConfigurationCategory.Parent, LogLevel.Debug, LogLevel.Debug)]
+    [InlineData(ConfigurationCategory.Self, LogLevel.Error, LogLevel.Trace)]
+    [InlineData(ConfigurationCategory.Self, LogLevel.Trace, LogLevel.Error)]
+    [InlineData(ConfigurationCategory.Self, LogLevel.Debug, LogLevel.Debug)]
+    [InlineData(ConfigurationCategory.Child, LogLevel.Error, LogLevel.Trace)]
+    [InlineData(ConfigurationCategory.Child, LogLevel.Trace, LogLevel.Error)]
+    [InlineData(ConfigurationCategory.Child, LogLevel.Debug, LogLevel.Debug)]
+    public void CanSetAndResetMinLevel(ConfigurationCategory configurationCategory, LogLevel configurationLevel, LogLevel overrideLevel)
+    {
+        string configurationKey = configurationCategory switch
+        {
+            ConfigurationCategory.Parent => "A",
+            ConfigurationCategory.Self => "A.B",
+            ConfigurationCategory.Child => "A.B.C",
+            _ => throw new ArgumentOutOfRangeException(nameof(configurationCategory))
+        };
 
-        // act III: set A to something else, make sure it inherits down
-        provider.SetLogLevel("A", LogLevel.Error);
-        configurations = provider.GetLoggerConfigurations();
-        tierOneNamespace = configurations.First(configuration => configuration.CategoryName == "A");
-        tierTwoNamespace = configurations.First(configuration => configuration.CategoryName == "A.B");
-        ILogger grandchildLogger = provider.CreateLogger("A.B.C.D");
+        var appSettings = new Dictionary<string, string?>
+        {
+            [$"Serilog:MinimumLevel:Override:{configurationKey}"] = DynamicLoggingTestContext.ToSerilogLevel(configurationLevel),
+            ["Serilog:WriteTo:0:Name"] = "Console"
+        };
 
-        // assert III
-        tierOneNamespace.EffectiveMinLevel.Should().Be(LogLevel.Error);
-        tierTwoNamespace.EffectiveMinLevel.Should().Be(LogLevel.Error);
-        childLogger.IsEnabled(LogLevel.Warning).Should().BeFalse();
-        grandchildLogger.IsEnabled(LogLevel.Warning).Should().BeFalse();
+        LogLevel expectBeforeLevelAtParent = configurationCategory == ConfigurationCategory.Parent ? configurationLevel : LogLevel.Information;
+        LogLevel expectBeforeLevelAtSelf = configurationCategory != ConfigurationCategory.Child ? configurationLevel : LogLevel.Information;
+        LogLevel expectBeforeLevelAtChild = configurationLevel;
+
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+
+        testContext.Parent.AssertMinLevel(expectBeforeLevelAtParent);
+        testContext.Self.AssertMinLevel(expectBeforeLevelAtSelf);
+        testContext.Child.AssertMinLevel(expectBeforeLevelAtChild);
+
+        provider.SetLogLevel(testContext.Self.CategoryName, overrideLevel);
+        testContext.Refresh();
+
+        testContext.Parent.AssertMinLevel(expectBeforeLevelAtParent);
+        testContext.Self.AssertMinLevel(overrideLevel, expectBeforeLevelAtSelf);
+        testContext.Child.AssertMinLevel(overrideLevel);
+
+        provider.SetLogLevel(testContext.Self.CategoryName, null);
+        testContext.Refresh();
+
+        testContext.Parent.AssertMinLevel(expectBeforeLevelAtParent);
+        testContext.Self.AssertMinLevel(expectBeforeLevelAtSelf);
+        testContext.Child.AssertMinLevel(expectBeforeLevelAtChild);
     }
 
     [Fact]
-    public void SetLogLevel_CanResetToDefault()
+    public void CanSetAndResetImplicitDefaultMinLevel()
     {
-        // arrange (A* should log at Information)
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Serilog:WriteTo:0:Name"] = "Console"
+        };
 
-        // act I: with original setup
-        ILogger firstLogger = provider.CreateLogger("A.B.C");
-        ICollection<DynamicLoggerConfiguration> configurations = provider.GetLoggerConfigurations();
-        DynamicLoggerConfiguration tierOneNamespace = configurations.First(configuration => configuration.CategoryName == "A");
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
 
-        // assert I: base namespace is in the response, correctly
-        tierOneNamespace.EffectiveMinLevel.Should().Be(LogLevel.Information);
+        testContext.Default.AssertMinLevel(LogLevel.Information);
+        testContext.Self.AssertMinLevel(LogLevel.Information);
 
-        // act II: set A.B* to log at Trace
-        provider.SetLogLevel("A.B", LogLevel.Trace);
-        configurations = provider.GetLoggerConfigurations();
-        tierOneNamespace = configurations.First(configuration => configuration.CategoryName == "A");
-        DynamicLoggerConfiguration tierTwoNamespace = configurations.First(configuration => configuration.CategoryName == "A.B");
+        provider.SetLogLevel(string.Empty, LogLevel.Error);
+        testContext.Refresh();
 
-        // assert II: base hasn't changed but the one set at runtime and all descendants (including a concrete logger) have
-        tierOneNamespace.EffectiveMinLevel.Should().Be(LogLevel.Information);
-        tierTwoNamespace.EffectiveMinLevel.Should().Be(LogLevel.Trace);
-        firstLogger.IsEnabled(LogLevel.Trace).Should().BeTrue();
+        testContext.Default.AssertMinLevel(LogLevel.Error, LogLevel.Information);
+        testContext.Self.AssertMinLevel(LogLevel.Error);
 
-        // act III: reset A.B
-        provider.SetLogLevel("A.B", null);
-        configurations = provider.GetLoggerConfigurations();
-        tierOneNamespace = configurations.First(configuration => configuration.CategoryName == "A");
-        tierTwoNamespace = configurations.First(configuration => configuration.CategoryName == "A.B");
-        ILogger secondLogger = provider.CreateLogger("A.B.C.D");
+        provider.SetLogLevel(string.Empty, null);
+        testContext.Refresh();
 
-        // assert again
-        tierOneNamespace.EffectiveMinLevel.Should().Be(LogLevel.Information);
-        tierTwoNamespace.EffectiveMinLevel.Should().Be(LogLevel.Information);
-        firstLogger.IsEnabled(LogLevel.Information).Should().BeTrue();
-        secondLogger.IsEnabled(LogLevel.Information).Should().BeTrue();
+        testContext.Default.AssertMinLevel(LogLevel.Information);
+        testContext.Self.AssertMinLevel(LogLevel.Information);
     }
 
     [Fact]
-    public void SetLogLevel_WorksOnDefault()
+    public void SetIsAppliedToBothExistingAndNewLogger()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Serilog:MinimumLevel:Override:Some"] = DynamicLoggingTestContext.ToSerilogLevel(LogLevel.Trace)
+        };
+
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+
+        ILogger beforeLogger = provider.CreateLogger("Some");
+        beforeLogger.ProbeMinLevel().Should().Be(LogLevel.Trace);
+
+        provider.SetLogLevel("Some", LogLevel.Error);
+        ILogger afterLogger = provider.CreateLogger("Some.Other");
+
+        beforeLogger.ProbeMinLevel().Should().Be(LogLevel.Error);
+        afterLogger.ProbeMinLevel().Should().Be(LogLevel.Error);
+    }
+
+    [Fact]
+    public void CategoriesAreCaseSensitive()
+    {
+        const string pascalCaseCategoryName = "Some";
+        const string upperCaseCategoryName = "SOME";
+
+        var appSettings = new Dictionary<string, string?>
+        {
+            [$"Serilog:MinimumLevel:Override:{pascalCaseCategoryName}"] = DynamicLoggingTestContext.ToSerilogLevel(LogLevel.Critical),
+            ["Serilog:WriteTo:0:Name"] = "Console"
+        };
+
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        LoggerWithDynamicState pascalCaseState = new(provider, _consoleOutput, pascalCaseCategoryName);
+        LoggerWithDynamicState upperCaseState = new(provider, _consoleOutput, upperCaseCategoryName);
+
+        provider.SetLogLevel(pascalCaseCategoryName, LogLevel.Trace);
+        Refresh();
+
+        pascalCaseState.AssertMinLevel(LogLevel.Trace, LogLevel.Critical);
+        upperCaseState.AssertMinLevel(LogLevel.Information);
+
+        void Refresh()
+        {
+            ICollection<DynamicLoggerState> logLevels = provider.GetLogLevels();
+
+            pascalCaseState.Refresh(logLevels);
+            upperCaseState.Refresh(logLevels);
+        }
+    }
+
+    [Fact]
+    public void AppliesChangedConfiguration()
+    {
+        const string fileName = "appsettings.json";
+        MemoryFileProvider fileProvider = new();
+
+        fileProvider.IncludeFile(fileName, """
+        {
+          "Serilog": {
+            "MinimumLevel": {
+              "Override": {
+                "A": "Warning"
+              }
+            },
+            "WriteTo": {
+              "Name": "Console"
+            }
+          }
+        }
+        """);
+
+        using IDynamicLoggerProvider provider =
+            CreateLoggerProvider(configurationBuilder => configurationBuilder.AddJsonFile(fileProvider, fileName, false, true));
+
+        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+
+        testContext.Parent.AssertMinLevel(LogLevel.Warning);
+        testContext.Self.AssertMinLevel(LogLevel.Warning);
+        testContext.Child.AssertMinLevel(LogLevel.Warning);
+
+        provider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Error);
+        testContext.Refresh();
+
+        testContext.Parent.AssertMinLevel(LogLevel.Warning);
+        testContext.Self.AssertMinLevel(LogLevel.Error, LogLevel.Warning);
+        testContext.Child.AssertMinLevel(LogLevel.Error);
+
+        fileProvider.ReplaceFile(fileName, """
+        {
+          "Serilog": {
+            "MinimumLevel": {
+              "Override": {
+                "A": "Verbose",
+                "A.B.C": "Debug"
+              }
+            },
+            "WriteTo": "Console"
+          }
+        }
+        """);
+
+        fileProvider.NotifyChanged();
+        testContext.Refresh();
+
+        testContext.Parent.AssertMinLevel(LogLevel.Trace);
+        testContext.Self.AssertMinLevel(LogLevel.Error, LogLevel.Trace);
+        testContext.Child.AssertMinLevel(LogLevel.Error);
+
+        provider.SetLogLevel(testContext.Self.CategoryName, null);
+        testContext.Refresh();
+
+        testContext.Parent.AssertMinLevel(LogLevel.Trace);
+        testContext.Self.AssertMinLevel(LogLevel.Trace);
+        testContext.Child.AssertMinLevel(LogLevel.Debug);
+    }
+
+    [Fact]
+    public void CanUseScopes()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Serilog:WriteTo:0:Name"] = "Console",
+            ["Serilog:WriteTo:0:Args:OutputTemplate"] = "[{Level:u3}] {SourceContext}: {Properties}{NewLine}  {Message:lj}{NewLine}"
+        };
+
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+
         using var factory = new LoggerFactory();
         factory.AddProvider(provider);
+        ILogger logger = factory.CreateLogger("Fully.Qualified.Type");
 
-        string[] originalConfiguration = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
+        using (logger.BeginScope("OuterScope"))
+        {
+            using (logger.BeginScope("InnerScope={InnerScopeKey}", "InnerScopeValue"))
+            {
+                logger.LogInformation("TestInfo");
+            }
+        }
 
-        provider.SetLogLevel("Default", LogLevel.Trace);
-        string[] updatedConfiguration = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
+        string logOutput = _consoleOutput.ToString();
 
-        originalConfiguration.Should().Contain("Default: Information -> Information");
-        updatedConfiguration.Should().Contain("Default: Information -> Trace");
+        logOutput.Should().Be("""
+            [INF] Fully.Qualified.Type: {InnerScopeKey="InnerScopeValue", Scope=["OuterScope", "InnerScope=InnerScopeValue"]}
+              TestInfo
+
+            """);
     }
 
     [Fact]
-    public void ResetLogLevel_WorksOnDefault()
+    public void CanUseSerilogEnrichers()
     {
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Serilog:WriteTo:0:Name"] = "Console",
+            ["Serilog:WriteTo:0:Args:OutputTemplate"] = "[{Level:u3}] {SourceContext}: {Properties}{NewLine}  {Message:lj}{NewLine}",
+            ["Serilog:Enrich:0"] = "FromLogContext"
+        };
+
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+
         using var factory = new LoggerFactory();
         factory.AddProvider(provider);
-
-        string[] originalConfiguration = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
-
-        provider.SetLogLevel("Default", LogLevel.Debug);
-        string[] updatedConfiguration = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
-
-        provider.SetLogLevel("Default", null);
-        string[] resetConfiguration = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
-
-        originalConfiguration.Should().Contain("Default: Information -> Information");
-        updatedConfiguration.Should().Contain("Default: Information -> Debug");
-        resetConfiguration.Should().Contain("Default: Information -> Information");
-    }
-
-    [Fact]
-    public void Logger_LogsWithEnrichers()
-    {
-        using var console = new ConsoleOutputBorrower();
-        var provider = new DynamicSerilogLoggerProvider(GetConfigurationFromFile(), []);
-        using var factory = new LoggerFactory();
-        factory.AddProvider(provider);
-        ILogger logger = factory.CreateLogger<TestClass>();
+        ILogger logger = factory.CreateLogger("Fully.Qualified.Type");
 
         using (LogContext.PushProperty("A", 1))
         {
@@ -270,156 +320,279 @@ public sealed class DynamicSerilogLoggerProviderTest
             logger.LogInformation("Carries property A = 1, again");
         }
 
-        string logged = console.ToString();
+        string logOutput = _consoleOutput.ToString();
 
-        logged.Should().Contain("""A.B.C.D.TestClass: {A=1, Application="Sample"}""");
-        logged.Should().Contain("Carries property A = 1");
-        logged.Should().Contain("""A.B.C.D.TestClass: {B=1, A=2, Application="Sample"}""");
-        logged.Should().Contain("Carries A = 2 and B = 1");
-        logged.Should().Contain("""A.B.C.D.TestClass: {A=1, Application="Sample"}""");
-        logged.Should().Contain("Carries property A = 1, again");
-        logged.Should().MatchRegex(new Regex(@"ThreadId:<\d+>"));
+        logOutput.Should().Be("""
+            [INF] Fully.Qualified.Type: {A=1}
+              Carries property A = 1
+            [INF] Fully.Qualified.Type: {B=1, A=2}
+              Carries A = 2 and B = 1
+            [INF] Fully.Qualified.Type: {A=1}
+              Carries property A = 1, again
+
+            """);
     }
 
     [Fact]
-    public void Logger_LogsWithDestructuring()
-    {
-        using var console = new ConsoleOutputBorrower();
-        var provider = new DynamicSerilogLoggerProvider(GetConfigurationFromFile(), []);
-        using var factory = new LoggerFactory();
-        factory.AddProvider(provider);
-        ILogger logger = factory.CreateLogger<TestClass>();
-
-        logger.LogInformation("Info {@TestInfo}", new
-        {
-            Info1 = "information1",
-            Info2 = "information2"
-        });
-
-        string logged = console.ToString();
-
-        logged.Should().Contain("""Info {"Info1": "information1", "Info2": "information2"}""");
-    }
-
-    [Fact]
-    public void Logger_LogsAtConfiguredSetting()
-    {
-        using var console = new ConsoleOutputBorrower();
-        var provider = new DynamicSerilogLoggerProvider(GetConfiguration(), []);
-        using var factory = new LoggerFactory();
-        factory.AddProvider(provider);
-        ILogger logger = factory.CreateLogger<TestClass>();
-
-        // act I - log at all levels, expect Info and above to work
-        WriteLogEntries(logger);
-        string logged1 = console.ToString();
-
-        // assert I
-        logged1.Should().Contain("Critical message");
-        logged1.Should().Contain("Error message");
-        logged1.Should().Contain("Warning message");
-        logged1.Should().Contain("Informational message");
-        logged1.Should().NotContain("Debug message");
-        logged1.Should().NotContain("Trace message");
-
-        // act II - adjust rules, expect Error and above to work
-        provider.SetLogLevel("A.B.C.D", LogLevel.Error);
-        console.Clear();
-
-        WriteLogEntries(logger);
-        string logged2 = console.ToString();
-
-        // assert II
-        logged2.Should().Contain("Critical message");
-        logged2.Should().Contain("Error message");
-        logged2.Should().NotContain("Warning message");
-        logged2.Should().NotContain("Informational message");
-        logged2.Should().NotContain("Debug message");
-        logged2.Should().NotContain("Trace message");
-
-        // act III - adjust rules, expect Trace and above to work
-        provider.SetLogLevel("A", LogLevel.Trace);
-        console.Clear();
-
-        WriteLogEntries(logger);
-        string logged3 = console.ToString();
-
-        // assert III
-        logged3.Should().Contain("Critical message");
-        logged3.Should().Contain("Error message");
-        logged3.Should().Contain("Warning message");
-        logged3.Should().Contain("Informational message");
-        logged3.Should().Contain("Debug message");
-        logged3.Should().Contain("Trace message");
-
-        // act IV - adjust rules, expect nothing to work
-        provider.SetLogLevel("A", LogLevel.None);
-        console.Clear();
-
-        WriteLogEntries(logger);
-        string logged4 = console.ToString();
-
-        // assert IV
-        logged4.Should().NotContain("Critical message");
-        logged4.Should().NotContain("Error message");
-        logged4.Should().NotContain("Warning message");
-        logged4.Should().NotContain("Informational message");
-        logged4.Should().NotContain("Debug message");
-        logged4.Should().NotContain("Trace message");
-
-        // act V - reset the rules, expect Info and above to work
-        provider.SetLogLevel("A", null);
-        console.Clear();
-
-        WriteLogEntries(logger);
-        string logged5 = console.ToString();
-
-        // assert V
-        logged5.Should().Contain("Critical message");
-        logged5.Should().Contain("Error message");
-        logged5.Should().Contain("Warning message");
-        logged5.Should().Contain("Informational message");
-        logged5.Should().NotContain("Debug message");
-        logged5.Should().NotContain("Trace message");
-    }
-
-    private void WriteLogEntries(ILogger logger)
-    {
-        logger.LogCritical("Critical message");
-        logger.LogError("Error message");
-        logger.LogWarning("Warning message");
-        logger.LogInformation("Informational message");
-        logger.LogDebug("Debug message");
-        logger.LogTrace("Trace message");
-    }
-
-    private TestOptionsMonitor<SerilogOptions> GetConfiguration()
+    public void CanUseSerilogDestructuring()
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "Serilog:MinimumLevel:Default", "Information" },
-            { "Serilog:MinimumLevel:Override:Microsoft", "Warning" },
-            { "Serilog:MinimumLevel:Override:Steeltoe.Extensions", "Verbose" },
-            { "Serilog:MinimumLevel:Override:Steeltoe", "Information" },
-            { "Serilog:MinimumLevel:Override:A", "Information" },
-            { "Serilog:MinimumLevel:Override:A.B.C", "Information" },
-            { "Serilog:WriteTo:Name", "Console" }
+            ["Serilog:WriteTo:0:Name"] = "Console",
+            ["Serilog:WriteTo:0:Args:OutputTemplate"] = "[{Level:u3}] {SourceContext}: {Message:lj}{NewLine}"
         };
 
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
-        IConfiguration configuration = builder.Build();
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
 
-        var serilogOptions = new SerilogOptions();
-        serilogOptions.SetSerilogOptions(configuration);
-        return TestOptionsMonitor.Create(serilogOptions);
+        using var factory = new LoggerFactory();
+        factory.AddProvider(provider);
+        ILogger logger = factory.CreateLogger("Fully.Qualified.Type");
+
+        logger.LogInformation("Processing of {@IncomingRequest} started.", new
+        {
+            RequestUrl = "https://www.example.com",
+            UserAgent = "Steeltoe"
+        });
+
+        string logOutput = _consoleOutput.ToString();
+
+        logOutput.Should().Be("""
+            [INF] Fully.Qualified.Type: Processing of {"RequestUrl": "https://www.example.com", "UserAgent": "Steeltoe"} started.
+
+            """);
     }
 
-    private TestOptionsMonitor<SerilogOptions> GetConfigurationFromFile()
+    [Fact]
+    public void CallsIntoMessageProcessors()
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("serilogSettings.json");
-        IConfiguration configuration = builder.Build();
-        var serilogOptions = new SerilogOptions();
-        serilogOptions.SetSerilogOptions(configuration);
-        return TestOptionsMonitor.Create(serilogOptions);
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Serilog:WriteTo:0:Name"] = "Console",
+            ["Serilog:WriteTo:0:Args:OutputTemplate"] = "[{Level:u3}] {Properties}{NewLine}  {Message:lj}{NewLine}"
+        };
+
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+
+        var services = new ServiceCollection();
+        services.AddSingleton(configuration);
+        services.AddLogging(loggingBuilder => loggingBuilder.AddDynamicSerilog());
+        services.AddSingleton<IDynamicMessageProcessor>(new TestMessageProcessor("One"));
+        services.AddSingleton<IDynamicMessageProcessor>(new TestMessageProcessor("Two"));
+        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        IDynamicLoggerProvider provider = serviceProvider.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().Single();
+        ILogger logger = provider.CreateLogger("Test");
+
+        logger.LogInformation("Three");
+        string logOutput = _consoleOutput.ToString();
+
+        logOutput.Should().Be("""
+            [INF] {SourceContext="Test", Scope=["TwoOne"]}
+              Three
+
+            """);
+    }
+
+    private static IDynamicLoggerProvider CreateLoggerProvider(Action<ConfigurationBuilder>? configure = null)
+    {
+        var configurationBuilder = new ConfigurationBuilder();
+        configure?.Invoke(configurationBuilder);
+        IConfiguration configuration = configurationBuilder.Build();
+
+        var services = new ServiceCollection();
+        services.AddSingleton(configuration);
+
+        services.AddLogging(loggingBuilder =>
+        {
+            loggingBuilder.AddDynamicSerilog();
+        });
+
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        return serviceProvider.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().Single();
+    }
+
+    public void Dispose()
+    {
+        _consoleOutput.Dispose();
+    }
+
+    public enum ConfigurationCategory
+    {
+        Parent,
+        Self,
+        Child
+    }
+
+    private sealed class LoggerWithDynamicState
+    {
+        private readonly ConsoleOutput _consoleOutput;
+        private readonly ILogger _logger;
+        private DynamicLoggerState _dynamicState;
+
+        public string CategoryName { get; }
+
+        public LoggerWithDynamicState(IDynamicLoggerProvider provider, ConsoleOutput consoleOutput, string categoryName)
+        {
+            _consoleOutput = consoleOutput;
+            _logger = provider.CreateLogger(categoryName);
+            CategoryName = categoryName;
+
+            ICollection<DynamicLoggerState> dynamicStates = provider.GetLogLevels();
+            _dynamicState = FilterDynamicState(dynamicStates);
+        }
+
+        public void Refresh(ICollection<DynamicLoggerState> dynamicStates)
+        {
+            _dynamicState = FilterDynamicState(dynamicStates);
+        }
+
+        private DynamicLoggerState FilterDynamicState(ICollection<DynamicLoggerState> dynamicStates)
+        {
+            return dynamicStates.Single(state => state.CategoryName == CategoryName);
+        }
+
+        public void AssertMinLevel(LogLevel effectiveMinLevel, LogLevel? backupLogLevel = null)
+        {
+            _logger.ProbeMinLevel().Should().Be(effectiveMinLevel);
+
+            string categoryNameInDynamicState = CategoryName.Length == 0 ? "Default" : CategoryName;
+
+            _dynamicState.ToString().Should().Be(backupLogLevel == null
+                ? $"{categoryNameInDynamicState}: {effectiveMinLevel}"
+                : $"{categoryNameInDynamicState}: {backupLogLevel} -> {effectiveMinLevel}");
+
+            string logOutput = CaptureLogOutput();
+
+            switch (effectiveMinLevel)
+            {
+                case LogLevel.None:
+                {
+                    logOutput.Should().BeEmpty();
+                    break;
+                }
+                case LogLevel.Critical:
+                {
+                    logOutput.Should().Contain($"Test:{CategoryName}:Critical");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Error");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Warning");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Informational");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Debug");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Trace");
+                    break;
+                }
+                case LogLevel.Error:
+                {
+                    logOutput.Should().Contain($"Test:{CategoryName}:Critical");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Error");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Warning");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Informational");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Debug");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Trace");
+                    break;
+                }
+                case LogLevel.Warning:
+                {
+                    logOutput.Should().Contain($"Test:{CategoryName}:Critical");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Error");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Warning");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Informational");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Debug");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Trace");
+                    break;
+                }
+                case LogLevel.Information:
+                {
+                    logOutput.Should().Contain($"Test:{CategoryName}:Critical");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Error");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Warning");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Informational");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Debug");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Trace");
+                    break;
+                }
+                case LogLevel.Debug:
+                {
+                    logOutput.Should().Contain($"Test:{CategoryName}:Critical");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Error");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Warning");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Informational");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Debug");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Trace");
+                    break;
+                }
+                case LogLevel.Trace:
+                {
+                    logOutput.Should().Contain($"Test:{CategoryName}:Critical");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Error");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Warning");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Informational");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Debug");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Trace");
+                    break;
+                }
+            }
+        }
+
+        private string CaptureLogOutput()
+        {
+            _consoleOutput.Clear();
+
+#pragma warning disable CA2254 // Template should be a static expression
+            _logger.LogCritical($"Test:{CategoryName}:Critical");
+            _logger.LogError($"Test:{CategoryName}:Error");
+            _logger.LogWarning($"Test:{CategoryName}:Warning");
+            _logger.LogInformation($"Test:{CategoryName}:Informational");
+            _logger.LogDebug($"Test:{CategoryName}:Debug");
+            _logger.LogTrace($"Test:{CategoryName}:Trace");
+#pragma warning restore CA2254 // Template should be a static expression
+
+            return _consoleOutput.ToString();
+        }
+    }
+
+    private sealed class DynamicLoggingTestContext(IDynamicLoggerProvider provider, ConsoleOutput consoleOutput)
+    {
+        private const string DefaultCategoryName = "";
+        private const string ParentCategoryName = "A";
+        private const string SelfCategoryName = "A.B";
+        private const string ChildCategoryName = "A.B.C";
+
+        private readonly IDynamicLoggerProvider _provider = provider;
+
+        public LoggerWithDynamicState Default { get; } = new(provider, consoleOutput, DefaultCategoryName);
+        public LoggerWithDynamicState Parent { get; } = new(provider, consoleOutput, ParentCategoryName);
+        public LoggerWithDynamicState Self { get; } = new(provider, consoleOutput, SelfCategoryName);
+        public LoggerWithDynamicState Child { get; } = new(provider, consoleOutput, ChildCategoryName);
+
+        public void Refresh()
+        {
+            ICollection<DynamicLoggerState> dynamicStates = _provider.GetLogLevels();
+
+            Default.Refresh(dynamicStates);
+            Parent.Refresh(dynamicStates);
+            Self.Refresh(dynamicStates);
+            Child.Refresh(dynamicStates);
+        }
+
+        public static string ToSerilogLevel(LogLevel logLevel)
+        {
+            return logLevel switch
+            {
+                LogLevel.Trace => "Verbose",
+                LogLevel.Critical => "Fatal",
+                _ => logLevel.ToString()
+            };
+        }
+    }
+
+    private sealed class TestMessageProcessor(string text) : IDynamicMessageProcessor
+    {
+        private readonly string _text = text;
+
+        public string Process(string message)
+        {
+            return _text + message;
+        }
     }
 }

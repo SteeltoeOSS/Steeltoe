@@ -23,7 +23,7 @@ internal sealed class TestLogProvider : IDynamicLoggerProvider
     {
     }
 
-    public ICollection<DynamicLoggerConfiguration> GetLoggerConfigurations()
+    public ICollection<DynamicLoggerState> GetLogLevels()
     {
         GetLoggerConfigurationsCalled = true;
         return [];
@@ -33,5 +33,9 @@ internal sealed class TestLogProvider : IDynamicLoggerProvider
     {
         Category = categoryName;
         MinLevel = minLevel ?? LogLevel.None;
+    }
+
+    public void RefreshConfiguration(LogLevelsConfiguration configuration)
+    {
     }
 }

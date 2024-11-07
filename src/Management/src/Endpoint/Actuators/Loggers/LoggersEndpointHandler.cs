@@ -13,6 +13,8 @@ namespace Steeltoe.Management.Endpoint.Actuators.Loggers;
 
 internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
 {
+    private const string SpringDefaultCategoryName = "Default";
+
     private static readonly ReadOnlyCollection<string> Levels = new List<string>
     {
         LoggerLevels.LogLevelToString(LogLevel.None),
@@ -71,23 +73,27 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
             { "levels", Levels }
         };
 
-        ICollection<DynamicLoggerConfiguration> configurations = _dynamicLoggerProvider.GetLoggerConfigurations();
-        var loggers = new Dictionary<string, LoggerLevels>();
+        ICollection<DynamicLoggerState> loggerStates = _dynamicLoggerProvider.GetLogLevels();
+        var loggerLevelsPerCategory = new Dictionary<string, LoggerLevels>();
 
-        foreach (DynamicLoggerConfiguration configuration in configurations.OrderBy(entry => entry.CategoryName))
+        foreach (DynamicLoggerState loggerState in loggerStates.OrderBy(entry => entry.CategoryName))
         {
-            _logger.LogTrace("Adding {Configuration}", configuration);
-            var levels = new LoggerLevels(configuration.ConfigurationMinLevel, configuration.EffectiveMinLevel);
-            loggers.Add(configuration.CategoryName, levels);
+            _logger.LogTrace("Adding {LoggerState}", loggerState);
+
+            string categoryName = loggerState.CategoryName.Length == 0 ? SpringDefaultCategoryName : loggerState.CategoryName;
+            var levels = new LoggerLevels(loggerState.BackupMinLevel, loggerState.EffectiveMinLevel);
+            loggerLevelsPerCategory.Add(categoryName, levels);
         }
 
-        result.Add("loggers", loggers);
+        result.Add("loggers", loggerLevelsPerCategory);
         return result;
     }
 
     private void SetLogLevel(string name, string? level)
     {
+        string categoryName = name == SpringDefaultCategoryName ? string.Empty : name;
         LogLevel? logLevel = LoggerLevels.StringToLogLevel(level);
-        _dynamicLoggerProvider.SetLogLevel(name, logLevel);
+
+        _dynamicLoggerProvider.SetLogLevel(categoryName, logLevel);
     }
 }

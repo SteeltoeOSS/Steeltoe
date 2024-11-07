@@ -13,11 +13,30 @@ namespace Steeltoe.Logging.DynamicSerilog;
 /// <summary>
 /// Implements <see cref="DynamicLoggerProvider" /> for logging using Serilog.
 /// </summary>
-public sealed class DynamicSerilogLoggerProvider(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor, IEnumerable<IDynamicMessageProcessor> messageProcessors)
-    : DynamicLoggerProvider(CreateSerilogLogger(serilogOptionsMonitor), GetMinimumLevelsFromOptions(serilogOptionsMonitor), messageProcessors)
+public sealed class DynamicSerilogLoggerProvider : DynamicLoggerProvider
 {
     private static readonly object LoggerLock = new();
     private static Logger? _serilogLogger;
+    private readonly IDisposable? _optionsChangeListener;
+
+    public DynamicSerilogLoggerProvider(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor, IEnumerable<IDynamicMessageProcessor> messageProcessors)
+        : base(CreateSerilogLogger(serilogOptionsMonitor), GetMinimumLevelsFromOptionsMonitor(serilogOptionsMonitor), messageProcessors)
+    {
+        ArgumentNullException.ThrowIfNull(serilogOptionsMonitor);
+
+        _optionsChangeListener = serilogOptionsMonitor.OnChange(options =>
+        {
+            LogLevelsConfiguration configuration = GetMinimumLevelsFromOptions(options);
+            RefreshConfiguration(configuration);
+        });
+    }
+
+    private static LogLevelsConfiguration GetMinimumLevelsFromOptionsMonitor(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor)
+    {
+        ArgumentNullException.ThrowIfNull(serilogOptionsMonitor);
+
+        return GetMinimumLevelsFromOptions(serilogOptionsMonitor.CurrentValue);
+    }
 
     /// <summary>
     /// Because of how Serilog is implemented, there is a single logger instance for a given application, which gets wrapped by ILoggers. However, while
@@ -27,13 +46,14 @@ public sealed class DynamicSerilogLoggerProvider(IOptionsMonitor<SerilogOptions>
     {
         lock (LoggerLock)
         {
+            _serilogLogger?.Dispose();
             _serilogLogger = null;
         }
     }
 
     protected override MessageProcessingLogger CreateMessageProcessingLogger(string categoryName)
     {
-        ArgumentException.ThrowIfNullOrEmpty(categoryName);
+        ArgumentNullException.ThrowIfNull(categoryName);
 
         ILogger logger = InnerLoggerProvider.CreateLogger(categoryName);
         LoggerFilter filter = GetFilter(categoryName);
@@ -53,29 +73,31 @@ public sealed class DynamicSerilogLoggerProvider(IOptionsMonitor<SerilogOptions>
         return new SerilogLoggerProvider(_serilogLogger);
     }
 
-    private static LoggerFilterConfiguration GetMinimumLevelsFromOptions(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor)
+    private static LogLevelsConfiguration GetMinimumLevelsFromOptions(SerilogOptions options)
     {
-        ArgumentNullException.ThrowIfNull(serilogOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(options);
 
-        SerilogOptions options = serilogOptionsMonitor.CurrentValue;
-        var defaultMinLevel = (LogLevel)options.MinimumLevel!.Default;
+        var minLevelsPerCategory = new Dictionary<string, LogLevel>();
 
-        var configurationMinLevels = new Dictionary<string, LogLevel>
+        if (options.MinimumLevel != null)
         {
-            [DefaultCategoryName] = defaultMinLevel
-        };
+            var defaultMinLevel = (LogLevel)options.MinimumLevel.Default;
+            minLevelsPerCategory.Add(string.Empty, defaultMinLevel);
 
-        var effectiveFilters = new Dictionary<string, LoggerFilter>();
-
-        foreach ((string? categoryName, LogEventLevel minEventLevel) in options.MinimumLevel.Override)
-        {
-            var minLevel = (LogLevel)minEventLevel;
-
-            configurationMinLevels[categoryName] = minLevel;
-            effectiveFilters[categoryName] = level => level >= minLevel;
+            foreach ((string categoryName, LogEventLevel minEventLevel) in options.MinimumLevel.Override)
+            {
+                var ruleMinLevel = (LogLevel)minEventLevel;
+                minLevelsPerCategory.Add(categoryName, ruleMinLevel);
+            }
         }
 
-        LoggerFilter defaultFilter = level => level >= defaultMinLevel;
-        return new LoggerFilterConfiguration(configurationMinLevels, effectiveFilters, defaultFilter);
+        return new LogLevelsConfiguration(minLevelsPerCategory.AsReadOnly());
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        _optionsChangeListener?.Dispose();
+        ClearLogger();
+        base.Dispose(disposing);
     }
 }

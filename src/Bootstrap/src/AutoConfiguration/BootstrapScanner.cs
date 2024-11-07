@@ -213,7 +213,7 @@ internal sealed class BootstrapScanner
 
     private void WireDynamicSerilog()
     {
-        _wrapper.AddDynamicSerilog(null, false);
+        _wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicSerilog());
 
         _logger.LogInformation("Configured dynamic console logger for Serilog");
     }

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 
@@ -13,133 +12,250 @@ namespace Steeltoe.Logging;
 /// </summary>
 public abstract class DynamicLoggerProvider : IDynamicLoggerProvider
 {
-    protected const string DefaultCategoryName = "Default";
-    protected const LogLevel DefaultLogLevel = LogLevel.Information;
+    // This is the ultimate default minimum level used by .NET if nothing is configured.
+    private const LogLevel DefaultLogLevel = LogLevel.Information;
 
-    private readonly IReadOnlyDictionary<string, LogLevel> _configurationMinLevels;
-    private readonly ConcurrentDictionary<string, LoggerFilter> _effectiveFiltersPerCategory;
-    private readonly ConcurrentDictionary<string, MessageProcessingLogger> _activeLoggersPerCategory = new();
-    private LoggerFilter _defaultFilter;
+    // Cached delegates to reduce allocations and avoid closures.
+    private static readonly LoggerFilter FilterTraceOrHigher = level => level >= LogLevel.Trace;
+    private static readonly LoggerFilter FilterDebugOrHigher = level => level >= LogLevel.Debug;
+    private static readonly LoggerFilter FilterInformationOrHigher = level => level >= LogLevel.Information;
+    private static readonly LoggerFilter FilterWarningOrHigher = level => level >= LogLevel.Warning;
+    private static readonly LoggerFilter FilterErrorOrHigher = level => level >= LogLevel.Error;
+    private static readonly LoggerFilter FilterCriticalOrHigher = level => level >= LogLevel.Critical;
+    private static readonly LoggerFilter FilterNone = _ => false;
 
+    // Guards the three dictionaries below. It's essential that levels are properly updated when diagnosing issues.
+    private readonly ReaderWriterLockSlim _lock = new();
+
+    // Contains solely the overridden log levels (not including parent/child categories). These entries can be reset. Typically small.
+    private readonly Dictionary<string, LogLevel> _overriddenMinLevelsPerCategory = new();
+
+    // Contains all active ILogger instances. Potentially large.
+    private readonly Dictionary<string, MessageProcessingLogger> _activeLoggersPerCategory = new();
+
+    // Contains solely the log levels in IConfiguration (not including parent/child categories). Typically small.
+    private IReadOnlyDictionary<string, LogLevel> _configurationMinLevelsPerCategory;
+
+    // The underlying provider to create new ILogger instances from.
     protected ILoggerProvider InnerLoggerProvider { get; }
-    protected ICollection<IDynamicMessageProcessor> MessageProcessors { get; }
+
+    // Passed downstream to support other Steeltoe features; this provider has no interest in it.
+    protected IReadOnlyCollection<IDynamicMessageProcessor> MessageProcessors { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DynamicLoggerProvider" /> class.
     /// </summary>
     /// <param name="innerLoggerProvider">
-    /// The <see cref="ILoggerProvider" /> to wrap.
+    /// The <see cref="ILoggerProvider" /> to wrap. Used to create new <see cref="ILogger" /> instances.
     /// </param>
-    /// <param name="loggerFilterConfiguration">
-    /// The minimum log levels and filters per category at application startup.
+    /// <param name="logLevelsConfiguration">
+    /// The minimum log levels per logger category, originating from configuration.
     /// </param>
     /// <param name="messageProcessors">
     /// The processors to decorate log messages with.
     /// </param>
-    protected DynamicLoggerProvider(ILoggerProvider innerLoggerProvider, LoggerFilterConfiguration loggerFilterConfiguration,
+    protected DynamicLoggerProvider(ILoggerProvider innerLoggerProvider, LogLevelsConfiguration logLevelsConfiguration,
         IEnumerable<IDynamicMessageProcessor> messageProcessors)
     {
         ArgumentNullException.ThrowIfNull(innerLoggerProvider);
-        ArgumentNullException.ThrowIfNull(loggerFilterConfiguration);
+        ArgumentNullException.ThrowIfNull(logLevelsConfiguration);
         ArgumentNullException.ThrowIfNull(messageProcessors);
 
         IDynamicMessageProcessor[] messageProcessorArray = messageProcessors.ToArray();
         ArgumentGuard.ElementsNotNull(messageProcessorArray);
 
         InnerLoggerProvider = innerLoggerProvider;
-        _configurationMinLevels = loggerFilterConfiguration.ConfigurationMinLevels;
-        _effectiveFiltersPerCategory = new ConcurrentDictionary<string, LoggerFilter>(loggerFilterConfiguration.EffectiveFilters, StringComparer.Ordinal);
-        _defaultFilter = loggerFilterConfiguration.DefaultFilter;
-        MessageProcessors = messageProcessorArray;
+        _configurationMinLevelsPerCategory = logLevelsConfiguration.MinLevelsPerCategory;
+        MessageProcessors = messageProcessorArray.AsReadOnly();
     }
 
     /// <inheritdoc />
     public ILogger CreateLogger(string categoryName)
     {
-        ArgumentException.ThrowIfNullOrEmpty(categoryName);
+        ArgumentNullException.ThrowIfNull(categoryName);
 
-        return _activeLoggersPerCategory.GetOrAdd(categoryName, CreateMessageProcessingLogger(categoryName));
+        // Taking an upgradable lock (which blocks others from concurrently obtaining an upgradable lock),
+        // because creating a new logger is far more common than returning an existing one.
+        _lock.EnterUpgradeableReadLock();
+
+        try
+        {
+            if (_activeLoggersPerCategory.TryGetValue(categoryName, out MessageProcessingLogger? logger))
+            {
+                return logger;
+            }
+
+            _lock.EnterWriteLock();
+
+            try
+            {
+                // This provider is optimized for efficiently creating loggers.
+                // - It calculates the parent categories, which is fast because it is a small set.
+                // - It loops over the dictionaries for effective/configuration levels, both of which are small.
+                // - Cached delegates for the logger filters are used to minimize allocations.
+
+                logger = CreateMessageProcessingLogger(categoryName);
+                _activeLoggersPerCategory.Add(categoryName, logger);
+
+                return logger;
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
+        }
+        finally
+        {
+            _lock.ExitUpgradeableReadLock();
+        }
     }
 
     /// <inheritdoc />
-    public ICollection<DynamicLoggerConfiguration> GetLoggerConfigurations()
+    public ICollection<DynamicLoggerState> GetLogLevels()
     {
-        LogLevel defaultConfigurationMinLevel = GetConfigurationMinLevel(DefaultCategoryName) ?? DefaultLogLevel;
-        LogLevel defaultEffectiveMinLevel = GetMinLevelFromFilter(_defaultFilter);
+        var loggerStates = new Dictionary<string, DynamicLoggerState>();
 
-        var configurations = new Dictionary<string, DynamicLoggerConfiguration>
-        {
-            [DefaultCategoryName] = new(DefaultCategoryName, defaultConfigurationMinLevel, defaultEffectiveMinLevel)
-        };
+        _lock.EnterReadLock();
 
-        foreach (string categoryName in _activeLoggersPerCategory.Keys.Where(name => name != DefaultCategoryName).SelectMany(GetCategoryNameWithParents))
+        try
         {
-            if (!configurations.ContainsKey(categoryName))
+            foreach (string categoryName in GetCategoryNameWithDescendants(string.Empty))
             {
-                LogLevel? configurationMinLevel = GetConfigurationMinLevel(categoryName);
-                LogLevel effectiveMinLevel = GetEffectiveMinLevel(categoryName) ?? defaultEffectiveMinLevel;
+                DynamicLoggerState loggerState = GetLoggerState(categoryName);
+                loggerStates.Add(categoryName, loggerState);
+            }
+        }
+        finally
+        {
+            _lock.ExitReadLock();
+        }
 
-                configurations[categoryName] = new DynamicLoggerConfiguration(categoryName, configurationMinLevel, effectiveMinLevel);
+        return loggerStates.Values;
+    }
+
+    /// <summary>
+    /// Returns the incoming category, including all descendant categories. This is potentially an expensive operation.
+    /// </summary>
+    /// <param name="categoryName">
+    /// The logger category name to descend from, or an empty string for all categories.
+    /// </param>
+    /// <remarks>
+    /// Note this typically includes categories not in use. For example, if only logger "A.B.C" exists, ["A.B.C", "A.B", "A"] will be returned.
+    /// </remarks>
+    private HashSet<string> GetCategoryNameWithDescendants(string categoryName)
+    {
+        HashSet<string> allCategoryNames = [categoryName];
+
+        foreach (string nextCategoryName in _activeLoggersPerCategory.Keys.SelectMany(GetCategoryNameWithParents))
+        {
+            if (categoryName.Length == 0 || IsCategoryOrDescendant(nextCategoryName, categoryName))
+            {
+                allCategoryNames.Add(nextCategoryName);
             }
         }
 
-        return configurations.Values;
+        return allCategoryNames;
+    }
+
+    private DynamicLoggerState GetLoggerState(string categoryName)
+    {
+        LogLevel effectiveMinLevel = GetEffectiveMinLevel(categoryName);
+
+        // Only set configurationMinLevel when this category can be reset (could be the same as effective level).
+        LogLevel? configurationMinLevel = null;
+
+        if (_overriddenMinLevelsPerCategory.ContainsKey(categoryName))
+        {
+            configurationMinLevel = GetConfigurationMinLevel(categoryName);
+        }
+
+        return new DynamicLoggerState(categoryName, configurationMinLevel, effectiveMinLevel);
     }
 
     /// <inheritdoc />
     public void SetLogLevel(string categoryName, LogLevel? minLevel)
     {
-        ArgumentException.ThrowIfNullOrEmpty(categoryName);
+        ArgumentNullException.ThrowIfNull(categoryName);
 
-        LoggerFilter? filter = minLevel != null ? level => level >= minLevel : null;
+        _lock.EnterWriteLock();
 
-        if (categoryName == DefaultCategoryName)
+        try
         {
-            // Update the default filter for new logger instances.
-            _defaultFilter = filter ?? (logLevel => logLevel >= GetConfigurationMinLevel(DefaultCategoryName));
+            UpdateOverriddenLevels(categoryName, minLevel);
+            UpdateActiveLoggers(categoryName, minLevel != null);
+        }
+        finally
+        {
+            _lock.ExitWriteLock();
+        }
+    }
+
+    private void UpdateOverriddenLevels(string categoryName, LogLevel? minLevel)
+    {
+        if (minLevel == null)
+        {
+            _overriddenMinLevelsPerCategory.Remove(categoryName);
         }
         else
         {
-            // Update the filter dictionary first, so that loggers can inherit changes when we reset.
-            UpdateEffectiveFilters(categoryName, filter);
+            _overriddenMinLevelsPerCategory[categoryName] = minLevel.Value;
+        }
 
-            // Update existing loggers under this category, or reset them to what they inherit.
-            UpdateActiveLoggers(categoryName, filter);
+        // Set or Reset implicitly resets all descendants.
+        HashSet<string> descendantCategoryNames = GetCategoryNameWithDescendants(categoryName);
+        descendantCategoryNames.Remove(categoryName);
+
+        foreach (string descendantCategoryName in descendantCategoryNames)
+        {
+            _overriddenMinLevelsPerCategory.Remove(descendantCategoryName);
         }
     }
 
-    private void UpdateEffectiveFilters(string categoryName, LoggerFilter? filter)
+    private void UpdateActiveLoggers(string categoryName, bool isOverride)
     {
-        if (filter != null && !_effectiveFiltersPerCategory.ContainsKey(categoryName))
+        LoggerFilter? overrideFilter = null;
+
+        if (isOverride)
         {
-            _effectiveFiltersPerCategory.TryAdd(categoryName, filter);
+            // Fast path: All descendant loggers get the same filter, ignoring minimum levels from configuration.
+            overrideFilter = GetFilter(categoryName);
         }
 
-        foreach ((string nextName, LoggerFilter nextFilter) in _effectiveFiltersPerCategory.Where(pair => IsCategoryOrDescendant(pair.Key, categoryName)))
+        foreach ((string nextCategoryName, MessageProcessingLogger nextLogger) in _activeLoggersPerCategory)
         {
-            if (filter != null)
+            if (categoryName.Length == 0 || IsCategoryOrDescendant(nextCategoryName, categoryName))
             {
-                _effectiveFiltersPerCategory.TryUpdate(nextName, filter, nextFilter);
-            }
-            else
-            {
-                _effectiveFiltersPerCategory.TryRemove(nextName, out _);
+                LoggerFilter filter = overrideFilter ?? GetFilter(nextCategoryName);
+                nextLogger.ChangeFilter(filter);
             }
         }
     }
 
-    private void UpdateActiveLoggers(string categoryName, LoggerFilter? filter)
+    /// <inheritdoc />
+    public void RefreshConfiguration(LogLevelsConfiguration configuration)
     {
-        LoggerFilter newFilter = filter ?? GetFilter(categoryName);
+        ArgumentNullException.ThrowIfNull(configuration);
 
-        foreach ((_, MessageProcessingLogger logger) in _activeLoggersPerCategory.Where(pair => IsCategoryOrDescendant(pair.Key, categoryName)))
+        _lock.EnterWriteLock();
+
+        try
         {
-            logger.ChangeFilter(newFilter);
+            _configurationMinLevelsPerCategory = configuration.MinLevelsPerCategory;
+            UpdateActiveLoggers(string.Empty, false);
+        }
+        finally
+        {
+            _lock.ExitWriteLock();
         }
     }
 
     private static bool IsCategoryOrDescendant(string fullCategoryName, string baseCategoryName)
     {
+        if (baseCategoryName.Length == 0)
+        {
+            return true;
+        }
+
         // Category names are case-sensitive.
 
         if (fullCategoryName.Length == baseCategoryName.Length)
@@ -149,7 +265,7 @@ public abstract class DynamicLoggerProvider : IDynamicLoggerProvider
 
         if (fullCategoryName.Length > baseCategoryName.Length)
         {
-            return fullCategoryName.StartsWith(baseCategoryName + ".", StringComparison.Ordinal);
+            return fullCategoryName.StartsWith(baseCategoryName + '.', StringComparison.Ordinal);
         }
 
         return false;
@@ -167,14 +283,15 @@ public abstract class DynamicLoggerProvider : IDynamicLoggerProvider
         if (disposing)
         {
             InnerLoggerProvider.Dispose();
-            _effectiveFiltersPerCategory.Clear();
+            _overriddenMinLevelsPerCategory.Clear();
             _activeLoggersPerCategory.Clear();
+            _lock.Dispose();
         }
     }
 
     protected virtual MessageProcessingLogger CreateMessageProcessingLogger(string categoryName)
     {
-        ArgumentException.ThrowIfNullOrEmpty(categoryName);
+        ArgumentNullException.ThrowIfNull(categoryName);
 
         ILogger logger = InnerLoggerProvider.CreateLogger(categoryName);
         LoggerFilter filter = GetFilter(categoryName);
@@ -184,39 +301,41 @@ public abstract class DynamicLoggerProvider : IDynamicLoggerProvider
 
     protected LoggerFilter GetFilter(string categoryName)
     {
-        ArgumentException.ThrowIfNullOrEmpty(categoryName);
+        ArgumentNullException.ThrowIfNull(categoryName);
 
-        foreach (string name in GetCategoryNameWithParents(categoryName))
+        LogLevel minLevel = GetEffectiveMinLevel(categoryName);
+
+        return minLevel switch
         {
-            if (_effectiveFiltersPerCategory.TryGetValue(name, out LoggerFilter? filter))
+            LogLevel.Trace => FilterTraceOrHigher,
+            LogLevel.Debug => FilterDebugOrHigher,
+            LogLevel.Information => FilterInformationOrHigher,
+            LogLevel.Warning => FilterWarningOrHigher,
+            LogLevel.Error => FilterErrorOrHigher,
+            LogLevel.Critical => FilterCriticalOrHigher,
+            _ => FilterNone
+        };
+    }
+
+    private LogLevel GetEffectiveMinLevel(string categoryName)
+    {
+        string[] categoryNames = GetCategoryNameWithParents(categoryName).ToArray();
+
+        foreach (string nextCategoryName in categoryNames)
+        {
+            if (_overriddenMinLevelsPerCategory.TryGetValue(nextCategoryName, out LogLevel minLevel))
             {
-                return filter;
+                return minLevel;
             }
         }
 
-        return _defaultFilter;
-    }
-
-    private LogLevel? GetEffectiveMinLevel(string categoryName)
-    {
-        foreach (string name in GetCategoryNameWithParents(categoryName))
+        // PERF: Code duplicated from GetConfigurationMinLevel, to avoid building categoryNames twice.
+        // GetConfigurationMinLevel is much less likely to execute, which justifies the rebuild there.
+        foreach (string nextCategoryName in categoryNames)
         {
-            if (_effectiveFiltersPerCategory.TryGetValue(name, out LoggerFilter? filter))
+            if (_configurationMinLevelsPerCategory.TryGetValue(nextCategoryName, out LogLevel minLevel))
             {
-                return GetMinLevelFromFilter(filter);
-            }
-        }
-
-        return null;
-    }
-
-    private static LogLevel GetMinLevelFromFilter(LoggerFilter filter)
-    {
-        foreach (LogLevel level in Enum.GetValues<LogLevel>())
-        {
-            if (filter.Invoke(level))
-            {
-                return level;
+                return minLevel;
             }
         }
 
@@ -232,16 +351,27 @@ public abstract class DynamicLoggerProvider : IDynamicLoggerProvider
 
             if (lastIndexOfDot == -1)
             {
-                yield return DefaultCategoryName;
                 break;
             }
 
             categoryName = categoryName[..lastIndexOfDot];
         }
+
+        yield return string.Empty;
     }
 
-    private LogLevel? GetConfigurationMinLevel(string name)
+    private LogLevel GetConfigurationMinLevel(string categoryName)
     {
-        return _configurationMinLevels.TryGetValue(name, out LogLevel level) ? level : null;
+        string[] categoryNames = GetCategoryNameWithParents(categoryName).ToArray();
+
+        foreach (string nextCategoryName in categoryNames)
+        {
+            if (_configurationMinLevelsPerCategory.TryGetValue(nextCategoryName, out LogLevel minLevel))
+            {
+                return minLevel;
+            }
+        }
+
+        return DefaultLogLevel;
     }
 }
