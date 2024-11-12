@@ -46,8 +46,7 @@
 
     <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
     <ConsulVersion>1.7.14.*</ConsulVersion>
-    <DiagnosticsNetCoreClientVersion>0.2.*</DiagnosticsNetCoreClientVersion>
-    <DiagnosticsTracingVersion>3.1.*</DiagnosticsTracingVersion>
+    <DiagnosticsTracingVersion>3.1.16</DiagnosticsTracingVersion>
     <EntityFrameworkCoreVersion>8.0.*</EntityFrameworkCoreVersion>
     <FoundationalVersion>
       <!--
