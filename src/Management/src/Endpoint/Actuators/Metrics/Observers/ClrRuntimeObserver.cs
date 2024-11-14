@@ -99,16 +99,16 @@ internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
 
         if (_options.CurrentValue.GCEvents)
         {
-            meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "Current CLR memory usage", "bytes");
-            meter.CreateObservableGauge("clr.gc.collections", GetCollectionCount, "Garbage collection count", "count");
-            meter.CreateObservableGauge("clr.process.uptime", GetUpTime, "Process uptime in seconds", "count");
-            meter.CreateObservableGauge("clr.cpu.count", () => System.Environment.ProcessorCount, "Total processor count", "count");
+            meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "bytes", "Current CLR memory usage");
+            meter.CreateObservableGauge("clr.gc.collections", GetCollectionCount, "count", "Garbage collection count");
+            meter.CreateObservableGauge("clr.process.uptime", GetUpTime, "count", "Process uptime in seconds");
+            meter.CreateObservableGauge("clr.cpu.count", () => System.Environment.ProcessorCount, "count", "Total processor count");
         }
 
         if (_options.CurrentValue.ThreadPoolEvents)
         {
-            meter.CreateObservableGauge("clr.threadpool.active", GetActiveThreadPoolWorkers, "Active thread count", "count");
-            meter.CreateObservableGauge("clr.threadpool.avail", GetAvailableThreadPoolWorkers, "Available thread count", "count");
+            meter.CreateObservableGauge("clr.threadpool.active", GetActiveThreadPoolWorkers, "count", "Active thread count");
+            meter.CreateObservableGauge("clr.threadpool.avail", GetAvailableThreadPoolWorkers, "count", "Available thread count");
         }
     }
 }
