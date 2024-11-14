@@ -16,7 +16,6 @@ using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Logging;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Wavefront.Exporters;
 using B3Propagator = OpenTelemetry.Extensions.Propagators.B3Propagator;
 using Sdk = OpenTelemetry.Sdk;
 
@@ -60,8 +59,6 @@ public static class TracingBaseServiceCollectionExtensions
 
         services.AddOptions();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<TracingOptions>, ConfigureTracingOptions>());
-
-        services.ConfigureOptionsWithChangeTokenSource<WavefrontExporterOptions, ConfigureWavefrontExporterOptions>();
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDynamicMessageProcessor, TracingLogProcessor>());
 
@@ -140,8 +137,6 @@ public static class TracingBaseServiceCollectionExtensions
             {
                 tracerProviderBuilder.SetSampler(new AlwaysOnSampler());
             }
-
-            AddWavefrontExporter(tracerProviderBuilder, serviceProvider);
         });
 
         return services;
@@ -184,17 +179,5 @@ public static class TracingBaseServiceCollectionExtensions
     private static void AddOpenTelemetryProtocolExporter(TracerProviderBuilder builder)
     {
         builder.AddOtlpExporter();
-    }
-
-    private static void AddWavefrontExporter(TracerProviderBuilder tracerProviderBuilder, IServiceProvider serviceProvider)
-    {
-        var wavefrontOptions = serviceProvider.GetRequiredService<IOptions<WavefrontExporterOptions>>();
-
-        // Only add if wavefront is configured
-        if (!string.IsNullOrEmpty(wavefrontOptions.Value.Uri))
-        {
-            var logger = serviceProvider.GetRequiredService<ILogger<WavefrontTraceExporter>>();
-            tracerProviderBuilder.AddWavefrontTraceExporter(wavefrontOptions.Value, logger);
-        }
     }
 }

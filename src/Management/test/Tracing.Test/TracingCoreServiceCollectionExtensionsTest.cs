@@ -44,24 +44,4 @@ public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
         var otlpOptions = serviceProvider.GetRequiredService<IOptions<OtlpExporterOptions>>();
         Assert.NotNull(otlpOptions.Value.Endpoint);
     }
-
-    [Fact]
-    public async Task AddDistributedTracingAspNetCore_WiresWavefrontExporters()
-    {
-        IServiceCollection services = new ServiceCollection();
-
-        services.AddSingleton(GetConfiguration(new Dictionary<string, string?>
-        {
-            { "management:metrics:export:wavefront:uri", "https://test.wavefront.com" },
-            { "management:metrics:export:wavefront:apiToken", "fakeSecret" }
-        }));
-
-        services.AddLogging();
-        services.AddDistributedTracing(null);
-
-        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-
-        var tracerProvider = serviceProvider.GetService<TracerProvider>();
-        Assert.NotNull(tracerProvider);
-    }
 }
