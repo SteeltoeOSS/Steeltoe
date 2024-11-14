@@ -48,7 +48,6 @@ using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Tracing;
-using Steeltoe.Management.Wavefront.Exporters;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
 
@@ -216,30 +215,6 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
     [InlineData(HostBuilderType.HostApplication)]
-    public async Task WavefrontMetricsExporter_IsAutowired(HostBuilderType hostBuilderType)
-    {
-        await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementWavefront, hostBuilderType);
-
-        AssertWavefrontMetricsExporterIsAutowired(hostWrapper);
-    }
-
-    [Theory]
-    [InlineData(HostBuilderType.Host)]
-    [InlineData(HostBuilderType.WebHost)]
-    [InlineData(HostBuilderType.WebApplication)]
-    [InlineData(HostBuilderType.HostApplication)]
-    public async Task WavefrontTraceExporter_IsAutowired(HostBuilderType hostBuilderType)
-    {
-        await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementTracing, hostBuilderType);
-
-        AssertWavefrontTraceExporterIsAutowired(hostWrapper);
-    }
-
-    [Theory]
-    [InlineData(HostBuilderType.Host)]
-    [InlineData(HostBuilderType.WebHost)]
-    [InlineData(HostBuilderType.WebApplication)]
-    [InlineData(HostBuilderType.HostApplication)]
     public async Task AllActuators_AreAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementEndpoint, hostBuilderType);
@@ -279,8 +254,6 @@ public sealed class HostBuilderExtensionsTest
         AssertDynamicSerilogIsAutowired(hostWrapper);
         AssertServiceDiscoveryClientsAreAutowired(hostWrapper);
         AssertPrometheusIsAutowired(hostWrapper);
-        AssertWavefrontMetricsExporterIsAutowired(hostWrapper);
-        AssertWavefrontTraceExporterIsAutowired(hostWrapper);
         AssertTracingIsAutowired(hostWrapper);
 
         await hostWrapper.StartAsync();
@@ -376,28 +349,6 @@ public sealed class HostBuilderExtensionsTest
     private static void AssertPrometheusIsAutowired(HostWrapper hostWrapper)
     {
         hostWrapper.Services.GetService<MeterProvider>().Should().NotBeNull();
-    }
-
-    private static void AssertWavefrontMetricsExporterIsAutowired(HostWrapper hostWrapper)
-    {
-        hostWrapper.Services.GetService<MeterProvider>().Should().NotBeNull();
-    }
-
-    private static void AssertWavefrontTraceExporterIsAutowired(HostWrapper hostWrapper)
-    {
-        var tracerProvider = hostWrapper.Services.GetRequiredService<TracerProvider>();
-
-        PropertyInfo? processorProperty = tracerProvider.GetType().GetProperty("Processor", BindingFlags.NonPublic | BindingFlags.Instance);
-        processorProperty.Should().NotBeNull();
-
-        object? processor = processorProperty!.GetValue(tracerProvider);
-        processor.Should().NotBeNull();
-
-        FieldInfo? exporterField = processor!.GetType().GetField("exporter", BindingFlags.NonPublic | BindingFlags.Instance);
-        exporterField.Should().NotBeNull();
-
-        object? exporter = exporterField!.GetValue(processor);
-        exporter.Should().BeOfType<WavefrontTraceExporter>();
     }
 
     private static async Task AssertAllActuatorsAreAutowiredAsync(HostWrapper hostWrapper, bool expectHealthy)

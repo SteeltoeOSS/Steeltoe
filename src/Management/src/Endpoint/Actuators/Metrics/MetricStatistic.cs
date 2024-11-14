@@ -4,7 +4,6 @@
 
 using System.Text.Json.Serialization;
 using Steeltoe.Common.CasingConventions;
-
 #if !DEBUG
 #pragma warning disable SA1602 // Enumeration items should be documented
 #endif

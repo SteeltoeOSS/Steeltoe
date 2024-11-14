@@ -18,6 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Wavefront\Steeltoe.Management.Wavefront.csproj" />
+    <ProjectReference Include="..\Endpoint\Steeltoe.Management.Endpoint.csproj" />
   </ItemGroup>
 </Project>
