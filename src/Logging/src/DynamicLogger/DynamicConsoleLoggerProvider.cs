@@ -12,46 +12,77 @@ namespace Steeltoe.Logging.DynamicLogger;
 /// Implements <see cref="DynamicLoggerProvider" /> for logging to the console.
 /// </summary>
 [ProviderAlias("Dynamic")]
-public sealed class DynamicConsoleLoggerProvider(
-    IOptionsMonitor<LoggerFilterOptions> filterOptionsMonitor, ConsoleLoggerProvider consoleLoggerProvider,
-    IEnumerable<IDynamicMessageProcessor> messageProcessors)
-    : DynamicLoggerProvider(consoleLoggerProvider, GetMinimumLevelsFromOptions(filterOptionsMonitor), messageProcessors), ISupportExternalScope
+public sealed class DynamicConsoleLoggerProvider : DynamicLoggerProvider, ISupportExternalScope
 {
-    private static LoggerFilterConfiguration GetMinimumLevelsFromOptions(IOptionsMonitor<LoggerFilterOptions> filterOptionsMonitor)
+    private readonly IDisposable? _optionsChangeListener;
+
+    public DynamicConsoleLoggerProvider(IOptionsMonitor<LoggerFilterOptions> filterOptionsMonitor, ConsoleLoggerProvider consoleLoggerProvider,
+        IEnumerable<IDynamicMessageProcessor> messageProcessors)
+        : base(consoleLoggerProvider, GetMinimumLevelsFromOptionsMonitor(filterOptionsMonitor), messageProcessors)
     {
         ArgumentNullException.ThrowIfNull(filterOptionsMonitor);
 
-        var effectiveFilters = new Dictionary<string, LoggerFilter>();
-        var configurationMinLevels = new Dictionary<string, LogLevel>();
-        LoggerFilter defaultFilter = level => level >= DefaultLogLevel;
-
-        foreach (LoggerFilterRule rule in filterOptionsMonitor.CurrentValue.Rules.Where(IsConsoleProvider))
+        _optionsChangeListener = filterOptionsMonitor.OnChange((options, _) =>
         {
-            string ruleCategoryName = rule.CategoryName ?? DefaultCategoryName;
+            LogLevelsConfiguration configuration = GetMinimumLevelsFromOptions(options);
+            RefreshConfiguration(configuration);
+        });
+    }
 
-            if (ruleCategoryName.Contains('*'))
+    private static LogLevelsConfiguration GetMinimumLevelsFromOptionsMonitor(IOptionsMonitor<LoggerFilterOptions> filterOptionsMonitor)
+    {
+        ArgumentNullException.ThrowIfNull(filterOptionsMonitor);
+
+        return GetMinimumLevelsFromOptions(filterOptionsMonitor.CurrentValue);
+    }
+
+    private static LogLevelsConfiguration GetMinimumLevelsFromOptions(LoggerFilterOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+
+        var minLevelsPerCategory = new Dictionary<string, LogLevel>();
+
+        foreach (LoggerFilterRule rule in GetRulesForConsoleProvider(options))
+        {
+            string categoryName = rule.CategoryName ?? string.Empty;
+
+            if (categoryName.Contains('*'))
             {
                 throw new NotSupportedException("Logger categories with wildcards are not supported.");
             }
 
-            configurationMinLevels[ruleCategoryName] = rule.LogLevel ?? DefaultLogLevel;
-
-            if (ruleCategoryName == DefaultCategoryName)
+            if (rule.LogLevel != null)
             {
-                defaultFilter = level => level >= (rule.LogLevel ?? DefaultLogLevel);
-            }
-            else
-            {
-                effectiveFilters[ruleCategoryName] = level => level >= (rule.LogLevel ?? DefaultLogLevel);
+                minLevelsPerCategory[categoryName] = rule.LogLevel.Value;
             }
         }
 
-        return new LoggerFilterConfiguration(configurationMinLevels, effectiveFilters, defaultFilter);
+        return new LogLevelsConfiguration(minLevelsPerCategory.AsReadOnly());
     }
 
-    private static bool IsConsoleProvider(LoggerFilterRule rule)
+    private static IEnumerable<LoggerFilterRule> GetRulesForConsoleProvider(LoggerFilterOptions options)
     {
-        return string.IsNullOrEmpty(rule.ProviderName) || rule.ProviderName == "Console" || rule.ProviderName == "Logging";
+        // Return global rules first, so that they are overridden by console-specific rules.
+        foreach (LoggerFilterRule rule in options.Rules.Where(rule => IsProviderAgnostic(rule.ProviderName)))
+        {
+            yield return rule;
+        }
+
+        foreach (LoggerFilterRule rule in options.Rules.Where(rule => IsConsoleProvider(rule.ProviderName)))
+        {
+            yield return rule;
+        }
+    }
+
+    private static bool IsProviderAgnostic(string? providerName)
+    {
+        return string.IsNullOrEmpty(providerName) || string.Equals(providerName, "Logging", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsConsoleProvider(string? providerName)
+    {
+        return string.Equals(providerName, "Console", StringComparison.OrdinalIgnoreCase) || string.Equals(providerName,
+            typeof(ConsoleLoggerProvider).FullName, StringComparison.OrdinalIgnoreCase);
     }
 
     void ISupportExternalScope.SetScopeProvider(IExternalScopeProvider scopeProvider)
@@ -59,5 +90,11 @@ public sealed class DynamicConsoleLoggerProvider(
         ArgumentNullException.ThrowIfNull(scopeProvider);
 
         ((ConsoleLoggerProvider)InnerLoggerProvider).SetScopeProvider(scopeProvider);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        _optionsChangeListener?.Dispose();
+        base.Dispose(disposing);
     }
 }

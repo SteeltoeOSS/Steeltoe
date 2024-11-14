@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 
 namespace Steeltoe.Logging;
 
@@ -13,9 +12,9 @@ namespace Steeltoe.Logging;
 /// </summary>
 public class MessageProcessingLogger : ILogger
 {
-    private LoggerFilter _filter;
+    private volatile LoggerFilter _filter;
 
-    protected ICollection<IDynamicMessageProcessor> MessageProcessors { get; }
+    protected IReadOnlyCollection<IDynamicMessageProcessor> MessageProcessors { get; }
 
     protected internal ILogger InnerLogger { get; }
 
@@ -37,12 +36,9 @@ public class MessageProcessingLogger : ILogger
         ArgumentNullException.ThrowIfNull(filter);
         ArgumentNullException.ThrowIfNull(messageProcessors);
 
-        IDynamicMessageProcessor[] messageProcessorArray = messageProcessors.ToArray();
-        ArgumentGuard.ElementsNotNull(messageProcessorArray);
-
         InnerLogger = innerLogger;
         _filter = filter;
-        MessageProcessors = messageProcessorArray;
+        MessageProcessors = messageProcessors as IReadOnlyCollection<IDynamicMessageProcessor> ?? messageProcessors.ToArray().AsReadOnly();
     }
 
     /// <summary>
@@ -93,7 +89,7 @@ public class MessageProcessingLogger : ILogger
     }
 
     private static string ApplyMessageProcessors<TState>(TState state, Exception? exception, Func<TState, Exception?, string> formatter,
-        IEnumerable<IDynamicMessageProcessor> processors)
+        IReadOnlyCollection<IDynamicMessageProcessor> processors)
     {
         string message = formatter(state, exception);
 

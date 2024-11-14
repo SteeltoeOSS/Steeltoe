@@ -42,10 +42,16 @@ public sealed class EndpointMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         var result = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers");
 
-        Assert.True(result.TryGetProperty("loggers", out JsonElement loggers));
-        Assert.True(result.TryGetProperty("levels", out _));
-        Assert.Equal("WARN", loggers.GetProperty("Default").GetProperty("configuredLevel").GetString());
-        Assert.Equal("INFO", loggers.GetProperty("Steeltoe.Management").GetProperty("effectiveLevel").GetString());
+        result.TryGetProperty("levels", out JsonElement levels).Should().BeTrue();
+        levels.ToString().Should().Be("""["OFF","FATAL","ERROR","WARN","INFO","DEBUG","TRACE"]""");
+
+        result.TryGetProperty("loggers", out JsonElement loggers).Should().BeTrue();
+
+        loggers.TryGetProperty("Default", out JsonElement defaultLogger).Should().BeTrue();
+        defaultLogger.ToString().Should().Be("""{"effectiveLevel":"WARN"}""");
+
+        loggers.TryGetProperty("Steeltoe.Management", out JsonElement managementLogger).Should().BeTrue();
+        managementLogger.ToString().Should().Be("""{"effectiveLevel":"INFO"}""");
     }
 
     [Fact]
@@ -173,10 +179,15 @@ public sealed class EndpointMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         var result = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers");
 
-        Assert.True(result.TryGetProperty("loggers", out JsonElement loggers));
-        Assert.True(result.TryGetProperty("levels", out _));
-        Assert.Equal("WARN", loggers.GetProperty("Default").GetProperty("configuredLevel").GetString());
-        Assert.Equal("WARN", loggers.GetProperty("Microsoft").GetProperty("effectiveLevel").GetString());
-        Assert.Equal("INFO", loggers.GetProperty("Steeltoe.Management").GetProperty("effectiveLevel").GetString());
+        result.TryGetProperty("levels", out JsonElement levels).Should().BeTrue();
+        levels.ToString().Should().Be("""["OFF","FATAL","ERROR","WARN","INFO","DEBUG","TRACE"]""");
+
+        result.TryGetProperty("loggers", out JsonElement loggers).Should().BeTrue();
+
+        loggers.TryGetProperty("Default", out JsonElement defaultLogger).Should().BeTrue();
+        defaultLogger.ToString().Should().Be("""{"effectiveLevel":"WARN"}""");
+
+        loggers.TryGetProperty("Steeltoe.Management", out JsonElement managementLogger).Should().BeTrue();
+        managementLogger.ToString().Should().Be("""{"effectiveLevel":"INFO"}""");
     }
 }

@@ -5,127 +5,56 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Logging.DynamicLogger.Test;
 
-public sealed class DynamicConsoleLoggerProviderTest
+public sealed class DynamicConsoleLoggerProviderTest : IDisposable
 {
+    private readonly ConsoleOutput _consoleOutput = ConsoleOutput.Capture();
+
     [Fact]
-    public void Create_CreatesLoggerWithCorrectFilters()
+    public async Task ConsoleSettingsWinOverGlobalSettings()
     {
-        var provider = CreateLoggerProvider<ILoggerProvider>(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
-            ["Logging:LogLevel:Fully.Qualified"] = "Warning"
-        });
+            ["Logging:LogLevel:Default"] = "Error",
+            ["Logging:LogLevel:A.B"] = "Warning",
+            ["Logging:Console:LogLevel:Default"] = "Trace",
+            ["Logging:Console:LogLevel:A.B.C"] = "Debug"
+        };
 
-        ILogger logger = provider.CreateLogger("Fully.Qualified.Name.For.Type");
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
 
-        logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Error).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Warning).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Information).Should().BeFalse();
-        logger.IsEnabled(LogLevel.Debug).Should().BeFalse();
-        logger.IsEnabled(LogLevel.Trace).Should().BeFalse();
-        logger.IsEnabled(LogLevel.None).Should().BeFalse();
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Trace);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Warning);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Debug);
     }
 
     [Fact]
-    public void Create_FailsOnWildcardInConfiguration()
+    public void FailsOnWildcardInConfiguration()
     {
         var appSettings = new Dictionary<string, string?>
         {
             ["Logging:LogLevel:Some*Other"] = "Information"
         };
 
-        Action action = () => CreateLoggerProvider<ILoggerProvider>(appSettings);
+        Action action = () => CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
 
         action.Should().ThrowExactly<NotSupportedException>().WithMessage("Logger categories with wildcards are not supported.");
     }
 
     [Fact]
-    public void GetLoggerConfigurations_ReturnsExpected()
+    public void CreatesLoggerWithCorrectFilters()
     {
-        var provider = CreateLoggerProvider<DynamicConsoleLoggerProvider>(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
-            ["Logging:LogLevel:A"] = "Information"
-        });
+            ["Logging:LogLevel:Fully.Qualified"] = "Warning"
+        };
 
-        _ = provider.CreateLogger("A.B.C.D.TestClass");
-
-        string[] configurations = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
-
-        configurations.Should().HaveCount(6);
-        configurations.Should().Contain("Default: Information -> Information");
-        configurations.Should().Contain("A.B.C.D.TestClass: Information");
-        configurations.Should().Contain("A.B.C.D: Information");
-        configurations.Should().Contain("A.B.C: Information");
-        configurations.Should().Contain("A.B: Information");
-        configurations.Should().Contain("A: Information -> Information");
-    }
-
-    [Fact]
-    public void GetLoggerConfigurations_UsesMinLevelInformationByDefault()
-    {
-        var provider = CreateLoggerProvider<DynamicConsoleLoggerProvider>();
-        _ = provider.CreateLogger("Some");
-
-        string[] configurations = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
-
-        configurations.Should().HaveCount(2);
-        configurations.Should().Contain("Default: Information -> Information");
-        configurations.Should().Contain("Some: Information");
-    }
-
-    [Fact]
-    public void GetLoggerConfigurations_ReturnsExpectedAfterSetLogLevel()
-    {
-        var provider = CreateLoggerProvider<DynamicConsoleLoggerProvider>(new Dictionary<string, string?>
-        {
-            ["Logging:LogLevel:A"] = "Information"
-        });
-
-        _ = provider.CreateLogger("A.B.C.D.TestClass");
-
-        string[] configurations = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
-
-        configurations.Should().HaveCount(6);
-        configurations.Should().Contain("Default: Information -> Information");
-        configurations.Should().Contain("A.B.C.D.TestClass: Information");
-        configurations.Should().Contain("A.B.C.D: Information");
-        configurations.Should().Contain("A.B.C: Information");
-        configurations.Should().Contain("A.B: Information");
-        configurations.Should().Contain("A: Information -> Information");
-
-        provider.SetLogLevel("A.B", LogLevel.Trace);
-        configurations = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
-
-        configurations.Should().HaveCount(6);
-        configurations.Should().Contain("Default: Information -> Information");
-        configurations.Should().Contain("A.B.C.D.TestClass: Trace");
-        configurations.Should().Contain("A.B.C.D: Trace");
-        configurations.Should().Contain("A.B.C: Trace");
-        configurations.Should().Contain("A.B: Trace");
-        configurations.Should().Contain("A: Information -> Information");
-    }
-
-    [Fact]
-    public void SetLogLevel_UpdatesLogger()
-    {
-        var provider = CreateLoggerProvider<DynamicConsoleLoggerProvider>();
-
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
         ILogger logger = provider.CreateLogger("Fully.Qualified.Name.For.Type");
-
-        provider.SetLogLevel("Fully", LogLevel.Debug);
-
-        logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Error).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Warning).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Information).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Debug).Should().BeTrue();
-        logger.IsEnabled(LogLevel.Trace).Should().BeFalse();
-        logger.IsEnabled(LogLevel.None).Should().BeFalse();
-
-        provider.SetLogLevel("Fully.Qualified.Name", LogLevel.Warning);
 
         logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
         logger.IsEnabled(LogLevel.Error).Should().BeTrue();
@@ -137,290 +66,661 @@ public sealed class DynamicConsoleLoggerProviderTest
     }
 
     [Fact]
-    public void SetLogLevel_UpdatesNamespaceDescendants()
+    public void CreateLoggerMultipleTimesReturnsSameLoggerInstance()
     {
-        // arrange (A* should log at Information)
-        var provider = CreateLoggerProvider<DynamicConsoleLoggerProvider>();
+        using IDynamicLoggerProvider provider = CreateLoggerProvider();
 
-        // act I: with original setup
-        ILogger childLogger = provider.CreateLogger("A.B.C");
-        ICollection<DynamicLoggerConfiguration> configurations = provider.GetLoggerConfigurations();
-        DynamicLoggerConfiguration tierOneNamespace = configurations.First(configuration => configuration.CategoryName == "A");
+        ILogger firstLogger = provider.CreateLogger("Some");
+        ILogger nextLogger = provider.CreateLogger("Some");
 
-        // assert I: base namespace is in the response, correctly
-        tierOneNamespace.EffectiveMinLevel.Should().Be(LogLevel.Information);
-
-        // act II: set A.B* to log at Trace
-        provider.SetLogLevel("A.B", LogLevel.Trace);
-        configurations = provider.GetLoggerConfigurations();
-        tierOneNamespace = configurations.First(configuration => configuration.CategoryName == "A");
-        DynamicLoggerConfiguration tierTwoNamespace = configurations.First(configuration => configuration.CategoryName == "A.B");
-
-        // assert II: base hasn't changed but the one set at runtime and all descendants (including a concrete logger) have
-        tierOneNamespace.EffectiveMinLevel.Should().Be(LogLevel.Information);
-        tierTwoNamespace.EffectiveMinLevel.Should().Be(LogLevel.Trace);
-        childLogger.IsEnabled(LogLevel.Trace).Should().BeTrue();
-
-        // act III: set A to something else, make sure it inherits down
-        provider.SetLogLevel("A", LogLevel.Error);
-        configurations = provider.GetLoggerConfigurations();
-        tierOneNamespace = configurations.First(configuration => configuration.CategoryName == "A");
-        tierTwoNamespace = configurations.First(configuration => configuration.CategoryName == "A.B");
-        ILogger grandchildLogger = provider.CreateLogger("A.B.C.D");
-
-        // assert III
-        tierOneNamespace.EffectiveMinLevel.Should().Be(LogLevel.Error);
-        tierTwoNamespace.EffectiveMinLevel.Should().Be(LogLevel.Error);
-        childLogger.IsEnabled(LogLevel.Warning).Should().BeFalse();
-        grandchildLogger.IsEnabled(LogLevel.Warning).Should().BeFalse();
+        firstLogger.Should().BeSameAs(nextLogger);
     }
 
     [Fact]
-    public void SetLogLevel_DoesNotUpdateUnrelatedCategoriesWithSamePrefix()
+    public void GetLogLevelsReturnsIntermediateCategories()
     {
-        var provider = CreateLoggerProvider<DynamicConsoleLoggerProvider>(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Logging:LogLevel:A"] = "Trace"
+        };
+
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        _ = provider.CreateLogger("A.B.C.D.Example");
+
+        string[] loggerStates = provider.GetLogLevels().Select(state => state.ToString()).ToArray();
+
+        loggerStates.Should().HaveCount(6);
+        loggerStates.Should().Contain("Default: Information");
+        loggerStates.Should().Contain("A: Trace");
+        loggerStates.Should().Contain("A.B: Trace");
+        loggerStates.Should().Contain("A.B.C: Trace");
+        loggerStates.Should().Contain("A.B.C.D: Trace");
+        loggerStates.Should().Contain("A.B.C.D.Example: Trace");
+    }
+
+    [Theory]
+    [InlineData(ConfigurationCategory.Parent, LogLevel.Error, LogLevel.Trace)]
+    [InlineData(ConfigurationCategory.Parent, LogLevel.Trace, LogLevel.Error)]
+    [InlineData(ConfigurationCategory.Parent, LogLevel.Debug, LogLevel.Debug)]
+    [InlineData(ConfigurationCategory.Self, LogLevel.Error, LogLevel.Trace)]
+    [InlineData(ConfigurationCategory.Self, LogLevel.Trace, LogLevel.Error)]
+    [InlineData(ConfigurationCategory.Self, LogLevel.Debug, LogLevel.Debug)]
+    [InlineData(ConfigurationCategory.Child, LogLevel.Error, LogLevel.Trace)]
+    [InlineData(ConfigurationCategory.Child, LogLevel.Trace, LogLevel.Error)]
+    [InlineData(ConfigurationCategory.Child, LogLevel.Debug, LogLevel.Debug)]
+    public async Task CanSetAndResetMinLevel(ConfigurationCategory configurationCategory, LogLevel configurationLevel, LogLevel overrideLevel)
+    {
+        string configurationKey = configurationCategory switch
+        {
+            ConfigurationCategory.Parent => "A",
+            ConfigurationCategory.Self => "A.B",
+            ConfigurationCategory.Child => "A.B.C",
+            _ => throw new ArgumentOutOfRangeException(nameof(configurationCategory))
+        };
+
+        var appSettings = new Dictionary<string, string?>
+        {
+            [$"Logging:LogLevel:{configurationKey}"] = configurationLevel.ToString()
+        };
+
+        LogLevel expectBeforeLevelAtParent = configurationCategory == ConfigurationCategory.Parent ? configurationLevel : LogLevel.Information;
+        LogLevel expectBeforeLevelAtSelf = configurationCategory != ConfigurationCategory.Child ? configurationLevel : LogLevel.Information;
+        LogLevel expectBeforeLevelAtChild = configurationLevel;
+
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+
+        await testContext.Parent.AssertMinLevelAsync(expectBeforeLevelAtParent);
+        await testContext.Self.AssertMinLevelAsync(expectBeforeLevelAtSelf);
+        await testContext.Child.AssertMinLevelAsync(expectBeforeLevelAtChild);
+
+        provider.SetLogLevel(testContext.Self.CategoryName, overrideLevel);
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(expectBeforeLevelAtParent);
+        await testContext.Self.AssertMinLevelAsync(overrideLevel, expectBeforeLevelAtSelf);
+        await testContext.Child.AssertMinLevelAsync(overrideLevel);
+
+        provider.SetLogLevel(testContext.Self.CategoryName, null);
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(expectBeforeLevelAtParent);
+        await testContext.Self.AssertMinLevelAsync(expectBeforeLevelAtSelf);
+        await testContext.Child.AssertMinLevelAsync(expectBeforeLevelAtChild);
+    }
+
+    [Fact]
+    public async Task CanSetAndResetImplicitDefaultMinLevel()
+    {
+        using IDynamicLoggerProvider provider = CreateLoggerProvider();
+        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+
+        await testContext.Default.AssertMinLevelAsync(LogLevel.Information);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Information);
+
+        provider.SetLogLevel(string.Empty, LogLevel.Error);
+        testContext.Refresh();
+
+        await testContext.Default.AssertMinLevelAsync(LogLevel.Error, LogLevel.Information);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Error);
+
+        provider.SetLogLevel(string.Empty, null);
+        testContext.Refresh();
+
+        await testContext.Default.AssertMinLevelAsync(LogLevel.Information);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Information);
+    }
+
+    [Fact]
+    public async Task ResetClearsOverridesInDescendants()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Logging:LogLevel:A.B.C"] = "Error"
+        };
+
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+
+        provider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Trace);
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Information);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Trace, LogLevel.Information);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Trace);
+
+        provider.SetLogLevel(testContext.Parent.CategoryName, LogLevel.Debug);
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Debug, LogLevel.Information);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Debug);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Debug);
+
+        provider.SetLogLevel(testContext.Parent.CategoryName, null);
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Information);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Information);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Error);
+    }
+
+    [Fact]
+    public async Task ResetAtDescendantPreservesOverrideInParent()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Logging:LogLevel:A.B"] = "Critical",
+            ["Logging:LogLevel:A.B.C"] = "Error"
+        };
+
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+
+        provider.SetLogLevel(testContext.Parent.CategoryName, LogLevel.Trace);
+        provider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Debug);
+        provider.SetLogLevel(testContext.Child.CategoryName, LogLevel.Warning);
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Trace, LogLevel.Information);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Debug, LogLevel.Critical);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Warning, LogLevel.Error);
+
+        provider.SetLogLevel(testContext.Child.CategoryName, null);
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Trace, LogLevel.Information);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Debug, LogLevel.Critical);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Debug);
+    }
+
+    [Fact]
+    public async Task CanResetForMissingOverride()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Logging:LogLevel:A.B.C"] = "Error"
+        };
+
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+
+        provider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Trace);
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Information);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Trace, LogLevel.Information);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Trace);
+
+        provider.SetLogLevel(testContext.Parent.CategoryName, null);
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Information);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Information);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Error);
+    }
+
+    [Fact]
+    public async Task CanSetOrResetMultipleTimes()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Logging:LogLevel:A"] = "Error"
+        };
+
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Error);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Error);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Error);
+
+        provider.SetLogLevel(testContext.Self.CategoryName, LogLevel.None);
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Error);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.None, LogLevel.Error);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.None);
+
+        provider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Debug);
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Error);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Debug, LogLevel.Error);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Debug);
+
+        provider.SetLogLevel(testContext.Parent.CategoryName, null);
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Error);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Error);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Error);
+
+        provider.SetLogLevel(testContext.Parent.CategoryName, null);
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Error);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Error);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Error);
+    }
+
+    [Fact]
+    public void SetIsAppliedToBothExistingAndNewLogger()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Logging:LogLevel:Some"] = "Trace"
+        };
+
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+
+        ILogger beforeLogger = provider.CreateLogger("Some");
+        beforeLogger.ProbeMinLevel().Should().Be(LogLevel.Trace);
+
+        provider.SetLogLevel("Some", LogLevel.Error);
+        ILogger afterLogger = provider.CreateLogger("Some.Other");
+
+        beforeLogger.ProbeMinLevel().Should().Be(LogLevel.Error);
+        afterLogger.ProbeMinLevel().Should().Be(LogLevel.Error);
+    }
+
+    [Fact]
+    public async Task ProperlySplitsCategories()
+    {
+        const string someCategoryName = "Some";
+        const string someWithSuffixCategoryName = "SomeWithSuffix";
+
+        var appSettings = new Dictionary<string, string?>
         {
             ["Logging:LogLevel:Default"] = "Warning",
-            ["Logging:LogLevel:Example"] = "Critical"
-        });
+            [$"Logging:LogLevel:{someCategoryName}"] = "Critical"
+        };
 
-        _ = provider.CreateLogger("Example");
-        _ = provider.CreateLogger("Example.Some");
-        _ = provider.CreateLogger("ExampleWithSuffix");
-        _ = provider.CreateLogger("ExampleWithSuffix.Other");
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        LoggerWithDynamicState someState = new(provider, _consoleOutput, someCategoryName);
+        LoggerWithDynamicState someWithSuffixState = new(provider, _consoleOutput, someWithSuffixCategoryName);
 
-        provider.SetLogLevel("Example", LogLevel.Error);
+        await someState.AssertMinLevelAsync(LogLevel.Critical);
+        await someWithSuffixState.AssertMinLevelAsync(LogLevel.Warning);
 
-        string[] configurations = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
+        provider.SetLogLevel(someCategoryName, LogLevel.Debug);
+        Refresh();
 
-        configurations.Should().HaveCount(5);
-        configurations.Should().Contain("Default: Warning -> Warning");
-        configurations.Should().Contain("Example: Critical -> Error");
-        configurations.Should().Contain("Example.Some: Error");
-        configurations.Should().Contain("ExampleWithSuffix: Warning");
-        configurations.Should().Contain("ExampleWithSuffix.Other: Warning");
+        await someState.AssertMinLevelAsync(LogLevel.Debug, LogLevel.Critical);
+        await someWithSuffixState.AssertMinLevelAsync(LogLevel.Warning);
+
+        provider.SetLogLevel(someCategoryName, null);
+        Refresh();
+
+        await someState.AssertMinLevelAsync(LogLevel.Critical);
+        await someWithSuffixState.AssertMinLevelAsync(LogLevel.Warning);
+
+        void Refresh()
+        {
+            ICollection<DynamicLoggerState> logLevels = provider.GetLogLevels();
+
+            someState.Refresh(logLevels);
+            someWithSuffixState.Refresh(logLevels);
+        }
     }
 
     [Fact]
-    public void SetLogLevel_CanResetToDefault()
+    public async Task CategoriesAreCaseSensitive()
     {
-        // arrange (A* should log at Information)
-        var provider = CreateLoggerProvider<DynamicConsoleLoggerProvider>(new Dictionary<string, string?>
+        const string pascalCaseCategoryName = "Some";
+        const string upperCaseCategoryName = "SOME";
+
+        var appSettings = new Dictionary<string, string?>
         {
-            ["Logging:LogLevel:A"] = "Information"
-        });
+            [$"Logging:LogLevel:{pascalCaseCategoryName}"] = "Critical"
+        };
 
-        // act I: with original setup
-        ILogger firstLogger = provider.CreateLogger("A.B.C");
-        ICollection<DynamicLoggerConfiguration> configurations = provider.GetLoggerConfigurations();
-        DynamicLoggerConfiguration tierOneNamespace = configurations.First(configuration => configuration.CategoryName == "A");
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        LoggerWithDynamicState pascalCaseState = new(provider, _consoleOutput, pascalCaseCategoryName);
+        LoggerWithDynamicState upperCaseState = new(provider, _consoleOutput, upperCaseCategoryName);
 
-        // assert I: base namespace is in the response, correctly
-        tierOneNamespace.EffectiveMinLevel.Should().Be(LogLevel.Information);
+        provider.SetLogLevel(pascalCaseCategoryName, LogLevel.Trace);
+        Refresh();
 
-        // act II: set A.B* to log at Trace
-        provider.SetLogLevel("A.B", LogLevel.Trace);
-        configurations = provider.GetLoggerConfigurations();
-        tierOneNamespace = configurations.First(configuration => configuration.CategoryName == "A");
-        DynamicLoggerConfiguration tierTwoNamespace = configurations.First(configuration => configuration.CategoryName == "A.B");
+        await pascalCaseState.AssertMinLevelAsync(LogLevel.Trace, LogLevel.Critical);
+        await upperCaseState.AssertMinLevelAsync(LogLevel.Information);
 
-        // assert II: base hasn't changed but the one set at runtime and all descendants (including a concrete logger) have
-        tierOneNamespace.EffectiveMinLevel.Should().Be(LogLevel.Information);
-        tierTwoNamespace.EffectiveMinLevel.Should().Be(LogLevel.Trace);
-        firstLogger.IsEnabled(LogLevel.Trace).Should().BeTrue();
+        void Refresh()
+        {
+            ICollection<DynamicLoggerState> logLevels = provider.GetLogLevels();
 
-        // act III: reset A.B
-        provider.SetLogLevel("A.B", null);
-        configurations = provider.GetLoggerConfigurations();
-        tierOneNamespace = configurations.First(configuration => configuration.CategoryName == "A");
-        tierTwoNamespace = configurations.First(configuration => configuration.CategoryName == "A.B");
-        ILogger secondLogger = provider.CreateLogger("A.B.C.D");
-
-        // assert again
-        tierOneNamespace.EffectiveMinLevel.Should().Be(LogLevel.Information);
-        tierTwoNamespace.EffectiveMinLevel.Should().Be(LogLevel.Information);
-        firstLogger.IsEnabled(LogLevel.Information).Should().BeTrue();
-        secondLogger.IsEnabled(LogLevel.Information).Should().BeTrue();
+            pascalCaseState.Refresh(logLevels);
+            upperCaseState.Refresh(logLevels);
+        }
     }
 
     [Fact]
-    public void SetLogLevel_WorksOnDefault()
+    public async Task AppliesChangedConfiguration()
     {
-        var provider = CreateLoggerProvider<DynamicConsoleLoggerProvider>();
-        string[] originalConfiguration = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
+        const string fileName = "appsettings.json";
+        MemoryFileProvider fileProvider = new();
 
-        provider.SetLogLevel("Default", LogLevel.Trace);
-        string[] updatedConfiguration = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
+        fileProvider.IncludeFile(fileName, """
+        {
+          "Logging": {
+            "LogLevel": {
+              "A": "Warning"
+            }
+          }
+        }
+        """);
 
-        originalConfiguration.Should().Contain("Default: Information -> Information");
-        updatedConfiguration.Should().Contain("Default: Information -> Trace");
+        using IDynamicLoggerProvider provider =
+            CreateLoggerProvider(configurationBuilder => configurationBuilder.AddJsonFile(fileProvider, fileName, false, true));
+
+        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Warning);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Warning);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Warning);
+
+        provider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Error);
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Warning);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Error, LogLevel.Warning);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Error);
+
+        fileProvider.ReplaceFile(fileName, """
+        {
+          "Logging": {
+            "LogLevel": {
+              "A": "Trace",
+              "A.B.C": "Debug"
+            }
+          }
+        }
+        """);
+
+        fileProvider.NotifyChanged();
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Trace);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Error, LogLevel.Trace);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Error);
+
+        provider.SetLogLevel(testContext.Self.CategoryName, null);
+        testContext.Refresh();
+
+        await testContext.Parent.AssertMinLevelAsync(LogLevel.Trace);
+        await testContext.Self.AssertMinLevelAsync(LogLevel.Trace);
+        await testContext.Child.AssertMinLevelAsync(LogLevel.Debug);
     }
 
     [Fact]
-    public void ResetLogLevel_WorksOnDefault()
+    public async Task CanUseJsonFormatterWithScopes()
     {
-        var provider = CreateLoggerProvider<DynamicConsoleLoggerProvider>(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
-            ["Logging:LogLevel:A"] = "Information"
-        });
+            ["Logging:Console:FormatterName"] = "json",
+            ["Logging:Console:FormatterOptions:IncludeScopes"] = "true",
+            ["Logging:Console:FormatterOptions:TimestampFormat"] = string.Empty,
+            ["Logging:Console:FormatterOptions:JsonWriterOptions:Indented"] = "true"
+        };
 
-        string[] originalConfiguration = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
 
-        provider.SetLogLevel("Default", LogLevel.Debug);
-        string[] updatedConfiguration = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
-        provider.SetLogLevel("Default", null);
-        string[] resetConfiguration = provider.GetLoggerConfigurations().Select(configuration => configuration.ToString()).ToArray();
+        using var factory = new LoggerFactory();
+        factory.AddProvider(provider);
+        ILogger logger = factory.CreateLogger("Fully.Qualified.Type");
 
-        originalConfiguration.Should().Contain("Default: Information -> Information");
-        updatedConfiguration.Should().Contain("Default: Information -> Debug");
-        resetConfiguration.Should().Contain("Default: Information -> Information");
-    }
-
-    [Fact]
-    public async Task Logger_LogsAtConfiguredSetting()
-    {
-        using var console = new ConsoleOutputBorrower();
-
-        var provider = CreateLoggerProvider<DynamicConsoleLoggerProvider>(new Dictionary<string, string?>
+        using (logger.BeginScope("OuterScope"))
         {
-            ["Logging:LogLevel:A"] = "Information"
-        });
-
-        ILogger logger = provider.CreateLogger("A.B.C.D.TestClass");
-
-        // act I - log at all levels, expect Info and above to work
-        await WriteLogEntriesAsync(logger);
-        string logged1 = console.ToString();
-
-        // assert I
-        logged1.Should().Contain("Critical message");
-        logged1.Should().Contain("Error message");
-        logged1.Should().Contain("Warning message");
-        logged1.Should().Contain("Informational message");
-        logged1.Should().NotContain("Debug message");
-        logged1.Should().NotContain("Trace message");
-
-        // act II - adjust rules, expect Error and above to work
-        provider.SetLogLevel("A.B.C.D", LogLevel.Error);
-        console.Clear();
-
-        await WriteLogEntriesAsync(logger);
-        string logged2 = console.ToString();
-
-        // assert II
-        logged2.Should().Contain("Critical message");
-        logged2.Should().Contain("Error message");
-        logged2.Should().NotContain("Warning message");
-        logged2.Should().NotContain("Informational message");
-        logged2.Should().NotContain("Debug message");
-        logged2.Should().NotContain("Trace message");
-
-        // act III - adjust rules, expect Trace and above to work
-        provider.SetLogLevel("A", LogLevel.Trace);
-        console.Clear();
-
-        await WriteLogEntriesAsync(logger);
-        string logged3 = console.ToString();
-
-        // assert III
-        logged3.Should().Contain("Critical message");
-        logged3.Should().Contain("Error message");
-        logged3.Should().Contain("Warning message");
-        logged3.Should().Contain("Informational message");
-        logged3.Should().Contain("Debug message");
-        logged3.Should().Contain("Trace message");
-
-        // act IV - adjust rules, expect nothing to work
-        provider.SetLogLevel("A", LogLevel.None);
-        console.Clear();
-
-        await WriteLogEntriesAsync(logger);
-        string logged4 = console.ToString();
-
-        // assert IV
-        logged4.Should().NotContain("Critical message");
-        logged4.Should().NotContain("Error message");
-        logged4.Should().NotContain("Warning message");
-        logged4.Should().NotContain("Informational message");
-        logged4.Should().NotContain("Debug message");
-        logged4.Should().NotContain("Trace message");
-
-        // act V - reset the rules, expect Info and above to work
-        provider.SetLogLevel("A", null);
-        console.Clear();
-
-        await WriteLogEntriesAsync(logger);
-        string logged5 = console.ToString();
-
-        // assert V
-        logged5.Should().Contain("Critical message");
-        logged5.Should().Contain("Error message");
-        logged5.Should().Contain("Warning message");
-        logged5.Should().Contain("Informational message");
-        logged5.Should().NotContain("Debug message");
-        logged5.Should().NotContain("Trace message");
-    }
-
-    [Fact]
-    public async Task Logger_CategoryIsCaseSensitive()
-    {
-        using var console = new ConsoleOutputBorrower();
-
-        var provider = CreateLoggerProvider<DynamicConsoleLoggerProvider>(new Dictionary<string, string?>
-        {
-            ["Logging:LogLevel:Some"] = "Critical"
-        });
-
-        ILogger logger = provider.CreateLogger("Some");
-
-        provider.SetLogLevel("SOME", LogLevel.Warning);
-
-        await WriteLogEntriesAsync(logger);
-        string logged = console.ToString();
-
-        logged.Should().Contain("Critical message");
-        logged.Should().NotContain("Error message");
-        logged.Should().NotContain("Warning message");
-        logged.Should().NotContain("Informational message");
-        logged.Should().NotContain("Debug message");
-        logged.Should().NotContain("Trace message");
-    }
-
-    private static async Task WriteLogEntriesAsync(ILogger logger)
-    {
-        logger.LogCritical("Critical message");
-        logger.LogError("Error message");
-        logger.LogWarning("Warning message");
-        logger.LogInformation("Informational message");
-        logger.LogDebug("Debug message");
-        logger.LogTrace("Trace message");
-
-        // ConsoleLogger writes messages to a queue, it takes a bit of time for the background thread to write them to Console.Out.
-        await Task.Delay(100);
-    }
-
-    private static TLoggerProvider CreateLoggerProvider<TLoggerProvider>(Dictionary<string, string?>? appSettings = null)
-        where TLoggerProvider : ILoggerProvider
-    {
-        var configurationBuilder = new ConfigurationBuilder();
-
-        if (appSettings != null)
-        {
-            configurationBuilder.AddInMemoryCollection(appSettings);
+            using (logger.BeginScope("InnerScope={InnerScopeKey}", "InnerScopeValue"))
+            {
+                logger.LogInformation("Processing of {@IncomingRequest} started.", new
+                {
+                    RequestUrl = "https://www.example.com",
+                    UserAgent = "Steeltoe"
+                });
+            }
         }
 
+        await _consoleOutput.WaitForFlushAsync();
+        string logOutput = _consoleOutput.ToString();
+
+        logOutput.Should().Be("""
+            {
+              "EventId": 0,
+              "LogLevel": "Information",
+              "Category": "Fully.Qualified.Type",
+              "Message": "Processing of { RequestUrl = https://www.example.com, UserAgent = Steeltoe } started.",
+              "State": {
+                "Message": "Processing of { RequestUrl = https://www.example.com, UserAgent = Steeltoe } started.",
+                "@IncomingRequest": "{ RequestUrl = https://www.example.com, UserAgent = Steeltoe }",
+                "{OriginalFormat}": "Processing of {@IncomingRequest} started."
+              },
+              "Scopes": [
+                "OuterScope",
+                {
+                  "Message": "InnerScope=InnerScopeValue",
+                  "InnerScopeKey": "InnerScopeValue",
+                  "{OriginalFormat}": "InnerScope={InnerScopeKey}"
+                }
+              ]
+            }
+
+            """);
+    }
+
+    [Fact]
+    public async Task CallsIntoMessageProcessors()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
+        services.AddSingleton<IDynamicMessageProcessor>(new TestMessageProcessor("One"));
+        services.AddSingleton<IDynamicMessageProcessor>(new TestMessageProcessor("Two"));
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        IDynamicLoggerProvider provider = serviceProvider.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().Single();
+        ILogger logger = provider.CreateLogger("Test");
+
+        logger.LogInformation("Three");
+
+        await _consoleOutput.WaitForFlushAsync();
+        string logOutput = _consoleOutput.ToString();
+
+        logOutput.Should().Contain("One");
+        logOutput.Should().Contain("Two");
+        logOutput.Should().Contain("Three");
+    }
+
+    private static IDynamicLoggerProvider CreateLoggerProvider(Action<ConfigurationBuilder>? configure = null)
+    {
+        var configurationBuilder = new ConfigurationBuilder();
+        configure?.Invoke(configurationBuilder);
         IConfiguration configuration = configurationBuilder.Build();
 
         var services = new ServiceCollection();
 
-        services.AddLogging(builder =>
+        services.AddLogging(loggingBuilder =>
         {
-            builder.AddConfiguration(configuration.GetSection("Logging"));
-            builder.AddDynamicConsole();
+            loggingBuilder.AddConfiguration(configuration.GetSection("Logging"));
+            loggingBuilder.AddDynamicConsole();
         });
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        return (TLoggerProvider)serviceProvider.GetRequiredService<ILoggerProvider>();
+        return serviceProvider.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().Single();
+    }
+
+    public void Dispose()
+    {
+        _consoleOutput.Dispose();
+    }
+
+    public enum ConfigurationCategory
+    {
+        Parent,
+        Self,
+        Child
+    }
+
+    private sealed class LoggerWithDynamicState
+    {
+        private readonly ConsoleOutput _consoleOutput;
+        private readonly ILogger _logger;
+        private DynamicLoggerState _dynamicState;
+
+        public string CategoryName { get; }
+
+        public LoggerWithDynamicState(IDynamicLoggerProvider provider, ConsoleOutput consoleOutput, string categoryName)
+        {
+            _consoleOutput = consoleOutput;
+            _logger = provider.CreateLogger(categoryName);
+            CategoryName = categoryName;
+
+            ICollection<DynamicLoggerState> dynamicStates = provider.GetLogLevels();
+            _dynamicState = FilterDynamicState(dynamicStates);
+        }
+
+        public void Refresh(ICollection<DynamicLoggerState> dynamicStates)
+        {
+            _dynamicState = FilterDynamicState(dynamicStates);
+        }
+
+        private DynamicLoggerState FilterDynamicState(ICollection<DynamicLoggerState> dynamicStates)
+        {
+            return dynamicStates.Single(state => state.CategoryName == CategoryName);
+        }
+
+        public async Task AssertMinLevelAsync(LogLevel effectiveMinLevel, LogLevel? backupLogLevel = null)
+        {
+            _logger.ProbeMinLevel().Should().Be(effectiveMinLevel);
+
+            string categoryNameInDynamicState = CategoryName.Length == 0 ? "Default" : CategoryName;
+
+            _dynamicState.ToString().Should().Be(backupLogLevel == null
+                ? $"{categoryNameInDynamicState}: {effectiveMinLevel}"
+                : $"{categoryNameInDynamicState}: {backupLogLevel} -> {effectiveMinLevel}");
+
+            string logOutput = await CaptureLogOutputAsync();
+
+            switch (effectiveMinLevel)
+            {
+                case LogLevel.None:
+                {
+                    logOutput.Should().BeEmpty();
+                    break;
+                }
+                case LogLevel.Critical:
+                {
+                    logOutput.Should().Contain($"Test:{CategoryName}:Critical");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Error");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Warning");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Informational");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Debug");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Trace");
+                    break;
+                }
+                case LogLevel.Error:
+                {
+                    logOutput.Should().Contain($"Test:{CategoryName}:Critical");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Error");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Warning");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Informational");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Debug");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Trace");
+                    break;
+                }
+                case LogLevel.Warning:
+                {
+                    logOutput.Should().Contain($"Test:{CategoryName}:Critical");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Error");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Warning");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Informational");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Debug");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Trace");
+                    break;
+                }
+                case LogLevel.Information:
+                {
+                    logOutput.Should().Contain($"Test:{CategoryName}:Critical");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Error");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Warning");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Informational");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Debug");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Trace");
+                    break;
+                }
+                case LogLevel.Debug:
+                {
+                    logOutput.Should().Contain($"Test:{CategoryName}:Critical");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Error");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Warning");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Informational");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Debug");
+                    logOutput.Should().NotContain($"Test:{CategoryName}:Trace");
+                    break;
+                }
+                case LogLevel.Trace:
+                {
+                    logOutput.Should().Contain($"Test:{CategoryName}:Critical");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Error");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Warning");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Informational");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Debug");
+                    logOutput.Should().Contain($"Test:{CategoryName}:Trace");
+                    break;
+                }
+            }
+        }
+
+        private async Task<string> CaptureLogOutputAsync()
+        {
+            _consoleOutput.Clear();
+
+#pragma warning disable CA2254 // Template should be a static expression
+            _logger.LogCritical($"Test:{CategoryName}:Critical");
+            _logger.LogError($"Test:{CategoryName}:Error");
+            _logger.LogWarning($"Test:{CategoryName}:Warning");
+            _logger.LogInformation($"Test:{CategoryName}:Informational");
+            _logger.LogDebug($"Test:{CategoryName}:Debug");
+            _logger.LogTrace($"Test:{CategoryName}:Trace");
+#pragma warning restore CA2254 // Template should be a static expression
+
+            await _consoleOutput.WaitForFlushAsync();
+
+            return _consoleOutput.ToString();
+        }
+    }
+
+    private sealed class DynamicLoggingTestContext(IDynamicLoggerProvider provider, ConsoleOutput consoleOutput)
+    {
+        private const string DefaultCategoryName = "";
+        private const string ParentCategoryName = "A";
+        private const string SelfCategoryName = "A.B";
+        private const string ChildCategoryName = "A.B.C";
+
+        private readonly IDynamicLoggerProvider _provider = provider;
+
+        public LoggerWithDynamicState Default { get; } = new(provider, consoleOutput, DefaultCategoryName);
+        public LoggerWithDynamicState Parent { get; } = new(provider, consoleOutput, ParentCategoryName);
+        public LoggerWithDynamicState Self { get; } = new(provider, consoleOutput, SelfCategoryName);
+        public LoggerWithDynamicState Child { get; } = new(provider, consoleOutput, ChildCategoryName);
+
+        public void Refresh()
+        {
+            ICollection<DynamicLoggerState> dynamicStates = _provider.GetLogLevels();
+
+            Default.Refresh(dynamicStates);
+            Parent.Refresh(dynamicStates);
+            Self.Refresh(dynamicStates);
+            Child.Refresh(dynamicStates);
+        }
+    }
+
+    private sealed class TestMessageProcessor(string text) : IDynamicMessageProcessor
+    {
+        private readonly string _text = text;
+
+        public string Process(string message)
+        {
+            return _text + message;
+        }
     }
 }
