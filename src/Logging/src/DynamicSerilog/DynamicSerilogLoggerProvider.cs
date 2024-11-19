@@ -68,9 +68,8 @@ public sealed class DynamicSerilogLoggerProvider : DynamicLoggerProvider
         lock (LoggerLock)
         {
             _serilogLogger ??= serilogOptionsMonitor.CurrentValue.GetSerilogConfiguration().CreateLogger();
+            return new SerilogLoggerProvider(_serilogLogger);
         }
-
-        return new SerilogLoggerProvider(_serilogLogger);
     }
 
     private static LogLevelsConfiguration GetMinimumLevelsFromOptions(SerilogOptions options)
