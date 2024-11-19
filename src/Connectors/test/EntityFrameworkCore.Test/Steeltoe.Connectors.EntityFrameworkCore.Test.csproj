@@ -11,6 +11,7 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(EntityFrameworkCoreTestVersion)" />
     <PackageReference Include="MySql.EntityFrameworkCore" Version="$(EntityFrameworkCoreTestVersion)" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="$(EntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="System.Text.Json" Version="$(FoundationalVersion)" />
   </ItemGroup>
 
   <ItemGroup>
