@@ -15,8 +15,7 @@ public class MessageProcessingLogger : ILogger
     private volatile LoggerFilter _filter;
 
     protected IReadOnlyCollection<IDynamicMessageProcessor> MessageProcessors { get; }
-
-    protected internal ILogger InnerLogger { get; }
+    protected ILogger InnerLogger { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageProcessingLogger" /> class.

@@ -25,12 +25,12 @@ internal sealed class RsaCryptoSettings
     public string? Algorithm { get; set; } = DefaultAlgorithm;
 
     /// <summary>
-    /// Gets or sets the salt value. Default value: deadbeef.
+    /// Gets or sets the salt for the random secret. Default value: deadbeef.
     /// </summary>
     public string? Salt { get; set; } = DefaultSalt;
 
     /// <summary>
-    /// Gets or sets a value indicating whether strong encryption is enabled. Default value: false.
+    /// Gets or sets a value indicating whether the "strong" GCM AES algorithm is used. Otherwise, the standard CBC algorithm is used. Default value: false.
     /// </summary>
     public bool Strong { get; set; }
 }

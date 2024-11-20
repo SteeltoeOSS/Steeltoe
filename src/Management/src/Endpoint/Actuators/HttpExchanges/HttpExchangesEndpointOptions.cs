@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Claims;
 using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
@@ -14,7 +15,7 @@ public sealed class HttpExchangesEndpointOptions : EndpointOptions
     public int Capacity { get; set; } = -1;
 
     /// <summary>
-    /// Gets or sets a value indicating whether HTTP headers from the request should be included in traces. Default value: true.
+    /// Gets or sets a value indicating whether headers from the HTTP request should be returned. Default value: true.
     /// <para>
     /// If a request header is not present in the <see cref="RequestHeaders" />, the header name will be logged with a redacted value. Request headers can
     /// contain authentication tokens, or private information which may have regulatory concerns under GDPR and other laws. Arbitrary request headers should
@@ -24,7 +25,7 @@ public sealed class HttpExchangesEndpointOptions : EndpointOptions
     public bool IncludeRequestHeaders { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether HTTP headers from the response should be included in traces. Default value: true.
+    /// Gets or sets a value indicating whether headers from the HTTP response should be returned. Default value: true.
     /// <para>
     /// If a response header is not present in the <see cref="ResponseHeaders" />, the header name will be logged with a redacted value.
     /// </para>
@@ -32,32 +33,32 @@ public sealed class HttpExchangesEndpointOptions : EndpointOptions
     public bool IncludeResponseHeaders { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the request path should be included in traces. Default value: true.
+    /// Gets or sets a value indicating whether the path from the HTTP request URL should be returned. Default value: true.
     /// </summary>
     public bool IncludePathInfo { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the request querystring should be included in traces. Default value: true.
+    /// Gets or sets a value indicating whether the query string parameters from the request URL should be returned. Default value: true.
     /// </summary>
     public bool IncludeQueryString { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the name of the user principal making the request should be included in traces. Default value: false.
+    /// Gets or sets a value indicating whether the username of the <see cref="ClaimsPrincipal" /> should be returned. Default value: false.
     /// </summary>
     public bool IncludeUserPrincipal { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the IP address of the request's sender should be included in traces. Default value: false.
+    /// Gets or sets a value indicating whether the IP address of the request's sender should be returned. Default value: false.
     /// </summary>
     public bool IncludeRemoteAddress { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the user's session ID should be included in traces. Default value: false.
+    /// Gets or sets a value indicating whether the user's session ID should be returned. Default value: false.
     /// </summary>
     public bool IncludeSessionId { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the time taken to process the request should be included in traces. Default value: true.
+    /// Gets or sets a value indicating whether the time taken to process the request should be returned. Default value: true.
     /// </summary>
     public bool IncludeTimeTaken { get; set; } = true;
 

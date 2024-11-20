@@ -68,18 +68,18 @@
                 },
                 "DisableTokenRenewal": {
                   "type": "boolean",
-                  "description": "Gets or sets a value indicating whether periodic token renewal should occur. Default value: false."
+                  "description": "Gets or sets a value indicating whether periodic HashiCorp Vault token renewal should occur. Default value: false."
                 },
                 "Discovery": {
                   "type": "object",
                   "properties": {
                     "Enabled": {
                       "type": "boolean",
-                      "description": "Gets or sets a value indicating whether discovery first behavior is enabled. Default value: false."
+                      "description": "Gets or sets a value indicating whether the discovery-first feature is enabled. Default value: false."
                     },
                     "ServiceId": {
                       "type": "string",
-                      "description": "Gets or sets a value of the service ID used during discovery first behavior. Default value: \"configserver\"."
+                      "description": "Gets or sets the Service ID of the Config Server to use during discovery-first. Default value: \"configserver\"."
                     }
                   },
                   "description": "Gets service discovery settings."
@@ -112,14 +112,14 @@
                     },
                     "TimeToLive": {
                       "type": "integer",
-                      "description": "Gets or sets the health check cache time-to-live, in milliseconds. Default value: 300_000 (5 minutes)."
+                      "description": "Gets or sets the health check cache time-to-live (in milliseconds). Default value: 300_000 (5 minutes)."
                     }
                   },
                   "description": "Gets health check settings."
                 },
                 "Label": {
                   "type": "string",
-                  "description": "Gets or sets the label used when accessing configuration data."
+                  "description": "Gets or sets a comma-delimited list of labels to request from the server."
                 },
                 "Name": {
                   "type": "string",
@@ -143,7 +143,7 @@
                     },
                     "InitialInterval": {
                       "type": "integer",
-                      "description": "Gets or sets initial retry interval in milliseconds. Default value: 1000."
+                      "description": "Gets or sets initial retry interval (in milliseconds). Default value: 1000."
                     },
                     "MaxAttempts": {
                       "type": "integer",
@@ -151,7 +151,7 @@
                     },
                     "MaxInterval": {
                       "type": "integer",
-                      "description": "Gets or sets max retry interval in milliseconds. Default value: 2000."
+                      "description": "Gets or sets max retry interval (in milliseconds). Default value: 2000."
                     },
                     "Multiplier": {
                       "type": [
@@ -165,19 +165,19 @@
                 },
                 "Timeout": {
                   "type": "integer",
-                  "description": "Gets or sets the request timeout in milliseconds. Default value: 60_000 (1 minute)."
+                  "description": "Gets or sets the request timeout (in milliseconds). Default value: 60_000 (1 minute)."
                 },
                 "Token": {
                   "type": "string",
-                  "description": "Gets or sets the token used for Vault."
+                  "description": "Gets or sets the HashiCorp Vault authentication token."
                 },
                 "TokenRenewRate": {
                   "type": "integer",
-                  "description": "Gets or sets the vault token renew rate in milliseconds. Default value: 60_000 (1 minute)."
+                  "description": "Gets or sets the vault token renew rate (in milliseconds). Default value: 60_000 (1 minute)."
                 },
                 "TokenTtl": {
                   "type": "integer",
-                  "description": "Gets or sets the vault token time-to-live in milliseconds. Default value: 300_000 (5 minutes)."
+                  "description": "Gets or sets the HashiCorp Vault token time-to-live (in milliseconds). Default value: 300_000 (5 minutes)."
                 },
                 "Uri": {
                   "type": "string",

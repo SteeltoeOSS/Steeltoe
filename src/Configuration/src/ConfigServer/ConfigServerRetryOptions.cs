@@ -15,12 +15,12 @@ public sealed class ConfigServerRetryOptions
     public bool Enabled { get; set; }
 
     /// <summary>
-    /// Gets or sets initial retry interval in milliseconds. Default value: 1000.
+    /// Gets or sets initial retry interval (in milliseconds). Default value: 1000.
     /// </summary>
     public int InitialInterval { get; set; } = 1000;
 
     /// <summary>
-    /// Gets or sets max retry interval in milliseconds. Default value: 2000.
+    /// Gets or sets max retry interval (in milliseconds). Default value: 2000.
     /// </summary>
     public int MaxInterval { get; set; } = 2000;
 

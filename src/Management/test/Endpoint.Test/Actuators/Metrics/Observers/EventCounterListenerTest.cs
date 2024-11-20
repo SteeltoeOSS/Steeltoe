@@ -18,6 +18,7 @@ public sealed class EventCounterListenerTest : BaseTest
         CacheDurationMilliseconds = 500
     });
 
+    // From https://learn.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters.
     private readonly string[] _metrics =
     [
         "System.Runtime.alloc-rate",

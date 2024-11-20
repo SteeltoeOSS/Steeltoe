@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 #pragma warning disable SA1401 // Fields should be private
+// ReSharper disable NotAccessedField.Global
 
 namespace Steeltoe.Common.Net;
 

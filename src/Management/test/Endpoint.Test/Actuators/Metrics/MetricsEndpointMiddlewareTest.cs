@@ -271,7 +271,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
 
         for (int index = 0; index < 10; index++)
         {
-            counter.Add(index, labels.ToArray());
+            counter.Add(index, [.. labels]);
         }
     }
 }

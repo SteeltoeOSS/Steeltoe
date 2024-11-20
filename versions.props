@@ -17,7 +17,7 @@
     <MongoDbDriverVersion>2.27.*</MongoDbDriverVersion>
     <MoqVersion>4.20.69</MoqVersion>
     <MySqlConnectorVersion>2.3.*</MySqlConnectorVersion>
-    <MySqlDataVersion>9.0.*</MySqlDataVersion>
+    <MySqlDataVersion>9.1.*</MySqlDataVersion>
     <NerdbankGitVersioningVersion>3.6.*</NerdbankGitVersioningVersion>
     <NewtonsoftJsonVersion>13.0.3</NewtonsoftJsonVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
