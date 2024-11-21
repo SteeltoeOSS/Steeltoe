@@ -336,11 +336,11 @@ public sealed class EndpointMiddlewareTest : BaseTest
                         },
                         {
                           "handler": "CoreRouteHandler",
-                          "predicate": "{[/actuator/mappings],methods=[Get]}"
+                          "predicate": "{[/actuator/mappings],methods=[GET || PUT || POST || DELETE || HEAD || OPTIONS]}"
                         },
                         {
                           "handler": "CoreRouteHandler",
-                          "predicate": "{[/actuator/refresh],methods=[Post]}"
+                          "predicate": "{[/actuator/refresh],methods=[GET || PUT || POST || DELETE || HEAD || OPTIONS]}"
                         }            
                       ]
                     }
@@ -351,7 +351,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             """);
 
         response = await client.GetAsync(new Uri("http://localhost/actuator/refresh"));
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
 
         response = await client.PostAsync(new Uri("http://localhost/actuator/refresh"), null);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -439,8 +439,12 @@ public sealed class EndpointMiddlewareTest : BaseTest
                         },
                         {
                           "handler": "CoreRouteHandler",
-                          "predicate": "{[/actuator/mappings],methods=[Get]}"
-                        }            
+                          "predicate": "{[/actuator/mappings],methods=[GET || PUT || POST || DELETE || HEAD || OPTIONS]}"
+                        },
+                        {
+                          "handler": "CoreRouteHandler",
+                          "predicate": "{[/actuator/refresh],methods=[GET || PUT || POST || DELETE || HEAD || OPTIONS]}"
+                        }
                       ]
                     }
                   }

@@ -55,7 +55,26 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
     {
         ArgumentNullException.ThrowIfNull(context);
 
+        bool notFound = true;
+        bool verbNotAllowed = false;
+
         if (ShouldInvoke(context.Request.Path))
+        {
+            HashSet<string> allowedVerbs = EndpointOptions.GetSafeAllowedVerbs();
+
+            notFound = allowedVerbs.Count == 0;
+            verbNotAllowed = !allowedVerbs.Contains(context.Request.Method);
+        }
+
+        if (notFound)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+        }
+        else if (verbNotAllowed)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+        }
+        else
         {
             if (!IsValidContentType(context.Request))
             {
@@ -74,10 +93,6 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
                 TResult result = await InvokeEndpointHandlerAsync(context, context.RequestAborted);
                 await WriteResponseAsync(result, context, context.RequestAborted);
             }
-        }
-        else
-        {
-            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
         }
     }
 
