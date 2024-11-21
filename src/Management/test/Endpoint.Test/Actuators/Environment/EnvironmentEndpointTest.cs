@@ -251,6 +251,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
             ["password"] = "my-secret",
             ["secret"] = "my-secret",
             ["key"] = "my-secret",
+            ["example-key"] = "my-secret",
             ["token"] = "my-secret",
             ["my_credentials"] = "my-secret",
             ["credentials_of"] = "my-secret",

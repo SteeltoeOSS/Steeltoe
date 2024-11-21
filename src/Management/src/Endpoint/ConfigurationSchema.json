@@ -228,7 +228,7 @@
                   "items": {
                     "type": "string"
                   },
-                  "description": "Gets the list of keys to sanitize. Allows regular expressions."
+                  "description": "Gets the list of keys to sanitize. A key can be a simple string that the property must end with, or a regular expression. A case-insensitive match is always performed. Use a single-element empty string to disable sanitization. Default value: [ \"password\", \"secret\", \"key\", \"token\", \".*credentials.*\", \"vcap_services\" ]"
                 },
                 "Path": {
                   "type": "string",
