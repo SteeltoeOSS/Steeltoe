@@ -11,7 +11,11 @@ public sealed class EnvironmentEndpointOptions : EndpointOptions
     private Sanitizer? _sanitizer;
 
     /// <summary>
-    /// Gets the list of keys to sanitize. Allows regular expressions.
+    /// Gets the list of keys to sanitize. A key can be a simple string that the property must end with, or a regular expression. A case-insensitive match is
+    /// always performed. Use a single-element empty string to disable sanitization. Default value:
+    /// <code><![CDATA[
+    /// [ "password", "secret", "key", "token", ".*credentials.*", "vcap_services" ]
+    /// ]]></code>
     /// </summary>
     public IList<string> KeysToSanitize { get; } = new List<string>();
 
