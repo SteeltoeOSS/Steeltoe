@@ -55,15 +55,31 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
     {
         ArgumentNullException.ThrowIfNull(context);
 
+        bool notFound = true;
+        bool verbNotAllowed = false;
+
         if (ShouldInvoke(context.Request.Path))
         {
-            TResult result = await InvokeEndpointHandlerAsync(context, context.RequestAborted);
-            await WriteResponseAsync(result, context, context.RequestAborted);
+            HashSet<string> allowedVerbs = EndpointOptions.GetSafeAllowedVerbs();
+
+            notFound = allowedVerbs.Count == 0;
+            verbNotAllowed = !allowedVerbs.Contains(context.Request.Method);
         }
-        else
+
+        if (notFound)
         {
             // Terminal middleware
             context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+        }
+        else if (verbNotAllowed)
+        {
+            // Terminal middleware
+            context.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+        }
+        else
+        {
+            TResult result = await InvokeEndpointHandlerAsync(context, context.RequestAborted);
+            await WriteResponseAsync(result, context, context.RequestAborted);
         }
     }
 
