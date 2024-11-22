@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
-using Steeltoe.Management.Endpoint.Actuators.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
@@ -14,7 +13,6 @@ public sealed class MetricsStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHypermediaActuator();
-        services.AddMetricsActuator();
     }
 
     public void Configure(IApplicationBuilder app)

@@ -13,8 +13,6 @@ override Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConvert
 override Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConverter.Write(System.Text.Json.Utf8JsonWriter! writer, System.DateTime value, System.Text.Json.JsonSerializerOptions! options) -> void
 override Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersEndpointOptions.RequiresExactMatch() -> bool
 override Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersRequest.ToString() -> string!
-override Steeltoe.Management.Endpoint.Actuators.Metrics.MetricSample.ToString() -> string!
-override Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.RequiresExactMatch() -> bool
 override Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.ToString() -> string!
 static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState.Broken -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState!
 static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState.Correct -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState!
@@ -48,9 +46,6 @@ static Steeltoe.Management.Endpoint.Actuators.Info.EndpointServiceCollectionExte
 static Steeltoe.Management.Endpoint.Actuators.Info.EndpointServiceCollectionExtensions.AddInfoContributor<T>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Loggers.EndpointServiceCollectionExtensions.AddLoggersActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Loggers.EndpointServiceCollectionExtensions.AddLoggersActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.Actuators.Metrics.EndpointServiceCollectionExtensions.AddMetricsActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.Actuators.Metrics.EndpointServiceCollectionExtensions.AddMetricsActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.Actuators.Metrics.EndpointServiceCollectionExtensions.AddMetricsObservers(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Refresh.EndpointServiceCollectionExtensions.AddRefreshActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Refresh.EndpointServiceCollectionExtensions.AddRefreshActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.RouteMappings.EndpointServiceCollectionExtensions.AddRouteMappingsActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
@@ -300,44 +295,6 @@ Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse
 Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse.Data.get -> System.Collections.Generic.IDictionary<string!, object!>!
 Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse.HasError.get -> bool
 Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse.LoggersResponse(System.Collections.Generic.IDictionary<string!, object!>! data, bool hasError) -> void
-Steeltoe.Management.Endpoint.Actuators.Metrics.EndpointServiceCollectionExtensions
-Steeltoe.Management.Endpoint.Actuators.Metrics.IMetricsEndpointHandler
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricSample
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricSample.MetricSample(Steeltoe.Management.Endpoint.Actuators.Metrics.MetricStatistic statistic, double value, System.Collections.Generic.IList<System.Collections.Generic.KeyValuePair<string!, string!>>? tags) -> void
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricSample.Statistic.get -> Steeltoe.Management.Endpoint.Actuators.Metrics.MetricStatistic
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricSample.Tags.get -> System.Collections.Generic.IList<System.Collections.Generic.KeyValuePair<string!, string!>>?
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricSample.Value.get -> double
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.CacheDurationMilliseconds.get -> int
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.CacheDurationMilliseconds.set -> void
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.IncludedMetrics.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.MaxHistograms.get -> int
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.MaxHistograms.set -> void
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.MaxTimeSeries.get -> int
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.MaxTimeSeries.set -> void
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsEndpointOptions.MetricsEndpointOptions() -> void
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsRequest
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsRequest.MetricName.get -> string!
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsRequest.MetricsRequest(string! metricName, System.Collections.Generic.IList<System.Collections.Generic.KeyValuePair<string!, string!>>! tags) -> void
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsRequest.Tags.get -> System.Collections.Generic.IList<System.Collections.Generic.KeyValuePair<string!, string!>>!
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsResponse
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsResponse.AvailableTags.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.Metrics.MetricTag!>?
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsResponse.Measurements.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.Metrics.MetricSample!>?
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsResponse.MetricsResponse(string! name, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.Metrics.MetricSample!>! measurements, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.Metrics.MetricTag!>! availableTags) -> void
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsResponse.MetricsResponse(System.Collections.Generic.ISet<string!>! names) -> void
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsResponse.Name.get -> string?
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsResponse.Names.get -> System.Collections.Generic.ISet<string!>?
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricStatistic
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricStatistic.Count = 2 -> Steeltoe.Management.Endpoint.Actuators.Metrics.MetricStatistic
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricStatistic.Max = 3 -> Steeltoe.Management.Endpoint.Actuators.Metrics.MetricStatistic
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricStatistic.Rate = 5 -> Steeltoe.Management.Endpoint.Actuators.Metrics.MetricStatistic
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricStatistic.Total = 0 -> Steeltoe.Management.Endpoint.Actuators.Metrics.MetricStatistic
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricStatistic.TotalTime = 1 -> Steeltoe.Management.Endpoint.Actuators.Metrics.MetricStatistic
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricStatistic.Value = 4 -> Steeltoe.Management.Endpoint.Actuators.Metrics.MetricStatistic
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricTag
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricTag.MetricTag(string! tag, System.Collections.Generic.ISet<string!>! values) -> void
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricTag.Tag.get -> string!
-Steeltoe.Management.Endpoint.Actuators.Metrics.MetricTag.Values.get -> System.Collections.Generic.ISet<string!>!
 Steeltoe.Management.Endpoint.Actuators.Refresh.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.Refresh.IRefreshEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.Refresh.RefreshEndpointOptions

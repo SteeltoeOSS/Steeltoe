@@ -13,7 +13,9 @@ internal sealed partial class DecryptionConfigurationProvider(
     IList<IConfigurationProvider> providers, ITextDecryptor? textDecryptor, ILoggerFactory loggerFactory)
     : CompositeConfigurationProvider(providers, loggerFactory)
 {
+#pragma warning disable IDE0052 // Remove unread private members
     private readonly ILogger<DecryptionConfigurationProvider> _logger = loggerFactory.CreateLogger<DecryptionConfigurationProvider>();
+#pragma warning restore IDE0052 // Remove unread private members
     private ITextDecryptor? _textDecryptor = textDecryptor;
 
     [GeneratedRegex("^{cipher}({key:(?<alias>.*)})?(?<cipher>.*)$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture, 1000)]

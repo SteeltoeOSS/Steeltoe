@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <!-- Targeting .NET 8 to workaround bug https://github.com/dotnet/runtime/issues/108790 -->
     <TargetFramework>net8.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
@@ -10,6 +11,7 @@
     -->
     <NoWarn>$(NoWarn);CS1570;CS1591</NoWarn>
     <!--<DefineConstants>$(DefineConstants);LAUNCH_DEBUGGER</DefineConstants>-->
+    <NuGetAuditMode>direct</NuGetAuditMode>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />

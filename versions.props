@@ -7,7 +7,7 @@
 
     <AspNetCoreHealthChecksVersion>8.0.*</AspNetCoreHealthChecksVersion>
     <CoverletVersion>6.0.*</CoverletVersion>
-    <EntityFrameworkCoreTestVersion>8.0.*</EntityFrameworkCoreTestVersion>
+    <EntityFrameworkCoreTestVersion>9.0.*-*</EntityFrameworkCoreTestVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
     <FluentAssertionsVersion>6.12.*</FluentAssertionsVersion>
     <MicrosoftAzureCosmosVersion>3.41.*</MicrosoftAzureCosmosVersion>
@@ -20,6 +20,7 @@
     <MySqlDataVersion>9.1.*</MySqlDataVersion>
     <NerdbankGitVersioningVersion>3.6.*</NerdbankGitVersioningVersion>
     <NewtonsoftJsonVersion>13.0.3</NewtonsoftJsonVersion>
+    <MySqlEntityFrameworkCoreTestVersion>8.0.*</MySqlEntityFrameworkCoreTestVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
     <RabbitClientTestVersion>6.8.*</RabbitClientTestVersion>
     <SerilogEnrichersThreadVersion>4.0.*</SerilogEnrichersThreadVersion>
@@ -34,7 +35,7 @@
     <XunitVersion>2.8.*</XunitVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'"></PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'"></PropertyGroup>
 
   <PropertyGroup>
     <!--
@@ -47,15 +48,15 @@
     <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
     <ConsulVersion>1.7.14.*</ConsulVersion>
     <DiagnosticsTracingVersion>3.1.16</DiagnosticsTracingVersion>
-    <EntityFrameworkCoreVersion>8.0.*</EntityFrameworkCoreVersion>
+    <EntityFrameworkCoreVersion>9.0.*</EntityFrameworkCoreVersion>
     <FoundationalVersion>
       <!--
         Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
         For example, v6 explicitly targets .NET 6; v7 explicitly targets .NET 6 and 7; v8 explicitly targets .NET 6, 7 and 8.
       -->
-      8.0.*
+      9.0.*
     </FoundationalVersion>
-    <MicrosoftIdentityModelVersion>7.6.*</MicrosoftIdentityModelVersion>
+    <MicrosoftIdentityModelVersion>8.0.*</MicrosoftIdentityModelVersion>
     <OpenTelemetryExporterPrometheusVersion>1.9.*-*</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryVersion>1.9.*</OpenTelemetryVersion>
     <SerilogVersion>8.0.*</SerilogVersion>
@@ -63,14 +64,14 @@
     <WavefrontSdkVersion>1.8.*-*</WavefrontSdkVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
     <MatchTargetFrameworkVersion>
       <!--
         Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
         For example, v6 targets only .NET 6; v7 targets only .NET 7; v8 targets only .NET 8.
         Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
       -->
-      8.0.*
+      9.0.*
     </MatchTargetFrameworkVersion>
   </PropertyGroup>
 </Project>

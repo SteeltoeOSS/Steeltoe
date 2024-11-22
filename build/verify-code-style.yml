@@ -17,6 +17,10 @@ jobs:
     displayName: Install .NET 8
     inputs:
       version: 8.0.x
+  - task: UseDotNet@2
+    displayName: Install .NET 9
+    inputs:
+      version: 9.0.x
   - checkout: self
     persistCredentials: true
     fetchDepth: 0
