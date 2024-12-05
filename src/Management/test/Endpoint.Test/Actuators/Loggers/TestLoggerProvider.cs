@@ -12,7 +12,7 @@ internal sealed class TestLoggerProvider : IDynamicLoggerProvider
 {
     public bool HasCalledGetLogLevels { get; private set; }
     public string? SetCategory { get; private set; }
-    public LogLevel SetMinLevel { get; private set; }
+    public LogLevel? SetMinLevel { get; private set; }
 
     public ILogger CreateLogger(string categoryName)
     {
@@ -28,7 +28,7 @@ internal sealed class TestLoggerProvider : IDynamicLoggerProvider
     public void SetLogLevel(string categoryName, LogLevel? minLevel)
     {
         SetCategory = categoryName;
-        SetMinLevel = minLevel ?? LogLevel.None;
+        SetMinLevel = minLevel;
     }
 
     public void RefreshConfiguration(LogLevelsConfiguration configuration)
