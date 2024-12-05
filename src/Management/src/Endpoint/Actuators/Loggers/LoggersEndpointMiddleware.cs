@@ -16,17 +16,14 @@ namespace Steeltoe.Management.Endpoint.Actuators.Loggers;
 
 internal sealed class LoggersEndpointMiddleware(
     ILoggersEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
-    : EndpointMiddleware<LoggersRequest, LoggersResponse>(endpointHandler, managementOptionsMonitor, loggerFactory)
+    : EndpointMiddleware<LoggersRequest, LoggersResponse?>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
     private readonly ILogger<LoggersEndpointMiddleware> _logger = loggerFactory.CreateLogger<LoggersEndpointMiddleware>();
 
-    protected override async Task<LoggersResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<LoggersResponse?> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         LoggersRequest? loggersRequest = await GetLoggersRequestAsync(context);
-
-        return loggersRequest == null
-            ? new LoggersResponse(new Dictionary<string, object>(), true)
-            : await EndpointHandler.InvokeAsync(loggersRequest, cancellationToken);
+        return loggersRequest == null ? LoggersResponse.Error : await EndpointHandler.InvokeAsync(loggersRequest, cancellationToken);
     }
 
     private async Task<LoggersRequest?> GetLoggersRequestAsync(HttpContext context)
@@ -92,17 +89,20 @@ internal sealed class LoggersEndpointMiddleware(
         return [];
     }
 
-    protected override async Task WriteResponseAsync(LoggersResponse result, HttpContext context, CancellationToken cancellationToken)
+    protected override async Task WriteResponseAsync(LoggersResponse? result, HttpContext context, CancellationToken cancellationToken)
     {
-        if (result.HasError)
+        if (result is { HasError: true })
         {
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
         }
         else
         {
-            context.HandleContentNegotiation(_logger);
-            JsonSerializerOptions options = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
-            await JsonSerializer.SerializeAsync(context.Response.Body, result.Data, options, cancellationToken);
+            if (result != null)
+            {
+                context.HandleContentNegotiation(_logger);
+                JsonSerializerOptions options = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
+                await JsonSerializer.SerializeAsync(context.Response.Body, result, options, cancellationToken);
+            }
         }
     }
 }

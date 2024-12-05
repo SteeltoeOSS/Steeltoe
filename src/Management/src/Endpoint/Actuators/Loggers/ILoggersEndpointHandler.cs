@@ -4,4 +4,4 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.Loggers;
 
-public interface ILoggersEndpointHandler : IEndpointHandler<LoggersRequest, LoggersResponse>;
+public interface ILoggersEndpointHandler : IEndpointHandler<LoggersRequest, LoggersResponse?>;

@@ -12,15 +12,15 @@ public sealed class LoggersRequestTest : BaseTest
     public void Constructor_SetsProperties()
     {
         var request = new LoggersRequest("foo", "bar");
-        Assert.Equal("foo", request.Name);
-        Assert.Equal("bar", request.Level);
+        request.Name.Should().Be("foo");
+        request.Level.Should().Be("bar");
     }
 
     [Fact]
     public void Constructor_AllowsReset()
     {
         var request = new LoggersRequest("foo", null);
-        Assert.Equal("foo", request.Name);
-        Assert.Null(request.Level);
+        request.Name.Should().Be("foo");
+        request.Level.Should().BeNull();
     }
 }

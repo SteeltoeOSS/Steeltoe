@@ -44,35 +44,29 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
         _logger = loggerFactory.CreateLogger<LoggersEndpointHandler>();
     }
 
-    public Task<LoggersResponse> InvokeAsync(LoggersRequest request, CancellationToken cancellationToken)
+    public Task<LoggersResponse?> InvokeAsync(LoggersRequest request, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         _logger.LogDebug("Invoke({Request})", SecurityUtilities.SanitizeInput(request.ToString()));
 
-        Dictionary<string, object> logLevels;
+        LoggersResponse? response;
 
         if (request.Type == LoggersRequestType.Get)
         {
-            logLevels = GetLogLevels();
+            response = GetLogLevels();
         }
         else
         {
             SetLogLevel(request.Name!, request.Level);
-            logLevels = [];
+            response = null;
         }
 
-        var response = new LoggersResponse(logLevels, false);
         return Task.FromResult(response);
     }
 
-    private Dictionary<string, object> GetLogLevels()
+    private LoggersResponse GetLogLevels()
     {
-        var result = new Dictionary<string, object>
-        {
-            { "levels", Levels }
-        };
-
         ICollection<DynamicLoggerState> loggerStates = _dynamicLoggerProvider.GetLogLevels();
         var loggerLevelsPerCategory = new Dictionary<string, LoggerLevels>();
 
@@ -85,8 +79,7 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
             loggerLevelsPerCategory.Add(categoryName, levels);
         }
 
-        result.Add("loggers", loggerLevelsPerCategory);
-        return result;
+        return new LoggersResponse(Levels, loggerLevelsPerCategory, LoggersResponse.EmptyGroups);
     }
 
     private void SetLogLevel(string name, string? level)

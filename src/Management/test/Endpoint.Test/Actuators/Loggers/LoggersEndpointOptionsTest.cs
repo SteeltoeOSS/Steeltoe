@@ -14,8 +14,8 @@ public sealed class LoggersEndpointOptionsTest : BaseTest
     public void Constructor_InitializesWithDefaults()
     {
         var options = GetOptionsFromSettings<LoggersEndpointOptions>();
-        Assert.Null(options.Enabled);
-        Assert.Equal("loggers", options.Id);
+        options.Enabled.Should().BeNull();
+        options.Id.Should().Be("loggers");
     }
 
     [Fact]
@@ -35,13 +35,13 @@ public sealed class LoggersEndpointOptionsTest : BaseTest
         var loggersEndpointOptions = GetOptionsFromSettings<LoggersEndpointOptions>(appSettings);
         var cloudFoundryEndpointOptions = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appSettings);
 
-        Assert.True(cloudFoundryEndpointOptions.Enabled);
-        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Id);
-        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Path);
-        Assert.True(cloudFoundryEndpointOptions.ValidateCertificates);
+        cloudFoundryEndpointOptions.Enabled.Should().BeTrue();
+        cloudFoundryEndpointOptions.Id.Should().BeEmpty();
+        cloudFoundryEndpointOptions.Path.Should().BeEmpty();
+        cloudFoundryEndpointOptions.ValidateCertificates.Should().BeTrue();
 
-        Assert.False(loggersEndpointOptions.Enabled);
-        Assert.Equal("loggers", loggersEndpointOptions.Id);
-        Assert.Equal("loggers", loggersEndpointOptions.Path);
+        loggersEndpointOptions.Enabled.Should().BeFalse();
+        loggersEndpointOptions.Id.Should().Be("loggers");
+        loggersEndpointOptions.Path.Should().Be("loggers");
     }
 }
