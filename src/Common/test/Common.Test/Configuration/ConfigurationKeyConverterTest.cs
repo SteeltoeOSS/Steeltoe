@@ -21,6 +21,6 @@ public sealed class ConfigurationKeyConverterTest
     [InlineData(@"one\.four\\.seven", @"one.four\:seven")]
     public void AsDotNetConfigurationKey_ProducesExpected(string input, string expectedOutput)
     {
-        _ = ConfigurationKeyConverter.AsDotNetConfigurationKey(input).Should().BeEquivalentTo(expectedOutput);
+        _ = ConfigurationKeyConverter.AsDotNetConfigurationKey(input).Should().Be(expectedOutput);
     }
 }
