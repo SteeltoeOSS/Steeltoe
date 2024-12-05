@@ -9,7 +9,7 @@
     <CoverletVersion>6.0.*</CoverletVersion>
     <EntityFrameworkCoreTestVersion>8.0.*</EntityFrameworkCoreTestVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
-    <FluentAssertionsVersion>6.12.*</FluentAssertionsVersion>
+    <FluentAssertionsVersion>7.0.*</FluentAssertionsVersion>
     <MicrosoftAzureCosmosVersion>3.41.*</MicrosoftAzureCosmosVersion>
     <MicrosoftCodeAnalysisVersion>4.11.0</MicrosoftCodeAnalysisVersion>
     <MicrosoftSqlClientVersion>5.2.*</MicrosoftSqlClientVersion>
