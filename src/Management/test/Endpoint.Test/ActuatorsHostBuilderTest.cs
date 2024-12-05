@@ -409,7 +409,7 @@ public sealed class ActuatorsHostBuilderTest
             """;
 
         HttpResponseMessage postResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Microsoft"), new StringContent(requestBody));
-        postResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        postResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         HttpResponseMessage getResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"));
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);

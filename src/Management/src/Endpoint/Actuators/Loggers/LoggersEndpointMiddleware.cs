@@ -97,7 +97,11 @@ internal sealed class LoggersEndpointMiddleware(
         }
         else
         {
-            if (result != null)
+            if (result == null)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.NoContent;
+            }
+            else
             {
                 context.HandleContentNegotiation(_logger);
                 JsonSerializerOptions options = ManagementOptionsMonitor.CurrentValue.SerializerOptions;

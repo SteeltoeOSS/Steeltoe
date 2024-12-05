@@ -86,7 +86,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         string responseText = await response.Content.ReadAsStringAsync();
         responseText.Should().BeEmpty();
 
@@ -116,7 +116,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}");
         HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/loggers/Default"), content);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         string responseText = await response.Content.ReadAsStringAsync();
         responseText.Should().BeEmpty();
 
@@ -141,7 +141,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         HttpContent content = new StringContent("{\"configuredLevel\":\"TRACE\"}");
         HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Steeltoe"), content);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         string responseText = await response.Content.ReadAsStringAsync();
         responseText.Should().BeEmpty();
 
