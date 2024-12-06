@@ -46,39 +46,30 @@ internal sealed class ActuatorEndpointMapper
         ArgumentNullException.ThrowIfNull(endpointRouteBuilder);
         ArgumentNullException.ThrowIfNull(actuatorConventionBuilder);
 
-        InnerMap(middleware => endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middleware.GetType()).Build(),
-            (middleware, requestPath, pipeline) =>
+        InnerMap(middleware => endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middleware.GetType()).Build(), (requestPath, pipeline) =>
+        {
+            IEndpointConventionBuilder endpointConventionBuilder = endpointRouteBuilder.Map(requestPath, pipeline);
+
+            foreach (Action<IEndpointConventionBuilder> configureAction in _conventionOptionsMonitor.CurrentValue.ConfigureActions)
             {
-                HashSet<string> allowedVerbs = middleware.EndpointOptions.GetSafeAllowedVerbs();
+                configureAction(endpointConventionBuilder);
+            }
 
-                if (allowedVerbs.Count > 0)
-                {
-                    IEndpointConventionBuilder endpointConventionBuilder = endpointRouteBuilder.MapMethods(requestPath, allowedVerbs, pipeline);
-
-                    foreach (Action<IEndpointConventionBuilder> configureAction in _conventionOptionsMonitor.CurrentValue.ConfigureActions)
-                    {
-                        configureAction(endpointConventionBuilder);
-                    }
-
-                    actuatorConventionBuilder.TrackTarget(endpointConventionBuilder);
-                }
-            });
+            actuatorConventionBuilder.TrackTarget(endpointConventionBuilder);
+        });
     }
 
     public void Map(IRouteBuilder routeBuilder)
     {
         ArgumentNullException.ThrowIfNull(routeBuilder);
 
-        InnerMap(middleware => routeBuilder.ApplicationBuilder.New().UseMiddleware(middleware.GetType()).Build(), (middleware, requestPath, pipeline) =>
+        InnerMap(middleware => routeBuilder.ApplicationBuilder.New().UseMiddleware(middleware.GetType()).Build(), (requestPath, pipeline) =>
         {
-            foreach (string verb in middleware.EndpointOptions.GetSafeAllowedVerbs())
-            {
-                routeBuilder.MapVerb(verb, requestPath, pipeline);
-            }
+            routeBuilder.MapRoute(requestPath, pipeline);
         });
     }
 
-    private void InnerMap(Func<IEndpointMiddleware, RequestDelegate> createPipeline, Action<IEndpointMiddleware, string, RequestDelegate> applyMapping)
+    private void InnerMap(Func<IEndpointMiddleware, RequestDelegate> createPipeline, Action<string, RequestDelegate> applyMapping)
     {
         var collection = new HashSet<string>();
 
@@ -95,7 +86,7 @@ internal sealed class ActuatorEndpointMapper
     }
 
     private void MapEndpoints(HashSet<string> collection, string? baseRequestPath, IEnumerable<IEndpointMiddleware> middlewares,
-        Func<IEndpointMiddleware, RequestDelegate> createPipeline, Action<IEndpointMiddleware, string, RequestDelegate> applyMapping)
+        Func<IEndpointMiddleware, RequestDelegate> createPipeline, Action<string, RequestDelegate> applyMapping)
     {
         foreach (IEndpointMiddleware middleware in middlewares)
         {
@@ -105,7 +96,7 @@ internal sealed class ActuatorEndpointMapper
 
             if (collection.Add(requestPath))
             {
-                applyMapping(middleware, requestPath, pipeline);
+                applyMapping(requestPath, pipeline);
             }
             else
             {
