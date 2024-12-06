@@ -26,7 +26,7 @@ public sealed class CertificateHttpClientBuilderExtensionsTest
         client.Should().NotBeNull();
         client.DefaultRequestHeaders.Contains("X-Client-Cert").Should().BeTrue();
         string certificateHeader = client.DefaultRequestHeaders.GetValues("X-Client-Cert").First();
-        certificateHeader.Should().BeEquivalentTo(Convert.ToBase64String(certificateBytes));
+        certificateHeader.Should().Be(Convert.ToBase64String(certificateBytes));
     }
 
     [Fact]
