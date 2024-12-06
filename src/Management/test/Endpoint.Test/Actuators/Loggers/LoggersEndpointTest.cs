@@ -21,16 +21,16 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton<IDynamicLoggerProvider, TestLogProvider>();
+            services.AddSingleton<IDynamicLoggerProvider, TestLoggerProvider>();
             services.AddLoggersActuator();
         };
 
         var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
-        var provider = (TestLogProvider)testContext.GetRequiredService<IDynamicLoggerProvider>();
+        var provider = (TestLoggerProvider)testContext.GetRequiredService<IDynamicLoggerProvider>();
 
         _ = await handler.InvokeAsync(new LoggersRequest(), CancellationToken.None);
 
-        provider.GetLoggerConfigurationsCalled.Should().BeTrue();
+        provider.HasCalledGetLogLevels.Should().BeTrue();
     }
 
     [Fact]
@@ -41,23 +41,23 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
 
         var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
 
-        LoggersResponse response = await handler.InvokeAsync(new LoggersRequest(), CancellationToken.None);
+        LoggersResponse? response = await handler.InvokeAsync(new LoggersRequest(), CancellationToken.None);
 
         response.Should().NotBeNull();
-        response.HasError.Should().BeFalse();
-        response.Data.Should().NotBeNull();
+        response!.HasError.Should().BeFalse();
 
-        var levels = response.Data.Should().ContainKey("levels").WhoseValue.As<ICollection<string>>();
-        levels.Should().HaveCount(7);
-        levels.Should().Contain("OFF");
-        levels.Should().Contain("FATAL");
-        levels.Should().Contain("ERROR");
-        levels.Should().Contain("WARN");
-        levels.Should().Contain("INFO");
-        levels.Should().Contain("DEBUG");
-        levels.Should().Contain("TRACE");
+        response.Groups.Should().BeEmpty();
 
-        response.Data.Should().ContainKey("loggers").WhoseValue.As<IDictionary<string, LoggerLevels>>().Should().NotBeEmpty();
+        response.Levels.Should().HaveCount(7);
+        response.Levels.Should().Contain("OFF");
+        response.Levels.Should().Contain("FATAL");
+        response.Levels.Should().Contain("ERROR");
+        response.Levels.Should().Contain("WARN");
+        response.Levels.Should().Contain("INFO");
+        response.Levels.Should().Contain("DEBUG");
+        response.Levels.Should().Contain("TRACE");
+
+        response.Loggers.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -67,21 +67,20 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton<IDynamicLoggerProvider, TestLogProvider>();
+            services.AddSingleton<IDynamicLoggerProvider, TestLoggerProvider>();
             services.AddLoggersActuator();
         };
 
         var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
-        var provider = (TestLogProvider)testContext.GetRequiredService<IDynamicLoggerProvider>();
+        var provider = (TestLoggerProvider)testContext.GetRequiredService<IDynamicLoggerProvider>();
 
         var changeRequest = new LoggersRequest("foobar", "WARN");
-        LoggersResponse response = await handler.InvokeAsync(changeRequest, CancellationToken.None);
+        LoggersResponse? response = await handler.InvokeAsync(changeRequest, CancellationToken.None);
 
-        response.HasError.Should().BeFalse();
-        response.Data.Should().BeEmpty();
+        response.Should().BeNull();
 
-        provider.Category.Should().Be("foobar");
-        provider.MinLevel.Should().Be(LogLevel.Warning);
+        provider.SetCategory.Should().Be("foobar");
+        provider.SetMinLevel.Should().Be(LogLevel.Warning);
     }
 
     [Fact]
@@ -93,9 +92,8 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
 
         var changeRequest = new LoggersRequest("foobar", "WARN");
-        LoggersResponse response = await handler.InvokeAsync(changeRequest, CancellationToken.None);
+        LoggersResponse? response = await handler.InvokeAsync(changeRequest, CancellationToken.None);
 
-        response.HasError.Should().BeFalse();
-        response.Data.Should().BeEmpty();
+        response.Should().BeNull();
     }
 }

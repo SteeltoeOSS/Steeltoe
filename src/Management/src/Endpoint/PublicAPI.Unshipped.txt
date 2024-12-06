@@ -48,6 +48,7 @@ static Steeltoe.Management.Endpoint.Actuators.Info.EndpointServiceCollectionExte
 static Steeltoe.Management.Endpoint.Actuators.Info.EndpointServiceCollectionExtensions.AddInfoContributor<T>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Loggers.EndpointServiceCollectionExtensions.AddLoggersActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Loggers.EndpointServiceCollectionExtensions.AddLoggersActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse.Error.get -> Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse!
 static Steeltoe.Management.Endpoint.Actuators.Metrics.EndpointServiceCollectionExtensions.AddMetricsActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Metrics.EndpointServiceCollectionExtensions.AddMetricsActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Metrics.EndpointServiceCollectionExtensions.AddMetricsObservers(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
@@ -281,6 +282,9 @@ Steeltoe.Management.Endpoint.Actuators.Info.InfoEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Info.InfoEndpointOptions.InfoEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Loggers.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.Loggers.ILoggersEndpointHandler
+Steeltoe.Management.Endpoint.Actuators.Loggers.LoggerGroup
+Steeltoe.Management.Endpoint.Actuators.Loggers.LoggerGroup.LoggerGroup(System.Collections.Generic.IList<string!>! members) -> void
+Steeltoe.Management.Endpoint.Actuators.Loggers.LoggerGroup.Members.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.Actuators.Loggers.LoggerLevels
 Steeltoe.Management.Endpoint.Actuators.Loggers.LoggerLevels.ConfiguredLevel.get -> string?
 Steeltoe.Management.Endpoint.Actuators.Loggers.LoggerLevels.EffectiveLevel.get -> string!
@@ -297,9 +301,11 @@ Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersRequestType
 Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersRequestType.Change = 1 -> Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersRequestType
 Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersRequestType.Get = 0 -> Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersRequestType
 Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse
-Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse.Data.get -> System.Collections.Generic.IDictionary<string!, object!>!
+Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse.Groups.get -> System.Collections.Generic.IDictionary<string!, Steeltoe.Management.Endpoint.Actuators.Loggers.LoggerGroup!>!
 Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse.HasError.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse.LoggersResponse(System.Collections.Generic.IDictionary<string!, object!>! data, bool hasError) -> void
+Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse.Levels.get -> System.Collections.Generic.IList<string!>!
+Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse.Loggers.get -> System.Collections.Generic.IDictionary<string!, Steeltoe.Management.Endpoint.Actuators.Loggers.LoggerLevels!>!
+Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse.LoggersResponse(System.Collections.Generic.IList<string!>! levels, System.Collections.Generic.IDictionary<string!, Steeltoe.Management.Endpoint.Actuators.Loggers.LoggerLevels!>! loggers, System.Collections.Generic.IDictionary<string!, Steeltoe.Management.Endpoint.Actuators.Loggers.LoggerGroup!>! groups) -> void
 Steeltoe.Management.Endpoint.Actuators.Metrics.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.Metrics.IMetricsEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.Metrics.MetricSample

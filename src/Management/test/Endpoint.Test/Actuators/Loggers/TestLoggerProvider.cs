@@ -8,34 +8,34 @@ using Steeltoe.Logging;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Loggers;
 
-internal sealed class TestLogProvider : IDynamicLoggerProvider
+internal sealed class TestLoggerProvider : IDynamicLoggerProvider
 {
-    public string? Category { get; private set; }
-    public LogLevel MinLevel { get; private set; }
-    public bool GetLoggerConfigurationsCalled { get; private set; }
+    public bool HasCalledGetLogLevels { get; private set; }
+    public string? SetCategory { get; private set; }
+    public LogLevel? SetMinLevel { get; private set; }
 
     public ILogger CreateLogger(string categoryName)
     {
         return NullLogger.Instance;
     }
 
-    public void Dispose()
-    {
-    }
-
     public ICollection<DynamicLoggerState> GetLogLevels()
     {
-        GetLoggerConfigurationsCalled = true;
+        HasCalledGetLogLevels = true;
         return [];
     }
 
     public void SetLogLevel(string categoryName, LogLevel? minLevel)
     {
-        Category = categoryName;
-        MinLevel = minLevel ?? LogLevel.None;
+        SetCategory = categoryName;
+        SetMinLevel = minLevel;
     }
 
     public void RefreshConfiguration(LogLevelsConfiguration configuration)
+    {
+    }
+
+    public void Dispose()
     {
     }
 }

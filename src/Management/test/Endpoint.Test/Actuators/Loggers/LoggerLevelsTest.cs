@@ -12,37 +12,37 @@ public sealed class LoggerLevelsTest : BaseTest
     [Fact]
     public void MapLogLevel_ToString_ReturnsExpected()
     {
-        Assert.Equal("OFF", LoggerLevels.LogLevelToString(LogLevel.None));
-        Assert.Equal("FATAL", LoggerLevels.LogLevelToString(LogLevel.Critical));
-        Assert.Equal("ERROR", LoggerLevels.LogLevelToString(LogLevel.Error));
-        Assert.Equal("WARN", LoggerLevels.LogLevelToString(LogLevel.Warning));
-        Assert.Equal("INFO", LoggerLevels.LogLevelToString(LogLevel.Information));
-        Assert.Equal("DEBUG", LoggerLevels.LogLevelToString(LogLevel.Debug));
-        Assert.Equal("TRACE", LoggerLevels.LogLevelToString(LogLevel.Trace));
+        LoggerLevels.LogLevelToString(LogLevel.None).Should().Be("OFF");
+        LoggerLevels.LogLevelToString(LogLevel.Critical).Should().Be("FATAL");
+        LoggerLevels.LogLevelToString(LogLevel.Error).Should().Be("ERROR");
+        LoggerLevels.LogLevelToString(LogLevel.Warning).Should().Be("WARN");
+        LoggerLevels.LogLevelToString(LogLevel.Information).Should().Be("INFO");
+        LoggerLevels.LogLevelToString(LogLevel.Debug).Should().Be("DEBUG");
+        LoggerLevels.LogLevelToString(LogLevel.Trace).Should().Be("TRACE");
     }
 
     [Fact]
     public void MapLogLevel_FromString_ReturnsExpected()
     {
-        Assert.Equal(LogLevel.None, LoggerLevels.StringToLogLevel("OFF"));
-        Assert.Equal(LogLevel.Critical, LoggerLevels.StringToLogLevel("FATAL"));
-        Assert.Equal(LogLevel.Error, LoggerLevels.StringToLogLevel("ERROR"));
-        Assert.Equal(LogLevel.Warning, LoggerLevels.StringToLogLevel("WARN"));
-        Assert.Equal(LogLevel.Information, LoggerLevels.StringToLogLevel("INFO"));
-        Assert.Equal(LogLevel.Debug, LoggerLevels.StringToLogLevel("DEBUG"));
-        Assert.Equal(LogLevel.Trace, LoggerLevels.StringToLogLevel("TRACE"));
-        Assert.Null(LoggerLevels.StringToLogLevel("FooBar"));
+        LoggerLevels.StringToLogLevel("OFF").Should().Be(LogLevel.None);
+        LoggerLevels.StringToLogLevel("FATAL").Should().Be(LogLevel.Critical);
+        LoggerLevels.StringToLogLevel("ERROR").Should().Be(LogLevel.Error);
+        LoggerLevels.StringToLogLevel("WARN").Should().Be(LogLevel.Warning);
+        LoggerLevels.StringToLogLevel("INFO").Should().Be(LogLevel.Information);
+        LoggerLevels.StringToLogLevel("DEBUG").Should().Be(LogLevel.Debug);
+        LoggerLevels.StringToLogLevel("TRACE").Should().Be(LogLevel.Trace);
+        LoggerLevels.StringToLogLevel("Invalid").Should().BeNull();
     }
 
     [Fact]
     public void Constructor_SetsProperties()
     {
-        var levels1 = new LoggerLevels(null, LogLevel.Warning);
-        Assert.Null(levels1.ConfiguredLevel);
-        Assert.Equal("WARN", levels1.EffectiveLevel);
+        var effectiveOnly = new LoggerLevels(null, LogLevel.Warning);
+        effectiveOnly.ConfiguredLevel.Should().BeNull();
+        effectiveOnly.EffectiveLevel.Should().Be("WARN");
 
-        var levels2 = new LoggerLevels(LogLevel.Information, LogLevel.Warning);
-        Assert.Equal("INFO", levels2.ConfiguredLevel);
-        Assert.Equal("WARN", levels2.EffectiveLevel);
+        var bothLevels = new LoggerLevels(LogLevel.Information, LogLevel.Warning);
+        bothLevels.ConfiguredLevel.Should().Be("INFO");
+        bothLevels.EffectiveLevel.Should().Be("WARN");
     }
 }

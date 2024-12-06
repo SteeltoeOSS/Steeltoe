@@ -5,7 +5,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -20,75 +20,80 @@ public sealed class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string?> AppSettings = new()
     {
-        ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
         ["Logging:LogLevel:Steeltoe"] = "Information",
-        ["management:endpoints:enabled"] = "true",
-        ["management:endpoints:loggers:enabled"] = "true",
         ["management:endpoints:actuator:exposure:include:0"] = "loggers"
     };
 
     [Fact]
     public async Task LoggersActuator_ReturnsExpectedData()
     {
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
-        builder.ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddConfiguration(context.Configuration));
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(AppSettings);
+        builder.Services.AddLoggersActuator();
+        builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
-        using IWebHost host = builder.Build();
+        await using WebApplication host = builder.Build();
         await host.StartAsync();
 
         using HttpClient client = host.GetTestClient();
-        var result = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers");
+        var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers");
 
-        result.TryGetProperty("levels", out JsonElement levels).Should().BeTrue();
+        json.TryGetProperty("levels", out JsonElement levels).Should().BeTrue();
         levels.ToString().Should().Be("""["OFF","FATAL","ERROR","WARN","INFO","DEBUG","TRACE"]""");
 
-        result.TryGetProperty("loggers", out JsonElement loggers).Should().BeTrue();
+        json.TryGetProperty("groups", out JsonElement groups).Should().BeTrue();
+        groups.EnumerateObject().Should().BeEmpty();
 
-        loggers.TryGetProperty("Default", out JsonElement defaultLogger).Should().BeTrue();
-        defaultLogger.ToString().Should().Be("""{"effectiveLevel":"WARN"}""");
-
-        loggers.TryGetProperty("Steeltoe.Management", out JsonElement managementLogger).Should().BeTrue();
-        managementLogger.ToString().Should().Be("""{"effectiveLevel":"INFO"}""");
+        json.TryGetProperty("loggers", out JsonElement loggers).Should().BeTrue();
+        AssertLoggerCategoryHasJson(loggers, "Default", """{"effectiveLevel":"WARN"}""");
+        AssertLoggerCategoryHasJson(loggers, "Steeltoe.Management", """{"effectiveLevel":"INFO"}""");
     }
 
     [Fact]
     public async Task LoggersActuator_ReturnsBadRequest()
     {
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
-        builder.ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddConfiguration(context.Configuration));
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(AppSettings);
+        builder.Services.AddLoggersActuator();
+        builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
-        using IWebHost host = builder.Build();
+        await using WebApplication host = builder.Build();
         await host.StartAsync();
 
         using HttpClient client = host.GetTestClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"BadData\"}");
-        HttpResponseMessage changeResult = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content);
-        Assert.Equal(HttpStatusCode.BadRequest, changeResult.StatusCode);
+        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content);
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        string responseText = await response.Content.ReadAsStringAsync();
+        responseText.Should().BeEmpty();
     }
 
     [Fact]
     public async Task LoggersActuator_AcceptsPost()
     {
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
-        builder.ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging")));
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(AppSettings);
+        builder.Services.AddLoggersActuator();
+        builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
-        using IWebHost host = builder.Build();
+        await using WebApplication host = builder.Build();
         await host.StartAsync();
 
         using HttpClient client = host.GetTestClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}");
-        HttpResponseMessage changeResult = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content);
-        Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
 
-        var parsedObject = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers");
-        Assert.Equal("ERROR", parsedObject.GetProperty("loggers").GetProperty("Default").GetProperty("effectiveLevel").GetString());
+        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        string responseText = await response.Content.ReadAsStringAsync();
+        responseText.Should().BeEmpty();
+
+        var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers");
+
+        json.TryGetProperty("loggers", out JsonElement loggers).Should().BeTrue();
+        AssertLoggerCategoryHasJson(loggers, "Default", """{"configuredLevel":"WARN","effectiveLevel":"ERROR"}""");
     }
 
     [Fact]
@@ -99,48 +104,55 @@ public sealed class EndpointMiddlewareTest : BaseTest
             ["management:endpoints:path"] = "/"
         };
 
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
-        builder.ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging")));
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddLoggersActuator();
+        builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
-        using IWebHost host = builder.Build();
+        await using WebApplication host = builder.Build();
         await host.StartAsync();
 
         using HttpClient client = host.GetTestClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}");
-        HttpResponseMessage changeResult = await client.PostAsync(new Uri("http://localhost/loggers/Default"), content);
-        Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
+        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/loggers/Default"), content);
 
-        var parsedObject = await client.GetFromJsonAsync<JsonElement>("http://localhost/loggers");
-        Assert.Equal("ERROR", parsedObject.GetProperty("loggers").GetProperty("Default").GetProperty("effectiveLevel").GetString());
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        string responseText = await response.Content.ReadAsStringAsync();
+        responseText.Should().BeEmpty();
+
+        var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/loggers");
+
+        json.TryGetProperty("loggers", out JsonElement loggers).Should().BeTrue();
+        AssertLoggerCategoryHasJson(loggers, "Default", """{"configuredLevel":"WARN","effectiveLevel":"ERROR"}""");
     }
 
     [Fact]
-    public async Task LoggersActuator_UpdateNameSpace_UpdatesChildren()
+    public async Task LoggersActuator_UpdateCategory_UpdatesChildren()
     {
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
-        builder.ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging")));
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(AppSettings);
+        builder.Services.AddLoggersActuator();
+        builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
-        using IWebHost host = builder.Build();
+        await using WebApplication host = builder.Build();
         await host.StartAsync();
 
         using HttpClient client = host.GetTestClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"TRACE\"}");
-        HttpResponseMessage changeResult = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Steeltoe"), content);
-        Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
+        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Steeltoe"), content);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        string responseText = await response.Content.ReadAsStringAsync();
+        responseText.Should().BeEmpty();
 
         var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers");
-        JsonElement loggers = json.GetProperty("loggers");
-        Assert.Equal("TRACE", loggers.GetProperty("Steeltoe").GetProperty("effectiveLevel").GetString());
-        Assert.Equal("TRACE", loggers.GetProperty("Steeltoe.Management").GetProperty("effectiveLevel").GetString());
-        Assert.Equal("TRACE", loggers.GetProperty("Steeltoe.Management.Endpoint").GetProperty("effectiveLevel").GetString());
-        Assert.Equal("TRACE", loggers.GetProperty("Steeltoe.Management.Endpoint.Actuators.Loggers").GetProperty("effectiveLevel").GetString());
 
-        Assert.Equal("TRACE",
-            loggers.GetProperty("Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersEndpointMiddleware").GetProperty("effectiveLevel").GetString());
+        json.TryGetProperty("loggers", out JsonElement loggers).Should().BeTrue();
+        AssertLoggerCategoryHasJson(loggers, "Steeltoe", """{"configuredLevel":"INFO","effectiveLevel":"TRACE"}""");
+        AssertLoggerCategoryHasJson(loggers, "Steeltoe.Management", """{"effectiveLevel":"TRACE"}""");
+        AssertLoggerCategoryHasJson(loggers, "Steeltoe.Management.Endpoint", """{"effectiveLevel":"TRACE"}""");
+        AssertLoggerCategoryHasJson(loggers, "Steeltoe.Management.Endpoint.Actuators.Loggers", """{"effectiveLevel":"TRACE"}""");
+        AssertLoggerCategoryHasJson(loggers, "Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersEndpointMiddleware", """{"effectiveLevel":"TRACE"}""");
     }
 
     [Fact]
@@ -149,45 +161,49 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var endpointOptions = GetOptionsFromSettings<LoggersEndpointOptions>();
         ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
-        Assert.False(endpointOptions.RequiresExactMatch());
-        Assert.Equal("/actuator/loggers/{**_}", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
+        endpointOptions.RequiresExactMatch().Should().BeFalse();
 
-        Assert.Equal("/cloudfoundryapplication/loggers/{**_}",
-            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
+        string actuatorPathPattern = endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path);
+        actuatorPathPattern.Should().Be("/actuator/loggers/{**_}");
 
-        Assert.Collection(endpointOptions.AllowedVerbs, verb => Assert.Contains("Get", verb, StringComparison.Ordinal),
-            verb => Assert.Contains("Post", verb, StringComparison.Ordinal));
+        string cloudFoundryPathPattern = endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath);
+        cloudFoundryPathPattern.Should().Be("/cloudfoundryapplication/loggers/{**_}");
+
+        endpointOptions.AllowedVerbs.Should().HaveCount(2);
+        endpointOptions.AllowedVerbs.Should().Contain("Get");
+        endpointOptions.AllowedVerbs.Should().Contain("Post");
     }
 
     [Fact]
     public async Task LoggersActuator_MultipleProviders_ReturnsExpectedData()
     {
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(AppSettings);
+        builder.Services.AddLoggersActuator();
+        builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
+        builder.Logging.AddDynamicConsole();
+        builder.Logging.AddDebug();
 
-        builder.ConfigureLogging((context, loggingBuilder) =>
-        {
-            loggingBuilder.AddConfiguration(context.Configuration);
-            loggingBuilder.AddDynamicConsole();
-            loggingBuilder.AddDebug();
-        });
-
-        using IWebHost host = builder.Build();
+        await using WebApplication host = builder.Build();
         await host.StartAsync();
 
         using HttpClient client = host.GetTestClient();
-        var result = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers");
+        var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers");
 
-        result.TryGetProperty("levels", out JsonElement levels).Should().BeTrue();
+        json.TryGetProperty("levels", out JsonElement levels).Should().BeTrue();
         levels.ToString().Should().Be("""["OFF","FATAL","ERROR","WARN","INFO","DEBUG","TRACE"]""");
 
-        result.TryGetProperty("loggers", out JsonElement loggers).Should().BeTrue();
+        json.TryGetProperty("groups", out JsonElement groups).Should().BeTrue();
+        groups.EnumerateObject().Should().BeEmpty();
 
-        loggers.TryGetProperty("Default", out JsonElement defaultLogger).Should().BeTrue();
-        defaultLogger.ToString().Should().Be("""{"effectiveLevel":"WARN"}""");
+        json.TryGetProperty("loggers", out JsonElement loggers).Should().BeTrue();
+        AssertLoggerCategoryHasJson(loggers, "Default", """{"effectiveLevel":"WARN"}""");
+        AssertLoggerCategoryHasJson(loggers, "Steeltoe.Management", """{"effectiveLevel":"INFO"}""");
+    }
 
-        loggers.TryGetProperty("Steeltoe.Management", out JsonElement managementLogger).Should().BeTrue();
-        managementLogger.ToString().Should().Be("""{"effectiveLevel":"INFO"}""");
+    private static void AssertLoggerCategoryHasJson(JsonElement loggers, string category, string jsonValue)
+    {
+        loggers.TryGetProperty(category, out JsonElement loggerElement).Should().BeTrue();
+        loggerElement.ToString().Should().Be(jsonValue);
     }
 }

@@ -30,6 +30,6 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var handler = serviceProvider.GetService<ILoggersEndpointHandler>();
-        Assert.NotNull(handler);
+        handler.Should().NotBeNull();
     }
 }

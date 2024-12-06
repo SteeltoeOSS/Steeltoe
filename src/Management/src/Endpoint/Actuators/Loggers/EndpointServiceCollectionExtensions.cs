@@ -43,7 +43,7 @@ public static class EndpointServiceCollectionExtensions
         services.AddLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
 
         services.AddCoreActuatorServices<LoggersEndpointOptions, ConfigureLoggersEndpointOptions, LoggersEndpointMiddleware, ILoggersEndpointHandler,
-            LoggersEndpointHandler, LoggersRequest, LoggersResponse>(configureMiddleware);
+            LoggersEndpointHandler, LoggersRequest, LoggersResponse?>(configureMiddleware);
 
         return services;
     }
