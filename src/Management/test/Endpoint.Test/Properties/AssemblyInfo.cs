@@ -3,10 +3,5 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.CompilerServices;
-using Aspire;
-using Steeltoe.Management.Prometheus;
-
-[assembly: ConfigurationSchema("Management:Endpoints:Prometheus", typeof(PrometheusEndpointOptions))]
-[assembly: LoggingCategories("Steeltoe", "Steeltoe.Management", "Steeltoe.Management.Prometheus")]
 
 [assembly: InternalsVisibleTo("Steeltoe.Management.Prometheus.Test")]
