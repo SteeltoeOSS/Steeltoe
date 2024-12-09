@@ -14,7 +14,6 @@ const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.LoggingDynamicS
 const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ManagementEndpoint = "Steeltoe.Management.Endpoint" -> string!
 const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ManagementPrometheus = "Steeltoe.Management.Prometheus" -> string!
 const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ManagementTracing = "Steeltoe.Management.Tracing" -> string!
-const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ManagementWavefront = "Steeltoe.Management.Wavefront" -> string!
 static Steeltoe.Bootstrap.AutoConfiguration.HostApplicationBuilderExtensions.AddSteeltoe(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Bootstrap.AutoConfiguration.HostApplicationBuilderExtensions.AddSteeltoe(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Bootstrap.AutoConfiguration.HostApplicationBuilderExtensions.AddSteeltoe(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, System.Collections.Generic.IReadOnlySet<string!>! assemblyNamesToExclude) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!

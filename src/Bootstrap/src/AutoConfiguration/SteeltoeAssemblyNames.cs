@@ -24,7 +24,6 @@ public static class SteeltoeAssemblyNames
     public const string ManagementEndpoint = "Steeltoe.Management.Endpoint";
     public const string ManagementPrometheus = "Steeltoe.Management.Prometheus";
     public const string ManagementTracing = "Steeltoe.Management.Tracing";
-    public const string ManagementWavefront = "Steeltoe.Management.Wavefront";
 
     internal static readonly IReadOnlySet<string> All = typeof(SteeltoeAssemblyNames).GetFields().Where(field => field.FieldType == typeof(string))
         .Select(field => field.GetValue(null)).Cast<string>().ToHashSet();

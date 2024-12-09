@@ -60,7 +60,6 @@
     <OpenTelemetryVersion>1.9.*</OpenTelemetryVersion>
     <SerilogVersion>8.0.*</SerilogVersion>
     <SerilogSinksConsoleVersion>6.0.*</SerilogSinksConsoleVersion>
-    <WavefrontSdkVersion>1.8.*-*</WavefrontSdkVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
