@@ -86,7 +86,7 @@ internal sealed class BootstrapScanner
         WireIfLoaded(WireDiscoveryEureka, SteeltoeAssemblyNames.DiscoveryEureka);
         WireIfLoaded(WireAllActuators, SteeltoeAssemblyNames.ManagementEndpoint);
         WireIfLoaded(WirePrometheus, SteeltoeAssemblyNames.ManagementPrometheus);
-        WireIfLoaded(WireDistributedTracing, SteeltoeAssemblyNames.ManagementTracing);
+        WireIfLoaded(WireDistributedTracingLogProcessor, SteeltoeAssemblyNames.ManagementTracing);
     }
 
     private void WireConfigServer()
@@ -256,11 +256,11 @@ internal sealed class BootstrapScanner
         _logger.LogInformation("Configured Prometheus");
     }
 
-    private void WireDistributedTracing()
+    private void WireDistributedTracingLogProcessor()
     {
-        _wrapper.ConfigureServices(services => services.AddDistributedTracingAspNetCore());
+        _wrapper.ConfigureServices(services => services.AddTracingLogProcessor());
 
-        _logger.LogInformation("Configured distributed tracing");
+        _logger.LogInformation("Configured distributed tracing log processor");
     }
 
     private bool WireIfLoaded(Action wireAction, string assemblyName)

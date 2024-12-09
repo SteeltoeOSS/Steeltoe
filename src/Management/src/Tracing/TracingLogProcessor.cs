@@ -3,21 +3,24 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text;
-using Microsoft.Extensions.Options;
 using OpenTelemetry.Trace;
+using Steeltoe.Common;
 using Steeltoe.Logging;
 
 namespace Steeltoe.Management.Tracing;
 
+/// <summary>
+/// An <see cref="IDynamicMessageProcessor" /> that adds details of <see cref="Tracer.CurrentSpan" /> (if found) to log messages.
+/// </summary>
 public sealed class TracingLogProcessor : IDynamicMessageProcessor
 {
-    private readonly IOptionsMonitor<TracingOptions> _optionsMonitor;
+    private readonly IApplicationInstanceInfo _applicationInstanceInfo;
 
-    public TracingLogProcessor(IOptionsMonitor<TracingOptions> optionsMonitor)
+    public TracingLogProcessor(IApplicationInstanceInfo applicationInstanceInfo)
     {
-        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(applicationInstanceInfo);
 
-        _optionsMonitor = optionsMonitor;
+        _applicationInstanceInfo = applicationInstanceInfo;
     }
 
     public string Process(string message)
@@ -26,41 +29,34 @@ public sealed class TracingLogProcessor : IDynamicMessageProcessor
 
         TelemetrySpan? currentSpan = GetCurrentSpan();
 
-        if (currentSpan != null)
+        if (currentSpan == null)
         {
-            TracingOptions options = _optionsMonitor.CurrentValue;
-
-            SpanContext context = currentSpan.Context;
-
-            var sb = new StringBuilder(" [");
-            sb.Append(options.Name);
-            sb.Append(',');
-
-            string traceId = context.TraceId.ToHexString();
-
-            if (traceId.Length > 16 && options.UseShortTraceIds)
-            {
-                traceId = traceId.Substring(traceId.Length - 16, 16);
-            }
-
-            sb.Append(traceId);
-            sb.Append(',');
-
-            sb.Append(context.SpanId.ToHexString());
-            sb.Append(',');
-
-            sb.Append(currentSpan.ParentSpanId.ToString());
-            sb.Append(',');
-
-            sb.Append(currentSpan.IsRecording ? "true" : "false");
-
-            sb.Append("] ");
-            sb.Append(message);
-
-            return sb.ToString();
+            return message;
         }
 
-        return message;
+        SpanContext context = currentSpan.Context;
+
+        var sb = new StringBuilder(" [");
+        sb.Append(_applicationInstanceInfo.ApplicationName);
+        sb.Append(',');
+
+        string traceId = context.TraceId.ToHexString();
+
+        sb.Append(traceId);
+        sb.Append(',');
+
+        sb.Append(context.SpanId.ToHexString());
+        sb.Append(',');
+
+        sb.Append(currentSpan.ParentSpanId.ToString());
+        sb.Append(',');
+
+        sb.Append(currentSpan.IsRecording ? "true" : "false");
+
+        sb.Append("] ");
+        sb.Append(message);
+
+        return sb.ToString();
     }
 
     private static TelemetrySpan? GetCurrentSpan()

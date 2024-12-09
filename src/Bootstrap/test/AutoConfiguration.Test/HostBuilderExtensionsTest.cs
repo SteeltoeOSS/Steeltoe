@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.Cosmos;
@@ -12,14 +11,13 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MySqlConnector;
 using Npgsql;
 using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
 using RabbitMQ.Client;
 using StackExchange.Redis;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration;
@@ -47,7 +45,6 @@ using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
-using Steeltoe.Management.Tracing;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
 
@@ -383,24 +380,10 @@ public sealed class HostBuilderExtensionsTest
 
     private static void AssertTracingIsAutowired(HostWrapper hostWrapper)
     {
-        var tracerProvider = hostWrapper.Services.GetRequiredService<TracerProvider>();
-
-        IHostedService[] hostedServices = hostWrapper.Services.GetServices<IHostedService>().ToArray();
-        hostedServices.Should().ContainSingle(hostedService => hostedService.GetType().Name == "TelemetryHostedService");
-
-        var optionsMonitor = hostWrapper.Services.GetRequiredService<IOptionsMonitor<TracingOptions>>();
-        optionsMonitor.CurrentValue.Name.Should().NotBeNull();
+        var applicationInstanceInfo = hostWrapper.Services.GetRequiredService<IApplicationInstanceInfo>();
+        applicationInstanceInfo.ApplicationName.Should().NotBeNull();
 
         hostWrapper.Services.GetService<IDynamicMessageProcessor>().Should().NotBeNull();
-
-        FieldInfo? instrumentationsField = tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance);
-        instrumentationsField.Should().NotBeNull();
-
-        var instrumentations = (List<object>?)instrumentationsField!.GetValue(tracerProvider);
-
-        instrumentations.Should().HaveCount(2);
-        instrumentations.Should().ContainSingle(instance => instance.GetType().Name == "HttpClientInstrumentation");
-        instrumentations.Should().ContainSingle(instance => instance.GetType().Name == "AspNetCoreInstrumentation");
     }
 
     private static class HostWrapperFactory
