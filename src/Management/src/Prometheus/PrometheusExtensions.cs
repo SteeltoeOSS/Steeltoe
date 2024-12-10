@@ -4,13 +4,13 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
-using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.Metrics;
@@ -44,23 +44,48 @@ public static class PrometheusExtensions
     /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires
     /// manual addition of the appropriate middleware for the Prometheus exporter to work correctly.
     /// </param>
-    /// <param name="configureBranchedPipeline">
-    /// Optional callback to configure the branched pipeline. Called before registration of the Prometheus middleware.
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddPrometheusActuator(this IServiceCollection services, bool configureMiddleware)
+    {
+        return AddPrometheusActuator(services, configureMiddleware, null);
+    }
+
+    /// <summary>
+    /// Adds the services used by the Steeltoe-configured OpenTelemetry Prometheus exporter.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configureMiddleware">
+    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires
+    /// manual addition of the appropriate middleware for the Prometheus exporter to work correctly.
+    /// </param>
+    /// <param name="configurePrometheusPipeline">
+    /// Optional callback to run additional middleware at the Prometheus endpoint path, before the Prometheus middleware runs. For example:
+    /// <code><![CDATA[builder => builder.UseAuthorization()]]></code>. Only used when is <c>true</c>.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddPrometheusActuator(this IServiceCollection services, bool configureMiddleware,
-        Action<IApplicationBuilder>? configureBranchedPipeline)
+        Action<IApplicationBuilder>? configurePrometheusPipeline)
     {
         ArgumentNullException.ThrowIfNull(services);
 
+        if (!configureMiddleware && configurePrometheusPipeline != null)
+        {
+            throw new InvalidOperationException($"The Prometheus pipeline cannot be configured here when {nameof(configureMiddleware)} is false.");
+        }
+
+        services.AddRouting();
         services.ConfigureEndpointOptions<PrometheusEndpointOptions, ConfigurePrometheusEndpointOptions>();
 
         if (configureMiddleware)
         {
-            services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, ConfigurePrometheusActuatorStartupFilter>(_ =>
-                new ConfigurePrometheusActuatorStartupFilter(configureBranchedPipeline)));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, PrometheusActuatorStartupFilter>(_ =>
+                new PrometheusActuatorStartupFilter(configurePrometheusPipeline)));
         }
 
         services.AddOpenTelemetry().WithMetrics(builder =>
@@ -92,27 +117,27 @@ public static class PrometheusExtensions
     /// <param name="builder">
     /// The <see cref="IApplicationBuilder" />.
     /// </param>
-    /// <param name="configureBranchedPipeline">
+    /// <param name="configurePrometheusPipeline">
     /// Optional callback to configure the branched pipeline. Called before registration of the Prometheus middleware.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static IApplicationBuilder UsePrometheusActuator(this IApplicationBuilder builder, Action<IApplicationBuilder>? configureBranchedPipeline)
+    public static IApplicationBuilder UsePrometheusActuator(this IApplicationBuilder builder, Action<IApplicationBuilder>? configurePrometheusPipeline)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
+        var loggerFactory = builder.ApplicationServices.GetRequiredService<ILoggerFactory>();
+        ILogger logger = loggerFactory.CreateLogger(nameof(PrometheusExtensions));
         ManagementOptions managementOptions = builder.ApplicationServices.GetRequiredService<IOptionsMonitor<ManagementOptions>>().CurrentValue;
-        var conventionOptions = builder.ApplicationServices.GetRequiredService<IOptionsMonitor<ActuatorConventionOptions>>();
+        var conventionOptionsMonitor = builder.ApplicationServices.GetRequiredService<IOptionsMonitor<ActuatorConventionOptions>>();
 
-        PrometheusEndpointOptions? prometheusOptions = builder.ApplicationServices.GetServices<EndpointOptions>()
-            .OfType<PrometheusEndpointOptions>().FirstOrDefault();
+        PrometheusEndpointOptions prometheusOptions = builder.ApplicationServices.GetRequiredService<IOptions<PrometheusEndpointOptions>>().Value;
 
         string basePath = managementOptions.Path ?? "/actuator";
-        string endpointPath = prometheusOptions?.Path ?? "prometheus";
+        string endpointPath = prometheusOptions.Path ?? "prometheus";
         string path = $"{basePath}/{endpointPath}".Replace("//", "/", StringComparison.Ordinal);
-
-        builder.UseOpenTelemetryPrometheusScrapingEndpoint(null, null, path, ConfigureBranchedPipeline, null);
+        string? cloudFoundryPath = null;
 
         if (Platform.IsCloudFoundry)
         {
@@ -120,14 +145,45 @@ public static class PrometheusExtensions
 
             if (permissionsProvider is null)
             {
-                var loggerFactory = builder.ApplicationServices.GetRequiredService<ILoggerFactory>();
-                ILogger logger = loggerFactory.CreateLogger(nameof(PrometheusExtensions));
                 logger.LogWarning("The Cloud Foundry Actuator is required in order to run the Prometheus exporter under the Cloud Foundry context.");
-                return builder;
+            }
+            else
+            {
+                cloudFoundryPath = $"/{ConfigureManagementOptions.DefaultCloudFoundryPath}/{endpointPath}".Replace("//", "/", StringComparison.Ordinal);
+            }
+        }
+
+        var mvcOptions = builder.ApplicationServices.GetService<IOptions<MvcOptions>>();
+        bool isEndpointRoutingEnabled = mvcOptions?.Value.EnableEndpointRouting ?? true;
+        bool applyActuatorConventions = conventionOptionsMonitor.CurrentValue.ConfigureActions.Count > 0;
+
+        if (isEndpointRoutingEnabled && (applyActuatorConventions || configurePrometheusPipeline != null))
+        {
+            builder.UseOpenTelemetryPrometheusScrapingEndpoint(null, null, path, ConfigureBranchedPipeline, null);
+
+            if (cloudFoundryPath != null)
+            {
+                builder.UseOpenTelemetryPrometheusScrapingEndpoint(null, null, cloudFoundryPath, ConfigureBranchedPipeline, null);
             }
 
-            string cloudFoundryPath = $"/{ConfigureManagementOptions.DefaultCloudFoundryPath}/{endpointPath}".Replace("//", "/", StringComparison.Ordinal);
-            builder.UseOpenTelemetryPrometheusScrapingEndpoint(null, null, cloudFoundryPath, ConfigureBranchedPipeline, null);
+            return builder;
+        }
+
+        if (applyActuatorConventions)
+        {
+            logger.LogWarning("Customizing endpoints is only supported when using endpoint routing.");
+        }
+
+        if (managementOptions.Port is null)
+        {
+            logger.LogWarning("The Prometheus endpoint may not be configured securely. Consider enabling EndpointRouting or using an alternate port.");
+        }
+
+        builder.UseOpenTelemetryPrometheusScrapingEndpoint(path);
+
+        if (cloudFoundryPath != null)
+        {
+            builder.UseOpenTelemetryPrometheusScrapingEndpoint(cloudFoundryPath);
         }
 
         return builder;
@@ -135,13 +191,13 @@ public static class PrometheusExtensions
         void ConfigureBranchedPipeline(IApplicationBuilder branchedApplicationBuilder)
         {
             branchedApplicationBuilder.UseRouting();
-            configureBranchedPipeline?.Invoke(branchedApplicationBuilder);
+            configurePrometheusPipeline?.Invoke(branchedApplicationBuilder);
 
             branchedApplicationBuilder.UseEndpoints(endpoints =>
             {
                 IEndpointConventionBuilder endpointBuilder = endpoints.MapPrometheusScrapingEndpoint("/");
 
-                foreach (Action<IEndpointConventionBuilder> endpointAction in conventionOptions.CurrentValue.ConfigureActions)
+                foreach (Action<IEndpointConventionBuilder> endpointAction in conventionOptionsMonitor.CurrentValue.ConfigureActions)
                 {
                     endpointAction(endpointBuilder);
                 }

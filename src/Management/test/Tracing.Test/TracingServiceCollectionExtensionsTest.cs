@@ -21,7 +21,6 @@ public sealed class TracingServiceCollectionExtensionsTest
 
         serviceProvider.GetService<IApplicationInstanceInfo>().Should().NotBeNull().And.BeOfType<ApplicationInstanceInfo>();
 
-        IEnumerable<IDynamicMessageProcessor> messageProcessors = serviceProvider.GetServices<IDynamicMessageProcessor>();
-        messageProcessors.Should().ContainSingle(messageProcessor => messageProcessor is TracingLogProcessor);
+        serviceProvider.GetServices<IDynamicMessageProcessor>().OfType<TracingLogProcessor>().Should().ContainSingle();
     }
 }

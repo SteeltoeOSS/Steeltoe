@@ -45,6 +45,7 @@ using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
+using Steeltoe.Management.Tracing;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
 
@@ -383,7 +384,7 @@ public sealed class HostBuilderExtensionsTest
         var applicationInstanceInfo = hostWrapper.Services.GetRequiredService<IApplicationInstanceInfo>();
         applicationInstanceInfo.ApplicationName.Should().NotBeNull();
 
-        hostWrapper.Services.GetService<IDynamicMessageProcessor>().Should().NotBeNull();
+        hostWrapper.Services.GetServices<IDynamicMessageProcessor>().OfType<TracingLogProcessor>().Should().ContainSingle();
     }
 
     private static class HostWrapperFactory

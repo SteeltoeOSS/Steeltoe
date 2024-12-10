@@ -9,10 +9,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="OpenTelemetry" Version="$(OpenTelemetryVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Endpoint\Steeltoe.Management.Endpoint.csproj" />
   </ItemGroup>
 </Project>

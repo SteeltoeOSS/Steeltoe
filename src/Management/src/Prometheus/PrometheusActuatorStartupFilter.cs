@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace Steeltoe.Management.Prometheus;
 
-internal sealed class ConfigurePrometheusActuatorStartupFilter(Action<IApplicationBuilder>? configureBranchedPipeline) : IStartupFilter
+internal sealed class PrometheusActuatorStartupFilter(Action<IApplicationBuilder>? configureBranchedPipeline) : IStartupFilter
 {
-    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder>? next)
     {
         return app =>
         {
-            next.Invoke(app);
+            next?.Invoke(app);
             app.UsePrometheusActuator(configureBranchedPipeline);
         };
     }

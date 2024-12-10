@@ -2,15 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using System.Text;
-using OpenTelemetry.Trace;
 using Steeltoe.Common;
 using Steeltoe.Logging;
 
 namespace Steeltoe.Management.Tracing;
 
 /// <summary>
-/// An <see cref="IDynamicMessageProcessor" /> that adds details of <see cref="Tracer.CurrentSpan" /> (if found) to log messages.
+/// An <see cref="IDynamicMessageProcessor" /> that adds tracing details from <see cref="Activity.Current" /> (if found) to log messages.
 /// </summary>
 public sealed class TracingLogProcessor : IDynamicMessageProcessor
 {
@@ -27,41 +27,33 @@ public sealed class TracingLogProcessor : IDynamicMessageProcessor
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        TelemetrySpan? currentSpan = GetCurrentSpan();
+        Activity? currentActivity = Activity.Current;
 
-        if (currentSpan == null)
+        if (currentActivity == null)
         {
             return message;
         }
 
-        SpanContext context = currentSpan.Context;
+        var builder = new StringBuilder(" [");
+        builder.Append(_applicationInstanceInfo.ApplicationName);
+        builder.Append(',');
 
-        var sb = new StringBuilder(" [");
-        sb.Append(_applicationInstanceInfo.ApplicationName);
-        sb.Append(',');
+        string traceId = currentActivity.TraceId.ToHexString();
 
-        string traceId = context.TraceId.ToHexString();
+        builder.Append(traceId);
+        builder.Append(',');
 
-        sb.Append(traceId);
-        sb.Append(',');
+        builder.Append(currentActivity.SpanId.ToHexString());
+        builder.Append(',');
 
-        sb.Append(context.SpanId.ToHexString());
-        sb.Append(',');
+        builder.Append(currentActivity.ParentSpanId.ToString());
+        builder.Append(',');
 
-        sb.Append(currentSpan.ParentSpanId.ToString());
-        sb.Append(',');
+        builder.Append(currentActivity.IsAllDataRequested ? "true" : "false");
 
-        sb.Append(currentSpan.IsRecording ? "true" : "false");
+        builder.Append("] ");
+        builder.Append(message);
 
-        sb.Append("] ");
-        sb.Append(message);
-
-        return sb.ToString();
-    }
-
-    private static TelemetrySpan? GetCurrentSpan()
-    {
-        TelemetrySpan span = Tracer.CurrentSpan;
-        return span.Context.IsValid ? span : null;
+        return builder.ToString();
     }
 }

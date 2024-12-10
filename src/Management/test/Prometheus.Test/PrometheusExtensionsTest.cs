@@ -6,6 +6,7 @@ using System.Net;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
@@ -29,8 +30,16 @@ public sealed class PrometheusExtensionsTest
         var optionsMonitor = provider.GetRequiredService<IOptionsMonitor<PrometheusEndpointOptions>>();
         optionsMonitor.CurrentValue.Path.Should().Be("prometheus");
 
-        IEnumerable<IStartupFilter>? startupFilters = provider.GetServices<IStartupFilter>();
-        startupFilters.Should().ContainSingle(filter => filter is ConfigurePrometheusActuatorStartupFilter);
+        IEnumerable<IStartupFilter> startupFilters = provider.GetServices<IStartupFilter>();
+        startupFilters.Should().ContainSingle(filter => filter is PrometheusActuatorStartupFilter);
+    }
+
+    [Fact]
+    public void AddPrometheusActuator_ConfigurePipelineRequiresConfigureMiddleware()
+    {
+        var services = new ServiceCollection();
+        var exception = Assert.Throws<InvalidOperationException>(() => services.AddPrometheusActuator(false, builder => builder.UseAuthorization()));
+        exception.Message.Should().Be("The Prometheus pipeline cannot be configured here when configureMiddleware is false.");
     }
 
     [Theory]
@@ -41,16 +50,30 @@ public sealed class PrometheusExtensionsTest
     {
         await using HostWrapper host = hostBuilderType.Build(builder =>
         {
-            builder.ConfigureServices(services =>
-            {
-                services.AddRouting();
-                services.AddPrometheusActuator();
-            });
+            builder.ConfigureServices(services => services.AddPrometheusActuator());
         });
 
         await host.StartAsync();
         using HttpClient httpClient = host.GetTestClient();
 
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/prometheus"));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string responseText = await response.Content.ReadAsStringAsync();
+        responseText.Should().Contain("# EOF");
+    }
+
+    [Fact]
+    public async Task AddPrometheusActuator_UserCanMapExporter()
+    {
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
+        hostBuilder.Services.AddPrometheusActuator(false);
+
+        await using WebApplication app = hostBuilder.Build();
+        app.UsePrometheusActuator();
+
+        await app.StartAsync();
+        using HttpClient httpClient = app.GetTestClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/prometheus"));
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -68,7 +91,6 @@ public sealed class PrometheusExtensionsTest
         {
             builder.ConfigureServices(services =>
             {
-                services.AddRouting();
                 services.AddAuthentication(BearerTokenDefaults.AuthenticationScheme).AddBearerToken();
                 services.AddAuthorizationBuilder().AddPolicy("test", policy => policy.RequireClaim("scope", "test"));
                 services.ConfigureActuatorEndpoints(endpoints => endpoints.RequireAuthorization("test"));
@@ -102,11 +124,7 @@ public sealed class PrometheusExtensionsTest
 
         await using HostWrapper host = hostBuilderType.Build(builder =>
         {
-            builder.ConfigureServices(services =>
-            {
-                services.AddRouting();
-                services.AddPrometheusActuator();
-            });
+            builder.ConfigureServices(services => services.AddPrometheusActuator());
         });
 
         await host.StartAsync();
@@ -137,7 +155,6 @@ public sealed class PrometheusExtensionsTest
 
             builder.ConfigureServices(services =>
             {
-                services.AddRouting();
                 services.AddCloudFoundryActuator();
                 services.AddPrometheusActuator();
             });
