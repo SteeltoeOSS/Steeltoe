@@ -87,10 +87,7 @@ public static class PrometheusExtensions
                 new PrometheusActuatorStartupFilter(configurePrometheusPipeline)));
         }
 
-        services.AddOpenTelemetry().WithMetrics(builder =>
-        {
-            builder.AddPrometheusExporter();
-        });
+        services.AddOpenTelemetry().WithMetrics(builder => builder.AddPrometheusExporter());
 
         return services;
     }
