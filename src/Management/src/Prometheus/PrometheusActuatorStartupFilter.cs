@@ -9,11 +9,13 @@ namespace Steeltoe.Management.Prometheus;
 
 internal sealed class PrometheusActuatorStartupFilter(Action<IApplicationBuilder>? configureBranchedPipeline) : IStartupFilter
 {
-    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder>? next)
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
     {
+        ArgumentNullException.ThrowIfNull(next);
+
         return app =>
         {
-            next?.Invoke(app);
+            next.Invoke(app);
             app.UsePrometheusActuator(configureBranchedPipeline);
         };
     }

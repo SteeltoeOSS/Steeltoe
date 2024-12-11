@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Logging;
+using Steeltoe.Logging.DynamicLogger;
 
 namespace Steeltoe.Management.Tracing;
 
@@ -21,11 +22,16 @@ public static class TracingServiceCollectionExtensions
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
+    /// <remarks>
+    /// This method also calls <see cref="LoggingBuilderExtensions.AddDynamicConsole" /> to ensure that an <see cref="IDynamicLoggerProvider" /> has been
+    /// registered.
+    /// </remarks>
     public static IServiceCollection AddTracingLogProcessor(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddApplicationInstanceInfo();
+        services.AddLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDynamicMessageProcessor, TracingLogProcessor>());
 
         return services;

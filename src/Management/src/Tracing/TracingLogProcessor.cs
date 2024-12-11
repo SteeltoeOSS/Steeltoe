@@ -38,9 +38,7 @@ public sealed class TracingLogProcessor : IDynamicMessageProcessor
         builder.Append(_applicationInstanceInfo.ApplicationName);
         builder.Append(',');
 
-        string traceId = currentActivity.TraceId.ToHexString();
-
-        builder.Append(traceId);
+        builder.Append(currentActivity.TraceId.ToHexString());
         builder.Append(',');
 
         builder.Append(currentActivity.SpanId.ToHexString());

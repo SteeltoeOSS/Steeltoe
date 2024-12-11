@@ -13,7 +13,6 @@ using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
-using Steeltoe.Management.Endpoint.Actuators.Metrics;
 using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Prometheus;
@@ -64,7 +63,7 @@ public static class PrometheusExtensions
     /// </param>
     /// <param name="configurePrometheusPipeline">
     /// Optional callback to run additional middleware at the Prometheus endpoint path, before the Prometheus middleware runs. For example:
-    /// <code><![CDATA[builder => builder.UseAuthorization()]]></code>. Only used when is <c>true</c>.
+    /// <code><![CDATA[builder => builder.UseAuthorization()]]></code>. Only used when <paramref name="configureMiddleware" /> is <c>true</c>.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
@@ -90,7 +89,6 @@ public static class PrometheusExtensions
 
         services.AddOpenTelemetry().WithMetrics(builder =>
         {
-            builder.AddMeter(SteeltoeMetrics.InstrumentationName);
             builder.AddPrometheusExporter();
         });
 
@@ -118,7 +116,8 @@ public static class PrometheusExtensions
     /// The <see cref="IApplicationBuilder" />.
     /// </param>
     /// <param name="configurePrometheusPipeline">
-    /// Optional callback to configure the branched pipeline. Called before registration of the Prometheus middleware.
+    /// Optional callback to run additional middleware at the Prometheus endpoint path, before the Prometheus middleware runs. For example:
+    /// <code><![CDATA[builder => builder.UseAuthorization()]]></code>.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
@@ -157,51 +156,47 @@ public static class PrometheusExtensions
         bool isEndpointRoutingEnabled = mvcOptions?.Value.EnableEndpointRouting ?? true;
         bool applyActuatorConventions = conventionOptionsMonitor.CurrentValue.ConfigureActions.Count > 0;
 
-        if (isEndpointRoutingEnabled && (applyActuatorConventions || configurePrometheusPipeline != null))
-        {
-            builder.UseOpenTelemetryPrometheusScrapingEndpoint(null, null, path, ConfigureBranchedPipeline, null);
-
-            if (cloudFoundryPath != null)
-            {
-                builder.UseOpenTelemetryPrometheusScrapingEndpoint(null, null, cloudFoundryPath, ConfigureBranchedPipeline, null);
-            }
-
-            return builder;
-        }
-
-        if (applyActuatorConventions)
+        if (applyActuatorConventions && !isEndpointRoutingEnabled)
         {
             logger.LogWarning("Customizing endpoints is only supported when using endpoint routing.");
         }
 
-        if (managementOptions.Port is null)
+        if (managementOptions.Port is null && !applyActuatorConventions && configurePrometheusPipeline is null)
         {
-            logger.LogWarning("The Prometheus endpoint may not be configured securely. Consider enabling EndpointRouting or using an alternate port.");
+            logger.LogWarning(
+                "The Prometheus endpoint may not be configured securely. Consider using a dedicated management port, adding actuator conventions or configuring the Prometheus middleware pipeline.");
         }
 
-        builder.UseOpenTelemetryPrometheusScrapingEndpoint(path);
+        builder.UseOpenTelemetryPrometheusScrapingEndpoint(null, null, path, ConfigureBranchedPipeline, null);
 
         if (cloudFoundryPath != null)
         {
-            builder.UseOpenTelemetryPrometheusScrapingEndpoint(cloudFoundryPath);
+            builder.UseOpenTelemetryPrometheusScrapingEndpoint(null, null, cloudFoundryPath, ConfigureBranchedPipeline, null);
         }
 
         return builder;
 
         void ConfigureBranchedPipeline(IApplicationBuilder branchedApplicationBuilder)
         {
-            branchedApplicationBuilder.UseRouting();
+            if (isEndpointRoutingEnabled && applyActuatorConventions)
+            {
+                branchedApplicationBuilder.UseRouting();
+            }
+
             configurePrometheusPipeline?.Invoke(branchedApplicationBuilder);
 
-            branchedApplicationBuilder.UseEndpoints(endpoints =>
+            if (isEndpointRoutingEnabled && applyActuatorConventions)
             {
-                IEndpointConventionBuilder endpointBuilder = endpoints.MapPrometheusScrapingEndpoint("/");
-
-                foreach (Action<IEndpointConventionBuilder> endpointAction in conventionOptionsMonitor.CurrentValue.ConfigureActions)
+                branchedApplicationBuilder.UseEndpoints(endpoints =>
                 {
-                    endpointAction(endpointBuilder);
-                }
-            });
+                    IEndpointConventionBuilder endpointBuilder = endpoints.MapPrometheusScrapingEndpoint("/");
+
+                    foreach (Action<IEndpointConventionBuilder> endpointAction in conventionOptionsMonitor.CurrentValue.ConfigureActions)
+                    {
+                        endpointAction(endpointBuilder);
+                    }
+                });
+            }
         }
     }
 }
