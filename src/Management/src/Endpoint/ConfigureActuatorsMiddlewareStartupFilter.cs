@@ -11,8 +11,10 @@ namespace Steeltoe.Management.Endpoint;
 
 internal sealed class ConfigureActuatorsMiddlewareStartupFilter : IStartupFilter
 {
-    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder>? next)
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
     {
+        ArgumentNullException.ThrowIfNull(next);
+
         return app =>
         {
             // According to https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing, apps typically don't need to call UseRouting; if not
@@ -31,7 +33,7 @@ internal sealed class ConfigureActuatorsMiddlewareStartupFilter : IStartupFilter
                 app.UseCloudFoundrySecurity();
             }
 
-            next?.Invoke(app);
+            next.Invoke(app);
 
             app.UseActuatorEndpoints();
         };

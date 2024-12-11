@@ -7,5 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Prometheus\Steeltoe.Management.Prometheus.csproj" />
+    <ProjectReference Include="..\Endpoint.Test\Steeltoe.Management.Endpoint.Test.csproj" />
   </ItemGroup>
 </Project>

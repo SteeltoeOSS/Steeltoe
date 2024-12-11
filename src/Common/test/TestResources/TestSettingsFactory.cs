@@ -25,12 +25,6 @@ public static class TestSettingsFactory
             settings["eureka:client:serviceUrl"] = "http://127.0.0.1";
         }
 
-        if (configurations.HasFlag(FastTestConfigurations.WaveFrontExport))
-        {
-            settings["management:metrics:export:wavefront:uri"] = "proxy://localhost:7828";
-            settings["management:endpoints:actuator:exposure:include:0"] = "*";
-        }
-
         if (configurations.HasFlag(FastTestConfigurations.Connectors))
         {
             settings["Steeltoe:Client:Mysql:Default:ConnectionString"] = "host=unknown.host.some";

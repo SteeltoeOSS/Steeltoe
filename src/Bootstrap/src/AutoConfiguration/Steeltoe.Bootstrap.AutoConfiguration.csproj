@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Package for automatically configuring Steeltoe packages that have separately been added to a project.</Description>
@@ -28,7 +28,6 @@
     <ProjectReference Include="..\..\..\Logging\src\DynamicSerilog\Steeltoe.Logging.DynamicSerilog.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Management\src\Prometheus\Steeltoe.Management.Prometheus.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Management\src\Tracing\Steeltoe.Management.Tracing.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Management\src\Wavefront\Steeltoe.Management.Wavefront.csproj" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemDefinitionGroup>

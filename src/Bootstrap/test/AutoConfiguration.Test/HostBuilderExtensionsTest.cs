@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.Cosmos;
@@ -12,14 +11,13 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MySqlConnector;
 using Npgsql;
 using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
 using RabbitMQ.Client;
 using StackExchange.Redis;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration;
@@ -48,7 +46,6 @@ using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Tracing;
-using Steeltoe.Management.Wavefront.Exporters;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
 
@@ -216,30 +213,6 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
     [InlineData(HostBuilderType.HostApplication)]
-    public async Task WavefrontMetricsExporter_IsAutowired(HostBuilderType hostBuilderType)
-    {
-        await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementWavefront, hostBuilderType);
-
-        AssertWavefrontMetricsExporterIsAutowired(hostWrapper);
-    }
-
-    [Theory]
-    [InlineData(HostBuilderType.Host)]
-    [InlineData(HostBuilderType.WebHost)]
-    [InlineData(HostBuilderType.WebApplication)]
-    [InlineData(HostBuilderType.HostApplication)]
-    public async Task WavefrontTraceExporter_IsAutowired(HostBuilderType hostBuilderType)
-    {
-        await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementTracing, hostBuilderType);
-
-        AssertWavefrontTraceExporterIsAutowired(hostWrapper);
-    }
-
-    [Theory]
-    [InlineData(HostBuilderType.Host)]
-    [InlineData(HostBuilderType.WebHost)]
-    [InlineData(HostBuilderType.WebApplication)]
-    [InlineData(HostBuilderType.HostApplication)]
     public async Task AllActuators_AreAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementEndpoint, hostBuilderType);
@@ -279,8 +252,6 @@ public sealed class HostBuilderExtensionsTest
         AssertDynamicSerilogIsAutowired(hostWrapper);
         AssertServiceDiscoveryClientsAreAutowired(hostWrapper);
         AssertPrometheusIsAutowired(hostWrapper);
-        AssertWavefrontMetricsExporterIsAutowired(hostWrapper);
-        AssertWavefrontTraceExporterIsAutowired(hostWrapper);
         AssertTracingIsAutowired(hostWrapper);
 
         await hostWrapper.StartAsync();
@@ -378,28 +349,6 @@ public sealed class HostBuilderExtensionsTest
         hostWrapper.Services.GetService<MeterProvider>().Should().NotBeNull();
     }
 
-    private static void AssertWavefrontMetricsExporterIsAutowired(HostWrapper hostWrapper)
-    {
-        hostWrapper.Services.GetService<MeterProvider>().Should().NotBeNull();
-    }
-
-    private static void AssertWavefrontTraceExporterIsAutowired(HostWrapper hostWrapper)
-    {
-        var tracerProvider = hostWrapper.Services.GetRequiredService<TracerProvider>();
-
-        PropertyInfo? processorProperty = tracerProvider.GetType().GetProperty("Processor", BindingFlags.NonPublic | BindingFlags.Instance);
-        processorProperty.Should().NotBeNull();
-
-        object? processor = processorProperty!.GetValue(tracerProvider);
-        processor.Should().NotBeNull();
-
-        FieldInfo? exporterField = processor!.GetType().GetField("exporter", BindingFlags.NonPublic | BindingFlags.Instance);
-        exporterField.Should().NotBeNull();
-
-        object? exporter = exporterField!.GetValue(processor);
-        exporter.Should().BeOfType<WavefrontTraceExporter>();
-    }
-
     private static async Task AssertAllActuatorsAreAutowiredAsync(HostWrapper hostWrapper, bool expectHealthy)
     {
         hostWrapper.Services.GetServices<IActuatorEndpointHandler>().Should().ContainSingle();
@@ -432,24 +381,10 @@ public sealed class HostBuilderExtensionsTest
 
     private static void AssertTracingIsAutowired(HostWrapper hostWrapper)
     {
-        var tracerProvider = hostWrapper.Services.GetRequiredService<TracerProvider>();
+        var applicationInstanceInfo = hostWrapper.Services.GetRequiredService<IApplicationInstanceInfo>();
+        applicationInstanceInfo.ApplicationName.Should().NotBeNull();
 
-        IHostedService[] hostedServices = hostWrapper.Services.GetServices<IHostedService>().ToArray();
-        hostedServices.Should().ContainSingle(hostedService => hostedService.GetType().Name == "TelemetryHostedService");
-
-        var optionsMonitor = hostWrapper.Services.GetRequiredService<IOptionsMonitor<TracingOptions>>();
-        optionsMonitor.CurrentValue.Name.Should().NotBeNull();
-
-        hostWrapper.Services.GetService<IDynamicMessageProcessor>().Should().NotBeNull();
-
-        FieldInfo? instrumentationsField = tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance);
-        instrumentationsField.Should().NotBeNull();
-
-        var instrumentations = (List<object>?)instrumentationsField!.GetValue(tracerProvider);
-
-        instrumentations.Should().HaveCount(2);
-        instrumentations.Should().ContainSingle(instance => instance.GetType().Name == "HttpClientInstrumentation");
-        instrumentations.Should().ContainSingle(instance => instance.GetType().Name == "AspNetCoreInstrumentation");
+        hostWrapper.Services.GetServices<IDynamicMessageProcessor>().OfType<TracingLogProcessor>().Should().ContainSingle();
     }
 
     private static class HostWrapperFactory

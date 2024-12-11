@@ -38,7 +38,6 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tasks")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tracing")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tracing.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.Wavefront")]
 [assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.CloudFoundry.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Security.Authorization.Certificate")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

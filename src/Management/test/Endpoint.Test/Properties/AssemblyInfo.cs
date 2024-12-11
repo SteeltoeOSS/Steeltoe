@@ -2,13 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.TestResources;
+using System.Runtime.CompilerServices;
 
-[Flags]
-public enum FastTestConfigurations
-{
-    ConfigServer = 1,
-    Discovery = 2,
-    Connectors = 4,
-    All = ConfigServer | Discovery | Connectors
-}
+[assembly: InternalsVisibleTo("Steeltoe.Management.Prometheus.Test")]

@@ -5,10 +5,7 @@
 using System.Runtime.CompilerServices;
 using Aspire;
 using Steeltoe.Common.Configuration;
-using Steeltoe.Management.Tracing;
 
 [assembly: ConfigurationSchema("Spring:Application", typeof(SpringApplicationSettings))]
-[assembly: ConfigurationSchema("Management:Tracing", typeof(TracingOptions))]
-[assembly: LoggingCategories("Steeltoe", "Steeltoe.Management", "Steeltoe.Management.Tracing")]
 
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tracing.Test")]

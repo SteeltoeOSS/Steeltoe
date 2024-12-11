@@ -6,8 +6,7 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="$(OpenTelemetryVersion)" />
-    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="$(OpenTelemetryVersion)" />
+    <PackageReference Include="OpenTelemetry" Version="$(OpenTelemetryVersion)" />
   </ItemGroup>
 
   <ItemGroup>
