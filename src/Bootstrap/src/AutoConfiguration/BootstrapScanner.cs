@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
@@ -36,8 +35,6 @@ using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Prometheus;
 using Steeltoe.Management.Tracing;
-using Steeltoe.Management.Wavefront;
-using Steeltoe.Management.Wavefront.Exporters;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration;
 
@@ -89,8 +86,7 @@ internal sealed class BootstrapScanner
         WireIfLoaded(WireDiscoveryEureka, SteeltoeAssemblyNames.DiscoveryEureka);
         WireIfLoaded(WireAllActuators, SteeltoeAssemblyNames.ManagementEndpoint);
         WireIfLoaded(WirePrometheus, SteeltoeAssemblyNames.ManagementPrometheus);
-        WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblyNames.ManagementWavefront);
-        WireIfLoaded(WireDistributedTracing, SteeltoeAssemblyNames.ManagementTracing);
+        WireIfLoaded(WireDistributedTracingLogProcessor, SteeltoeAssemblyNames.ManagementTracing);
     }
 
     private void WireConfigServer()
@@ -260,33 +256,11 @@ internal sealed class BootstrapScanner
         _logger.LogInformation("Configured Prometheus");
     }
 
-    private void WireWavefrontMetrics()
+    private void WireDistributedTracingLogProcessor()
     {
-        _wrapper.ConfigureServices((context, services) =>
-        {
-            if (HasWavefront(context.Configuration))
-            {
-                services.AddWavefrontMetrics();
-                _logger.LogInformation("Configured Wavefront metrics");
-            }
-        });
-    }
+        _wrapper.ConfigureServices(services => services.AddTracingLogProcessor());
 
-    private static bool HasWavefront(IConfiguration configuration)
-    {
-        var options = new WavefrontExporterOptions();
-
-        var configurer = new ConfigureWavefrontExporterOptions(configuration);
-        configurer.Configure(options);
-
-        return !string.IsNullOrEmpty(options.Uri);
-    }
-
-    private void WireDistributedTracing()
-    {
-        _wrapper.ConfigureServices(services => services.AddDistributedTracingAspNetCore());
-
-        _logger.LogInformation("Configured distributed tracing");
+        _logger.LogInformation("Configured distributed tracing log processor");
     }
 
     private bool WireIfLoaded(Action wireAction, string assemblyName)

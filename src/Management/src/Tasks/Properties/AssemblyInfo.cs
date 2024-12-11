@@ -14,6 +14,4 @@ using Steeltoe.Management.Tasks;
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Prometheus")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.Wavefront")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tracing")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.Wavefront.Test")]
