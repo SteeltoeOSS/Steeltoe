@@ -9,6 +9,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\Endpoint\Steeltoe.Management.Endpoint.csproj" />
+    <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Logging.DynamicLogger.csproj" />
   </ItemGroup>
 </Project>
