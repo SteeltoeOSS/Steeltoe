@@ -19,12 +19,7 @@ internal static class EndpointOptionsExtensions
             return endpointOptions.Enabled.Value;
         }
 
-        if (managementOptions.Enabled != null)
-        {
-            return managementOptions.Enabled.Value;
-        }
-
-        return endpointOptions.DefaultEnabled;
+        return managementOptions.Enabled ?? true;
     }
 
     public static bool IsExposed(this EndpointOptions endpointOptions, ManagementOptions managementOptions)
