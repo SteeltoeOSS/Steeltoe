@@ -8,8 +8,6 @@ public abstract class EndpointOptions
 {
     private string? _path;
 
-    internal virtual bool DefaultEnabled => true;
-
     /// <summary>
     /// Gets or sets a value indicating whether this endpoint is enabled.
     /// </summary>
@@ -25,15 +23,7 @@ public abstract class EndpointOptions
     /// </summary>
     public virtual string? Path
     {
-        get
-        {
-            if (_path != null)
-            {
-                return _path;
-            }
-
-            return Id;
-        }
+        get => _path ?? Id;
         set => _path = value;
     }
 
