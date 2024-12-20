@@ -29,6 +29,7 @@
     <StyleCopVersion>1.2.0-beta.556</StyleCopVersion>
     <SystemCommandLineVersion>2.0.0-beta4.24324.3</SystemCommandLineVersion>
     <SystemSqlClientVersion>4.8.*</SystemSqlClientVersion>
+    <SystemTextJsonToolsVersion>9.0.*</SystemTextJsonToolsVersion>
     <TestSdkVersion>17.10.*</TestSdkVersion>
     <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
     <XunitVersion>2.8.*</XunitVersion>
