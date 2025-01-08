@@ -85,6 +85,10 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
                 response.Groups.Add(group);
             }
         }
+        else
+        {
+            response.Details.Clear();
+        }
 
         return response;
     }

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -179,6 +180,12 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     public async Task InvokeWithLivenessGroupReturnsGroupResults()
     {
         using var testContext = new TestContext(_testOutputHelper);
+
+        testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            { "Management:Endpoints:Health:ShowDetails", "Always" }
+        });
+
         var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
         TestOptionsMonitor<LivenessHealthContributorOptions> optionsMonitor = new();
 
@@ -202,15 +209,21 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
-        Assert.Equal(HealthStatus.Up, result.Status);
-        Assert.Single(result.Details.Keys);
-        Assert.Equal(2, result.Groups.Count);
+        result.Status.Should().Be(HealthStatus.Up);
+        result.Details.Keys.Should().ContainSingle();
+        result.Groups.Should().HaveCount(2);
     }
 
     [Fact]
     public async Task InvokeWithReadinessGroupReturnsGroupResults()
     {
         using var testContext = new TestContext(_testOutputHelper);
+
+        testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            { "Management:Endpoints:Health:ShowDetails", "Always" }
+        });
+
         var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
         TestOptionsMonitor<ReadinessHealthContributorOptions> optionsMonitor = new();
 
@@ -236,9 +249,9 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
-        Assert.Equal(HealthStatus.Up, result.Status);
-        Assert.Single(result.Details.Keys);
-        Assert.Equal(2, result.Groups.Count);
+        result.Status.Should().Be(HealthStatus.Up);
+        result.Details.Keys.Should().ContainSingle();
+        result.Groups.Should().HaveCount(2);
     }
 
     [Fact]
@@ -255,7 +268,11 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
             new ReadinessHealthContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
         ];
 
-        IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
+        IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(
+            new Dictionary<string, string?>
+            {
+                { "Management:Endpoints:Health:ShowDetails", "Always" }
+            });
 
         var handler = new HealthEndpointHandler(options, new HealthAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), EmptyServiceProvider,
             NullLoggerFactory.Instance);
@@ -266,15 +283,20 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
-        Assert.Equal(HealthStatus.Up, result.Status);
-        Assert.Single(result.Details.Keys);
-        Assert.Equal(2, result.Groups.Count);
+        result.Status.Should().Be(HealthStatus.Up);
+        result.Details.Keys.Should().ContainSingle();
+        result.Groups.Should().HaveCount(2);
     }
 
     [Fact]
     public async Task InvokeWithInvalidGroupReturnsAllContributors()
     {
         using var testContext = new TestContext(_testOutputHelper);
+
+        testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            { "Management:Endpoints:Health:ShowDetails", "Always" }
+        });
 
         List<IHealthContributor> contributors =
         [
@@ -298,15 +320,19 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
-        Assert.Equal(HealthStatus.OutOfService, result.Status);
-        Assert.Equal(4, result.Details.Keys.Count);
-        Assert.Equal(2, result.Groups.Count);
+        result.Status.Should().Be(HealthStatus.OutOfService);
+        result.Details.Keys.Should().HaveCount(4);
+        result.Groups.Should().HaveCount(2);
     }
 
     [Fact]
     public async Task InvokeWithGroupFiltersMicrosoftResults()
     {
-        IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
+        IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(
+            new Dictionary<string, string?>
+            {
+                { "Management:Endpoints:Health:ShowDetails", "Always" }
+            });
 
         options.CurrentValue.Groups.Add("msft", new HealthGroupOptions
         {
@@ -327,10 +353,10 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
-        Assert.Equal(2, result.Details.Keys.Count);
-        Assert.Contains("alwaysUp", result.Details.Keys);
-        Assert.Contains("privatememory", result.Details.Keys);
-        Assert.Equal(3, result.Groups.Count);
+        result.Details.Keys.Should().HaveCount(2);
+        result.Details.Should().ContainKey("alwaysUp");
+        result.Details.Should().ContainKey("privatememory");
+        result.Groups.Should().HaveCount(3);
     }
 
     private static HealthEndpointRequest GetHealthRequest()

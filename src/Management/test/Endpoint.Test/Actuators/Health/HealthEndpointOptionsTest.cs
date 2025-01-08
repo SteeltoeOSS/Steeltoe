@@ -17,7 +17,7 @@ public sealed class HealthEndpointOptionsTest : BaseTest
 
         Assert.Null(options.Enabled);
         Assert.Equal("health", options.Id);
-        Assert.Equal(ShowDetails.Always, options.ShowDetails);
+        Assert.Equal(ShowDetails.Never, options.ShowDetails);
         Assert.Equal(EndpointPermissions.Restricted, options.RequiredPermissions);
     }
 
