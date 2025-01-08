@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -52,18 +54,47 @@ internal sealed class ManagementPortMiddleware
         }
     }
 
-    private static bool IsRequestAllowed(HttpRequest request, ManagementOptions managementOptions)
+    private bool IsRequestAllowed(HttpRequest request, ManagementOptions managementOptions)
     {
-        if (int.TryParse(managementOptions.Port, CultureInfo.InvariantCulture, out int managementPort) && managementPort > 0)
+        if (!int.TryParse(managementOptions.Port, CultureInfo.InvariantCulture, out int managementPort) || managementPort <= 0)
         {
-            bool isManagementPath = request.Path.StartsWithSegments(managementOptions.Path);
-            bool isManagementScheme = managementOptions.SslEnabled ? request.Scheme == Uri.UriSchemeHttps : request.Scheme == Uri.UriSchemeHttp;
-            bool isManagementPort = request.Host.Port == managementPort;
-
-            return isManagementPath ? isManagementScheme && isManagementPort : !isManagementScheme || !isManagementPort;
+            return true;
         }
 
-        return true;
+        bool isManagementPath = request.Path.StartsWithSegments(managementOptions.Path);
+        bool isManagementScheme = managementOptions.SslEnabled ? request.Scheme == Uri.UriSchemeHttps : request.Scheme == Uri.UriSchemeHttp;
+        bool isManagementPort = request.Host.Port == managementPort;
+
+        string? instancePorts = Environment.GetEnvironmentVariable("CF_INSTANCE_PORTS");
+
+        if (!isManagementPort && !string.IsNullOrEmpty(instancePorts))
+        {
+            isManagementPort = EvaluateCfInstancePorts(managementPort, instancePorts, request.Host.Port);
+        }
+
+        return isManagementPath ? isManagementScheme && isManagementPort : !isManagementScheme || !isManagementPort;
+    }
+
+    private bool EvaluateCfInstancePorts(int managementPort, string instancePorts, int? requestPort)
+    {
+        var portMappings = JsonSerializer.Deserialize<List<PortMapping>>(instancePorts);
+
+        if (portMappings == null)
+        {
+            return false;
+        }
+
+        PortMapping? portMapping = portMappings.Find(mapping =>
+            mapping.Internal == managementPort && (requestPort == mapping.ExternalTlsProxy || requestPort == mapping.InternalTlsProxy));
+
+        if (_logger.IsEnabled(LogLevel.Trace) && portMapping != null)
+        {
+            _logger.LogTrace(
+                "Request received on port {RequestPort}. Allowed by CF_INSTANCE_PORTS mapping: [ Internal: {InternalPort}, ExternalTlsProxy: {ExternalTlsProxy}, InternalTlsProxy: {InternalTlsProxy} ]",
+                requestPort, portMapping.Internal, portMapping.ExternalTlsProxy, portMapping.InternalTlsProxy);
+        }
+
+        return portMapping != null;
     }
 
     private void SetResponseError(HttpContext context, string? managementPort)
@@ -79,5 +110,20 @@ internal sealed class ManagementPortMiddleware
             defaultPort ?? context.Request.Host.Port, managementPort);
 
         context.Response.StatusCode = StatusCodes.Status404NotFound;
+    }
+
+    private sealed record PortMapping
+    {
+        [JsonPropertyName("internal")]
+        public int? Internal { get; init; }
+
+        [JsonPropertyName("exEternal")]
+        public int? External { get; init; }
+
+        [JsonPropertyName("external_tls_proxy")]
+        public int? ExternalTlsProxy { get; init; }
+
+        [JsonPropertyName("internal_tls_proxy")]
+        public int? InternalTlsProxy { get; init; }
     }
 }
