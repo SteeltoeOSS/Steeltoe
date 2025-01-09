@@ -370,11 +370,11 @@ public sealed class EndpointMiddlewareTest : BaseTest
         await app.StartAsync();
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage unknownResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        unknownResult.StatusCode.Should().Be(HttpStatusCode.OK);
+        HttpResponseMessage responseMessage = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string unknownJson = await unknownResult.Content.ReadAsStringAsync();
-        unknownJson.Should().Be("""{"status":"UP"}""");
+        string json = await responseMessage.Content.ReadAsStringAsync();
+        json.Should().Be("""{"status":"UP"}""");
     }
 
     [Fact]
