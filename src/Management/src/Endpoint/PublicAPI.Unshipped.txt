@@ -184,8 +184,8 @@ Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions.Include.get -> 
 Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions.Include.set -> void
 Steeltoe.Management.Endpoint.Actuators.Health.IHealthEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
-Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails.Always = 0 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
-Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails.Never = 1 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
+Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails.Always = 1 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
+Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails.Never = 0 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
 Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails.WhenAuthorized = 2 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
 Steeltoe.Management.Endpoint.Actuators.HeapDump.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions
