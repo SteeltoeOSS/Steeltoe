@@ -18,9 +18,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
 {
     private readonly Dictionary<string, string?> _appSettings = new()
     {
-        { "Management:Endpoints:Enabled", "true" },
-        { "Management:Endpoints:Path", "/cloudfoundryapplication" },
-        { "Management:Endpoints:Health:Enabled", "true" }
+        ["management:endpoints:enabled"] = "true",
+        ["management:endpoints:path"] = "/cloudfoundryapplication",
+        ["management:endpoints:health:enabled"] = "true"
     };
 
     [Fact]
@@ -52,7 +52,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            { "Management:Endpoints:Health:ShowDetails", "whenAuthorized" }
+            ["Management:Endpoints:Health:ShowDetails"] = "whenAuthorized"
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -81,9 +81,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            { "Management:Endpoints:Health:ShowDetails", "whenAuthorized" },
-            { "Management:Endpoints:Health:Claim:Type", "health-details" },
-            { "Management:Endpoints:Health:Claim:Value", "show" }
+            ["Management:Endpoints:Health:ShowDetails"] = "whenAuthorized",
+            ["Management:Endpoints:Health:Claim:Type"] = "health-details",
+            ["Management:Endpoints:Health:Claim:Value"] = "show"
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -112,7 +112,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            { "Management:Endpoints:Health:ShowDetails", "Always" }
+            ["Management:Endpoints:Health:ShowDetails"] = "Always"
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -142,8 +142,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            { "Management:Endpoints:CustomJsonConverters:0", typeof(HealthConverterV3).FullName! },
-            { "Management:Endpoints:Health:ShowDetails", "Always" }
+            ["Management:Endpoints:CustomJsonConverters:0"] = typeof(HealthConverterV3).FullName!,
+            ["Management:Endpoints:Health:ShowDetails"] = "Always"
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -176,8 +176,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            { "HealthCheckType", "default" },
-            { "Management:Endpoints:Health:ShowDetails", "Always" }
+            ["HealthCheckType"] = "default",
+            ["Management:Endpoints:Health:ShowDetails"] = "Always"
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -209,8 +209,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            { "Management:Endpoints:Health:ShowDetails", "Always" },
-            { "Management:Endpoints:Health:DiskSpace:Enabled", "false" }
+            ["Management:Endpoints:Health:ShowDetails"] = "Always",
+            ["Management:Endpoints:Health:DiskSpace:Enabled"] = "false"
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -306,8 +306,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         {
             var settings = new Dictionary<string, string?>(_appSettings)
             {
-                { "HealthCheckType", "down" },
-                { "Management:Endpoints:UseStatusCodeFromResponse", "false" }
+                ["HealthCheckType"] = "down",
+                ["Management:Endpoints:UseStatusCodeFromResponse"] = "false"
             };
 
             configuration.AddInMemoryCollection(settings);
@@ -321,7 +321,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string json = await response.Content.ReadAsStringAsync();
-        json.Should().Be("{\"status\":\"DOWN\"}");
+        json.Should().Be("""{"status":"DOWN"}""");
     }
 
     [Fact]
@@ -334,8 +334,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         {
             var settings = new Dictionary<string, string?>(_appSettings)
             {
-                { "HealthCheckType", "down" },
-                { "Management:Endpoints:UseStatusCodeFromResponse", "false" }
+                ["HealthCheckType"] = "down",
+                ["Management:Endpoints:UseStatusCodeFromResponse"] = "false"
             };
 
             configuration.AddInMemoryCollection(settings);
@@ -352,7 +352,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 
         string json = await response.Content.ReadAsStringAsync();
-        json.Should().Be("{\"status\":\"DOWN\"}");
+        json.Should().Be("""{"status":"DOWN"}""");
     }
 
     [Fact]
@@ -363,7 +363,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(new Dictionary<string, string?>(_appSettings)
         {
-            { "HealthCheckType", "default" }
+            ["HealthCheckType"] = "default"
         }));
 
         using IWebHost app = builder.Build();
@@ -374,7 +374,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         unknownResult.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string unknownJson = await unknownResult.Content.ReadAsStringAsync();
-        unknownJson.Should().Be("{\"status\":\"UP\"}");
+        unknownJson.Should().Be("""{"status":"UP"}""");
     }
 
     [Fact]

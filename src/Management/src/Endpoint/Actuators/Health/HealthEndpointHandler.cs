@@ -78,16 +78,16 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 
         ShowDetails showDetails = endpointOptions.ShowDetails;
 
-        if (showDetails != ShowDetails.Never && (showDetails != ShowDetails.WhenAuthorized || healthRequest.HasClaim))
+        if (showDetails == ShowDetails.Never || (showDetails == ShowDetails.WhenAuthorized && !healthRequest.HasClaim))
+        {
+            response.Details.Clear();
+        }
+        else
         {
             foreach (string group in endpointOptions.Groups.Select(group => group.Key))
             {
                 response.Groups.Add(group);
             }
-        }
-        else
-        {
-            response.Details.Clear();
         }
 
         return response;
