@@ -337,8 +337,8 @@
                 },
                 "ShowDetails": {
                   "enum": [
-                    "Always",
                     "Never",
+                    "Always",
                     "WhenAuthorized"
                   ],
                   "description": "Represents the level of detail to include in the health endpoint response."
