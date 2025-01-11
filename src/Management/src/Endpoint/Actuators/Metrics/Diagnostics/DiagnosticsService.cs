@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Management.Diagnostics;
+namespace Steeltoe.Management.Endpoint.Actuators.Metrics.Diagnostics;
 
 internal sealed class DiagnosticsService : IHostedService
 {

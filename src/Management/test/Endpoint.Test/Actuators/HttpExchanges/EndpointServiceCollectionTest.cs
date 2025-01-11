@@ -5,8 +5,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
+using Steeltoe.Management.Endpoint.Actuators.Metrics.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.HttpExchanges;
 

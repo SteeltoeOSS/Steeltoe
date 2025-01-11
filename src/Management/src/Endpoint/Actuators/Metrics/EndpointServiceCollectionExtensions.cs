@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Diagnostics;
+using Steeltoe.Management.Endpoint.Actuators.Metrics.Diagnostics;
 using Steeltoe.Management.Endpoint.Actuators.Metrics.Observers;
 using Steeltoe.Management.Endpoint.Actuators.Metrics.SystemDiagnosticsMetrics;
 

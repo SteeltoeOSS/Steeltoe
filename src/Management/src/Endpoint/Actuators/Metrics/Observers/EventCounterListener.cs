@@ -8,7 +8,6 @@ using System.Diagnostics.Tracing;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Metrics.Observers;
 

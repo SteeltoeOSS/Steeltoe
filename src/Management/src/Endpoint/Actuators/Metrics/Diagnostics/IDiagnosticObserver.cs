@@ -4,7 +4,7 @@
 
 using System.Diagnostics;
 
-namespace Steeltoe.Management.Diagnostics;
+namespace Steeltoe.Management.Endpoint.Actuators.Metrics.Diagnostics;
 
 public interface IDiagnosticObserver : IObserver<KeyValuePair<string, object?>>, IDisposable
 {

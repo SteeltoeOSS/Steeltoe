@@ -5,7 +5,6 @@
 using System.Runtime.CompilerServices;
 using Aspire;
 using Steeltoe.Common.Configuration;
-using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.DbMigrations;
 using Steeltoe.Management.Endpoint.Actuators.Environment;

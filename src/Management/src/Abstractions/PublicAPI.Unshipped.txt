@@ -1,5 +1,4 @@
 #nullable enable
-abstract Steeltoe.Management.Diagnostics.DiagnosticObserver.ProcessEvent(string! eventName, object? value) -> void
 Steeltoe.Management.Configuration.EndpointOptions
 Steeltoe.Management.Configuration.EndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Configuration.EndpointOptions.EndpointOptions() -> void
@@ -9,42 +8,6 @@ Steeltoe.Management.Configuration.EndpointPermissions
 Steeltoe.Management.Configuration.EndpointPermissions.Full = 2 -> Steeltoe.Management.Configuration.EndpointPermissions
 Steeltoe.Management.Configuration.EndpointPermissions.None = 0 -> Steeltoe.Management.Configuration.EndpointPermissions
 Steeltoe.Management.Configuration.EndpointPermissions.Restricted = 1 -> Steeltoe.Management.Configuration.EndpointPermissions
-Steeltoe.Management.Diagnostics.DiagnosticObserver
-Steeltoe.Management.Diagnostics.DiagnosticObserver.DiagnosticObserver(string! name, string! listenerName, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
-Steeltoe.Management.Diagnostics.DiagnosticObserver.Dispose() -> void
-Steeltoe.Management.Diagnostics.DiagnosticObserver.ListenerName.get -> string!
-Steeltoe.Management.Diagnostics.DiagnosticObserver.ObserverName.get -> string!
-Steeltoe.Management.Diagnostics.DiagnosticObserver.Subscribe(System.Diagnostics.DiagnosticListener! listener) -> void
-Steeltoe.Management.Diagnostics.IDiagnosticObserver
-Steeltoe.Management.Diagnostics.IDiagnosticObserver.ObserverName.get -> string!
-Steeltoe.Management.Diagnostics.IDiagnosticObserver.Subscribe(System.Diagnostics.DiagnosticListener! listener) -> void
-Steeltoe.Management.Diagnostics.IDiagnosticsManager
-Steeltoe.Management.Diagnostics.IDiagnosticsManager.Start() -> void
-Steeltoe.Management.Diagnostics.IDiagnosticsManager.Stop() -> void
-Steeltoe.Management.Diagnostics.IRuntimeDiagnosticSource
-Steeltoe.Management.Diagnostics.IRuntimeDiagnosticSource.AddInstrumentation() -> void
-Steeltoe.Management.Diagnostics.MetricsObserverOptions
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.AspNetCoreHosting.get -> bool
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.AspNetCoreHosting.set -> void
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.EgressIgnorePattern.get -> string?
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.EgressIgnorePattern.set -> void
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterEvents.get -> bool
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterEvents.set -> void
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterIntervalSec.get -> int?
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterIntervalSec.set -> void
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.ExcludedMetrics.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.GCEvents.get -> bool
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.GCEvents.set -> void
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.HttpClientCore.get -> bool
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.HttpClientCore.set -> void
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.HttpClientDesktop.get -> bool
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.HttpClientDesktop.set -> void
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.IncludedMetrics.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.IngressIgnorePattern.get -> string?
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.IngressIgnorePattern.set -> void
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.MetricsObserverOptions() -> void
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.ThreadPoolEvents.get -> bool
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.ThreadPoolEvents.set -> void
 virtual Steeltoe.Management.Configuration.EndpointOptions.Enabled.get -> bool?
 virtual Steeltoe.Management.Configuration.EndpointOptions.Enabled.set -> void
 virtual Steeltoe.Management.Configuration.EndpointOptions.GetDefaultAllowedVerbs() -> System.Collections.Generic.IList<string!>!
@@ -53,7 +16,3 @@ virtual Steeltoe.Management.Configuration.EndpointOptions.Id.set -> void
 virtual Steeltoe.Management.Configuration.EndpointOptions.Path.get -> string?
 virtual Steeltoe.Management.Configuration.EndpointOptions.Path.set -> void
 virtual Steeltoe.Management.Configuration.EndpointOptions.RequiresExactMatch() -> bool
-virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.Dispose(bool disposing) -> void
-virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnCompleted() -> void
-virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnError(System.Exception! error) -> void
-virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnNext(System.Collections.Generic.KeyValuePair<string!, object?> value) -> void

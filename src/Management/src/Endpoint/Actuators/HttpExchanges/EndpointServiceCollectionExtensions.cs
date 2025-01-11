@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Management.Diagnostics;
+using Steeltoe.Management.Endpoint.Actuators.Metrics.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
-namespace Steeltoe.Management.Diagnostics;
+namespace Steeltoe.Management.Endpoint.Actuators.Metrics.Diagnostics;
 
 internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
 {

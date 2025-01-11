@@ -5,7 +5,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Steeltoe.Management.Diagnostics;
+namespace Steeltoe.Management.Endpoint.Actuators.Metrics.Diagnostics;
 
 internal static class ServiceCollectionExtensions
 {
