@@ -55,7 +55,7 @@ public sealed class ConsulDiscoveryClientTest
 
         var healthMoq = new Mock<IHealthEndpoint>();
 
-        healthMoq.Setup(endpoint => endpoint.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, default))
+        healthMoq.Setup(endpoint => endpoint.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, CancellationToken.None))
             .Returns(Task.FromResult(queryResult));
 
         var clientMoq = new Mock<IConsulClient>();
@@ -114,7 +114,7 @@ public sealed class ConsulDiscoveryClientTest
         };
 
         var catalogMoq = new Mock<ICatalogEndpoint>();
-        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, default)).Returns(Task.FromResult(queryResult));
+        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, CancellationToken.None)).Returns(Task.FromResult(queryResult));
 
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Catalog).Returns(catalogMoq.Object);
@@ -182,7 +182,7 @@ public sealed class ConsulDiscoveryClientTest
         };
 
         var catalogMoq = new Mock<ICatalogEndpoint>();
-        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, default)).Returns(Task.FromResult(queryResult1));
+        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, CancellationToken.None)).Returns(Task.FromResult(queryResult1));
 
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Catalog).Returns(catalogMoq.Object);
@@ -190,7 +190,7 @@ public sealed class ConsulDiscoveryClientTest
         var healthMoq = new Mock<IHealthEndpoint>();
         clientMoq.Setup(client => client.Health).Returns(healthMoq.Object);
 
-        healthMoq.Setup(h => h.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, default))
+        healthMoq.Setup(h => h.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, CancellationToken.None))
             .Returns(Task.FromResult(queryResult2));
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);

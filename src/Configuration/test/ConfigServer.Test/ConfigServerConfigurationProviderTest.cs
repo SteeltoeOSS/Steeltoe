@@ -250,7 +250,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             .WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
 
         using var provider = new ConfigServerConfigurationProvider(options, null, handler, NullLoggerFactory.Instance);
-        await provider.RefreshVaultTokenAsync(default);
+        await provider.RefreshVaultTokenAsync(CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -277,7 +277,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             .WithHeaders("Authorization", "Bearer secret").WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
 
         using var provider = new ConfigServerConfigurationProvider(options, null, handler, NullLoggerFactory.Instance);
-        await provider.RefreshVaultTokenAsync(default);
+        await provider.RefreshVaultTokenAsync(CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }

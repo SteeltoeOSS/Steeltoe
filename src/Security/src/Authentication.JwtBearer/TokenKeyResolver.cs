@@ -39,7 +39,7 @@ internal sealed class TokenKeyResolver
 
         // can't be async all the way until updates are complete in Microsoft libraries
         // https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/issues/468
-        JsonWebKeySet? keySet = FetchKeySetAsync(default).GetAwaiter().GetResult();
+        JsonWebKeySet? keySet = FetchKeySetAsync(CancellationToken.None).GetAwaiter().GetResult();
 
         if (keySet != null)
         {
