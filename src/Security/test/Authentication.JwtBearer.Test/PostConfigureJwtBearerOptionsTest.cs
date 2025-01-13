@@ -67,7 +67,6 @@ public sealed class PostConfigureJwtBearerOptionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddAuthentication().AddJwtBearer().ConfigureJwtBearerForCloudFoundry();
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<JwtBearerOptions>>();
