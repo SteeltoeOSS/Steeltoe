@@ -897,9 +897,9 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
     private sealed class TestApplicationLifetime : IHostApplicationLifetime
     {
-        public CancellationToken ApplicationStarted => default;
-        public CancellationToken ApplicationStopping => default;
-        public CancellationToken ApplicationStopped => default;
+        public CancellationToken ApplicationStarted => CancellationToken.None;
+        public CancellationToken ApplicationStopping => CancellationToken.None;
+        public CancellationToken ApplicationStopped => CancellationToken.None;
 
         public void StopApplication()
         {

@@ -42,8 +42,8 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
         SpringBootAdminClientHostedService hostedService = app.Services.GetServices<IHostedService>().OfType<SpringBootAdminClientHostedService>().Single();
         Assert.Null(hostedService.RegistrationResult);
 
-        await hostedService.StartAsync(default);
-        await hostedService.StopAsync(default);
+        await hostedService.StartAsync(CancellationToken.None);
+        await hostedService.StopAsync(CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
         Assert.Equal("1234567", hostedService.RegistrationResult?.Id);
@@ -76,7 +76,7 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
         SpringBootAdminClientHostedService hostedService = app.Services.GetServices<IHostedService>().OfType<SpringBootAdminClientHostedService>().Single();
         Assert.Null(hostedService.RegistrationResult);
 
-        await hostedService.StartAsync(default);
+        await hostedService.StartAsync(CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
