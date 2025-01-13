@@ -15,12 +15,12 @@ public enum ShowDetails
     Never,
 
     /// <summary>
-    /// Always include health check details in the response.
-    /// </summary>
-    Always,
-
-    /// <summary>
     /// Only include health check details in the response when the user is authorized.
     /// </summary>
-    WhenAuthorized
+    WhenAuthorized,
+
+    /// <summary>
+    /// Always include health check details in the response.
+    /// </summary>
+    Always
 }
