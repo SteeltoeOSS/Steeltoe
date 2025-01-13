@@ -35,22 +35,24 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string json = await response.Content.ReadAsStringAsync();
-        Assert.NotNull(json);
+        json.Should().NotBeNull();
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-        Assert.NotNull(health);
-        Assert.True(health.ContainsKey("status"));
+        health.Should().NotBeNull();
+        health.Should().ContainKey("status");
+        health.Should().NotContainKey("components");
+        health.Should().NotContainKey("details");
     }
 
     [Fact]
-    public async Task HealthActuator_ReturnsOnlyStatusWhenAuthorized()
+    public async Task HealthActuator_ReturnsOnlyStatus_WhenAuthorizedSetButUserIsNot()
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            { "management:endpoints:health:showDetails", "whenAuthorized" }
+            ["Management:Endpoints:Health:ShowDetails"] = "whenAuthorized"
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -62,14 +64,16 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string json = await response.Content.ReadAsStringAsync();
-        Assert.NotNull(json);
+        json.Should().NotBeNull();
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-        Assert.NotNull(health);
-        Assert.True(health.ContainsKey("status"));
+        health.Should().NotBeNull();
+        health.Should().ContainKey("status");
+        health.Should().NotContainKey("components");
+        health.Should().NotContainKey("details");
     }
 
     [Fact]
@@ -77,9 +81,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            { "management:endpoints:health:showDetails", "whenAuthorized" },
-            { "management:endpoints:health:claim:type", "health-details" },
-            { "management:endpoints:health:claim:value", "show" }
+            ["Management:Endpoints:Health:ShowDetails"] = "whenAuthorized",
+            ["Management:Endpoints:Health:Claim:Type"] = "health-details",
+            ["Management:Endpoints:Health:Claim:Value"] = "show"
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -91,25 +95,25 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string json = await response.Content.ReadAsStringAsync();
-        Assert.NotNull(json);
+        json.Should().NotBeNull();
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-        Assert.NotNull(health);
-        Assert.True(health.ContainsKey("status"));
-        Assert.True(health.ContainsKey("details"));
-        Assert.Contains("diskSpace", health["details"].ToString(), StringComparison.Ordinal);
-        Assert.True(health.ContainsKey("status"), "Health should contain key: status");
-        Assert.True(health.ContainsKey("details"), "Health should contain key: details");
-        Assert.Contains("diskSpace", health["details"].ToString(), StringComparison.Ordinal);
+        health.Should().NotBeNull();
+        health.Should().ContainKey("status");
+        health.Should().ContainKey("details");
+        health!["details"].ToString().Should().Contain("diskSpace");
     }
 
     [Fact]
-    public async Task HealthActuator_ReturnsDetails()
+    public async Task HealthActuator_ReturnsDetailsWhenConfigured()
     {
-        var settings = new Dictionary<string, string?>(_appSettings);
+        var settings = new Dictionary<string, string?>(_appSettings)
+        {
+            ["Management:Endpoints:Health:ShowDetails"] = "Always"
+        };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
@@ -121,24 +125,25 @@ public sealed class EndpointMiddlewareTest : BaseTest
         using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         string json = await response.Content.ReadAsStringAsync();
-        Assert.NotNull(json);
+        json.Should().NotBeNull();
 
         // { "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-        Assert.NotNull(health);
-        Assert.True(health.ContainsKey("status"), "Health should contain key: status");
-        Assert.True(health.ContainsKey("details"), "Health should contain key: details");
-        Assert.Contains("diskSpace", health["details"].ToString(), StringComparison.Ordinal);
+        health.Should().NotBeNull();
+        health.Should().ContainKey("status");
+        health.Should().ContainKey("details");
+        health!["details"].ToString().Should().Contain("diskSpace");
     }
 
     [Fact]
-    public async Task HealthActuatorV3_ReturnsDetails()
+    public async Task HealthActuatorV3_ReturnsDetailsWhenConfigured()
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            { "management:endpoints:customJsonConverters:0", typeof(HealthConverterV3).FullName! }
+            ["Management:Endpoints:CustomJsonConverters:0"] = typeof(HealthConverterV3).FullName!,
+            ["Management:Endpoints:Health:ShowDetails"] = "Always"
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -150,28 +155,29 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string json = await response.Content.ReadAsStringAsync();
-        Assert.NotNull(json);
+        json.Should().NotBeNull();
 
         // {"status":"UP","components":{"diskSpace":{"status":"UP","details":{"total":1003588939776,"free":597722619904,"threshold":10485760,"status":"UP"}},"readiness":{"status":"UNKNOWN","description":"Failed to get current availability state","details":{}}}}
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-        Assert.NotNull(health);
-        Assert.True(health.ContainsKey("status"), "Health should contain key: status");
-        Assert.False(health.ContainsKey("details"), "Health should not contain key: details");
-        Assert.True(health.ContainsKey("components"), "Health should contain key: components");
-        string componentString = health["components"].ToString() ?? string.Empty;
-        Assert.Contains("diskSpace", componentString, StringComparison.Ordinal);
-        Assert.Contains("details", componentString, StringComparison.Ordinal);
+        health.Should().NotBeNull();
+        health.Should().ContainKey("status");
+        health.Should().NotContainKey("details");
+        health.Should().ContainKey("components");
+        string componentString = health!["components"].ToString() ?? string.Empty;
+        componentString.Should().Contain("diskSpace");
+        componentString.Should().Contain("details");
     }
 
     [Fact]
-    public async Task HealthActuator_ReturnsMicrosoftHealthDetails()
+    public async Task HealthActuator_ReturnsMicrosoftHealthDetailsWhenConfigured()
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            ["HealthCheckType"] = "default"
+            ["HealthCheckType"] = "default",
+            ["Management:Endpoints:Health:ShowDetails"] = "Always"
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -183,18 +189,19 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string json = await response.Content.ReadAsStringAsync();
-        Assert.NotNull(json);
+        json.Should().NotBeNull();
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-        Assert.NotNull(health);
-        Assert.True(health.ContainsKey("status"));
-        Assert.True(health.ContainsKey("details"));
-        Assert.Contains("diskSpace", health["details"].ToString(), StringComparison.Ordinal);
-        Assert.Contains("test-registration", health["details"].ToString(), StringComparison.Ordinal);
-        Assert.Contains("test-tag-2", json, StringComparison.Ordinal);
+        health.Should().NotBeNull();
+        health.Should().ContainKey("status");
+        health.Should().ContainKey("details");
+        var details = JsonSerializer.Deserialize<Dictionary<string, object>>(health!["details"].ToString()!);
+        details.Should().ContainKey("diskSpace");
+        details.Should().ContainKey("test-registration");
+        details!["test-registration"].ToString().Should().Contain("\"tags\":[\"test-tag-1\",\"test-tag-2\"]");
     }
 
     [Fact]
@@ -202,7 +209,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            ["management:endpoints:health:diskSpace:enabled"] = "false"
+            ["Management:Endpoints:Health:ShowDetails"] = "Always",
+            ["Management:Endpoints:Health:DiskSpace:Enabled"] = "false"
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -214,16 +222,16 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string json = await response.Content.ReadAsStringAsync();
-        Assert.NotNull(json);
+        json.Should().NotBeNull();
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-        Assert.NotNull(health);
-        Assert.True(health.ContainsKey("status"));
-        Assert.True(health.ContainsKey("details"));
-        Assert.DoesNotContain("diskSpace", health["details"].ToString(), StringComparison.Ordinal);
+        health.Should().NotBeNull();
+        health.Should().ContainKey("status");
+        health.Should().ContainKey("details");
+        health!["details"].ToString().Should().NotContain("diskSpace");
     }
 
     [Fact]
@@ -247,10 +255,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string json = await response.Content.ReadAsStringAsync();
-        Assert.NotNull(json);
+        json.Should().NotBeNull();
     }
 
     [Theory]
@@ -299,7 +307,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             var settings = new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "down",
-                ["management:endpoints:UseStatusCodeFromResponse"] = "false"
+                ["Management:Endpoints:UseStatusCodeFromResponse"] = "false"
             };
 
             configuration.AddInMemoryCollection(settings);
@@ -313,10 +321,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string json = await response.Content.ReadAsStringAsync();
-
-        json.Should().Contain("""
-            "status":"DOWN"
-            """);
+        json.Should().Be("""{"status":"DOWN"}""");
     }
 
     [Fact]
@@ -330,7 +335,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             var settings = new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "down",
-                ["management:endpoints:UseStatusCodeFromResponse"] = "false"
+                ["Management:Endpoints:UseStatusCodeFromResponse"] = "false"
             };
 
             configuration.AddInMemoryCollection(settings);
@@ -347,10 +352,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 
         string json = await response.Content.ReadAsStringAsync();
-
-        json.Should().Contain("""
-            "status":"DOWN"
-            """);
+        json.Should().Be("""{"status":"DOWN"}""");
     }
 
     [Fact]
@@ -368,12 +370,11 @@ public sealed class EndpointMiddlewareTest : BaseTest
         await app.StartAsync();
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage unknownResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        Assert.Equal(HttpStatusCode.OK, unknownResult.StatusCode);
+        HttpResponseMessage responseMessage = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string unknownJson = await unknownResult.Content.ReadAsStringAsync();
-        Assert.NotNull(unknownJson);
-        Assert.Contains("\"status\":\"UP\"", unknownJson, StringComparison.Ordinal);
+        string json = await responseMessage.Content.ReadAsStringAsync();
+        json.Should().Be("""{"status":"UP"}""");
     }
 
     [Fact]
@@ -387,10 +388,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using HttpClient client = app.GetTestClient();
         HttpResponseMessage responseMessage = await client.GetAsync(new Uri("http://localhost/actuator/health/foo"));
-        Assert.Equal(HttpStatusCode.NotFound, responseMessage.StatusCode);
+        responseMessage.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         string body = await responseMessage.Content.ReadAsStringAsync();
-        Assert.Empty(body);
+        body.Should().BeEmpty();
     }
 
     [Fact]
@@ -399,13 +400,12 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var endpointOptions = GetOptionsFromSettings<HealthEndpointOptions>();
         ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
-        Assert.False(endpointOptions.RequiresExactMatch());
-        Assert.Equal("/actuator/health/{**_}", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
+        endpointOptions.RequiresExactMatch().Should().BeFalse();
+        endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path).Should().Be("/actuator/health/{**_}");
 
-        Assert.Equal("/cloudfoundryapplication/health/{**_}",
-            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
+        endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath).Should()
+            .Be("/cloudfoundryapplication/health/{**_}");
 
-        Assert.Single(endpointOptions.AllowedVerbs);
-        Assert.Contains("Get", endpointOptions.AllowedVerbs);
+        endpointOptions.AllowedVerbs.Should().ContainSingle("Get");
     }
 }

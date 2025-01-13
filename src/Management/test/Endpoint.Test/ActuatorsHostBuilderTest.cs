@@ -151,6 +151,33 @@ public sealed class ActuatorsHostBuilderTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync();
+        responseText.Should().Be("{\"status\":\"UP\"}");
+    }
+
+    [Theory]
+    [InlineData(HostBuilderType.Host)]
+    [InlineData(HostBuilderType.WebHost)]
+    [InlineData(HostBuilderType.WebApplication)]
+    public async Task HealthActuatorWithDetails(HostBuilderType hostBuilderType)
+    {
+        var appSettings = new Dictionary<string, string?>(AppSettings)
+        {
+            { "Management:Endpoints:Health:ShowDetails", "Always" }
+        };
+
+        await using HostWrapper host = hostBuilderType.Build(builder =>
+        {
+            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+            builder.ConfigureServices(services => services.AddHealthActuator());
+        });
+
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
+
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string responseText = await response.Content.ReadAsStringAsync();
         responseText.Should().Contain("\"diskSpace\":");
         responseText.Should().Contain("\"readiness\":");
         responseText.Should().Contain("\"liveness\":");
@@ -164,9 +191,10 @@ public sealed class ActuatorsHostBuilderTest
     {
         var appSettings = new Dictionary<string, string?>(AppSettings)
         {
-            ["Management:Endpoints:Health:DiskSpace:Enabled"] = "false",
-            ["Management:Endpoints:Health:Liveness:Enabled"] = "false",
-            ["Management:Endpoints:Health:Readiness:Enabled"] = "false"
+            { "Management:Endpoints:Health:ShowDetails", "Always" },
+            { "Management:Endpoints:Health:DiskSpace:Enabled", "false" },
+            { "Management:Endpoints:Health:Liveness:Enabled", "false" },
+            { "Management:Endpoints:Health:Readiness:Enabled", "false" }
         };
 
         await using HostWrapper host = hostBuilderType.Build(builder =>
@@ -191,9 +219,14 @@ public sealed class ActuatorsHostBuilderTest
     [InlineData(HostBuilderType.WebApplication)]
     public async Task HealthActuatorWithExtraContributor(HostBuilderType hostBuilderType)
     {
+        var appSettings = new Dictionary<string, string?>(AppSettings)
+        {
+            { "Management:Endpoints:Health:ShowDetails", "Always" }
+        };
+
         await using HostWrapper host = hostBuilderType.Build(builder =>
         {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
+            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
 
             builder.ConfigureServices(services =>
             {
@@ -221,9 +254,14 @@ public sealed class ActuatorsHostBuilderTest
     [InlineData(HostBuilderType.WebApplication)]
     public async Task HealthActuatorWithAvailability(HostBuilderType hostBuilderType)
     {
+        var appSettings = new Dictionary<string, string?>(AppSettings)
+        {
+            { "Management:Endpoints:Health:ShowDetails", "Always" }
+        };
+
         await using HostWrapper host = hostBuilderType.Build(builder =>
         {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
+            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
             builder.ConfigureServices(services => services.AddHealthActuator());
         });
 

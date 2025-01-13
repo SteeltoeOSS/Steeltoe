@@ -10,11 +10,6 @@ namespace Steeltoe.Management.Endpoint.Actuators.Health;
 public enum ShowDetails
 {
     /// <summary>
-    /// Always include health check details in the response.
-    /// </summary>
-    Always,
-
-    /// <summary>
     /// Never include health check details in the response.
     /// </summary>
     Never,
@@ -22,5 +17,10 @@ public enum ShowDetails
     /// <summary>
     /// Only include health check details in the response when the user is authorized.
     /// </summary>
-    WhenAuthorized
+    WhenAuthorized,
+
+    /// <summary>
+    /// Always include health check details in the response.
+    /// </summary>
+    Always
 }
