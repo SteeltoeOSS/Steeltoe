@@ -63,20 +63,26 @@ internal sealed class ManagementPortMiddleware
 
         bool isManagementPath = request.Path.StartsWithSegments(managementOptions.Path);
         bool isManagementScheme = managementOptions.SslEnabled ? request.Scheme == Uri.UriSchemeHttps : request.Scheme == Uri.UriSchemeHttp;
-        bool isManagementPort = request.Host.Port == managementPort;
-
-        string? instancePorts = Environment.GetEnvironmentVariable("CF_INSTANCE_PORTS");
-
-        if (!isManagementPort && !string.IsNullOrEmpty(instancePorts))
-        {
-            isManagementPort = EvaluateCfInstancePorts(managementPort, instancePorts, request.Host.Port);
-        }
+        bool isManagementPort = IsManagementPort(managementPort, request.Host.Port);
 
         return isManagementPath ? isManagementScheme && isManagementPort : !isManagementScheme || !isManagementPort;
     }
 
-    private bool EvaluateCfInstancePorts(int managementPort, string instancePorts, int? requestPort)
+    private bool IsManagementPort(int managementPort, int? requestPort)
     {
+        if (requestPort == managementPort)
+        {
+            return true;
+        }
+
+        // Evaluate CF_INSTANCE_PORTS for port forwarding scenarios where the Host HTTP header doesn't match the actual socket connection.
+        string? instancePorts = Environment.GetEnvironmentVariable("CF_INSTANCE_PORTS");
+
+        if (string.IsNullOrEmpty(instancePorts))
+        {
+            return false;
+        }
+
         var portMappings = JsonSerializer.Deserialize<List<PortMapping>>(instancePorts);
 
         if (portMappings == null)
@@ -116,9 +122,6 @@ internal sealed class ManagementPortMiddleware
     {
         [JsonPropertyName("internal")]
         public int? Internal { get; init; }
-
-        [JsonPropertyName("external")]
-        public int? External { get; init; }
 
         [JsonPropertyName("external_tls_proxy")]
         public int? ExternalTlsProxy { get; init; }

@@ -101,12 +101,12 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
     [Fact]
     public async Task AspNetDefaultPort_AlternateManagementPortConfigured_AccessibleOnCfInstancePorts()
     {
-        using var instancePorts = new EnvironmentVariableScope("CF_INSTANCE_PORTS",
-            "[{\"external\":40041,\"internal\":8090,\"external_tls_proxy\":8998,\"internal_tls_proxy\":8999}]");
-
         const string managementPort = "8090";
         const string externalTlsProxyPort = "8998";
         const string internalTlsProxyPort = "8999";
+
+        using var instancePorts = new EnvironmentVariableScope("CF_INSTANCE_PORTS",
+            $"[{{\"external\":40041,\"internal\":{managementPort},\"external_tls_proxy\":{externalTlsProxyPort},\"internal_tls_proxy\":{internalTlsProxyPort}}}]");
 
         var appSettings = new Dictionary<string, string?>
         {
