@@ -117,7 +117,7 @@ internal sealed class ManagementPortMiddleware
         [JsonPropertyName("internal")]
         public int? Internal { get; init; }
 
-        [JsonPropertyName("exEternal")]
+        [JsonPropertyName("external")]
         public int? External { get; init; }
 
         [JsonPropertyName("external_tls_proxy")]
