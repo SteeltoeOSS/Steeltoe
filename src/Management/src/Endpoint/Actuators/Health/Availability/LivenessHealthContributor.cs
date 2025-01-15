@@ -8,7 +8,7 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
-public sealed class LivenessHealthContributor : AvailabilityHealthContributor
+internal sealed class LivenessHealthContributor : AvailabilityHealthContributor
 {
     private readonly ApplicationAvailability _availability;
     private readonly IOptionsMonitor<LivenessHealthContributorOptions> _optionsMonitor;

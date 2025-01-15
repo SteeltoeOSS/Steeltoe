@@ -7,7 +7,7 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
-public abstract class AvailabilityHealthContributor : IHealthContributor
+internal abstract class AvailabilityHealthContributor : IHealthContributor
 {
     private readonly IDictionary<AvailabilityState, HealthStatus> _stateMappings;
     private readonly ILogger _logger;
