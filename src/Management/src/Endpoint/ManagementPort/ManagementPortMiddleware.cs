@@ -56,51 +56,44 @@ internal sealed class ManagementPortMiddleware
 
     private bool IsRequestAllowed(HttpRequest request, ManagementOptions managementOptions)
     {
-        if (!int.TryParse(managementOptions.Port, CultureInfo.InvariantCulture, out int managementPort) || managementPort <= 0)
+        if (int.TryParse(managementOptions.Port, CultureInfo.InvariantCulture, out int managementPort) && managementPort > 0)
         {
-            return true;
+            bool isManagementPath = request.Path.StartsWithSegments(managementOptions.Path);
+            bool isManagementScheme = managementOptions.SslEnabled ? request.Scheme == Uri.UriSchemeHttps : request.Scheme == Uri.UriSchemeHttp;
+            bool isManagementPort = request.Host.Port == managementPort || HasMappedInstancePort(managementPort, request.Host.Port);
+
+            return isManagementPath ? isManagementScheme && isManagementPort : !isManagementScheme || !isManagementPort;
         }
 
-        bool isManagementPath = request.Path.StartsWithSegments(managementOptions.Path);
-        bool isManagementScheme = managementOptions.SslEnabled ? request.Scheme == Uri.UriSchemeHttps : request.Scheme == Uri.UriSchemeHttp;
-        bool isManagementPort = IsManagementPort(managementPort, request.Host.Port);
-
-        return isManagementPath ? isManagementScheme && isManagementPort : !isManagementScheme || !isManagementPort;
+        return true;
     }
 
-    private bool IsManagementPort(int managementPort, int? requestPort)
+    // Evaluate CF_INSTANCE_PORTS for port forwarding scenarios where the Host HTTP header doesn't match the actual socket connection.
+    private bool HasMappedInstancePort(int managementPort, int? requestPort)
     {
-        if (requestPort == managementPort)
-        {
-            return true;
-        }
-
-        // Evaluate CF_INSTANCE_PORTS for port forwarding scenarios where the Host HTTP header doesn't match the actual socket connection.
         string? instancePorts = Environment.GetEnvironmentVariable("CF_INSTANCE_PORTS");
 
-        if (string.IsNullOrEmpty(instancePorts))
+        if (!string.IsNullOrEmpty(instancePorts))
         {
-            return false;
+            var portMappings = JsonSerializer.Deserialize<List<PortMapping>>(instancePorts);
+
+            PortMapping? portMapping = portMappings?.Find(mapping =>
+                mapping.Internal == managementPort && (requestPort == mapping.ExternalTlsProxy || requestPort == mapping.InternalTlsProxy));
+
+            if (portMapping != null)
+            {
+                if (_logger.IsEnabled(LogLevel.Trace))
+                {
+                    _logger.LogTrace(
+                        "Request received on port {RequestPort}. Allowed by CF_INSTANCE_PORTS mapping: [ Internal: {InternalPort}, ExternalTlsProxy: {ExternalTlsProxy}, InternalTlsProxy: {InternalTlsProxy} ]",
+                        requestPort, portMapping.Internal, portMapping.ExternalTlsProxy, portMapping.InternalTlsProxy);
+                }
+
+                return true;
+            }
         }
 
-        var portMappings = JsonSerializer.Deserialize<List<PortMapping>>(instancePorts);
-
-        if (portMappings == null)
-        {
-            return false;
-        }
-
-        PortMapping? portMapping = portMappings.Find(mapping =>
-            mapping.Internal == managementPort && (requestPort == mapping.ExternalTlsProxy || requestPort == mapping.InternalTlsProxy));
-
-        if (_logger.IsEnabled(LogLevel.Trace) && portMapping != null)
-        {
-            _logger.LogTrace(
-                "Request received on port {RequestPort}. Allowed by CF_INSTANCE_PORTS mapping: [ Internal: {InternalPort}, ExternalTlsProxy: {ExternalTlsProxy}, InternalTlsProxy: {InternalTlsProxy} ]",
-                requestPort, portMapping.Internal, portMapping.ExternalTlsProxy, portMapping.InternalTlsProxy);
-        }
-
-        return portMapping != null;
+        return false;
     }
 
     private void SetResponseError(HttpContext context, string? managementPort)
