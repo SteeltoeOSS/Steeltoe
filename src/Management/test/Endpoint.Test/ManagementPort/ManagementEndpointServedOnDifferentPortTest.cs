@@ -105,8 +105,15 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         const string externalTlsProxyPort = "8998";
         const string internalTlsProxyPort = "8999";
 
-        using var instancePorts = new EnvironmentVariableScope("CF_INSTANCE_PORTS",
-            $"[{{\"external\":40041,\"internal\":{managementPort},\"external_tls_proxy\":{externalTlsProxyPort},\"internal_tls_proxy\":{internalTlsProxyPort}}}]");
+        using var instancePorts = new EnvironmentVariableScope("CF_INSTANCE_PORTS", $$"""
+            [
+              {
+                "internal": {{managementPort}},
+                "external_tls_proxy": {{externalTlsProxyPort}},
+                "internal_tls_proxy": {{internalTlsProxyPort}}
+              }
+            ]
+            """);
 
         var appSettings = new Dictionary<string, string?>
         {
