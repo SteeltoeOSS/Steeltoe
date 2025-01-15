@@ -11,7 +11,7 @@ namespace Steeltoe.Discovery.Consul;
 /// <summary>
 /// A service instance returned from a Consul server.
 /// </summary>
-public sealed class ConsulServiceInstance : IServiceInstance
+internal sealed class ConsulServiceInstance : IServiceInstance
 {
     /// <inheritdoc />
     public string ServiceId { get; }

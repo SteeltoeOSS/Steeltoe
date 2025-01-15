@@ -14,7 +14,7 @@ namespace Steeltoe.Discovery.Consul.Registry;
 /// <summary>
 /// A service registry that uses Consul.
 /// </summary>
-public sealed class ConsulServiceRegistry : IAsyncDisposable
+internal sealed class ConsulServiceRegistry : IAsyncDisposable
 {
     private const string Up = "UP";
     private const string OutOfService = "OUT_OF_SERVICE";

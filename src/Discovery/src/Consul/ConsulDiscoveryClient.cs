@@ -38,28 +38,35 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     /// <param name="optionsMonitor">
     /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
-    /// <param name="registrar">
-    /// The Consul registrar service.
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
-    /// <param name="logger">
-    /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
-    /// </param>
-    public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ConsulServiceRegistrar? registrar,
-        ILogger<ConsulDiscoveryClient> logger)
+    public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(optionsMonitor);
-        ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
+
+        ConsulServiceRegistrar registrar = CreateRegistrar(client, optionsMonitor, loggerFactory);
 
         _client = client;
         _optionsMonitor = optionsMonitor;
+        _thisServiceInstance = new ThisServiceInstance(registrar.Registration);
         _registrar = registrar;
 
-        if (registrar != null)
-        {
-            _thisServiceInstance = new ThisServiceInstance(registrar.Registration);
-            registrar.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
-        }
+        _registrar.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
+    }
+
+    private static ConsulServiceRegistrar CreateRegistrar(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor,
+        ILoggerFactory loggerFactory)
+    {
+        var registration = ConsulRegistration.Create(optionsMonitor);
+
+        ILogger<ConsulServiceRegistry> registryLogger = loggerFactory.CreateLogger<ConsulServiceRegistry>();
+        var registry = new ConsulServiceRegistry(client, optionsMonitor, new TtlScheduler(optionsMonitor, client, loggerFactory), registryLogger);
+
+        ILogger<ConsulServiceRegistrar> registrarLogger = loggerFactory.CreateLogger<ConsulServiceRegistrar>();
+        return new ConsulServiceRegistrar(registry, optionsMonitor, registration, registrarLogger);
     }
 
     /// <inheritdoc />
