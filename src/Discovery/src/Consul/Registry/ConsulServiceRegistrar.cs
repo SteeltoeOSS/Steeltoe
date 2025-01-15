@@ -13,7 +13,7 @@ namespace Steeltoe.Discovery.Consul.Registry;
 /// <summary>
 /// A registrar used to register a service in a Consul server.
 /// </summary>
-public sealed class ConsulServiceRegistrar : IAsyncDisposable
+internal sealed class ConsulServiceRegistrar : IAsyncDisposable
 {
     private const int NotRunning = 0;
     private const int Running = 1;
@@ -69,7 +69,7 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.
     /// </param>
-    internal async Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         if (!Options.Enabled)
         {

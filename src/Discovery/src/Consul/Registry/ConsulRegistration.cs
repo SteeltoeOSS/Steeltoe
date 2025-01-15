@@ -13,7 +13,7 @@ namespace Steeltoe.Discovery.Consul.Registry;
 /// <summary>
 /// Represents the local application instance, to be registered with the Consul server.
 /// </summary>
-public sealed class ConsulRegistration : IServiceInstance
+internal sealed class ConsulRegistration : IServiceInstance
 {
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
 
@@ -75,7 +75,7 @@ public sealed class ConsulRegistration : IServiceInstance
     /// <param name="optionsMonitor">
     /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
-    internal static ConsulRegistration Create(IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
+    public static ConsulRegistration Create(IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
     {
         ArgumentNullException.ThrowIfNull(optionsMonitor);
 
@@ -124,7 +124,7 @@ public sealed class ConsulRegistration : IServiceInstance
         return options.Tags.ToArray();
     }
 
-    internal static AgentServiceCheck CreateCheck(int port, ConsulDiscoveryOptions options)
+    public static AgentServiceCheck CreateCheck(int port, ConsulDiscoveryOptions options)
     {
         var check = new AgentServiceCheck();
 

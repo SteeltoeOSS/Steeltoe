@@ -16,7 +16,12 @@ public sealed class ConsulDiscoveryClientTest
     [Fact]
     public async Task AddInstancesToListAsync_AddsExpected()
     {
-        var options = new ConsulDiscoveryOptions();
+        var options = new ConsulDiscoveryOptions
+        {
+            Register = false,
+            HostName = "this.host.com",
+            Port = 8888
+        };
 
         var queryResult = new QueryResult<ServiceEntry[]>
         {
@@ -62,7 +67,7 @@ public sealed class ConsulDiscoveryClientTest
         clientMoq.Setup(client => client.Health).Returns(healthMoq.Object);
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, null, NullLogger<ConsulDiscoveryClient>.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
 
         List<IServiceInstance> serviceInstances = [];
         await discoveryClient.AddInstancesToListAsync(serviceInstances, "ServiceId", QueryOptions.Default, optionsMonitor.CurrentValue, CancellationToken.None);
@@ -94,6 +99,13 @@ public sealed class ConsulDiscoveryClientTest
     [Fact]
     public async Task GetServicesAsync_ReturnsExpected()
     {
+        var options = new ConsulDiscoveryOptions
+        {
+            Register = false,
+            HostName = "this.host.com",
+            Port = 8888
+        };
+
         var queryResult = new QueryResult<Dictionary<string, string[]>>
         {
             Response = new Dictionary<string, string[]>
@@ -119,8 +131,8 @@ public sealed class ConsulDiscoveryClientTest
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Catalog).Returns(catalogMoq.Object);
 
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, null, NullLogger<ConsulDiscoveryClient>.Instance);
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
+        var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
         ISet<string> serviceIds = await discoveryClient.GetServiceIdsAsync(QueryOptions.Default, CancellationToken.None);
 
         Assert.Equal(2, serviceIds.Count);
@@ -131,7 +143,12 @@ public sealed class ConsulDiscoveryClientTest
     [Fact]
     public async Task GetAllInstances_ReturnsExpected()
     {
-        var options = new ConsulDiscoveryOptions();
+        var options = new ConsulDiscoveryOptions
+        {
+            Register = false,
+            HostName = "this.host.com",
+            Port = 8888
+        };
 
         var queryResult1 = new QueryResult<Dictionary<string, string[]>>
         {
@@ -194,7 +211,7 @@ public sealed class ConsulDiscoveryClientTest
             .Returns(Task.FromResult(queryResult2));
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, null, NullLogger<ConsulDiscoveryClient>.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
         IList<IServiceInstance> serviceInstances = await discoveryClient.GetAllInstancesAsync(QueryOptions.Default, CancellationToken.None);
 
         Assert.Equal(2, serviceInstances.Count);

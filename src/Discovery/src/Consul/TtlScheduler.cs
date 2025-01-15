@@ -14,7 +14,7 @@ namespace Steeltoe.Discovery.Consul;
 /// <summary>
 /// Scheduler used to issue TTL (time-to-live) requests to the Consul server.
 /// </summary>
-public sealed class TtlScheduler : IAsyncDisposable
+internal sealed class TtlScheduler : IAsyncDisposable
 {
     private const string InstancePrefix = "service:";
 
@@ -66,7 +66,7 @@ public sealed class TtlScheduler : IAsyncDisposable
     /// <param name="instanceId">
     /// The instance ID.
     /// </param>
-    internal void Add(string instanceId)
+    public void Add(string instanceId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
 
@@ -103,7 +103,7 @@ public sealed class TtlScheduler : IAsyncDisposable
     /// <param name="instanceId">
     /// The instance ID.
     /// </param>
-    internal async Task RemoveAsync(string instanceId)
+    public async Task RemoveAsync(string instanceId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
 
