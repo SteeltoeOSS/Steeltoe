@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -52,18 +54,46 @@ internal sealed class ManagementPortMiddleware
         }
     }
 
-    private static bool IsRequestAllowed(HttpRequest request, ManagementOptions managementOptions)
+    private bool IsRequestAllowed(HttpRequest request, ManagementOptions managementOptions)
     {
         if (int.TryParse(managementOptions.Port, CultureInfo.InvariantCulture, out int managementPort) && managementPort > 0)
         {
             bool isManagementPath = request.Path.StartsWithSegments(managementOptions.Path);
             bool isManagementScheme = managementOptions.SslEnabled ? request.Scheme == Uri.UriSchemeHttps : request.Scheme == Uri.UriSchemeHttp;
-            bool isManagementPort = request.Host.Port == managementPort;
+            bool isManagementPort = request.Host.Port == managementPort || HasMappedInstancePort(managementPort, request.Host.Port);
 
             return isManagementPath ? isManagementScheme && isManagementPort : !isManagementScheme || !isManagementPort;
         }
 
         return true;
+    }
+
+    // Evaluate CF_INSTANCE_PORTS for port forwarding scenarios where the Host HTTP header doesn't match the actual socket connection.
+    private bool HasMappedInstancePort(int managementPort, int? requestPort)
+    {
+        string? instancePorts = Environment.GetEnvironmentVariable("CF_INSTANCE_PORTS");
+
+        if (!string.IsNullOrEmpty(instancePorts))
+        {
+            var portMappings = JsonSerializer.Deserialize<List<PortMapping>>(instancePorts);
+
+            PortMapping? portMapping = portMappings?.Find(mapping =>
+                mapping.Internal == managementPort && (requestPort == mapping.ExternalTlsProxy || requestPort == mapping.InternalTlsProxy));
+
+            if (portMapping != null)
+            {
+                if (_logger.IsEnabled(LogLevel.Trace))
+                {
+                    _logger.LogTrace(
+                        "Request received on port {RequestPort}. Allowed by CF_INSTANCE_PORTS mapping: [ Internal: {InternalPort}, ExternalTlsProxy: {ExternalTlsProxy}, InternalTlsProxy: {InternalTlsProxy} ]",
+                        requestPort, portMapping.Internal, portMapping.ExternalTlsProxy, portMapping.InternalTlsProxy);
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void SetResponseError(HttpContext context, string? managementPort)
@@ -79,5 +109,17 @@ internal sealed class ManagementPortMiddleware
             defaultPort ?? context.Request.Host.Port, managementPort);
 
         context.Response.StatusCode = StatusCodes.Status404NotFound;
+    }
+
+    private sealed record PortMapping
+    {
+        [JsonPropertyName("internal")]
+        public int? Internal { get; init; }
+
+        [JsonPropertyName("external_tls_proxy")]
+        public int? ExternalTlsProxy { get; init; }
+
+        [JsonPropertyName("internal_tls_proxy")]
+        public int? InternalTlsProxy { get; init; }
     }
 }

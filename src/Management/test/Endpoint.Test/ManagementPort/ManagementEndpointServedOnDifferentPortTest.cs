@@ -99,6 +99,44 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
     }
 
     [Fact]
+    public async Task AspNetDefaultPort_AlternateManagementPortConfigured_AccessibleOnCfInstancePorts()
+    {
+        const string managementPort = "8090";
+        const string externalTlsProxyPort = "8998";
+        const string internalTlsProxyPort = "8999";
+
+        using var instancePorts = new EnvironmentVariableScope("CF_INSTANCE_PORTS", $$"""
+            [
+              {
+                "internal": {{managementPort}},
+                "external_tls_proxy": {{externalTlsProxyPort}},
+                "internal_tls_proxy": {{internalTlsProxyPort}}
+              }
+            ]
+            """);
+
+        var appSettings = new Dictionary<string, string?>
+        {
+            // The test listens on the proxy ports in lieu of Cloud Foundry's proxy infrastructure
+            ["urls"] = $"http://*:{externalTlsProxyPort};http://*:{internalTlsProxyPort}",
+            ["management:endpoints:port"] = managementPort
+        };
+
+        await using WebApplication app = await CreateAppAsync(appSettings);
+
+        using HttpClient httpClient = CreateHttpClient();
+
+        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{managementPort}/actuator"));
+        actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{internalTlsProxyPort}/actuator"));
+        actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{externalTlsProxyPort}/actuator"));
+        actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
     [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
     public async Task AspNetDefaultPort_AlternateManagementPortAndSchemeConfigured_AccessibleOnSeparatePortsAndSchemes()
     {
