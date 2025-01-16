@@ -10,5 +10,5 @@ namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 internal sealed class ConfigureThreadDumpEndpointOptions(IConfiguration configuration)
     : ConfigureEndpointOptions<ThreadDumpEndpointOptions>(configuration, ManagementInfoPrefix, "threaddump")
 {
-    private const string ManagementInfoPrefix = "management:endpoints:dump";
+    private const string ManagementInfoPrefix = "management:endpoints:threaddump";
 }

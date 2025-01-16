@@ -21,7 +21,7 @@ public sealed class HealthEndpointResponse
     /// <summary>
     /// Gets details of the health check.
     /// </summary>
-    public IDictionary<string, object> Details { get; } = new Dictionary<string, object>();
+    public IDictionary<string, object> Components { get; } = new Dictionary<string, object>();
 
     /// <summary>
     /// Gets the list of available health groups.
@@ -46,7 +46,7 @@ public sealed class HealthEndpointResponse
 
         foreach ((string key, object value) in result.Details)
         {
-            Details[key] = value;
+            Components[key] = value;
         }
     }
 }

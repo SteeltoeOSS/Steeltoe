@@ -27,7 +27,7 @@ public sealed class HealthAggregatorTest : BaseTest
 
         Assert.NotNull(result);
         Assert.Equal(SteeltoeHealthStatus.Unknown, result.Status);
-        Assert.NotNull(result.Details);
+        Assert.Empty(result.Details);
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public sealed class HealthAggregatorTest : BaseTest
 
         Assert.NotNull(result);
         Assert.Equal(SteeltoeHealthStatus.Unknown, result.Status);
-        Assert.NotNull(result.Details);
+        Assert.Empty(result.Details);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public sealed class HealthAggregatorTest : BaseTest
 
         Assert.NotNull(result);
         Assert.Equal(SteeltoeHealthStatus.Up, result.Status);
-        Assert.NotNull(result.Details);
+        Assert.NotEmpty(result.Details);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public sealed class HealthAggregatorTest : BaseTest
 
         Assert.NotNull(result);
         Assert.Equal(SteeltoeHealthStatus.Down, result.Status);
-        Assert.NotNull(result.Details);
+        Assert.NotEmpty(result.Details);
     }
 
     [Fact]
@@ -111,6 +111,7 @@ public sealed class HealthAggregatorTest : BaseTest
 
         Assert.NotNull(result);
         Assert.Equal(SteeltoeHealthStatus.Up, result.Status);
+        Assert.NotEmpty(result.Details);
         Assert.Contains("alwaysUp-9", result.Details.Keys);
     }
 
@@ -131,7 +132,7 @@ public sealed class HealthAggregatorTest : BaseTest
 
         Assert.NotNull(result);
         Assert.Equal(SteeltoeHealthStatus.OutOfService, result.Status);
-        Assert.NotNull(result.Details);
+        Assert.NotEmpty(result.Details);
     }
 
     [Fact]

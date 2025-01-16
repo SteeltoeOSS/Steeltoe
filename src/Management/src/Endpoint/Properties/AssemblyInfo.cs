@@ -43,7 +43,7 @@ using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 [assembly: ConfigurationSchema("Management:Endpoints:Refresh", typeof(RefreshEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Mappings", typeof(RouteMappingsEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Services", typeof(ServicesEndpointOptions))]
-[assembly: ConfigurationSchema("Management:Endpoints:Dump", typeof(ThreadDumpEndpointOptions))]
+[assembly: ConfigurationSchema("Management:Endpoints:ThreadDump", typeof(ThreadDumpEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:HttpExchanges", typeof(HttpExchangesEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Actuator", typeof(HypermediaEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Actuator:Exposure", typeof(Exposure))]

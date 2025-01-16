@@ -52,27 +52,6 @@ public static class EndpointServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddAllActuators(this IServiceCollection services, bool configureMiddleware)
     {
-        return AddAllActuators(services, MediaTypeVersion.V2, configureMiddleware);
-    }
-
-    /// <summary>
-    /// Adds all Steeltoe actuators to the service container.
-    /// </summary>
-    /// <param name="services">
-    /// The <see cref="IServiceCollection" /> to add services to.
-    /// </param>
-    /// <param name="version">
-    /// The default media version that is used by actuators that support multiple versions.
-    /// </param>
-    /// <param name="configureMiddleware">
-    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires
-    /// manual addition of the appropriate middleware for actuators to work correctly.
-    /// </param>
-    /// <returns>
-    /// The incoming <paramref name="services" /> so that additional calls can be chained.
-    /// </returns>
-    public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version, bool configureMiddleware)
-    {
         ArgumentNullException.ThrowIfNull(services);
 
         if (Platform.IsCloudFoundry)
@@ -81,7 +60,7 @@ public static class EndpointServiceCollectionExtensions
         }
 
         services.AddHypermediaActuator(configureMiddleware);
-        services.AddThreadDumpActuator(version, configureMiddleware);
+        services.AddThreadDumpActuator(configureMiddleware);
         services.AddHeapDumpActuator(configureMiddleware);
         services.AddDbMigrationsActuator(configureMiddleware);
         services.AddEnvironmentActuator(configureMiddleware);

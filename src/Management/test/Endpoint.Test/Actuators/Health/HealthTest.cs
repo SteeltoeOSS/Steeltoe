@@ -41,7 +41,7 @@ public sealed class HealthTest : BaseTest
         {
             Status = HealthStatus.OutOfService,
             Description = "Test",
-            Details =
+            Components =
             {
                 { "item1", new HealthData() },
                 { "item2", "String" },
@@ -55,7 +55,7 @@ public sealed class HealthTest : BaseTest
             {
               "status": "OUT_OF_SERVICE",
               "description": "Test",
-              "details": {
+              "components": {
                 "item1": {
                   "stringProperty": "TestData",
                   "intProperty": 100,
@@ -75,7 +75,7 @@ public sealed class HealthTest : BaseTest
         {
             Status = HealthStatus.OutOfService,
             Description = "Test",
-            Details =
+            Components =
             {
                 ["ExampleContributor"] = new HealthCheckResult
                 {
@@ -95,11 +95,13 @@ public sealed class HealthTest : BaseTest
             {
               "status": "OUT_OF_SERVICE",
               "description": "Test",
-              "details": {
+              "components": {
                 "ExampleContributor": {
                   "status": "UNKNOWN",
                   "description": "ExampleDescription",
-                  "ExampleMessage": "ExampleValue"
+                  "details": {
+                    "ExampleMessage": "ExampleValue"
+                  }
                 }
               }
             }

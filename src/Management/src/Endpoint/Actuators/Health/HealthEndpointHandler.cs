@@ -80,7 +80,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 
         if (showDetails == ShowDetails.Never || (showDetails == ShowDetails.WhenAuthorized && !healthRequest.HasClaim))
         {
-            response.Details.Clear();
+            response.Components.Clear();
         }
         else
         {

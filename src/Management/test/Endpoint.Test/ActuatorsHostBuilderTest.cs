@@ -151,7 +151,7 @@ public sealed class ActuatorsHostBuilderTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync();
-        responseText.Should().Be("{\"status\":\"UP\"}");
+        responseText.Should().Be("""{"status":"UP"}""");
     }
 
     [Theory]
@@ -210,7 +210,9 @@ public sealed class ActuatorsHostBuilderTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync();
-        responseText.Should().Be("""{"status":"UNKNOWN"}""");
+        responseText.Should().Be("""
+            {"status":"UNKNOWN","groups":["liveness","readiness"]}
+            """);
     }
 
     [Theory]
@@ -272,13 +274,17 @@ public sealed class ActuatorsHostBuilderTest
         livenessResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string livenessResponseText = await livenessResponse.Content.ReadAsStringAsync();
-        livenessResponseText.Should().Contain("\"CORRECT\"");
+        livenessResponseText.Should().Be("""
+            {"status":"UP","groups":["liveness","readiness"],"components":{"liveness":{"status":"UP"}}}
+            """);
 
         HttpResponseMessage readinessResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/readiness"));
         readinessResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string readinessResponseText = await readinessResponse.Content.ReadAsStringAsync();
-        readinessResponseText.Should().Contain("\"ACCEPTING_TRAFFIC\"");
+        readinessResponseText.Should().Be("""
+            {"status":"UP","groups":["liveness","readiness"],"components":{"readiness":{"status":"UP"}}}
+            """);
 
         var availability = host.Services.GetRequiredService<ApplicationAvailability>();
         await host.StopAsync();

@@ -210,7 +210,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
         result.Status.Should().Be(HealthStatus.Up);
-        result.Details.Keys.Should().ContainSingle();
+        result.Components.Keys.Should().ContainSingle();
         result.Groups.Should().HaveCount(2);
     }
 
@@ -250,7 +250,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
         result.Status.Should().Be(HealthStatus.Up);
-        result.Details.Keys.Should().ContainSingle();
+        result.Components.Keys.Should().ContainSingle();
         result.Groups.Should().HaveCount(2);
     }
 
@@ -284,7 +284,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
         result.Status.Should().Be(HealthStatus.Up);
-        result.Details.Keys.Should().ContainSingle();
+        result.Components.Keys.Should().ContainSingle();
         result.Groups.Should().HaveCount(2);
     }
 
@@ -321,7 +321,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
         result.Status.Should().Be(HealthStatus.OutOfService);
-        result.Details.Keys.Should().HaveCount(4);
+        result.Components.Keys.Should().HaveCount(4);
         result.Groups.Should().HaveCount(2);
     }
 
@@ -353,9 +353,9 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
-        result.Details.Keys.Should().HaveCount(2);
-        result.Details.Should().ContainKey("alwaysUp");
-        result.Details.Should().ContainKey("privatememory");
+        result.Components.Keys.Should().HaveCount(2);
+        result.Components.Should().ContainKey("alwaysUp");
+        result.Components.Should().ContainKey("privatememory");
         result.Groups.Should().HaveCount(3);
     }
 

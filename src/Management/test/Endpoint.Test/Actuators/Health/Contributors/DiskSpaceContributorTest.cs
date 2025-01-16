@@ -29,10 +29,11 @@ public sealed class DiskSpaceContributorTest : BaseTest
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.NotNull(result.Details);
-        Assert.True(result.Details.ContainsKey("total"));
-        Assert.True(result.Details.ContainsKey("free"));
-        Assert.True(result.Details.ContainsKey("threshold"));
-        Assert.True(result.Details.ContainsKey("status"));
+        Assert.Contains("total", result.Details);
+        Assert.Contains("free", result.Details);
+        Assert.Contains("threshold", result.Details);
+        Assert.Contains("exists", result.Details);
+        Assert.Contains("path", result.Details);
     }
 
     [Fact]

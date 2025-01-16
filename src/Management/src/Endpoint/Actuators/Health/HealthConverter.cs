@@ -5,7 +5,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Steeltoe.Common.CasingConventions;
-using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health;
 
@@ -23,43 +22,32 @@ internal sealed class HealthConverter : JsonConverter<HealthEndpointResponse>
         writer.WriteStartObject();
         writer.WriteString("status", value.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
 
+        if (value.Groups.Count > 0)
+        {
+            writer.WriteStartArray("groups");
+
+            foreach (string group in value.Groups)
+            {
+                writer.WriteStringValue(group);
+            }
+
+            writer.WriteEndArray();
+        }
+
         if (!string.IsNullOrEmpty(value.Description))
         {
             writer.WriteString("description", value.Description);
         }
 
-        if (value.Details.Count > 0)
+        if (value.Components.Count > 0)
         {
-            writer.WritePropertyName("details");
+            writer.WritePropertyName("components");
             writer.WriteStartObject();
 
-            foreach ((string detailKey, object detailValue) in value.Details)
+            foreach (KeyValuePair<string, object> component in value.Components)
             {
-                writer.WritePropertyName(detailKey);
-
-                if (detailValue is HealthCheckResult result)
-                {
-                    var details = new Dictionary<string, object>
-                    {
-                        ["status"] = result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps)
-                    };
-
-                    if (result.Description != null)
-                    {
-                        details["description"] = result.Description;
-                    }
-
-                    foreach ((string resultKey, object resultValue) in result.Details)
-                    {
-                        details[resultKey] = resultValue;
-                    }
-
-                    JsonSerializer.Serialize(writer, details, options);
-                }
-                else
-                {
-                    JsonSerializer.Serialize(writer, detailValue, options);
-                }
+                writer.WritePropertyName(component.Key);
+                JsonSerializer.Serialize(writer, component.Value, options);
             }
 
             writer.WriteEndObject();

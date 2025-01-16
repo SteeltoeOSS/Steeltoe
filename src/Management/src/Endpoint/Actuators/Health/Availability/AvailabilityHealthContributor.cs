@@ -46,7 +46,6 @@ internal abstract class AvailabilityHealthContributor : IHealthContributor
             try
             {
                 health.Status = _stateMappings[currentHealth];
-                health.Details.Add(currentHealth.GetType().Name, currentHealth.ToString());
             }
             catch (Exception exception)
             {

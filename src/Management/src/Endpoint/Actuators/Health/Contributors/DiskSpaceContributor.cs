@@ -57,7 +57,8 @@ internal sealed class DiskSpaceContributor : IHealthContributor
                     result.Details.Add("total", driveInfo.TotalSize);
                     result.Details.Add("free", freeSpaceInBytes);
                     result.Details.Add("threshold", options.Threshold);
-                    result.Details.Add("status", result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+                    result.Details.Add("path", absolutePath);
+                    result.Details.Add("exists", driveInfo.RootDirectory.Exists);
                     return result;
                 }
             }
