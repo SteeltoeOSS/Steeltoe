@@ -76,7 +76,7 @@ internal sealed class PermissionsProvider
                 _logger.LogInformation("Cloud Foundry returned status: {HttpStatus} while obtaining permissions from: {PermissionsUri}", response.StatusCode,
                     checkPermissionsUri);
 
-                return response.StatusCode == HttpStatusCode.Forbidden
+                return response.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized
                     ? new SecurityResult(HttpStatusCode.Forbidden, AccessDeniedMessage)
                     : new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
             }
