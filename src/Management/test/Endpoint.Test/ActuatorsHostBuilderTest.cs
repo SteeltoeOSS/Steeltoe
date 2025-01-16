@@ -151,7 +151,7 @@ public sealed class ActuatorsHostBuilderTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync();
-        responseText.Should().Be("{\"status\":\"UP\"}");
+        responseText.Should().Be("""{"status":"UP"}""");
     }
 
     [Theory]
@@ -194,6 +194,7 @@ public sealed class ActuatorsHostBuilderTest
             { "Management:Endpoints:Health:ShowDetails", "Always" },
             { "Management:Endpoints:Health:DiskSpace:Enabled", "false" },
             { "Management:Endpoints:Health:Liveness:Enabled", "false" },
+            { "Management:Endpoints:Health:Ping:Enabled", "false" },
             { "Management:Endpoints:Health:Readiness:Enabled", "false" }
         };
 
