@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
-internal sealed class ThreadDumpV2Converter : JsonConverter<IList<ThreadInfo>>
+internal sealed class ThreadDumpJsonConverter : JsonConverter<IList<ThreadInfo>>
 {
     public override IList<ThreadInfo> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

@@ -9,14 +9,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Configuration;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
 public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddleware
 {
+    protected const string ContentType = "application/vnd.spring-boot.actuator.v3+json";
     private readonly ILogger _logger;
-
     protected IOptionsMonitor<ManagementOptions> ManagementOptionsMonitor { get; }
     protected IEndpointHandler<TArgument, TResult> EndpointHandler { get; }
 
@@ -73,7 +72,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        context.HandleContentNegotiation(_logger);
+        context.Response.Headers.Append("Content-Type", ContentType);
 
         if (Equals(result, null))
         {

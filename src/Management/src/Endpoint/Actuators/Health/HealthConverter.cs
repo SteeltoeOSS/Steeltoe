@@ -5,7 +5,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Steeltoe.Common.CasingConventions;
-using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health;
 
@@ -30,36 +29,13 @@ internal sealed class HealthConverter : JsonConverter<HealthEndpointResponse>
 
         if (value.Details.Count > 0)
         {
-            writer.WritePropertyName("details");
+            writer.WritePropertyName("components");
             writer.WriteStartObject();
 
-            foreach ((string detailKey, object detailValue) in value.Details)
+            foreach (KeyValuePair<string, object> detail in value.Details)
             {
-                writer.WritePropertyName(detailKey);
-
-                if (detailValue is HealthCheckResult result)
-                {
-                    var details = new Dictionary<string, object>
-                    {
-                        ["status"] = result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps)
-                    };
-
-                    if (result.Description != null)
-                    {
-                        details["description"] = result.Description;
-                    }
-
-                    foreach ((string resultKey, object resultValue) in result.Details)
-                    {
-                        details[resultKey] = resultValue;
-                    }
-
-                    JsonSerializer.Serialize(writer, details, options);
-                }
-                else
-                {
-                    JsonSerializer.Serialize(writer, detailValue, options);
-                }
+                writer.WritePropertyName(detail.Key);
+                JsonSerializer.Serialize(writer, detail.Value, options);
             }
 
             writer.WriteEndObject();

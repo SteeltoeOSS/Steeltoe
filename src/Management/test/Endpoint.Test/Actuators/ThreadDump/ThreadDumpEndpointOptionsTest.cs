@@ -46,33 +46,4 @@ public sealed class ThreadDumpEndpointOptionsTest : BaseTest
         Assert.Equal("threaddump", options.Id);
         Assert.Equal("threaddump", options.Path);
     }
-
-    [Fact]
-    public void Constructor_BindsConfigurationCorrectlyV1()
-    {
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:loggers:enabled"] = "false",
-            ["management:endpoints:dump:enabled"] = "true",
-            ["management:endpoints:cloudfoundry:validateCertificates"] = "true",
-            ["management:endpoints:cloudfoundry:enabled"] = "true"
-        };
-
-        IOptionsMonitor<ThreadDumpEndpointOptions> optionsMonitor =
-            GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>(appSettings);
-
-        CloudFoundryEndpointOptions cloudFoundryEndpointOptions =
-            GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appSettings);
-
-        ThreadDumpEndpointOptions options = optionsMonitor.CurrentValue;
-        Assert.True(cloudFoundryEndpointOptions.Enabled);
-        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Id);
-        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Path);
-        Assert.True(cloudFoundryEndpointOptions.ValidateCertificates);
-
-        Assert.True(options.Enabled);
-        Assert.Equal("dump", options.Id);
-        Assert.Equal("dump", options.Path);
-    }
 }
