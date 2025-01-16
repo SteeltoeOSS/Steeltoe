@@ -51,6 +51,7 @@ public static class EndpointServiceCollectionExtensions
                 managementOptions.SerializerOptions.Converters.Add(new ThreadDumpJsonConverter());
             }
         });
+
         services.TryAddSingleton<EventPipeThreadDumper>();
 
         return services;

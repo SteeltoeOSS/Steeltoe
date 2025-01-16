@@ -211,6 +211,7 @@ public sealed class ActuatorsHostBuilderTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync();
+
         responseText.Should().Be("""
             {"status":"UNKNOWN","groups":["liveness","readiness"]}
             """);
@@ -275,6 +276,7 @@ public sealed class ActuatorsHostBuilderTest
         livenessResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string livenessResponseText = await livenessResponse.Content.ReadAsStringAsync();
+
         livenessResponseText.Should().Be("""
             {"status":"UP","groups":["liveness","readiness"],"components":{"liveness":{"status":"UP"}}}
             """);
@@ -283,6 +285,7 @@ public sealed class ActuatorsHostBuilderTest
         readinessResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string readinessResponseText = await readinessResponse.Content.ReadAsStringAsync();
+
         readinessResponseText.Should().Be("""
             {"status":"UP","groups":["liveness","readiness"],"components":{"readiness":{"status":"UP"}}}
             """);

@@ -483,7 +483,6 @@ Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>
 Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>.InvokeAsync(TArgument argument, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>!
 Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>.Options.get -> Steeltoe.Management.Configuration.EndpointOptions!
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ActuatorVersionFromRequest.get -> Steeltoe.Management.Endpoint.MediaTypeVersion?
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointHandler.get -> Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>!
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointMiddleware(Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>! endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Configuration.ManagementOptions!>! managementOptionsMonitor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointOptions.get -> Steeltoe.Management.Configuration.EndpointOptions!

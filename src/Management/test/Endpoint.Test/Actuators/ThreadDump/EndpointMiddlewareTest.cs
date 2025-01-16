@@ -21,7 +21,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:threaddump:enabled"] = "true",
-        ["management:endpoints:actuator:exposure:include:0"] = "threaddump",
+        ["management:endpoints:actuator:exposure:include:0"] = "threaddump"
     };
 
     [Fact]
