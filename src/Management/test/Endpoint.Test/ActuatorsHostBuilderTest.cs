@@ -194,6 +194,7 @@ public sealed class ActuatorsHostBuilderTest
             { "Management:Endpoints:Health:ShowDetails", "Always" },
             { "Management:Endpoints:Health:DiskSpace:Enabled", "false" },
             { "Management:Endpoints:Health:Liveness:Enabled", "false" },
+            { "Management:Endpoints:Health:Ping:Enabled", "false" },
             { "Management:Endpoints:Health:Readiness:Enabled", "false" }
         };
 

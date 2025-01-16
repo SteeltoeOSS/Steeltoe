@@ -76,7 +76,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         Assert.NotNull(aggregator);
 
         IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
-        Assert.Equal(3, contributors.Count());
+        Assert.Equal(4, contributors.Count());
 
         var availability = serviceProvider.GetService<ApplicationAvailability>();
         Assert.NotNull(availability);

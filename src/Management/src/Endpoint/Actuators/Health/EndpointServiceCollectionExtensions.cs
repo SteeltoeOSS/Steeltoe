@@ -72,6 +72,9 @@ public static class EndpointServiceCollectionExtensions
         services.ConfigureOptionsWithChangeTokenSource<DiskSpaceContributorOptions, ConfigureDiskSpaceContributorOptions>();
         AddHealthContributor<DiskSpaceContributor>(services);
 
+        services.ConfigureOptionsWithChangeTokenSource<PingContributorOptions, ConfigurePingContributorOptions>();
+        AddHealthContributor<PingContributor>(services);
+
         services.TryAddSingleton<ApplicationAvailability>();
         services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, AvailabilityStartupFilter>());
 
