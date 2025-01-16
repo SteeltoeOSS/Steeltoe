@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Management.Endpoint.Configuration;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Loggers;
@@ -103,7 +102,7 @@ internal sealed class LoggersEndpointMiddleware(
             }
             else
             {
-                context.HandleContentNegotiation(_logger);
+                context.Response.Headers.Append("Content-Type", ContentType);
                 JsonSerializerOptions options = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
                 await JsonSerializer.SerializeAsync(context.Response.Body, result, options, cancellationToken);
             }
