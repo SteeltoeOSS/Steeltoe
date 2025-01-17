@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
@@ -18,6 +19,8 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Loggers;
 
 public sealed class EndpointMiddlewareTest : BaseTest
 {
+    private static readonly MediaTypeHeaderValue ContentType = MediaTypeHeaderValue.Parse("application/vnd.spring-boot.actuator.v3+json");
+
     private static readonly Dictionary<string, string?> AppSettings = new()
     {
         ["Logging:LogLevel:Default"] = "Warning",
@@ -62,7 +65,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         await host.StartAsync();
 
         using HttpClient client = host.GetTestClient();
-        HttpContent content = new StringContent("{\"configuredLevel\":\"BadData\"}");
+        HttpContent content = new StringContent("{\"configuredLevel\":\"BadData\"}", ContentType);
         HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -82,8 +85,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         await host.StartAsync();
 
         using HttpClient client = host.GetTestClient();
-        HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}");
-
+        HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}", ContentType);
         HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -113,7 +115,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         await host.StartAsync();
 
         using HttpClient client = host.GetTestClient();
-        HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}");
+        HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}", ContentType);
         HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/loggers/Default"), content);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -138,7 +140,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         await host.StartAsync();
 
         using HttpClient client = host.GetTestClient();
-        HttpContent content = new StringContent("{\"configuredLevel\":\"TRACE\"}");
+        HttpContent content = new StringContent("{\"configuredLevel\":\"TRACE\"}", ContentType);
         HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Steeltoe"), content);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
