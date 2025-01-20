@@ -27,7 +27,10 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         get
         {
             List<Type> endpointOptionsTypes = typeof(ConfigureEndpointOptions<>).Assembly.GetTypes()
-                .Where(type => type.IsAssignableTo(typeof(EndpointOptions)) && type != typeof(CloudFoundryEndpointOptions)).ToList();
+                .Where(type => type.IsAssignableTo(typeof(EndpointOptions)) && type != typeof(CloudFoundryEndpointOptions))
+                // TODO: Revert temporary workaround for duplicate RouteMappingsEndpointOptions types.
+                .Where(type => type.FullName != "Steeltoe.Management.Endpoint.Actuators.RouteMappings.RouteMappingsEndpointOptions")
+                .ToList();
 
             TheoryData<RegistrationMode, Type> theoryData = [];
 

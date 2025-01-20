@@ -14,7 +14,7 @@ using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
-using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
+using Steeltoe.Management.Endpoint.Actuators.RouteMappingsNew;
 using Steeltoe.Management.Endpoint.Actuators.Services;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 

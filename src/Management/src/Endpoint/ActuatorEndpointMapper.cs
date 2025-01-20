@@ -52,7 +52,11 @@ internal sealed class ActuatorEndpointMapper
 
                 if (allowedVerbs.Count > 0)
                 {
+                    // Note: We COULD make actuator endpoints visible in API Explorer by casting the `pipeline` parameter to Delegate,
+                    // as explained at https://khalidabuhakmeh.com/fix-missing-openapi-elements-from-aspnet-core-minimal-api-apps.
+                    // We currently don't, because their exposure in OpenAPI is likely undesired in apps. They will show up in the mappings actuator.
                     IEndpointConventionBuilder endpointConventionBuilder = endpointRouteBuilder.MapMethods(requestPath, allowedVerbs, pipeline);
+                    endpointConventionBuilder.ExcludeFromDescription();
 
                     foreach (Action<IEndpointConventionBuilder> configureAction in _conventionOptionsMonitor.CurrentValue.ConfigureActions)
                     {

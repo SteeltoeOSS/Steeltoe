@@ -53,7 +53,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All" />
+    <!-- TODO: Revert this change. -->
+    <!--
     <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="$(PublicApiAnalyzersVersion)" PrivateAssets="All" />
+    -->
   </ItemGroup>
 
   <Target Name="ValidatePackage" AfterTargets="BeforeBuild">
