@@ -67,7 +67,7 @@ internal sealed class PermissionsProvider
 
         try
         {
-            _logger.LogDebug("GetPermissionsAsync({Uri}, {AccessToken})", checkPermissionsUri, SecurityUtilities.SanitizeInput(accessToken));
+            _logger.LogDebug("GetPermissionsAsync({Uri})", checkPermissionsUri);
             using HttpClient httpClient = CreateHttpClient();
             using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
