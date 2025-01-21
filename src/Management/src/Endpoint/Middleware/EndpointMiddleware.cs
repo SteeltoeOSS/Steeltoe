@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Middleware;
 
 public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddleware
 {
-    protected const string ContentType = "application/vnd.spring-boot.actuator.v3+json";
+    private protected const string ContentType = "application/vnd.spring-boot.actuator.v3+json";
     private readonly ILogger _logger;
     protected IOptionsMonitor<ManagementOptions> ManagementOptionsMonitor { get; }
     protected IEndpointHandler<TArgument, TResult> EndpointHandler { get; }

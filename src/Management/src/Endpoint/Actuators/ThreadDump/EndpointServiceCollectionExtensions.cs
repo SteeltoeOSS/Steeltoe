@@ -46,7 +46,7 @@ public static class EndpointServiceCollectionExtensions
 
         services.PostConfigure<ManagementOptions>(managementOptions =>
         {
-            if (!managementOptions.SerializerOptions.Converters.Any(converter => converter is ThreadDumpJsonConverter))
+            if (!managementOptions.SerializerOptions.Converters.OfType<ThreadDumpJsonConverter>().Any())
             {
                 managementOptions.SerializerOptions.Converters.Add(new ThreadDumpJsonConverter());
             }

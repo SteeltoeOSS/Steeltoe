@@ -60,7 +60,7 @@ public static class EndpointServiceCollectionExtensions
     {
         services.PostConfigure<ManagementOptions>(managementOptions =>
         {
-            if (!managementOptions.SerializerOptions.Converters.Any(converter => converter is HealthConverter))
+            if (!managementOptions.SerializerOptions.Converters.OfType<HealthConverter>().Any())
             {
                 managementOptions.SerializerOptions.Converters.Add(new HealthConverter());
             }

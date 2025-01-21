@@ -103,6 +103,7 @@ internal sealed class LoggersEndpointMiddleware(
             else
             {
                 context.Response.Headers.Append("Content-Type", ContentType);
+
                 JsonSerializerOptions options = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
                 await JsonSerializer.SerializeAsync(context.Response.Body, result, options, cancellationToken);
             }
