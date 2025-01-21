@@ -123,7 +123,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         HypermediaEndpointOptions endpointOptions = GetOptionsFromSettings<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
         ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions, ConfigureManagementOptions>().CurrentValue;
         Assert.True(endpointOptions.RequiresExactMatch());
-        Assert.Equal("/actuator", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
+        Assert.Equal("/actuator", endpointOptions.GetPathMatchPattern(managementOptions.Path));
         Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 }

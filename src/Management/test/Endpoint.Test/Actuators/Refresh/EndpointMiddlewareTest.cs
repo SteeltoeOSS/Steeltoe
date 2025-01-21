@@ -117,11 +117,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
         Assert.True(endpointOptions.RequiresExactMatch());
-        Assert.Equal("/actuator/refresh", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
-
-        Assert.Equal("/cloudfoundryapplication/refresh",
-            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
-
+        Assert.Equal("/actuator/refresh", endpointOptions.GetPathMatchPattern(managementOptions.Path));
+        Assert.Equal("/cloudfoundryapplication/refresh", endpointOptions.GetPathMatchPattern(ConfigureManagementOptions.DefaultCloudFoundryPath));
         Assert.Contains("Post", endpointOptions.AllowedVerbs);
     }
 

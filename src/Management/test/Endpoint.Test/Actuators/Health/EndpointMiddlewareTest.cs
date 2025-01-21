@@ -399,11 +399,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
         endpointOptions.RequiresExactMatch().Should().BeFalse();
-        endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path).Should().Be("/actuator/health/{**_}");
-
-        endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath).Should()
-            .Be("/cloudfoundryapplication/health/{**_}");
-
+        endpointOptions.GetPathMatchPattern(managementOptions.Path).Should().Be("/actuator/health/{**_}");
+        endpointOptions.GetPathMatchPattern(ConfigureManagementOptions.DefaultCloudFoundryPath).Should().Be("/cloudfoundryapplication/health/{**_}");
         endpointOptions.AllowedVerbs.Should().ContainSingle("Get");
     }
 }

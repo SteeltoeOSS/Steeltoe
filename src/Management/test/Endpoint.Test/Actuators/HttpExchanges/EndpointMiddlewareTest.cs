@@ -215,11 +215,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
         endpointOptions.RequiresExactMatch().Should().BeTrue();
-        endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path).Should().Be("/actuator/httpexchanges");
-
-        endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath).Should()
-            .Be("/cloudfoundryapplication/httpexchanges");
-
+        endpointOptions.GetPathMatchPattern(managementOptions.Path).Should().Be("/actuator/httpexchanges");
+        endpointOptions.GetPathMatchPattern(ConfigureManagementOptions.DefaultCloudFoundryPath).Should().Be("/cloudfoundryapplication/httpexchanges");
         endpointOptions.AllowedVerbs.Should().Contain(verb => verb == "Get");
     }
 
