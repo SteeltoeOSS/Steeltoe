@@ -91,11 +91,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
         Assert.True(endpointOptions.RequiresExactMatch());
-        Assert.Equal("/actuator/heapdump", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
-
-        Assert.Equal("/cloudfoundryapplication/heapdump",
-            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
-
+        Assert.Equal("/actuator/heapdump", endpointOptions.GetPathMatchPattern(managementOptions.Path));
+        Assert.Equal("/cloudfoundryapplication/heapdump", endpointOptions.GetPathMatchPattern(ConfigureManagementOptions.DefaultCloudFoundryPath));
         Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 

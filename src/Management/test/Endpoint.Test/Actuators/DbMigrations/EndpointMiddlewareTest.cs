@@ -91,7 +91,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
         Assert.True(endpointOptions.RequiresExactMatch());
-        Assert.Equal("/actuator/dbmigrations", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
+        Assert.Equal("/actuator/dbmigrations", endpointOptions.GetPathMatchPattern(managementOptions.Path));
     }
 
     private HttpContext CreateRequest(string method, string path)

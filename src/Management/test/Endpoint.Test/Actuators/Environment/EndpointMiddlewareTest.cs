@@ -246,11 +246,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
         Assert.True(endpointOptions.RequiresExactMatch());
-        Assert.Equal("/actuator/env", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path!));
-
-        Assert.Equal("/cloudfoundryapplication/env",
-            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
-
+        Assert.Equal("/actuator/env", endpointOptions.GetPathMatchPattern(managementOptions.Path));
+        Assert.Equal("/cloudfoundryapplication/env", endpointOptions.GetPathMatchPattern(ConfigureManagementOptions.DefaultCloudFoundryPath));
         Assert.Single(endpointOptions.AllowedVerbs);
         Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }

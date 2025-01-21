@@ -6,7 +6,6 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Configuration;
@@ -37,12 +36,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         HypermediaEndpointOptions endpointOptions = GetOptionsMonitorFromSettings<HypermediaEndpointOptions>().CurrentValue;
-        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
+
         Assert.True(endpointOptions.RequiresExactMatch());
-
-        Assert.Equal("/cloudfoundryapplication",
-            endpointOptions.GetPathMatchPattern(managementOptionsMonitor.CurrentValue, ConfigureManagementOptions.DefaultCloudFoundryPath));
-
+        Assert.Equal("/cloudfoundryapplication", endpointOptions.GetPathMatchPattern(ConfigureManagementOptions.DefaultCloudFoundryPath));
         Assert.Single(endpointOptions.AllowedVerbs);
         Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }

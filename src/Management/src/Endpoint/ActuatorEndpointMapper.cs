@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Configuration;
@@ -100,8 +99,7 @@ internal sealed class ActuatorEndpointMapper
         foreach (IEndpointMiddleware middleware in middlewares)
         {
             RequestDelegate pipeline = createPipeline(middleware);
-            EndpointOptions endpointOptions = middleware.EndpointOptions;
-            string requestPath = endpointOptions.GetPathMatchPattern(_managementOptionsMonitor.CurrentValue, baseRequestPath);
+            string requestPath = middleware.EndpointOptions.GetPathMatchPattern(baseRequestPath);
 
             if (collection.Add(requestPath))
             {

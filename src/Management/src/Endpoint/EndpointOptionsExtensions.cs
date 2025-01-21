@@ -45,10 +45,9 @@ internal static class EndpointOptionsExtensions
         return true;
     }
 
-    public static string GetPathMatchPattern(this EndpointOptions endpointOptions, ManagementOptions managementOptions, string? baseRequestPath)
+    public static string GetPathMatchPattern(this EndpointOptions endpointOptions, string? baseRequestPath)
     {
         ArgumentNullException.ThrowIfNull(endpointOptions);
-        ArgumentNullException.ThrowIfNull(managementOptions);
 
         string? path = baseRequestPath;
 
