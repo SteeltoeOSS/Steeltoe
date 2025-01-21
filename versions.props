@@ -29,6 +29,7 @@
     <SourceLinkGitHubVersion>8.0.*</SourceLinkGitHubVersion>
     <StyleCopVersion>1.2.0-beta.556</StyleCopVersion>
     <SystemCommandLineVersion>2.0.0-beta4.24324.3</SystemCommandLineVersion>
+    <SystemIdentityModelVersion>8.3.0</SystemIdentityModelVersion>
     <SystemSqlClientVersion>4.8.*</SystemSqlClientVersion>
     <SystemTextJsonToolsVersion>9.0.*</SystemTextJsonToolsVersion>
     <TestSdkVersion>17.10.*</TestSdkVersion>

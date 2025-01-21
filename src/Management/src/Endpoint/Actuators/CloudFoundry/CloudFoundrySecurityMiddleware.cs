@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -117,10 +119,21 @@ internal sealed class CloudFoundrySecurityMiddleware
         return string.Empty;
     }
 
-    internal Task<SecurityResult> GetPermissionsAsync(HttpContext context)
+    internal async Task<SecurityResult> GetPermissionsAsync(HttpContext context)
     {
         string accessToken = GetAccessToken(context.Request);
-        return _permissionsProvider.GetPermissionsAsync(accessToken, context.RequestAborted);
+        SecurityResult permissionsResult = await _permissionsProvider.GetPermissionsAsync(accessToken, context.RequestAborted);
+
+        if (permissionsResult.Permissions != EndpointPermissions.None)
+        {
+            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityToken? jwtSecurityToken = jwtSecurityTokenHandler.ReadJwtToken(accessToken);
+            var claimsIdentity = new ClaimsIdentity();
+            claimsIdentity.AddClaims(jwtSecurityToken.Claims);
+            context.User.AddIdentity(claimsIdentity);
+        }
+
+        return permissionsResult;
     }
 
     private EndpointOptions? FindTargetEndpoint(PathString requestPath)
@@ -156,7 +169,7 @@ internal sealed class CloudFoundrySecurityMiddleware
 
     private async Task ReturnErrorAsync(HttpContext context, SecurityResult error)
     {
-        LogError(context, error);
+        _logger.LogError("Actuator Security Error: {Code} - {Message}", error.Code, error.Message);
         context.Response.Headers.Append("Content-Type", "application/json;charset=UTF-8");
 
         // allowing override of 400-level errors is more likely to cause confusion than to be useful
@@ -166,18 +179,5 @@ internal sealed class CloudFoundrySecurityMiddleware
         }
 
         await JsonSerializer.SerializeAsync(context.Response.Body, error, cancellationToken: context.RequestAborted);
-    }
-
-    private void LogError(HttpContext context, SecurityResult error)
-    {
-        _logger.LogError("Actuator Security Error: {Code} - {Message}", error.Code, error.Message);
-
-        if (_logger.IsEnabled(LogLevel.Trace))
-        {
-            foreach (KeyValuePair<string, StringValues> header in context.Request.Headers)
-            {
-                _logger.LogTrace("Header: {Key} - {Value}", header.Key, header.Value);
-            }
-        }
     }
 }

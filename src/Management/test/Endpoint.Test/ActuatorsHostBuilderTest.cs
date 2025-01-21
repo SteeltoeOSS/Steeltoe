@@ -51,6 +51,9 @@ public sealed class ActuatorsHostBuilderTest
     [InlineData(HostBuilderType.WebApplication)]
     public async Task CloudFoundryActuator(HostBuilderType hostBuilderType)
     {
+        const string token =
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3VhYS5jbG91ZC5jb20vb2F1dGgvdG9rZW4iLCJpYXQiOjE3MzcwNjMxNzYsImV4cCI6MTc2ODU5OTE3NiwiYXVkIjoiYWN0dWF0b3IiLCJzdWIiOiJ1c2VyQGVtYWlsLmNvbSIsInNjb3BlIjpbImFjdHVhdG9yLnJlYWQiLCJjbG91ZF9jb250cm9sbGVyLnVzZXIiXSwiRW1haWwiOiJ1c2VyQGVtYWlsLmNvbSIsImNsaWVudF9pZCI6ImFwcHNfbWFuYWdlcl9qcyIsInVzZXJfbmFtZSI6InVzZXJAZW1haWwuY29tIiwidXNlcl9pZCI6InVzZXIifQ.bfCtDFxcWF8Yuie2p89S8_fTuUkAOd3i9M8PyKDV-N0";
+
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", """
             {
                 "cf_api": "https://api.cloud.com",
@@ -71,7 +74,7 @@ public sealed class ActuatorsHostBuilderTest
         var handler = new DelegateToMockHttpClientHandler();
 
         handler.Mock.Expect(HttpMethod.Get, "https://api.cloud.com/v2/apps/fa05c1a9-0fc1-4fbd-bae1-139850dec7a3/permissions")
-            .WithHeaders("Authorization", "bearer test-token").Respond("application/json", """
+            .WithHeaders("Authorization", $"bearer {token}").Respond("application/json", """
                 {
                     "read_sensitive_data": true
                 }
@@ -83,7 +86,7 @@ public sealed class ActuatorsHostBuilderTest
         using HttpClient httpClient = host.GetTestClient();
 
         var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
-        request.Headers.Authorization = AuthenticationHeaderValue.Parse("Bearer test-token");
+        request.Headers.Authorization = AuthenticationHeaderValue.Parse($"bearer {token}");
 
         HttpResponseMessage response = await httpClient.SendAsync(request);
         response.StatusCode.Should().Be(HttpStatusCode.OK);

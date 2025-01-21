@@ -62,7 +62,7 @@ public static class EndpointServiceCollectionExtensions
         services.TryAddSingleton<HttpClientHandlerFactory>();
         services.TryAddSingleton<ValidateCertificatesHttpClientHandlerConfigurer<CloudFoundryEndpointOptions>>();
 
-        IHttpClientBuilder httpClientBuilder = services.AddHttpClient(PermissionsProvider.HttpClientName);
+        IHttpClientBuilder httpClientBuilder = services.AddHttpClient(PermissionsProvider.HttpClientName).RedactLoggedHeaders(["Authorization"]);
 
         httpClientBuilder.ConfigurePrimaryHttpMessageHandler(serviceProvider =>
         {
