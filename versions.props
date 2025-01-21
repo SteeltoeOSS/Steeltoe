@@ -8,6 +8,7 @@
     <AspNetCoreHealthChecksVersion>8.0.*</AspNetCoreHealthChecksVersion>
     <CoverletVersion>6.0.*</CoverletVersion>
     <EntityFrameworkCoreTestVersion>8.0.*</EntityFrameworkCoreTestVersion>
+    <EntityFrameworkCoreMySqlTestVersion>8.0.8</EntityFrameworkCoreMySqlTestVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
     <FluentAssertionsVersion>7.0.*</FluentAssertionsVersion>
     <MicrosoftAzureCosmosVersion>3.41.*</MicrosoftAzureCosmosVersion>
@@ -49,7 +50,6 @@
     <ConsulVersion>1.7.14.*</ConsulVersion>
     <DiagnosticsTracingVersion>3.1.16</DiagnosticsTracingVersion>
     <EntityFrameworkCoreVersion>8.0.*</EntityFrameworkCoreVersion>
-    <EntityFrameworkCoreMySqlVersion>8.0.8</EntityFrameworkCoreMySqlVersion>
     <FoundationalVersion>
       <!--
         Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
