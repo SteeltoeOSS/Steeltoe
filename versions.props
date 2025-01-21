@@ -49,6 +49,7 @@
     <ConsulVersion>1.7.14.*</ConsulVersion>
     <DiagnosticsTracingVersion>3.1.16</DiagnosticsTracingVersion>
     <EntityFrameworkCoreVersion>8.0.*</EntityFrameworkCoreVersion>
+    <EntityFrameworkCoreMySqlVersion>8.0.8</EntityFrameworkCoreMySqlVersion>
     <FoundationalVersion>
       <!--
         Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
