@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 
-internal class PingContributorOptions
+internal sealed class PingContributorOptions
 {
     /// <summary>
     /// Gets or sets a value indicating whether to enable the ping contributor. Default value: true.
