@@ -85,7 +85,7 @@ internal sealed class HypermediaService
             }
             else
             {
-                AddToLinkEntries(baseUrl, links, endpointOptions);
+                AddToLinkEntries(baseUrl, links, endpointOptions, managementOptions);
             }
         }
 
@@ -97,13 +97,18 @@ internal sealed class HypermediaService
         return links;
     }
 
-    private void AddToLinkEntries(string baseUrl, Links links, EndpointOptions endpointOptions)
+    private void AddToLinkEntries(string baseUrl, Links links, EndpointOptions endpointOptions, ManagementOptions managementOptions)
     {
         if (!string.IsNullOrEmpty(endpointOptions.Id))
         {
             if (!links.Entries.ContainsKey(endpointOptions.Id))
             {
-                string linkPath = $"{baseUrl.TrimEnd('/')}/{endpointOptions.Path}";
+                var builder = new UriBuilder(new Uri(baseUrl))
+                {
+                    Path = endpointOptions.GetEndpointPath(managementOptions.Path)
+                };
+
+                string linkPath = builder.Uri.ToString();
                 links.Entries.Add(endpointOptions.Id, new Link(linkPath));
             }
             else

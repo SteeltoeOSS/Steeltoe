@@ -25,6 +25,14 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
             services.AddCloudFoundryActuator();
         };
 
+        testContext.AdditionalConfiguration = configuration =>
+        {
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "management:endpoints:path", "foobar" }
+            });
+        };
+
         var handler = testContext.GetRequiredService<ICloudFoundryEndpointHandler>();
 
         Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
@@ -65,7 +73,8 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                { "management:endpoints:enabled", "true" }
+                { "management:endpoints:enabled", "true" },
+                { "management:endpoints:path", "foobar" }
             });
         };
 

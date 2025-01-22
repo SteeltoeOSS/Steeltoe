@@ -13,6 +13,7 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Test;
 
 namespace Steeltoe.Management.Prometheus.Test;
@@ -27,8 +28,11 @@ public sealed class PrometheusExtensionsTest
 
         await using ServiceProvider provider = services.BuildServiceProvider(true);
 
-        var optionsMonitor = provider.GetRequiredService<IOptionsMonitor<PrometheusEndpointOptions>>();
-        optionsMonitor.CurrentValue.Path.Should().Be("prometheus");
+        var managementOptionsMonitor = provider.GetRequiredService<IOptionsMonitor<ManagementOptions>>();
+        managementOptionsMonitor.CurrentValue.Path.Should().Be("/actuator");
+
+        var endpointOptionsMonitor = provider.GetRequiredService<IOptionsMonitor<PrometheusEndpointOptions>>();
+        endpointOptionsMonitor.CurrentValue.Path.Should().Be("prometheus");
 
         IEnumerable<IStartupFilter> startupFilters = provider.GetServices<IStartupFilter>();
         startupFilters.Should().ContainSingle(filter => filter is PrometheusActuatorStartupFilter);
