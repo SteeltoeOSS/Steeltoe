@@ -48,14 +48,12 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
 
         _logger.LogInformation("Registering with Spring Boot Admin Server at {Url}", clientOptions.Url);
 
-        if (clientOptions.BasePath == null || clientOptions.ApplicationName == null)
+        if (clientOptions.ApplicationName == null || !Uri.TryCreate(clientOptions.BasePath, UriKind.Absolute, out Uri? baseUri))
         {
             throw new InvalidOperationException("BasePath and ApplicationName must be provided in options.");
         }
 
-        string basePath = clientOptions.BasePath.TrimEnd('/');
-        Application app = CreateApplication(basePath, clientOptions.ApplicationName);
-
+        Application app = CreateApplication(baseUri, clientOptions.ApplicationName);
         Merge(app.Metadata, clientOptions.Metadata);
 
         using HttpClient httpClient = CreateHttpClient(clientOptions.ConnectionTimeout);
@@ -83,21 +81,27 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         }
     }
 
-    private Application CreateApplication(string basePath, string applicationName)
+    private Application CreateApplication(Uri baseUri, string applicationName)
     {
         ManagementOptions managementOptions = _managementOptionsMonitor.CurrentValue;
         HealthEndpointOptions healthOptions = _healthOptionsMonitor.CurrentValue;
 
-        var healthUrl = new Uri($"{basePath}{managementOptions.Path}/{healthOptions.Path}");
-        var managementUrl = new Uri($"{basePath}{managementOptions.Path}");
-        var serviceUrl = new Uri($"{basePath}/");
+        var healthUriBuilder = new UriBuilder(baseUri)
+        {
+            Path = healthOptions.GetEndpointPath(managementOptions.Path)
+        };
+
+        var managementUriBuilder = new UriBuilder(baseUri)
+        {
+            Path = managementOptions.Path
+        };
 
         var metadata = new Dictionary<string, object>
         {
             { "startup", DateTime.UtcNow }
         };
 
-        return new Application(applicationName, managementUrl, healthUrl, serviceUrl, metadata);
+        return new Application(applicationName, managementUriBuilder.Uri, healthUriBuilder.Uri, baseUri, metadata);
     }
 
     private static void Merge<TKey, TValue>(IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from)

@@ -45,18 +45,11 @@ internal static class EndpointOptionsExtensions
         return true;
     }
 
-    public static string GetPathMatchPattern(this EndpointOptions endpointOptions, string? baseRequestPath)
+    public static string GetPathMatchPattern(this EndpointOptions endpointOptions, string? basePath)
     {
         ArgumentNullException.ThrowIfNull(endpointOptions);
 
-        string? path = baseRequestPath;
-
-        if (path == null || (!path.EndsWith('/') && !string.IsNullOrEmpty(endpointOptions.Path)))
-        {
-            path += '/';
-        }
-
-        path += endpointOptions.Path;
+        string path = GetEndpointPath(endpointOptions, basePath);
 
         if (!endpointOptions.RequiresExactMatch())
         {
@@ -69,5 +62,20 @@ internal static class EndpointOptionsExtensions
         }
 
         return path;
+    }
+
+    public static string GetEndpointPath(this EndpointOptions endpointOptions, string? basePath)
+    {
+        ArgumentNullException.ThrowIfNull(endpointOptions);
+
+        string baseSegment = basePath == null ? string.Empty : basePath.Trim('/');
+        string endpointSegment = endpointOptions.Path == null ? string.Empty : endpointOptions.Path.Trim('/');
+
+        if (baseSegment.Length == 0)
+        {
+            return endpointSegment.Length == 0 ? "/" : $"/{endpointSegment}";
+        }
+
+        return endpointSegment.Length == 0 ? $"/{baseSegment}" : $"/{baseSegment}/{endpointSegment}";
     }
 }

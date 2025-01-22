@@ -141,23 +141,18 @@ internal sealed class CloudFoundrySecurityMiddleware
         foreach (EndpointOptions endpointOptions in _endpointOptionsMonitorProviderArray.Select(provider => provider.Get())
             .Where(options => options is not HypermediaEndpointOptions))
         {
-            string basePath = ConfigureManagementOptions.DefaultCloudFoundryPath;
-
-            if (!string.IsNullOrEmpty(endpointOptions.Path))
-            {
-                basePath += '/';
-            }
+            string endpointPath = endpointOptions.GetEndpointPath(ConfigureManagementOptions.DefaultCloudFoundryPath);
 
             if (endpointOptions is CloudFoundryEndpointOptions)
             {
-                if (requestPath.Equals(basePath))
+                if (requestPath == endpointPath)
                 {
                     return endpointOptions;
                 }
             }
             else
             {
-                if (requestPath.StartsWithSegments(basePath + endpointOptions.Path))
+                if (requestPath.StartsWithSegments(endpointPath))
                 {
                     return endpointOptions;
                 }

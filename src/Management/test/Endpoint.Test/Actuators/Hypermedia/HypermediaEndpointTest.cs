@@ -24,6 +24,14 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
             services.AddInfoActuator();
         };
 
+        testContext.AdditionalConfiguration = configuration =>
+        {
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "management:endpoints:path", "foobar" }
+            });
+        };
+
         var handler = testContext.GetRequiredService<IActuatorEndpointHandler>();
 
         Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
