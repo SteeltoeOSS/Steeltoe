@@ -2,7 +2,6 @@
 abstract Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.InvokeEndpointHandlerAsync(Microsoft.AspNetCore.Http.HttpContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>!
 const Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.LivenessKey = "Liveness" -> string!
 const Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.ReadinessKey = "Readiness" -> string!
-const Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ContentType = "application/vnd.spring-boot.actuator.v3+json" -> string!
 override Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityState.ToString() -> string!
 override Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.RequiresExactMatch() -> bool
 override Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConverter.Read(ref System.Text.Json.Utf8JsonReader reader, System.Type! typeToConvert, System.Text.Json.JsonSerializerOptions! options) -> System.DateTime
@@ -155,9 +154,9 @@ Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointRequest.GroupName.ge
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointRequest.HasClaim.get -> bool
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointRequest.HealthEndpointRequest(string! groupName, bool hasClaim) -> void
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse
+Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Components.get -> System.Collections.Generic.IDictionary<string!, object!>!
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Description.get -> string?
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Description.init -> void
-Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Details.get -> System.Collections.Generic.IDictionary<string!, object!>!
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Exists.get -> bool
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Exists.init -> void
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Groups.get -> System.Collections.Generic.IList<string!>!
@@ -505,5 +504,6 @@ Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.get -> bool
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.set -> void
 virtual Steeltoe.Management.Endpoint.Configuration.ConfigureEndpointOptions<TOptions>.Configure(TOptions! options) -> void
+virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ContentType.get -> string!
 virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ShouldInvoke(Microsoft.AspNetCore.Http.PathString requestPath) -> bool
 virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.WriteResponseAsync(TResult result, Microsoft.AspNetCore.Http.HttpContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!

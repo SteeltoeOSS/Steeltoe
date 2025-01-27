@@ -15,8 +15,8 @@ namespace Steeltoe.Management.Endpoint.Middleware;
 
 public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddleware
 {
-    private protected const string ContentType = "application/vnd.spring-boot.actuator.v3+json";
     private readonly ILogger _logger;
+    protected virtual string ContentType => "application/vnd.spring-boot.actuator.v3+json";
     protected IOptionsMonitor<ManagementOptions> ManagementOptionsMonitor { get; }
     protected IEndpointHandler<TArgument, TResult> EndpointHandler { get; }
 
@@ -59,11 +59,13 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         {
             if (!IsValidContentType(context.Request))
             {
+                _logger.LogWarning("ContentType {RequestContentType} is not supported for this request.", context.Request.ContentType);
                 context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
                 await context.Response.WriteAsync($"Only the '{ContentType}' content type is supported.");
             }
             else if (!IsCompatibleAcceptHeader(context.Request))
             {
+                _logger.LogWarning("Accept value(s) '{AcceptType}' is not supported for this request.", context.Request.Headers.Accept.ToString());
                 context.Response.StatusCode = (int)HttpStatusCode.NotAcceptable;
                 await context.Response.WriteAsync($"Only the '{ContentType}' content type is supported.");
             }
@@ -79,7 +81,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         }
     }
 
-    private static bool IsValidContentType(HttpRequest request)
+    private bool IsValidContentType(HttpRequest request)
     {
         if (request.ContentType == null)
         {
@@ -87,11 +89,10 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         }
 
         // Media types are case-insensitive, according to https://stackoverflow.com/a/9842589.
-        return MediaTypeHeaderValue.TryParse(request.ContentType, out MediaTypeHeaderValue? headerValue) &&
-            headerValue.MediaType.Equals(ContentType, StringComparison.OrdinalIgnoreCase);
+        return MediaTypeHeaderValue.TryParse(request.ContentType, out MediaTypeHeaderValue? headerValue) && headerValue.MatchesMediaType(ContentType);
     }
 
-    private static bool IsCompatibleAcceptHeader(HttpRequest request)
+    private bool IsCompatibleAcceptHeader(HttpRequest request)
     {
         string[] acceptHeaderValues = request.Headers.GetCommaSeparatedValues("Accept");
 

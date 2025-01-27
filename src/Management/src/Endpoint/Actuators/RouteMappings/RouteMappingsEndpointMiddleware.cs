@@ -17,6 +17,8 @@ internal sealed class RouteMappingsEndpointMiddleware(
     IRouteMappingsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
     : EndpointMiddleware<object?, RouteMappingsResponse>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
+    protected override string ContentType { get; } = "application/vnd.spring-boot.actuator.v2+json";
+
     protected override async Task<RouteMappingsResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(null, context.RequestAborted);

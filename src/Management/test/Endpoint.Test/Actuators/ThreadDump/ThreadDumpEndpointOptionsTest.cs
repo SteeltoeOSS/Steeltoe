@@ -25,7 +25,7 @@ public sealed class ThreadDumpEndpointOptionsTest : BaseTest
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:loggers:enabled"] = "false",
-            ["management:endpoints:dump:enabled"] = "true",
+            ["management:endpoints:threaddump:enabled"] = "true",
             ["management:endpoints:cloudfoundry:validateCertificates"] = "true",
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };

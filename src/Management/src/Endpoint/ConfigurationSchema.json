@@ -165,42 +165,6 @@
                 }
               }
             },
-            "Dump": {
-              "type": "object",
-              "properties": {
-                "AllowedVerbs": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
-                },
-                "Duration": {
-                  "type": "integer",
-                  "description": "Gets or sets the duration (in milliseconds) before signaling to stop the capture. Default value: 10."
-                },
-                "Enabled": {
-                  "type": "boolean",
-                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
-                },
-                "Id": {
-                  "type": "string",
-                  "description": "Gets or sets the unique ID of this endpoint."
-                },
-                "Path": {
-                  "type": "string",
-                  "description": "Gets or sets the relative path at which this endpoint is exposed."
-                },
-                "RequiredPermissions": {
-                  "enum": [
-                    "None",
-                    "Restricted",
-                    "Full"
-                  ],
-                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
-                }
-              }
-            },
             "Enabled": {
               "type": "boolean",
               "description": "Gets or sets a value indicating whether management endpoints are enabled. Default value: true."
@@ -314,6 +278,15 @@
                 "Path": {
                   "type": "string",
                   "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "Ping": {
+                  "type": "object",
+                  "properties": {
+                    "Enabled": {
+                      "type": "boolean",
+                      "description": "Gets or sets a value indicating whether to enable the ping contributor. Default value: true."
+                    }
+                  }
                 },
                 "Readiness": {
                   "type": "object",
@@ -778,6 +751,42 @@
             "SslEnabled": {
               "type": "boolean",
               "description": "Gets or sets a value indicating whether 'Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Port' applies to HTTP or HTTPS requests. Default value: false."
+            },
+            "ThreadDump": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
+                },
+                "Duration": {
+                  "type": "integer",
+                  "description": "Gets or sets the duration (in milliseconds) before signaling to stop the capture. Default value: 10."
+                },
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
+                },
+                "Id": {
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
+                },
+                "Path": {
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                }
+              }
             },
             "UseStatusCodeFromResponse": {
               "type": "boolean",

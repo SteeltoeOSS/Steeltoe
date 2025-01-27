@@ -129,7 +129,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         string json = await response.Content.ReadAsStringAsync();
         json.Should().NotBeNull();
 
-        // {"status":"UP","components":{"diskSpace":{"status":"UP","details":{"total":1003588939776,"free":597722619904,"threshold":10485760,"status":"UP"}},"readiness":{"status":"UNKNOWN","description":"Failed to get current availability state","details":{}}}}
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
@@ -167,10 +166,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
         health.Should().ContainKey("components");
-        var details = JsonSerializer.Deserialize<Dictionary<string, object>>(health!["components"].ToString()!);
-        details.Should().ContainKey("diskSpace");
-        details.Should().ContainKey("test-registration");
-        details!["test-registration"].ToString().Should().Contain("\"tags\":[\"test-tag-1\",\"test-tag-2\"]");
+        var components = JsonSerializer.Deserialize<Dictionary<string, object>>(health!["components"].ToString()!);
+        components.Should().ContainKey("diskSpace");
+        components.Should().ContainKey("test-registration");
+        components!["test-registration"].ToString().Should().Contain("\"tags\":[\"test-tag-1\",\"test-tag-2\"]");
     }
 
     [Fact]

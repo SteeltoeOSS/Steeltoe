@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Extensions;
-using Steeltoe.Management.Endpoint.Actuators.Health;
+using Steeltoe.Common.Json;
 using Steeltoe.Management.Endpoint.Actuators.Metrics;
 using Steeltoe.Management.Endpoint.Actuators.Metrics.SystemDiagnosticsMetrics;
 
@@ -20,12 +20,20 @@ public abstract class BaseTest : IDisposable
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
-        Converters =
-        {
-            new HealthConverter()
-        }
+        PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate
     };
+
+    protected BaseTest()
+    {
+        try
+        {
+            SerializerOptions.AddJsonIgnoreEmptyCollection();
+        }
+        catch (InvalidOperationException)
+        {
+            // AddJsonIgnoreEmptyCollection throws if called more than once, but is called here because SerializerOptions is shared.
+        }
+    }
 
     public void Dispose()
     {
