@@ -314,7 +314,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         result.Components.Keys.Should().HaveCount(2);
         result.Components.Should().ContainKey("alwaysUp");
         result.Components.Should().ContainKey("privatememory");
-        result.Groups.Should().HaveCount(1);
+        result.Groups.Should().HaveCount(3);
     }
 
     private static HealthEndpointRequest GetHealthRequest()

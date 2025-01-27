@@ -214,7 +214,7 @@ public sealed class ActuatorsHostBuilderTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync();
-        responseText.Should().Be("""{"status":"UNKNOWN"}""");
+        responseText.Should().Be("""{"status":"UNKNOWN","groups":["liveness","readiness"]}""");
     }
 
     [Theory]
