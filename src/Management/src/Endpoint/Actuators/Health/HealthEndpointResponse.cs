@@ -23,7 +23,7 @@ public class HealthEndpointResponse
     public string? Description { get; init; }
 
     /// <summary>
-    /// Gets details of the health check.
+    /// Gets the individual health check components, including their details.
     /// </summary>
     [JsonIgnoreEmptyCollection]
     public IDictionary<string, object> Components { get; } = new Dictionary<string, object>();
