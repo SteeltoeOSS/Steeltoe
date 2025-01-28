@@ -51,6 +51,9 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Equal("""{"security_error":"Application id is not available"}""", await response.Content.ReadAsStringAsync());
+        Assert.NotNull(response.Content.Headers.ContentType);
+        Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
     }
 
     [Fact]
@@ -82,6 +85,9 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Equal("""{"security_error":"Cloud controller URL is not available"}""", await response.Content.ReadAsStringAsync());
+        Assert.NotNull(response.Content.Headers.ContentType);
+        Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
     }
 
     [Fact]
@@ -114,6 +120,9 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/barfoo"));
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Equal("""{"security_error":"Endpoint is not available"}""", await response.Content.ReadAsStringAsync());
+        Assert.NotNull(response.Content.Headers.ContentType);
+        Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
     }
 
     [Fact]
@@ -146,10 +155,13 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""", await response.Content.ReadAsStringAsync());
+        Assert.NotNull(response.Content.Headers.ContentType);
+        Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_UseStatusCodeFromResponseFalse_ReturnsOk()
+    public async Task CloudFoundrySecurityMiddleware_UseStatusCodeFromResponseFalse_ReturnsOkAndContent()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -177,6 +189,9 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("""{"security_error":"Application id is not available"}""", await response.Content.ReadAsStringAsync());
+        Assert.NotNull(response.Content.Headers.ContentType);
+        Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
     }
 
     [Fact]
@@ -210,6 +225,9 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""", await response.Content.ReadAsStringAsync());
+        Assert.NotNull(response.Content.Headers.ContentType);
+        Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
     }
 
     [Fact]
@@ -243,6 +261,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/info"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(response.Content.Headers.ContentType);
+        Assert.NotEqual("application/json", response.Content.Headers.ContentType.MediaType);
     }
 
     [Fact]
@@ -282,6 +302,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(response.Content.Headers.ContentType);
+        Assert.NotEqual("application/json", response.Content.Headers.ContentType.MediaType);
     }
 
     [Fact]
@@ -313,9 +335,15 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication"));
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode); // We expect the authorization to fail, but the FindEndpoint logic to work.
+        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""", await response.Content.ReadAsStringAsync());
+        Assert.NotNull(response.Content.Headers.ContentType);
+        Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
 
         HttpResponseMessage response2 = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.Unauthorized, response2.StatusCode);
+        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""", await response2.Content.ReadAsStringAsync());
+        Assert.NotNull(response2.Content.Headers.ContentType);
+        Assert.Equal("application/json", response2.Content.Headers.ContentType.MediaType);
     }
 
     [Fact]

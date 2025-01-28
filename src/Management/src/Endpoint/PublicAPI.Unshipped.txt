@@ -504,6 +504,5 @@ Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.get -> bool
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.set -> void
 virtual Steeltoe.Management.Endpoint.Configuration.ConfigureEndpointOptions<TOptions>.Configure(TOptions! options) -> void
-virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ContentType.get -> string!
 virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ShouldInvoke(Microsoft.AspNetCore.Http.PathString requestPath) -> bool
 virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.WriteResponseAsync(TResult result, Microsoft.AspNetCore.Http.HttpContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!

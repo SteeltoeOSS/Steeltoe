@@ -214,6 +214,8 @@ public sealed class ActuatorsHostBuilderTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync();
+
+        // TODO: these groups should NOT be populated since liveness/readiness are disabled, but there's a deficiency in the code right now
         responseText.Should().Be("""{"status":"UNKNOWN","groups":["liveness","readiness"]}""");
     }
 

@@ -16,24 +16,12 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public abstract class BaseTest : IDisposable
 {
-    protected static JsonSerializerOptions SerializerOptions { get; } = new()
+    protected static JsonSerializerOptions SerializerOptions { get; } = new JsonSerializerOptions
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate
-    };
-
-    protected BaseTest()
-    {
-        try
-        {
-            SerializerOptions.AddJsonIgnoreEmptyCollection();
-        }
-        catch (InvalidOperationException)
-        {
-            // AddJsonIgnoreEmptyCollection throws if called more than once, but is called here because SerializerOptions is shared.
-        }
-    }
+    }.AddJsonIgnoreEmptyCollection();
 
     public void Dispose()
     {

@@ -34,7 +34,7 @@ public sealed class HealthTest : BaseTest
     }
 
     [Fact]
-    public void Serialize_WithDetails_ReturnsExpected()
+    public void Serialize_WithComponents_ReturnsExpected()
     {
         var health = new HealthEndpointResponse
         {

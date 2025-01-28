@@ -44,7 +44,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
         health.Should().NotContainKey("components");
-        health.Should().NotContainKey("details");
     }
 
     [Fact]
@@ -73,7 +72,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
         health.Should().NotContainKey("components");
-        health.Should().NotContainKey("details");
     }
 
     [Fact]
@@ -132,7 +130,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
-        health.Should().NotContainKey("details");
         health.Should().ContainKey("components");
         string componentString = health!["components"].ToString() ?? string.Empty;
         componentString.Should().Contain("diskSpace");
