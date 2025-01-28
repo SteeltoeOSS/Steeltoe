@@ -59,13 +59,13 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         {
             if (!IsValidContentType(context.Request))
             {
-                _logger.LogWarning("ContentType {RequestContentType} is not supported for this request.", context.Request.ContentType);
+                _logger.LogDebug("Content-Type header '{RequestContentType}' is not supported for this request.", context.Request.ContentType);
                 context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
                 await context.Response.WriteAsync($"Only the '{ContentType}' content type is supported.");
             }
             else if (!IsCompatibleAcceptHeader(context.Request))
             {
-                _logger.LogWarning("Accept value(s) '{AcceptType}' is not supported for this request.", context.Request.Headers.Accept.ToString());
+                _logger.LogDebug("Accept header '{AcceptType}' is not supported for this request.", context.Request.Headers.Accept.ToString());
                 context.Response.StatusCode = (int)HttpStatusCode.NotAcceptable;
                 await context.Response.WriteAsync($"Only the '{ContentType}' content type is supported.");
             }
