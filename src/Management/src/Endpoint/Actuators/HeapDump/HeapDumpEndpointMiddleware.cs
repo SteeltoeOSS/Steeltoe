@@ -16,6 +16,7 @@ internal sealed class HeapDumpEndpointMiddleware(
     : EndpointMiddleware<object?, string?>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
     private readonly ILogger<HeapDumpEndpointMiddleware> _logger = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
+    private protected override string ContentType { get; } = "application/octet-stream";
 
     protected override async Task<string?> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {

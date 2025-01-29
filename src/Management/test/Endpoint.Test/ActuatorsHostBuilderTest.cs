@@ -215,7 +215,7 @@ public sealed class ActuatorsHostBuilderTest
 
         string responseText = await response.Content.ReadAsStringAsync();
 
-        // TODO: these groups should NOT be populated since liveness/readiness are disabled, but there's a deficiency in the code right now
+        // These groups should NOT be populated since liveness/readiness are disabled, but there's a deficiency in the code right now
         responseText.Should().Be("""{"status":"UNKNOWN","groups":["liveness","readiness"]}""");
     }
 

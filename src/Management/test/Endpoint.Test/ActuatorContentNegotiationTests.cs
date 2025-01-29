@@ -9,20 +9,21 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.All;
+using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
 public sealed class ActuatorContentNegotiationTests
 {
-    private static readonly Dictionary<string, string?> AppSettings = new()
-    {
-        ["Management:Endpoints:Actuator:Exposure:Include:0"] = "*"
-    };
-
     private const string ActuatorV1 = "application/vnd.spring-boot.actuator.v1+json";
     private const string ActuatorV2 = "application/vnd.spring-boot.actuator.v2+json";
     private const string ActuatorV3 = "application/vnd.spring-boot.actuator.v3+json";
     private const string SpringBootStandardAccept = $"{ActuatorV2},{ActuatorV1},application/json";
+
+    private static readonly Dictionary<string, string?> AppSettings = new()
+    {
+        ["Management:Endpoints:Actuator:Exposure:Include:0"] = "*"
+    };
 
     // AcceptHeader values captured from Spring Boot Admin 3.4.1
     [InlineData("", $"{ActuatorV3},{SpringBootStandardAccept}", ActuatorV3)]
@@ -81,7 +82,7 @@ public sealed class ActuatorContentNegotiationTests
         var requestMessage = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri($"http://localhost/actuator/loggers/Microsoft"),
+            RequestUri = new Uri("http://localhost/actuator/loggers/Microsoft"),
             Content = new StringContent("""{"configuredLevel":"ERROR"}""", MediaTypeHeaderValue.Parse("application/json"))
         };
 
@@ -97,4 +98,49 @@ public sealed class ActuatorContentNegotiationTests
         response.Content.Headers.ContentType.Should().BeNull();
     }
 
+    [Fact]
+    public async Task Cannot_use_incompatible_accept_header_in_heap_dump_actuator()
+    {
+        var appSettings = new Dictionary<string, string?>(AppSettings)
+        {
+            ["management:endpoints:heapDump:heapDumpType"] = "gcdump"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddHeapDumpActuator();
+
+        await using WebApplication host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/heapdump"));
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        HttpResponseMessage response = await client.SendAsync(request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
+    }
+
+    [Fact]
+    public async Task Can_use_compatible_accept_header_in_heap_dump_actuator()
+    {
+        var appSettings = new Dictionary<string, string?>(AppSettings)
+        {
+            ["management:endpoints:heapDump:heapDumpType"] = "gcdump"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddHeapDumpActuator();
+
+        await using WebApplication host = builder.Build();
+        await host.StartAsync();
+
+        using HttpClient client = host.GetTestClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/heapdump"));
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/octet-stream"));
+        HttpResponseMessage response = await client.SendAsync(request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
 }

@@ -9,7 +9,7 @@ using Steeltoe.Common.Json;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health;
 
-public class HealthEndpointResponse
+public sealed class HealthEndpointResponse
 {
     /// <summary>
     /// Gets the status of the health check.

@@ -16,11 +16,11 @@ namespace Steeltoe.Management.Endpoint.Middleware;
 public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddleware
 {
     private readonly ILogger _logger;
-    private protected virtual string ContentType => "application/vnd.spring-boot.actuator.v3+json";
     protected IOptionsMonitor<ManagementOptions> ManagementOptionsMonitor { get; }
     protected IEndpointHandler<TArgument, TResult> EndpointHandler { get; }
 
     public EndpointOptions EndpointOptions => EndpointHandler.Options;
+    private protected virtual string ContentType => "application/vnd.spring-boot.actuator.v3+json";
 
     protected EndpointMiddleware(IEndpointHandler<TArgument, TResult> endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)
@@ -118,12 +118,12 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        context.Response.Headers.Append("Content-Type", ContentType);
-
         if (Equals(result, null))
         {
             return;
         }
+
+        context.Response.Headers.Append("Content-Type", ContentType);
 
         JsonSerializerOptions options = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
         await JsonSerializer.SerializeAsync(context.Response.Body, result, options, cancellationToken);
