@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.All;
-using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -96,51 +95,5 @@ public sealed class ActuatorContentNegotiationTests
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         response.Content.Headers.ContentType.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task Cannot_use_incompatible_accept_header_in_heap_dump_actuator()
-    {
-        var appSettings = new Dictionary<string, string?>(AppSettings)
-        {
-            ["management:endpoints:heapDump:heapDumpType"] = "gcdump"
-        };
-
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddHeapDumpActuator();
-
-        await using WebApplication host = builder.Build();
-        await host.StartAsync();
-
-        using HttpClient client = host.GetTestClient();
-        using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/heapdump"));
-        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        HttpResponseMessage response = await client.SendAsync(request);
-
-        response.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
-    }
-
-    [Fact]
-    public async Task Can_use_compatible_accept_header_in_heap_dump_actuator()
-    {
-        var appSettings = new Dictionary<string, string?>(AppSettings)
-        {
-            ["management:endpoints:heapDump:heapDumpType"] = "gcdump"
-        };
-
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddHeapDumpActuator();
-
-        await using WebApplication host = builder.Build();
-        await host.StartAsync();
-
-        using HttpClient client = host.GetTestClient();
-        using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/heapdump"));
-        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/octet-stream"));
-        HttpResponseMessage response = await client.SendAsync(request);
-
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }

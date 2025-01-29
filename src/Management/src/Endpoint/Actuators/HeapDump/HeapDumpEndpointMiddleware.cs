@@ -33,7 +33,7 @@ internal sealed class HeapDumpEndpointMiddleware(
             return;
         }
 
-        context.Response.ContentType = "application/octet-stream";
+        context.Response.ContentType = ContentType;
         context.Response.Headers.Append("Content-Disposition", $"attachment; filename=\"{Path.GetFileName(fileName)}.gz\"");
         context.Response.StatusCode = StatusCodes.Status200OK;
 
