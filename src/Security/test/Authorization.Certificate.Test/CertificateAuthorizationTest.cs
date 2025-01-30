@@ -32,7 +32,7 @@ public sealed class CertificateAuthorizationTest
     [Fact]
     public async Task CertificateAuth_AcceptsSameOrg()
     {
-        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrganization}");
+        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrg}");
         using IHost host = await GetHostBuilder().StartAsync();
         var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         X509Certificate2 certificate = optionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName).Certificate!;
@@ -60,7 +60,7 @@ public sealed class CertificateAuthorizationTest
     [Fact]
     public async Task CertificateAuth_RejectsOrgMismatch()
     {
-        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrganization}");
+        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrg}");
         using IHost host = await GetHostBuilder().StartAsync();
         using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), Certificates.SpaceMatch);
 
@@ -100,7 +100,7 @@ public sealed class CertificateAuthorizationTest
     [Fact]
     public async Task CertificateAuth_AcceptsSameOrg_DiegoCert()
     {
-        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrganization}");
+        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrg}");
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", "not empty");
         using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");

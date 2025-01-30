@@ -1,5 +1,5 @@
 #nullable enable
-const Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationPolicies.SameOrganization = "sameorg" -> string!
+const Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationPolicies.SameOrg = "sameorg" -> string!
 const Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationPolicies.SameSpace = "samespace" -> string!
 static Steeltoe.Security.Authorization.Certificate.CertificateApplicationBuilderExtensions.UseCertificateAuthorization(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
 static Steeltoe.Security.Authorization.Certificate.CertificateApplicationBuilderExtensions.UseCertificateAuthorization(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder, Microsoft.AspNetCore.Builder.ForwardedHeadersOptions! options) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!

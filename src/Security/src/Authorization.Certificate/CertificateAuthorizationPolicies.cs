@@ -8,7 +8,7 @@ namespace Steeltoe.Security.Authorization.Certificate;
 /// Use this class to refer to authorization policies for use with Cloud Foundry style certificates.
 /// <example>
 /// <code><![CDATA[
-/// [Authorize(Policy = CertificateAuthorizationPolicies.SameOrganization)]
+/// [Authorize(Policy = CertificateAuthorizationPolicies.SameOrg)]
 /// [HttpGet]
 /// public string AnyAppInTheOrgCanAccess()
 /// {
@@ -21,9 +21,9 @@ namespace Steeltoe.Security.Authorization.Certificate;
 public static class CertificateAuthorizationPolicies
 {
     /// <summary>
-    /// Restrict access to application instances operating within the same organization.
+    /// Restrict access to application instances operating within the same organization (org).
     /// </summary>
-    public const string SameOrganization = "sameorg";
+    public const string SameOrg = "sameorg";
 
     /// <summary>
     /// Restrict access to application instances operating within the same space.

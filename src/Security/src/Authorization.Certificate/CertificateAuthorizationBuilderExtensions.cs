@@ -69,7 +69,7 @@ public static class CertificateAuthorizationBuilderExtensions
         builder.Services.AddSingleton<IPostConfigureOptions<CertificateAuthenticationOptions>, PostConfigureCertificateAuthenticationOptions>();
         builder.Services.AddSingleton<IAuthorizationHandler, CertificateAuthorizationHandler>();
 
-        builder.AddPolicy(CertificateAuthorizationPolicies.SameOrganization, authorizationPolicyBuilder =>
+        builder.AddPolicy(CertificateAuthorizationPolicies.SameOrg, authorizationPolicyBuilder =>
         {
             authorizationPolicyBuilder.RequireSameOrg();
         }).AddPolicy(CertificateAuthorizationPolicies.SameSpace, authorizationPolicyBuilder =>

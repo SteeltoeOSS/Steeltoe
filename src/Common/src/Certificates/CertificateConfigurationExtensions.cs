@@ -79,8 +79,8 @@ public static class CertificateConfigurationExtensions
     /// <param name="builder">
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
-    /// <param name="organizationId">
-    /// (Optional) A GUID representing an organization, for use with Cloud Foundry certificate-based authorization policy.
+    /// <param name="orgId">
+    /// (Optional) A GUID representing an organization (org), for use with Cloud Foundry certificate-based authorization policy.
     /// </param>
     /// <param name="spaceId">
     /// (Optional) A GUID representing a space, for use with Cloud Foundry certificate-based authorization policy.
@@ -92,17 +92,17 @@ public static class CertificateConfigurationExtensions
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static IConfigurationBuilder AddAppInstanceIdentityCertificate(this IConfigurationBuilder builder, Guid? organizationId, Guid? spaceId)
+    public static IConfigurationBuilder AddAppInstanceIdentityCertificate(this IConfigurationBuilder builder, Guid? orgId, Guid? spaceId)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
         if (!Platform.IsCloudFoundry)
         {
-            organizationId ??= Guid.NewGuid();
+            orgId ??= Guid.NewGuid();
             spaceId ??= Guid.NewGuid();
 
             var writer = new LocalCertificateWriter();
-            writer.Write(organizationId.Value, spaceId.Value);
+            writer.Write(orgId.Value, spaceId.Value);
 
             Environment.SetEnvironmentVariable("CF_SYSTEM_CERT_PATH",
                 Path.Combine(Directory.GetParent(LocalCertificateWriter.AppBasePath)?.FullName ?? string.Empty,

@@ -9,7 +9,7 @@ namespace Steeltoe.Security.Authorization.Certificate;
 public static class CertificateAuthorizationPolicyBuilderExtensions
 {
     /// <summary>
-    /// Require a client certificate to originate from within the same organization.
+    /// Require a client certificate to originate from within the same organization (org).
     /// </summary>
     /// <param name="builder">
     /// The <see cref="AuthorizationPolicyBuilder" /> to configure.

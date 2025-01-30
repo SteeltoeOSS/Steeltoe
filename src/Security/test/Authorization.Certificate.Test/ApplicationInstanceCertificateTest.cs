@@ -22,7 +22,7 @@ public sealed class ApplicationInstanceCertificateTest
         if (shouldParse)
         {
             instanceCertificate.Should().NotBeNull();
-            instanceCertificate!.OrganizationId.Should().Be(expectedOrgId);
+            instanceCertificate!.OrgId.Should().Be(expectedOrgId);
             instanceCertificate.SpaceId.Should().Be(expectedSpaceId);
         }
         else
