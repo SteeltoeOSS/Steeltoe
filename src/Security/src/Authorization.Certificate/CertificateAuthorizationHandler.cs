@@ -29,8 +29,7 @@ internal sealed class CertificateAuthorizationHandler : IAuthorizationHandler
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        HandleCertificateAuthorizationRequirement<SameOrgRequirement>(context, ApplicationClaimTypes.OrganizationId,
-            _applicationInstanceCertificate?.OrganizationId);
+        HandleCertificateAuthorizationRequirement<SameOrgRequirement>(context, ApplicationClaimTypes.OrgId, _applicationInstanceCertificate?.OrgId);
 
         HandleCertificateAuthorizationRequirement<SameSpaceRequirement>(context, ApplicationClaimTypes.SpaceId, _applicationInstanceCertificate?.SpaceId);
         return Task.CompletedTask;

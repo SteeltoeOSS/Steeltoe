@@ -6,7 +6,7 @@ namespace Steeltoe.Security.Authorization.Certificate;
 
 internal static class ApplicationClaimTypes
 {
-    internal const string OrganizationId = "OrganizationId";
+    internal const string OrgId = "OrgId";
     internal const string SpaceId = "SpaceId";
     internal const string ApplicationId = "ApplicationId";
     internal const string ApplicationInstanceId = "ApplicationInstanceId";
