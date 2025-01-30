@@ -17,7 +17,8 @@ public sealed class HealthEndpointOptionsTest : BaseTest
 
         Assert.Null(options.Enabled);
         Assert.Equal("health", options.Id);
-        Assert.Equal(ShowDetails.Never, options.ShowDetails);
+        Assert.Equal(ShowValues.Never, options.ShowComponents);
+        Assert.Equal(ShowValues.Never, options.ShowDetails);
         Assert.Equal(EndpointPermissions.Restricted, options.RequiredPermissions);
     }
 
@@ -73,18 +74,5 @@ public sealed class HealthEndpointOptionsTest : BaseTest
         Assert.NotNull(options.Claim);
         Assert.Equal(ClaimTypes.Role, options.Claim.Type);
         Assert.Equal("role-claim-value", options.Claim.Value);
-    }
-
-    [Fact]
-    public void CanClearDefaultGroups()
-    {
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["management:endpoints:health:groups::include"] = string.Empty
-        };
-
-        HealthEndpointOptions options = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appSettings);
-
-        options.Groups.Should().BeEmpty();
     }
 }

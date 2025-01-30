@@ -57,35 +57,54 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
     {
         string groupName = healthRequest.GroupName;
         HealthEndpointOptions endpointOptions = _endpointOptionsMonitor.CurrentValue;
+        HealthGroupOptions? groupOptions = null;
 
-        IHealthContributor[] filteredContributors;
-        ICollection<HealthCheckRegistration> healthCheckRegistrations;
+        if (!string.IsNullOrEmpty(groupName) && !endpointOptions.Groups.ContainsKey(groupName))
+        {
+            return new HealthEndpointResponse
+            {
+                Exists = false
+            };
+        }
 
-        if (!string.IsNullOrEmpty(groupName) && groupName != endpointOptions.Id)
+        if (!string.IsNullOrEmpty(groupName))
         {
-            filteredContributors = GetFilteredContributors(groupName);
-            healthCheckRegistrations = GetFilteredHealthCheckServiceOptions(groupName);
+            groupOptions = _endpointOptionsMonitor.CurrentValue.Groups[groupName];
         }
-        else
-        {
-            filteredContributors = _healthContributors;
-            healthCheckRegistrations = _healthOptionsMonitor.CurrentValue.Registrations;
-        }
+
+        IHealthContributor[] filteredContributors = GetFilteredContributors(groupName);
+        ICollection<HealthCheckRegistration> healthCheckRegistrations = GetFilteredHealthCheckServiceOptions(groupName);
 
         HealthCheckResult result = await _healthAggregator.AggregateAsync(filteredContributors, healthCheckRegistrations, _serviceProvider, cancellationToken);
 
         var response = new HealthEndpointResponse(result);
 
-        ShowDetails showDetails = endpointOptions.ShowDetails;
+        ShowValues showComponents = groupOptions?.ShowComponents ?? endpointOptions.ShowComponents;
 
-        if (showDetails == ShowDetails.Never || (showDetails == ShowDetails.WhenAuthorized && !healthRequest.HasClaim))
+        if (showComponents == ShowValues.Never || (showComponents == ShowValues.WhenAuthorized && !healthRequest.HasClaim))
         {
-            _logger.LogTrace("Clearing health check details. ShowDetails={ShowDetails}, HasClaim={HasClaimForHealthDetails}.", showDetails,
+            _logger.LogTrace("Clearing health check components. ShowComponents={ShowComponents}, HasClaim={HasClaimForHealth}.", showComponents,
                 healthRequest.HasClaim);
 
             response.Components.Clear();
         }
         else
+        {
+            ShowValues showDetails = groupOptions?.ShowDetails ?? endpointOptions.ShowDetails;
+
+            if (response.Components.Any() && (showDetails == ShowValues.Never || (showComponents == ShowValues.WhenAuthorized && !healthRequest.HasClaim)))
+            {
+                foreach (KeyValuePair<string, object> component in response.Components)
+                {
+                    if (component.Value is HealthCheckResult checkResult)
+                    {
+                        checkResult.Details.Clear();
+                    }
+                }
+            }
+        }
+
+        if (string.IsNullOrEmpty(groupName))
         {
             foreach (string group in endpointOptions.Groups.Select(group => group.Key))
             {

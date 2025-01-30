@@ -35,7 +35,6 @@ public sealed class RabbitMQHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().Contain("error", "BrokerUnreachableException: None of the specified endpoints were reachable");
-        result.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact]
@@ -64,7 +63,6 @@ public sealed class RabbitMQHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");
-        result.Details.Should().Contain("status", "UP");
         result.Details.Should().Contain("version", "1.2.3");
     }
 
@@ -100,7 +98,6 @@ public sealed class RabbitMQHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().Contain("error", "IOException: RabbitMQ connection is closed!");
-        result.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact]
@@ -137,7 +134,6 @@ public sealed class RabbitMQHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");
-        result.Details.Should().Contain("status", "UP");
         result.Details.Should().ContainKey("version");
     }
 }

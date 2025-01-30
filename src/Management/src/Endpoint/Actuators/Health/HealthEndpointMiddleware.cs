@@ -52,20 +52,19 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
     {
         string[] requestComponents = requestPath.Value?.Split('/') ?? [];
 
-        if (requestComponents.Length > 0)
+        if (requestComponents.Length > 0 && requestComponents[^1] != _endpointOptionsMonitor.CurrentValue.Id)
         {
             return requestComponents[^1];
         }
 
-        _logger.LogWarning("Failed to find anything in the request from which to parse health group name.");
+        _logger.LogTrace("Did not find a health group in the request path.");
 
         return string.Empty;
     }
 
     private bool IsValidGroup(string groupName)
     {
-        return groupName == _endpointOptionsMonitor.CurrentValue.Id || groupName == "{**_}" ||
-            _endpointOptionsMonitor.CurrentValue.Groups.Any(pair => pair.Key == groupName);
+        return string.IsNullOrEmpty(groupName) || groupName == "{**_}" || _endpointOptionsMonitor.CurrentValue.Groups.Any(pair => pair.Key == groupName);
     }
 
     private bool GetHasClaim(HttpContext context)

@@ -178,16 +178,21 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["Management:Endpoints:Health:ShowDetails"] = "Always"
+            ["Management:Endpoints:Health:ShowComponents"] = "Always",
+            ["Management:Endpoints:Health:Liveness:Enabled"] = "true"
         });
 
         var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
-        TestOptionsMonitor<LivenessHealthContributorOptions> optionsMonitor = new();
+
+        var optionsMonitor = TestOptionsMonitor.Create(new LivenessStateContributorOptions
+        {
+            Enabled = true
+        });
 
         List<IHealthContributor> contributors =
         [
             new DiskSpaceContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>()),
-            new LivenessHealthContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
+            new LivenessStateContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
         ];
 
         testContext.AdditionalServices = (services, _) =>
@@ -205,7 +210,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         result.Status.Should().Be(HealthStatus.Up);
         result.Components.Keys.Should().ContainSingle();
-        result.Groups.Should().HaveCount(2);
+        result.Groups.Should().BeEmpty();
     }
 
     [Fact]
@@ -215,18 +220,23 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            { "Management:Endpoints:Health:ShowDetails", "Always" }
+            ["Management:Endpoints:Health:ShowComponents"] = "Always",
+            ["Management:Endpoints:Health:Readiness:Enabled"] = "true"
         });
 
         var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
-        TestOptionsMonitor<ReadinessHealthContributorOptions> optionsMonitor = new();
+
+        var optionsMonitor = TestOptionsMonitor.Create(new ReadinessStateContributorOptions
+        {
+            Enabled = true
+        });
 
         List<IHealthContributor> contributors =
         [
             new UnknownContributor(),
             new DisabledContributor(),
             new UpContributor(),
-            new ReadinessHealthContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
+            new ReadinessStateContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
         ];
 
         testContext.AdditionalServices = (services, _) =>
@@ -244,31 +254,16 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         result.Status.Should().Be(HealthStatus.Up);
         result.Components.Keys.Should().ContainSingle();
-        result.Groups.Should().HaveCount(2);
+        result.Groups.Should().BeEmpty();
     }
 
     [Fact]
-    public async Task InvokeWithInvalidGroupReturnsAllContributors()
+    public async Task InvokeWithInvalidGroupReturnsNotFound()
     {
         using var testContext = new TestContext(_testOutputHelper);
 
-        testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            { "Management:Endpoints:Health:ShowDetails", "Always" }
-        });
-
-        List<IHealthContributor> contributors =
-        [
-            new DiskSpaceContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>()),
-            new OutOfServiceContributor(),
-            new UnknownContributor(),
-            new DisabledContributor(),
-            new UpContributor()
-        ];
-
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddHealthActuator();
         };
 
@@ -278,9 +273,10 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
-        result.Status.Should().Be(HealthStatus.OutOfService);
-        result.Components.Keys.Should().HaveCount(4);
-        result.Groups.Should().HaveCount(2);
+        result.Exists.Should().BeFalse();
+        result.Status.Should().Be(HealthStatus.Unknown);
+        result.Components.Keys.Should().BeEmpty();
+        result.Groups.Should().BeEmpty();
     }
 
     [Fact]
@@ -289,7 +285,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(
             new Dictionary<string, string?>
             {
-                { "Management:Endpoints:Health:ShowDetails", "Always" }
+                ["Management:Endpoints:Health:ShowComponents"] = "Always"
             });
 
         options.CurrentValue.Groups.Add("msft", new HealthGroupOptions
@@ -314,7 +310,61 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         result.Components.Keys.Should().HaveCount(2);
         result.Components.Should().ContainKey("alwaysUp");
         result.Components.Should().ContainKey("privatememory");
-        result.Groups.Should().HaveCount(3);
+        result.Groups.Should().BeEmpty();
+    }
+
+    [InlineData(null, null, null, null, false, false)]
+    [InlineData("Always", null, null, null, true, false)]
+    [InlineData("Always", "Always", null, null, true, true)]
+    [InlineData("Never", "Never", "Always", null, true, false)]
+    [InlineData("Never", "Never", "Always", "Always", true, true)]
+    [InlineData(null, null, "Always", null, true, false)]
+    [InlineData(null, null, "Always", "Always", true, true)]
+    [Theory]
+    public async Task InvokeWithGroupUsesShowComponentShowDetailOptions(string? endpointShowComponents, string? endpointShowDetails,
+        string? groupShowComponents, string? groupShowDetails, bool returnComponents, bool returnDetails)
+    {
+        using var testContext = new TestContext(_testOutputHelper);
+
+        testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["Management:Endpoints:Health:ShowComponents"] = endpointShowComponents,
+            ["Management:Endpoints:Health:ShowDetails"] = endpointShowDetails,
+            ["Management:Endpoints:Health:Groups:test:include"] = "diskSpace",
+            ["Management:Endpoints:Health:Groups:test:ShowComponents"] = groupShowComponents,
+            ["Management:Endpoints:Health:Groups:test:ShowDetails"] = groupShowDetails
+        });
+
+        testContext.AdditionalServices = (services, _) =>
+        {
+            services.AddHealthActuator();
+        };
+
+        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
+
+        var healthRequest = new HealthEndpointRequest("test", true);
+
+        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
+
+        result.Status.Should().Be(HealthStatus.Up);
+
+        if (returnComponents)
+        {
+            result.Components.Keys.Should().ContainSingle();
+
+            if (returnDetails)
+            {
+                var component = result.Components["diskSpace"] as HealthCheckResult;
+                component.Should().NotBeNull();
+                component!.Details.Should().NotBeEmpty();
+            }
+        }
+        else
+        {
+            result.Components.Keys.Should().BeEmpty();
+        }
+
+        result.Groups.Should().BeEmpty();
     }
 
     private static HealthEndpointRequest GetHealthRequest()

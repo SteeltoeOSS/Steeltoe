@@ -165,7 +165,9 @@ public sealed class ActuatorsHostBuilderTest
     {
         var appSettings = new Dictionary<string, string?>(AppSettings)
         {
-            { "Management:Endpoints:Health:ShowDetails", "Always" }
+            ["Management:Endpoints:Health:ShowComponents"] = "Always",
+            ["Management:Endpoints:Health:Liveness:Enabled"] = "true",
+            ["Management:Endpoints:Health:Readiness:Enabled"] = "true"
         };
 
         await using HostWrapper host = hostBuilderType.Build(builder =>
@@ -182,8 +184,8 @@ public sealed class ActuatorsHostBuilderTest
 
         string responseText = await response.Content.ReadAsStringAsync();
         responseText.Should().Contain("\"diskSpace\":");
-        responseText.Should().Contain("\"readiness\":");
-        responseText.Should().Contain("\"liveness\":");
+        responseText.Should().Contain("\"readinessState\":");
+        responseText.Should().Contain("\"livenessState\":");
     }
 
     [Theory]
@@ -194,7 +196,7 @@ public sealed class ActuatorsHostBuilderTest
     {
         var appSettings = new Dictionary<string, string?>(AppSettings)
         {
-            { "Management:Endpoints:Health:ShowDetails", "Always" },
+            { "Management:Endpoints:Health:ShowComponents", "Always" },
             { "Management:Endpoints:Health:DiskSpace:Enabled", "false" },
             { "Management:Endpoints:Health:Liveness:Enabled", "false" },
             { "Management:Endpoints:Health:Ping:Enabled", "false" },
@@ -215,8 +217,7 @@ public sealed class ActuatorsHostBuilderTest
 
         string responseText = await response.Content.ReadAsStringAsync();
 
-        // These groups should NOT be populated since liveness/readiness are disabled, but there's a deficiency in the code right now
-        responseText.Should().Be("""{"status":"UNKNOWN","groups":["liveness","readiness"]}""");
+        responseText.Should().Be("""{"status":"UNKNOWN"}""");
     }
 
     [Theory]
@@ -227,7 +228,7 @@ public sealed class ActuatorsHostBuilderTest
     {
         var appSettings = new Dictionary<string, string?>(AppSettings)
         {
-            { "Management:Endpoints:Health:ShowDetails", "Always" }
+            ["Management:Endpoints:Health:ShowComponents"] = "Always"
         };
 
         await using HostWrapper host = hostBuilderType.Build(builder =>
@@ -249,8 +250,6 @@ public sealed class ActuatorsHostBuilderTest
 
         string responseText = await response.Content.ReadAsStringAsync();
         responseText.Should().Contain("\"diskSpace\":");
-        responseText.Should().Contain("\"readiness\":");
-        responseText.Should().Contain("\"liveness\":");
         responseText.Should().Contain("\"alwaysDown\":");
     }
 
@@ -262,7 +261,9 @@ public sealed class ActuatorsHostBuilderTest
     {
         var appSettings = new Dictionary<string, string?>(AppSettings)
         {
-            { "Management:Endpoints:Health:ShowDetails", "Always" }
+            ["Management:Endpoints:Health:ShowComponents"] = "Always",
+            ["Management:Endpoints:Health:Liveness:Enabled"] = "true",
+            ["Management:Endpoints:Health:Readiness:Enabled"] = "true"
         };
 
         await using HostWrapper host = hostBuilderType.Build(builder =>
@@ -278,13 +279,13 @@ public sealed class ActuatorsHostBuilderTest
         livenessResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string livenessResponseText = await livenessResponse.Content.ReadAsStringAsync();
-        livenessResponseText.Should().Contain("\"CORRECT\"");
+        livenessResponseText.Should().Be("""{"status":"UP","components":{"livenessState":{"status":"UP"}}}""");
 
         HttpResponseMessage readinessResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/readiness"));
         readinessResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string readinessResponseText = await readinessResponse.Content.ReadAsStringAsync();
-        readinessResponseText.Should().Contain("\"ACCEPTING_TRAFFIC\"");
+        readinessResponseText.Should().Contain("""{"status":"UP","components":{"readinessState":{"status":"UP"}}}""");
 
         var availability = host.Services.GetRequiredService<ApplicationAvailability>();
         await host.StopAsync();

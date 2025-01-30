@@ -136,7 +136,7 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 
         ManagementOptions managementOptions = host.Services.GetRequiredService<IOptionsMonitor<ManagementOptions>>().CurrentValue;
         string path = options.GetPathMatchPattern(managementOptions, managementOptions.Path);
-        path = path.Replace("metrics/{**_}", "metrics", StringComparison.Ordinal);
+        path = path.Replace("health/{**_}", "health", StringComparison.Ordinal).Replace("metrics/{**_}", "metrics", StringComparison.Ordinal);
         HttpResponseMessage response;
 
         using HttpClient httpClient = host.GetTestClient();
@@ -153,10 +153,12 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         response.StatusCode.Should().Be(expectSuccess ? HttpStatusCode.OK : HttpStatusCode.Forbidden);
     }
 
+#pragma warning disable SA1602 // Enumeration items should be documented
     public enum RegistrationMode
     {
         Services,
         UseEndpoints,
         MapEndpoints
     }
+#pragma warning restore SA1602 // Enumeration items should be documented
 }

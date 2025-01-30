@@ -45,7 +45,6 @@ public sealed class CosmosDbHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", serviceName);
         result.Details.Should().Contain("error", "HttpRequestException: No connection could be made because ...");
-        result.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact]
@@ -71,7 +70,6 @@ public sealed class CosmosDbHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", serviceName);
         result.Details.Should().Contain("error", "TimeoutException: The operation has timed out.");
-        result.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact]
@@ -94,7 +92,6 @@ public sealed class CosmosDbHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");
-        result.Details.Should().Contain("status", "UP");
     }
 
     [Fact]
@@ -146,7 +143,6 @@ public sealed class CosmosDbHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");
-        result.Details.Should().Contain("status", "UP");
     }
 
     private static ServiceProvider CreateServiceProvider(string serviceName, string connectionString, CosmosClient cosmosClient)

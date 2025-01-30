@@ -10,4 +10,14 @@ public sealed class HealthGroupOptions
     /// Gets or sets a comma-separated list of contributors or tags to include in this group.
     /// </summary>
     public string? Include { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether to show components in this group, overriding the endpoint-level setting.
+    /// </summary>
+    public ShowValues? ShowComponents { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether to show details of components in this group, overriding the endpoint-level setting.
+    /// </summary>
+    public ShowValues? ShowDetails { get; set; }
 }

@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
@@ -50,6 +51,8 @@ public static class EndpointServiceCollectionExtensions
         services.TryAddSingleton<IHealthAggregator, HealthAggregator>();
         RegisterDefaultHealthContributors(services);
 
+        services.AddSingleton<IPostConfigureOptions<HealthEndpointOptions>, PostConfigureHealthEndpointOptions>();
+
         return services;
     }
 
@@ -64,11 +67,11 @@ public static class EndpointServiceCollectionExtensions
         services.TryAddSingleton<ApplicationAvailability>();
         services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, AvailabilityStartupFilter>());
 
-        services.ConfigureOptionsWithChangeTokenSource<LivenessHealthContributorOptions, ConfigureLivenessHealthContributorOptions>();
-        AddHealthContributor<LivenessHealthContributor>(services);
+        services.ConfigureOptionsWithChangeTokenSource<LivenessStateContributorOptions, ConfigureLivenessStateContributorOptions>();
+        AddHealthContributor<LivenessStateContributor>(services);
 
-        services.ConfigureOptionsWithChangeTokenSource<ReadinessHealthContributorOptions, ConfigureReadinessHealthContributorOptions>();
-        AddHealthContributor<ReadinessHealthContributor>(services);
+        services.ConfigureOptionsWithChangeTokenSource<ReadinessStateContributorOptions, ConfigureReadinessStateContributorOptions>();
+        AddHealthContributor<ReadinessStateContributor>(services);
     }
 
     /// <summary>

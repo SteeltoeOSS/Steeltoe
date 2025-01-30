@@ -7,20 +7,20 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
-internal sealed class ConfigureReadinessHealthContributorOptions : IConfigureOptionsWithKey<ReadinessHealthContributorOptions>
+internal sealed class ConfigureLivenessStateContributorOptions : IConfigureOptionsWithKey<LivenessStateContributorOptions>
 {
     private readonly IConfiguration _configuration;
 
-    public string ConfigurationKey => "management:endpoints:health:readiness";
+    public string ConfigurationKey => "management:endpoints:health:liveness";
 
-    public ConfigureReadinessHealthContributorOptions(IConfiguration configuration)
+    public ConfigureLivenessStateContributorOptions(IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
         _configuration = configuration;
     }
 
-    public void Configure(ReadinessHealthContributorOptions options)
+    public void Configure(LivenessStateContributorOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
 
