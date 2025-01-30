@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
-using Steeltoe.Management.Endpoint.Actuators.Metrics.Diagnostics;
+using Steeltoe.Management.Endpoint.Actuators.HttpExchanges.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.HttpExchanges;
 
@@ -39,8 +39,8 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         var handler = serviceProvider.GetService<IHttpExchangesEndpointHandler>();
         handler.Should().NotBeNull();
 
-        IEnumerable<IDiagnosticObserver> observers = serviceProvider.GetServices<IDiagnosticObserver>();
-        List<IDiagnosticObserver> list = observers.ToList();
+        IEnumerable<DiagnosticObserver> observers = serviceProvider.GetServices<DiagnosticObserver>();
+        List<DiagnosticObserver> list = observers.ToList();
         list.Should().ContainSingle();
         list[0].Should().BeOfType<HttpExchangesDiagnosticObserver>();
     }
