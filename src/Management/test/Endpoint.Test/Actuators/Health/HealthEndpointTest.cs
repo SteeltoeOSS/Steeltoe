@@ -31,7 +31,6 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(new List<IHealthContributor>());
-            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuator();
 
             services.RemoveAll<IHealthContributor>();
@@ -61,7 +60,6 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuator();
         };
 
@@ -85,7 +83,6 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuator();
         };
 
@@ -115,7 +112,6 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuator();
         };
 
@@ -149,7 +145,6 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuator();
         };
 
@@ -183,7 +178,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            { "Management:Endpoints:Health:ShowDetails", "Always" }
+            ["Management:Endpoints:Health:ShowDetails"] = "Always"
         });
 
         var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
@@ -198,7 +193,6 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuator();
         };
 
@@ -210,7 +204,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
         result.Status.Should().Be(HealthStatus.Up);
-        result.Details.Keys.Should().ContainSingle();
+        result.Components.Keys.Should().ContainSingle();
         result.Groups.Should().HaveCount(2);
     }
 
@@ -238,7 +232,6 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuator();
         };
 
@@ -250,41 +243,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
         result.Status.Should().Be(HealthStatus.Up);
-        result.Details.Keys.Should().ContainSingle();
-        result.Groups.Should().HaveCount(2);
-    }
-
-    [Fact]
-    public async Task InvokeWithReadinessGroupReturnsGroupResults2()
-    {
-        var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
-        TestOptionsMonitor<ReadinessHealthContributorOptions> optionsMonitor = new();
-
-        List<IHealthContributor> contributors =
-        [
-            new UnknownContributor(),
-            new DisabledContributor(),
-            new UpContributor(),
-            new ReadinessHealthContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
-        ];
-
-        IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(
-            new Dictionary<string, string?>
-            {
-                { "Management:Endpoints:Health:ShowDetails", "Always" }
-            });
-
-        var handler = new HealthEndpointHandler(options, new HealthAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), EmptyServiceProvider,
-            NullLoggerFactory.Instance);
-
-        appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
-
-        var healthRequest = new HealthEndpointRequest("readiness", true);
-
-        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
-
-        result.Status.Should().Be(HealthStatus.Up);
-        result.Details.Keys.Should().ContainSingle();
+        result.Components.Keys.Should().ContainSingle();
         result.Groups.Should().HaveCount(2);
     }
 
@@ -310,7 +269,6 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuator();
         };
 
@@ -321,7 +279,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
         result.Status.Should().Be(HealthStatus.OutOfService);
-        result.Details.Keys.Should().HaveCount(4);
+        result.Components.Keys.Should().HaveCount(4);
         result.Groups.Should().HaveCount(2);
     }
 
@@ -353,9 +311,9 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
-        result.Details.Keys.Should().HaveCount(2);
-        result.Details.Should().ContainKey("alwaysUp");
-        result.Details.Should().ContainKey("privatememory");
+        result.Components.Keys.Should().HaveCount(2);
+        result.Components.Should().ContainKey("alwaysUp");
+        result.Components.Should().ContainKey("privatememory");
         result.Groups.Should().HaveCount(3);
     }
 

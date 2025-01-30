@@ -19,10 +19,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string?> AppSettings = new()
     {
-        ["management:endpoints:enabled"] = "true",
-        ["management:endpoints:dump:enabled"] = "true",
-        ["management:endpoints:actuator:exposure:include:0"] = "threaddump",
-        ["management:endpoints:actuator:exposure:include:1"] = "dump"
+        ["management:endpoints:actuator:exposure:include:0"] = "threaddump"
     };
 
     [Fact]
@@ -34,32 +31,11 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var threadDumper = new EventPipeThreadDumper(endpointOptionsMonitor, NullLogger<EventPipeThreadDumper>.Instance);
         var handler = new ThreadDumpEndpointHandler(endpointOptionsMonitor, threadDumper, NullLoggerFactory.Instance);
         var middleware = new ThreadDumpEndpointMiddleware(handler, managementOptions, NullLoggerFactory.Instance);
-        HttpContext context = CreateRequest("GET", "/dump");
+        HttpContext context = CreateRequest("GET", "/threaddump");
         await middleware.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body);
         string json = await reader.ReadToEndAsync();
-        Assert.NotNull(json);
-        Assert.NotEqual("[]", json);
-        Assert.StartsWith("[", json, StringComparison.Ordinal);
-        Assert.EndsWith("]", json, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public async Task ThreadDumpActuatorV1_ReturnsExpectedData()
-    {
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<StartupV1>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
-
-        using IWebHost host = builder.Build();
-        await host.StartAsync();
-
-        using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/dump"));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-        string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
         Assert.NotEqual("[]", json);
         Assert.StartsWith("[", json, StringComparison.Ordinal);
@@ -85,21 +61,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         Assert.NotEqual("{}", json);
         Assert.StartsWith("{", json, StringComparison.Ordinal);
         Assert.EndsWith("}", json, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void RoutesByPathAndVerb_V1()
-    {
-        ThreadDumpEndpointOptions endpointOptions = GetOptionsFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>();
-        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
-
-        Assert.True(endpointOptions.RequiresExactMatch());
-        Assert.Equal("/actuator/dump", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
-
-        Assert.Equal("/cloudfoundryapplication/dump",
-            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
-
-        Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 
     [Fact]

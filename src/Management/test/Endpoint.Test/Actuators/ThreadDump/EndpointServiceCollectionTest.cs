@@ -20,7 +20,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
-            ["management:endpoints:dump:enabled"] = "false"
+            ["management:endpoints:threaddump:enabled"] = "false"
         };
 
         var configurationBuilder = new ConfigurationBuilder();

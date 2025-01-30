@@ -19,7 +19,6 @@ static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapActuators(
 static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapActuators(this Microsoft.AspNetCore.Routing.IRouteBuilder! builder) -> Microsoft.AspNetCore.Routing.IRouteBuilder!
 static Steeltoe.Management.Endpoint.Actuators.All.EndpointServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.All.EndpointServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.Actuators.All.EndpointServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.CloudFoundry.EndpointApplicationBuilderExtensions.UseCloudFoundrySecurity(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
 static Steeltoe.Management.Endpoint.Actuators.CloudFoundry.EndpointServiceCollectionExtensions.AddCloudFoundryActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.CloudFoundry.EndpointServiceCollectionExtensions.AddCloudFoundryActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
@@ -56,7 +55,6 @@ static Steeltoe.Management.Endpoint.Actuators.Services.EndpointServiceCollection
 static Steeltoe.Management.Endpoint.Actuators.Services.EndpointServiceCollectionExtensions.AddServicesActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.ThreadDump.EndpointServiceCollectionExtensions.AddThreadDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.ThreadDump.EndpointServiceCollectionExtensions.AddThreadDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.Actuators.ThreadDump.EndpointServiceCollectionExtensions.AddThreadDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.ApplicationBuilderExtensions.UseActuatorEndpoints(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
 static Steeltoe.Management.Endpoint.ApplicationBuilderExtensions.UseActuatorEndpoints(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
 static Steeltoe.Management.Endpoint.ApplicationBuilderExtensions.UseActuatorsCorsPolicy(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
@@ -156,9 +154,9 @@ Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointRequest.GroupName.ge
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointRequest.HasClaim.get -> bool
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointRequest.HealthEndpointRequest(string! groupName, bool hasClaim) -> void
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse
+Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Components.get -> System.Collections.Generic.IDictionary<string!, object!>!
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Description.get -> string?
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Description.init -> void
-Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Details.get -> System.Collections.Generic.IDictionary<string!, object!>!
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Exists.get -> bool
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Exists.init -> void
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Groups.get -> System.Collections.Generic.IList<string!>!
@@ -483,10 +481,6 @@ Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions
 Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>
 Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>.InvokeAsync(TArgument argument, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>!
 Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>.Options.get -> Steeltoe.Management.Configuration.EndpointOptions!
-Steeltoe.Management.Endpoint.MediaTypeVersion
-Steeltoe.Management.Endpoint.MediaTypeVersion.V1 = 0 -> Steeltoe.Management.Endpoint.MediaTypeVersion
-Steeltoe.Management.Endpoint.MediaTypeVersion.V2 = 1 -> Steeltoe.Management.Endpoint.MediaTypeVersion
-Steeltoe.Management.Endpoint.MediaTypeVersion.V3 = 2 -> Steeltoe.Management.Endpoint.MediaTypeVersion
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointHandler.get -> Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>!
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointMiddleware(Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>! endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Configuration.ManagementOptions!>! managementOptionsMonitor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void

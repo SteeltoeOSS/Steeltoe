@@ -44,7 +44,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
         health.Should().NotContainKey("components");
-        health.Should().NotContainKey("details");
     }
 
     [Fact]
@@ -73,7 +72,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
         health.Should().NotContainKey("components");
-        health.Should().NotContainKey("details");
     }
 
     [Fact]
@@ -103,8 +101,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
-        health.Should().ContainKey("details");
-        health!["details"].ToString().Should().Contain("diskSpace");
+        health.Should().ContainKey("components");
+        health!["components"].ToString().Should().Contain("diskSpace");
     }
 
     [Fact]
@@ -124,47 +122,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        string json = await response.Content.ReadAsStringAsync();
-        json.Should().NotBeNull();
-
-        // { "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
-        var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-        health.Should().NotBeNull();
-        health.Should().ContainKey("status");
-        health.Should().ContainKey("details");
-        health!["details"].ToString().Should().Contain("diskSpace");
-    }
-
-    [Fact]
-    public async Task HealthActuatorV3_ReturnsDetailsWhenConfigured()
-    {
-        var settings = new Dictionary<string, string?>(_appSettings)
-        {
-            ["Management:Endpoints:CustomJsonConverters:0"] = typeof(HealthConverterV3).FullName!,
-            ["Management:Endpoints:Health:ShowDetails"] = "Always"
-        };
-
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
-
-        using IWebHost app = builder.Build();
-        await app.StartAsync();
-
-        using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string json = await response.Content.ReadAsStringAsync();
         json.Should().NotBeNull();
 
-        // {"status":"UP","components":{"diskSpace":{"status":"UP","details":{"total":1003588939776,"free":597722619904,"threshold":10485760,"status":"UP"}},"readiness":{"status":"UNKNOWN","description":"Failed to get current availability state","details":{}}}}
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
-        health.Should().NotContainKey("details");
         health.Should().ContainKey("components");
         string componentString = health!["components"].ToString() ?? string.Empty;
         componentString.Should().Contain("diskSpace");
@@ -197,11 +162,11 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
-        health.Should().ContainKey("details");
-        var details = JsonSerializer.Deserialize<Dictionary<string, object>>(health!["details"].ToString()!);
-        details.Should().ContainKey("diskSpace");
-        details.Should().ContainKey("test-registration");
-        details!["test-registration"].ToString().Should().Contain("\"tags\":[\"test-tag-1\",\"test-tag-2\"]");
+        health.Should().ContainKey("components");
+        var components = JsonSerializer.Deserialize<Dictionary<string, object>>(health!["components"].ToString()!);
+        components.Should().ContainKey("diskSpace");
+        components.Should().ContainKey("test-registration");
+        components!["test-registration"].ToString().Should().Contain("\"tags\":[\"test-tag-1\",\"test-tag-2\"]");
     }
 
     [Fact]
@@ -230,8 +195,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
-        health.Should().ContainKey("details");
-        health!["details"].ToString().Should().NotContain("diskSpace");
+        health.Should().ContainKey("components");
+        health!["components"].ToString().Should().NotContain("diskSpace");
     }
 
     [Fact]

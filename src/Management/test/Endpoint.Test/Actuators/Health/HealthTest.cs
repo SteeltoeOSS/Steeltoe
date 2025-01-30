@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Text.Json;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Health;
@@ -25,7 +24,7 @@ public sealed class HealthTest : BaseTest
     public void Serialize_Default_ReturnsExpected()
     {
         var health = new HealthEndpointResponse();
-        string json = JsonSerializer.Serialize(health, SerializerOptions);
+        string json = Serialize(health);
 
         json.Should().BeJson("""
             {
@@ -35,13 +34,13 @@ public sealed class HealthTest : BaseTest
     }
 
     [Fact]
-    public void Serialize_WithDetails_ReturnsExpected()
+    public void Serialize_WithComponents_ReturnsExpected()
     {
         var health = new HealthEndpointResponse
         {
             Status = HealthStatus.OutOfService,
             Description = "Test",
-            Details =
+            Components =
             {
                 { "item1", new HealthData() },
                 { "item2", "String" },
@@ -49,13 +48,13 @@ public sealed class HealthTest : BaseTest
             }
         };
 
-        string json = JsonSerializer.Serialize(health, SerializerOptions);
+        string json = Serialize(health);
 
         json.Should().BeJson("""
             {
               "status": "OUT_OF_SERVICE",
               "description": "Test",
-              "details": {
+              "components": {
                 "item1": {
                   "stringProperty": "TestData",
                   "intProperty": 100,
@@ -75,7 +74,7 @@ public sealed class HealthTest : BaseTest
         {
             Status = HealthStatus.OutOfService,
             Description = "Test",
-            Details =
+            Components =
             {
                 ["ExampleContributor"] = new HealthCheckResult
                 {
@@ -89,17 +88,19 @@ public sealed class HealthTest : BaseTest
             }
         };
 
-        string json = JsonSerializer.Serialize(health, SerializerOptions);
+        string json = Serialize(health);
 
         json.Should().BeJson("""
             {
               "status": "OUT_OF_SERVICE",
               "description": "Test",
-              "details": {
+              "components": {
                 "ExampleContributor": {
                   "status": "UNKNOWN",
                   "description": "ExampleDescription",
-                  "ExampleMessage": "ExampleValue"
+                  "details": {
+                    "ExampleMessage": "ExampleValue"
+                  }
                 }
               }
             }

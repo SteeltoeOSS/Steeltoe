@@ -16,6 +16,7 @@ internal sealed class HeapDumpEndpointMiddleware(
     : EndpointMiddleware<object?, string?>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
     private readonly ILogger<HeapDumpEndpointMiddleware> _logger = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
+    private protected override string ContentType { get; } = "application/octet-stream";
 
     protected override async Task<string?> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
@@ -32,7 +33,7 @@ internal sealed class HeapDumpEndpointMiddleware(
             return;
         }
 
-        context.Response.ContentType = "application/octet-stream";
+        context.Response.ContentType = ContentType;
         context.Response.Headers.Append("Content-Disposition", $"attachment; filename=\"{Path.GetFileName(fileName)}.gz\"");
         context.Response.StatusCode = StatusCodes.Status200OK;
 

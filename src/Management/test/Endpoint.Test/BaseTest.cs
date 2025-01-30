@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Extensions;
-using Steeltoe.Management.Endpoint.Actuators.Health;
+using Steeltoe.Common.Json;
 using Steeltoe.Management.Endpoint.Actuators.Metrics;
 using Steeltoe.Management.Endpoint.Actuators.Metrics.SystemDiagnosticsMetrics;
 
@@ -16,16 +16,12 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public abstract class BaseTest : IDisposable
 {
-    protected static JsonSerializerOptions SerializerOptions { get; } = new()
+    protected static JsonSerializerOptions SerializerOptions { get; } = new JsonSerializerOptions
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
-        Converters =
-        {
-            new HealthConverter()
-        }
-    };
+        PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate
+    }.AddJsonIgnoreEmptyCollection();
 
     public void Dispose()
     {
