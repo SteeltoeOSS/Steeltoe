@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges.Diagnostics;
 internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable
 {
     private readonly ILogger<DiagnosticsManager> _logger;
-    private IEnumerable<DiagnosticObserver> _observers;
+    private readonly List<DiagnosticObserver> _observers;
 
     private bool _isDisposed;
 #pragma warning disable S1450 // Private fields only used as local variables in methods should become local variables
@@ -26,7 +26,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
         ArgumentNullException.ThrowIfNull(logger);
 
         _logger = logger;
-        _observers = observers;
+        _observers = observers.ToList();
     }
 
     public void OnCompleted()
@@ -41,9 +41,9 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
 
     public void OnNext(DiagnosticListener value)
     {
-        foreach (DiagnosticObserver listener in _observers)
+        foreach (DiagnosticObserver observer in _observers)
         {
-            listener.Subscribe(value);
+            observer.Subscribe(value);
         }
     }
 
@@ -66,9 +66,9 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
     {
         if (Interlocked.CompareExchange(ref _started, 0, 1) == 1)
         {
-            foreach (DiagnosticObserver listener in _observers)
+            foreach (DiagnosticObserver observer in _observers)
             {
-                listener.Dispose();
+                observer.Dispose();
             }
         }
     }
@@ -78,7 +78,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
         if (!_isDisposed)
         {
             Stop();
-            _observers = [];
+            _observers.Clear();
             _isDisposed = true;
         }
     }

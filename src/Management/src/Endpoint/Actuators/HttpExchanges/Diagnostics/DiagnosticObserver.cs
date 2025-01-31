@@ -9,20 +9,15 @@ namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges.Diagnostics;
 
 internal abstract class DiagnosticObserver : IObserver<KeyValuePair<string, object?>>, IDisposable
 {
+    private const string ListenerName = "Microsoft.AspNetCore";
+    private const string ObserverName = "HttpExchangesDiagnosticObserver";
     private readonly ILogger _logger;
     private IDisposable? _subscription;
 
-    public string ListenerName { get; }
-    public string ObserverName { get; }
-
-    protected DiagnosticObserver(string name, string listenerName, ILoggerFactory loggerFactory)
+    protected DiagnosticObserver(ILoggerFactory loggerFactory)
     {
-        ArgumentException.ThrowIfNullOrEmpty(name);
-        ArgumentException.ThrowIfNullOrEmpty(listenerName);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        ObserverName = name;
-        ListenerName = listenerName;
         _logger = loggerFactory.CreateLogger<DiagnosticObserver>();
     }
 
@@ -47,7 +42,7 @@ internal abstract class DiagnosticObserver : IObserver<KeyValuePair<string, obje
     {
         ArgumentNullException.ThrowIfNull(listener);
 
-        if (ListenerName == listener.Name)
+        if (listener.Name == ListenerName)
         {
             if (_subscription != null)
             {
