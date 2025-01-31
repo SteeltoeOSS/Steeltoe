@@ -3,18 +3,16 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Management.Endpoint.Actuators.Metrics.Diagnostics;
+namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges.Diagnostics;
 
-public abstract class DiagnosticObserver : IDiagnosticObserver
+internal abstract class DiagnosticObserver : IObserver<KeyValuePair<string, object?>>, IDisposable
 {
+    private readonly string _observerName;
+    private readonly string _listenerName;
     private readonly ILogger _logger;
     private IDisposable? _subscription;
-
-    public string ListenerName { get; }
-    public string ObserverName { get; }
 
     protected DiagnosticObserver(string name, string listenerName, ILoggerFactory loggerFactory)
     {
@@ -22,8 +20,8 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
         ArgumentException.ThrowIfNullOrEmpty(listenerName);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        ObserverName = name;
-        ListenerName = listenerName;
+        _observerName = name;
+        _listenerName = listenerName;
         _logger = loggerFactory.CreateLogger<DiagnosticObserver>();
     }
 
@@ -40,7 +38,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
             _subscription?.Dispose();
             _subscription = null;
 
-            _logger.LogInformation("DiagnosticObserver {Observer} Disposed", ObserverName);
+            _logger.LogTrace("DiagnosticObserver {Observer} disposed", _observerName);
         }
     }
 
@@ -48,7 +46,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
     {
         ArgumentNullException.ThrowIfNull(listener);
 
-        if (ListenerName == listener.Name)
+        if (_listenerName == listener.Name)
         {
             if (_subscription != null)
             {
@@ -56,7 +54,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
             }
 
             _subscription = listener.Subscribe(this);
-            _logger.LogInformation("DiagnosticObserver {Observer} Subscribed to {Listener}", ObserverName, listener.Name);
+            _logger.LogTrace("DiagnosticObserver {Observer} subscribed to {Listener}", _observerName, listener.Name);
         }
     }
 
@@ -83,19 +81,4 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
     }
 
     public abstract void ProcessEvent(string eventName, object? value);
-
-    private protected static T? GetPropertyOrDefault<T>(object instance, string name)
-    {
-        ArgumentNullException.ThrowIfNull(instance);
-        ArgumentException.ThrowIfNullOrWhiteSpace(name);
-
-        PropertyInfo? property = instance.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
-
-        if (property == null)
-        {
-            return default;
-        }
-
-        return (T?)property.GetValue(instance);
-    }
 }

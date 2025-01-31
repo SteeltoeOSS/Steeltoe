@@ -16,7 +16,6 @@ using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
-using Steeltoe.Management.Endpoint.Actuators.Metrics;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
@@ -39,7 +38,6 @@ using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 [assembly: ConfigurationSchema("Management:Endpoints:HeapDump", typeof(HeapDumpEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Info", typeof(InfoEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Loggers", typeof(LoggersEndpointOptions))]
-[assembly: ConfigurationSchema("Management:Endpoints:Metrics", typeof(MetricsEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Refresh", typeof(RefreshEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Mappings", typeof(RouteMappingsEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Services", typeof(ServicesEndpointOptions))]
@@ -48,7 +46,6 @@ using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 [assembly: ConfigurationSchema("Management:Endpoints:Actuator", typeof(HypermediaEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Actuator:Exposure", typeof(Exposure))]
 [assembly: ConfigurationSchema("Management:Endpoints:Web:Exposure", typeof(Exposure))]
-[assembly: ConfigurationSchema("Management:Metrics:Observer", typeof(MetricsObserverOptions))]
 [assembly: LoggingCategories("Steeltoe", "Steeltoe.Management", "Steeltoe.Management.Endpoint")]
 
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

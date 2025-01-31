@@ -5,8 +5,6 @@
     <PackageTags>actuators;management;monitoring;Spring Cloud</PackageTags>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsPackable>true</IsPackable>
-    <!-- The compiler constants below are required for the copied code in SystemDiagnosticsMetrics -->
-    <DefineConstants>$(DefineConstants);MEMORYMARSHAL_SUPPORT</DefineConstants>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

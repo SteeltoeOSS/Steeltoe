@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Management.Endpoint.Actuators.Metrics.Diagnostics;
+using Steeltoe.Management.Endpoint.Actuators.HttpExchanges.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
@@ -44,11 +44,12 @@ public static class EndpointServiceCollectionExtensions
         services.AddCoreActuatorServices<HttpExchangesEndpointOptions, ConfigureHttpExchangesEndpointOptions, HttpExchangesEndpointMiddleware,
             IHttpExchangesEndpointHandler, HttpExchangesEndpointHandler, object?, HttpExchangesResult>(configureMiddleware);
 
-        services.AddDiagnosticsManager();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpExchangesDiagnosticObserver>());
+        services.TryAddSingleton<DiagnosticsManager>();
+        services.AddHostedService<DiagnosticsService>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<DiagnosticObserver, HttpExchangesDiagnosticObserver>());
 
         services.TryAddSingleton<IHttpExchangesRepository>(serviceProvider =>
-            serviceProvider.GetServices<IDiagnosticObserver>().OfType<HttpExchangesDiagnosticObserver>().Single());
+            serviceProvider.GetServices<DiagnosticObserver>().OfType<HttpExchangesDiagnosticObserver>().Single());
 
         return services;
     }
