@@ -136,7 +136,7 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 
         ManagementOptions managementOptions = host.Services.GetRequiredService<IOptionsMonitor<ManagementOptions>>().CurrentValue;
         string path = options.GetPathMatchPattern(managementOptions, managementOptions.Path);
-        path = path.Replace("metrics/{**_}", "metrics", StringComparison.Ordinal);
+        path = path.Replace("health/{**_}", "health", StringComparison.Ordinal);
         HttpResponseMessage response;
 
         using HttpClient httpClient = host.GetTestClient();

@@ -5,14 +5,14 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Management.Endpoint.Actuators.Metrics.Diagnostics;
+namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges.Diagnostics;
 
 internal sealed class DiagnosticsService : IHostedService
 {
     private readonly ILogger<DiagnosticsService> _logger;
-    private readonly IDiagnosticsManager _observerManager;
+    private readonly DiagnosticsManager _observerManager;
 
-    public DiagnosticsService(IDiagnosticsManager observerManager, ILogger<DiagnosticsService> logger)
+    public DiagnosticsService(DiagnosticsManager observerManager, ILogger<DiagnosticsService> logger)
     {
         ArgumentNullException.ThrowIfNull(observerManager);
         ArgumentNullException.ThrowIfNull(logger);

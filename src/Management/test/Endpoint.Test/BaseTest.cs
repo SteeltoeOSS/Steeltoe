@@ -9,8 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Json;
-using Steeltoe.Management.Endpoint.Actuators.Metrics;
-using Steeltoe.Management.Endpoint.Actuators.Metrics.SystemDiagnosticsMetrics;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -36,33 +34,6 @@ public abstract class BaseTest : IDisposable
     protected string Serialize<T>(T value)
     {
         return JsonSerializer.Serialize(value, SerializerOptions);
-    }
-
-    internal AggregationManager GetTestMetrics(MetricsExporter exporter)
-    {
-        var aggregationManager = new AggregationManager(100, 100, exporter.AddMetrics, (_, _) =>
-        {
-        }, (_, _) =>
-        {
-        }, _ =>
-        {
-        }, _ =>
-        {
-        }, _ =>
-        {
-        }, () =>
-        {
-        }, exception => throw exception, () =>
-        {
-        }, () =>
-        {
-        }, exception => throw exception);
-
-        aggregationManager.Include(SteeltoeMetrics.InstrumentationName);
-
-        exporter.SetCollect(aggregationManager.Collect);
-
-        return aggregationManager;
     }
 
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>()

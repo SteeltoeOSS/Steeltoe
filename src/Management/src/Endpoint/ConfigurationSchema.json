@@ -536,57 +536,6 @@
                 }
               }
             },
-            "Metrics": {
-              "type": "object",
-              "properties": {
-                "AllowedVerbs": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
-                },
-                "CacheDurationMilliseconds": {
-                  "type": "integer",
-                  "description": "Gets or sets the duration (in milliseconds) that metrics are cached for. Default value: 500."
-                },
-                "Enabled": {
-                  "type": "boolean",
-                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
-                },
-                "Id": {
-                  "type": "string",
-                  "description": "Gets or sets the unique ID of this endpoint."
-                },
-                "IncludedMetrics": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "Gets the names of additional metrics to include. See the list at https://learn.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters."
-                },
-                "MaxHistograms": {
-                  "type": "integer",
-                  "description": "Gets or sets the maximum number of histograms to return. Default value: 100."
-                },
-                "MaxTimeSeries": {
-                  "type": "integer",
-                  "description": "Gets or sets the maximum number of time series to return. Default value: 100."
-                },
-                "Path": {
-                  "type": "string",
-                  "description": "Gets or sets the relative path at which this endpoint is exposed."
-                },
-                "RequiredPermissions": {
-                  "enum": [
-                    "None",
-                    "Restricted",
-                    "Full"
-                  ],
-                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
-                }
-              }
-            },
             "Path": {
               "type": "string",
               "description": "Gets or sets the HTTP request path at which management endpoints are exposed. Default value: /actuator."
@@ -819,66 +768,6 @@
             }
           },
           "description": "Provides configuration settings for management endpoints (actuators)."
-        },
-        "Metrics": {
-          "type": "object",
-          "properties": {
-            "Observer": {
-              "type": "object",
-              "properties": {
-                "AspNetCoreHosting": {
-                  "type": "boolean",
-                  "description": "Gets or sets a value indicating whether to enable the Steeltoe ASP.NET Core hosting observer (HTTP server metrics). Default value: true."
-                },
-                "EgressIgnorePattern": {
-                  "type": "string",
-                  "description": "Gets or sets a regex pattern for requests leaving this application where metrics should not be captured."
-                },
-                "EventCounterEvents": {
-                  "type": "boolean",
-                  "description": "Gets or sets a value indicating whether to enable metrics for EventCounter events. Default value: false."
-                },
-                "EventCounterIntervalSec": {
-                  "type": "integer",
-                  "description": "Gets or sets how often to export (in seconds) when 'Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsObserverOptions.EventCounterEvents' is set to true. Default value: 1."
-                },
-                "ExcludedMetrics": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "Gets a list of metrics that should not be captured. Entries in 'Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsObserverOptions.IncludedMetrics' take precedence in case of conflict."
-                },
-                "GCEvents": {
-                  "type": "boolean",
-                  "description": "Gets or sets a value indicating whether to enable metrics for CLR garbage collection. Default value: true."
-                },
-                "HttpClientCore": {
-                  "type": "boolean",
-                  "description": "Gets or sets a value indicating whether to enable the Steeltoe HttpClient observer for ASP.NET Core. Default value: false."
-                },
-                "HttpClientDesktop": {
-                  "type": "boolean",
-                  "description": "Gets or sets a value indicating whether to enable the Steeltoe HttpClient observer for desktop apps. Default value: false."
-                },
-                "IncludedMetrics": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "Gets a list of metrics that should be captured. This takes precedence over 'Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsObserverOptions.ExcludedMetrics' in case of conflict."
-                },
-                "IngressIgnorePattern": {
-                  "type": "string",
-                  "description": "Gets or sets a regex pattern for requests coming into this application where metrics should not be captured."
-                },
-                "ThreadPoolEvents": {
-                  "type": "boolean",
-                  "description": "Gets or sets a value indicating whether to enable metrics for CLR thread pool events. Default value: true."
-                }
-              }
-            }
-          }
         }
       }
     },

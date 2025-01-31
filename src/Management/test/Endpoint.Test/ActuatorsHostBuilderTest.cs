@@ -25,7 +25,6 @@ using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
-using Steeltoe.Management.Endpoint.Actuators.Metrics;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
@@ -490,28 +489,6 @@ public sealed class ActuatorsHostBuilderTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
-    public async Task MetricsActuator(HostBuilderType hostBuilderType)
-    {
-        await using HostWrapper host = hostBuilderType.Build(builder =>
-        {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
-            builder.ConfigureServices(services => services.AddMetricsActuator());
-        });
-
-        await host.StartAsync();
-        using HttpClient httpClient = host.GetTestClient();
-
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/metrics"));
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        string responseText = await response.Content.ReadAsStringAsync();
-        responseText.Should().Contain("\"clr.cpu.count\"");
-    }
-
-    [Theory]
-    [InlineData(HostBuilderType.Host)]
-    [InlineData(HostBuilderType.WebHost)]
-    [InlineData(HostBuilderType.WebApplication)]
     public async Task RefreshActuatorGet(HostBuilderType hostBuilderType)
     {
         await using HostWrapper host = hostBuilderType.Build(builder =>
@@ -621,7 +598,7 @@ public sealed class ActuatorsHostBuilderTest
     [InlineData(HostBuilderType.WebApplication)]
     public async Task AddAllActuatorsDoesNotRegisterDuplicateServices(HostBuilderType hostBuilderType)
     {
-        const int actuatorCount = 13;
+        const int actuatorCount = 12;
 
         await using HostWrapper host = hostBuilderType.Build(builder =>
         {
