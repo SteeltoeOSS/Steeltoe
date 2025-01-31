@@ -9,10 +9,9 @@ namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges.Diagnostics;
 
 internal abstract class DiagnosticObserver : IObserver<KeyValuePair<string, object?>>, IDisposable
 {
-    private readonly ILogger _logger;
-
     private readonly string _observerName;
     private readonly string _listenerName;
+    private readonly ILogger _logger;
     private IDisposable? _subscription;
 
     protected DiagnosticObserver(string name, string listenerName, ILoggerFactory loggerFactory)
