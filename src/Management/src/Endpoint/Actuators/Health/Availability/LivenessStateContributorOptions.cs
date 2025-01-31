@@ -9,7 +9,7 @@ public sealed class LivenessStateContributorOptions
     internal static string GroupName => "liveness";
 
     /// <summary>
-    /// Gets or sets a value indicating whether to enable the liveness contributor.
+    /// Gets or sets a value indicating whether to enable the liveness contributor. Default value: false.
     /// </summary>
     public bool Enabled { get; set; }
 }

@@ -5,22 +5,22 @@
 namespace Steeltoe.Management.Endpoint.Actuators.Health;
 
 /// <summary>
-/// Represents the level of detail to include in the health endpoint response.
+/// Represents when something should be included in an endpoint response.
 /// </summary>
 public enum ShowValues
 {
     /// <summary>
-    /// Never include health check components and their details in the response.
+    /// Never include this item.
     /// </summary>
     Never,
 
     /// <summary>
-    /// Only include health check components and their details in the response when the user is authorized.
+    /// Only include this item when the user is authorized.
     /// </summary>
     WhenAuthorized,
 
     /// <summary>
-    /// Always include health check components and their details in the response.
+    /// Always include this item.
     /// </summary>
     Always
 }

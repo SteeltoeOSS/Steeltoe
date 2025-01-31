@@ -278,7 +278,7 @@
                       }
                     }
                   },
-                  "description": "Gets the list of configured health groups."
+                  "description": "Gets the configured health groups."
                 },
                 "Id": {
                   "type": "string",
@@ -289,7 +289,7 @@
                   "properties": {
                     "Enabled": {
                       "type": "boolean",
-                      "description": "Gets or sets a value indicating whether to enable the liveness contributor."
+                      "description": "Gets or sets a value indicating whether to enable the liveness contributor. Default value: false."
                     }
                   }
                 },
@@ -311,7 +311,7 @@
                   "properties": {
                     "Enabled": {
                       "type": "boolean",
-                      "description": "Gets or sets a value indicating whether to enable the readiness contributor."
+                      "description": "Gets or sets a value indicating whether to enable the readiness contributor. Default value: false."
                     }
                   }
                 },
@@ -325,7 +325,7 @@
                 },
                 "Role": {
                   "type": "string",
-                  "description": "gets or sets the role required to use this endpoint."
+                  "description": "Gets or sets the role required to use this endpoint."
                 },
                 "ShowComponents": {
                   "enum": [

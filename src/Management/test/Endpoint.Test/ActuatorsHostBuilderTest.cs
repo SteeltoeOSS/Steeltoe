@@ -161,7 +161,7 @@ public sealed class ActuatorsHostBuilderTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
-    public async Task HealthActuatorWithDetails(HostBuilderType hostBuilderType)
+    public async Task HealthActuatorWithComponents(HostBuilderType hostBuilderType)
     {
         var appSettings = new Dictionary<string, string?>(AppSettings)
         {
@@ -196,11 +196,8 @@ public sealed class ActuatorsHostBuilderTest
     {
         var appSettings = new Dictionary<string, string?>(AppSettings)
         {
-            { "Management:Endpoints:Health:ShowComponents", "Always" },
             { "Management:Endpoints:Health:DiskSpace:Enabled", "false" },
-            { "Management:Endpoints:Health:Liveness:Enabled", "false" },
-            { "Management:Endpoints:Health:Ping:Enabled", "false" },
-            { "Management:Endpoints:Health:Readiness:Enabled", "false" }
+            { "Management:Endpoints:Health:Ping:Enabled", "false" }
         };
 
         await using HostWrapper host = hostBuilderType.Build(builder =>

@@ -9,7 +9,7 @@ public sealed class ReadinessStateContributorOptions
     internal static string HealthGroupName => "readiness";
 
     /// <summary>
-    /// Gets or sets a value indicating whether to enable the readiness contributor.
+    /// Gets or sets a value indicating whether to enable the readiness contributor. Default value: false.
     /// </summary>
     public bool Enabled { get; set; }
 }

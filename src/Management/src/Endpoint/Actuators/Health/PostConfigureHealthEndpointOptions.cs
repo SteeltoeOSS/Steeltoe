@@ -8,12 +8,12 @@ using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 namespace Steeltoe.Management.Endpoint.Actuators.Health;
 
 internal sealed class PostConfigureHealthEndpointOptions(
-    IOptions<LivenessStateContributorOptions> livenessOptions, IOptions<ReadinessStateContributorOptions> readinessOptions)
+    IOptionsMonitor<LivenessStateContributorOptions> livenessOptions, IOptionsMonitor<ReadinessStateContributorOptions> readinessOptions)
     : IPostConfigureOptions<HealthEndpointOptions>
 {
     public void PostConfigure(string? name, HealthEndpointOptions options)
     {
-        if (livenessOptions.Value.Enabled && !options.Groups.ContainsKey(LivenessStateContributorOptions.GroupName))
+        if (livenessOptions.CurrentValue.Enabled && !options.Groups.ContainsKey(LivenessStateContributorOptions.GroupName))
         {
             options.Groups.Add(LivenessStateContributorOptions.GroupName, new HealthGroupOptions
             {
@@ -21,7 +21,7 @@ internal sealed class PostConfigureHealthEndpointOptions(
             });
         }
 
-        if (readinessOptions.Value.Enabled && !options.Groups.ContainsKey(ReadinessStateContributorOptions.HealthGroupName))
+        if (readinessOptions.CurrentValue.Enabled && !options.Groups.ContainsKey(ReadinessStateContributorOptions.HealthGroupName))
         {
             options.Groups.Add(ReadinessStateContributorOptions.HealthGroupName, new HealthGroupOptions
             {

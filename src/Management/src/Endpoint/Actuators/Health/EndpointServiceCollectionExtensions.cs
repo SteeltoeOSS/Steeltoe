@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
@@ -51,7 +50,7 @@ public static class EndpointServiceCollectionExtensions
         services.TryAddSingleton<IHealthAggregator, HealthAggregator>();
         RegisterDefaultHealthContributors(services);
 
-        services.AddSingleton<IPostConfigureOptions<HealthEndpointOptions>, PostConfigureHealthEndpointOptions>();
+        services.PostConfigureOptionsWithChangeTokenSource<HealthEndpointOptions, PostConfigureHealthEndpointOptions>();
 
         return services;
     }
