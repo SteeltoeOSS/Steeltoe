@@ -16,6 +16,8 @@ namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
 internal sealed class HttpExchangesDiagnosticObserver : DiagnosticObserver, IHttpExchangesRepository
 {
+    private const string ObserverName = "HttpExchangesDiagnosticObserver";
+    private const string ListenerName = "Microsoft.AspNetCore";
     private const string StopEventName = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
     internal const string Redacted = "******";
@@ -24,7 +26,7 @@ internal sealed class HttpExchangesDiagnosticObserver : DiagnosticObserver, IHtt
     internal ConcurrentQueue<HttpExchange> Queue { get; } = new();
 
     public HttpExchangesDiagnosticObserver(IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor, ILoggerFactory loggerFactory)
-        : base(loggerFactory)
+        : base(ObserverName, ListenerName, loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(optionsMonitor);
 

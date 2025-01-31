@@ -9,15 +9,20 @@ namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges.Diagnostics;
 
 internal abstract class DiagnosticObserver : IObserver<KeyValuePair<string, object?>>, IDisposable
 {
-    private const string ListenerName = "Microsoft.AspNetCore";
-    private const string ObserverName = "HttpExchangesDiagnosticObserver";
     private readonly ILogger _logger;
+
+    private readonly string _observerName;
+    private readonly string _listenerName;
     private IDisposable? _subscription;
 
-    protected DiagnosticObserver(ILoggerFactory loggerFactory)
+    protected DiagnosticObserver(string name, string listenerName, ILoggerFactory loggerFactory)
     {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrEmpty(listenerName);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
+        _observerName = name;
+        _listenerName = listenerName;
         _logger = loggerFactory.CreateLogger<DiagnosticObserver>();
     }
 
@@ -34,7 +39,7 @@ internal abstract class DiagnosticObserver : IObserver<KeyValuePair<string, obje
             _subscription?.Dispose();
             _subscription = null;
 
-            _logger.LogTrace("DiagnosticObserver {Observer} disposed", ObserverName);
+            _logger.LogTrace("DiagnosticObserver {Observer} disposed", _observerName);
         }
     }
 
@@ -42,7 +47,7 @@ internal abstract class DiagnosticObserver : IObserver<KeyValuePair<string, obje
     {
         ArgumentNullException.ThrowIfNull(listener);
 
-        if (listener.Name == ListenerName)
+        if (_listenerName == listener.Name)
         {
             if (_subscription != null)
             {
@@ -50,7 +55,7 @@ internal abstract class DiagnosticObserver : IObserver<KeyValuePair<string, obje
             }
 
             _subscription = listener.Subscribe(this);
-            _logger.LogTrace("DiagnosticObserver {Observer} subscribed to {Listener}", ObserverName, listener.Name);
+            _logger.LogTrace("DiagnosticObserver {Observer} subscribed to {Listener}", _observerName, listener.Name);
         }
     }
 
