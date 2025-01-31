@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Metrics.Observers;
 

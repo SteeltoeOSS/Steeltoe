@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Actuators.Metrics;
 using Steeltoe.Management.Endpoint.Actuators.Metrics.Observers;
 using Steeltoe.Management.Endpoint.Actuators.Metrics.SystemDiagnosticsMetrics;

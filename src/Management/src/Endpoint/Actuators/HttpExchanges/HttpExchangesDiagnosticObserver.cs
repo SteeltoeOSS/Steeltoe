@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Management.Diagnostics;
+using Steeltoe.Management.Endpoint.Actuators.Metrics.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 

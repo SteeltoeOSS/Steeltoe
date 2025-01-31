@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Management.Diagnostics;
+namespace Steeltoe.Management.Endpoint.Actuators.Metrics.Diagnostics;
 
 public abstract class DiagnosticObserver : IDiagnosticObserver
 {

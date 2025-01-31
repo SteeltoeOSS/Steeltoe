@@ -5,7 +5,7 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Diagnostics;
+using Steeltoe.Management.Endpoint.Actuators.Metrics.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Metrics.Observers;
 

@@ -840,14 +840,14 @@
                 },
                 "EventCounterIntervalSec": {
                   "type": "integer",
-                  "description": "Gets or sets how often to export (in seconds) when 'Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterEvents' is set to true. Default value: 1."
+                  "description": "Gets or sets how often to export (in seconds) when 'Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsObserverOptions.EventCounterEvents' is set to true. Default value: 1."
                 },
                 "ExcludedMetrics": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "Gets a list of metrics that should not be captured. Entries in 'Steeltoe.Management.Diagnostics.MetricsObserverOptions.IncludedMetrics' take precedence in case of conflict."
+                  "description": "Gets a list of metrics that should not be captured. Entries in 'Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsObserverOptions.IncludedMetrics' take precedence in case of conflict."
                 },
                 "GCEvents": {
                   "type": "boolean",
@@ -866,7 +866,7 @@
                   "items": {
                     "type": "string"
                   },
-                  "description": "Gets a list of metrics that should be captured. This takes precedence over 'Steeltoe.Management.Diagnostics.MetricsObserverOptions.ExcludedMetrics' in case of conflict."
+                  "description": "Gets a list of metrics that should be captured. This takes precedence over 'Steeltoe.Management.Endpoint.Actuators.Metrics.MetricsObserverOptions.ExcludedMetrics' in case of conflict."
                 },
                 "IngressIgnorePattern": {
                   "type": "string",
