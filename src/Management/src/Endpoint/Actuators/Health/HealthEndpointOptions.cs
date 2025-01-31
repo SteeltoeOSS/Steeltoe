@@ -24,12 +24,12 @@ public sealed class HealthEndpointOptions : EndpointOptions
     public EndpointClaim? Claim { get; set; }
 
     /// <summary>
-    /// gets or sets the role required to use this endpoint.
+    /// Gets or sets the role required to use this endpoint.
     /// </summary>
     public string? Role { get; set; }
 
     /// <summary>
-    /// Gets the list of configured health groups.
+    /// Gets the configured health groups.
     /// </summary>
     public IDictionary<string, HealthGroupOptions> Groups { get; } = new Dictionary<string, HealthGroupOptions>(StringComparer.OrdinalIgnoreCase);
 
