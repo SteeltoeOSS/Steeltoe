@@ -64,7 +64,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 
         HealthEndpointResponse response = await GetResponseAsync(groupOptions, cancellationToken);
 
-        CleanResult(groupOptions, healthRequest, response);
+        CleanResult(endpointOptions, groupOptions, healthRequest, response);
 
         if (string.IsNullOrEmpty(groupName))
         {
@@ -116,9 +116,9 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         return requestedGroup.Length > 0 && endpointOptions.Groups.TryGetValue(requestedGroup, out HealthGroupOptions? groupOptions) ? groupOptions : null;
     }
 
-    private void CleanResult(HealthGroupOptions? groupOptions, HealthEndpointRequest healthRequest, HealthEndpointResponse response)
+    private void CleanResult(HealthEndpointOptions endpointOptions, HealthGroupOptions? groupOptions, HealthEndpointRequest healthRequest, HealthEndpointResponse response)
     {
-        ShowValues showComponents = groupOptions?.ShowComponents ?? _endpointOptionsMonitor.CurrentValue.ShowComponents;
+        ShowValues showComponents = groupOptions?.ShowComponents ?? endpointOptions.ShowComponents;
 
         if (ShouldClear(showComponents, healthRequest))
         {
@@ -129,7 +129,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         }
         else
         {
-            ShowValues showDetails = groupOptions?.ShowDetails ?? _endpointOptionsMonitor.CurrentValue.ShowDetails;
+            ShowValues showDetails = groupOptions?.ShowDetails ?? endpointOptions.ShowDetails;
 
             if (response.Components.Any() && ShouldClear(showDetails, healthRequest))
             {
