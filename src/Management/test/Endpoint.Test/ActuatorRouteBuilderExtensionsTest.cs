@@ -153,12 +153,10 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         response.StatusCode.Should().Be(expectSuccess ? HttpStatusCode.OK : HttpStatusCode.Forbidden);
     }
 
-#pragma warning disable SA1602 // Enumeration items should be documented
     public enum RegistrationMode
     {
         Services,
         UseEndpoints,
         MapEndpoints
     }
-#pragma warning restore SA1602 // Enumeration items should be documented
 }

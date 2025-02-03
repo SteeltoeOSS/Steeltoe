@@ -7,13 +7,23 @@ using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health;
 
-internal sealed class PostConfigureHealthEndpointOptions(
-    IOptionsMonitor<LivenessStateContributorOptions> livenessOptions, IOptionsMonitor<ReadinessStateContributorOptions> readinessOptions)
-    : IPostConfigureOptions<HealthEndpointOptions>
+internal sealed class PostConfigureHealthEndpointOptions : IPostConfigureOptions<HealthEndpointOptions>
 {
+    private readonly IOptionsMonitor<LivenessStateContributorOptions> _livenessOptionsMonitor;
+    private readonly IOptionsMonitor<ReadinessStateContributorOptions> _readinessOptionsMonitor;
+
+    public PostConfigureHealthEndpointOptions(IOptionsMonitor<LivenessStateContributorOptions> livenessOptionsMonitor, IOptionsMonitor<ReadinessStateContributorOptions> readinessOptionsMonitor)
+    {
+        ArgumentNullException.ThrowIfNull(livenessOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(readinessOptionsMonitor);
+
+        _livenessOptionsMonitor = livenessOptionsMonitor;
+        _readinessOptionsMonitor = readinessOptionsMonitor;
+    }
+
     public void PostConfigure(string? name, HealthEndpointOptions options)
     {
-        if (livenessOptions.CurrentValue.Enabled && !options.Groups.ContainsKey(LivenessStateContributorOptions.GroupName))
+        if (_livenessOptionsMonitor.CurrentValue.Enabled && !options.Groups.ContainsKey(LivenessStateContributorOptions.GroupName))
         {
             options.Groups.Add(LivenessStateContributorOptions.GroupName, new HealthGroupOptions
             {
@@ -21,7 +31,7 @@ internal sealed class PostConfigureHealthEndpointOptions(
             });
         }
 
-        if (readinessOptions.CurrentValue.Enabled && !options.Groups.ContainsKey(ReadinessStateContributorOptions.HealthGroupName))
+        if (_readinessOptionsMonitor.CurrentValue.Enabled && !options.Groups.ContainsKey(ReadinessStateContributorOptions.HealthGroupName))
         {
             options.Groups.Add(ReadinessStateContributorOptions.HealthGroupName, new HealthGroupOptions
             {
