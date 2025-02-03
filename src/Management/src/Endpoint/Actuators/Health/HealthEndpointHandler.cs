@@ -116,7 +116,8 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         return requestedGroup.Length > 0 && endpointOptions.Groups.TryGetValue(requestedGroup, out HealthGroupOptions? groupOptions) ? groupOptions : null;
     }
 
-    private void CleanResult(HealthEndpointOptions endpointOptions, HealthGroupOptions? groupOptions, HealthEndpointRequest healthRequest, HealthEndpointResponse response)
+    private void CleanResult(HealthEndpointOptions endpointOptions, HealthGroupOptions? groupOptions, HealthEndpointRequest healthRequest,
+        HealthEndpointResponse response)
     {
         ShowValues showComponents = groupOptions?.ShowComponents ?? endpointOptions.ShowComponents;
 
