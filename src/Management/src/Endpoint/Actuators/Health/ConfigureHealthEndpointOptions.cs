@@ -27,22 +27,5 @@ internal sealed class ConfigureHealthEndpointOptions(IConfiguration configuratio
                 Value = options.Role
             };
         }
-
-        if (options.Groups.Count == 0)
-        {
-            options.Groups["liveness"] = new HealthGroupOptions
-            {
-                Include = "liveness"
-            };
-
-            options.Groups["readiness"] = new HealthGroupOptions
-            {
-                Include = "readiness"
-            };
-        }
-        else if (options.Groups.Count == 1 && options.Groups.TryGetValue(string.Empty, out HealthGroupOptions? group) && string.IsNullOrEmpty(group.Include))
-        {
-            options.Groups.Clear();
-        }
     }
 }

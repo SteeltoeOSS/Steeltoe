@@ -36,7 +36,6 @@ public sealed class RedisHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("RedisConnectionException: It was not possible to connect ");
-        result.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact]
@@ -64,7 +63,6 @@ public sealed class RedisHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");
-        result.Details.Should().Contain("status", "UP");
         result.Details.Should().Contain("ping", 50D);
     }
 
@@ -98,7 +96,6 @@ public sealed class RedisHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");
-        result.Details.Should().Contain("status", "UP");
         result.Details.Should().ContainKey("ping");
     }
 }

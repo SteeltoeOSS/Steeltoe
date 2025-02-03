@@ -33,7 +33,6 @@ public sealed class RelationalDatabaseHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().Match("NpgsqlException: Failed to connect to *:9999");
-        result.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact(Skip = "Integration test - Requires local PostgreSQL server")]
@@ -53,7 +52,6 @@ public sealed class RelationalDatabaseHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");
-        result.Details.Should().Contain("status", "UP");
     }
 
     [Fact]
@@ -74,7 +72,6 @@ public sealed class RelationalDatabaseHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("MySqlException: ");
-        result.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact(Skip = "Integration test - Requires local MySQL server")]
@@ -94,7 +91,6 @@ public sealed class RelationalDatabaseHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");
-        result.Details.Should().Contain("status", "UP");
     }
 
     [Fact]
@@ -116,7 +112,6 @@ public sealed class RelationalDatabaseHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("SqlException: Connection Timeout Expired.");
-        result.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact(Skip = "Integration test - Requires local SQL Server instance")]
@@ -136,7 +131,6 @@ public sealed class RelationalDatabaseHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");
-        result.Details.Should().Contain("status", "UP");
     }
 
     [Fact]
@@ -162,7 +156,6 @@ public sealed class RelationalDatabaseHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");
-        result.Details.Should().Contain("status", "UP");
     }
 
     [Fact]

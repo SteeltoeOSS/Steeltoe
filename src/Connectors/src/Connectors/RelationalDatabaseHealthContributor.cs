@@ -5,7 +5,6 @@
 using System.Data.Common;
 using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
 
@@ -56,7 +55,6 @@ internal sealed class RelationalDatabaseHealthContributor : IHealthContributor, 
             await command.ExecuteScalarAsync(cancellationToken);
 
             result.Status = HealthStatus.Up;
-            result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
 
             _logger.LogTrace("{DbConnection} at {Host} is up!", Id, Host);
         }
@@ -74,7 +72,6 @@ internal sealed class RelationalDatabaseHealthContributor : IHealthContributor, 
             result.Status = HealthStatus.Down;
             result.Description = $"{Id} health check failed";
             result.Details.Add("error", $"{exception.GetType().Name}: {exception.Message}");
-            result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
         }
         finally
         {

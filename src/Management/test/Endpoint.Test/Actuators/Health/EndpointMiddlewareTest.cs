@@ -51,7 +51,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            ["Management:Endpoints:Health:ShowDetails"] = "whenAuthorized"
+            ["Management:Endpoints:Health:ShowComponents"] = "whenAuthorized"
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -69,17 +69,15 @@ public sealed class EndpointMiddlewareTest : BaseTest
         json.Should().NotBeNull();
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-        health.Should().NotBeNull();
-        health.Should().ContainKey("status");
-        health.Should().NotContainKey("components");
+        health.Should().NotBeNull().And.ContainKey("status").And.NotContainKey("components");
     }
 
     [Fact]
-    public async Task HealthActuator_ReturnsDetailsWhenAuthorized()
+    public async Task HealthActuator_ReturnsComponentsWhenAuthorized()
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            ["Management:Endpoints:Health:ShowDetails"] = "whenAuthorized",
+            ["Management:Endpoints:Health:ShowComponents"] = "whenAuthorized",
             ["Management:Endpoints:Health:Claim:Type"] = "health-details",
             ["Management:Endpoints:Health:Claim:Value"] = "show"
         };
@@ -102,14 +100,15 @@ public sealed class EndpointMiddlewareTest : BaseTest
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
         health.Should().ContainKey("components");
-        health!["components"].ToString().Should().Contain("diskSpace");
+        health!["components"].ToString().Should().Contain("diskSpace").And.NotContain("details");
     }
 
     [Fact]
-    public async Task HealthActuator_ReturnsDetailsWhenConfigured()
+    public async Task HealthActuator_ReturnsComponentsAndDetailsWhenConfigured()
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
+            ["Management:Endpoints:Health:ShowComponents"] = "Always",
             ["Management:Endpoints:Health:ShowDetails"] = "Always"
         };
 
@@ -137,11 +136,45 @@ public sealed class EndpointMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task HealthActuator_ReturnsMicrosoftHealthDetailsWhenConfigured()
+    public async Task HealthActuator_ReturnsMicrosoftHealthComponentsWithoutDetailsAsConfigured()
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
             ["HealthCheckType"] = "default",
+            ["Management:Endpoints:Health:ShowComponents"] = "Always"
+        };
+
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<Startup>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
+
+        using IWebHost app = builder.Build();
+        await app.StartAsync();
+
+        using HttpClient client = app.GetTestClient();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string json = await response.Content.ReadAsStringAsync();
+        json.Should().NotBeNull();
+
+        var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+        health.Should().NotBeNull();
+        health.Should().ContainKey("status");
+        health.Should().ContainKey("components");
+        var components = JsonSerializer.Deserialize<Dictionary<string, object>>(health!["components"].ToString()!);
+        components.Should().ContainKey("diskSpace");
+        components.Should().ContainKey("test-registration");
+        components!["test-registration"].ToString().Should().NotContain("\"tags\":[\"test-tag-1\",\"test-tag-2\"]");
+    }
+
+    [Fact]
+    public async Task HealthActuator_ReturnsMicrosoftHealthComponentsAndDetailsWhenConfigured()
+    {
+        var settings = new Dictionary<string, string?>(_appSettings)
+        {
+            ["HealthCheckType"] = "default",
+            ["Management:Endpoints:Health:ShowComponents"] = "Always",
             ["Management:Endpoints:Health:ShowDetails"] = "Always"
         };
 
@@ -174,7 +207,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            ["Management:Endpoints:Health:ShowDetails"] = "Always",
+            ["Management:Endpoints:Health:ShowComponents"] = "Always",
             ["Management:Endpoints:Health:DiskSpace:Enabled"] = "false"
         };
 

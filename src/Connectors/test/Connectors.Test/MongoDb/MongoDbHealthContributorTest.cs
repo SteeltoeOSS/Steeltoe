@@ -39,7 +39,6 @@ public sealed class MongoDbHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("TimeoutException: A timeout occurred after 1ms selecting ");
-        result.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact]
@@ -62,7 +61,6 @@ public sealed class MongoDbHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");
-        result.Details.Should().Contain("status", "UP");
     }
 
     [Fact]
@@ -116,7 +114,6 @@ public sealed class MongoDbHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");
-        result.Details.Should().Contain("status", "UP");
     }
 
     private ServiceProvider CreateServiceProvider(string serviceName, string connectionString, IMongoClient mongoClient)

@@ -7,7 +7,7 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
-internal abstract class AvailabilityHealthContributor : IHealthContributor
+internal abstract class AvailabilityStateHealthContributor : IHealthContributor
 {
     private readonly IDictionary<AvailabilityState, HealthStatus> _stateMappings;
     private readonly ILogger _logger;
@@ -16,13 +16,13 @@ internal abstract class AvailabilityHealthContributor : IHealthContributor
 
     public abstract string Id { get; }
 
-    protected AvailabilityHealthContributor(IDictionary<AvailabilityState, HealthStatus> stateMappings, ILoggerFactory loggerFactory)
+    protected AvailabilityStateHealthContributor(IDictionary<AvailabilityState, HealthStatus> stateMappings, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(stateMappings);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _stateMappings = stateMappings;
-        _logger = loggerFactory.CreateLogger<AvailabilityHealthContributor>();
+        _logger = loggerFactory.CreateLogger<AvailabilityStateHealthContributor>();
     }
 
     public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
@@ -46,7 +46,6 @@ internal abstract class AvailabilityHealthContributor : IHealthContributor
             try
             {
                 health.Status = _stateMappings[currentHealth];
-                health.Details.Add(currentHealth.GetType().Name, currentHealth.ToString());
             }
             catch (Exception exception)
             {

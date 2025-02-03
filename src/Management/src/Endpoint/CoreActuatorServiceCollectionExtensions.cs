@@ -112,6 +112,16 @@ public static class CoreActuatorServiceCollectionExtensions
         services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>, ConfigurationChangeTokenSource<TOptions>>();
     }
 
+    internal static void PostConfigureOptionsWithChangeTokenSource<TOptions, TPostConfigureOptions>(this IServiceCollection services)
+        where TOptions : class
+        where TPostConfigureOptions : class, IPostConfigureOptions<TOptions>
+    {
+        services.AddOptions();
+        services.TryAddEnumerable(ServiceDescriptor.Transient<IPostConfigureOptions<TOptions>, TPostConfigureOptions>());
+
+        services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>, ConfigurationChangeTokenSource<TOptions>>();
+    }
+
     /// <summary>
     /// Configures an <see cref="Action{IEndpointConventionBuilder}" /> to customize the mapped actuator endpoints.
     /// </summary>

@@ -12,12 +12,16 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.Availability;
 public sealed class LivenessHealthContributorTest
 {
     private readonly ApplicationAvailability _availability = new(NullLogger<ApplicationAvailability>.Instance);
-    private readonly TestOptionsMonitor<LivenessHealthContributorOptions> _optionsMonitor = new();
+
+    private readonly TestOptionsMonitor<LivenessStateContributorOptions> _optionsMonitor = TestOptionsMonitor.Create(new LivenessStateContributorOptions
+    {
+        Enabled = true
+    });
 
     [Fact]
     public async Task HandlesUnknown()
     {
-        var contributor = new LivenessHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
+        var contributor = new LivenessStateContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
@@ -29,7 +33,7 @@ public sealed class LivenessHealthContributorTest
     public async Task HandlesCorrect()
     {
         _availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, "tests");
-        var contributor = new LivenessHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
+        var contributor = new LivenessStateContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
@@ -41,7 +45,7 @@ public sealed class LivenessHealthContributorTest
     public async Task HandlesBroken()
     {
         _availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Broken, "tests");
-        var contributor = new LivenessHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
+        var contributor = new LivenessStateContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
