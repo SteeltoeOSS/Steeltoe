@@ -12,7 +12,8 @@ internal sealed class PostConfigureHealthEndpointOptions : IPostConfigureOptions
     private readonly IOptionsMonitor<LivenessStateContributorOptions> _livenessOptionsMonitor;
     private readonly IOptionsMonitor<ReadinessStateContributorOptions> _readinessOptionsMonitor;
 
-    public PostConfigureHealthEndpointOptions(IOptionsMonitor<LivenessStateContributorOptions> livenessOptionsMonitor, IOptionsMonitor<ReadinessStateContributorOptions> readinessOptionsMonitor)
+    public PostConfigureHealthEndpointOptions(IOptionsMonitor<LivenessStateContributorOptions> livenessOptionsMonitor,
+        IOptionsMonitor<ReadinessStateContributorOptions> readinessOptionsMonitor)
     {
         ArgumentNullException.ThrowIfNull(livenessOptionsMonitor);
         ArgumentNullException.ThrowIfNull(readinessOptionsMonitor);
