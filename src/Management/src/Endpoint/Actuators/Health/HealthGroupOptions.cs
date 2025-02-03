@@ -7,7 +7,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.Health;
 public sealed class HealthGroupOptions
 {
     /// <summary>
-    /// Gets or sets a comma-separated list of contributors or tags to include in this group.
+    /// Gets or sets a comma-separated list of contributors to include in this group.
     /// </summary>
     public string? Include { get; set; }
 

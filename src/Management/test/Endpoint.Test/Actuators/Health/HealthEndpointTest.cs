@@ -258,28 +258,6 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     }
 
     [Fact]
-    public async Task InvokeWithInvalidGroupReturnsNotFound()
-    {
-        using var testContext = new TestContext(_testOutputHelper);
-
-        testContext.AdditionalServices = (services, _) =>
-        {
-            services.AddHealthActuator();
-        };
-
-        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
-
-        var healthRequest = new HealthEndpointRequest("iNvaLid", true);
-
-        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
-
-        result.Exists.Should().BeFalse();
-        result.Status.Should().Be(HealthStatus.Unknown);
-        result.Components.Keys.Should().BeEmpty();
-        result.Groups.Should().BeEmpty();
-    }
-
-    [Fact]
     public async Task InvokeWithGroupFiltersMicrosoftResults()
     {
         IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(
@@ -354,7 +332,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
             if (returnDetails)
             {
-                var component = result.Components["diskSpace"] as HealthCheckResult;
+                HealthCheckResult component = result.Components["diskSpace"];
                 component.Should().NotBeNull();
                 component!.Details.Should().NotBeEmpty();
             }

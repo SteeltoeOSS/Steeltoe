@@ -42,28 +42,43 @@ public sealed class HealthTest : BaseTest
             Description = "Test",
             Components =
             {
-                { "item1", new HealthData() },
-                { "item2", "String" },
-                { "item3", false }
+                ["exampleContributor"] = new HealthCheckResult
+                {
+                    Details =
+                    {
+                        { "item1", new HealthData() },
+                        { "item2", "String" },
+                        { "item3", false }
+                    }
+                }
             }
         };
 
         string json = Serialize(health);
 
         json.Should().BeJson("""
-            {
-              "status": "OUT_OF_SERVICE",
-              "description": "Test",
-              "components": {
-                "item1": {
-                  "stringProperty": "TestData",
-                  "intProperty": 100,
-                  "boolProperty": true
-                },
-                "item2": "String",
-                "item3": false
+              {
+                "status": "OUT_OF_SERVICE",
+                "description": "Test",
+                "components": 
+                {
+                  "exampleContributor": 
+                  {
+                    "status": "UNKNOWN",
+                    "details":
+                    {
+                      "item1":
+                      {
+                        "stringProperty": "TestData",
+                        "intProperty": 100,
+                        "boolProperty": true 
+                      },
+                      "item2": "String", 
+                      "item3": false 
+                    }
+                  }
+                }
               }
-            }
             """);
     }
 

@@ -151,7 +151,7 @@ Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointRequest.GroupName.ge
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointRequest.HasClaim.get -> bool
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointRequest.HealthEndpointRequest(string! groupName, bool hasClaim) -> void
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse
-Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Components.get -> System.Collections.Generic.IDictionary<string!, object!>!
+Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Components.get -> System.Collections.Generic.IDictionary<string!, Steeltoe.Common.HealthChecks.HealthCheckResult!>!
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Description.get -> string?
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Description.init -> void
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Exists.get -> bool
