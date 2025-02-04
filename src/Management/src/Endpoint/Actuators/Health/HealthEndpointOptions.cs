@@ -19,12 +19,12 @@ public sealed class HealthEndpointOptions : EndpointOptions
     public ShowValues ShowDetails { get; set; }
 
     /// <summary>
-    /// Gets or sets the claim requirements for using this endpoint.
+    /// Gets or sets the claim requirements for retrieving components and/or details.
     /// </summary>
     public EndpointClaim? Claim { get; set; }
 
     /// <summary>
-    /// Gets or sets the role required to use this endpoint.
+    /// Gets or sets the role required to retrieve components and/or details.
     /// </summary>
     public string? Role { get; set; }
 
