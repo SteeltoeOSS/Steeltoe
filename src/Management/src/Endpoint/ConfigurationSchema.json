@@ -228,7 +228,7 @@
                       "type": "string"
                     }
                   },
-                  "description": "Gets or sets the claim requirements for using this endpoint."
+                  "description": "Gets or sets the claim requirements for retrieving components and/or details."
                 },
                 "DiskSpace": {
                   "type": "object",
@@ -258,7 +258,7 @@
                     "properties": {
                       "Include": {
                         "type": "string",
-                        "description": "Gets or sets a comma-separated list of contributors to include in this group."
+                        "description": "Gets or sets a comma-separated list of health contributor IDs and/or health check registration names to include in this group."
                       },
                       "ShowComponents": {
                         "enum": [
@@ -325,7 +325,7 @@
                 },
                 "Role": {
                   "type": "string",
-                  "description": "Gets or sets the role required to use this endpoint."
+                  "description": "Gets or sets the role required to retrieve components and/or details."
                 },
                 "ShowComponents": {
                   "enum": [

@@ -9,7 +9,7 @@ using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.Availability;
 
-public sealed class LivenessHealthContributorTest
+public sealed class LivenessStateContributorTest
 {
     private readonly ApplicationAvailability _availability = new(NullLogger<ApplicationAvailability>.Instance);
 

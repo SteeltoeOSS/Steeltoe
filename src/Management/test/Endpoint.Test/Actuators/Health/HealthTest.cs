@@ -34,7 +34,7 @@ public sealed class HealthTest : BaseTest
     }
 
     [Fact]
-    public void Serialize_WithComponents_ReturnsExpected()
+    public void Serialize_WithDetails_ReturnsExpected()
     {
         var health = new HealthEndpointResponse
         {
@@ -57,28 +57,28 @@ public sealed class HealthTest : BaseTest
         string json = Serialize(health);
 
         json.Should().BeJson("""
+            {
+              "status": "OUT_OF_SERVICE",
+              "description": "Test",
+              "components":
               {
-                "status": "OUT_OF_SERVICE",
-                "description": "Test",
-                "components": 
+                "exampleContributor":
                 {
-                  "exampleContributor": 
+                  "status": "UNKNOWN",
+                  "details":
                   {
-                    "status": "UNKNOWN",
-                    "details":
+                    "item1":
                     {
-                      "item1":
-                      {
-                        "stringProperty": "TestData",
-                        "intProperty": 100,
-                        "boolProperty": true 
-                      },
-                      "item2": "String", 
-                      "item3": false 
-                    }
+                      "stringProperty": "TestData",
+                      "intProperty": 100,
+                      "boolProperty": true
+                    },
+                    "item2": "String",
+                    "item3": false
                   }
                 }
               }
+            }
             """);
     }
 
@@ -109,8 +109,10 @@ public sealed class HealthTest : BaseTest
             {
               "status": "OUT_OF_SERVICE",
               "description": "Test",
-              "components": {
-                "ExampleContributor": {
+              "components":
+              {
+                "ExampleContributor":
+                {
                   "status": "UNKNOWN",
                   "description": "ExampleDescription",
                   "details": {

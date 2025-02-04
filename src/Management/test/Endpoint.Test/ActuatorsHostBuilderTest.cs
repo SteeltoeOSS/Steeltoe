@@ -160,6 +160,37 @@ public sealed class ActuatorsHostBuilderTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
+    public async Task HealthActuatorWithProbes(HostBuilderType hostBuilderType)
+    {
+        var appSettings = new Dictionary<string, string?>(AppSettings)
+        {
+            ["Management:Endpoints:Health:Liveness:Enabled"] = "true",
+            ["Management:Endpoints:Health:Readiness:Enabled"] = "true"
+        };
+
+        await using HostWrapper host = hostBuilderType.Build(builder =>
+        {
+            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+            builder.ConfigureServices(services => services.AddHealthActuator());
+        });
+
+        await host.StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
+
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string responseText = await response.Content.ReadAsStringAsync();
+
+        responseText.Should().Be("""
+            {"status":"UP","groups":["liveness","readiness"]}
+            """);
+    }
+
+    [Theory]
+    [InlineData(HostBuilderType.Host)]
+    [InlineData(HostBuilderType.WebHost)]
+    [InlineData(HostBuilderType.WebApplication)]
     public async Task HealthActuatorWithComponents(HostBuilderType hostBuilderType)
     {
         var appSettings = new Dictionary<string, string?>(AppSettings)
@@ -182,9 +213,10 @@ public sealed class ActuatorsHostBuilderTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync();
-        responseText.Should().Contain("\"diskSpace\":");
-        responseText.Should().Contain("\"readinessState\":");
-        responseText.Should().Contain("\"livenessState\":");
+
+        responseText.Should().Be("""
+            {"status":"UP","components":{"ping":{"status":"UP"},"diskSpace":{"status":"UP"},"readinessState":{"status":"UP"},"livenessState":{"status":"UP"}},"groups":["liveness","readiness"]}
+            """);
     }
 
     [Theory]
@@ -245,8 +277,10 @@ public sealed class ActuatorsHostBuilderTest
         response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 
         string responseText = await response.Content.ReadAsStringAsync();
-        responseText.Should().Contain("\"diskSpace\":");
-        responseText.Should().Contain("\"alwaysDown\":");
+
+        responseText.Should().Be("""
+            {"status":"DOWN","components":{"alwaysDown":{"status":"DOWN"},"ping":{"status":"UP"},"diskSpace":{"status":"UP"}}}
+            """);
     }
 
     [Theory]
@@ -281,7 +315,7 @@ public sealed class ActuatorsHostBuilderTest
         readinessResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string readinessResponseText = await readinessResponse.Content.ReadAsStringAsync();
-        readinessResponseText.Should().Contain("""{"status":"UP","components":{"readinessState":{"status":"UP"}}}""");
+        readinessResponseText.Should().Be("""{"status":"UP","components":{"readinessState":{"status":"UP"}}}""");
 
         var availability = host.Services.GetRequiredService<ApplicationAvailability>();
         await host.StopAsync();

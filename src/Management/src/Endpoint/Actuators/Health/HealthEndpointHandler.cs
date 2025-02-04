@@ -64,9 +64,9 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 
         HealthEndpointResponse response = await GetResponseAsync(groupOptions, cancellationToken);
 
-        CleanResult(endpointOptions, groupOptions, healthRequest, response);
+        CleanResponse(response, endpointOptions, groupOptions, healthRequest);
 
-        if (string.IsNullOrEmpty(groupName))
+        if (groupOptions is null)
         {
             foreach (string group in endpointOptions.Groups.Select(group => group.Key))
             {
@@ -91,10 +91,10 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
     {
         if (groupOptions is { Include: not null })
         {
-            string[] includedContributors = groupOptions.Include.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            string[] includedRegistrations = groupOptions.Include.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 
             return _healthOptionsMonitor.CurrentValue.Registrations
-                .Where(contributor => includedContributors.Contains(contributor.Name, StringComparer.OrdinalIgnoreCase)).ToArray();
+                .Where(contributor => includedRegistrations.Contains(contributor.Name, StringComparer.OrdinalIgnoreCase)).ToArray();
         }
 
         return _healthOptionsMonitor.CurrentValue.Registrations;
@@ -116,8 +116,8 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         return requestedGroup.Length > 0 && endpointOptions.Groups.TryGetValue(requestedGroup, out HealthGroupOptions? groupOptions) ? groupOptions : null;
     }
 
-    private void CleanResult(HealthEndpointOptions endpointOptions, HealthGroupOptions? groupOptions, HealthEndpointRequest healthRequest,
-        HealthEndpointResponse response)
+    private void CleanResponse(HealthEndpointResponse response, HealthEndpointOptions endpointOptions, HealthGroupOptions? groupOptions,
+        HealthEndpointRequest healthRequest)
     {
         ShowValues showComponents = groupOptions?.ShowComponents ?? endpointOptions.ShowComponents;
 
@@ -132,14 +132,14 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         {
             ShowValues showDetails = groupOptions?.ShowDetails ?? endpointOptions.ShowDetails;
 
-            if (response.Components.Any() && ShouldClear(showDetails, healthRequest))
+            if (ShouldClear(showDetails, healthRequest))
             {
                 _logger.LogTrace("Clearing health check component details. ShowDetails={ShowDetails}, HasClaim={HasClaimForHealth}.", showDetails,
                     healthRequest.HasClaim);
 
-                foreach (KeyValuePair<string, HealthCheckResult> component in response.Components)
+                foreach (HealthCheckResult component in response.Components.Values)
                 {
-                    component.Value.Details.Clear();
+                    component.Details.Clear();
                 }
             }
         }
