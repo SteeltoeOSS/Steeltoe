@@ -60,15 +60,11 @@ public sealed class HealthTest : BaseTest
             {
               "status": "OUT_OF_SERVICE",
               "description": "Test",
-              "components":
-              {
-                "exampleContributor":
-                {
+              "components": {
+                "exampleContributor": {
                   "status": "UNKNOWN",
-                  "details":
-                  {
-                    "item1":
-                    {
+                  "details": {
+                    "item1": {
                       "stringProperty": "TestData",
                       "intProperty": 100,
                       "boolProperty": true
@@ -109,10 +105,8 @@ public sealed class HealthTest : BaseTest
             {
               "status": "OUT_OF_SERVICE",
               "description": "Test",
-              "components":
-              {
-                "ExampleContributor":
-                {
+              "components": {
+                "ExampleContributor": {
                   "status": "UNKNOWN",
                   "description": "ExampleDescription",
                   "details": {
