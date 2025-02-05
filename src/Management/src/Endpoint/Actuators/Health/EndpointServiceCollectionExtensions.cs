@@ -50,6 +50,8 @@ public static class EndpointServiceCollectionExtensions
         services.TryAddSingleton<IHealthAggregator, HealthAggregator>();
         RegisterDefaultHealthContributors(services);
 
+        services.PostConfigureOptionsWithChangeTokenSource<HealthEndpointOptions, PostConfigureHealthEndpointOptions>();
+
         return services;
     }
 
@@ -64,11 +66,11 @@ public static class EndpointServiceCollectionExtensions
         services.TryAddSingleton<ApplicationAvailability>();
         services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, AvailabilityStartupFilter>());
 
-        services.ConfigureOptionsWithChangeTokenSource<LivenessHealthContributorOptions, ConfigureLivenessHealthContributorOptions>();
-        AddHealthContributor<LivenessHealthContributor>(services);
+        services.ConfigureOptionsWithChangeTokenSource<LivenessStateContributorOptions, ConfigureLivenessStateContributorOptions>();
+        AddHealthContributor<LivenessStateContributor>(services);
 
-        services.ConfigureOptionsWithChangeTokenSource<ReadinessHealthContributorOptions, ConfigureReadinessHealthContributorOptions>();
-        AddHealthContributor<ReadinessHealthContributor>(services);
+        services.ConfigureOptionsWithChangeTokenSource<ReadinessStateContributorOptions, ConfigureReadinessStateContributorOptions>();
+        AddHealthContributor<ReadinessStateContributor>(services);
     }
 
     /// <summary>

@@ -26,7 +26,7 @@ public sealed class HealthEndpointResponse
     /// Gets the individual health check components, including their details.
     /// </summary>
     [JsonIgnoreEmptyCollection]
-    public IDictionary<string, object> Components { get; } = new Dictionary<string, object>();
+    public IDictionary<string, HealthCheckResult> Components { get; } = new Dictionary<string, HealthCheckResult>();
 
     /// <summary>
     /// Gets the list of available health groups.
@@ -53,7 +53,10 @@ public sealed class HealthEndpointResponse
 
         foreach ((string key, object value) in result.Details)
         {
-            Components[key] = value;
+            if (value is HealthCheckResult healthCheck)
+            {
+                Components[key] = healthCheck;
+            }
         }
     }
 }

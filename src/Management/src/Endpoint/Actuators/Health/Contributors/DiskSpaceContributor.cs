@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
@@ -57,7 +56,8 @@ internal sealed class DiskSpaceContributor : IHealthContributor
                     result.Details.Add("total", driveInfo.TotalSize);
                     result.Details.Add("free", freeSpaceInBytes);
                     result.Details.Add("threshold", options.Threshold);
-                    result.Details.Add("status", result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+                    result.Details.Add("path", absolutePath);
+                    result.Details.Add("exists", driveInfo.RootDirectory.Exists);
                     return result;
                 }
             }
@@ -69,8 +69,7 @@ internal sealed class DiskSpaceContributor : IHealthContributor
             Description = "Failed to determine free disk space.",
             Details =
             {
-                ["error"] = "The configured path is invalid or does not exist.",
-                ["status"] = HealthStatus.Unknown.ToSnakeCaseString(SnakeCaseStyle.AllCaps)
+                ["error"] = "The configured path is invalid or does not exist."
             }
         };
     }

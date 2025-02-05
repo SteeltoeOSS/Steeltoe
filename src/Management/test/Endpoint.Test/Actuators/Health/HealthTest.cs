@@ -34,7 +34,7 @@ public sealed class HealthTest : BaseTest
     }
 
     [Fact]
-    public void Serialize_WithComponents_ReturnsExpected()
+    public void Serialize_WithDetails_ReturnsExpected()
     {
         var health = new HealthEndpointResponse
         {
@@ -42,9 +42,15 @@ public sealed class HealthTest : BaseTest
             Description = "Test",
             Components =
             {
-                { "item1", new HealthData() },
-                { "item2", "String" },
-                { "item3", false }
+                ["exampleContributor"] = new HealthCheckResult
+                {
+                    Details =
+                    {
+                        { "item1", new HealthData() },
+                        { "item2", "String" },
+                        { "item3", false }
+                    }
+                }
             }
         };
 
@@ -55,13 +61,18 @@ public sealed class HealthTest : BaseTest
               "status": "OUT_OF_SERVICE",
               "description": "Test",
               "components": {
-                "item1": {
-                  "stringProperty": "TestData",
-                  "intProperty": 100,
-                  "boolProperty": true
-                },
-                "item2": "String",
-                "item3": false
+                "exampleContributor": {
+                  "status": "UNKNOWN",
+                  "details": {
+                    "item1": {
+                      "stringProperty": "TestData",
+                      "intProperty": 100,
+                      "boolProperty": true
+                    },
+                    "item2": "String",
+                    "item3": false
+                  }
+                }
               }
             }
             """);

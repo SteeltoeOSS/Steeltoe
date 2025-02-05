@@ -55,37 +55,18 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 
     public async Task<HealthEndpointResponse> InvokeAsync(HealthEndpointRequest healthRequest, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(healthRequest);
+
         string groupName = healthRequest.GroupName;
         HealthEndpointOptions endpointOptions = _endpointOptionsMonitor.CurrentValue;
 
-        IHealthContributor[] filteredContributors;
-        ICollection<HealthCheckRegistration> healthCheckRegistrations;
+        HealthGroupOptions? groupOptions = GetHealthGroupOptions(groupName, endpointOptions);
 
-        if (!string.IsNullOrEmpty(groupName) && groupName != endpointOptions.Id)
-        {
-            filteredContributors = GetFilteredContributors(groupName);
-            healthCheckRegistrations = GetFilteredHealthCheckServiceOptions(groupName);
-        }
-        else
-        {
-            filteredContributors = _healthContributors;
-            healthCheckRegistrations = _healthOptionsMonitor.CurrentValue.Registrations;
-        }
+        HealthEndpointResponse response = await GetResponseAsync(groupOptions, cancellationToken);
 
-        HealthCheckResult result = await _healthAggregator.AggregateAsync(filteredContributors, healthCheckRegistrations, _serviceProvider, cancellationToken);
+        CleanResponse(response, endpointOptions, groupOptions, healthRequest);
 
-        var response = new HealthEndpointResponse(result);
-
-        ShowDetails showDetails = endpointOptions.ShowDetails;
-
-        if (showDetails == ShowDetails.Never || (showDetails == ShowDetails.WhenAuthorized && !healthRequest.HasClaim))
-        {
-            _logger.LogTrace("Clearing health check details. ShowDetails={ShowDetails}, HasClaim={HasClaimForHealthDetails}.", showDetails,
-                healthRequest.HasClaim);
-
-            response.Components.Clear();
-        }
-        else
+        if (groupOptions is null)
         {
             foreach (string group in endpointOptions.Groups.Select(group => group.Key))
             {
@@ -96,56 +77,76 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         return response;
     }
 
-    private ICollection<HealthCheckRegistration> GetFilteredHealthCheckServiceOptions(string requestedGroup)
+    private async Task<HealthEndpointResponse> GetResponseAsync(HealthGroupOptions? groupOptions, CancellationToken cancellationToken)
     {
-        if (!string.IsNullOrEmpty(requestedGroup))
-        {
-            if (_endpointOptionsMonitor.CurrentValue.Groups.TryGetValue(requestedGroup, out HealthGroupOptions? groupOptions) && groupOptions.Include != null)
-            {
-                string[] includedContributors = groupOptions.Include.Split(',');
+        IHealthContributor[] filteredContributors = GetFilteredContributors(groupOptions);
+        ICollection<HealthCheckRegistration> healthCheckRegistrations = GetFilteredRegistrations(groupOptions);
 
-                return _healthOptionsMonitor.CurrentValue.Registrations
-                    .Where(registration => includedContributors.Contains(registration.Name, StringComparer.OrdinalIgnoreCase)).ToArray();
-            }
+        HealthCheckResult result = await _healthAggregator.AggregateAsync(filteredContributors, healthCheckRegistrations, _serviceProvider, cancellationToken);
 
-            _logger.LogInformation("Health check requested for a group that is not configured");
-        }
-        else
+        return new HealthEndpointResponse(result);
+    }
+
+    private ICollection<HealthCheckRegistration> GetFilteredRegistrations(HealthGroupOptions? groupOptions)
+    {
+        if (groupOptions is { Include: not null })
         {
-            _logger.LogTrace("Health group name not found in request");
+            string[] includedRegistrations = groupOptions.Include.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+            return _healthOptionsMonitor.CurrentValue.Registrations
+                .Where(contributor => includedRegistrations.Contains(contributor.Name, StringComparer.OrdinalIgnoreCase)).ToArray();
         }
 
         return _healthOptionsMonitor.CurrentValue.Registrations;
     }
 
-    /// <summary>
-    /// Filter out health contributors that do not belong to the requested group.
-    /// </summary>
-    /// <param name="requestedGroup">
-    /// Name of group from request.
-    /// </param>
-    /// <returns>
-    /// If the group is configured, returns health contributors that belong to the group.
-    /// <para />
-    /// If group can't be parsed or is not configured, returns all health contributors.
-    /// </returns>
-    private IHealthContributor[] GetFilteredContributors(string requestedGroup)
+    private IHealthContributor[] GetFilteredContributors(HealthGroupOptions? groupOptions)
     {
-        if (!string.IsNullOrEmpty(requestedGroup))
+        if (groupOptions is { Include: not null })
         {
-            if (_endpointOptionsMonitor.CurrentValue.Groups.TryGetValue(requestedGroup, out HealthGroupOptions? groupOptions) && groupOptions.Include != null)
-            {
-                string[] includedContributors = groupOptions.Include.Split(',');
-                return _healthContributors.Where(contributor => includedContributors.Contains(contributor.Id, StringComparer.OrdinalIgnoreCase)).ToArray();
-            }
-
-            _logger.LogInformation("Health check requested for a group that is not configured");
-        }
-        else
-        {
-            _logger.LogTrace("Health group name not found in request");
+            string[] includedContributors = groupOptions.Include.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            return _healthContributors.Where(contributor => includedContributors.Contains(contributor.Id, StringComparer.OrdinalIgnoreCase)).ToArray();
         }
 
         return _healthContributors;
+    }
+
+    private static HealthGroupOptions? GetHealthGroupOptions(string requestedGroup, HealthEndpointOptions endpointOptions)
+    {
+        return requestedGroup.Length > 0 && endpointOptions.Groups.TryGetValue(requestedGroup, out HealthGroupOptions? groupOptions) ? groupOptions : null;
+    }
+
+    private void CleanResponse(HealthEndpointResponse response, HealthEndpointOptions endpointOptions, HealthGroupOptions? groupOptions,
+        HealthEndpointRequest healthRequest)
+    {
+        ShowValues showComponents = groupOptions?.ShowComponents ?? endpointOptions.ShowComponents;
+
+        if (ShouldClear(showComponents, healthRequest))
+        {
+            _logger.LogTrace("Clearing health check components. ShowComponents={ShowComponents}, HasClaim={HasClaimForHealth}.", showComponents,
+                healthRequest.HasClaim);
+
+            response.Components.Clear();
+        }
+        else
+        {
+            ShowValues showDetails = groupOptions?.ShowDetails ?? endpointOptions.ShowDetails;
+
+            if (ShouldClear(showDetails, healthRequest))
+            {
+                _logger.LogTrace("Clearing health check component details. ShowDetails={ShowDetails}, HasClaim={HasClaimForHealth}.", showDetails,
+                    healthRequest.HasClaim);
+
+                foreach (HealthCheckResult component in response.Components.Values)
+                {
+                    component.Details.Clear();
+                }
+            }
+        }
+    }
+
+    private static bool ShouldClear(ShowValues showValues, HealthEndpointRequest healthRequest)
+    {
+        return showValues == ShowValues.Never || (showValues == ShowValues.WhenAuthorized && !healthRequest.HasClaim);
     }
 }

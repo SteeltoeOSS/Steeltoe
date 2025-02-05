@@ -4,10 +4,12 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
-public sealed class ReadinessHealthContributorOptions
+public sealed class LivenessStateContributorOptions
 {
+    internal static string GroupName => "liveness";
+
     /// <summary>
-    /// Gets or sets a value indicating whether to enable the readiness contributor. Default value: true.
+    /// Gets or sets a value indicating whether to enable the liveness contributor. Default value: false.
     /// </summary>
-    public bool Enabled { get; set; } = true;
+    public bool Enabled { get; set; }
 }

@@ -227,7 +227,8 @@
                     "Value": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "description": "Gets or sets the claim requirements for retrieving components and/or details."
                 },
                 "DiskSpace": {
                   "type": "object",
@@ -257,10 +258,27 @@
                     "properties": {
                       "Include": {
                         "type": "string",
-                        "description": "Gets or sets a comma-separated list of contributors or tags to include in this group."
+                        "description": "Gets or sets a comma-separated list of health contributor IDs and/or health check registration names to include in this group."
+                      },
+                      "ShowComponents": {
+                        "enum": [
+                          "Never",
+                          "WhenAuthorized",
+                          "Always"
+                        ],
+                        "description": "Gets or sets whether to show components in this group, overriding the endpoint-level setting."
+                      },
+                      "ShowDetails": {
+                        "enum": [
+                          "Never",
+                          "WhenAuthorized",
+                          "Always"
+                        ],
+                        "description": "Gets or sets whether to show details of components in this group, overriding the endpoint-level setting."
                       }
                     }
-                  }
+                  },
+                  "description": "Gets the configured health groups."
                 },
                 "Id": {
                   "type": "string",
@@ -271,7 +289,7 @@
                   "properties": {
                     "Enabled": {
                       "type": "boolean",
-                      "description": "Gets or sets a value indicating whether to enable the liveness contributor. Default value: true."
+                      "description": "Gets or sets a value indicating whether to enable the liveness contributor. Default value: false."
                     }
                   }
                 },
@@ -293,7 +311,7 @@
                   "properties": {
                     "Enabled": {
                       "type": "boolean",
-                      "description": "Gets or sets a value indicating whether to enable the readiness contributor. Default value: true."
+                      "description": "Gets or sets a value indicating whether to enable the readiness contributor. Default value: false."
                     }
                   }
                 },
@@ -306,7 +324,16 @@
                   "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
                 },
                 "Role": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets the role required to retrieve components and/or details."
+                },
+                "ShowComponents": {
+                  "enum": [
+                    "Never",
+                    "WhenAuthorized",
+                    "Always"
+                  ],
+                  "description": "Gets or sets whether to show components in responses."
                 },
                 "ShowDetails": {
                   "enum": [
@@ -314,7 +341,7 @@
                     "WhenAuthorized",
                     "Always"
                   ],
-                  "description": "Represents the level of detail to include in the health endpoint response."
+                  "description": "Gets or sets whether to show details of components in responses."
                 }
               }
             },

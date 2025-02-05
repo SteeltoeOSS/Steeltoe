@@ -32,7 +32,8 @@ public sealed class DiskSpaceContributorTest : BaseTest
         Assert.True(result.Details.ContainsKey("total"));
         Assert.True(result.Details.ContainsKey("free"));
         Assert.True(result.Details.ContainsKey("threshold"));
-        Assert.True(result.Details.ContainsKey("status"));
+        Assert.True(result.Details.ContainsKey("path"));
+        Assert.True(result.Details.ContainsKey("exists"));
     }
 
     [Fact]
@@ -51,7 +52,6 @@ public sealed class DiskSpaceContributorTest : BaseTest
         result!.Status.Should().Be(HealthStatus.Unknown);
         result.Description.Should().Be("Failed to determine free disk space.");
         result.Details.Should().Contain("error", "The configured path is invalid or does not exist.");
-        result.Details.Should().Contain("status", "UNKNOWN");
     }
 
     [Theory]

@@ -29,9 +29,10 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 
     protected override async Task<HealthEndpointResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        string groupName = GetRequestedHealthGroup(context.Request.Path);
+        HealthEndpointOptions currentEndpointOptions = _endpointOptionsMonitor.CurrentValue;
+        string groupName = GetRequestedHealthGroup(context.Request.Path, currentEndpointOptions, _logger);
 
-        if (!IsValidGroup(groupName))
+        if (!IsValidGroup(groupName, currentEndpointOptions))
         {
             return new HealthEndpointResponse
             {
@@ -39,7 +40,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
             };
         }
 
-        bool hasClaim = GetHasClaim(context);
+        bool hasClaim = GetHasClaim(context, currentEndpointOptions);
 
         var request = new HealthEndpointRequest(groupName, hasClaim);
         return await EndpointHandler.InvokeAsync(request, context.RequestAborted);
@@ -48,29 +49,29 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
     /// <summary>
     /// Returns the last segment of the HTTP request path, which is expected to be the name of a configured health group.
     /// </summary>
-    private string GetRequestedHealthGroup(PathString requestPath)
+    private static string GetRequestedHealthGroup(PathString requestPath, HealthEndpointOptions endpointOptions, ILogger<HealthEndpointMiddleware> logger)
     {
         string[] requestComponents = requestPath.Value?.Split('/') ?? [];
 
-        if (requestComponents.Length > 0)
+        if (requestComponents.Length > 0 && requestComponents[^1] != endpointOptions.Id)
         {
+            logger.LogTrace("Found group '{HealthGroup}' in the request path.", requestComponents[^1]);
             return requestComponents[^1];
         }
 
-        _logger.LogWarning("Failed to find anything in the request from which to parse health group name.");
+        logger.LogTrace("Did not find a health group in the request path.");
 
         return string.Empty;
     }
 
-    private bool IsValidGroup(string groupName)
+    private static bool IsValidGroup(string groupName, HealthEndpointOptions endpointOptions)
     {
-        return groupName == _endpointOptionsMonitor.CurrentValue.Id || groupName == "{**_}" ||
-            _endpointOptionsMonitor.CurrentValue.Groups.Any(pair => pair.Key == groupName);
+        return string.IsNullOrEmpty(groupName) || endpointOptions.Groups.Any(pair => pair.Key == groupName);
     }
 
-    private bool GetHasClaim(HttpContext context)
+    private static bool GetHasClaim(HttpContext context, HealthEndpointOptions endpointOptions)
     {
-        EndpointClaim? claim = _endpointOptionsMonitor.CurrentValue.Claim;
+        EndpointClaim? claim = endpointOptions.Claim;
         return claim is { Type: not null, Value: not null } && context.User.HasClaim(claim.Type, claim.Value);
     }
 

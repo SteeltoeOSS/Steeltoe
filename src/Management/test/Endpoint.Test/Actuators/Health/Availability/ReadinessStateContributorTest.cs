@@ -9,15 +9,19 @@ using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.Availability;
 
-public sealed class LivenessHealthContributorTest
+public sealed class ReadinessStateContributorTest
 {
     private readonly ApplicationAvailability _availability = new(NullLogger<ApplicationAvailability>.Instance);
-    private readonly TestOptionsMonitor<LivenessHealthContributorOptions> _optionsMonitor = new();
+
+    private readonly TestOptionsMonitor<ReadinessStateContributorOptions> _optionsMonitor = TestOptionsMonitor.Create(new ReadinessStateContributorOptions
+    {
+        Enabled = true
+    });
 
     [Fact]
     public async Task HandlesUnknown()
     {
-        var contributor = new LivenessHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
+        var contributor = new ReadinessStateContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
@@ -26,10 +30,10 @@ public sealed class LivenessHealthContributorTest
     }
 
     [Fact]
-    public async Task HandlesCorrect()
+    public async Task HandlesAccepting()
     {
-        _availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, "tests");
-        var contributor = new LivenessHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
+        _availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, "tests");
+        var contributor = new ReadinessStateContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
@@ -38,14 +42,14 @@ public sealed class LivenessHealthContributorTest
     }
 
     [Fact]
-    public async Task HandlesBroken()
+    public async Task HandlesRefusing()
     {
-        _availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Broken, "tests");
-        var contributor = new LivenessHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
+        _availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.RefusingTraffic, "tests");
+        var contributor = new ReadinessStateContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
         Assert.NotNull(result);
-        Assert.Equal(HealthStatus.Down, result.Status);
+        Assert.Equal(HealthStatus.OutOfService, result.Status);
     }
 }

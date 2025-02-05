@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
@@ -176,18 +175,22 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     {
         using var testContext = new TestContext(_testOutputHelper);
 
-        testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
-            ["Management:Endpoints:Health:ShowDetails"] = "Always"
-        });
+            ["Management:Endpoints:Health:ShowComponents"] = "Always",
+            ["Management:Endpoints:Health:Liveness:Enabled"] = "true"
+        };
+
+        testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(appSettings);
 
         var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
-        TestOptionsMonitor<LivenessHealthContributorOptions> optionsMonitor = new();
+
+        IOptionsMonitor<LivenessStateContributorOptions> optionsMonitor = GetOptionsMonitorFromSettings<LivenessStateContributorOptions>(appSettings);
 
         List<IHealthContributor> contributors =
         [
             new DiskSpaceContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>()),
-            new LivenessHealthContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
+            new LivenessStateContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
         ];
 
         testContext.AdditionalServices = (services, _) =>
@@ -205,7 +208,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         result.Status.Should().Be(HealthStatus.Up);
         result.Components.Keys.Should().ContainSingle();
-        result.Groups.Should().HaveCount(2);
+        result.Groups.Should().BeEmpty();
     }
 
     [Fact]
@@ -213,20 +216,27 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     {
         using var testContext = new TestContext(_testOutputHelper);
 
-        testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
-            { "Management:Endpoints:Health:ShowDetails", "Always" }
-        });
+            ["Management:Endpoints:Health:ShowComponents"] = "Always",
+            ["Management:Endpoints:Health:Readiness:Enabled"] = "true"
+        };
+
+        testContext.AdditionalConfiguration = configuration =>
+        {
+            configuration.AddInMemoryCollection(appSettings);
+        };
 
         var appAvailability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
-        TestOptionsMonitor<ReadinessHealthContributorOptions> optionsMonitor = new();
+
+        IOptionsMonitor<ReadinessStateContributorOptions> optionsMonitor = GetOptionsMonitorFromSettings<ReadinessStateContributorOptions>(appSettings);
 
         List<IHealthContributor> contributors =
         [
             new UnknownContributor(),
             new DisabledContributor(),
             new UpContributor(),
-            new ReadinessHealthContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
+            new ReadinessStateContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
         ];
 
         testContext.AdditionalServices = (services, _) =>
@@ -244,43 +254,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         result.Status.Should().Be(HealthStatus.Up);
         result.Components.Keys.Should().ContainSingle();
-        result.Groups.Should().HaveCount(2);
-    }
-
-    [Fact]
-    public async Task InvokeWithInvalidGroupReturnsAllContributors()
-    {
-        using var testContext = new TestContext(_testOutputHelper);
-
-        testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            { "Management:Endpoints:Health:ShowDetails", "Always" }
-        });
-
-        List<IHealthContributor> contributors =
-        [
-            new DiskSpaceContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>()),
-            new OutOfServiceContributor(),
-            new UnknownContributor(),
-            new DisabledContributor(),
-            new UpContributor()
-        ];
-
-        testContext.AdditionalServices = (services, _) =>
-        {
-            services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-            services.AddHealthActuator();
-        };
-
-        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
-
-        var healthRequest = new HealthEndpointRequest("iNvaLid", true);
-
-        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
-
-        result.Status.Should().Be(HealthStatus.OutOfService);
-        result.Components.Keys.Should().HaveCount(4);
-        result.Groups.Should().HaveCount(2);
+        result.Groups.Should().BeEmpty();
     }
 
     [Fact]
@@ -289,7 +263,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(
             new Dictionary<string, string?>
             {
-                { "Management:Endpoints:Health:ShowDetails", "Always" }
+                ["Management:Endpoints:Health:ShowComponents"] = "Always"
             });
 
         options.CurrentValue.Groups.Add("msft", new HealthGroupOptions
@@ -314,7 +288,108 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         result.Components.Keys.Should().HaveCount(2);
         result.Components.Should().ContainKey("alwaysUp");
         result.Components.Should().ContainKey("privatememory");
-        result.Groups.Should().HaveCount(3);
+        result.Groups.Should().BeEmpty();
+    }
+
+    // default configuration
+    [InlineData(null, null, null, null, false, false, false)]
+    // misconfiguration
+    [InlineData(null, "Always", null, null, false, false, false)]
+    [InlineData(null, "WhenAuthorized", null, null, false, false, false)]
+    [InlineData(null, "WhenAuthorized", null, null, true, false, false)]
+    [InlineData(null, null, null, "Always", false, false, false)]
+    [InlineData(null, null, null, "WhenAuthorized", false, false, false)]
+    [InlineData(null, null, null, "WhenAuthorized", true, false, false)]
+    // only endpoint configuration
+    [InlineData("Always", null, null, null, false, true, false)]
+    [InlineData("WhenAuthorized", null, null, null, false, false, false)]
+    [InlineData("WhenAuthorized", null, null, null, true, true, false)]
+    [InlineData("Always", "Always", null, null, false, true, true)]
+    [InlineData("Always", "WhenAuthorized", null, null, false, true, false)]
+    [InlineData("Always", "WhenAuthorized", null, null, true, true, true)]
+    [InlineData("WhenAuthorized", "Always", null, null, false, false, false)]
+    [InlineData("WhenAuthorized", "Always", null, null, true, true, true)]
+    [InlineData("WhenAuthorized", "WhenAuthorized", null, null, true, true, true)]
+    // only group configuration
+    [InlineData(null, null, "Always", null, false, true, false)]
+    [InlineData(null, null, "WhenAuthorized", null, false, false, false)]
+    [InlineData(null, null, "WhenAuthorized", null, true, true, false)]
+    [InlineData(null, null, "Always", "Always", false, true, true)]
+    [InlineData(null, null, "WhenAuthorized", "WhenAuthorized", false, false, false)]
+    [InlineData(null, null, "WhenAuthorized", "WhenAuthorized", true, true, true)]
+    // group supplements endpoint
+    [InlineData("Always", null, null, "Always", true, true, true)]
+    [InlineData("Always", null, null, "WhenAuthorized", false, true, false)]
+    [InlineData("Always", null, null, "WhenAuthorized", true, true, true)]
+    [InlineData("WhenAuthorized", null, null, "WhenAuthorized", false, false, false)]
+    [InlineData("WhenAuthorized", null, null, "WhenAuthorized", true, true, true)]
+    [InlineData(null, "Always", "Always", null, false, true, true)]
+    [InlineData(null, "WhenAuthorized", "Always", null, false, true, false)]
+    [InlineData(null, "WhenAuthorized", "Always", null, true, true, true)]
+    [InlineData(null, "Always", "WhenAuthorized", null, false, false, false)]
+    [InlineData(null, "Always", "WhenAuthorized", null, true, true, true)]
+    // group overrides endpoint
+    [InlineData("Never", "Never", "Always", null, false, true, false)]
+    [InlineData("Never", "Never", "WhenAuthorized", null, false, false, false)]
+    [InlineData("Never", "Never", "WhenAuthorized", null, true, true, false)]
+    [InlineData("Never", "Never", "Always", "Always", false, true, true)]
+    [InlineData("Never", "Never", "WhenAuthorized", "WhenAuthorized", false, false, false)]
+    [InlineData("Never", "Never", "WhenAuthorized", "WhenAuthorized", true, true, true)]
+    [InlineData("Always", null, "Never", null, false, false, false)]
+    [InlineData("WhenAuthorized", null, "Never", null, false, false, false)]
+    [InlineData("WhenAuthorized", null, "Never", null, true, false, false)]
+    [InlineData("Always", null, "WhenAuthorized", null, false, false, false)]
+    [InlineData("Always", null, "WhenAuthorized", null, true, true, false)]
+    [InlineData("Always", "Always", "WhenAuthorized", null, false, false, false)]
+    [InlineData("Always", "Always", "WhenAuthorized", null, true, true, true)]
+    [InlineData("Always", "Always", null, "Never", false, true, false)]
+    [InlineData("WhenAuthorized", "WhenAuthorized", null, "Never", false, false, false)]
+    [InlineData("WhenAuthorized", "WhenAuthorized", null, "Never", true, true, false)]
+    [Theory]
+    public async Task InvokeWithGroupUsesShowComponentShowDetailOptions(string? endpointShowComponents, string? endpointShowDetails,
+        string? groupShowComponents, string? groupShowDetails, bool hasClaim, bool returnComponents, bool returnDetails)
+    {
+        using var testContext = new TestContext(_testOutputHelper);
+
+        testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["Management:Endpoints:Health:ShowComponents"] = endpointShowComponents,
+            ["Management:Endpoints:Health:ShowDetails"] = endpointShowDetails,
+            ["Management:Endpoints:Health:Groups:test:include"] = "diskSpace",
+            ["Management:Endpoints:Health:Groups:test:ShowComponents"] = groupShowComponents,
+            ["Management:Endpoints:Health:Groups:test:ShowDetails"] = groupShowDetails
+        });
+
+        testContext.AdditionalServices = (services, _) =>
+        {
+            services.AddHealthActuator();
+        };
+
+        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
+
+        var healthRequest = new HealthEndpointRequest("test", hasClaim);
+
+        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
+
+        result.Status.Should().Be(HealthStatus.Up);
+
+        if (returnComponents)
+        {
+            result.Components.Keys.Should().ContainSingle();
+
+            if (returnDetails)
+            {
+                HealthCheckResult component = result.Components["diskSpace"];
+                component.Should().NotBeNull();
+                component.Details.Should().NotBeEmpty();
+            }
+        }
+        else
+        {
+            result.Components.Keys.Should().BeEmpty();
+        }
+
+        result.Groups.Should().BeEmpty();
     }
 
     private static HealthEndpointRequest GetHealthRequest()

@@ -33,9 +33,6 @@ public sealed class HealthCheckResult
     /// <summary>
     /// Gets details of the health check.
     /// </summary>
-    /// <remarks>
-    /// For parity with Spring Boot, repeat the status (in all-caps snake case) here.
-    /// </remarks>
     [JsonIgnoreEmptyCollection]
     public IDictionary<string, object> Details { get; } = new Dictionary<string, object>();
 }

@@ -110,16 +110,16 @@ Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityEventArgs
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityEventArgs.NewState.get -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityState!
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityState
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityState.AvailabilityState(string! value) -> void
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessHealthContributorOptions
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessHealthContributorOptions.Enabled.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessHealthContributorOptions.Enabled.set -> void
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessHealthContributorOptions.LivenessHealthContributorOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessHealthContributorOptions
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessHealthContributorOptions.Enabled.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessHealthContributorOptions.Enabled.set -> void
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessHealthContributorOptions.ReadinessHealthContributorOptions() -> void
+Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessStateContributorOptions
+Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessStateContributorOptions.Enabled.get -> bool
+Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessStateContributorOptions.Enabled.set -> void
+Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessStateContributorOptions.LivenessStateContributorOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessState
+Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessStateContributorOptions
+Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessStateContributorOptions.Enabled.get -> bool
+Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessStateContributorOptions.Enabled.set -> void
+Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessStateContributorOptions.ReadinessStateContributorOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorOptions
 Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorOptions.DiskSpaceContributorOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorOptions.Enabled.get -> bool
@@ -142,14 +142,16 @@ Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.Groups.get -
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.HealthEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.Role.get -> string?
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.Role.set -> void
-Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.ShowDetails.get -> Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
+Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.ShowComponents.get -> Steeltoe.Management.Endpoint.Actuators.Health.ShowValues
+Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.ShowComponents.set -> void
+Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.ShowDetails.get -> Steeltoe.Management.Endpoint.Actuators.Health.ShowValues
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.ShowDetails.set -> void
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointRequest
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointRequest.GroupName.get -> string!
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointRequest.HasClaim.get -> bool
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointRequest.HealthEndpointRequest(string! groupName, bool hasClaim) -> void
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse
-Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Components.get -> System.Collections.Generic.IDictionary<string!, object!>!
+Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Components.get -> System.Collections.Generic.IDictionary<string!, Steeltoe.Common.HealthChecks.HealthCheckResult!>!
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Description.get -> string?
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Description.init -> void
 Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointResponse.Exists.get -> bool
@@ -163,11 +165,15 @@ Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions
 Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions.HealthGroupOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions.Include.get -> string?
 Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions.Include.set -> void
+Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions.ShowComponents.get -> Steeltoe.Management.Endpoint.Actuators.Health.ShowValues?
+Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions.ShowComponents.set -> void
+Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions.ShowDetails.get -> Steeltoe.Management.Endpoint.Actuators.Health.ShowValues?
+Steeltoe.Management.Endpoint.Actuators.Health.HealthGroupOptions.ShowDetails.set -> void
 Steeltoe.Management.Endpoint.Actuators.Health.IHealthEndpointHandler
-Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
-Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails.Always = 2 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
-Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails.Never = 0 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
-Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails.WhenAuthorized = 1 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowDetails
+Steeltoe.Management.Endpoint.Actuators.Health.ShowValues
+Steeltoe.Management.Endpoint.Actuators.Health.ShowValues.Always = 2 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowValues
+Steeltoe.Management.Endpoint.Actuators.Health.ShowValues.Never = 0 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowValues
+Steeltoe.Management.Endpoint.Actuators.Health.ShowValues.WhenAuthorized = 1 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowValues
 Steeltoe.Management.Endpoint.Actuators.HeapDump.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions.HeapDumpEndpointOptions() -> void
