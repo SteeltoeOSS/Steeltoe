@@ -5,6 +5,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -22,9 +24,9 @@ public static class ActuatorRouteBuilderExtensions
     public static IEndpointConventionBuilder MapActuators(this IEndpointRouteBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
+        AssertActuatorsAreSecuredOnCloudFoundry(builder.ServiceProvider);
 
-        IServiceProvider serviceProvider = builder.ServiceProvider;
-        var mapper = serviceProvider.GetRequiredService<ActuatorEndpointMapper>();
+        var mapper = builder.ServiceProvider.GetRequiredService<ActuatorEndpointMapper>();
 
         var conventionBuilder = new ActuatorConventionBuilder();
         mapper.Map(builder, conventionBuilder);
@@ -43,11 +45,20 @@ public static class ActuatorRouteBuilderExtensions
     public static IRouteBuilder MapActuators(this IRouteBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
+        AssertActuatorsAreSecuredOnCloudFoundry(builder.ServiceProvider);
 
-        IServiceProvider serviceProvider = builder.ServiceProvider;
-        var mapper = serviceProvider.GetRequiredService<ActuatorEndpointMapper>();
+        var mapper = builder.ServiceProvider.GetRequiredService<ActuatorEndpointMapper>();
 
         mapper.Map(builder);
         return builder;
+    }
+
+    private static void AssertActuatorsAreSecuredOnCloudFoundry(IServiceProvider serviceProvider)
+    {
+        if (Platform.IsCloudFoundry && serviceProvider.GetService<PermissionsProvider>() == null)
+        {
+            throw new InvalidOperationException($"Running on Cloud Foundry without security middleware. " +
+                $"Call services.{nameof(EndpointServiceCollectionExtensions.AddCloudFoundryActuator)}() to fix this.");
+        }
     }
 }

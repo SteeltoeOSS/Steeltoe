@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
+using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
@@ -182,6 +184,21 @@ public sealed class EndpointMiddlewareTest : BaseTest
         response.Should().NotContain("2017-07-12T18:40:39Z");
         response.Should().Contain("1496926022000");
         response.Should().NotContain("2017-06-08T12:47:02Z");
+    }
+
+    [Fact]
+    public async Task ThrowsForMissingSecurityMiddlewareOnCloudFoundry()
+    {
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Services.AddInfoActuator();
+        await using WebApplication app = builder.Build();
+
+        Func<Task> action = async () => await app.StartAsync();
+
+        await action.Should().ThrowExactlyAsync<InvalidOperationException>()
+            .WithMessage("Running on Cloud Foundry without security middleware. Call services.AddCloudFoundryActuator() to fix this.");
     }
 
     protected override void Dispose(bool disposing)
