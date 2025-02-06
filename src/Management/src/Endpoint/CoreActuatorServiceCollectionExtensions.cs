@@ -77,6 +77,7 @@ public static class CoreActuatorServiceCollectionExtensions
     private static void AddCommonActuatorServices(IServiceCollection services, bool configureMiddleware)
     {
         services.AddRouting();
+        services.TryAddSingleton<ActuatorRouteMapper>();
         services.TryAddSingleton<ActuatorEndpointMapper>();
 
         services.AddCors();

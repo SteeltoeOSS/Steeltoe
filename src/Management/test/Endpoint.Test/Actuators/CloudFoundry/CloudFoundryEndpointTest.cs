@@ -87,7 +87,7 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
-    public void Invoke_CloudFoundryDisable_DoesNotInvoke()
+    public void Invoke_CloudFoundryDisabled_DoesNotInvoke()
     {
         using var testContext = new TestContext(_testOutputHelper);
 
@@ -107,6 +107,6 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
         };
 
         var middleware = testContext.GetRequiredService<CloudFoundryEndpointMiddleware>();
-        middleware.ShouldInvoke("/cloudfoundryapplication/info").Should().BeFalse();
+        middleware.CanInvoke("/cloudfoundryapplication/info").Should().BeFalse();
     }
 }

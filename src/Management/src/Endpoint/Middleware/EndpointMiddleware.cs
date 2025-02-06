@@ -20,6 +20,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
     protected IEndpointHandler<TArgument, TResult> EndpointHandler { get; }
 
     public EndpointOptions EndpointOptions => EndpointHandler.Options;
+
     private protected virtual string ContentType => "application/vnd.spring-boot.actuator.v3+json";
 
     protected EndpointMiddleware(IEndpointHandler<TArgument, TResult> endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
@@ -34,51 +35,53 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         _logger = loggerFactory.CreateLogger<EndpointMiddleware<TArgument, TResult>>();
     }
 
-    public virtual bool ShouldInvoke(PathString requestPath)
+    public virtual ActuatorMetadataProvider GetMetadataProvider()
     {
-        ManagementOptions managementOptions = ManagementOptionsMonitor.CurrentValue;
-        bool isEnabled = EndpointOptions.IsEnabled(managementOptions);
-        bool isExposed = EndpointOptions.IsExposed(managementOptions);
+        return new ActuatorMetadataProvider(ContentType);
+    }
 
-        bool isCloudFoundryEndpoint = requestPath.StartsWithSegments(ConfigureManagementOptions.DefaultCloudFoundryPath);
-        bool returnValue = isCloudFoundryEndpoint ? managementOptions.IsCloudFoundryEnabled && isEnabled : isEnabled && isExposed;
-
-        _logger.LogDebug(
-            "Returned {ReturnValue} for endpointHandler: {EndpointHandler}, requestPath: {RequestPath}, isEnabled: {IsEnabled}, " +
-            "isExposed: {IsExposed}, isCloudFoundryEndpoint: {IsCloudFoundryEndpoint}, isCloudFoundryEnabled: {IsCloudFoundryEnabled}", returnValue,
-            EndpointOptions.Id, requestPath, isEnabled, isExposed, isCloudFoundryEndpoint, managementOptions.IsCloudFoundryEnabled);
-
-        return returnValue;
+    public virtual bool CanInvoke(PathString requestPath)
+    {
+        return EndpointOptions.CanInvoke(requestPath, ManagementOptionsMonitor.CurrentValue);
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate? next)
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        if (ShouldInvoke(context.Request.Path))
+        if (CanInvoke(context.Request.Path))
         {
-            if (!IsValidContentType(context.Request))
+            HashSet<string> allowedVerbs = EndpointOptions.GetSafeAllowedVerbs();
+
+            if (allowedVerbs.Count > 0)
             {
-                _logger.LogDebug("Content-Type header '{RequestContentType}' is not supported for this request.", context.Request.ContentType);
-                context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
-                await context.Response.WriteAsync($"Only the '{ContentType}' content type is supported.");
-            }
-            else if (!IsCompatibleAcceptHeader(context.Request))
-            {
-                _logger.LogDebug("Accept header '{AcceptType}' is not supported for this request.", context.Request.Headers.Accept.ToString());
-                context.Response.StatusCode = (int)HttpStatusCode.NotAcceptable;
-                await context.Response.WriteAsync($"Only the '{ContentType}' content type is supported.");
-            }
-            else
-            {
-                TResult result = await InvokeEndpointHandlerAsync(context, context.RequestAborted);
-                await WriteResponseAsync(result, context, context.RequestAborted);
+                if (!allowedVerbs.Contains(context.Request.Method))
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+                }
+                else if (!IsValidContentType(context.Request))
+                {
+                    _logger.LogDebug("Content-Type header '{RequestContentType}' is not supported for this request.", context.Request.ContentType);
+                    context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
+                    await context.Response.WriteAsync($"Only the '{ContentType}' content type is supported.");
+                }
+                else if (!IsCompatibleAcceptHeader(context.Request))
+                {
+                    _logger.LogDebug("Accept header '{AcceptType}' is not supported for this request.", context.Request.Headers.Accept.ToString());
+                    context.Response.StatusCode = (int)HttpStatusCode.NotAcceptable;
+                    await context.Response.WriteAsync($"Only the '{ContentType}' content type is supported.");
+                }
+                else
+                {
+                    TResult result = await InvokeEndpointHandlerAsync(context, context.RequestAborted);
+                    await WriteResponseAsync(result, context, context.RequestAborted);
+                }
+
+                return;
             }
         }
-        else
-        {
-            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-        }
+
+        context.Response.StatusCode = (int)HttpStatusCode.NotFound;
     }
 
     private bool IsValidContentType(HttpRequest request)

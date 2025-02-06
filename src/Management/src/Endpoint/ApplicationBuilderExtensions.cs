@@ -61,7 +61,7 @@ public static class ApplicationBuilderExtensions
         }
         else
         {
-            builder.UseMvc(routeBuilder => routeBuilder.MapActuators());
+            builder.UseRouter(routeBuilder => routeBuilder.MapActuators());
         }
 
         return builder;

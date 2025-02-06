@@ -28,7 +28,34 @@ public sealed class HttpVerbInConventionalRoutingTest
         builder.Services.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
-        app.UseMvc(routes => routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"));
+        app.UseMvcWithDefaultRoute();
+        await app.StartAsync();
+
+        using HttpClient httpClient = app.GetTestClient();
+        var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
+
+        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
+        getResponse.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
+
+        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null);
+        postResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task Can_be_configured_to_unexposed()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Management:Endpoints:Actuator:Exposure:Include:0"] = string.Empty
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
+        builder.Services.AddRefreshActuator();
+
+        await using WebApplication app = builder.Build();
+        app.UseMvcWithDefaultRoute();
         await app.StartAsync();
 
         using HttpClient httpClient = app.GetTestClient();
@@ -38,7 +65,35 @@ public sealed class HttpVerbInConventionalRoutingTest
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null);
-        postResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        postResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Can_be_configured_to_disabled()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Management:Endpoints:Actuator:Exposure:Include:0"] = "refresh",
+            ["Management:Endpoints:Refresh:Enabled"] = "false"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
+        builder.Services.AddRefreshActuator();
+
+        await using WebApplication app = builder.Build();
+        app.UseMvcWithDefaultRoute();
+        await app.StartAsync();
+
+        using HttpClient httpClient = app.GetTestClient();
+        var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
+
+        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
+        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null);
+        postResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -56,7 +111,7 @@ public sealed class HttpVerbInConventionalRoutingTest
         builder.Services.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
-        app.UseMvc(routes => routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"));
+        app.UseMvcWithDefaultRoute();
         await app.StartAsync();
 
         using HttpClient httpClient = app.GetTestClient();
@@ -84,7 +139,7 @@ public sealed class HttpVerbInConventionalRoutingTest
         builder.Services.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
-        app.UseMvc(routes => routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"));
+        app.UseMvcWithDefaultRoute();
         await app.StartAsync();
 
         using HttpClient httpClient = app.GetTestClient();
@@ -94,7 +149,7 @@ public sealed class HttpVerbInConventionalRoutingTest
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null);
-        postResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        postResponse.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
     }
 
     [Fact]
@@ -113,7 +168,7 @@ public sealed class HttpVerbInConventionalRoutingTest
         builder.Services.AddRefreshActuator();
 
         await using WebApplication app = builder.Build();
-        app.UseMvc(routes => routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"));
+        app.UseMvcWithDefaultRoute();
         await app.StartAsync();
 
         using HttpClient httpClient = app.GetTestClient();
@@ -124,5 +179,85 @@ public sealed class HttpVerbInConventionalRoutingTest
 
         HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null);
         postResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task Can_change_allowed_verbs_at_runtime()
+    {
+        const string fileName = "appsettings.json";
+        MemoryFileProvider fileProvider = new();
+
+        fileProvider.IncludeFile(fileName, """
+        {
+          "Management": {
+            "Endpoints": {
+              "Actuator": {
+                "Exposure": {
+                  "Include": ["refresh"]
+                }
+              }
+            }
+          }
+        }
+        """);
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
+        builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
+        builder.Services.AddRefreshActuator();
+
+        await using WebApplication app = builder.Build();
+        app.UseMvcWithDefaultRoute();
+        await app.StartAsync();
+
+        using HttpClient httpClient = app.GetTestClient();
+        var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
+
+        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
+        getResponse.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
+
+        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null);
+        postResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        fileProvider.ReplaceFile(fileName, """
+        {
+          "Management": {
+            "Endpoints": {
+              "Actuator": {
+                "Exposure": {
+                  "Include": ["refresh"]
+                }
+              },
+              "Refresh": {
+                "AllowedVerbs": ["GET"]
+              }
+            }
+          }
+        }
+        """);
+
+        fileProvider.NotifyChanged();
+
+        getResponse = await httpClient.GetAsync(requestUri);
+        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        postResponse = await httpClient.PostAsync(requestUri, null);
+        postResponse.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
+    }
+
+    [Fact]
+    public async Task ThrowsForCallback()
+    {
+        Action<IEndpointConventionBuilder> configureEndpointsCallback = _ =>
+        {
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
+        await using WebApplication host = builder.Build();
+
+        Action action = () => host.UseActuatorEndpoints(configureEndpointsCallback);
+
+        action.Should().ThrowExactly<NotSupportedException>().WithMessage("Customizing endpoints is only supported when using endpoint routing.");
     }
 }

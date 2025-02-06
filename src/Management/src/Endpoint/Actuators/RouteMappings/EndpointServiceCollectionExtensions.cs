@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Management.Endpoint.Actuators.RouteMappings.ResponseTypes;
 
 namespace Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 
@@ -44,7 +45,8 @@ public static class EndpointServiceCollectionExtensions
             IRouteMappingsEndpointHandler, RouteMappingsEndpointHandler, object?, RouteMappingsResponse>(configureMiddleware);
 
         services.AddEndpointsApiExplorer();
-        services.TryAddSingleton<RouterMappings>();
+        services.TryAddSingleton<ActuatorRouteOptionsResolver>();
+        services.TryAddSingleton<AspNetEndpointProvider>();
 
         return services;
     }

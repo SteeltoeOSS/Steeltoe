@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Http;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Configuration;
 
@@ -43,6 +44,18 @@ internal static class EndpointOptionsExtensions
         }
 
         return true;
+    }
+
+    public static bool CanInvoke(this EndpointOptions endpointOptions, PathString requestPath, ManagementOptions managementOptions)
+    {
+        ArgumentNullException.ThrowIfNull(endpointOptions);
+        ArgumentNullException.ThrowIfNull(managementOptions);
+
+        bool isEnabled = IsEnabled(endpointOptions, managementOptions);
+        bool isExposed = IsExposed(endpointOptions, managementOptions);
+
+        bool isAtCloudFoundryPath = requestPath.StartsWithSegments(ConfigureManagementOptions.DefaultCloudFoundryPath);
+        return isAtCloudFoundryPath ? managementOptions.IsCloudFoundryEnabled && isEnabled : isEnabled && isExposed;
     }
 
     public static string GetPathMatchPattern(this EndpointOptions endpointOptions, string? basePath)

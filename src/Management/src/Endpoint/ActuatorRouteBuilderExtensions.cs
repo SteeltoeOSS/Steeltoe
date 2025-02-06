@@ -47,7 +47,7 @@ public static class ActuatorRouteBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         AssertActuatorsAreSecuredOnCloudFoundry(builder.ServiceProvider);
 
-        var mapper = builder.ServiceProvider.GetRequiredService<ActuatorEndpointMapper>();
+        var mapper = builder.ServiceProvider.GetRequiredService<ActuatorRouteMapper>();
 
         mapper.Map(builder);
         return builder;

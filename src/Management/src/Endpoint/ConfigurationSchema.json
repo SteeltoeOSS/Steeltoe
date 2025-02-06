@@ -549,6 +549,10 @@
                   "type": "string",
                   "description": "Gets or sets the unique ID of this endpoint."
                 },
+                "IncludeActuators": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to include actuator endpoints in the route mappings response. Default value: true."
+                },
                 "Path": {
                   "type": "string",
                   "description": "Gets or sets the relative path at which this endpoint is exposed."
