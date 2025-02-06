@@ -22,7 +22,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
     private readonly Dictionary<string, string?> _appSettings = new()
     {
         ["management:endpoints:enabled"] = "true",
-        ["management:endpoints:path"] = "/cloudfoundryapplication",
         ["management:endpoints:info:enabled"] = "true",
         ["info:application:name"] = "foobar",
         ["info:application:version"] = "1.0.0",

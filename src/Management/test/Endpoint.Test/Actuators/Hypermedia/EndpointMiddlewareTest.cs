@@ -46,11 +46,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
         client.DefaultRequestHeaders.Add("X-Forwarded-Proto", xForwarded);
         var links = await client.GetFromJsonAsync<Links>($"{requestUriString}/actuator", SerializerOptions);
 
-        Assert.NotNull(links);
-        Assert.True(links.Entries.ContainsKey("self"));
-        Assert.Equal($"{calculatedHost}/actuator", links.Entries["self"].Href);
-        Assert.True(links.Entries.ContainsKey("info"));
-        Assert.Equal($"{calculatedHost}/actuator/info", links.Entries["info"].Href);
+        links.Should().NotBeNull();
+        links!.Entries.Should().ContainKey("self").WhoseValue.Href.Should().Be($"{calculatedHost}/actuator");
+        links.Entries.Should().ContainKey("info").WhoseValue.Href.Should().Be($"{calculatedHost}/actuator/info");
     }
 
     [Fact]
