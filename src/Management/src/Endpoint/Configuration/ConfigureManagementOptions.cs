@@ -51,7 +51,11 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
     private static void ConfigureSerializerOptions(ManagementOptions options)
     {
         options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+
+        // This was added initially for the route mappings actuator, to make generic method signatures human-readable,
+        // but may affect other endpoints too. Removing this is a breaking change.
         options.SerializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+
         options.SerializerOptions.AddJsonIgnoreEmptyCollection();
 
         foreach (string converterTypeName in options.CustomJsonConverters)
