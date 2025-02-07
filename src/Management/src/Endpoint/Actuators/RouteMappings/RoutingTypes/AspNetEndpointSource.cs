@@ -5,7 +5,7 @@
 namespace Steeltoe.Management.Endpoint.Actuators.RouteMappings.RoutingTypes;
 
 /// <summary>
-/// Indicates which ASP.NET subsystem an endpoint originates from.
+/// Indicates which ASP.NET Core subsystem an endpoint originates from.
 /// </summary>
 internal enum AspNetEndpointSource
 {
@@ -15,12 +15,12 @@ internal enum AspNetEndpointSource
     ApiExplorer,
 
     /// <summary>
-    /// Endpoint originates from an ASP.NET MVC Controller.
+    /// Endpoint originates from an ASP.NET Core MVC Controller.
     /// </summary>
     MvcControllerEndpointDataSource,
 
     /// <summary>
-    /// Endpoint originates from ASP.NET Razor Pages.
+    /// Endpoint originates from ASP.NET Core Razor Pages.
     /// </summary>
     RazorPagesEndpointDataSource,
 

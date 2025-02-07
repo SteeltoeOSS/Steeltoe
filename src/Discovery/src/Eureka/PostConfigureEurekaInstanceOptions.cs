@@ -196,7 +196,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
 
             if (portNumber is null or <= 0)
             {
-                // The port number is dynamically assigned by ASP.NET once the app has fully started.
+                // The port number is dynamically assigned by ASP.NET Core once the app has fully started.
                 // Pick a random number (outside the valid range) to prevent registering duplicate instances in Eureka.
                 portNumber = Random.Shared.Next(90_000, 99_999);
             }

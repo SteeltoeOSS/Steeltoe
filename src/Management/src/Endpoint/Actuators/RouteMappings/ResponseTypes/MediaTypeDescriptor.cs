@@ -11,7 +11,7 @@ public sealed class MediaTypeDescriptor
     [JsonPropertyName("mediaType")]
     public string MediaType { get; }
 
-    // Not possible in ASP.NET.
+    // Not possible in ASP.NET Core.
     [JsonPropertyName("negated")]
     public bool Negated { get; }
 

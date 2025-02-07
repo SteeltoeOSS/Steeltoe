@@ -29,7 +29,7 @@ internal sealed class ConfigureApplicationInstanceInfo : IConfigureOptions<Appli
 
     private string? GetAspNetApplicationName()
     {
-        // When using UseStartup<T>() on the host builder, ASP.NET sets the below key to point to the assembly containing T.
+        // When using UseStartup<T>() on the host builder, ASP.NET Core sets the below key to point to the assembly containing T.
         return _configuration.GetValue<string>("applicationName");
     }
 }

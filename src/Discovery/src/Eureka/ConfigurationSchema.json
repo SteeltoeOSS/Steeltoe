@@ -96,7 +96,7 @@
               "properties": {
                 "CheckEnabled": {
                   "type": "boolean",
-                  "description": "Gets or sets a value indicating whether to query ASP.NET health checks and 'Steeltoe.Common.HealthChecks.IHealthContributor's during registration and renewals, in order to determine the status of the running app to report back to Eureka. Default value: true."
+                  "description": "Gets or sets a value indicating whether to query ASP.NET Core health checks and 'Steeltoe.Common.HealthChecks.IHealthContributor's during registration and renewals, in order to determine the status of the running app to report back to Eureka. Default value: true."
                 },
                 "Enabled": {
                   "type": "boolean",

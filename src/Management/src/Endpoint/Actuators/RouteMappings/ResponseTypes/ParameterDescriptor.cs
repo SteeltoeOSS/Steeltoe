@@ -20,7 +20,7 @@ public sealed class ParameterDescriptor
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Required { get; }
 
-    // Not possible in ASP.NET.
+    // Not possible in ASP.NET Core.
     [JsonPropertyName("negated")]
     public bool Negated { get; }
 

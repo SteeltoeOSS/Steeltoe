@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint;
 public static class ActuatorRouteBuilderExtensions
 {
     /// <summary>
-    /// Maps the registered actuators, when using ASP.NET attribute-based endpoint routing.
+    /// Maps the registered actuators, when using ASP.NET Core attribute-based endpoint routing.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IEndpointRouteBuilder" /> to add routes to.
@@ -34,7 +34,7 @@ public static class ActuatorRouteBuilderExtensions
     }
 
     /// <summary>
-    /// Maps the registered actuators, when using ASP.NET conventional routing.
+    /// Maps the registered actuators, when using ASP.NET Core conventional routing.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IRouteBuilder" /> to add routes to.

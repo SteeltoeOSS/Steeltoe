@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.Middleware;
 namespace Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 
 /// <summary>
-/// Middleware for displaying the mapped ASP.NET routes.
+/// Middleware for displaying the mapped ASP.NET Core endpoints.
 /// </summary>
 internal sealed class RouteMappingsEndpointMiddleware(
     IRouteMappingsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)

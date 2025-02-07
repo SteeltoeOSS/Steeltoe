@@ -9,7 +9,7 @@ using System.Reflection;
 namespace Steeltoe.Management.Endpoint.Actuators.RouteMappings.RoutingTypes;
 
 /// <summary>
-/// Provides unified information about an ASP.NET endpoint.
+/// Provides unified information about an ASP.NET Core endpoint.
 /// </summary>
 internal sealed class AspNetEndpoint
 {

@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.RouteMappings;
 internal static class MvcBuilderExtensions
 {
     /// <summary>
-    /// Replaces ASP.NET assembly scanning for controllers with only the provided ones.
+    /// Replaces ASP.NET Core assembly scanning for controllers with only the provided ones.
     /// </summary>
     public static void HideControllersExcept(this IMvcBuilder builder, params Type[] controllerTypes)
     {

@@ -5,7 +5,7 @@
 namespace Steeltoe.Management.Endpoint.Actuators.RouteMappings.RoutingTypes;
 
 /// <summary>
-/// Provides unified information about the origin of a parameter in an ASP.NET endpoint.
+/// Provides unified information about the origin of a parameter in an ASP.NET Core endpoint.
 /// </summary>
 internal enum AspNetEndpointParameterOrigin
 {

@@ -26,7 +26,7 @@ using MicrosoftEndpoint = Microsoft.AspNetCore.Http.Endpoint;
 namespace Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 
 /// <summary>
-/// Gathers endpoint in an ASP.NET application by combining information from various sources.
+/// Gathers endpoints in an ASP.NET Core application by combining information from various sources.
 /// </summary>
 internal sealed class AspNetEndpointProvider
 {

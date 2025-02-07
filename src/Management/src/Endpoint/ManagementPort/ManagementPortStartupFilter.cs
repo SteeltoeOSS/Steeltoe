@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Steeltoe.Management.Endpoint.ManagementPort;
 
 /// <summary>
-/// Adds the configured management port to the list of addresses that ASP.NET listens on.
+/// Adds the configured management port to the list of addresses that ASP.NET Core listens on.
 /// </summary>
 /// <remarks>
 /// Because there's no way to set listen ports per endpoint, <see cref="ManagementPortMiddleware" /> blocks non-permitted requests.

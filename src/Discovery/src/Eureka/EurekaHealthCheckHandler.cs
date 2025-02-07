@@ -13,7 +13,7 @@ using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 namespace Steeltoe.Discovery.Eureka;
 
 /// <summary>
-/// Computes the Eureka <see cref="InstanceStatus" /> from ASP.NET health checks and all registered Steeltoe <see cref="IHealthContributor" />s.
+/// Computes the Eureka <see cref="InstanceStatus" /> from ASP.NET Core health checks and all registered Steeltoe <see cref="IHealthContributor" />s.
 /// </summary>
 internal sealed class EurekaHealthCheckHandler : IHealthCheckHandler
 {
