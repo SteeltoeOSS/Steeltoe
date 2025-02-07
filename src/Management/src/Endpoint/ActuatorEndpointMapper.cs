@@ -44,9 +44,9 @@ internal sealed class ActuatorEndpointMapper : ActuatorMapper
             RouteHandlerBuilder routeHandlerBuilder = endpointRouteBuilder.Map(routePattern, pipeline);
 
             // Actuator endpoint exposure in OpenAPI is likely undesired in apps. They will show up in the mappings actuator.
+            routeHandlerBuilder.ExcludeFromDescription();
             ActuatorMetadataProvider metadataProvider = middleware.GetMetadataProvider();
             routeHandlerBuilder.WithMetadata(metadataProvider);
-            routeHandlerBuilder.ExcludeFromDescription();
 
             ConfigureConventions(routeHandlerBuilder, actuatorConventionBuilder);
         }
