@@ -46,7 +46,7 @@ internal sealed class AspNetEndpoint
 
     private static IEnumerable<AspNetEndpointParameter> FilterParameters(List<AspNetEndpointParameter> parameters)
     {
-        // Include parameters from query string and unknown origin for diagnostics purposes.
+        // Include parameters from query string and unknown origin (where ASP.NET Core can't identify the source) for diagnostics purposes.
         return parameters.Where(parameter =>
             parameter.Origin is AspNetEndpointParameterOrigin.Route or AspNetEndpointParameterOrigin.QueryString or AspNetEndpointParameterOrigin.Unknown);
     }
