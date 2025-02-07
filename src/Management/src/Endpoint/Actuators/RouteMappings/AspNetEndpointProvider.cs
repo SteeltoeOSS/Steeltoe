@@ -84,7 +84,7 @@ internal sealed class AspNetEndpointProvider
             {
                 // When available, API Explorer (for Minimal APIs and API Controllers) is the preferred model because it provides the richest metadata.
                 // For example, it performs speculative model-binding to include parameters missing from the route pattern, while hiding injected parameters.
-                // See https://github.com/dotnet/aspnetcore/blob/release/9.0/src/Mvc/Mvc.ApiExplorer/src/DefaultApiDescriptionProvider.cs#L169.
+                // See https://github.com/dotnet/aspnetcore/blob/release/8.0/src/Mvc/Mvc.ApiExplorer/src/DefaultApiDescriptionProvider.cs#L166.
 
                 List<ApiDescription> descriptionsForEndpoint = FindApiDescriptionsForEndpoint(endpoint, apiDescriptions);
 
