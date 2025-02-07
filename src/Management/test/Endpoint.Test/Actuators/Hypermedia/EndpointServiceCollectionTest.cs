@@ -13,17 +13,9 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     [Fact]
     public async Task AddHyperMediaActuator_AddsCorrectServices()
     {
+        IConfiguration configuration = new ConfigurationBuilder().Build();
+
         var services = new ServiceCollection();
-
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["management:endpoints:enabled"] = "false"
-        };
-
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = configurationBuilder.Build();
-
         services.AddLogging();
         services.AddSingleton(configuration);
         services.AddHypermediaActuator();

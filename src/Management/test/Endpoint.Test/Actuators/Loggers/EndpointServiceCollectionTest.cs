@@ -13,16 +13,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     [Fact]
     public async Task AddLoggersActuator_AddsCorrectServices()
     {
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/cloudfoundryapplication",
-            ["management:endpoints:loggers:enabled"] = "true"
-        };
-
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfiguration configuration = new ConfigurationBuilder().Build();
 
         var services = new ServiceCollection();
         services.AddLoggersActuator();

@@ -13,20 +13,9 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     [Fact]
     public async Task AddHeapDumpActuator_AddsCorrectServices()
     {
+        IConfiguration configuration = new ConfigurationBuilder().Build();
+
         var services = new ServiceCollection();
-
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/cloudfoundryapplication",
-            ["management:endpoints:heapDump:enabled"] = "false",
-            ["management:endpoints:heapDump:HeapDumpType"] = "Normal"
-        };
-
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = configurationBuilder.Build();
-
         services.AddLogging();
         services.AddSingleton(configuration);
         services.AddHeapDumpActuator();

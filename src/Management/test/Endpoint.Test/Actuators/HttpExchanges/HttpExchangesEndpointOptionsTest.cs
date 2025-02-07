@@ -33,9 +33,6 @@ public sealed class HttpExchangesEndpointOptionsTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/cloudfoundryapplication",
-            ["management:endpoints:loggers:enabled"] = "false",
             ["management:endpoints:httpExchanges:enabled"] = "true",
             ["management:endpoints:httpExchanges:capacity"] = "1000",
             ["management:endpoints:httpExchanges:includeTimeTaken"] = "false",

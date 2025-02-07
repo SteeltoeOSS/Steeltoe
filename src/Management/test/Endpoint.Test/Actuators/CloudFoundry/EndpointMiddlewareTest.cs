@@ -17,21 +17,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
 public sealed class EndpointMiddlewareTest : BaseTest
 {
     // Allow routing to /cloudfoundryapplication
-    private readonly EnvironmentVariableScope _scope = new("VCAP_APPLICATION", "some");
-
-    private readonly Dictionary<string, string?> _appSettings = new()
-    {
-        ["management:endpoints:enabled"] = "true",
-        ["management:endpoints:info:enabled"] = "true",
-        ["info:application:name"] = "foobar",
-        ["info:application:version"] = "1.0.0",
-        ["info:application:date"] = "5/1/2008",
-        ["info:application:time"] = "8:30:52 AM",
-        ["info:NET:type"] = "Core",
-        ["info:NET:version"] = "2.0.0",
-        ["info:NET:ASPNET:type"] = "Core",
-        ["info:NET:ASPNET:version"] = "2.0.0"
-    };
+    private readonly EnvironmentVariableScope _scope = new("VCAP_APPLICATION", "{}");
 
     [Fact]
     public void RoutesByPathAndVerb()
@@ -49,7 +35,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using IWebHost host = builder.Build();
         await host.StartAsync();
@@ -78,7 +63,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using IWebHost host = builder.Build();
         await host.StartAsync();
@@ -149,7 +133,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using IWebHost host = builder.Build();
         await host.StartAsync();
@@ -164,7 +147,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task CloudFoundryOptions_UseCustomJsonSerializerOptions()
     {
-        Dictionary<string, string?> settings = new(_appSettings)
+        Dictionary<string, string?> settings = new()
         {
             { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConverter" }
         };

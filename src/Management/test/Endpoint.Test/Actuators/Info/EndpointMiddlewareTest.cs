@@ -17,7 +17,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
 {
     private readonly Dictionary<string, string?> _appSettings = new()
     {
-        ["management:endpoints:enabled"] = "false",
         ["management:endpoints:path"] = "/management",
         ["management:endpoints:info:enabled"] = "true",
         ["management:endpoints:info:id"] = "info-management",

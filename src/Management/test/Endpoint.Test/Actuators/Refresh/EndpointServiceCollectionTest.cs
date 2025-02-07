@@ -18,8 +18,6 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:refresh:path"] = "/some"
         };
 

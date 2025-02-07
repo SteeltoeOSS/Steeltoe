@@ -14,18 +14,9 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     [Fact]
     public async Task AddEntityFrameworkCoreActuator_AddsCorrectServices()
     {
+        IConfiguration configuration = new ConfigurationBuilder().Build();
+
         var services = new ServiceCollection();
-
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/cloudfoundryapplication"
-        };
-
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = configurationBuilder.Build();
-
         services.AddSingleton(configuration);
         services.AddLogging();
         services.AddDbMigrationsActuator();

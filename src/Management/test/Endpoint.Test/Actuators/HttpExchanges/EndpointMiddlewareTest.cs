@@ -22,8 +22,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string?> AppSettings = new()
     {
-        ["management:endpoints:enabled"] = "true",
-        ["management:endpoints:httpExchanges:enabled"] = "true",
         ["management:endpoints:actuator:exposure:include:0"] = "httpexchanges"
     };
 
@@ -83,8 +81,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:actuator:exposure:include:0"] = "httpexchanges",
-            ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:httpExchanges:enabled"] = "true",
             ["management:endpoints:httpExchanges:IncludeRequestHeaders"] = "true",
             ["management:endpoints:httpExchanges:IncludeResponseHeaders"] = "true",
             ["management:endpoints:httpExchanges:IncludePathInfo"] = "true",
@@ -160,8 +156,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:actuator:exposure:include:0"] = "httpexchanges",
-            ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:httpExchanges:enabled"] = "true",
             ["management:endpoints:httpExchanges:IncludeRequestHeaders"] = "false",
             ["management:endpoints:httpExchanges:IncludeResponseHeaders"] = "false",
             ["management:endpoints:httpExchanges:IncludePathInfo"] = "false",

@@ -14,20 +14,6 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Hypermedia;
 
 public sealed class EndpointMiddlewareTest : BaseTest
 {
-    private readonly Dictionary<string, string?> _appSettings = new()
-    {
-        ["management:endpoints:enabled"] = "true",
-        ["management:endpoints:info:enabled"] = "true",
-        ["info:application:name"] = "foobar",
-        ["info:application:version"] = "1.0.0",
-        ["info:application:date"] = "5/1/2008",
-        ["info:application:time"] = "8:30:52 AM",
-        ["info:NET:type"] = "Core",
-        ["info:NET:version"] = "2.0.0",
-        ["info:NET:ASPNET:type"] = "Core",
-        ["info:NET:ASPNET:version"] = "2.0.0"
-    };
-
     [Theory]
     [InlineData("http://somehost:1234", "https://somehost:1234", "https")]
     [InlineData("http://somehost:443", "https://somehost", "https")]
@@ -37,7 +23,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using IWebHost host = builder.Build();
         await host.StartAsync();
@@ -56,7 +41,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using IWebHost host = builder.Build();
         await host.StartAsync();
@@ -85,11 +69,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HypermediaEndpointMiddleware_Returns_Expected_When_ManagementPath_Is_Slash()
     {
-        _appSettings.Add("Management:Endpoints:Path", "/");
+        Dictionary<string, string?> appSettings = new()
+        {
+            ["Management:Endpoints:Path"] = "/"
+        };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using IWebHost host = builder.Build();
         await host.StartAsync();
