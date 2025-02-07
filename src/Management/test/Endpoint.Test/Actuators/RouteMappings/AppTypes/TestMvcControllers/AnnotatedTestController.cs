@@ -26,8 +26,8 @@ internal sealed class AnnotatedTestController : Controller
 
     [HttpPatch("update/{id:guid}")]
     [Consumes(typeof(Product), "application/json")]
-    public async Task UpdateAsync(Guid id, int? languageId, [FromHeader(Name = "X-Media-Version")] string mediaVersion,
-        [FromHeader(Name = "X-Include-Details")] [FromQuery] string? includeDetails, [FromBody] Product product, bool failOnError = true)
+    public async Task UpdateAsync(Guid id, [FromQuery] int? languageId, [FromHeader(Name = "X-Media-Version")] string mediaVersion,
+        [FromHeader(Name = "X-Include-Details")] string? includeDetails, [FromBody] Product product, bool failOnError = true)
     {
         _ = id;
         _ = languageId;

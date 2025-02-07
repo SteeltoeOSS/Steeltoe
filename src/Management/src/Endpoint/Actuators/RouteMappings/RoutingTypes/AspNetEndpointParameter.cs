@@ -9,6 +9,15 @@ namespace Steeltoe.Management.Endpoint.Actuators.RouteMappings.RoutingTypes;
 /// </summary>
 internal sealed class AspNetEndpointParameter
 {
+    private static readonly AspNetEndpointParameterOrigin[] OriginsInOrderOfPriority =
+    [
+        AspNetEndpointParameterOrigin.Route,
+        AspNetEndpointParameterOrigin.QueryString,
+        AspNetEndpointParameterOrigin.Header,
+        AspNetEndpointParameterOrigin.Other,
+        AspNetEndpointParameterOrigin.Unknown
+    ];
+
     public AspNetEndpointParameterOrigin Origin { get; }
     public string Name { get; }
     public object? DefaultValue { get; }
@@ -24,6 +33,31 @@ internal sealed class AspNetEndpointParameter
         IsRequired = isRequired;
     }
 
+    public AspNetEndpointParameter MergeWith(AspNetEndpointParameter other)
+    {
+        AspNetEndpointParameterOrigin origin = MergeOriginWith(other.Origin);
+        return new AspNetEndpointParameter(origin, other.Name, other.DefaultValue, other.IsRequired);
+    }
+
+    private AspNetEndpointParameterOrigin MergeOriginWith(AspNetEndpointParameterOrigin other)
+    {
+        List<AspNetEndpointParameterOrigin> originsToSort =
+        [
+            other,
+            Origin
+        ];
+
+        originsToSort.Sort(OriginsComparison);
+        return originsToSort[0];
+    }
+
+    private static int OriginsComparison(AspNetEndpointParameterOrigin left, AspNetEndpointParameterOrigin right)
+    {
+        int leftIndex = Array.IndexOf(OriginsInOrderOfPriority, left);
+        int rightIndex = Array.IndexOf(OriginsInOrderOfPriority, right);
+        return leftIndex.CompareTo(rightIndex);
+    }
+
     public override string ToString()
     {
         string marker = IsRequired switch
@@ -33,6 +67,6 @@ internal sealed class AspNetEndpointParameter
             _ => string.Empty
         };
 
-        return $"{Name}{marker}{(DefaultValue != null ? "=" + DefaultValue : string.Empty)}";
+        return $"{Origin}: {Name}{marker}{(DefaultValue != null ? "=" + DefaultValue : string.Empty)}";
     }
 }

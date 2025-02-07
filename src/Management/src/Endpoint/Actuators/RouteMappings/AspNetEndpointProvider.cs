@@ -247,10 +247,10 @@ internal sealed class AspNetEndpointProvider
 
             foreach (HandlerParameterDescriptor descriptor in handlerDescriptor.Parameters)
             {
-                // Overwrite parameters from route pattern to discover default values (they cannot be expressed in routes).
+                // Merge parameters from route pattern to discover default values (they cannot be expressed in routes).
                 // Aside from that, the action method may contain additional parameters not present in the route pattern (which applies to all action methods on the page).
                 AspNetEndpointParameter parameter = ToAspNetEndpointParameter(descriptor);
-                parametersByName[parameter.Name] = parameter;
+                MergeWithExistingParameters(parameter, parametersByName);
             }
 
             yield return new AspNetEndpoint(AspNetEndpointSource.RazorPagesEndpointDataSource, displayName, routePattern, httpMethods, handlerMethod,
@@ -285,9 +285,9 @@ internal sealed class AspNetEndpointProvider
         {
             foreach (ParameterDescriptor descriptor in controllerActionDescriptor.Parameters)
             {
-                // Overwrite parameters from route pattern to discover default values (they cannot be expressed in routes) and correct nullability.
+                // Merge parameters from route pattern to discover default values (they cannot be expressed in routes) and correct nullability.
                 AspNetEndpointParameter parameter = ToAspNetEndpointParameter(descriptor);
-                parametersByName[parameter.Name] = parameter;
+                MergeWithExistingParameters(parameter, parametersByName);
             }
         }
 
@@ -399,6 +399,18 @@ internal sealed class AspNetEndpointProvider
             NullabilityState.Nullable => false,
             _ => null
         };
+    }
+
+    private static void MergeWithExistingParameters(AspNetEndpointParameter parameter, Dictionary<string, AspNetEndpointParameter> existingParametersByName)
+    {
+        if (!existingParametersByName.TryGetValue(parameter.Name, out AspNetEndpointParameter? existingParameter))
+        {
+            existingParametersByName.Add(parameter.Name, parameter);
+        }
+        else
+        {
+            existingParametersByName[parameter.Name] = existingParameter.MergeWith(parameter);
+        }
     }
 
     private static IEnumerable<string> ExtractConsumedContentTypes(EndpointMetadataCollection metadata)
