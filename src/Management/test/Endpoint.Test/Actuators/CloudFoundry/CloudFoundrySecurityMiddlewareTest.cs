@@ -35,7 +35,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
-        Assert.Equal("""{"security_error":"Application id is not available"}""", await response.Content.ReadAsStringAsync());
+        Assert.Equal("""{"security_error":"Application ID is not available"}""", await response.Content.ReadAsStringAsync());
         Assert.NotNull(response.Content.Headers.ContentType);
         Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
     }
@@ -64,7 +64,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_TargetEndpointNotConfigured_ReturnsServiceUnavailable()
+    public async Task CloudFoundrySecurityMiddleware_TargetEndpointNotConfigured_DelegatesToEndpointMiddleware()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -80,11 +80,10 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         await host.StartAsync();
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/barfoo"));
-        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
-        Assert.Equal("""{"security_error":"Endpoint is not available"}""", await response.Content.ReadAsStringAsync());
-        Assert.NotNull(response.Content.Headers.ContentType);
-        Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/does-not-exist"));
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal(string.Empty, await response.Content.ReadAsStringAsync());
+        Assert.Null(response.Content.Headers.ContentType);
     }
 
     [Fact]
@@ -129,7 +128,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal("""{"security_error":"Application id is not available"}""", await response.Content.ReadAsStringAsync());
+        Assert.Equal("""{"security_error":"Application ID is not available"}""", await response.Content.ReadAsStringAsync());
         Assert.NotNull(response.Content.Headers.ContentType);
         Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
     }

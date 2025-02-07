@@ -64,38 +64,32 @@ internal sealed class CloudFoundrySecurityMiddleware
                     "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
 
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.ApplicationIdMissingMessage));
-
                 return;
             }
 
             if (string.IsNullOrEmpty(endpointOptions.Api))
             {
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.CloudfoundryApiMissingMessage));
-
                 return;
             }
 
             EndpointOptions? targetEndpointOptions = FindTargetEndpoint(context.Request.Path);
 
-            if (targetEndpointOptions == null)
+            if (targetEndpointOptions != null)
             {
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.EndpointNotConfiguredMessage));
+                SecurityResult givenPermissions = await GetPermissionsAsync(context);
 
-                return;
-            }
+                if (givenPermissions.Code != HttpStatusCode.OK)
+                {
+                    await ReturnErrorAsync(context, givenPermissions);
+                    return;
+                }
 
-            SecurityResult givenPermissions = await GetPermissionsAsync(context);
-
-            if (givenPermissions.Code != HttpStatusCode.OK)
-            {
-                await ReturnErrorAsync(context, givenPermissions);
-                return;
-            }
-
-            if (targetEndpointOptions.RequiredPermissions > givenPermissions.Permissions)
-            {
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, PermissionsProvider.AccessDeniedMessage));
-                return;
+                if (targetEndpointOptions.RequiredPermissions > givenPermissions.Permissions)
+                {
+                    await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, PermissionsProvider.AccessDeniedMessage));
+                    return;
+                }
             }
         }
 
