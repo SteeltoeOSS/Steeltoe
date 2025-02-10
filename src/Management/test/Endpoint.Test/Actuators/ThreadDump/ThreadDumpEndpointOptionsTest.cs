@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
@@ -23,27 +22,24 @@ public sealed class ThreadDumpEndpointOptionsTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:loggers:enabled"] = "false",
             ["management:endpoints:threaddump:enabled"] = "true",
             ["management:endpoints:cloudfoundry:validateCertificates"] = "true",
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        IOptionsMonitor<ThreadDumpEndpointOptions> optionsMonitor =
-            GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptions>(appSettings);
+        ThreadDumpEndpointOptions threadDumpEndpointOptions =
+            GetOptionsFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptions>(appSettings);
 
         CloudFoundryEndpointOptions cloudFoundryEndpointOptions =
             GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appSettings);
 
-        ThreadDumpEndpointOptions options = optionsMonitor.CurrentValue;
         Assert.True(cloudFoundryEndpointOptions.Enabled);
         Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Id);
         Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Path);
         Assert.True(cloudFoundryEndpointOptions.ValidateCertificates);
 
-        Assert.True(options.Enabled);
-        Assert.Equal("threaddump", options.Id);
-        Assert.Equal("threaddump", options.Path);
+        Assert.True(threadDumpEndpointOptions.Enabled);
+        Assert.Equal("threaddump", threadDumpEndpointOptions.Id);
+        Assert.Equal("threaddump", threadDumpEndpointOptions.Path);
     }
 }

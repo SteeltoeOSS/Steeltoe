@@ -3,12 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
+using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
@@ -16,33 +17,15 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
 public sealed class EndpointMiddlewareTest : BaseTest
 {
     // Allow routing to /cloudfoundryapplication
-    private readonly EnvironmentVariableScope _scope = new("VCAP_APPLICATION", "some");
-
-    private readonly Dictionary<string, string?> _appSettings = new()
-    {
-        ["management:endpoints:enabled"] = "true",
-        ["management:endpoints:path"] = "/cloudfoundryapplication",
-        ["management:endpoints:info:enabled"] = "true",
-        ["info:application:name"] = "foobar",
-        ["info:application:version"] = "1.0.0",
-        ["info:application:date"] = "5/1/2008",
-        ["info:application:time"] = "8:30:52 AM",
-        ["info:NET:type"] = "Core",
-        ["info:NET:version"] = "2.0.0",
-        ["info:NET:ASPNET:type"] = "Core",
-        ["info:NET:ASPNET:version"] = "2.0.0"
-    };
+    private readonly EnvironmentVariableScope _scope = new("VCAP_APPLICATION", "{}");
 
     [Fact]
     public void RoutesByPathAndVerb()
     {
         HypermediaEndpointOptions endpointOptions = GetOptionsMonitorFromSettings<HypermediaEndpointOptions>().CurrentValue;
-        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
+
         Assert.True(endpointOptions.RequiresExactMatch());
-
-        Assert.Equal("/cloudfoundryapplication",
-            endpointOptions.GetPathMatchPattern(managementOptionsMonitor.CurrentValue, ConfigureManagementOptions.DefaultCloudFoundryPath));
-
+        Assert.Equal("/cloudfoundryapplication", endpointOptions.GetPathMatchPattern(ConfigureManagementOptions.DefaultCloudFoundryPath));
         Assert.Single(endpointOptions.AllowedVerbs);
         Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
@@ -52,7 +35,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using IWebHost host = builder.Build();
         await host.StartAsync();
@@ -81,7 +63,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using IWebHost host = builder.Build();
         await host.StartAsync();
@@ -152,7 +133,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using IWebHost host = builder.Build();
         await host.StartAsync();
@@ -167,7 +147,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task CloudFoundryOptions_UseCustomJsonSerializerOptions()
     {
-        Dictionary<string, string?> settings = new(_appSettings)
+        Dictionary<string, string?> settings = new()
         {
             { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConverter" }
         };
@@ -186,6 +166,21 @@ public sealed class EndpointMiddlewareTest : BaseTest
         response.Should().NotContain("2017-07-12T18:40:39Z");
         response.Should().Contain("1496926022000");
         response.Should().NotContain("2017-06-08T12:47:02Z");
+    }
+
+    [Fact]
+    public async Task ThrowsForMissingSecurityMiddlewareOnCloudFoundry()
+    {
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Services.AddInfoActuator();
+        await using WebApplication app = builder.Build();
+
+        Func<Task> action = async () => await app.StartAsync();
+
+        await action.Should().ThrowExactlyAsync<InvalidOperationException>()
+            .WithMessage("Running on Cloud Foundry without security middleware. Call services.AddCloudFoundryActuator() to fix this.");
     }
 
     protected override void Dispose(bool disposing)

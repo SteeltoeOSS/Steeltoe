@@ -17,7 +17,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
 {
     private readonly Dictionary<string, string?> _appSettings = new()
     {
-        ["management:endpoints:enabled"] = "false",
         ["management:endpoints:path"] = "/management",
         ["management:endpoints:info:enabled"] = "true",
         ["management:endpoints:info:id"] = "info-management",
@@ -112,11 +111,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
         Assert.True(endpointOptions.RequiresExactMatch());
-        Assert.Equal("/actuator/info", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
-
-        Assert.Equal("/cloudfoundryapplication/info",
-            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
-
+        Assert.Equal("/actuator/info", endpointOptions.GetPathMatchPattern(managementOptions.Path));
+        Assert.Equal("/cloudfoundryapplication/info", endpointOptions.GetPathMatchPattern(ConfigureManagementOptions.DefaultCloudFoundryPath));
         Assert.Single(endpointOptions.AllowedVerbs);
         Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }

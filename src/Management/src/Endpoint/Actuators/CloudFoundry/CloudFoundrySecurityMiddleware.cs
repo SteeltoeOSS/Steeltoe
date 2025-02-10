@@ -53,8 +53,9 @@ internal sealed class CloudFoundrySecurityMiddleware
 
         _logger.LogDebug("InvokeAsync({RequestPath})", context.Request.Path.Value);
         CloudFoundryEndpointOptions endpointOptions = _endpointOptionsMonitor.CurrentValue;
+        ManagementOptions managementOptions = _managementOptionsMonitor.CurrentValue;
 
-        if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue) &&
+        if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(managementOptions) && managementOptions.IsCloudFoundryEnabled &&
             PermissionsProvider.IsCloudFoundryRequest(context.Request.Path))
         {
             if (string.IsNullOrEmpty(endpointOptions.ApplicationId))
@@ -63,38 +64,32 @@ internal sealed class CloudFoundrySecurityMiddleware
                     "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
 
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.ApplicationIdMissingMessage));
-
                 return;
             }
 
             if (string.IsNullOrEmpty(endpointOptions.Api))
             {
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.CloudfoundryApiMissingMessage));
-
                 return;
             }
 
             EndpointOptions? targetEndpointOptions = FindTargetEndpoint(context.Request.Path);
 
-            if (targetEndpointOptions == null)
+            if (targetEndpointOptions != null)
             {
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.EndpointNotConfiguredMessage));
+                SecurityResult givenPermissions = await GetPermissionsAsync(context);
 
-                return;
-            }
+                if (givenPermissions.Code != HttpStatusCode.OK)
+                {
+                    await ReturnErrorAsync(context, givenPermissions);
+                    return;
+                }
 
-            SecurityResult givenPermissions = await GetPermissionsAsync(context);
-
-            if (givenPermissions.Code != HttpStatusCode.OK)
-            {
-                await ReturnErrorAsync(context, givenPermissions);
-                return;
-            }
-
-            if (targetEndpointOptions.RequiredPermissions > givenPermissions.Permissions)
-            {
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, PermissionsProvider.AccessDeniedMessage));
-                return;
+                if (targetEndpointOptions.RequiredPermissions > givenPermissions.Permissions)
+                {
+                    await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, PermissionsProvider.AccessDeniedMessage));
+                    return;
+                }
             }
         }
 
@@ -141,23 +136,18 @@ internal sealed class CloudFoundrySecurityMiddleware
         foreach (EndpointOptions endpointOptions in _endpointOptionsMonitorProviderArray.Select(provider => provider.Get())
             .Where(options => options is not HypermediaEndpointOptions))
         {
-            string basePath = ConfigureManagementOptions.DefaultCloudFoundryPath;
-
-            if (!string.IsNullOrEmpty(endpointOptions.Path))
-            {
-                basePath += '/';
-            }
+            string endpointPath = endpointOptions.GetEndpointPath(ConfigureManagementOptions.DefaultCloudFoundryPath);
 
             if (endpointOptions is CloudFoundryEndpointOptions)
             {
-                if (requestPath.Equals(basePath))
+                if (requestPath == endpointPath)
                 {
                     return endpointOptions;
                 }
             }
             else
             {
-                if (requestPath.StartsWithSegments(basePath + endpointOptions.Path))
+                if (requestPath.StartsWithSegments(endpointPath))
                 {
                     return endpointOptions;
                 }

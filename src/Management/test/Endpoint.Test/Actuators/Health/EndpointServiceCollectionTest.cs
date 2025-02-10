@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
@@ -15,58 +14,15 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Health;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public async Task AddHealthActuator_AddsCorrectServicesWithDefaultHealthAggregator()
-    {
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/cloudfoundryapplication",
-            ["management:endpoints:health:enabled"] = "true"
-        };
-
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = configurationBuilder.Build();
-
-        var services = new ServiceCollection();
-        services.AddLogging();
-        services.AddHealthActuator();
-        services.Configure<HealthCheckServiceOptions>(configuration);
-        services.AddSingleton(configuration);
-
-        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-
-        var handler = serviceProvider.GetService<IHealthEndpointHandler>();
-        Assert.NotNull(handler);
-
-        var aggregator = serviceProvider.GetService<IHealthAggregator>();
-        Assert.NotNull(aggregator);
-
-        IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
-        Assert.NotEmpty(contributors);
-    }
-
-    [Fact]
     public async Task AddHealthActuator_AddsCorrectServices()
     {
+        IConfiguration configuration = new ConfigurationBuilder().Build();
+
         var services = new ServiceCollection();
-
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/cloudfoundryapplication",
-            ["management:endpoints:health:enabled"] = "true"
-        };
-
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = configurationBuilder.Build();
-
         services.AddLogging();
-        services.AddSingleton(configuration);
         services.AddHealthActuator();
+        services.AddSingleton(configuration);
 
-        services.Configure<HealthCheckServiceOptions>(configuration);
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var handler = serviceProvider.GetService<IHealthEndpointHandler>();
@@ -75,8 +31,8 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         var aggregator = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(aggregator);
 
-        IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
-        Assert.Equal(4, contributors.Count());
+        IHealthContributor[] contributors = serviceProvider.GetServices<IHealthContributor>().ToArray();
+        Assert.Equal(4, contributors.Length);
 
         var availability = serviceProvider.GetService<ApplicationAvailability>();
         Assert.NotNull(availability);

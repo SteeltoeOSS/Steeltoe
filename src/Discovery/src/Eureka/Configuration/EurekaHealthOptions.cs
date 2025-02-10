@@ -23,8 +23,8 @@ public sealed class EurekaHealthOptions
     public string? MonitoredApps { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether to query ASP.NET health checks and <see cref="IHealthContributor" />s during registration and renewals, in
-    /// order to determine the status of the running app to report back to Eureka. Default value: true.
+    /// Gets or sets a value indicating whether to query ASP.NET Core health checks and <see cref="IHealthContributor" />s during registration and renewals,
+    /// in order to determine the status of the running app to report back to Eureka. Default value: true.
     /// </summary>
     public bool CheckEnabled { get; set; }
 }

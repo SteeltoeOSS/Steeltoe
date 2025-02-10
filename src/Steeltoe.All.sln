@@ -223,6 +223,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Logging", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Logging.Test", "Common\test\Logging.Test\Steeltoe.Common.Logging.Test.csproj", "{A9CCC214-212A-4296-98F5-65ADDB2BB8B4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Management.Endpoint.RazorPagesWebApp.Test", "Management\test\RazorPagesWebApp.Test\Steeltoe.Management.Endpoint.RazorPagesWebApp.Test.csproj", "{51DD3135-1EAA-4640-82F1-9FBECA421708}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -505,6 +507,10 @@ Global
 		{A9CCC214-212A-4296-98F5-65ADDB2BB8B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9CCC214-212A-4296-98F5-65ADDB2BB8B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9CCC214-212A-4296-98F5-65ADDB2BB8B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51DD3135-1EAA-4640-82F1-9FBECA421708}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51DD3135-1EAA-4640-82F1-9FBECA421708}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51DD3135-1EAA-4640-82F1-9FBECA421708}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51DD3135-1EAA-4640-82F1-9FBECA421708}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -580,6 +586,7 @@ Global
 		{C4C38F83-8410-443C-9599-ACFB5FA7CD2D} = {DF26D677-72A3-442D-B556-46E3D0EF4A77}
 		{738AFF97-B4C4-4EAC-B9C5-C405D481C92B} = {59874241-E276-4035-B31D-14924889A1C9}
 		{A9CCC214-212A-4296-98F5-65ADDB2BB8B4} = {59874241-E276-4035-B31D-14924889A1C9}
+		{51DD3135-1EAA-4640-82F1-9FBECA421708} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}

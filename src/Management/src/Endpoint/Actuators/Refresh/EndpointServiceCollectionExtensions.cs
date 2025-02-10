@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.Refresh;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the refresh actuator to the service container and configures the ASP.NET middleware pipeline.
+    /// Adds the refresh actuator to the service container and configures the ASP.NET Core middleware pipeline.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
@@ -29,7 +29,7 @@ public static class EndpointServiceCollectionExtensions
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configureMiddleware">
-    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires
+    /// When <c>false</c>, skips configuration of the ASP.NET Core middleware pipeline. While this provides full control over the pipeline order, it requires
     /// manual addition of the appropriate middleware for actuators to work correctly.
     /// </param>
     /// <returns>

@@ -5,13 +5,14 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Management.Endpoint.Actuators.RouteMappings.ResponseTypes;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 
 /// <summary>
-/// Middleware for displaying the mapped ASP.NET routes.
+/// Middleware for displaying the mapped ASP.NET Core endpoints.
 /// </summary>
 internal sealed class RouteMappingsEndpointMiddleware(
     IRouteMappingsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)

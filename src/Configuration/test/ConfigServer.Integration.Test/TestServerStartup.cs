@@ -30,6 +30,6 @@ internal sealed class TestServerStartup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-        app.UseEndpoints(endpoints => endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}"));
+        app.UseEndpoints(endpoints => endpoints.MapDefaultControllerRoute());
     }
 }

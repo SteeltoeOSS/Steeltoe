@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Http;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Configuration;
 
@@ -45,19 +46,23 @@ internal static class EndpointOptionsExtensions
         return true;
     }
 
-    public static string GetPathMatchPattern(this EndpointOptions endpointOptions, ManagementOptions managementOptions, string? baseRequestPath)
+    public static bool CanInvoke(this EndpointOptions endpointOptions, PathString requestPath, ManagementOptions managementOptions)
     {
         ArgumentNullException.ThrowIfNull(endpointOptions);
         ArgumentNullException.ThrowIfNull(managementOptions);
 
-        string? path = baseRequestPath;
+        bool isEnabled = IsEnabled(endpointOptions, managementOptions);
+        bool isExposed = IsExposed(endpointOptions, managementOptions);
 
-        if (path == null || (!path.EndsWith('/') && !string.IsNullOrEmpty(endpointOptions.Path)))
-        {
-            path += '/';
-        }
+        bool isAtCloudFoundryPath = requestPath.StartsWithSegments(ConfigureManagementOptions.DefaultCloudFoundryPath);
+        return isAtCloudFoundryPath ? managementOptions.IsCloudFoundryEnabled && isEnabled : isEnabled && isExposed;
+    }
 
-        path += endpointOptions.Path;
+    public static string GetPathMatchPattern(this EndpointOptions endpointOptions, string? basePath)
+    {
+        ArgumentNullException.ThrowIfNull(endpointOptions);
+
+        string path = GetEndpointPath(endpointOptions, basePath);
 
         if (!endpointOptions.RequiresExactMatch())
         {
@@ -70,5 +75,20 @@ internal static class EndpointOptionsExtensions
         }
 
         return path;
+    }
+
+    public static string GetEndpointPath(this EndpointOptions endpointOptions, string? basePath)
+    {
+        ArgumentNullException.ThrowIfNull(endpointOptions);
+
+        string baseSegment = basePath == null ? string.Empty : basePath.Trim('/');
+        string endpointSegment = endpointOptions.Path == null ? string.Empty : endpointOptions.Path.Trim('/');
+
+        if (baseSegment.Length == 0)
+        {
+            return endpointSegment.Length == 0 ? "/" : $"/{endpointSegment}";
+        }
+
+        return endpointSegment.Length == 0 ? $"/{baseSegment}" : $"/{baseSegment}/{endpointSegment}";
     }
 }

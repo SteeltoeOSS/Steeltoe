@@ -49,7 +49,7 @@ internal sealed class CloudFoundryEndpointHandler : ICloudFoundryEndpointHandler
         var hypermediaService =
             new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _optionsMonitorProviderArray, _hypermediaServiceLogger);
 
-        Links result = hypermediaService.Invoke(baseUrl);
+        Links result = hypermediaService.Invoke(new Uri(baseUrl));
         return await Task.FromResult(result);
     }
 }

@@ -12,7 +12,7 @@ internal static class ConfigurationExtensions
     private const string DeprecatedServerUrlsConfigurationKey = "server.urls";
 
     /// <summary>
-    /// Best-effort attempt to discover the addresses this ASP.NET application binds to at startup.
+    /// Best-effort attempt to discover the addresses this ASP.NET Core application binds to at startup.
     /// </summary>
     /// <param name="configuration">
     /// The <see cref="IConfiguration" /> to read application settings from.

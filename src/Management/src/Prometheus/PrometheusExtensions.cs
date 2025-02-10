@@ -20,7 +20,7 @@ namespace Steeltoe.Management.Prometheus;
 public static class PrometheusExtensions
 {
     /// <summary>
-    /// Adds the services used by the Steeltoe-configured OpenTelemetry Prometheus exporter and configures the ASP.NET middleware pipeline.
+    /// Adds the services used by the Steeltoe-configured OpenTelemetry Prometheus exporter and configures the ASP.NET Core middleware pipeline.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
@@ -40,7 +40,7 @@ public static class PrometheusExtensions
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configureMiddleware">
-    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires
+    /// When <c>false</c>, skips configuration of the ASP.NET Core middleware pipeline. While this provides full control over the pipeline order, it requires
     /// manual addition of the appropriate middleware for the Prometheus exporter to work correctly.
     /// </param>
     /// <returns>
@@ -58,7 +58,7 @@ public static class PrometheusExtensions
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configureMiddleware">
-    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires
+    /// When <c>false</c>, skips configuration of the ASP.NET Core middleware pipeline. While this provides full control over the pipeline order, it requires
     /// manual addition of the appropriate middleware for the Prometheus exporter to work correctly.
     /// </param>
     /// <param name="configurePrometheusPipeline">
@@ -80,6 +80,7 @@ public static class PrometheusExtensions
 
         services.AddRouting();
         services.ConfigureEndpointOptions<PrometheusEndpointOptions, ConfigurePrometheusEndpointOptions>();
+        services.ConfigureOptionsWithChangeTokenSource<ManagementOptions, ConfigureManagementOptions>();
 
         if (configureMiddleware)
         {
@@ -127,12 +128,9 @@ public static class PrometheusExtensions
         ILogger logger = loggerFactory.CreateLogger(nameof(PrometheusExtensions));
         ManagementOptions managementOptions = builder.ApplicationServices.GetRequiredService<IOptionsMonitor<ManagementOptions>>().CurrentValue;
         var conventionOptionsMonitor = builder.ApplicationServices.GetRequiredService<IOptionsMonitor<ActuatorConventionOptions>>();
+        PrometheusEndpointOptions prometheusOptions = builder.ApplicationServices.GetRequiredService<IOptionsMonitor<PrometheusEndpointOptions>>().CurrentValue;
 
-        PrometheusEndpointOptions prometheusOptions = builder.ApplicationServices.GetRequiredService<IOptions<PrometheusEndpointOptions>>().Value;
-
-        string basePath = managementOptions.Path ?? "/actuator";
-        string endpointPath = prometheusOptions.Path ?? "prometheus";
-        string path = $"{basePath}/{endpointPath}".Replace("//", "/", StringComparison.Ordinal);
+        string endpointPath = prometheusOptions.GetEndpointPath(managementOptions.Path);
         string? cloudFoundryPath = null;
 
         if (Platform.IsCloudFoundry)
@@ -145,7 +143,7 @@ public static class PrometheusExtensions
             }
             else
             {
-                cloudFoundryPath = $"/{ConfigureManagementOptions.DefaultCloudFoundryPath}/{endpointPath}".Replace("//", "/", StringComparison.Ordinal);
+                cloudFoundryPath = prometheusOptions.GetEndpointPath(ConfigureManagementOptions.DefaultCloudFoundryPath);
             }
         }
 
@@ -164,7 +162,7 @@ public static class PrometheusExtensions
                 "The Prometheus endpoint may not be configured securely. Consider using a dedicated management port, adding actuator conventions or configuring the Prometheus middleware pipeline.");
         }
 
-        builder.UseOpenTelemetryPrometheusScrapingEndpoint(null, null, path, ConfigureBranchedPipeline, null);
+        builder.UseOpenTelemetryPrometheusScrapingEndpoint(null, null, endpointPath, ConfigureBranchedPipeline, null);
 
         if (cloudFoundryPath != null)
         {

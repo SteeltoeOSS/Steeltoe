@@ -21,29 +21,13 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
 
 public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
 {
-    private readonly EnvironmentVariableScope _scope = new("VCAP_APPLICATION", "some");
+    private readonly EnvironmentVariableScope _scope = new("VCAP_APPLICATION", "{}");
 
     [Fact]
     public async Task CloudFoundrySecurityMiddleware_MissingApplicationID_ReturnsServiceUnavailable()
     {
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/",
-            ["management:endpoints:info:enabled"] = "true",
-            ["info:application:name"] = "foobar",
-            ["info:application:version"] = "1.0.0",
-            ["info:application:date"] = "5/1/2008",
-            ["info:application:time"] = "8:30:52 AM",
-            ["info:NET:type"] = "Core",
-            ["info:NET:version"] = "2.0.0",
-            ["info:NET:ASPNET:type"] = "Core",
-            ["info:NET:ASPNET:version"] = "2.0.0"
-        };
-
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<StartupWithSecurity>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using IWebHost host = builder.Build();
         await host.StartAsync();
@@ -51,7 +35,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
-        Assert.Equal("""{"security_error":"Application id is not available"}""", await response.Content.ReadAsStringAsync());
+        Assert.Equal("""{"security_error":"Application ID is not available"}""", await response.Content.ReadAsStringAsync());
         Assert.NotNull(response.Content.Headers.ContentType);
         Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
     }
@@ -61,17 +45,6 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/",
-            ["management:endpoints:info:enabled"] = "true",
-            ["info:application:name"] = "foobar",
-            ["info:application:version"] = "1.0.0",
-            ["info:application:date"] = "5/1/2008",
-            ["info:application:time"] = "8:30:52 AM",
-            ["info:NET:type"] = "Core",
-            ["info:NET:version"] = "2.0.0",
-            ["info:NET:ASPNET:type"] = "Core",
-            ["info:NET:ASPNET:version"] = "2.0.0",
             ["vcap:application:application_id"] = "foobar"
         };
 
@@ -91,21 +64,10 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_EndpointNotConfigured_ReturnsServiceUnavailable()
+    public async Task CloudFoundrySecurityMiddleware_TargetEndpointNotConfigured_DelegatesToEndpointMiddleware()
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/",
-            ["management:endpoints:info:enabled"] = "true",
-            ["info:application:name"] = "foobar",
-            ["info:application:version"] = "1.0.0",
-            ["info:application:date"] = "5/1/2008",
-            ["info:application:time"] = "8:30:52 AM",
-            ["info:NET:type"] = "Core",
-            ["info:NET:version"] = "2.0.0",
-            ["info:NET:ASPNET:type"] = "Core",
-            ["info:NET:ASPNET:version"] = "2.0.0",
             ["vcap:application:application_id"] = "foobar",
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
@@ -118,11 +80,10 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         await host.StartAsync();
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/barfoo"));
-        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
-        Assert.Equal("""{"security_error":"Endpoint is not available"}""", await response.Content.ReadAsStringAsync());
-        Assert.NotNull(response.Content.Headers.ContentType);
-        Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/does-not-exist"));
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal(string.Empty, await response.Content.ReadAsStringAsync());
+        Assert.Null(response.Content.Headers.ContentType);
     }
 
     [Fact]
@@ -130,17 +91,6 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/",
-            ["management:endpoints:info:enabled"] = "true",
-            ["info:application:name"] = "foobar",
-            ["info:application:version"] = "1.0.0",
-            ["info:application:date"] = "5/1/2008",
-            ["info:application:time"] = "8:30:52 AM",
-            ["info:NET:type"] = "Core",
-            ["info:NET:version"] = "2.0.0",
-            ["info:NET:ASPNET:type"] = "Core",
-            ["info:NET:ASPNET:version"] = "2.0.0",
             ["vcap:application:application_id"] = "foobar",
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
@@ -165,18 +115,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/",
-            ["management:endpoints:info:enabled"] = "true",
-            ["management:endpoints:UseStatusCodeFromResponse"] = "false",
-            ["info:application:name"] = "foobar",
-            ["info:application:version"] = "1.0.0",
-            ["info:application:date"] = "5/1/2008",
-            ["info:application:time"] = "8:30:52 AM",
-            ["info:NET:type"] = "Core",
-            ["info:NET:version"] = "2.0.0",
-            ["info:NET:ASPNET:type"] = "Core",
-            ["info:NET:ASPNET:version"] = "2.0.0"
+            ["management:endpoints:UseStatusCodeFromResponse"] = "false"
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -189,7 +128,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal("""{"security_error":"Application id is not available"}""", await response.Content.ReadAsStringAsync());
+        Assert.Equal("""{"security_error":"Application ID is not available"}""", await response.Content.ReadAsStringAsync());
         Assert.NotNull(response.Content.Headers.ContentType);
         Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
     }
@@ -199,18 +138,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/",
-            ["management:endpoints:info:enabled"] = "true",
             ["management:endpoints:UseStatusCodeFromResponse"] = "false",
-            ["info:application:name"] = "foobar",
-            ["info:application:version"] = "1.0.0",
-            ["info:application:date"] = "5/1/2008",
-            ["info:application:time"] = "8:30:52 AM",
-            ["info:NET:type"] = "Core",
-            ["info:NET:version"] = "2.0.0",
-            ["info:NET:ASPNET:type"] = "Core",
-            ["info:NET:ASPNET:version"] = "2.0.0",
             ["vcap:application:application_id"] = "foobar",
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
@@ -231,24 +159,33 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalse()
+    public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfCloudFoundryDisabled()
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/",
-            ["management:endpoints:info:enabled"] = "true",
-            ["management:endpoints:cloudfoundry:enabled"] = "false",
-            ["info:application:name"] = "foobar",
-            ["info:application:version"] = "1.0.0",
-            ["info:application:date"] = "5/1/2008",
-            ["info:application:time"] = "8:30:52 AM",
-            ["info:NET:type"] = "Core",
-            ["info:NET:version"] = "2.0.0",
-            ["info:NET:ASPNET:type"] = "Core",
-            ["info:NET:ASPNET:version"] = "2.0.0",
-            ["vcap:application:application_id"] = "foobar",
-            ["vcap:application:cf_api"] = "http://localhost:9999/foo"
+            ["Management:CloudFoundry:Enabled"] = "false"
+        };
+
+        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
+        builder.UseStartup<StartupWithSecurity>();
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        using IWebHost host = builder.Build();
+
+        await host.StartAsync();
+        using HttpClient client = host.GetTestClient();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        string responseBody = await response.Content.ReadAsStringAsync();
+        responseBody.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfCloudFoundryActuatorDisabled()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["management:endpoints:cloudfoundry:enabled"] = "false"
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -259,42 +196,20 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         await host.StartAsync();
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/info"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(response.Content.Headers.ContentType);
         Assert.NotEqual("application/json", response.Content.Headers.ContentType.MediaType);
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalseViaEnvironmentVariables()
+    public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfCloudFoundryActuatorDisabledViaEnvironmentVariable()
     {
         using var scope = new EnvironmentVariableScope("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", "False");
 
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/",
-            ["management:endpoints:info:enabled"] = "true",
-            ["info:application:name"] = "foobar",
-            ["info:application:version"] = "1.0.0",
-            ["info:application:date"] = "5/1/2008",
-            ["info:application:time"] = "8:30:52 AM",
-            ["info:NET:type"] = "Core",
-            ["info:NET:version"] = "2.0.0",
-            ["info:NET:ASPNET:type"] = "Core",
-            ["info:NET:ASPNET:version"] = "2.0.0",
-            ["vcap:application:application_id"] = "foobar",
-            ["vcap:application:cf_api"] = "http://localhost:9999/foo"
-        };
-
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<StartupWithSecurity>();
-
-        builder.ConfigureAppConfiguration((_, configuration) =>
-        {
-            configuration.AddInMemoryCollection(appSettings);
-            configuration.AddEnvironmentVariables();
-        });
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddEnvironmentVariables());
 
         using IWebHost host = builder.Build();
         await host.StartAsync();
@@ -311,16 +226,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:enabled"] = "true",
             ["management:endpoints:info:enabled"] = "true",
-            ["info:application:name"] = "foobar",
-            ["info:application:version"] = "1.0.0",
-            ["info:application:date"] = "5/1/2008",
-            ["info:application:time"] = "8:30:52 AM",
-            ["info:NET:type"] = "Core",
-            ["info:NET:version"] = "2.0.0",
-            ["info:NET:ASPNET:type"] = "Core",
-            ["info:NET:ASPNET:version"] = "2.0.0",
             ["vcap:application:application_id"] = "foobar",
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
@@ -334,7 +240,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         using HttpClient client = host.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication"));
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode); // We expect the authorization to fail, but the FindEndpoint logic to work.
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode); // We expect the authorization to fail, but the FindTargetEndpoint logic to work.
         Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""", await response.Content.ReadAsStringAsync());
         Assert.NotNull(response.Content.Headers.ContentType);
         Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);

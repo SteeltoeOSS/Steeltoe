@@ -4,13 +4,14 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Management.Endpoint.Actuators.RouteMappings.ResponseTypes;
 
 namespace Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the route mappings actuator to the service container and configures the ASP.NET middleware pipeline.
+    /// Adds the route mappings actuator to the service container and configures the ASP.NET Core middleware pipeline.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
@@ -30,7 +31,7 @@ public static class EndpointServiceCollectionExtensions
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configureMiddleware">
-    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires
+    /// When <c>false</c>, skips configuration of the ASP.NET Core middleware pipeline. While this provides full control over the pipeline order, it requires
     /// manual addition of the appropriate middleware for actuators to work correctly.
     /// </param>
     /// <returns>
@@ -44,7 +45,8 @@ public static class EndpointServiceCollectionExtensions
             IRouteMappingsEndpointHandler, RouteMappingsEndpointHandler, object?, RouteMappingsResponse>(configureMiddleware);
 
         services.AddEndpointsApiExplorer();
-        services.TryAddSingleton<RouterMappings>();
+        services.TryAddSingleton<ActuatorRouteOptionsResolver>();
+        services.TryAddSingleton<AspNetEndpointProvider>();
 
         return services;
     }

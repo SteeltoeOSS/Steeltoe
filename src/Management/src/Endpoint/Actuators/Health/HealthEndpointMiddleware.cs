@@ -27,6 +27,11 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
         _logger = loggerFactory.CreateLogger<HealthEndpointMiddleware>();
     }
 
+    public override ActuatorMetadataProvider GetMetadataProvider()
+    {
+        return new HealthActuatorMetadataProvider(ContentType);
+    }
+
     protected override async Task<HealthEndpointResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         HealthEndpointOptions currentEndpointOptions = _endpointOptionsMonitor.CurrentValue;
@@ -93,7 +98,8 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 
     private static bool UseStatusCodeFromResponseInHeader(IHeaderDictionary requestHeaders)
     {
-        if (requestHeaders.TryGetValue("X-Use-Status-Code-From-Response", out StringValues headerValue) && bool.TryParse(headerValue, out bool useStatusCode))
+        if (requestHeaders.TryGetValue(ManagementOptions.UseStatusCodeFromResponseHeaderName, out StringValues headerValue) &&
+            bool.TryParse(headerValue, out bool useStatusCode))
         {
             return useStatusCode;
         }

@@ -135,7 +135,7 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         var options = (EndpointOptions)((dynamic)optionsMonitor).CurrentValue;
 
         ManagementOptions managementOptions = host.Services.GetRequiredService<IOptionsMonitor<ManagementOptions>>().CurrentValue;
-        string path = options.GetPathMatchPattern(managementOptions, managementOptions.Path);
+        string path = options.GetPathMatchPattern(managementOptions.Path);
         path = path.Replace("health/{**_}", "health", StringComparison.Ordinal);
         HttpResponseMessage response;
 

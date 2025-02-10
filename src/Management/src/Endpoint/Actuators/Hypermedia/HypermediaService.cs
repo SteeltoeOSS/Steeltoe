@@ -50,9 +50,9 @@ internal sealed class HypermediaService
         _logger = logger;
     }
 
-    public Links Invoke(string baseUrl)
+    public Links Invoke(Uri baseUrl)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(baseUrl);
+        ArgumentNullException.ThrowIfNull(baseUrl);
 
         var links = new Links();
         ManagementOptions managementOptions = _managementOptionsMonitor.CurrentValue;
@@ -65,7 +65,8 @@ internal sealed class HypermediaService
         _logger.LogTrace("Processing hypermedia for {ManagementOptions}", managementOptions);
 
         Link? selfLink = null;
-        bool skipExposureCheck = PermissionsProvider.IsCloudFoundryRequest(new Uri(baseUrl).PathAndQuery);
+        bool skipExposureCheck = PermissionsProvider.IsCloudFoundryRequest(baseUrl.PathAndQuery);
+        string? basePath = managementOptions.GetBasePath(baseUrl.AbsolutePath);
 
         foreach (EndpointOptions endpointOptions in _endpointOptionsMonitorProviders.Select(provider => provider.Get()))
         {
@@ -81,11 +82,11 @@ internal sealed class HypermediaService
 
             if (endpointOptions.Id == _endpointOptions.Id)
             {
-                selfLink = new Link(baseUrl);
+                selfLink = new Link(baseUrl.ToString());
             }
             else
             {
-                AddToLinkEntries(baseUrl, links, endpointOptions);
+                AddToLinkEntries(baseUrl, basePath, links, endpointOptions);
             }
         }
 
@@ -97,13 +98,18 @@ internal sealed class HypermediaService
         return links;
     }
 
-    private void AddToLinkEntries(string baseUrl, Links links, EndpointOptions endpointOptions)
+    private void AddToLinkEntries(Uri baseUrl, string? basePath, Links links, EndpointOptions endpointOptions)
     {
         if (!string.IsNullOrEmpty(endpointOptions.Id))
         {
             if (!links.Entries.ContainsKey(endpointOptions.Id))
             {
-                string linkPath = $"{baseUrl.TrimEnd('/')}/{endpointOptions.Path}";
+                var builder = new UriBuilder(baseUrl)
+                {
+                    Path = endpointOptions.GetEndpointPath(basePath)
+                };
+
+                string linkPath = builder.Uri.ToString();
                 links.Entries.Add(endpointOptions.Id, new Link(linkPath));
             }
             else

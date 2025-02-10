@@ -37,11 +37,12 @@ public abstract class EndpointOptions
     /// </summary>
     public IList<string> AllowedVerbs { get; private set; } = new List<string>();
 
+    /// <summary>
+    /// Gets the normalized set of allowed HTTP verbs: no duplicates, all uppercase, and no empty strings. An empty set indicates no verbs are allowed.
+    /// </summary>
     internal HashSet<string> GetSafeAllowedVerbs()
     {
-        // Caution: Mapping with an empty string in the list results in exposing the endpoint at ALL verbs.
-        // And duplicate verbs that only differ in case result in an ambiguous match error when mapping routes.
-        return AllowedVerbs.Where(verb => verb.Length > 0).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        return AllowedVerbs.Where(verb => verb.Length > 0).Select(verb => verb.ToUpperInvariant()).ToHashSet(StringComparer.OrdinalIgnoreCase);
     }
 
     internal void ApplyDefaultAllowedVerbs()

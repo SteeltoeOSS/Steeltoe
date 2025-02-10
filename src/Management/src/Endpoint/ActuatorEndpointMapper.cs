@@ -7,38 +7,22 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
-using Steeltoe.Management.Configuration;
-using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
-using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint;
 
-internal sealed class ActuatorEndpointMapper
+internal sealed class ActuatorEndpointMapper : ActuatorMapper
 {
-    private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IOptionsMonitor<ActuatorConventionOptions> _conventionOptionsMonitor;
-    private readonly IEndpointMiddleware[] _middlewares;
-    private readonly ILogger<ActuatorEndpointMapper> _logger;
 
-    public ActuatorEndpointMapper(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        IOptionsMonitor<ActuatorConventionOptions> conventionOptionsMonitor, IEnumerable<IEndpointMiddleware> middlewares,
-        ILogger<ActuatorEndpointMapper> logger)
+    public ActuatorEndpointMapper(IEnumerable<IEndpointMiddleware> middlewares, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+        IOptionsMonitor<ActuatorConventionOptions> conventionOptionsMonitor, ILoggerFactory loggerFactory)
+        : base(middlewares, managementOptionsMonitor, loggerFactory)
     {
-        ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
         ArgumentNullException.ThrowIfNull(conventionOptionsMonitor);
-        ArgumentNullException.ThrowIfNull(middlewares);
-        ArgumentNullException.ThrowIfNull(logger);
 
-        IEndpointMiddleware[] middlewareArray = middlewares.ToArray();
-        ArgumentGuard.ElementsNotNull(middlewareArray);
-
-        _managementOptionsMonitor = managementOptionsMonitor;
         _conventionOptionsMonitor = conventionOptionsMonitor;
-        _middlewares = middlewareArray;
-        _logger = logger;
     }
 
     public void Map(IEndpointRouteBuilder endpointRouteBuilder, ActuatorConventionBuilder actuatorConventionBuilder)
@@ -46,71 +30,42 @@ internal sealed class ActuatorEndpointMapper
         ArgumentNullException.ThrowIfNull(endpointRouteBuilder);
         ArgumentNullException.ThrowIfNull(actuatorConventionBuilder);
 
-        InnerMap(middleware => endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middleware.GetType()).Build(),
-            (middleware, requestPath, pipeline) =>
-            {
-                HashSet<string> allowedVerbs = middleware.EndpointOptions.GetSafeAllowedVerbs();
+        var routesMapped = new Dictionary<string, IEndpointMiddleware>(StringComparer.OrdinalIgnoreCase);
 
-                if (allowedVerbs.Count > 0)
-                {
-                    IEndpointConventionBuilder endpointConventionBuilder = endpointRouteBuilder.MapMethods(requestPath, allowedVerbs, pipeline);
-
-                    foreach (Action<IEndpointConventionBuilder> configureAction in _conventionOptionsMonitor.CurrentValue.ConfigureActions)
-                    {
-                        configureAction(endpointConventionBuilder);
-                    }
-
-                    actuatorConventionBuilder.TrackTarget(endpointConventionBuilder);
-                }
-            });
-    }
-
-    public void Map(IRouteBuilder routeBuilder)
-    {
-        ArgumentNullException.ThrowIfNull(routeBuilder);
-
-        InnerMap(middleware => routeBuilder.ApplicationBuilder.New().UseMiddleware(middleware.GetType()).Build(), (middleware, requestPath, pipeline) =>
+        foreach ((string routePattern, IEndpointMiddleware middleware) in GetEndpointsToMap())
         {
-            foreach (string verb in middleware.EndpointOptions.GetSafeAllowedVerbs())
+            if (!routesMapped.TryAdd(routePattern, middleware))
             {
-                routeBuilder.MapVerb(verb, requestPath, pipeline);
+                LogErrorForDuplicateRoute(routePattern, routesMapped[routePattern], middleware);
+                continue;
             }
-        });
-    }
 
-    private void InnerMap(Func<IEndpointMiddleware, RequestDelegate> createPipeline, Action<IEndpointMiddleware, string, RequestDelegate> applyMapping)
-    {
-        var collection = new HashSet<string>();
+            Delegate pipeline = CreatePipeline(endpointRouteBuilder, middleware);
+            RouteHandlerBuilder routeHandlerBuilder = endpointRouteBuilder.Map(routePattern, pipeline);
 
-        // Map Default configured context
-        IEnumerable<IEndpointMiddleware> middlewares = _middlewares.Where(middleware => middleware is not CloudFoundryEndpointMiddleware);
-        MapEndpoints(collection, _managementOptionsMonitor.CurrentValue.Path, middlewares, createPipeline, applyMapping);
+            // Actuator endpoint exposure in OpenAPI is likely undesired in apps. They will show up in the mappings actuator.
+            routeHandlerBuilder.ExcludeFromDescription();
+            ActuatorMetadataProvider metadataProvider = middleware.GetMetadataProvider();
+            routeHandlerBuilder.WithMetadata(metadataProvider);
 
-        // Map Cloudfoundry context
-        if (Platform.IsCloudFoundry)
-        {
-            IEnumerable<IEndpointMiddleware> cloudFoundryMiddlewares = _middlewares.Where(middleware => middleware is not HypermediaEndpointMiddleware);
-            MapEndpoints(collection, ConfigureManagementOptions.DefaultCloudFoundryPath, cloudFoundryMiddlewares, createPipeline, applyMapping);
+            ConfigureConventions(routeHandlerBuilder, actuatorConventionBuilder);
         }
     }
 
-    private void MapEndpoints(HashSet<string> collection, string? baseRequestPath, IEnumerable<IEndpointMiddleware> middlewares,
-        Func<IEndpointMiddleware, RequestDelegate> createPipeline, Action<IEndpointMiddleware, string, RequestDelegate> applyMapping)
+    private static Delegate CreatePipeline(IEndpointRouteBuilder endpointRouteBuilder, IEndpointMiddleware middleware)
     {
-        foreach (IEndpointMiddleware middleware in middlewares)
-        {
-            RequestDelegate pipeline = createPipeline(middleware);
-            EndpointOptions endpointOptions = middleware.EndpointOptions;
-            string requestPath = endpointOptions.GetPathMatchPattern(_managementOptionsMonitor.CurrentValue, baseRequestPath);
+        IApplicationBuilder builder = endpointRouteBuilder.CreateApplicationBuilder();
+        builder.UseMiddleware(middleware.GetType());
+        return builder.Build();
+    }
 
-            if (collection.Add(requestPath))
-            {
-                applyMapping(middleware, requestPath, pipeline);
-            }
-            else
-            {
-                _logger.LogError("Skipping over duplicate path at {Path}", requestPath);
-            }
+    private void ConfigureConventions(IEndpointConventionBuilder endpointConventionBuilder, ActuatorConventionBuilder actuatorConventionBuilder)
+    {
+        foreach (Action<IEndpointConventionBuilder> configureAction in _conventionOptionsMonitor.CurrentValue.ConfigureActions)
+        {
+            configureAction(endpointConventionBuilder);
         }
+
+        actuatorConventionBuilder.TrackTarget(endpointConventionBuilder);
     }
 }

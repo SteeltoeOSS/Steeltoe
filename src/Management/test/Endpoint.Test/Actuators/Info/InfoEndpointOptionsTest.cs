@@ -21,8 +21,6 @@ public sealed class InfoEndpointOptionsTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/management",
             ["management:endpoints:info:enabled"] = "false",
             ["management:endpoints:info:id"] = "info-management"
         };

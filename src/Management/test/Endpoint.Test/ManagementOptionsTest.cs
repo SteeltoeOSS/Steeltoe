@@ -26,9 +26,7 @@ public sealed class ManagementOptionsTest : BaseTest
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/management",
-            ["management:endpoints:info:enabled"] = "true",
-            ["management:endpoints:info:id"] = "/info-management"
+            ["management:endpoints:path"] = "/management"
         };
 
         ManagementOptions options = GetOptionsMonitorFromSettings<ManagementOptions>(appSettings).CurrentValue;

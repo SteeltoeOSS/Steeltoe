@@ -23,7 +23,6 @@ public sealed class LoggersEndpointOptionsTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:enabled"] = "false",
             ["management:endpoints:loggers:enabled"] = "false",
             ["management:endpoints:cloudfoundry:validateCertificates"] = "true",
             ["management:endpoints:cloudfoundry:enabled"] = "true"

@@ -16,7 +16,7 @@ using Steeltoe.Discovery.Eureka.Configuration;
 namespace Steeltoe.Discovery.Eureka;
 
 /// <summary>
-/// Configures <see cref="EurekaInstanceOptions" /> with the dynamic port(s) this app listens on, once ASP.NET has determined them.
+/// Configures <see cref="EurekaInstanceOptions" /> with the dynamic port(s) this app listens on, once ASP.NET Core has determined them.
 /// </summary>
 internal sealed class DynamicPortAssignmentHostedService : IHostedLifecycleService
 {
@@ -39,7 +39,7 @@ internal sealed class DynamicPortAssignmentHostedService : IHostedLifecycleServi
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        // Skip wire-up when running from a Hosted Service project instead of an ASP.NET project.
+        // Skip wire-up when running from a Hosted Service project instead of an ASP.NET Core project.
         if (services.Any(descriptor => descriptor.ServiceType == typeof(IServer)))
         {
             services.AddHostedService<DynamicPortAssignmentHostedService>();

@@ -23,8 +23,7 @@ internal sealed class PermissionsProvider
     private const string CloudfoundryNotReachableMessage = "Cloud controller not reachable";
     private const string ReadSensitiveDataJsonPropertyName = "read_sensitive_data";
     public const string HttpClientName = "CloudFoundrySecurity";
-    public const string ApplicationIdMissingMessage = "Application id is not available";
-    public const string EndpointNotConfiguredMessage = "Endpoint is not available";
+    public const string ApplicationIdMissingMessage = "Application ID is not available";
     public const string CloudfoundryApiMissingMessage = "Cloud controller URL is not available";
     public const string AccessDeniedMessage = "Access denied";
     public const string AuthorizationHeaderName = "Authorization";

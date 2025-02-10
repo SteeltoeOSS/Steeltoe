@@ -165,10 +165,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         endpointOptions.RequiresExactMatch().Should().BeFalse();
 
-        string actuatorPathPattern = endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path);
+        string actuatorPathPattern = endpointOptions.GetPathMatchPattern(managementOptions.Path);
         actuatorPathPattern.Should().Be("/actuator/loggers/{**_}");
 
-        string cloudFoundryPathPattern = endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath);
+        string cloudFoundryPathPattern = endpointOptions.GetPathMatchPattern(ConfigureManagementOptions.DefaultCloudFoundryPath);
         cloudFoundryPathPattern.Should().Be("/cloudfoundryapplication/loggers/{**_}");
 
         endpointOptions.AllowedVerbs.Should().HaveCount(2);

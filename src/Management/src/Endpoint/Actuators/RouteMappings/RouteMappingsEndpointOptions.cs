@@ -6,4 +6,10 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 
-public sealed class RouteMappingsEndpointOptions : EndpointOptions;
+public sealed class RouteMappingsEndpointOptions : EndpointOptions
+{
+    /// <summary>
+    /// Gets or sets a value indicating whether to include actuator endpoints in the route mappings response. Default value: true.
+    /// </summary>
+    public bool IncludeActuators { get; set; } = true;
+}

@@ -3,11 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using RichardSzalay.MockHttp;
+using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
@@ -148,8 +151,12 @@ public sealed class CorsPolicyTest
     [Fact]
     public async Task ConfiguresDefaultActuatorsCorsPolicyForGetRequestOnCloudFoundry()
     {
+        const string token =
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3VhYS5jbG91ZC5jb20vb2F1dGgvdG9rZW4iLCJpYXQiOjE3MzcwNjMxNzYsImV4cCI6MTc2ODU5OTE3NiwiYXVkIjoiYWN0dWF0b3IiLCJzdWIiOiJ1c2VyQGVtYWlsLmNvbSIsInNjb3BlIjpbImFjdHVhdG9yLnJlYWQiLCJjbG91ZF9jb250cm9sbGVyLnVzZXIiXSwiRW1haWwiOiJ1c2VyQGVtYWlsLmNvbSIsImNsaWVudF9pZCI6ImFwcHNfbWFuYWdlcl9qcyIsInVzZXJfbmFtZSI6InVzZXJAZW1haWwuY29tIiwidXNlcl9pZCI6InVzZXIifQ.bfCtDFxcWF8Yuie2p89S8_fTuUkAOd3i9M8PyKDV-N0";
+
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", """
             {
+                "cf_api": "https://api.cloud.com",
                 "limits": {
                     "fds": 16384,
                     "mem": 1024,
@@ -175,7 +182,20 @@ public sealed class CorsPolicyTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundry();
         builder.Services.AddInfoActuator();
+        builder.Services.AddCloudFoundryActuator();
         await using WebApplication app = builder.Build();
+
+        DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().Setup(mock =>
+        {
+            mock.Expect(HttpMethod.Get, "https://api.cloud.com/v2/apps/798c2495-fe75-49b1-88da-b81197f2bf06/permissions")
+                .WithHeaders("Authorization", $"bearer {token}").Respond("application/json", """
+                    {
+                        "read_sensitive_data": true
+                    }
+                    """);
+        });
+
+        app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
@@ -189,8 +209,11 @@ public sealed class CorsPolicyTest
         using HttpClient httpClient = app.GetTestClient();
 
         var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication/info"));
+        request.Headers.Authorization = AuthenticationHeaderValue.Parse($"bearer {token}");
         request.Headers.Add("Origin", "http://example.api.com");
         HttpResponseMessage response = await httpClient.SendAsync(request);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Headers.Should().ContainKey("Access-Control-Allow-Origin");

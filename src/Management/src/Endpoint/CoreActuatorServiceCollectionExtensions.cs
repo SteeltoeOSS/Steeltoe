@@ -48,7 +48,7 @@ public static class CoreActuatorServiceCollectionExtensions
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configureMiddleware">
-    /// When <c>false</c>, skips configuration of the ASP.NET middleware pipeline. While this provides full control over the pipeline order, it requires
+    /// When <c>false</c>, skips configuration of the ASP.NET Core middleware pipeline. While this provides full control over the pipeline order, it requires
     /// manual addition of the appropriate middleware for actuators to work correctly.
     /// </param>
     /// <returns>
@@ -77,6 +77,7 @@ public static class CoreActuatorServiceCollectionExtensions
     private static void AddCommonActuatorServices(IServiceCollection services, bool configureMiddleware)
     {
         services.AddRouting();
+        services.TryAddSingleton<ActuatorRouteMapper>();
         services.TryAddSingleton<ActuatorEndpointMapper>();
 
         services.AddCors();

@@ -21,7 +21,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string?> AppSettings = new()
     {
-        ["management:endpoints:enabled"] = "true",
         ["management:endpoints:actuator:exposure:include:0"] = "dbmigrations"
     };
 
@@ -91,7 +90,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
         Assert.True(endpointOptions.RequiresExactMatch());
-        Assert.Equal("/actuator/dbmigrations", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
+        Assert.Equal("/actuator/dbmigrations", endpointOptions.GetPathMatchPattern(managementOptions.Path));
     }
 
     private HttpContext CreateRequest(string method, string path)

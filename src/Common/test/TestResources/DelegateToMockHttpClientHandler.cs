@@ -19,6 +19,14 @@ public sealed class DelegateToMockHttpClientHandler : HttpClientHandler
 
     public MockHttpMessageHandler Mock { get; } = new();
 
+    public DelegateToMockHttpClientHandler Setup(Action<MockHttpMessageHandler> action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        action(Mock);
+        return this;
+    }
+
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(request);

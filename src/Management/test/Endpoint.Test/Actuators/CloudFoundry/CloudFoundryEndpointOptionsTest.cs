@@ -23,8 +23,6 @@ public sealed class CloudFoundryEndpointOptionsTest : BaseTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:info:enabled"] = "true",
             ["management:endpoints:cloudfoundry:validateCertificates"] = "false",
             ["management:endpoints:cloudfoundry:enabled"] = "true"

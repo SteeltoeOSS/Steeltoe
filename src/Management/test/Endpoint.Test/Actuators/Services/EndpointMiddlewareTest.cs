@@ -129,11 +129,8 @@ public sealed class EndpointMiddlewareTest(ITestOutputHelper testOutputHelper) :
         ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
         endpointOptions.RequiresExactMatch().Should().BeTrue();
-        endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path).Should().Be("/actuator/beans");
-
-        endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath).Should()
-            .Be("/cloudfoundryapplication/beans");
-
+        endpointOptions.GetPathMatchPattern(managementOptions.Path).Should().Be("/actuator/beans");
+        endpointOptions.GetPathMatchPattern(ConfigureManagementOptions.DefaultCloudFoundryPath).Should().Be("/cloudfoundryapplication/beans");
         endpointOptions.AllowedVerbs.Should().ContainSingle();
         endpointOptions.AllowedVerbs[0].Should().Be("Get");
     }

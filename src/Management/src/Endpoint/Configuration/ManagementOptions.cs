@@ -11,6 +11,8 @@ namespace Steeltoe.Management.Endpoint.Configuration;
 /// </summary>
 public sealed class ManagementOptions
 {
+    internal const string UseStatusCodeFromResponseHeaderName = "X-Use-Status-Code-From-Response";
+
     internal bool IsCloudFoundryEnabled { get; set; }
 
     /// <summary>

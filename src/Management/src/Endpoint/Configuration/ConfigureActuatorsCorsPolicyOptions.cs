@@ -35,8 +35,8 @@ internal sealed class ConfigureActuatorsCorsPolicyOptions : IConfigureOptions<Co
 
         options.AddPolicy(ActuatorsCorsPolicyOptions.PolicyName, policyBuilder =>
         {
-            string[] methods = GetEndpointMethods();
-            policyBuilder.WithMethods(methods);
+            HashSet<string> methods = GetEndpointMethods();
+            policyBuilder.WithMethods([.. methods]);
 
             if (Platform.IsCloudFoundry)
             {
@@ -59,16 +59,8 @@ internal sealed class ConfigureActuatorsCorsPolicyOptions : IConfigureOptions<Co
         });
     }
 
-    private string[] GetEndpointMethods()
+    private HashSet<string> GetEndpointMethods()
     {
-        HashSet<string> upperCaseMethods = [];
-
-        foreach (string method in _optionsMonitorProviderArray.Select(provider => provider.Get())
-            .SelectMany(endpointOptions => endpointOptions.GetSafeAllowedVerbs()))
-        {
-            upperCaseMethods.Add(method.ToUpperInvariant());
-        }
-
-        return upperCaseMethods.ToArray();
+        return _optionsMonitorProviderArray.Select(provider => provider.Get()).SelectMany(endpointOptions => endpointOptions.GetSafeAllowedVerbs()).ToHashSet();
     }
 }

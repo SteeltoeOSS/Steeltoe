@@ -14,6 +14,11 @@ internal sealed class RefreshEndpointMiddleware(
     IRefreshEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
     : EndpointMiddleware<object?, IList<string>>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
+    public override ActuatorMetadataProvider GetMetadataProvider()
+    {
+        return new RefreshActuatorMetadataProvider(ContentType);
+    }
+
     protected override async Task<IList<string>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(null, cancellationToken);

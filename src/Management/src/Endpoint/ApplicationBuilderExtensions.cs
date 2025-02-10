@@ -61,7 +61,7 @@ public static class ApplicationBuilderExtensions
         }
         else
         {
-            builder.UseMvc(routeBuilder => routeBuilder.MapActuators());
+            builder.UseRouter(routeBuilder => routeBuilder.MapActuators());
         }
 
         return builder;
@@ -71,7 +71,7 @@ public static class ApplicationBuilderExtensions
     /// Adds a middleware that filters requests based on the configured management port.
     /// </summary>
     /// <remarks>
-    /// Because ASP.NET provides no way to vary listen ports per endpoint, the management port is added to the list of listen addresses at startup and
+    /// Because ASP.NET Core provides no way to vary listen ports per endpoint, the management port is added to the list of listen addresses at startup and
     /// requests are then filtered here by port/path combination.
     /// </remarks>
     /// <param name="builder">

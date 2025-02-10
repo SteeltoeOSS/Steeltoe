@@ -45,7 +45,7 @@ internal sealed class ActuatorEndpointHandler : IActuatorEndpointHandler
         ArgumentException.ThrowIfNullOrWhiteSpace(baseUrl);
 
         var service = new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _endpointOptionsMonitorProviderArray, _hypermediaServiceLogger);
-        Links result = service.Invoke(baseUrl);
+        Links result = service.Invoke(new Uri(baseUrl));
         return Task.FromResult(result);
     }
 }
