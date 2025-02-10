@@ -11,14 +11,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using Moq;
-using StackExchange.Redis;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Connectors.Redis;
 
 namespace Steeltoe.Security.DataProtection.Redis.Test;
 
-public sealed class RedisDataProtectionBuilderExtensionsTest
+public sealed partial class RedisDataProtectionBuilderExtensionsTest
 {
     [Fact]
     [Trait("Category", "SkipOnMacOS")]
@@ -96,54 +94,5 @@ public sealed class RedisDataProtectionBuilderExtensionsTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         string responseContent = await response.Content.ReadAsStringAsync();
         responseContent.Should().Be("example-value");
-    }
-
-    private static object GetMockedConnectionMultiplexer(string? connectionString)
-    {
-        Dictionary<string, byte[]> innerStore = [];
-        var databaseMock = new Mock<IDatabase>();
-
-        databaseMock.Setup(database => database.HashGet(It.IsAny<RedisKey>(), It.IsAny<RedisValue[]>(), It.IsAny<CommandFlags>()))
-            .Returns((RedisKey key, RedisValue[] _, CommandFlags _) => GetRedisValues(key));
-
-        databaseMock.Setup(database => database.HashGetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue[]>(), It.IsAny<CommandFlags>())).Returns(
-            (RedisKey key, RedisValue[] _, CommandFlags _) => Task.FromResult(GetRedisValues(key)));
-
-        databaseMock.Setup(database =>
-            database.ScriptEvaluateAsync(It.IsAny<string>(), It.IsAny<RedisKey[]?>(), It.IsAny<RedisValue[]?>(), It.IsAny<CommandFlags>())).Returns(
-            (string _, RedisKey[]? keys, RedisValue[]? values, CommandFlags _) => Task.FromResult(SetRedisValues(keys, values)));
-
-        var connectionMultiplexerMock = new Mock<IConnectionMultiplexer>();
-        connectionMultiplexerMock.Setup(connectionMultiplexer => connectionMultiplexer.Configuration).Returns(connectionString!);
-
-        connectionMultiplexerMock.Setup(connectionMultiplexer => connectionMultiplexer.GetDatabase(It.IsAny<int>(), It.IsAny<object?>()))
-            .Returns(databaseMock.Object);
-
-        databaseMock.Setup(database => database.Multiplexer).Returns(connectionMultiplexerMock.Object);
-
-        return connectionMultiplexerMock.Object;
-
-        RedisValue[] GetRedisValues(RedisKey key)
-        {
-            return innerStore.TryGetValue(key!, out byte[]? data)
-                ?
-                [
-                    default,
-                    default,
-                    data
-                ]
-                :
-                [
-                    default,
-                    default,
-                    default
-                ];
-        }
-
-        RedisResult SetRedisValues(RedisKey[]? keys, RedisValue[]? values)
-        {
-            innerStore[keys![0]!] = values![3]!;
-            return RedisResult.Create(keys[0]);
-        }
     }
 }
