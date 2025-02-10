@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Connectors for using service bindings in your application</Description>
-    <PackageTags>connectors;services</PackageTags>
+    <Description>Connectors for using service bindings in your application.</Description>
+    <PackageTags>connectors;services;bindings;vcap_services;cnb;tanzu</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

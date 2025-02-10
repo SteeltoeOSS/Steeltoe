@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Steeltoe Dynamic Console Logger</Description>
+    <Description>Console logger that supports logging configuration changes while an app is running.</Description>
     <PackageTags>logging;dynamic-logging;console;log-management;monitoring</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>

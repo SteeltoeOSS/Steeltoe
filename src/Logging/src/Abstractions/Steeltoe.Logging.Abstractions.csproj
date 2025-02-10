@@ -2,8 +2,8 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Logging</RootNamespace>
-    <Description>Abstractions for use with dynamic logging</Description>
-    <PackageTags>abstractions;logging;dynamic-logging;log-management</PackageTags>
+    <Description>Abstractions for managing minimum logging levels at runtime.</Description>
+    <PackageTags>abstractions;logging;dynamic-logging;log-management;</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

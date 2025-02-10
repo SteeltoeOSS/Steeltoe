@@ -1,6 +1,6 @@
 # Steeltoe .NET Open Source Software
 
-[![Build Status](https://dev.azure.com/SteeltoeOSS/Steeltoe/_apis/build/status/Steeltoe.All?branchName=main)](https://dev.azure.com/SteeltoeOSS/Steeltoe/_build/latest?definitionId=4&branchName=main)
+[![Build Status](https://dev.azure.com/SteeltoeOSS/Steeltoe/_apis/build/status/Steeltoe.All?branchName=main)](https://dev.azure.com/SteeltoeOSS/Steeltoe/_build/latest?definitionId=4&branchName=main)[![NuGet Version](https://img.shields.io/nuget/v/Steeltoe.Common.svg?style=flat)](https://www.nuget.org/packages/Steeltoe.Common/)&nbsp;[![Stack Overflow](https://img.shields.io/badge/stack%20overflow-steeltoe-orange.svg)](http://stackoverflow.com/questions/tagged/steeltoe)
 
 ## Why Steeltoe?
 
@@ -17,15 +17,15 @@ We have also built several tools to get you started:
 
 ## Project Information
 
-For more project information, please see our [Steeltoe Wiki](https://github.com/SteeltoeOSS/Steeltoe/wiki)
+For more project information, please see the [Steeltoe Wiki](https://github.com/SteeltoeOSS/Steeltoe/wiki).
 
-See our [website](https://steeltoe.io) for lots of information, blogs, documentation, and getting started guides
+See our [website](https://steeltoe.io) for lots of information, blogs, documentation, and getting started guides.
 
-For community support, we recommend our [Steeltoe OSS Slack](https://slack.steeltoe.io) channels or [StackOverflow](https://stackoverflow.com/questions/tagged/steeltoe)
+For community support, we recommend [Steeltoe OSS Slack](https://slack.steeltoe.io) or [StackOverflow](https://stackoverflow.com/questions/tagged/steeltoe)
 
-For production support, we recommend you reach out to [Broadcom Support](https://support.broadcom.com/)
+For production support, we recommend you reach out to [Broadcom Support](https://support.broadcom.com/).
 
-Other questions or feedback [open an issue](https://github.com/SteeltoeOSS/Steeltoe/issues/new/choose)
+Other questions or feedback [open an issue](https://github.com/SteeltoeOSS/Steeltoe/issues/new/choose).
 
 ### Conduct
 

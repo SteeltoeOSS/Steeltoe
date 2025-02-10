@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Steeltoe library for common hosting-related utilities</Description>
-    <PackageTags>NET Core;Cloud Hosting;</PackageTags>
+    <Description>Steeltoe internal library for commonly used hosting-related functions. Contains no public API.</Description>
+    <PackageTags>hosting;</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

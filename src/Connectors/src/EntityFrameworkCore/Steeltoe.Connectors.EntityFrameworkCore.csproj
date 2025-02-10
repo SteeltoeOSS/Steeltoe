@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Package for using Steeltoe Connectors with Entity Framework Core</Description>
-    <PackageTags>connectors;EFCore;EntityFrameworkCore;EF;Entity Framework Core;entity-framework-core;services</PackageTags>
+    <Description>Extensions for using Steeltoe Connectors with Entity Framework Core.</Description>
+    <PackageTags>connectors;EFCore;EntityFrameworkCore;EF;Entity Framework Core;entity-framework-core;services;tanzu</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

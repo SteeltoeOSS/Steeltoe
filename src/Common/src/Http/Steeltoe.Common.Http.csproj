@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Steeltoe common library for HTTP</Description>
-    <PackageTags>http; discovery; loadbalancing</PackageTags>
+    <Description>Shared code related to HTTP, primarily for working with HTTPClient.</Description>
+    <PackageTags>http;</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

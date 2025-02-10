@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Configuration Provider for reading Kubernetes Service Bindings</Description>
-    <PackageTags>configuration;kubernetes;k8s;service-bindings;tanzu</PackageTags>
+    <Description>Configuration Provider for reading Kubernetes Service Bindings.</Description>
+    <PackageTags>configuration;ConfigurationProvider;kubernetes;k8s;bindings;service-bindings;cloud-native-bindings;cnb;tanzu</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
