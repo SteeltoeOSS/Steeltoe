@@ -614,6 +614,10 @@
             "SerializerOptions": {
               "type": "object",
               "properties": {
+                "AllowOutOfOrderMetadataProperties": {
+                  "type": "boolean",
+                  "description": "Allows JSON metadata properties to be specified after regular properties in a deserialized JSON object."
+                },
                 "AllowTrailingCommas": {
                   "type": "boolean",
                   "description": "Get or sets a value that indicates whether an extra comma at the end of a list of JSON values in an object or array is allowed (and ignored) within the JSON payload being deserialized."
@@ -637,15 +641,27 @@
                 },
                 "IgnoreReadOnlyProperties": {
                   "type": "boolean",
-                  "description": "Gets a value that indicates whether read-only properties are ignored during serialization. The default value is false."
+                  "description": "Gets or sets a value that indicates whether read-only properties are ignored during serialization. The default value is false."
                 },
                 "IncludeFields": {
                   "type": "boolean",
                   "description": "Gets or sets a value that indicates whether fields are handled during serialization and deserialization. The default value is false."
                 },
+                "IndentCharacter": {
+                  "type": "integer",
+                  "description": "Defines the indentation character being used when 'System.Text.Json.JsonSerializerOptions.WriteIndented' is enabled. Defaults to the space character."
+                },
+                "IndentSize": {
+                  "type": "integer",
+                  "description": "Defines the indentation size being used when 'System.Text.Json.JsonSerializerOptions.WriteIndented' is enabled. Defaults to two."
+                },
                 "MaxDepth": {
                   "type": "integer",
                   "description": "Gets or sets the maximum depth allowed when serializing or deserializing JSON, with the default value of 0 indicating a maximum depth of 64."
+                },
+                "NewLine": {
+                  "type": "string",
+                  "description": "Gets or sets the new line string to use when 'System.Text.Json.JsonSerializerOptions.WriteIndented' is true.\n\nThe default is the value of 'System.Environment.NewLine'."
                 },
                 "NumberHandling": {
                   "enum": [
@@ -674,6 +690,14 @@
                     "Allow"
                   ],
                   "description": "Gets or sets a value that defines how comments are handled during deserialization."
+                },
+                "RespectNullableAnnotations": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value that indicates whether nullability annotations should be respected during serialization and deserialization."
+                },
+                "RespectRequiredConstructorParameters": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value that indicates whether non-optional constructor parameters should be specified during deserialization."
                 },
                 "UnknownTypeHandling": {
                   "enum": [

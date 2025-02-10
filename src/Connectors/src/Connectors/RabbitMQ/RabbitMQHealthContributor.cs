@@ -32,7 +32,7 @@ internal sealed class RabbitMQHealthContributor : IHealthContributor, IDisposabl
         _logger = logger;
     }
 
-    public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
+    public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
 
@@ -53,7 +53,7 @@ internal sealed class RabbitMQHealthContributor : IHealthContributor, IDisposabl
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            _connectionInterfaceShim ??= _connectionFactoryInterfaceShim.CreateConnection();
+            _connectionInterfaceShim ??= await _connectionFactoryInterfaceShim.CreateConnectionAsync(cancellationToken);
 
             if (!_connectionInterfaceShim.IsOpen)
             {
@@ -86,7 +86,7 @@ internal sealed class RabbitMQHealthContributor : IHealthContributor, IDisposabl
             result.Details.Add("error", $"{exception.GetType().Name}: {exception.Message}");
         }
 
-        return Task.FromResult<HealthCheckResult?>(result);
+        return result;
     }
 
     public void Dispose()

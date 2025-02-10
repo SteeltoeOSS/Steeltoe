@@ -5,42 +5,41 @@
       It's safe to update these at any time, so wildcards are allowed.
     -->
 
-    <AspNetCoreHealthChecksVersion>8.0.*</AspNetCoreHealthChecksVersion>
+    <AspNetCoreHealthChecksVersion>9.0.*</AspNetCoreHealthChecksVersion>
     <CoverletVersion>6.0.*</CoverletVersion>
-    <EntityFrameworkCoreTestVersion>8.0.*</EntityFrameworkCoreTestVersion>
-    <EntityFrameworkCoreMySqlTestVersion>8.0.8</EntityFrameworkCoreMySqlTestVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
-    <FluentAssertionsVersion>7.0.*</FluentAssertionsVersion>
-    <MicrosoftAzureCosmosVersion>3.41.*</MicrosoftAzureCosmosVersion>
-    <MicrosoftCodeAnalysisVersion>4.11.0</MicrosoftCodeAnalysisVersion>
-    <MicrosoftSqlClientVersion>5.2.*</MicrosoftSqlClientVersion>
+    <FluentAssertionsVersion>7.1.*</FluentAssertionsVersion>
+    <MicrosoftAzureCosmosVersion>3.46.*</MicrosoftAzureCosmosVersion>
+    <MicrosoftCodeAnalysisVersion>4.12.0</MicrosoftCodeAnalysisVersion>
+    <MicrosoftSqlClientVersion>6.0.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>7.0.*</MockHttpVersion>
-    <MongoDbDriverVersion>2.27.*</MongoDbDriverVersion>
+    <MongoDbDriverVersion>3.1.*</MongoDbDriverVersion>
     <MoqVersion>4.20.69</MoqVersion>
-    <MySqlConnectorVersion>2.3.*</MySqlConnectorVersion>
-    <MySqlDataVersion>9.1.*</MySqlDataVersion>
-    <NerdbankGitVersioningVersion>3.6.*</NerdbankGitVersioningVersion>
+    <MySqlConnectorVersion>2.4.*</MySqlConnectorVersion>
+    <MySqlDataVersion>9.2.*</MySqlDataVersion>
+    <NerdbankGitVersioningVersion>3.7.*</NerdbankGitVersioningVersion>
     <NewtonsoftJsonVersion>13.0.3</NewtonsoftJsonVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
-    <RabbitClientTestVersion>6.8.*</RabbitClientTestVersion>
+    <RabbitClientTestVersion>7.0.*</RabbitClientTestVersion>
     <SerilogEnrichersThreadVersion>4.0.*</SerilogEnrichersThreadVersion>
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
     <SonarAnalyzerVersion>9.25.*</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>8.0.*</SourceLinkGitHubVersion>
     <StyleCopVersion>1.2.0-beta.556</StyleCopVersion>
     <SystemCommandLineVersion>2.0.0-beta4.24324.3</SystemCommandLineVersion>
-    <SystemIdentityModelVersion>8.3.0</SystemIdentityModelVersion>
-    <SystemSqlClientVersion>4.8.*</SystemSqlClientVersion>
-    <SystemTextJsonToolsVersion>9.0.*</SystemTextJsonToolsVersion>
-    <TestSdkVersion>17.10.*</TestSdkVersion>
+    <SystemIdentityModelVersion>8.4.0</SystemIdentityModelVersion>
+    <SystemSqlClientVersion>4.9.*</SystemSqlClientVersion>
+    <TestSdkVersion>17.13.*</TestSdkVersion>
     <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
-    <XunitVersion>2.8.*</XunitVersion>
+    <XunitVersion>2.9.*</XunitVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <EntityFrameworkCoreTestVersion>8.0.*</EntityFrameworkCoreTestVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <EntityFrameworkCoreTestVersion>9.0.*-*</EntityFrameworkCoreTestVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -55,21 +54,21 @@
     <ConsulVersion>1.7.14.*</ConsulVersion>
     <DiagnosticsTracingVersion>3.1.16</DiagnosticsTracingVersion>
     <EntityFrameworkCoreVersion>8.0.*</EntityFrameworkCoreVersion>
-    <MicrosoftIdentityModelVersion>7.6.*</MicrosoftIdentityModelVersion>
-    <OpenTelemetryExporterPrometheusVersion>1.9.*-*</OpenTelemetryExporterPrometheusVersion>
-    <OpenTelemetryVersion>1.9.*</OpenTelemetryVersion>
-    <SerilogVersion>8.0.*</SerilogVersion>
-    <SerilogSinksConsoleVersion>6.0.*</SerilogSinksConsoleVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <FoundationalVersion>
       <!--
         Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
         For example, v6 explicitly targets .NET 6; v7 explicitly targets .NET 6 and 7; v8 explicitly targets .NET 6, 7 and 8.
       -->
-      8.0.*
+      9.0.*
     </FoundationalVersion>
+    <MicrosoftIdentityModelVersion>8.4.*</MicrosoftIdentityModelVersion>
+    <OpenTelemetryExporterPrometheusVersion>1.11.*-*</OpenTelemetryExporterPrometheusVersion>
+    <OpenTelemetryVersion>1.11.*</OpenTelemetryVersion>
+    <SerilogVersion>8.0.*</SerilogVersion>
+    <SerilogSinksConsoleVersion>6.0.*</SerilogSinksConsoleVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <MatchTargetFrameworkVersion>
       <!--
         Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
@@ -81,13 +80,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <FoundationalVersion>
-      <!--
-        Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
-        For example, v6 explicitly targets .NET 6; v7 explicitly targets .NET 6 and 7; v8 explicitly targets .NET 6, 7 and 8.
-      -->
-      9.0.*
-    </FoundationalVersion>
     <MatchTargetFrameworkVersion>
       <!--
         Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.

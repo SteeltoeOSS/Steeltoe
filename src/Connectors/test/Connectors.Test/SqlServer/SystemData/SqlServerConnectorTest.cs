@@ -13,6 +13,8 @@ using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Connectors.SqlServer;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+
 namespace Steeltoe.Connectors.Test.SqlServer.SystemData;
 
 public sealed class SqlServerConnectorTest
