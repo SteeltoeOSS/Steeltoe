@@ -15,6 +15,20 @@ We have also built several tools to get you started:
   * We also have the ability to load these project templates inside of Visual Studio
 * [Steeltoe Samples](https://github.com/SteeltoeOSS/Samples) - Here we have working samples for trying out features and to use as code references
 
+## Pre-release packages
+
+Whether you are working with the team on validating a bugfix or just want to try the latest version available, you can use the Steeltoe development feed by adding a reference in your nuget.config file:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <add key="Steeltoe-dev" value="https://pkgs.dev.azure.com/dotnet/Steeltoe/_packaging/dev/nuget/v3/index.json" />
+    <add key="NuGet" value="https://api.nuget.org/v3/index.json" />
+  </packageSources>
+</configuration>
+```
+
 ## Project Information
 
 For more project information, please see the [Steeltoe Wiki](https://github.com/SteeltoeOSS/Steeltoe/wiki).
