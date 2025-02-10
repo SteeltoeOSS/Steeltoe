@@ -15,7 +15,12 @@ public sealed class CapturingLoggerProvider : ILoggerProvider
     private static readonly Func<string, LogLevel, bool> DefaultFilter = (_, _) => true;
     private readonly Func<string, LogLevel, bool> _filter;
 
+#if NET9_0_OR_GREATER
+    private readonly Lock _lockObject = new();
+#else
     private readonly object _lockObject = new();
+#endif
+
     private readonly List<string> _messages = [];
 
     public CapturingLoggerProvider()

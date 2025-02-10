@@ -37,7 +37,11 @@
     <XunitVersion>2.8.*</XunitVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'"></PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
+  </PropertyGroup>
 
   <PropertyGroup>
     <!--
@@ -51,13 +55,6 @@
     <ConsulVersion>1.7.14.*</ConsulVersion>
     <DiagnosticsTracingVersion>3.1.16</DiagnosticsTracingVersion>
     <EntityFrameworkCoreVersion>8.0.*</EntityFrameworkCoreVersion>
-    <FoundationalVersion>
-      <!--
-        Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
-        For example, v6 explicitly targets .NET 6; v7 explicitly targets .NET 6 and 7; v8 explicitly targets .NET 6, 7 and 8.
-      -->
-      8.0.*
-    </FoundationalVersion>
     <MicrosoftIdentityModelVersion>7.6.*</MicrosoftIdentityModelVersion>
     <OpenTelemetryExporterPrometheusVersion>1.9.*-*</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryVersion>1.9.*</OpenTelemetryVersion>
@@ -66,6 +63,13 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <FoundationalVersion>
+      <!--
+        Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
+        For example, v6 explicitly targets .NET 6; v7 explicitly targets .NET 6 and 7; v8 explicitly targets .NET 6, 7 and 8.
+      -->
+      8.0.*
+    </FoundationalVersion>
     <MatchTargetFrameworkVersion>
       <!--
         Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
@@ -73,6 +77,24 @@
         Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
       -->
       8.0.*
+    </MatchTargetFrameworkVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <FoundationalVersion>
+      <!--
+        Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
+        For example, v6 explicitly targets .NET 6; v7 explicitly targets .NET 6 and 7; v8 explicitly targets .NET 6, 7 and 8.
+      -->
+      9.0.*
+    </FoundationalVersion>
+    <MatchTargetFrameworkVersion>
+      <!--
+        Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
+        For example, v6 targets only .NET 6; v7 targets only .NET 7; v8 targets only .NET 8.
+        Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
+      -->
+      9.0.*
     </MatchTargetFrameworkVersion>
   </PropertyGroup>
 </Project>
