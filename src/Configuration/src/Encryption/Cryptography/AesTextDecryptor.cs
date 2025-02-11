@@ -36,7 +36,10 @@ internal sealed class AesTextDecryptor : ITextDecryptor
 
         byte[] saltBytes = GetSaltBytes(salt);
 
+#pragma warning disable S5344 // Use at least 100,000 iterations here.
+        // Justification: Changing the iteration count breaks compatibility with Spring Cloud Config Server.
         _key = KeyDerivation.Pbkdf2(key, saltBytes, KeyDerivationPrf.HMACSHA1, 1024, KeySize / 8);
+#pragma warning restore S5344 // Use at least 100,000 iterations here.
     }
 
     private static byte[] GetSaltBytes(string salt)

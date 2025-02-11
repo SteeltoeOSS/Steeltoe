@@ -23,7 +23,7 @@
     <RabbitClientTestVersion>7.0.*</RabbitClientTestVersion>
     <SerilogEnrichersThreadVersion>4.0.*</SerilogEnrichersThreadVersion>
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
-    <SonarAnalyzerVersion>9.25.*</SonarAnalyzerVersion>
+    <SonarAnalyzerVersion>10.6.0.109712</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>8.0.*</SourceLinkGitHubVersion>
     <StyleCopVersion>1.2.0-beta.556</StyleCopVersion>
     <SystemCommandLineVersion>2.0.0-beta4.24324.3</SystemCommandLineVersion>
