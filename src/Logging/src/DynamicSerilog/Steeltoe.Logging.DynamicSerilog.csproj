@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>This package adds support for minimum log level configuration changes to Serilog while an app is running.</Description>
+    <Description>Manage minimum logging levels at runtime using Serilog.</Description>
     <PackageTags>logging;dynamic-logging;serilog;log-management;monitoring</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>

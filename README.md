@@ -39,7 +39,7 @@ For community support, we recommend [Steeltoe OSS Slack](https://slack.steeltoe.
 
 For production support, we recommend you reach out to [Broadcom Support](https://support.broadcom.com/).
 
-Other questions or feedback [open an issue](https://github.com/SteeltoeOSS/Steeltoe/issues/new/choose).
+For other questions or feedback, [open an issue](https://github.com/SteeltoeOSS/Steeltoe/issues/new/choose).
 
 ### Conduct
 

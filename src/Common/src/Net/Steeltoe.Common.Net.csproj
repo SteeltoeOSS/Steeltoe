@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Abstractions and code for using Windows network files shares.</Description>
-    <PackageTags>Windows-file-sharing; network-file-system</PackageTags>
+    <PackageTags>Windows-file-sharing; SMB; CIFS</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

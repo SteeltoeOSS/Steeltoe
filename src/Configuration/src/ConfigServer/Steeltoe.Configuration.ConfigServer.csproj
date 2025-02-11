@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Configuration Provider for Spring Cloud Config Server.</Description>
+    <Description>Configuration provider for Spring Cloud Config Server.</Description>
     <PackageTags>configuration;ConfigurationProvider;spring-cloud;Spring Cloud Config Server;Spring-Cloud-Config-Server;tanzu</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>

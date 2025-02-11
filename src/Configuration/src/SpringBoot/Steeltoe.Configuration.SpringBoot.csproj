@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>This package contains a Configuration Provider for reading Spring Boot style configuration.</Description>
+    <Description>Configuration provider for reading Spring Boot-style configuration.</Description>
     <PackageTags>configuration;ConfigurationProvider;springboot</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>

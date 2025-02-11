@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Base package for using Steeltoe Service Discovery.</Description>
+    <Description>Enables HTTP clients to load-balance over discovered service instances.</Description>
     <PackageTags>service-discovery;service-registry;load-balancing;round-robin;httpclient;httpclientfactory</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>

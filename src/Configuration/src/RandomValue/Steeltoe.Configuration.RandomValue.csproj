@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Configuration Provider for generating random values.</Description>
+    <Description>Configuration provider for generating random values.</Description>
     <PackageTags>configuration;ConfigurationProvider;random values</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
