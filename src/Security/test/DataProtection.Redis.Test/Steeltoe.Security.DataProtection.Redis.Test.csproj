@@ -21,8 +21,8 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
     <Compile Remove="**/*.net90.cs" />
     <None Include="**/*.net90.cs" />
-
   </ItemGroup>
+
   <ItemGroup Condition=" '$(TargetFramework)' != 'net8.0' ">
     <Compile Remove="**/*.net80.cs" />
     <None Include="**/*.net80.cs" />
