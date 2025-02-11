@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Adds trace information to logging output in distributed systems.</Description>
-    <PackageTags>management;monitoring;distributed tracing;</PackageTags>
+    <PackageTags>management;monitoring;distributed;tracing;</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

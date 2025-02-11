@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Configuration provider for decrypting encrypted configuration values.</Description>
-    <PackageTags>configuration;ConfigurationProvider;cryptography;decryption;Spring Boot</PackageTags>
+    <PackageTags>configuration;ConfigurationProvider;cryptography;decryption;Spring;Boot</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Configuration provider for reading Spring Boot-style configuration.</Description>
-    <PackageTags>configuration;ConfigurationProvider;springboot</PackageTags>
+    <PackageTags>configuration;ConfigurationProvider;Spring;Boot</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

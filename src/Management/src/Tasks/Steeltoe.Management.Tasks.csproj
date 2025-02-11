@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Extensions for running tasks embedded in your .NET application. Ideal for cf run-task in Cloud Foundry.</Description>
-    <PackageTags>tasks;management;Spring Cloud;cf run-task</PackageTags>
+    <PackageTags>tasks;management;Spring;Cloud;cf;run-task</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
