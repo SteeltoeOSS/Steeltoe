@@ -234,8 +234,10 @@ public sealed class ApplicationInfoCollection : IReadOnlyCollection<ApplicationI
         return hashcodeBuilder.ToString();
     }
 
-    internal static ApplicationInfoCollection FromJson(JsonApplications? jsonApplications)
+    internal static ApplicationInfoCollection FromJson(JsonApplications? jsonApplications, TimeProvider timeProvider)
     {
+        ArgumentNullException.ThrowIfNull(timeProvider);
+
         var apps = new ApplicationInfoCollection();
 
         if (jsonApplications != null)
@@ -247,7 +249,7 @@ public sealed class ApplicationInfoCollection : IReadOnlyCollection<ApplicationI
             {
                 foreach (JsonApplication? application in jsonApplications.Applications)
                 {
-                    ApplicationInfo? app = ApplicationInfo.FromJson(application);
+                    ApplicationInfo? app = ApplicationInfo.FromJson(application, timeProvider);
 
                     if (app != null)
                     {

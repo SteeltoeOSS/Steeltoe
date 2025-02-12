@@ -55,19 +55,22 @@ public sealed class EurekaClient
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IOptionsMonitor<EurekaClientOptions> _optionsMonitor;
     private readonly EurekaServiceUriStateManager _eurekaServiceUriStateManager;
+    private readonly TimeProvider _timeProvider;
     private readonly ILogger<EurekaClient> _logger;
 
     public EurekaClient(IHttpClientFactory httpClientFactory, IOptionsMonitor<EurekaClientOptions> optionsMonitor,
-        EurekaServiceUriStateManager eurekaServiceUriStateManager, ILogger<EurekaClient> logger)
+        EurekaServiceUriStateManager eurekaServiceUriStateManager, TimeProvider timeProvider, ILogger<EurekaClient> logger)
     {
         ArgumentNullException.ThrowIfNull(httpClientFactory);
         ArgumentNullException.ThrowIfNull(optionsMonitor);
         ArgumentNullException.ThrowIfNull(eurekaServiceUriStateManager);
+        ArgumentNullException.ThrowIfNull(timeProvider);
         ArgumentNullException.ThrowIfNull(logger);
 
         _httpClientFactory = httpClientFactory;
         _optionsMonitor = optionsMonitor;
         _eurekaServiceUriStateManager = eurekaServiceUriStateManager;
+        _timeProvider = timeProvider;
         _logger = logger;
     }
 
@@ -223,7 +226,7 @@ public sealed class EurekaClient
         return await ExecuteRequestAsync(HttpMethod.Get, path, null, null, async response =>
         {
             var root = await response.Content.ReadFromJsonAsync<JsonApplicationsRoot>(ResponseSerializerOptions, cancellationToken);
-            return ApplicationInfoCollection.FromJson(root?.Applications);
+            return ApplicationInfoCollection.FromJson(root?.Applications, _timeProvider);
         }, cancellationToken);
     }
 

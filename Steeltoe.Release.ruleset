@@ -95,6 +95,7 @@
     <Rule Id="S4428" Action="None" />
     <Rule Id="S4433" Action="None" />
     <Rule Id="S4583" Action="None" />
+    <Rule Id="S6354" Action="Warning" />
     <Rule Id="S6419" Action="None" />
     <Rule Id="S6420" Action="None" />
     <Rule Id="S6422" Action="None" />

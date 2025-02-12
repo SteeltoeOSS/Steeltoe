@@ -17,6 +17,7 @@ public sealed class InstanceInfo
 {
     private static readonly ReadOnlyDictionary<string, string?> EmptyMetadata = new(new Dictionary<string, string?>());
 
+    private readonly TimeProvider _timeProvider;
     private volatile IReadOnlyDictionary<string, string?> _metadata = EmptyMetadata;
     private volatile NullableValueWrapper<InstanceStatus> _status = new(null);
     private volatile NullableValueWrapper<InstanceStatus> _overriddenStatus = new(null);
@@ -27,7 +28,7 @@ public sealed class InstanceInfo
     internal static InstanceInfo Disabled { get; } = new("disabled", "disabled", "disabled", "disabled", new DataCenterInfo
     {
         Name = DataCenterName.MyOwn
-    });
+    }, TimeProvider.System);
 
     /// <summary>
     /// Gets the ID that uniquely identifies this instance within a Eureka server.
@@ -211,7 +212,7 @@ public sealed class InstanceInfo
         {
             if (value)
             {
-                DateTime now = DateTime.UtcNow;
+                DateTime now = _timeProvider.GetUtcNow().UtcDateTime;
 
                 _lastDirtyTimeUtc = new NullableValueWrapper<DateTime>(now);
                 _lastUpdatedTimeUtc = new NullableValueWrapper<DateTime>(now);
@@ -224,7 +225,7 @@ public sealed class InstanceInfo
         }
     }
 
-    internal InstanceInfo(string instanceId, string appName, string hostName, string ipAddress, DataCenterInfo dataCenterInfo)
+    internal InstanceInfo(string instanceId, string appName, string hostName, string ipAddress, DataCenterInfo dataCenterInfo, TimeProvider timeProvider)
     {
         // These are required to register an instance to Eureka server, so they should always be available.
         ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
@@ -233,11 +234,14 @@ public sealed class InstanceInfo
         ArgumentException.ThrowIfNullOrWhiteSpace(ipAddress);
         ArgumentNullException.ThrowIfNull(dataCenterInfo);
 
+        ArgumentNullException.ThrowIfNull(timeProvider);
+
         InstanceId = instanceId;
         AppName = appName;
         HostName = hostName;
         IPAddress = ipAddress;
         DataCenterInfo = dataCenterInfo;
+        _timeProvider = timeProvider;
     }
 
     public override bool Equals(object? obj)
@@ -266,9 +270,10 @@ public sealed class InstanceInfo
         return JsonSerializer.Serialize(this, DebugSerializerOptions.Instance);
     }
 
-    internal static InstanceInfo FromConfiguration(EurekaInstanceOptions options)
+    internal static InstanceInfo FromConfiguration(EurekaInstanceOptions options, TimeProvider timeProvider)
     {
         ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(timeProvider);
 
         if (string.IsNullOrWhiteSpace(options.IPAddress))
         {
@@ -300,7 +305,8 @@ public sealed class InstanceInfo
         int? nullableNonSecurePort = options.IsNonSecurePortEnabled ? nonSecurePort : null;
         int? nullableSecurePort = options.IsSecurePortEnabled ? securePort : null;
 
-        return new InstanceInfo(options.InstanceId, options.AppName.ToUpperInvariant(), options.HostName, options.IPAddress, options.DataCenterInfo)
+        return new InstanceInfo(options.InstanceId, options.AppName.ToUpperInvariant(), options.HostName, options.IPAddress, options.DataCenterInfo,
+            timeProvider)
         {
             AppGroupName = options.AppGroupName?.ToUpperInvariant(),
             VipAddress = options.VipAddress,
@@ -321,8 +327,10 @@ public sealed class InstanceInfo
         };
     }
 
-    internal static InstanceInfo? FromJson(JsonInstanceInfo? jsonInstance)
+    internal static InstanceInfo? FromJson(JsonInstanceInfo? jsonInstance, TimeProvider timeProvider)
     {
+        ArgumentNullException.ThrowIfNull(timeProvider);
+
         if (jsonInstance == null)
         {
             return null;
@@ -343,7 +351,7 @@ public sealed class InstanceInfo
             return null;
         }
 
-        return new InstanceInfo(instanceId, jsonInstance.AppName, jsonInstance.HostName, jsonInstance.IPAddress, dataCenterInfo)
+        return new InstanceInfo(instanceId, jsonInstance.AppName, jsonInstance.HostName, jsonInstance.IPAddress, dataCenterInfo, timeProvider)
         {
             AppGroupName = jsonInstance.AppGroupName,
             VipAddress = jsonInstance.VipAddress,

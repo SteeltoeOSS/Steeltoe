@@ -19,18 +19,22 @@ internal sealed class HttpExchangesDiagnosticObserver : DiagnosticObserver, IHtt
     private const string ObserverName = "HttpExchangesDiagnosticObserver";
     private const string ListenerName = "Microsoft.AspNetCore";
     private const string StopEventName = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
-
     internal const string Redacted = "******";
 
     private readonly IOptionsMonitor<HttpExchangesEndpointOptions> _optionsMonitor;
+    private readonly TimeProvider _timeProvider;
+
     internal ConcurrentQueue<HttpExchange> Queue { get; } = new();
 
-    public HttpExchangesDiagnosticObserver(IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor, ILoggerFactory loggerFactory)
+    public HttpExchangesDiagnosticObserver(IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor, TimeProvider timeProvider,
+        ILoggerFactory loggerFactory)
         : base(ObserverName, ListenerName, loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(timeProvider);
 
         _optionsMonitor = optionsMonitor;
+        _timeProvider = timeProvider;
     }
 
     public HttpExchangesResult GetHttpExchanges()
@@ -106,7 +110,7 @@ internal sealed class HttpExchangesDiagnosticObserver : DiagnosticObserver, IHtt
         return filteredUri.Uri;
     }
 
-    private static HttpExchange GetHttpExchange(HttpContext context, TimeSpan duration)
+    private HttpExchange GetHttpExchange(HttpContext context, TimeSpan duration)
     {
         var requestUri = new Uri(context.Request.GetEncodedUrl());
         Dictionary<string, StringValues> requestHeaders = GetHeaders(context.Request.Headers);
@@ -123,7 +127,7 @@ internal sealed class HttpExchangesDiagnosticObserver : DiagnosticObserver, IHtt
 
         HttpExchangeSession? session = sessionId == null ? null : new HttpExchangeSession(sessionId);
 
-        return new HttpExchange(request, response, DateTime.UtcNow, principal, session, duration);
+        return new HttpExchange(request, response, _timeProvider.GetUtcNow().UtcDateTime, principal, session, duration);
     }
 
     private static Dictionary<string, StringValues> GetHeaders(IHeaderDictionary headers)

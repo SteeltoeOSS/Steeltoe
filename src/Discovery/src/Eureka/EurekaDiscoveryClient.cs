@@ -28,6 +28,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     private readonly EurekaClient _eurekaClient;
     private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
     private readonly HealthCheckHandlerProvider _healthCheckHandlerProvider;
+    private readonly TimeProvider _timeProvider;
     private readonly IDisposable? _clientOptionsChangeToken;
     private readonly ILogger<EurekaDiscoveryClient> _logger;
     private readonly Timer? _heartbeatTimer;
@@ -68,18 +69,21 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     public event EventHandler<ApplicationsFetchedEventArgs>? ApplicationsFetched;
 
     public EurekaDiscoveryClient(EurekaApplicationInfoManager appInfoManager, EurekaClient eurekaClient,
-        IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, HealthCheckHandlerProvider healthCheckHandlerProvider, ILogger<EurekaDiscoveryClient> logger)
+        IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, HealthCheckHandlerProvider healthCheckHandlerProvider, TimeProvider timeProvider,
+        ILogger<EurekaDiscoveryClient> logger)
     {
         ArgumentNullException.ThrowIfNull(appInfoManager);
         ArgumentNullException.ThrowIfNull(eurekaClient);
         ArgumentNullException.ThrowIfNull(clientOptionsMonitor);
         ArgumentNullException.ThrowIfNull(healthCheckHandlerProvider);
+        ArgumentNullException.ThrowIfNull(timeProvider);
         ArgumentNullException.ThrowIfNull(logger);
 
         _appInfoManager = appInfoManager;
         _eurekaClient = eurekaClient;
         _clientOptionsMonitor = clientOptionsMonitor;
         _healthCheckHandlerProvider = healthCheckHandlerProvider;
+        _timeProvider = timeProvider;
         _logger = logger;
 
         EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
@@ -292,7 +296,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             await _eurekaClient.HeartbeatAsync(snapshot.AppName, snapshot.InstanceId, snapshot.LastDirtyTimeUtc, cancellationToken);
             _logger.LogDebug("Heartbeat for {Application}/{Instance} succeeded.", snapshot.AppName, snapshot.InstanceId);
 
-            _lastGoodHeartbeatTimeUtc = new NullableValueWrapper<DateTime>(DateTime.UtcNow);
+            _lastGoodHeartbeatTimeUtc = new NullableValueWrapper<DateTime>(_timeProvider.GetUtcNow().UtcDateTime);
         }
         catch (EurekaTransportException exception)
         {
@@ -330,7 +334,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
             _remoteApps = fetched;
             _remoteApps.ReturnUpInstancesOnly = clientOptions.ShouldFilterOnlyUpInstances;
-            _lastGoodRegistryFetchTimeUtc = new NullableValueWrapper<DateTime>(DateTime.UtcNow);
+            _lastGoodRegistryFetchTimeUtc = new NullableValueWrapper<DateTime>(_timeProvider.GetUtcNow().UtcDateTime);
 
             UpdateLastRemoteInstanceStatusFromCache();
 

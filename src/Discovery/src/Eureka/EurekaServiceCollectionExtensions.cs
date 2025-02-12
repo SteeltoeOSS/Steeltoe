@@ -83,6 +83,7 @@ public static class EurekaServiceCollectionExtensions
 
     private static void AddEurekaServices(IServiceCollection services)
     {
+        services.TryAddSingleton(TimeProvider.System);
         services.AddSingleton<HealthCheckHandlerProvider>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHealthContributor, EurekaServerHealthContributor>());
         services.AddSingleton<EurekaApplicationInfoManager>();

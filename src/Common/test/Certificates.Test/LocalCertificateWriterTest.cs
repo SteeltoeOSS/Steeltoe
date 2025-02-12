@@ -18,7 +18,7 @@ public sealed class LocalCertificateWriterTest
     {
         var orgId = Guid.NewGuid();
         var spaceId = Guid.NewGuid();
-        var certificateWriter = new LocalCertificateWriter();
+        var certificateWriter = new LocalCertificateWriter(TimeProvider.System);
         using var rsa = RSA.Create();
 
         certificateWriter.Write(orgId, spaceId);

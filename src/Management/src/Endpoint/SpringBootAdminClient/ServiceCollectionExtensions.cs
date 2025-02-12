@@ -37,7 +37,9 @@ public static class ServiceCollectionExtensions
 
         ConfigureHttpClient(services);
 
+        services.TryAddSingleton(TimeProvider.System);
         services.AddHostedService<SpringBootAdminClientHostedService>();
+
         return services;
     }
 
