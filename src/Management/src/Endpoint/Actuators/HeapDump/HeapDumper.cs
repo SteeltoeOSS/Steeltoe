@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
-public sealed class HeapDumper
+internal sealed class HeapDumper : IHeapDumper
 {
     private readonly string? _basePathOverride;
     private readonly IOptionsMonitor<HeapDumpEndpointOptions> _optionsMonitor;

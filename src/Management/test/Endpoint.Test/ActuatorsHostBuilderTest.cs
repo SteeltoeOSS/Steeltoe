@@ -33,6 +33,7 @@ using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.ManagementPort;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
+using Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 using Steeltoe.Management.Endpoint.Test.Actuators.Info;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -333,7 +334,12 @@ public sealed class ActuatorsHostBuilderTest
         await using HostWrapper host = hostBuilderType.Build(builder =>
         {
             builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
-            builder.ConfigureServices(services => services.AddHeapDumpActuator());
+
+            builder.ConfigureServices(services =>
+            {
+                services.AddHeapDumpActuator();
+                services.AddSingleton<IHeapDumper, FakeHeapDumper>();
+            });
         });
 
         await host.StartAsync();

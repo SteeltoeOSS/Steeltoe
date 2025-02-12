@@ -2,16 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.IO.Compression;
 using System.Net;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Common.TestResources.IO;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 using Steeltoe.Management.Endpoint.Configuration;
 
@@ -26,60 +22,35 @@ public sealed class EndpointMiddlewareTest : BaseTest
     };
 
     [Fact]
-    public async Task HandleHeapDumpRequestAsync_ReturnsExpected()
-    {
-        IOptionsMonitor<HeapDumpEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions>(AppSettings);
-        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>(AppSettings);
-
-        IServiceCollection services = new ServiceCollection();
-        services.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
-        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-
-        var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-
-        ILogger<HeapDumper> logger1 = loggerFactory.CreateLogger<HeapDumper>();
-
-        var heapDumper = new HeapDumper(endpointOptionsMonitor, logger1);
-
-        var handler = new HeapDumpEndpointHandler(endpointOptionsMonitor, heapDumper, loggerFactory);
-        var middleware = new HeapDumpEndpointMiddleware(handler, managementOptionsMonitor, loggerFactory);
-        HttpContext context = CreateRequest("GET", "/heapdump");
-        await middleware.InvokeAsync(context, null);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        byte[] buffer = new byte[1024];
-        _ = await context.Response.Body.ReadAsync(buffer);
-        Assert.NotEqual(0, buffer[0]);
-    }
-
-    [Fact]
     public async Task HeapDumpActuator_ReturnsExpectedData()
     {
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
-
         using IWebHost app = builder.Build();
+
         await app.StartAsync();
 
         using HttpClient client = app.GetTestClient();
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/heapdump"));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        Assert.True(response.Content.Headers.Contains("Content-Type"));
-        IEnumerable<string> contentType = response.Content.Headers.GetValues("Content-Type");
-        Assert.Equal("application/octet-stream", contentType.Single());
-        Assert.True(response.Content.Headers.Contains("Content-Disposition"));
+        response.Content.Headers.Should().ContainKey("Content-Type").WhoseValue.Should().HaveCount(1).And.Contain("application/octet-stream");
+        response.Content.Headers.Should().ContainKey("Content-Disposition");
 
-        using var tempFile = new TempFile();
+        using var memoryStream = new MemoryStream();
 
         await using (Stream responseStream = await response.Content.ReadAsStreamAsync())
         {
-            await using var writeStream = new FileStream(tempFile.FullPath, FileMode.Create);
-            await responseStream.CopyToAsync(writeStream);
+            await using var zipStream = new GZipStream(responseStream, CompressionMode.Decompress);
+            await zipStream.CopyToAsync(memoryStream);
+
+            responseStream.Length.Should().BeLessThan(memoryStream.Length);
         }
 
-        await using FileStream readStream = File.Open(tempFile.FullPath, FileMode.Open);
-        Assert.NotEqual(0, readStream.Length);
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        int firstByteInDump = memoryStream.ReadByte();
+        firstByteInDump.Should().NotBe(-1).And.NotBe(0);
     }
 
     [Fact]
@@ -92,20 +63,5 @@ public sealed class EndpointMiddlewareTest : BaseTest
         Assert.Equal("/actuator/heapdump", endpointOptions.GetPathMatchPattern(managementOptions.Path));
         Assert.Equal("/cloudfoundryapplication/heapdump", endpointOptions.GetPathMatchPattern(ConfigureManagementOptions.DefaultCloudFoundryPath));
         Assert.Contains("Get", endpointOptions.AllowedVerbs);
-    }
-
-    private HttpContext CreateRequest(string method, string path)
-    {
-        HttpContext context = new DefaultHttpContext
-        {
-            TraceIdentifier = Guid.NewGuid().ToString()
-        };
-
-        context.Response.Body = new MemoryStream();
-        context.Request.Method = method;
-        context.Request.Path = path;
-        context.Request.Scheme = "http";
-        context.Request.Host = new HostString("localhost");
-        return context;
     }
 }

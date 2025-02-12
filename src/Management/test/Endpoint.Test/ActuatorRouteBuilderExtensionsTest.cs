@@ -16,7 +16,9 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
+using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 using Steeltoe.Management.Endpoint.Configuration;
+using Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -71,6 +73,8 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 
         hostBuilder.ConfigureServices(services =>
         {
+            services.AddSingleton<IHeapDumper, FakeHeapDumper>();
+
             if (mode == RegistrationMode.Services)
             {
                 services.AddAllActuators();
