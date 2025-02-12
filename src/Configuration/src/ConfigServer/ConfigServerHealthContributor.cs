@@ -10,6 +10,7 @@ namespace Steeltoe.Configuration.ConfigServer;
 
 internal sealed class ConfigServerHealthContributor : IHealthContributor
 {
+    private readonly TimeProvider _timeProvider;
     private readonly ILogger<ConfigServerHealthContributor> _logger;
 
     internal ConfigServerConfigurationProvider? Provider { get; }
@@ -17,11 +18,13 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
     internal long LastAccess { get; set; }
     public string Id => "config-server";
 
-    public ConfigServerHealthContributor(IConfiguration configuration, ILogger<ConfigServerHealthContributor> logger)
+    public ConfigServerHealthContributor(IConfiguration configuration, TimeProvider timeProvider, ILogger<ConfigServerHealthContributor> logger)
     {
         ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(timeProvider);
         ArgumentNullException.ThrowIfNull(logger);
 
+        _timeProvider = timeProvider;
         _logger = logger;
         Provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().FirstOrDefault();
 
@@ -80,7 +83,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 
     internal async Task<IList<PropertySource>?> GetPropertySourcesAsync(ConfigServerConfigurationProvider provider, CancellationToken cancellationToken)
     {
-        long currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        long currentTime = _timeProvider.GetUtcNow().ToUnixTimeMilliseconds();
 
         if (IsCacheStale(currentTime))
         {

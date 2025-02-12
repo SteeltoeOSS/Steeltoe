@@ -14,7 +14,7 @@ public sealed class DiscoveryHttpClientHandlerTest
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replace-me/api"));
         var loadBalancer = new BrokenLoadBalancer();
 
-        var handler = new DiscoveryHttpClientHandler(loadBalancer);
+        var handler = new DiscoveryHttpClientHandler(loadBalancer, TimeProvider.System);
         using var invoker = new HttpMessageInvoker(handler);
 
         Func<Task<HttpResponseMessage>> action = async () => _ = await invoker.SendAsync(httpRequestMessage, CancellationToken.None);
@@ -29,7 +29,7 @@ public sealed class DiscoveryHttpClientHandlerTest
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replace-me/api"));
         var loadBalancer = new FakeLoadBalancer();
 
-        var handler = new DiscoveryHttpClientHandler(loadBalancer);
+        var handler = new DiscoveryHttpClientHandler(loadBalancer, TimeProvider.System);
         using var invoker = new HttpMessageInvoker(handler);
 
         Func<Task<HttpResponseMessage>> action = async () => _ = await invoker.SendAsync(httpRequestMessage, CancellationToken.None);

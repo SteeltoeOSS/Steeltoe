@@ -18,6 +18,7 @@ public sealed class DiscoveryHttpDelegatingHandler<TLoadBalancer> : DelegatingHa
     where TLoadBalancer : class, ILoadBalancer
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly TimeProvider _timeProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiscoveryHttpDelegatingHandler{TLoadBalancer}" /> class.
@@ -25,11 +26,16 @@ public sealed class DiscoveryHttpDelegatingHandler<TLoadBalancer> : DelegatingHa
     /// <param name="serviceProvider">
     /// The <see cref="IServiceProvider" /> to obtain an instance of <typeparamref name="TLoadBalancer" /> from.
     /// </param>
-    public DiscoveryHttpDelegatingHandler(IServiceProvider serviceProvider)
+    /// <param name="timeProvider">
+    /// Provides access to the system time.
+    /// </param>
+    public DiscoveryHttpDelegatingHandler(IServiceProvider serviceProvider, TimeProvider timeProvider)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(timeProvider);
 
         _serviceProvider = serviceProvider;
+        _timeProvider = timeProvider;
     }
 
     /// <inheritdoc />
@@ -50,7 +56,7 @@ public sealed class DiscoveryHttpDelegatingHandler<TLoadBalancer> : DelegatingHa
         Uri? requestUri = request.RequestUri;
         Uri? serviceInstanceUri = null;
         Exception? error = null;
-        DateTime startTime = DateTime.UtcNow;
+        DateTimeOffset startTime = _timeProvider.GetUtcNow();
 
         try
         {
@@ -73,7 +79,8 @@ public sealed class DiscoveryHttpDelegatingHandler<TLoadBalancer> : DelegatingHa
 
             if (requestUri != null && serviceInstanceUri != null && (error == null || !error.IsCancellation()))
             {
-                await loadBalancer.UpdateStatisticsAsync(requestUri, serviceInstanceUri, DateTime.UtcNow - startTime, error, cancellationToken);
+                DateTimeOffset endTime = _timeProvider.GetUtcNow();
+                await loadBalancer.UpdateStatisticsAsync(requestUri, serviceInstanceUri, endTime - startTime, error, cancellationToken);
             }
         }
     }

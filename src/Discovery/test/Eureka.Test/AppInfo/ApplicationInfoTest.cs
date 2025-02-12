@@ -133,7 +133,7 @@ public sealed class ApplicationInfoTest
             Instances = [instanceInfo]
         };
 
-        ApplicationInfo? app = ApplicationInfo.FromJson(application);
+        ApplicationInfo? app = ApplicationInfo.FromJson(application, TimeProvider.System);
 
         Assert.NotNull(app);
         Assert.Equal("myApp", app.Name);

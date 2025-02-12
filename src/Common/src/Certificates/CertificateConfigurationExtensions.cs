@@ -69,7 +69,7 @@ public static class CertificateConfigurationExtensions
     /// </returns>
     public static IConfigurationBuilder AddAppInstanceIdentityCertificate(this IConfigurationBuilder builder)
     {
-        return AddAppInstanceIdentityCertificate(builder, null, null);
+        return AddAppInstanceIdentityCertificate(builder, TimeProvider.System, null, null);
     }
 
     /// <summary>
@@ -94,14 +94,44 @@ public static class CertificateConfigurationExtensions
     /// </returns>
     public static IConfigurationBuilder AddAppInstanceIdentityCertificate(this IConfigurationBuilder builder, Guid? orgId, Guid? spaceId)
     {
+        return AddAppInstanceIdentityCertificate(builder, TimeProvider.System, orgId, spaceId);
+    }
+
+    /// <summary>
+    /// Adds PEM certificate files representing application identity to the application configuration. When running outside of Cloud Foundry-based platforms,
+    /// this method will create certificates resembling those found on the platform.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
+    /// </param>
+    /// <param name="timeProvider">
+    /// Provides access to the system time.
+    /// </param>
+    /// <param name="orgId">
+    /// (Optional) A GUID representing an organization (org), for use with Cloud Foundry certificate-based authorization policy.
+    /// </param>
+    /// <param name="spaceId">
+    /// (Optional) A GUID representing a space, for use with Cloud Foundry certificate-based authorization policy.
+    /// </param>
+    /// <remarks>
+    /// When running outside of Cloud Foundry, the CA and Intermediate certificates will be created in a directory above the current project, so that they
+    /// can be shared between different projects in the same solution.
+    /// </remarks>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IConfigurationBuilder AddAppInstanceIdentityCertificate(this IConfigurationBuilder builder, TimeProvider timeProvider, Guid? orgId,
+        Guid? spaceId)
+    {
         ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(timeProvider);
 
         if (!Platform.IsCloudFoundry)
         {
             orgId ??= Guid.NewGuid();
             spaceId ??= Guid.NewGuid();
 
-            var writer = new LocalCertificateWriter();
+            var writer = new LocalCertificateWriter(timeProvider);
             writer.Write(orgId.Value, spaceId.Value);
 
             Environment.SetEnvironmentVariable("CF_SYSTEM_CERT_PATH",

@@ -23,7 +23,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
         IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor =
             GetOptionsMonitorFromSettings<HttpExchangesEndpointOptions, ConfigureHttpExchangesEndpointOptions>();
 
-        var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, NullLoggerFactory.Instance);
+        using var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, TimeProvider.System, NullLoggerFactory.Instance);
 
         // No current activity, event ignored
         observer.ProcessEvent("foobar", null);
@@ -52,7 +52,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
         IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor =
             GetOptionsMonitorFromSettings<HttpExchangesEndpointOptions, ConfigureHttpExchangesEndpointOptions>();
 
-        using var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, NullLoggerFactory.Instance);
+        using var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, TimeProvider.System, NullLoggerFactory.Instance);
         observer.Subscribe(listener);
 
         HttpContext context = CreateRequest();
@@ -79,7 +79,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
         IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor =
             GetOptionsMonitorFromSettings<HttpExchangesEndpointOptions, ConfigureHttpExchangesEndpointOptions>();
 
-        var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, NullLoggerFactory.Instance);
+        using var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, TimeProvider.System, NullLoggerFactory.Instance);
 
         var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
         current.Start();
@@ -100,7 +100,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
         IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor =
             GetOptionsMonitorFromSettings<HttpExchangesEndpointOptions, ConfigureHttpExchangesEndpointOptions>();
 
-        var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, NullLoggerFactory.Instance);
+        using var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, TimeProvider.System, NullLoggerFactory.Instance);
         var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
         current.Start();
 
@@ -122,7 +122,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
         IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor =
             GetOptionsMonitorFromSettings<HttpExchangesEndpointOptions, ConfigureHttpExchangesEndpointOptions>();
 
-        var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, NullLoggerFactory.Instance);
+        using var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, TimeProvider.System, NullLoggerFactory.Instance);
         var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
         current.Start();
 
@@ -161,7 +161,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
         IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor =
             GetOptionsMonitorFromSettings<HttpExchangesEndpointOptions, ConfigureHttpExchangesEndpointOptions>(appSettings);
 
-        var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, NullLoggerFactory.Instance);
+        using var observer = new HttpExchangesDiagnosticObserver(optionsMonitor, TimeProvider.System, NullLoggerFactory.Instance);
         var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
         current.Start();
 

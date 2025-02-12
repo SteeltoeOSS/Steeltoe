@@ -24,7 +24,7 @@ internal sealed class InstanceInfoBuilder
     {
         string instanceId = _instanceId ?? $"{DefaultHostName}:{_appName}:1234";
 
-        return new InstanceInfo(instanceId, _appName, DefaultHostName, DefaultIPAddress, _dataCenterInfo)
+        return new InstanceInfo(instanceId, _appName, DefaultHostName, DefaultIPAddress, _dataCenterInfo, TimeProvider.System)
         {
             Status = _status,
             VipAddress = _vipAddress,

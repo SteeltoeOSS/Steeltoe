@@ -12,33 +12,24 @@ namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
 internal sealed class HeapDumper : IHeapDumper
 {
-    private readonly string? _basePathOverride;
     private readonly IOptionsMonitor<HeapDumpEndpointOptions> _optionsMonitor;
+    private readonly TimeProvider _timeProvider;
     private readonly ILogger<HeapDumper> _logger;
 
-    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> optionsMonitor, ILogger<HeapDumper> logger)
-        : this(optionsMonitor, null, logger)
-    {
-    }
-
-    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> optionsMonitor, string? basePathOverride, ILogger<HeapDumper> logger)
+    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> optionsMonitor, TimeProvider timeProvider, ILogger<HeapDumper> logger)
     {
         ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(timeProvider);
         ArgumentNullException.ThrowIfNull(logger);
 
         _optionsMonitor = optionsMonitor;
+        _timeProvider = timeProvider;
         _logger = logger;
-        _basePathOverride = basePathOverride;
     }
 
     public string? DumpHeapToFile(CancellationToken cancellationToken)
     {
         string fileName = CreateFileName();
-
-        if (_basePathOverride != null)
-        {
-            fileName = _basePathOverride + fileName;
-        }
 
         try
         {
@@ -76,12 +67,11 @@ internal sealed class HeapDumper : IHeapDumper
 
     private string CreateFileName()
     {
-        if (string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
-        {
-            return $"gcdump-{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}-live.gcdump";
-        }
+        DateTime utcNow = _timeProvider.GetUtcNow().UtcDateTime;
 
-        return $"minidump-{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}-live.dmp";
+        return string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase)
+            ? $"gcdump-{utcNow:yyyy-MM-dd-HH-mm-ss}-live.gcdump"
+            : $"minidump-{utcNow:yyyy-MM-dd-HH-mm-ss}-live.dmp";
     }
 
     private bool TryCollectMemoryGraph(int processId, int timeout, out MemoryGraph memoryGraph, CancellationToken cancellationToken)

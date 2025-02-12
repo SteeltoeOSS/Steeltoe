@@ -65,8 +65,10 @@ public sealed class ApplicationInfo
         _instanceMap.TryRemove(instance.InstanceId, out _);
     }
 
-    internal static ApplicationInfo? FromJson(JsonApplication? jsonApplication)
+    internal static ApplicationInfo? FromJson(JsonApplication? jsonApplication, TimeProvider timeProvider)
     {
+        ArgumentNullException.ThrowIfNull(timeProvider);
+
         if (jsonApplication == null || string.IsNullOrWhiteSpace(jsonApplication.Name))
         {
             return null;
@@ -78,7 +80,7 @@ public sealed class ApplicationInfo
         {
             foreach (JsonInstanceInfo? jsonInstance in jsonApplication.Instances)
             {
-                InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance);
+                InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance, timeProvider);
 
                 if (instance != null)
                 {

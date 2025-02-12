@@ -19,19 +19,22 @@ internal sealed class EurekaServerHealthContributor : IHealthContributor
     private readonly EurekaDiscoveryClient _discoveryClient;
     private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
     private readonly IOptionsMonitor<EurekaInstanceOptions> _instanceOptionsMonitor;
+    private readonly TimeProvider _timeProvider;
 
     public string Id => "eurekaServer";
 
     public EurekaServerHealthContributor(EurekaDiscoveryClient discoveryClient, IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor,
-        IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor)
+        IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor, TimeProvider timeProvider)
     {
         ArgumentNullException.ThrowIfNull(discoveryClient);
         ArgumentNullException.ThrowIfNull(clientOptionsMonitor);
         ArgumentNullException.ThrowIfNull(instanceOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(timeProvider);
 
         _discoveryClient = discoveryClient;
         _clientOptionsMonitor = clientOptionsMonitor;
         _instanceOptionsMonitor = instanceOptionsMonitor;
+        _timeProvider = timeProvider;
     }
 
     public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
@@ -189,8 +192,8 @@ internal sealed class EurekaServerHealthContributor : IHealthContributor
         }
     }
 
-    private static TimeSpan? GetElapsedSince(DateTime? dateTimeUtc)
+    private TimeSpan? GetElapsedSince(DateTime? dateTimeUtc)
     {
-        return dateTimeUtc == null ? null : DateTime.UtcNow - dateTimeUtc.Value;
+        return dateTimeUtc == null ? null : _timeProvider.GetUtcNow().UtcDateTime - dateTimeUtc.Value;
     }
 }

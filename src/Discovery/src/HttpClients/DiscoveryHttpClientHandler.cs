@@ -13,6 +13,7 @@ namespace Steeltoe.Discovery.HttpClients;
 public sealed class DiscoveryHttpClientHandler : HttpClientHandler
 {
     private readonly ILoadBalancer _loadBalancer;
+    private readonly TimeProvider _timeProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiscoveryHttpClientHandler" /> class.
@@ -20,11 +21,16 @@ public sealed class DiscoveryHttpClientHandler : HttpClientHandler
     /// <param name="loadBalancer">
     /// The load balancer to use.
     /// </param>
-    public DiscoveryHttpClientHandler(ILoadBalancer loadBalancer)
+    /// <param name="timeProvider">
+    /// Provides access to the system time.
+    /// </param>
+    public DiscoveryHttpClientHandler(ILoadBalancer loadBalancer, TimeProvider timeProvider)
     {
         ArgumentNullException.ThrowIfNull(loadBalancer);
+        ArgumentNullException.ThrowIfNull(timeProvider);
 
         _loadBalancer = loadBalancer;
+        _timeProvider = timeProvider;
     }
 
     /// <inheritdoc />
@@ -35,7 +41,7 @@ public sealed class DiscoveryHttpClientHandler : HttpClientHandler
         Uri? requestUri = request.RequestUri;
         Uri? serviceInstanceUri = null;
         Exception? error = null;
-        DateTime startTime = DateTime.UtcNow;
+        DateTimeOffset startTime = _timeProvider.GetUtcNow();
 
         try
         {
@@ -58,7 +64,8 @@ public sealed class DiscoveryHttpClientHandler : HttpClientHandler
 
             if (requestUri != null && serviceInstanceUri != null && (error == null || !error.IsCancellation()))
             {
-                await _loadBalancer.UpdateStatisticsAsync(requestUri, serviceInstanceUri, DateTime.UtcNow - startTime, error, cancellationToken);
+                DateTimeOffset endTime = _timeProvider.GetUtcNow();
+                await _loadBalancer.UpdateStatisticsAsync(requestUri, serviceInstanceUri, endTime - startTime, error, cancellationToken);
             }
         }
     }
