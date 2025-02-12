@@ -21,9 +21,8 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddHeapDumpActuator();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var heapDumper = serviceProvider.GetService<HeapDumper>();
-        Assert.NotNull(heapDumper);
-        var handler = serviceProvider.GetService<IHeapDumpEndpointHandler>();
-        Assert.NotNull(handler);
+
+        serviceProvider.GetService<IHeapDumpEndpointHandler>().Should().BeOfType<HeapDumpEndpointHandler>();
+        serviceProvider.GetService<IHeapDumper>().Should().BeOfType<HeapDumper>();
     }
 }

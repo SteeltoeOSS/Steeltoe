@@ -438,8 +438,8 @@ public sealed class PostgreSqlConnectorTest
 
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
-        RelationalDatabaseHealthContributor[] contributors = healthContributors.Should().AllBeOfType<RelationalDatabaseHealthContributor>().Subject.ToArray();
+        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
+        RelationalDatabaseHealthContributor[] contributors = [.. healthContributors.Should().AllBeOfType<RelationalDatabaseHealthContributor>().Subject];
         contributors.Should().HaveCount(2);
 
         contributors[0].Id.Should().Be("PostgreSQL");
@@ -468,7 +468,7 @@ public sealed class PostgreSqlConnectorTest
 
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
+        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
         healthContributors.Should().BeEmpty();
     }
 
@@ -490,7 +490,7 @@ public sealed class PostgreSqlConnectorTest
 
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
+        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
         healthContributors.Should().BeEmpty();
     }
 

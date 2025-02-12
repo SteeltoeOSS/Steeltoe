@@ -17,7 +17,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(MicrosoftCodeAnalysisVersion)" />
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
-    <PackageReference Include="System.Text.Json" Version="$(SystemTextJsonToolsVersion)" />
+    <PackageReference Include="System.Text.Json" Version="$(FoundationalVersion)" />
 
     <InternalsVisibleTo Include="$(AssemblyName).Tests" />
   </ItemGroup>

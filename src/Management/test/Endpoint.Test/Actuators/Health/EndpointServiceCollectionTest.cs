@@ -31,7 +31,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         var aggregator = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(aggregator);
 
-        IHealthContributor[] contributors = serviceProvider.GetServices<IHealthContributor>().ToArray();
+        IHealthContributor[] contributors = [.. serviceProvider.GetServices<IHealthContributor>()];
         Assert.Equal(4, contributors.Length);
 
         var availability = serviceProvider.GetService<ApplicationAvailability>();

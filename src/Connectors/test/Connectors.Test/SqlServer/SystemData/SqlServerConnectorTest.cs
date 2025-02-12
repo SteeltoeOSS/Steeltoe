@@ -13,6 +13,8 @@ using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Connectors.SqlServer;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+
 namespace Steeltoe.Connectors.Test.SqlServer.SystemData;
 
 public sealed class SqlServerConnectorTest
@@ -257,8 +259,8 @@ public sealed class SqlServerConnectorTest
 
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
-        RelationalDatabaseHealthContributor[] contributors = healthContributors.Should().AllBeOfType<RelationalDatabaseHealthContributor>().Subject.ToArray();
+        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
+        RelationalDatabaseHealthContributor[] contributors = [.. healthContributors.Should().AllBeOfType<RelationalDatabaseHealthContributor>().Subject];
         contributors.Should().HaveCount(2);
 
         contributors[0].Id.Should().Be("SQL Server");

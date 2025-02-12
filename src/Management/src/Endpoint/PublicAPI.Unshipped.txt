@@ -178,10 +178,6 @@ Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions.HeapDumpEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions.HeapDumpType.get -> string?
 Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions.HeapDumpType.set -> void
-Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumper
-Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumper.DumpHeapToFile(System.Threading.CancellationToken cancellationToken) -> string?
-Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumper.HeapDumper(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions!>! optionsMonitor, Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumper!>! logger) -> void
-Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumper.HeapDumper(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions!>! optionsMonitor, string? basePathOverride, Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumper!>! logger) -> void
 Steeltoe.Management.Endpoint.Actuators.HeapDump.IHeapDumpEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange

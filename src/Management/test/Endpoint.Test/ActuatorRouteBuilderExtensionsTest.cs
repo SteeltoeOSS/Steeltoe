@@ -16,7 +16,9 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
+using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 using Steeltoe.Management.Endpoint.Configuration;
+using Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -26,8 +28,11 @@ public sealed class ActuatorRouteBuilderExtensionsTest
     {
         get
         {
-            List<Type> endpointOptionsTypes = typeof(ConfigureEndpointOptions<>).Assembly.GetTypes()
-                .Where(type => type.IsAssignableTo(typeof(EndpointOptions)) && type != typeof(CloudFoundryEndpointOptions)).ToList();
+            List<Type> endpointOptionsTypes =
+            [
+                .. typeof(ConfigureEndpointOptions<>).Assembly.GetTypes().Where(type =>
+                    type.IsAssignableTo(typeof(EndpointOptions)) && type != typeof(CloudFoundryEndpointOptions))
+            ];
 
             TheoryData<RegistrationMode, Type> theoryData = [];
 
@@ -71,6 +76,8 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 
         hostBuilder.ConfigureServices(services =>
         {
+            services.AddSingleton<IHeapDumper, FakeHeapDumper>();
+
             if (mode == RegistrationMode.Services)
             {
                 services.AddAllActuators();

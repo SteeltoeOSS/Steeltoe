@@ -78,6 +78,7 @@ dotnet_diagnostic.IDE0058.severity = silent
 
 # Collection expression preferences (note: turned off in shared-package.props)
 dotnet_style_prefer_collection_expression = when_types_exactly_match
+dotnet_diagnostic.IDE0306.severity = silent # Workaround for https://github.com/dotnet/roslyn/issues/77177
 
 # Parameter preferences
 dotnet_code_quality_unused_parameters = non_public

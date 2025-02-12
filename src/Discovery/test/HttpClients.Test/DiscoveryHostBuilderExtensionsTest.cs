@@ -39,7 +39,7 @@ public sealed class DiscoveryHostBuilderExtensionsTest
 
         using IHost host = hostBuilder.Build();
 
-        IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
+        IDiscoveryClient[] discoveryClients = [.. host.Services.GetServices<IDiscoveryClient>()];
         Assert.Single(discoveryClients);
         Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
 
@@ -69,7 +69,7 @@ public sealed class DiscoveryHostBuilderExtensionsTest
 
         using IHost host = hostBuilder.Build();
 
-        IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
+        IDiscoveryClient[] discoveryClients = [.. host.Services.GetServices<IDiscoveryClient>()];
         Assert.Single(discoveryClients);
         Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
 

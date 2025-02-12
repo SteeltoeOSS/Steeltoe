@@ -30,6 +30,10 @@ jobs:
     displayName: Install .NET 8
     inputs:
       version: 8.0.x
+  - task: UseDotNet@2
+    displayName: Install .NET 9
+    inputs:
+      version: 9.0.x
   - task: DotNetCoreCLI@2
     displayName: Install Nerdbank.GitVersioning tool
     condition: eq('${{parameters.OS}}', 'macOS')
@@ -64,11 +68,11 @@ jobs:
     condition: eq(${{parameters.runConfigServer}}, 'true')
     displayName: Start Config Server
   - task: DotNetCoreCLI@2
-    displayName: dotnet test net8.0
+    displayName: dotnet test
     inputs:
       command: test
       projects: $(SolutionFile)
-      arguments: -f net8.0 ${{parameters.skipFilter}} $(CommonTestArgs)
+      arguments: ${{parameters.skipFilter}} $(CommonTestArgs)
       publishTestResults: false
   - task: CopyFiles@2
     condition: failed()

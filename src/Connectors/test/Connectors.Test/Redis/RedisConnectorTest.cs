@@ -282,8 +282,8 @@ public sealed class RedisConnectorTest
 
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
-        RedisHealthContributor[] redisHealthContributors = healthContributors.Should().AllBeOfType<RedisHealthContributor>().Subject.ToArray();
+        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
+        RedisHealthContributor[] redisHealthContributors = [.. healthContributors.Should().AllBeOfType<RedisHealthContributor>().Subject];
         redisHealthContributors.Should().HaveCount(2);
 
         redisHealthContributors[0].Id.Should().Be("Redis");

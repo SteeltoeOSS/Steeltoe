@@ -13,5 +13,6 @@
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="$(MatchTargetFrameworkVersion)" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(FoundationalVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(FoundationalVersion)" />
+    <PackageReference Include="System.Text.Json" Version="$(FoundationalVersion)" />
   </ItemGroup>
 </Project>

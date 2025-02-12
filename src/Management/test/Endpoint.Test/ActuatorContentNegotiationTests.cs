@@ -7,8 +7,11 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.All;
+using Steeltoe.Management.Endpoint.Actuators.HeapDump;
+using Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -43,6 +46,7 @@ public sealed class ActuatorContentNegotiationTests
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddAllActuators();
+        builder.Services.AddSingleton<IHeapDumper, FakeHeapDumper>();
 
         await using WebApplication host = builder.Build();
         await host.StartAsync();

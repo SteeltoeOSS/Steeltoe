@@ -43,13 +43,13 @@ public sealed class RabbitMQHealthContributorTest
         var connectionMock = new Mock<IConnection>();
         connectionMock.Setup(connection => connection.IsOpen).Returns(true);
 
-        connectionMock.Setup(connection => connection.ServerProperties).Returns(new Dictionary<string, object>
+        connectionMock.Setup(connection => connection.ServerProperties).Returns(new Dictionary<string, object?>
         {
             { "version", "1.2.3"u8.ToArray() }
         });
 
         var connectionFactoryMock = new Mock<IConnectionFactory>();
-        connectionFactoryMock.Setup(factory => factory.CreateConnection()).Returns(connectionMock.Object);
+        connectionFactoryMock.Setup(factory => factory.CreateConnectionAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(connectionMock.Object));
 
         using var healthContributor = new RabbitMQHealthContributor(connectionFactoryMock.Object, "localhost", NullLogger<RabbitMQHealthContributor>.Instance)
         {
@@ -72,13 +72,13 @@ public sealed class RabbitMQHealthContributorTest
         var connectionMock = new Mock<IConnection>();
         connectionMock.Setup(connection => connection.IsOpen).Returns(true);
 
-        connectionMock.Setup(connection => connection.ServerProperties).Returns(new Dictionary<string, object>
+        connectionMock.Setup(connection => connection.ServerProperties).Returns(new Dictionary<string, object?>
         {
             { "version", "1.2.3"u8.ToArray() }
         });
 
         var connectionFactoryMock = new Mock<IConnectionFactory>();
-        connectionFactoryMock.Setup(factory => factory.CreateConnection()).Returns(connectionMock.Object);
+        connectionFactoryMock.Setup(factory => factory.CreateConnectionAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(connectionMock.Object));
 
         using var healthContributor = new RabbitMQHealthContributor(connectionFactoryMock.Object, "localhost", NullLogger<RabbitMQHealthContributor>.Instance)
         {

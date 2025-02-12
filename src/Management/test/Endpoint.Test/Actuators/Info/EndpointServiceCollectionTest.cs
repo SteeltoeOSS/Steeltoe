@@ -25,7 +25,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IInfoContributor[] contributors = serviceProvider.GetServices<IInfoContributor>().ToArray();
+        IInfoContributor[] contributors = [.. serviceProvider.GetServices<IInfoContributor>()];
         contributors.Should().HaveCount(4);
         contributors.OfType<GitInfoContributor>().Should().NotBeEmpty();
         contributors.OfType<AppSettingsInfoContributor>().Should().NotBeEmpty();

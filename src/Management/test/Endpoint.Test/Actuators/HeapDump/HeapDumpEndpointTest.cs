@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 using Xunit.Abstractions;
 
@@ -19,19 +17,17 @@ public sealed class HeapDumpEndpointTest(ITestOutputHelper testOutputHelper) : B
     {
         using var testContext = new TestContext(_testOutputHelper);
 
-        IOptionsMonitor<HeapDumpEndpointOptions> options = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions>();
-
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddHeapDumpActuator();
-            services.AddSingleton(serviceProvider => new HeapDumper(options, serviceProvider.GetRequiredService<ILogger<HeapDumper>>()));
+            services.AddSingleton<IHeapDumper, FakeHeapDumper>();
         };
 
         var handler = testContext.GetRequiredService<IHeapDumpEndpointHandler>();
 
-        string? result = await handler.InvokeAsync(null, CancellationToken.None);
-        Assert.NotNull(result);
-        Assert.True(File.Exists(result));
-        File.Delete(result);
+        string? path = await handler.InvokeAsync(null, CancellationToken.None);
+
+        path.Should().NotBeNull();
+        File.Exists(path).Should().BeTrue();
     }
 }

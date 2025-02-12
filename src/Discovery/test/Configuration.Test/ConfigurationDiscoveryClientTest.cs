@@ -136,7 +136,7 @@ public sealed class ConfigurationDiscoveryClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         // by getting the client, we're confirming that the options are also available in the container
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
+        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
 
         Assert.Single(discoveryClients);
         Assert.IsType<ConfigurationDiscoveryClient>(discoveryClients[0]);
@@ -164,10 +164,10 @@ public sealed class ConfigurationDiscoveryClientTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
+        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
         discoveryClients.OfType<ConfigurationDiscoveryClient>().Should().ContainSingle();
 
-        ConfigurationDiscoveryClient[] configurationDiscoveryClients = serviceProvider.GetServices<ConfigurationDiscoveryClient>().ToArray();
+        ConfigurationDiscoveryClient[] configurationDiscoveryClients = [.. serviceProvider.GetServices<ConfigurationDiscoveryClient>()];
         configurationDiscoveryClients.Should().BeEmpty();
     }
 
@@ -183,7 +183,7 @@ public sealed class ConfigurationDiscoveryClientTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
+        IHostedService[] hostedServices = [.. serviceProvider.GetServices<IHostedService>()];
         hostedServices.OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 }

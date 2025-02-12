@@ -37,7 +37,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
+        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
 
         Assert.Single(discoveryClients);
         Assert.NotNull(discoveryClients[0]);
@@ -142,7 +142,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
+        IHostedService[] hostedServices = [.. serviceProvider.GetServices<IHostedService>()];
         hostedServices.OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 

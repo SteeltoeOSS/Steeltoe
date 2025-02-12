@@ -57,6 +57,10 @@ jobs:
     displayName: Install .NET 8
     inputs:
       version: 8.0.x
+  - task: UseDotNet@2
+    displayName: Install .NET 9
+    inputs:
+      version: 9.0.x
   - task: DotNetCoreCLI@2
     displayName: Install Nerdbank.GitVersioning tool
     condition: eq(variables['imageName'], 'macOS-latest')
@@ -101,11 +105,11 @@ jobs:
     condition: eq(variables['integrationTests'], 'true')
     displayName: Start Docker services
   - task: DotNetCoreCLI@2
-    displayName: dotnet test net8.0
+    displayName: dotnet test
     inputs:
       command: test
       projects: '**/*.csproj'
-      arguments: '--blame-hang-timeout 3m -f net8.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      arguments: '--blame-hang-timeout 3m --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - task: CopyFiles@2
     condition: failed()

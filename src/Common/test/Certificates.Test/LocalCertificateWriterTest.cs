@@ -5,6 +5,10 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
+#if NET9_0_OR_GREATER
+#pragma warning disable SYSLIB0057 // Type or member is obsolete
+#endif
+
 namespace Steeltoe.Common.Certificates.Test;
 
 public sealed class LocalCertificateWriterTest

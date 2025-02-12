@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 internal sealed class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
 {
     private readonly IOptionsMonitor<HeapDumpEndpointOptions> _optionsMonitor;
-    private readonly HeapDumper _heapDumper;
+    private readonly IHeapDumper _heapDumper;
     private readonly ILogger<HeapDumpEndpointHandler> _logger;
 
     public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
-    public HeapDumpEndpointHandler(IOptionsMonitor<HeapDumpEndpointOptions> optionsMonitor, HeapDumper heapDumper, ILoggerFactory loggerFactory)
+    public HeapDumpEndpointHandler(IOptionsMonitor<HeapDumpEndpointOptions> optionsMonitor, IHeapDumper heapDumper, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(optionsMonitor);
         ArgumentNullException.ThrowIfNull(heapDumper);

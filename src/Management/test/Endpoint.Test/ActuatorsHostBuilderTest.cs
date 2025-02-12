@@ -33,6 +33,7 @@ using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.ManagementPort;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
+using Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 using Steeltoe.Management.Endpoint.Test.Actuators.Info;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -333,7 +334,12 @@ public sealed class ActuatorsHostBuilderTest
         await using HostWrapper host = hostBuilderType.Build(builder =>
         {
             builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
-            builder.ConfigureServices(services => services.AddHeapDumpActuator());
+
+            builder.ConfigureServices(services =>
+            {
+                services.AddHeapDumpActuator();
+                services.AddSingleton<IHeapDumper, FakeHeapDumper>();
+            });
         });
 
         await host.StartAsync();
@@ -651,7 +657,7 @@ public sealed class ActuatorsHostBuilderTest
         host.Services.GetServices<IEndpointOptionsMonitorProvider>().Should().HaveCount(actuatorCount);
         host.Services.GetServices<IEndpointMiddleware>().Should().HaveCount(actuatorCount);
 
-        IStartupFilter[] startupFilters = host.Services.GetServices<IStartupFilter>().ToArray();
+        IStartupFilter[] startupFilters = [.. host.Services.GetServices<IStartupFilter>()];
         startupFilters.Should().ContainSingle(filter => filter is ConfigureActuatorsMiddlewareStartupFilter);
         startupFilters.Should().ContainSingle(filter => filter is ManagementPortStartupFilter);
         startupFilters.Should().ContainSingle(filter => filter is AvailabilityStartupFilter);

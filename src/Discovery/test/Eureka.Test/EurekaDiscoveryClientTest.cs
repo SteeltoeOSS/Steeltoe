@@ -189,7 +189,7 @@ public sealed class EurekaDiscoveryClientTest
 
         await using WebApplication webApplication = builder.Build();
 
-        EurekaDiscoveryClient[] discoveryClients = webApplication.Services.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>().ToArray();
+        EurekaDiscoveryClient[] discoveryClients = [.. webApplication.Services.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>()];
         Assert.Single(discoveryClients);
 
         Assert.False(discoveryClients[0].IsCacheRefreshTimerStarted);

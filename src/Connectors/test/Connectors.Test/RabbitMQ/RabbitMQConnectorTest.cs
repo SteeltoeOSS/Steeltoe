@@ -332,8 +332,8 @@ public sealed class RabbitMQConnectorTest
 
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
-        RabbitMQHealthContributor[] rabbitMQHealthContributors = healthContributors.Should().AllBeOfType<RabbitMQHealthContributor>().Subject.ToArray();
+        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
+        RabbitMQHealthContributor[] rabbitMQHealthContributors = [.. healthContributors.Should().AllBeOfType<RabbitMQHealthContributor>().Subject];
         rabbitMQHealthContributors.Should().HaveCount(2);
 
         rabbitMQHealthContributors[0].Id.Should().Be("RabbitMQ");
@@ -451,102 +451,91 @@ public sealed class RabbitMQConnectorTest
         public int LocalPort => throw new NotImplementedException();
         public int RemotePort => throw new NotImplementedException();
         public ushort ChannelMax => throw new NotImplementedException();
-        public IDictionary<string, object> ClientProperties => throw new NotImplementedException();
+        public IDictionary<string, object?> ClientProperties => throw new NotImplementedException();
         public ShutdownEventArgs CloseReason => throw new NotImplementedException();
         public AmqpTcpEndpoint Endpoint => throw new NotImplementedException();
         public uint FrameMax => throw new NotImplementedException();
         public TimeSpan Heartbeat => throw new NotImplementedException();
         public bool IsOpen => throw new NotImplementedException();
-        public AmqpTcpEndpoint[] KnownHosts => throw new NotImplementedException();
         public IProtocol Protocol => throw new NotImplementedException();
-        public IDictionary<string, object> ServerProperties => throw new NotImplementedException();
-        public IList<ShutdownReportEntry> ShutdownReport => throw new NotImplementedException();
+        public IDictionary<string, object?> ServerProperties => throw new NotImplementedException();
+        public IEnumerable<ShutdownReportEntry> ShutdownReport => throw new NotImplementedException();
         public string ClientProvidedName => throw new NotImplementedException();
 
-        public event EventHandler<CallbackExceptionEventArgs> CallbackException
+        public event AsyncEventHandler<CallbackExceptionEventArgs>? CallbackExceptionAsync
         {
             add => throw new NotImplementedException();
             remove => throw new NotImplementedException();
         }
 
-        public event EventHandler<ConnectionBlockedEventArgs> ConnectionBlocked
+        public event AsyncEventHandler<ShutdownEventArgs>? ConnectionShutdownAsync
         {
             add => throw new NotImplementedException();
             remove => throw new NotImplementedException();
         }
 
-        public event EventHandler<ShutdownEventArgs> ConnectionShutdown
+        public event AsyncEventHandler<AsyncEventArgs>? RecoverySucceededAsync
         {
             add => throw new NotImplementedException();
             remove => throw new NotImplementedException();
         }
 
-        public event EventHandler<EventArgs> ConnectionUnblocked
+        public event AsyncEventHandler<ConnectionRecoveryErrorEventArgs>? ConnectionRecoveryErrorAsync
         {
             add => throw new NotImplementedException();
             remove => throw new NotImplementedException();
+        }
+
+        public event AsyncEventHandler<ConsumerTagChangedAfterRecoveryEventArgs>? ConsumerTagChangeAfterRecoveryAsync
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
+        public event AsyncEventHandler<QueueNameChangedAfterRecoveryEventArgs>? QueueNameChangedAfterRecoveryAsync
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
+        public event AsyncEventHandler<RecoveringConsumerEventArgs>? RecoveringConsumerAsync
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
+        public event AsyncEventHandler<ConnectionBlockedEventArgs>? ConnectionBlockedAsync
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
+        public event AsyncEventHandler<AsyncEventArgs>? ConnectionUnblockedAsync
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return ValueTask.CompletedTask;
         }
 
         public void Dispose()
         {
         }
 
-        public void UpdateSecret(string newSecret, string reason)
+        public Task UpdateSecretAsync(string newSecret, string reason, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public void Abort()
+        public Task CloseAsync(ushort reasonCode, string reasonText, TimeSpan timeout, bool abort, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public void Abort(ushort reasonCode, string reasonText)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Abort(TimeSpan timeout)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Abort(ushort reasonCode, string reasonText, TimeSpan timeout)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Close()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Close(ushort reasonCode, string reasonText)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Close(TimeSpan timeout)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Close(ushort reasonCode, string reasonText, TimeSpan timeout)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IModel CreateModel()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void HandleConnectionBlocked(string reason)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void HandleConnectionUnblocked()
+        public Task<IChannel> CreateChannelAsync(CreateChannelOptions? options = null, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

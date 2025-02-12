@@ -11,9 +11,13 @@ internal sealed class ConnectionFactoryInterfaceShim(RabbitMQPackageResolver pac
 {
     private readonly RabbitMQPackageResolver _packageResolver = packageResolver;
 
-    public ConnectionInterfaceShim CreateConnection()
+    public async Task<ConnectionInterfaceShim> CreateConnectionAsync(CancellationToken cancellationToken)
     {
-        object connectionInstance = InstanceAccessor.InvokeMethodOverload("CreateConnection", true, Type.EmptyTypes)!;
-        return new ConnectionInterfaceShim(_packageResolver, connectionInstance);
+        var task = (Task)InstanceAccessor.InvokeMethodOverload("CreateConnectionAsync", true, [typeof(CancellationToken)], cancellationToken)!;
+
+        await task;
+
+        using var taskShim = new TaskShim<IDisposable>(task);
+        return new ConnectionInterfaceShim(_packageResolver, taskShim.Result);
     }
 }

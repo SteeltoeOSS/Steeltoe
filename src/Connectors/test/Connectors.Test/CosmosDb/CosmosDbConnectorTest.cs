@@ -247,8 +247,8 @@ public sealed class CosmosDbConnectorTest
 
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
-        CosmosDbHealthContributor[] cosmosDbHealthContributors = healthContributors.Should().AllBeOfType<CosmosDbHealthContributor>().Subject.ToArray();
+        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
+        CosmosDbHealthContributor[] cosmosDbHealthContributors = [.. healthContributors.Should().AllBeOfType<CosmosDbHealthContributor>().Subject];
         cosmosDbHealthContributors.Should().HaveCount(2);
 
         cosmosDbHealthContributors[0].Id.Should().Be("CosmosDB");
