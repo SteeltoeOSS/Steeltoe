@@ -16,6 +16,7 @@ public sealed class EurekaApplicationInfoManager : IDisposable
 {
     private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
     private readonly IOptionsMonitor<EurekaInstanceOptions> _instanceOptionsMonitor;
+    private readonly TimeProvider _timeProvider;
     private readonly IDisposable? _instanceOptionsChangeToken;
     private readonly ILogger<EurekaApplicationInfoManager> _logger;
     private readonly object _instanceWriteLock = new();
@@ -35,10 +36,11 @@ public sealed class EurekaApplicationInfoManager : IDisposable
     internal event EventHandler<InstanceChangedEventArgs>? InstanceChanged;
 
     public EurekaApplicationInfoManager(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor,
-        IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor, ILogger<EurekaApplicationInfoManager> logger)
+        IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor, TimeProvider timeProvider, ILogger<EurekaApplicationInfoManager> logger)
     {
         ArgumentNullException.ThrowIfNull(clientOptionsMonitor);
         ArgumentNullException.ThrowIfNull(instanceOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(timeProvider);
         ArgumentNullException.ThrowIfNull(logger);
 
         if (!clientOptionsMonitor.CurrentValue.Enabled)
@@ -48,13 +50,14 @@ public sealed class EurekaApplicationInfoManager : IDisposable
         }
         else
         {
-            _instance = InstanceInfo.FromConfiguration(instanceOptionsMonitor.CurrentValue);
+            _instance = InstanceInfo.FromConfiguration(instanceOptionsMonitor.CurrentValue, timeProvider);
             _instanceOptionsChangeToken = instanceOptionsMonitor.OnChange(HandleInstanceOptionsChanged);
         }
 
         _clientOptionsMonitor = clientOptionsMonitor;
         _logger = logger;
         _instanceOptionsMonitor = instanceOptionsMonitor;
+        _timeProvider = timeProvider;
     }
 
     private void HandleInstanceOptionsChanged(EurekaInstanceOptions instanceOptions)
@@ -165,7 +168,7 @@ public sealed class EurekaApplicationInfoManager : IDisposable
             instanceOptions.AppName = previousInstance.AppName;
         }
 
-        InstanceInfo newInstance = InstanceInfo.FromConfiguration(instanceOptions);
+        InstanceInfo newInstance = InstanceInfo.FromConfiguration(instanceOptions, _timeProvider);
 
         newInstance.ReplaceStatus(previousInstance.Status);
         newInstance.ReplaceOverriddenStatus(previousInstance.OverriddenStatus);

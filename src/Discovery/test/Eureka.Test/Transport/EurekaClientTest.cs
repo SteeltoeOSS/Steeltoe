@@ -139,11 +139,12 @@ public sealed class EurekaClientTest
         services.AddSingleton<IHttpClientFactory>(new TestHttpClientFactory());
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo())
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo(), TimeProvider.System)
         {
             NonSecurePort = 8080,
             IsNonSecurePortEnabled = true,
@@ -175,6 +176,7 @@ public sealed class EurekaClientTest
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
 
@@ -186,7 +188,7 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo())
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo(), TimeProvider.System)
         {
             NonSecurePort = 8080,
             IsNonSecurePortEnabled = true,
@@ -223,6 +225,7 @@ public sealed class EurekaClientTest
         services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServer.RetryCount = 0);
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
         httpClientHandler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOOBAR").Respond(HttpStatusCode.NotFound);
@@ -231,7 +234,7 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo())
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo(), TimeProvider.System)
         {
             NonSecurePort = 8080,
             IsNonSecurePortEnabled = true,
@@ -270,6 +273,7 @@ public sealed class EurekaClientTest
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
         httpClientHandler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOOBAR").Respond(HttpStatusCode.NotFound);
@@ -278,7 +282,7 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo());
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
 
         Func<Task> asyncAction = async () => await client.RegisterAsync(instance, CancellationToken.None);
 
@@ -333,6 +337,7 @@ public sealed class EurekaClientTest
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
         httpClientHandler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOOBAR").WithContent(jsonRequest).Respond(HttpStatusCode.NoContent);
@@ -341,7 +346,7 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo())
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo(), TimeProvider.System)
         {
             NonSecurePort = 8080,
             IsNonSecurePortEnabled = true,
@@ -375,6 +380,7 @@ public sealed class EurekaClientTest
         services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = "http://server1:8761,http://server2:8761");
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
         httpClientHandler.Mock.Expect(HttpMethod.Post, "http://server1:8761/apps/FOOBAR").Respond(HttpStatusCode.NotFound);
@@ -384,7 +390,7 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo())
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo(), TimeProvider.System)
         {
             NonSecurePort = 8080,
             IsNonSecurePortEnabled = true,
@@ -420,6 +426,7 @@ public sealed class EurekaClientTest
         services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/");
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
 
@@ -431,7 +438,7 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo());
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
 
         await client.RegisterAsync(instance, CancellationToken.None);
 
@@ -446,6 +453,7 @@ public sealed class EurekaClientTest
         services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = "http://:pass@boo:123/eureka/");
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
 
@@ -457,7 +465,7 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo());
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
 
         await client.RegisterAsync(instance, CancellationToken.None);
 
@@ -485,6 +493,7 @@ public sealed class EurekaClientTest
 
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
 
         var accessTokenHttpClientHandler = new DelegateToMockHttpClientHandler();
         var eurekaHttpClientHandler = new DelegateToMockHttpClientHandler();
@@ -501,7 +510,7 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo());
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
 
         await client.RegisterAsync(instance, CancellationToken.None);
 
@@ -516,6 +525,7 @@ public sealed class EurekaClientTest
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
         httpClientHandler.Mock.Expect(HttpMethod.Delete, "http://localhost:8761/eureka/apps/foo/localhost%3Abar%3A1234").Respond(HttpStatusCode.NoContent);
@@ -537,6 +547,7 @@ public sealed class EurekaClientTest
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
 
@@ -561,6 +572,7 @@ public sealed class EurekaClientTest
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
         httpClientHandler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", GetApplicationsFullJsonResponse);
@@ -601,6 +613,7 @@ public sealed class EurekaClientTest
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
         httpClientHandler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", jsonResponse);
@@ -633,6 +646,7 @@ public sealed class EurekaClientTest
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
         httpClientHandler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/delta").Respond("application/json", GetApplicationsDeltaJsonResponse);
@@ -669,6 +683,7 @@ public sealed class EurekaClientTest
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
         httpClientHandler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/vips/foo").Respond("application/json", GetApplicationsFullJsonResponse);

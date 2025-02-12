@@ -723,7 +723,7 @@ public sealed class ApplicationInfoCollectionTest
             Applications = [application]
         };
 
-        ApplicationInfoCollection apps = ApplicationInfoCollection.FromJson(applications);
+        ApplicationInfoCollection apps = ApplicationInfoCollection.FromJson(applications, TimeProvider.System);
 
         Assert.Equal("AppsHashCode", apps.AppsHashCode);
         Assert.Equal(1, apps.Version);
@@ -853,7 +853,7 @@ public sealed class ApplicationInfoCollectionTest
             Applications = [application]
         };
 
-        ApplicationInfoCollection apps = ApplicationInfoCollection.FromJson(applications);
+        ApplicationInfoCollection apps = ApplicationInfoCollection.FromJson(applications, TimeProvider.System);
 
         Assert.Equal("AppsHashCode", apps.AppsHashCode);
         Assert.Equal(1, apps.Version);

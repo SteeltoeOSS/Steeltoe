@@ -21,6 +21,14 @@ internal sealed class LocalCertificateWriter
     internal static readonly string RootCaPfxPath = Path.Combine(ParentPath, CertificateDirectoryName, "SteeltoeCA.pfx");
 
     internal static readonly string IntermediatePfxPath = Path.Combine(ParentPath, CertificateDirectoryName, "SteeltoeIntermediate.pfx");
+    private readonly TimeProvider _timeProvider;
+
+    public LocalCertificateWriter(TimeProvider timeProvider)
+    {
+        ArgumentNullException.ThrowIfNull(timeProvider);
+
+        _timeProvider = timeProvider;
+    }
 
     public void Write(Guid orgId, Guid spaceId)
     {
@@ -81,7 +89,7 @@ internal sealed class LocalCertificateWriter
         File.WriteAllText(Path.Combine(AppBasePath, CertificateDirectoryName, $"{CertificateFilenamePrefix}Key.pem"), keyContents);
     }
 
-    private static X509Certificate2 CreateRootCertificate(string distinguishedName)
+    private X509Certificate2 CreateRootCertificate(string distinguishedName)
     {
         using var privateKey = RSA.Create();
 
@@ -90,10 +98,10 @@ internal sealed class LocalCertificateWriter
 
         certificateRequest.CertificateExtensions.Add(new X509BasicConstraintsExtension(true, false, 0, true));
 
-        return certificateRequest.CreateSelfSigned(DateTimeOffset.UtcNow, new DateTimeOffset(2039, 12, 31, 23, 59, 59, TimeSpan.Zero));
+        return certificateRequest.CreateSelfSigned(_timeProvider.GetUtcNow(), new DateTimeOffset(2039, 12, 31, 23, 59, 59, TimeSpan.Zero));
     }
 
-    private static X509Certificate2 CreateIntermediateCertificate(string subjectName, X509Certificate2 issuerCertificate)
+    private X509Certificate2 CreateIntermediateCertificate(string subjectName, X509Certificate2 issuerCertificate)
     {
         using var privateKey = RSA.Create();
         var certificateRequest = new CertificateRequest(subjectName, privateKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
@@ -103,11 +111,11 @@ internal sealed class LocalCertificateWriter
         using var randomNumberGenerator = RandomNumberGenerator.Create();
         randomNumberGenerator.GetBytes(serialNumber);
 
-        return certificateRequest.Create(issuerCertificate, DateTimeOffset.UtcNow, issuerCertificate.NotAfter, serialNumber).CopyWithPrivateKey(privateKey);
+        return certificateRequest.Create(issuerCertificate, _timeProvider.GetUtcNow(), issuerCertificate.NotAfter, serialNumber).CopyWithPrivateKey(privateKey);
     }
 
-    private static X509Certificate2 CreateClientCertificate(string subjectName, X509Certificate2 issuerCertificate,
-        SubjectAlternativeNameBuilder alternativeNames, DateTimeOffset? notAfter = null)
+    private X509Certificate2 CreateClientCertificate(string subjectName, X509Certificate2 issuerCertificate, SubjectAlternativeNameBuilder alternativeNames,
+        DateTimeOffset? notAfter = null)
     {
         using var privateKey = RSA.Create();
         var request = new CertificateRequest(subjectName, privateKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
@@ -129,9 +137,8 @@ internal sealed class LocalCertificateWriter
             randomNumberGenerator.GetBytes(serialNumber);
         }
 
-        X509Certificate2 signedCertificate =
-            request.Create(issuerCertificate, DateTimeOffset.UtcNow, notAfter ?? DateTimeOffset.UtcNow.AddDays(1), serialNumber);
-
+        DateTimeOffset utcNow = _timeProvider.GetUtcNow();
+        X509Certificate2 signedCertificate = request.Create(issuerCertificate, utcNow, notAfter ?? utcNow.AddDays(1), serialNumber);
         return signedCertificate.CopyWithPrivateKey(privateKey);
     }
 }

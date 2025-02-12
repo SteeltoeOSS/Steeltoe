@@ -13,7 +13,7 @@ public sealed class InstanceInfoTest
     [Fact]
     public void Constructor_InitializedWithDefaults()
     {
-        var instance = new InstanceInfo("x", "x", "x", "x", new DataCenterInfo());
+        var instance = new InstanceInfo("x", "x", "x", "x", new DataCenterInfo(), TimeProvider.System);
 
         Assert.Null(instance.OverriddenStatus);
         Assert.False(instance.IsSecurePortEnabled);
@@ -32,7 +32,7 @@ public sealed class InstanceInfoTest
     [Fact]
     public void Constructor_RemovesEmptyMetadataValues()
     {
-        var instance = new InstanceInfo("x", "x", "x", "x", new DataCenterInfo())
+        var instance = new InstanceInfo("x", "x", "x", "x", new DataCenterInfo(), TimeProvider.System)
         {
             Metadata = new Dictionary<string, string?>
             {
@@ -102,7 +102,7 @@ public sealed class InstanceInfoTest
             AutoScalingGroupName = "AsgName"
         };
 
-        InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance);
+        InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance, TimeProvider.System);
 
         Assert.NotNull(instance);
         Assert.Equal("InstanceId", instance.InstanceId);
@@ -205,7 +205,7 @@ public sealed class InstanceInfoTest
             AutoScalingGroupName = "AsgName"
         };
 
-        InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance);
+        InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance, TimeProvider.System);
 
         Assert.NotNull(instance);
         Assert.Equal(InstanceStatus.OutOfService, instance.OverriddenStatus);
@@ -268,7 +268,7 @@ public sealed class InstanceInfoTest
             AutoScalingGroupName = "AsgName"
         };
 
-        InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance);
+        InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance, TimeProvider.System);
 
         Assert.NotNull(instance);
         Assert.Equal(InstanceStatus.OutOfService, instance.OverriddenStatus);
@@ -287,7 +287,7 @@ public sealed class InstanceInfoTest
             AppName = "unknown"
         };
 
-        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions, TimeProvider.System);
 
         Assert.NotNull(instance);
         Assert.Equal(instanceOptions.HostName, instance.HostName);
@@ -341,7 +341,7 @@ public sealed class InstanceInfoTest
             SecurePort = 9090
         };
 
-        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions, TimeProvider.System);
 
         Assert.NotNull(instance);
         Assert.False(instance.IsNonSecurePortEnabled);
@@ -367,7 +367,7 @@ public sealed class InstanceInfoTest
             IsSecurePortEnabled = false
         };
 
-        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions, TimeProvider.System);
 
         Assert.NotNull(instance);
         Assert.True(instance.IsNonSecurePortEnabled);
@@ -394,7 +394,7 @@ public sealed class InstanceInfoTest
             SecurePort = 9090
         };
 
-        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions, TimeProvider.System);
 
         Assert.NotNull(instance);
         Assert.True(instance.IsNonSecurePortEnabled);
@@ -420,7 +420,7 @@ public sealed class InstanceInfoTest
             IsSecurePortEnabled = false
         };
 
-        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions, TimeProvider.System);
 
         Assert.NotNull(instance);
         Assert.False(instance.IsNonSecurePortEnabled);
@@ -446,7 +446,7 @@ public sealed class InstanceInfoTest
             SecureHealthCheckUrl = "https://www.${eureka.hostname}/health.html"
         };
 
-        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions, TimeProvider.System);
 
         Assert.NotNull(instance);
         Assert.Equal("http://www.example-host.com/home.html", instance.HomePageUrl);
@@ -466,7 +466,7 @@ public sealed class InstanceInfoTest
             AppName = "my-app"
         };
 
-        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions, TimeProvider.System);
         JsonInstanceInfo jsonInstance = instance.ToJson();
 
         Assert.Equal(instanceOptions.HostName, jsonInstance.HostName);
@@ -515,8 +515,8 @@ public sealed class InstanceInfoTest
     [Fact]
     public void Equals_Equals()
     {
-        var info1 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo());
-        var info2 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo());
+        var info1 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
+        var info2 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
 
         Assert.True(info1.Equals(info2));
     }
@@ -524,8 +524,8 @@ public sealed class InstanceInfoTest
     [Fact]
     public void Equals_NotEqual()
     {
-        var info1 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo());
-        var info2 = new InstanceInfo("foobar2", "app", "host", "127.0.0.1", new DataCenterInfo());
+        var info1 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
+        var info2 = new InstanceInfo("foobar2", "app", "host", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
 
         Assert.False(info1.Equals(info2));
     }
@@ -533,7 +533,7 @@ public sealed class InstanceInfoTest
     [Fact]
     public void Equals_NotEqual_DiffTypes()
     {
-        var info1 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo());
+        var info1 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
 
         // ReSharper disable once SuspiciousTypeConversion.Global
         Assert.False(info1.Equals(this));

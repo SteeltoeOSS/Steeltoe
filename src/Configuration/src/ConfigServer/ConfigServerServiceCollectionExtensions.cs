@@ -47,6 +47,7 @@ public static class ConfigServerServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
+        services.TryAddSingleton(TimeProvider.System);
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHealthContributor, ConfigServerHealthContributor>());
 
         return services;

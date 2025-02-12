@@ -12,7 +12,7 @@ public sealed class EurekaServiceInstanceTest
     [Fact]
     public void InstanceWithBothPorts()
     {
-        var instance = new InstanceInfo("id", "app", "host", "127.0.0.1", new DataCenterInfo())
+        var instance = new InstanceInfo("id", "app", "host", "127.0.0.1", new DataCenterInfo(), TimeProvider.System)
         {
             NonSecurePort = 8888,
             IsNonSecurePortEnabled = true,
@@ -37,7 +37,7 @@ public sealed class EurekaServiceInstanceTest
     [Fact]
     public void InstanceWithSecurePort()
     {
-        var instance = new InstanceInfo("id", "app", "host", "127.0.0.1", new DataCenterInfo())
+        var instance = new InstanceInfo("id", "app", "host", "127.0.0.1", new DataCenterInfo(), TimeProvider.System)
         {
             NonSecurePort = 8888,
             IsNonSecurePortEnabled = false,
@@ -55,7 +55,7 @@ public sealed class EurekaServiceInstanceTest
     [Fact]
     public void InstanceWithNonSecurePort()
     {
-        var instance = new InstanceInfo("id", "app", "host", "127.0.0.1", new DataCenterInfo())
+        var instance = new InstanceInfo("id", "app", "host", "127.0.0.1", new DataCenterInfo(), TimeProvider.System)
         {
             NonSecurePort = 8888,
             IsNonSecurePortEnabled = true,
@@ -73,7 +73,7 @@ public sealed class EurekaServiceInstanceTest
     [Fact]
     public void InstanceWithoutPort()
     {
-        var instance = new InstanceInfo("id", "app", "host", "127.0.0.1", new DataCenterInfo())
+        var instance = new InstanceInfo("id", "app", "host", "127.0.0.1", new DataCenterInfo(), TimeProvider.System)
         {
             NonSecurePort = 8888,
             IsNonSecurePortEnabled = false,

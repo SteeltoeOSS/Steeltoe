@@ -21,24 +21,27 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IOptionsMonitor<HealthEndpointOptions> _healthOptionsMonitor;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly TimeProvider _timeProvider;
     private readonly ILogger<SpringBootAdminClientHostedService> _logger;
 
     internal RegistrationResult? RegistrationResult { get; private set; }
 
     public SpringBootAdminClientHostedService(IOptionsMonitor<SpringBootAdminClientOptions> clientOptionsMonitor,
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor, IOptionsMonitor<HealthEndpointOptions> healthOptionsMonitor,
-        IHttpClientFactory httpClientFactory, ILogger<SpringBootAdminClientHostedService> logger)
+        IHttpClientFactory httpClientFactory, TimeProvider timeProvider, ILogger<SpringBootAdminClientHostedService> logger)
     {
         ArgumentNullException.ThrowIfNull(clientOptionsMonitor);
         ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
         ArgumentNullException.ThrowIfNull(healthOptionsMonitor);
         ArgumentNullException.ThrowIfNull(httpClientFactory);
+        ArgumentNullException.ThrowIfNull(timeProvider);
         ArgumentNullException.ThrowIfNull(logger);
 
         _clientOptionsMonitor = clientOptionsMonitor;
         _managementOptionsMonitor = managementOptionsMonitor;
         _healthOptionsMonitor = healthOptionsMonitor;
         _httpClientFactory = httpClientFactory;
+        _timeProvider = timeProvider;
         _logger = logger;
     }
 
@@ -98,7 +101,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
 
         var metadata = new Dictionary<string, object>
         {
-            { "startup", DateTime.UtcNow }
+            { "startup", _timeProvider.GetUtcNow().UtcDateTime }
         };
 
         return new Application(applicationName, managementUriBuilder.Uri, healthUriBuilder.Uri, baseUri, metadata);

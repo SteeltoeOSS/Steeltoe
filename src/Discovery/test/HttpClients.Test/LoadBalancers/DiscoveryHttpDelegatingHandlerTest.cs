@@ -21,7 +21,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var handler = new DiscoveryHttpDelegatingHandler<FakeLoadBalancer>(serviceProvider)
+        var handler = new DiscoveryHttpDelegatingHandler<FakeLoadBalancer>(serviceProvider, TimeProvider.System)
         {
             InnerHandler = new TestInnerDelegatingHandler()
         };
@@ -45,7 +45,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var handler = new DiscoveryHttpDelegatingHandler<FakeLoadBalancer>(serviceProvider)
+        var handler = new DiscoveryHttpDelegatingHandler<FakeLoadBalancer>(serviceProvider, TimeProvider.System)
         {
             InnerHandler = new TestInnerDelegatingHandler
             {
@@ -72,7 +72,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var handler = new DiscoveryHttpDelegatingHandler<BrokenLoadBalancer>(serviceProvider)
+        var handler = new DiscoveryHttpDelegatingHandler<BrokenLoadBalancer>(serviceProvider, TimeProvider.System)
         {
             InnerHandler = new TestInnerDelegatingHandler()
         };
@@ -96,7 +96,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var handler = new DiscoveryHttpDelegatingHandler<FakeLoadBalancer>(serviceProvider)
+        var handler = new DiscoveryHttpDelegatingHandler<FakeLoadBalancer>(serviceProvider, TimeProvider.System)
         {
             InnerHandler = new TestInnerDelegatingHandlerBrokenServer()
         };

@@ -249,7 +249,7 @@ public sealed class EurekaDiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        var instance = new InstanceInfo("localhost:foo", "FOO", "localhost", "192.168.56.1", new DataCenterInfo())
+        var instance = new InstanceInfo("localhost:foo", "FOO", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
         {
             Status = InstanceStatus.Starting
         };
@@ -439,13 +439,13 @@ public sealed class EurekaDiscoveryClientTest
 
         discoveryClient.Applications = new ApplicationInfoCollection([
             new ApplicationInfo("app1", [
-                new InstanceInfo("id1", "app1", "localhost", "192.168.56.1", new DataCenterInfo())
+                new InstanceInfo("id1", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
                     VipAddress = "vapp1",
                     SecureVipAddress = "svapp1",
                     Status = InstanceStatus.Down
                 },
-                new InstanceInfo("id2", "app1", "localhost", "192.168.56.1", new DataCenterInfo())
+                new InstanceInfo("id2", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
                     VipAddress = "vapp1",
                     SecureVipAddress = "svapp1",
@@ -453,13 +453,13 @@ public sealed class EurekaDiscoveryClientTest
                 }
             ]),
             new ApplicationInfo("app2", [
-                new InstanceInfo("id21", "app2", "localhost", "192.168.56.1", new DataCenterInfo())
+                new InstanceInfo("id21", "app2", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
                     VipAddress = "vapp2",
                     SecureVipAddress = "svapp2",
                     Status = InstanceStatus.Up
                 },
-                new InstanceInfo("id22", "app2", "localhost", "192.168.56.1", new DataCenterInfo())
+                new InstanceInfo("id22", "app2", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
                     VipAddress = "vapp2",
                     SecureVipAddress = "svapp2",
@@ -506,13 +506,13 @@ public sealed class EurekaDiscoveryClientTest
 
         discoveryClient.Applications = new ApplicationInfoCollection([
             new ApplicationInfo("app1", [
-                new InstanceInfo("id1", "app1", "localhost", "192.168.56.1", new DataCenterInfo())
+                new InstanceInfo("id1", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
                     VipAddress = "vapp1",
                     SecureVipAddress = "svapp1",
                     Status = InstanceStatus.Down
                 },
-                new InstanceInfo("id2", "app1", "localhost", "192.168.56.1", new DataCenterInfo())
+                new InstanceInfo("id2", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
                     VipAddress = "vapp1",
                     SecureVipAddress = "svapp1",
@@ -520,13 +520,13 @@ public sealed class EurekaDiscoveryClientTest
                 }
             ]),
             new ApplicationInfo("app2", [
-                new InstanceInfo("id1", "app2", "localhost", "192.168.56.1", new DataCenterInfo())
+                new InstanceInfo("id1", "app2", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
                     VipAddress = "vapp1",
                     SecureVipAddress = "svapp1",
                     Status = InstanceStatus.Up
                 },
-                new InstanceInfo("id2", "app2", "localhost", "192.168.56.1", new DataCenterInfo())
+                new InstanceInfo("id2", "app2", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
                     VipAddress = "vapp1",
                     SecureVipAddress = "svapp1",

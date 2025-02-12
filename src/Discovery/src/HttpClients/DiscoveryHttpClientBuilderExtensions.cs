@@ -48,7 +48,13 @@ public static class DiscoveryHttpClientBuilderExtensions
             builder.Services.AddSingleton<ServiceInstancesResolver>();
         }
 
-        builder.AddHttpMessageHandler(serviceProvider => new DiscoveryHttpDelegatingHandler<TLoadBalancer>(serviceProvider));
+        builder.Services.TryAddSingleton(TimeProvider.System);
+
+        builder.AddHttpMessageHandler(serviceProvider =>
+        {
+            var timeProvider = serviceProvider.GetRequiredService<TimeProvider>();
+            return new DiscoveryHttpDelegatingHandler<TLoadBalancer>(serviceProvider, timeProvider);
+        });
 
         return builder;
     }

@@ -44,6 +44,7 @@ public static class EndpointServiceCollectionExtensions
         services.AddCoreActuatorServices<HttpExchangesEndpointOptions, ConfigureHttpExchangesEndpointOptions, HttpExchangesEndpointMiddleware,
             IHttpExchangesEndpointHandler, HttpExchangesEndpointHandler, object?, HttpExchangesResult>(configureMiddleware);
 
+        services.TryAddSingleton(TimeProvider.System);
         services.TryAddSingleton<DiagnosticsManager>();
         services.AddHostedService<DiagnosticsService>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<DiagnosticObserver, HttpExchangesDiagnosticObserver>());
