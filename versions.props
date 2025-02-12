@@ -21,6 +21,7 @@
     <NewtonsoftJsonVersion>13.0.3</NewtonsoftJsonVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
     <RabbitClientTestVersion>7.0.*</RabbitClientTestVersion>
+    <ReproducibleBuildsVersion>1.2.25</ReproducibleBuildsVersion>
     <SerilogEnrichersThreadVersion>4.0.*</SerilogEnrichersThreadVersion>
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
     <SonarAnalyzerVersion>10.6.0.109712</SonarAnalyzerVersion>
