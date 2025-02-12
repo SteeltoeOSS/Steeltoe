@@ -332,8 +332,8 @@ public sealed class RabbitMQConnectorTest
 
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
-        RabbitMQHealthContributor[] rabbitMQHealthContributors = healthContributors.Should().AllBeOfType<RabbitMQHealthContributor>().Subject.ToArray();
+        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
+        RabbitMQHealthContributor[] rabbitMQHealthContributors = [.. healthContributors.Should().AllBeOfType<RabbitMQHealthContributor>().Subject];
         rabbitMQHealthContributors.Should().HaveCount(2);
 
         rabbitMQHealthContributors[0].Id.Should().Be("RabbitMQ");

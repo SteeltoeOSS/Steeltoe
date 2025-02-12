@@ -39,7 +39,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         builder.Services.AddEurekaDiscoveryClient();
 
         await using WebApplication host = builder.Build();
-        IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
+        IDiscoveryClient[] discoveryClients = [.. host.Services.GetServices<IDiscoveryClient>()];
 
         Assert.Single(discoveryClients);
         Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
@@ -55,7 +55,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
 
         await using WebApplication host = builder.Build();
 
-        IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
+        IDiscoveryClient[] discoveryClients = [.. host.Services.GetServices<IDiscoveryClient>()];
         Assert.Single(discoveryClients);
         Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
         Assert.Single(host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>());

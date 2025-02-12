@@ -336,7 +336,7 @@ public sealed class HostBuilderExtensionsTest
 
     private static void AssertServiceDiscoveryClientsAreAutowired(HostWrapper hostWrapper)
     {
-        IDiscoveryClient[] discoveryClients = hostWrapper.Services.GetServices<IDiscoveryClient>().ToArray();
+        IDiscoveryClient[] discoveryClients = [.. hostWrapper.Services.GetServices<IDiscoveryClient>()];
 
         discoveryClients.Should().HaveCount(3);
         discoveryClients.Should().ContainSingle(discoveryClient => discoveryClient is ConfigurationDiscoveryClient);

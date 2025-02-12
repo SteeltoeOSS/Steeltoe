@@ -50,7 +50,7 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
         using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
         _ = provider.CreateLogger("A.B.C.D.Example");
 
-        string[] loggerStates = provider.GetLogLevels().Select(state => state.ToString()).ToArray();
+        string[] loggerStates = [.. provider.GetLogLevels().Select(state => state.ToString())];
 
         loggerStates.Should().HaveCount(6);
         loggerStates.Should().Contain("Default: Information");

@@ -169,7 +169,7 @@ public sealed class ConfigureCertificateOptionsTest
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);
 
-        IOptionsChangeTokenSource<CertificateOptions>[] tokenSources = serviceProvider.GetServices<IOptionsChangeTokenSource<CertificateOptions>>().ToArray();
+        IOptionsChangeTokenSource<CertificateOptions>[] tokenSources = [.. serviceProvider.GetServices<IOptionsChangeTokenSource<CertificateOptions>>()];
         tokenSources.OfType<FilePathInOptionsChangeTokenSource<CertificateOptions>>().Should().HaveCount(2);
         IChangeToken changeToken = tokenSources.OfType<ConfigurationChangeTokenSource<CertificateOptions>>().Single().GetChangeToken();
 

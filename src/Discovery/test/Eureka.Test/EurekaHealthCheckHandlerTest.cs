@@ -147,7 +147,7 @@ public sealed class EurekaHealthCheckHandlerTest
 
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
-        IDiscoveryClient[] discoveryClients = app.Services.GetServices<IDiscoveryClient>().ToArray();
+        IDiscoveryClient[] discoveryClients = [.. app.Services.GetServices<IDiscoveryClient>()];
         Assert.Single(discoveryClients);
 
         await Task.Delay(TimeSpan.FromSeconds(2));

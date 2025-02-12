@@ -37,9 +37,8 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         var handler = serviceProvider.GetService<IHttpExchangesEndpointHandler>();
         handler.Should().NotBeNull();
 
-        IEnumerable<DiagnosticObserver> observers = serviceProvider.GetServices<DiagnosticObserver>();
-        List<DiagnosticObserver> list = observers.ToList();
-        list.Should().ContainSingle();
-        list[0].Should().BeOfType<HttpExchangesDiagnosticObserver>();
+        List<DiagnosticObserver> observers = [.. serviceProvider.GetServices<DiagnosticObserver>()];
+        observers.Should().ContainSingle();
+        observers[0].Should().BeOfType<HttpExchangesDiagnosticObserver>();
     }
 }

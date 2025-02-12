@@ -31,10 +31,10 @@ public sealed class ConfigureOptionsTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IConfigureOptions<ManagementOptions>[] configurers = serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>().ToArray();
+        IConfigureOptions<ManagementOptions>[] configurers = [.. serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>()];
         configurers.Should().ContainSingle();
 
-        IOptionsChangeTokenSource<ManagementOptions>[] tokenSources = serviceProvider.GetServices<IOptionsChangeTokenSource<ManagementOptions>>().ToArray();
+        IOptionsChangeTokenSource<ManagementOptions>[] tokenSources = [.. serviceProvider.GetServices<IOptionsChangeTokenSource<ManagementOptions>>()];
         tokenSources.Should().ContainSingle();
     }
 
@@ -51,7 +51,7 @@ public sealed class ConfigureOptionsTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IConfigureOptions<ManagementOptions>[] configurers = serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>().ToArray();
+        IConfigureOptions<ManagementOptions>[] configurers = [.. serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>()];
         configurers.Should().HaveCount(2);
         configurers.OfType<ConfigureManagementOptions>().Should().ContainSingle();
         configurers.OfType<CustomManagementOptionsConfigurer>().Should().ContainSingle();
@@ -73,7 +73,7 @@ public sealed class ConfigureOptionsTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IConfigureOptions<ManagementOptions>[] configurers = serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>().ToArray();
+        IConfigureOptions<ManagementOptions>[] configurers = [.. serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>()];
         configurers.Should().HaveCount(2);
         configurers.OfType<ConfigureManagementOptions>().Should().ContainSingle();
         configurers.OfType<CustomManagementOptionsConfigurer>().Should().ContainSingle();

@@ -27,8 +27,11 @@ public sealed class EmptyAutoConfigurationTest
             "Steeltoe.Common.TestResources.dll"
         };
 
-        string[] files = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "Steeltoe*.dll").Select(Path.GetFileName).Select(fileName => fileName!)
-            .Where(fileName => !whitelist.Contains(fileName)).ToArray();
+        string[] files =
+        [
+            .. Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "Steeltoe*.dll").Select(Path.GetFileName).Select(fileName => fileName!)
+                .Where(fileName => !whitelist.Contains(fileName))
+        ];
 
         files.Should().BeEmpty();
     }

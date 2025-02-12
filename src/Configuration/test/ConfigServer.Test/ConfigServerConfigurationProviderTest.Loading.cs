@@ -109,7 +109,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
+        TestConfigServerStartup.ReturnStatus = [.. Enumerable.Repeat(200, 100)];
         TestConfigServerStartup.Label = "test-label";
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
@@ -157,7 +157,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Response = environment;
 
         // Initial requests succeed, but later requests return 400 status code so that an exception is thrown during polling
-        TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 2).Concat(Enumerable.Repeat(400, 100)).ToArray();
+        TestConfigServerStartup.ReturnStatus = [.. Enumerable.Repeat(200, 2).Concat(Enumerable.Repeat(400, 100))];
         TestConfigServerStartup.Label = "test-label";
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();
@@ -205,7 +205,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
+        TestConfigServerStartup.ReturnStatus = [.. Enumerable.Repeat(200, 100)];
         TestConfigServerStartup.Label = "test-label";
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestConfigServerStartup>();

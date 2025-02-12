@@ -34,7 +34,7 @@ public sealed class HostBuilderTests : IDisposable
         builder.Logging.AddDynamicSerilog();
         await using WebApplication host = builder.Build();
 
-        ILoggerProvider[] loggerProviders = host.Services.GetServices<ILoggerProvider>().ToArray();
+        ILoggerProvider[] loggerProviders = [.. host.Services.GetServices<ILoggerProvider>()];
         loggerProviders.OfType<ConsoleLoggerProvider>().Should().BeEmpty();
         loggerProviders.OfType<DynamicSerilogLoggerProvider>().Should().ContainSingle();
 
@@ -49,7 +49,7 @@ public sealed class HostBuilderTests : IDisposable
         builder.Logging.AddDynamicSerilog();
         await using WebApplication host = builder.Build();
 
-        ILoggerProvider[] loggerProviders = host.Services.GetServices<ILoggerProvider>().ToArray();
+        ILoggerProvider[] loggerProviders = [.. host.Services.GetServices<ILoggerProvider>()];
         loggerProviders.OfType<DynamicSerilogLoggerProvider>().Should().ContainSingle();
 
         host.Services.GetService<IDynamicLoggerProvider>().Should().BeOfType<DynamicSerilogLoggerProvider>();

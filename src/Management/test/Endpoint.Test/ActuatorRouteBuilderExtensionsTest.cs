@@ -28,8 +28,11 @@ public sealed class ActuatorRouteBuilderExtensionsTest
     {
         get
         {
-            List<Type> endpointOptionsTypes = typeof(ConfigureEndpointOptions<>).Assembly.GetTypes()
-                .Where(type => type.IsAssignableTo(typeof(EndpointOptions)) && type != typeof(CloudFoundryEndpointOptions)).ToList();
+            List<Type> endpointOptionsTypes =
+            [
+                .. typeof(ConfigureEndpointOptions<>).Assembly.GetTypes().Where(type =>
+                    type.IsAssignableTo(typeof(EndpointOptions)) && type != typeof(CloudFoundryEndpointOptions))
+            ];
 
             TheoryData<RegistrationMode, Type> theoryData = [];
 

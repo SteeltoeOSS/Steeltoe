@@ -76,7 +76,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
         var timer = new Stopwatch();
         timer.Start();
 
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
+        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
         Assert.Single(discoveryClients);
 
         timer.Stop();
@@ -219,7 +219,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
+        IHostedService[] hostedServices = [.. serviceProvider.GetServices<IHostedService>()];
         hostedServices.OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 }

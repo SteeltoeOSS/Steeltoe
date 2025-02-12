@@ -657,7 +657,7 @@ public sealed class ActuatorsHostBuilderTest
         host.Services.GetServices<IEndpointOptionsMonitorProvider>().Should().HaveCount(actuatorCount);
         host.Services.GetServices<IEndpointMiddleware>().Should().HaveCount(actuatorCount);
 
-        IStartupFilter[] startupFilters = host.Services.GetServices<IStartupFilter>().ToArray();
+        IStartupFilter[] startupFilters = [.. host.Services.GetServices<IStartupFilter>()];
         startupFilters.Should().ContainSingle(filter => filter is ConfigureActuatorsMiddlewareStartupFilter);
         startupFilters.Should().ContainSingle(filter => filter is ManagementPortStartupFilter);
         startupFilters.Should().ContainSingle(filter => filter is AvailabilityStartupFilter);

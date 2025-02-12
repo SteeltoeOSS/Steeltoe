@@ -255,8 +255,8 @@ public sealed class MongoDbConnectorTest
 
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
-        MongoDbHealthContributor[] mongoDbHealthContributors = healthContributors.Should().AllBeOfType<MongoDbHealthContributor>().Subject.ToArray();
+        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
+        MongoDbHealthContributor[] mongoDbHealthContributors = [.. healthContributors.Should().AllBeOfType<MongoDbHealthContributor>().Subject];
         mongoDbHealthContributors.Should().HaveCount(2);
 
         mongoDbHealthContributors[0].Id.Should().Be("MongoDB");
