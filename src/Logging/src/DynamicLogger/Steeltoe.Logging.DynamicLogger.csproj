@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Steeltoe Dynamic Console Logger</Description>
+    <Description>Manage minimum logging levels at runtime using ConsoleLogger.</Description>
     <PackageTags>logging;dynamic-logging;console;log-management;monitoring</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>

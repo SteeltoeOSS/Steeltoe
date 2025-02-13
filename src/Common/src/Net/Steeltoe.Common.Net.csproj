@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Steeltoe common library for network interaction</Description>
-    <PackageTags>Windows-file-sharing; network-file-system</PackageTags>
+    <Description>Abstractions and code for using Windows network files shares.</Description>
+    <PackageTags>Windows-file-sharing;SMB;CIFS</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

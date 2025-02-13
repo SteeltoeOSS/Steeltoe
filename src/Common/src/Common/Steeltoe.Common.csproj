@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Steeltoe common library</Description>
-    <PackageTags>health;health-checks;service-discovery;network</PackageTags>
+    <Description>Abstractions and code shared by many Steeltoe components.</Description>
+    <PackageTags>common;utility</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

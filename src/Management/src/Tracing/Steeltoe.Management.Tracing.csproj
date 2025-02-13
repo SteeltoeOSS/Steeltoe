@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Enables request tracing in distributed systems.</Description>
-    <PackageTags>management;monitoring;distributed tracing</PackageTags>
+    <Description>Adds trace information to logging output in distributed systems.</Description>
+    <PackageTags>management;monitoring;distributed;tracing;</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\Endpoint\Steeltoe.Management.Endpoint.csproj" />
+    <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Logging.DynamicLogger.csproj" />
   </ItemGroup>
 </Project>

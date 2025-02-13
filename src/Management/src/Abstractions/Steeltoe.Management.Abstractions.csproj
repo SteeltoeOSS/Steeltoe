@@ -2,8 +2,8 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Management</RootNamespace>
-    <Description>Abstractions for application management and monitoring</Description>
-    <PackageTags>abstractions;log-management;monitoring;actuator</PackageTags>
+    <Description>Abstractions for application management and monitoring.</Description>
+    <PackageTags>abstractions;actuator</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

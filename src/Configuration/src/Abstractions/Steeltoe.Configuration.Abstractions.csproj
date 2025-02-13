@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Configuration</RootNamespace>
-    <Description>Abstractions used in Steeltoe Configuration libraries</Description>
+    <Description>Abstractions and code shared by Steeltoe Configuration libraries.</Description>
     <PackageTags>abstractions;configuration</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
