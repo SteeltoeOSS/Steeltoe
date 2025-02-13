@@ -41,7 +41,7 @@ using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Logging;
-using Steeltoe.Logging.DynamicLogger;
+using Steeltoe.Logging.DynamicConsole;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
@@ -171,7 +171,7 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.HostApplication)]
     public async Task DynamicConsoleLogger_IsAutowired(HostBuilderType hostBuilderType)
     {
-        await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.LoggingDynamicLogger, hostBuilderType);
+        await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.LoggingDynamicConsole, hostBuilderType);
 
         AssertDynamicConsoleIsAutowired(hostWrapper);
     }

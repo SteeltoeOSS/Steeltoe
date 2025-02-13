@@ -11,7 +11,7 @@
       "Configuration\\src\\CloudFoundry\\Steeltoe.Configuration.CloudFoundry.csproj",
       "Configuration\\src\\Placeholder\\Steeltoe.Configuration.Placeholder.csproj",
       "Logging\\src\\Abstractions\\Steeltoe.Logging.Abstractions.csproj",
-      "Logging\\src\\DynamicLogger\\Steeltoe.Logging.DynamicLogger.csproj",
+      "Logging\\src\\DynamicConsole\\Steeltoe.Logging.DynamicConsole.csproj",
       "Logging\\src\\DynamicSerilog\\Steeltoe.Logging.DynamicSerilog.csproj",
       "Management\\src\\Abstractions\\Steeltoe.Management.Abstractions.csproj",
       "Management\\src\\Endpoint\\Steeltoe.Management.Endpoint.csproj",

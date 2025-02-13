@@ -7,6 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Logging\Steeltoe.Common.Logging.csproj" />
-    <ProjectReference Include="..\..\src\DynamicLogger\Steeltoe.Logging.DynamicLogger.csproj" />
+    <ProjectReference Include="..\..\src\DynamicConsole\Steeltoe.Logging.DynamicConsole.csproj" />
   </ItemGroup>
 </Project>

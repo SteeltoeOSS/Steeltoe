@@ -102,9 +102,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Consul.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Eureka.Test", "Discovery\test\Eureka.Test\Steeltoe.Discovery.Eureka.Test.csproj", "{23B95817-4183-4B42-BF27-EA575184DB2D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Logging.DynamicLogger", "Logging\src\DynamicLogger\Steeltoe.Logging.DynamicLogger.csproj", "{43DC1B99-588C-4984-AEAC-43AA5B47D84C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Logging.DynamicConsole", "Logging\src\DynamicConsole\Steeltoe.Logging.DynamicConsole.csproj", "{43DC1B99-588C-4984-AEAC-43AA5B47D84C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Logging.DynamicLogger.Test", "Logging\test\DynamicLogger.Test\Steeltoe.Logging.DynamicLogger.Test.csproj", "{04BC571A-0055-4B9B-805E-D2B0823C9D8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Logging.DynamicConsole.Test", "Logging\test\DynamicConsole.Test\Steeltoe.Logging.DynamicConsole.Test.csproj", "{04BC571A-0055-4B9B-805E-D2B0823C9D8D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Tasks", "Management\src\Tasks\Steeltoe.Management.Tasks.csproj", "{990DCEE9-D88F-4B9F-8298-678B524AC4D6}"
 EndProject
