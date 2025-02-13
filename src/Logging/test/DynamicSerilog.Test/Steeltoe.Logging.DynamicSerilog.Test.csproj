@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DynamicLogger\Steeltoe.Logging.DynamicLogger.csproj" />
+    <ProjectReference Include="..\..\src\DynamicConsole\Steeltoe.Logging.DynamicConsole.csproj" />
     <ProjectReference Include="..\..\src\DynamicSerilog\Steeltoe.Logging.DynamicSerilog.csproj" />
   </ItemGroup>
 </Project>

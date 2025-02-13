@@ -1,5 +1,0 @@
-#nullable enable
-static Steeltoe.Logging.DynamicLogger.LoggingBuilderExtensions.AddDynamicConsole(this Microsoft.Extensions.Logging.ILoggingBuilder! builder) -> Microsoft.Extensions.Logging.ILoggingBuilder!
-Steeltoe.Logging.DynamicLogger.DynamicConsoleLoggerProvider
-Steeltoe.Logging.DynamicLogger.DynamicConsoleLoggerProvider.DynamicConsoleLoggerProvider(Microsoft.Extensions.Options.IOptionsMonitor<Microsoft.Extensions.Logging.LoggerFilterOptions!>! filterOptionsMonitor, Microsoft.Extensions.Logging.Console.ConsoleLoggerProvider! consoleLoggerProvider, System.Collections.Generic.IEnumerable<Steeltoe.Logging.IDynamicMessageProcessor!>! messageProcessors) -> void
-Steeltoe.Logging.DynamicLogger.LoggingBuilderExtensions

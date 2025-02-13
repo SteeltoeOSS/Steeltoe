@@ -6,9 +6,9 @@
       "Common\\src\\Hosting\\Steeltoe.Common.Hosting.csproj",
       "Common\\test\\TestResources\\Steeltoe.Common.TestResources.csproj",
       "Logging\\src\\Abstractions\\Steeltoe.Logging.Abstractions.csproj",
-      "Logging\\src\\DynamicLogger\\Steeltoe.Logging.DynamicLogger.csproj",
+      "Logging\\src\\DynamicConsole\\Steeltoe.Logging.DynamicConsole.csproj",
       "Logging\\src\\DynamicSerilog\\Steeltoe.Logging.DynamicSerilog.csproj",
-      "Logging\\test\\DynamicLogger.Test\\Steeltoe.Logging.DynamicLogger.Test.csproj",
+      "Logging\\test\\DynamicConsole.Test\\Steeltoe.Logging.DynamicConsole.Test.csproj",
       "Logging\\test\\DynamicSerilog.Test\\Steeltoe.Logging.DynamicSerilog.Test.csproj",
       "Tools\\src\\ConfigurationSchemaGenerator\\ConfigurationSchemaGenerator.csproj"
     ]

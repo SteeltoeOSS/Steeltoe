@@ -18,7 +18,7 @@
     <ProjectReference Include="..\..\..\Common\src\Hosting\Steeltoe.Common.Hosting.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Logging.DynamicLogger.csproj" />
+    <ProjectReference Include="..\..\..\Logging\src\DynamicConsole\Steeltoe.Logging.DynamicConsole.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
   </ItemGroup>
 </Project>

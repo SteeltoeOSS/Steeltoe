@@ -25,8 +25,9 @@
     <ProjectReference Include="..\..\..\Discovery\src\Configuration\Steeltoe.Discovery.Configuration.csproj" />
     <ProjectReference Include="..\..\..\Discovery\src\Consul\Steeltoe.Discovery.Consul.csproj" />
     <ProjectReference Include="..\..\..\Discovery\src\Eureka\Steeltoe.Discovery.Eureka.csproj" />
-    <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Logging.DynamicLogger.csproj" />
+    <ProjectReference Include="..\..\..\Logging\src\DynamicConsole\Steeltoe.Logging.DynamicConsole.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicSerilog\Steeltoe.Logging.DynamicSerilog.csproj" />
+    <ProjectReference Include="..\..\..\Management\src\Endpoint\Steeltoe.Management.Endpoint.csproj" />
     <ProjectReference Include="..\..\..\Management\src\Prometheus\Steeltoe.Management.Prometheus.csproj" />
     <ProjectReference Include="..\..\..\Management\src\Tracing\Steeltoe.Management.Tracing.csproj" />
     <ProjectReference Include="..\..\src\AutoConfiguration\Steeltoe.Bootstrap.AutoConfiguration.csproj" />

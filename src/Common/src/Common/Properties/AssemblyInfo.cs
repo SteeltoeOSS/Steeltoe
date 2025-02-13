@@ -29,7 +29,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.HttpClients")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.HttpClients.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Logging.Abstractions")]
-[assembly: InternalsVisibleTo("Steeltoe.Logging.DynamicLogger")]
+[assembly: InternalsVisibleTo("Steeltoe.Logging.DynamicConsole")]
 [assembly: InternalsVisibleTo("Steeltoe.Logging.DynamicSerilog")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Abstractions")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]
