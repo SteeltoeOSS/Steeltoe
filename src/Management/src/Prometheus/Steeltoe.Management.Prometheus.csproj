@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Adds Prometheus support for Steeltoe management endpoints</Description>
-    <PackageTags>actuators;management;monitoring;distributed tracing;metrics;prometheus</PackageTags>
+    <Description>Adds Prometheus support for Steeltoe management endpoints.</Description>
+    <PackageTags>actuator;actuators;management;monitoring;metrics;prometheus;tanzu;appmetrics;aspnetcore;</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

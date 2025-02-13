@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Logging.DynamicLogger;
+using Steeltoe.Logging.DynamicConsole;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Loggers;
 

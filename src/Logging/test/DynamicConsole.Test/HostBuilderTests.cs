@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.Logging;
 using Steeltoe.Common.TestResources;
 
-namespace Steeltoe.Logging.DynamicLogger.Test;
+namespace Steeltoe.Logging.DynamicConsole.Test;
 
 public sealed class HostBuilderTests
 {

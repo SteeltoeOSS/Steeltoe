@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.TestResources;
 
-namespace Steeltoe.Logging.DynamicLogger.Test;
+namespace Steeltoe.Logging.DynamicConsole.Test;
 
 public sealed class DynamicConsoleLoggerProviderTest : IDisposable
 {

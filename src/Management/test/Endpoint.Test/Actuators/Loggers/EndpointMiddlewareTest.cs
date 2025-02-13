@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Logging.DynamicLogger;
+using Steeltoe.Logging.DynamicConsole;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
 using Steeltoe.Management.Endpoint.Configuration;
 
