@@ -16,13 +16,13 @@ Key features include:
 
 ## Getting Started
 
-In addition to the [documentation site](https://docs.steeltoe.io), we have built several tools to help you get started:
+In addition to the [feature documentation](https://docs.steeltoe.io/api), we have built several tools to help you get started:
 
 - [Steeltoe Initializr](https://start.steeltoe.io) - Pick and choose what type of application you would like to build and let us generate the initial project for you
-  - The Initializr uses [.NET templates](https://github.com/SteeltoeOSS/NetCoreToolTemplates) that can also be used from the `dotnet` CLI and inside of Visual Studio
+  - Initializr uses [.NET templates](https://github.com/SteeltoeOSS/NetCoreToolTemplates) that can also be used from the `dotnet` CLI and inside of Visual Studio
 - [Steeltoe Samples](https://github.com/SteeltoeOSS/Samples) - Here we have working samples for trying out features and to use as code references
 
-### Framework Targets
+### Prerequisites
 
 | Steeltoe Version | .NET Version |
 | --- | --- |
@@ -30,17 +30,15 @@ In addition to the [documentation site](https://docs.steeltoe.io), we have built
 | 3.x | .NET Core 3.1 - .NET 6 |
 | 2.x | .NET Framework 4.6.1+ |
 
-## Feedback and Support
+## Support and Feedback
 
-For community support, we recommend [Steeltoe OSS Slack](https://slack.steeltoe.io) or [StackOverflow](https://stackoverflow.com/questions/tagged/steeltoe)
+For community support, we recommend [Steeltoe OSS Slack](https://slack.steeltoe.io), [StackOverflow](https://stackoverflow.com/questions/tagged/steeltoe), or [open an issue](https://github.com/SteeltoeOSS/Steeltoe/issues/new/choose).
 
-For production support, we recommend you reach out to [Broadcom Support](https://support.broadcom.com/).
-
-For other questions or feedback, [open an issue](https://github.com/SteeltoeOSS/Steeltoe/issues/new/choose).
+For production support, we recommend that you contact [Broadcom Support](https://support.broadcom.com/).
 
 ## Pre-release packages
 
-Whether you are working with the team on validating a bugfix or just want to try the latest version available, you can use the Steeltoe development feed by adding a reference in your nuget.config file:
+If you want to try the latest bits from the `main` branch, use the Steeltoe development feed by adding a reference to your `nuget.config` file:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -56,7 +54,7 @@ Whether you are working with the team on validating a bugfix or just want to try
 
 For more information on contributing to the project or other project information, please see the [Steeltoe Wiki](https://github.com/SteeltoeOSS/Steeltoe/wiki).
 
-### Conduct
+### Code of Conduct
 
 This project has adopted the code of conduct defined by the Contributor Covenant to clarify expected behavior in our community.
 For more information see the [.NET Foundation Code of Conduct](https://dotnetfoundation.org/code-of-conduct).
