@@ -22,9 +22,13 @@ In addition to the [documentation site](https://docs.steeltoe.io), we have built
   - The Initializr uses [.NET templates](https://github.com/SteeltoeOSS/NetCoreToolTemplates) that can also be used from the `dotnet` CLI and inside of Visual Studio
 - [Steeltoe Samples](https://github.com/SteeltoeOSS/Samples) - Here we have working samples for trying out features and to use as code references
 
-## Contributing
+### Framework Targets
 
-For more information on contributing to the project or other project information, please see the [Steeltoe Wiki](https://github.com/SteeltoeOSS/Steeltoe/wiki).
+| Steeltoe Version | .NET Version |
+| --- | --- |
+| 4.x | .NET 8 - 9 |
+| 3.x | .NET Core 3.1 - .NET 6 |
+| 2.x | .NET Framework 4.6.1+ |
 
 ## Feedback and Support
 
@@ -47,6 +51,10 @@ Whether you are working with the team on validating a bugfix or just want to try
   </packageSources>
 </configuration>
 ```
+
+## Contributing
+
+For more information on contributing to the project or other project information, please see the [Steeltoe Wiki](https://github.com/SteeltoeOSS/Steeltoe/wiki).
 
 ### Conduct
 
