@@ -25,7 +25,7 @@
   <PropertyGroup>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <DebugType>embedded</DebugType>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <EmbedAllSources>true</EmbedAllSources>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
