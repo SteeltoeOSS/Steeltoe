@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Logging;
-using Steeltoe.Logging.DynamicLogger;
+using Steeltoe.Logging.DynamicConsole;
 
 namespace Steeltoe.Management.Tracing;
 

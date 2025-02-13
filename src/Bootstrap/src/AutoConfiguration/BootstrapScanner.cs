@@ -30,7 +30,7 @@ using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
-using Steeltoe.Logging.DynamicLogger;
+using Steeltoe.Logging.DynamicConsole;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Prometheus;
@@ -78,7 +78,7 @@ internal sealed class BootstrapScanner
 
         if (!WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblyNames.LoggingDynamicSerilog))
         {
-            WireIfLoaded(WireDynamicConsole, SteeltoeAssemblyNames.LoggingDynamicLogger);
+            WireIfLoaded(WireDynamicConsole, SteeltoeAssemblyNames.LoggingDynamicConsole);
         }
 
         WireIfLoaded(WireDiscoveryConfiguration, SteeltoeAssemblyNames.DiscoveryConfiguration);

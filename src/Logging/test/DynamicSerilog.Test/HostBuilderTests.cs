@@ -12,7 +12,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Logging.DynamicLogger;
+using Steeltoe.Logging.DynamicConsole;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Steeltoe.Logging.DynamicSerilog.Test;

@@ -19,7 +19,7 @@
       "Discovery\\test\\Eureka.Test\\Steeltoe.Discovery.Eureka.Test.csproj",
       "Discovery\\test\\HttpClients.Test\\Steeltoe.Discovery.HttpClients.Test.csproj",
       "Logging\\src\\Abstractions\\Steeltoe.Logging.Abstractions.csproj",
-      "Logging\\src\\DynamicLogger\\Steeltoe.Logging.DynamicLogger.csproj",
+      "Logging\\src\\DynamicConsole\\Steeltoe.Logging.DynamicConsole.csproj",
       "Management\\src\\Abstractions\\Steeltoe.Management.Abstractions.csproj",
       "Management\\src\\Endpoint\\Steeltoe.Management.Endpoint.csproj",
       "Tools\\src\\ConfigurationSchemaGenerator\\ConfigurationSchemaGenerator.csproj"

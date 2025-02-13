@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 
-namespace Steeltoe.Logging.DynamicLogger;
+namespace Steeltoe.Logging.DynamicConsole;
 
 /// <summary>
 /// Implements <see cref="DynamicLoggerProvider" /> for logging to the console.
