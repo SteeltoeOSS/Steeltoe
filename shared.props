@@ -1,5 +1,4 @@
 <Project>
-  <Sdk Name="DotNet.ReproducibleBuilds.Isolated" Version="1.2.25" />
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
