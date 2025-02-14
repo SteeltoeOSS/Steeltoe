@@ -6,9 +6,9 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint;
 
-public interface IEndpointHandler<in TArgument, TResult>
+public interface IEndpointHandler<in TRequest, TResponse>
 {
     EndpointOptions Options { get; }
 
-    Task<TResult> InvokeAsync(TArgument argument, CancellationToken cancellationToken);
+    Task<TResponse> InvokeAsync(TRequest argument, CancellationToken cancellationToken);
 }
