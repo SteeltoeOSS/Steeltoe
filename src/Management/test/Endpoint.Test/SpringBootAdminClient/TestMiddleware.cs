@@ -22,7 +22,7 @@ public sealed class TestMiddleware : IMiddleware
     {
         if (context.Request.Path.Value?.EndsWith("instances", StringComparison.Ordinal) == true)
         {
-            var dictionary = await JsonSerializer.DeserializeAsync<Dictionary<string, object>>(context.Request.Body);
+            var dictionary = await JsonSerializer.DeserializeAsync<Dictionary<string, object>>(context.Request.Body, cancellationToken: context.RequestAborted);
             context.Response.Headers.Append("Content-Type", "application/json");
 
             bool isValid = dictionary != null && KeyNames.All(dictionary.ContainsKey);

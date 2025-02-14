@@ -32,40 +32,37 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
         return new HealthActuatorMetadataProvider(ContentType);
     }
 
-    protected override async Task<HealthEndpointResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override Task<HealthEndpointRequest?> ParseRequestAsync(HttpContext httpContext, CancellationToken cancellationToken)
     {
-        HealthEndpointOptions currentEndpointOptions = _endpointOptionsMonitor.CurrentValue;
-        string groupName = GetRequestedHealthGroup(context.Request.Path, currentEndpointOptions, _logger);
+        ArgumentNullException.ThrowIfNull(httpContext);
 
-        if (!IsValidGroup(groupName, currentEndpointOptions))
+        HealthEndpointRequest? request = null;
+        HealthEndpointOptions options = _endpointOptionsMonitor.CurrentValue;
+        string groupName = GetRequestedHealthGroup(httpContext.Request.Path, options);
+
+        if (IsValidGroup(groupName, options))
         {
-            return new HealthEndpointResponse
-            {
-                Exists = false
-            };
+            bool hasClaim = GetHasClaim(httpContext, options);
+            request = new HealthEndpointRequest(groupName, hasClaim);
         }
 
-        bool hasClaim = GetHasClaim(context, currentEndpointOptions);
-
-        var request = new HealthEndpointRequest(groupName, hasClaim);
-        return await EndpointHandler.InvokeAsync(request, context.RequestAborted);
+        return Task.FromResult(request);
     }
 
     /// <summary>
     /// Returns the last segment of the HTTP request path, which is expected to be the name of a configured health group.
     /// </summary>
-    private static string GetRequestedHealthGroup(PathString requestPath, HealthEndpointOptions endpointOptions, ILogger<HealthEndpointMiddleware> logger)
+    private string GetRequestedHealthGroup(PathString requestPath, HealthEndpointOptions endpointOptions)
     {
         string[] requestComponents = requestPath.Value?.Split('/') ?? [];
 
         if (requestComponents.Length > 0 && requestComponents[^1] != endpointOptions.Id)
         {
-            logger.LogTrace("Found group '{HealthGroup}' in the request path.", requestComponents[^1]);
+            _logger.LogTrace("Found group '{HealthGroup}' in the request path.", requestComponents[^1]);
             return requestComponents[^1];
         }
 
-        logger.LogTrace("Did not find a health group in the request path.");
-
+        _logger.LogTrace("Did not find a health group in the request path.");
         return string.Empty;
     }
 
@@ -80,20 +77,33 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
         return claim is { Type: not null, Value: not null } && context.User.HasClaim(claim.Type, claim.Value);
     }
 
-    protected override async Task WriteResponseAsync(HealthEndpointResponse result, HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<HealthEndpointResponse> InvokeEndpointHandlerAsync(HealthEndpointRequest? request, CancellationToken cancellationToken)
     {
-        if (!result.Exists)
+        if (request == null)
         {
-            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            return new HealthEndpointResponse
+            {
+                Exists = false
+            };
+        }
+
+        return await EndpointHandler.InvokeAsync(request, cancellationToken);
+    }
+
+    protected override async Task WriteResponseAsync(HealthEndpointResponse response, HttpContext httpContext, CancellationToken cancellationToken)
+    {
+        if (!response.Exists)
+        {
+            httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
             return;
         }
 
-        if (ManagementOptionsMonitor.CurrentValue.UseStatusCodeFromResponse || UseStatusCodeFromResponseInHeader(context.Request.Headers))
+        if (ManagementOptionsMonitor.CurrentValue.UseStatusCodeFromResponse || UseStatusCodeFromResponseInHeader(httpContext.Request.Headers))
         {
-            context.Response.StatusCode = ((HealthEndpointHandler)EndpointHandler).GetStatusCode(result);
+            httpContext.Response.StatusCode = ((HealthEndpointHandler)EndpointHandler).GetStatusCode(response);
         }
 
-        await base.WriteResponseAsync(result, context, cancellationToken);
+        await base.WriteResponseAsync(response, httpContext, cancellationToken);
     }
 
     private static bool UseStatusCodeFromResponseInHeader(IHeaderDictionary requestHeaders)

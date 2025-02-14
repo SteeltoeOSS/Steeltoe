@@ -15,33 +15,27 @@ internal sealed class HypermediaEndpointMiddleware(
     IActuatorEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
     : EndpointMiddleware<string, Links>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    private readonly ILogger _logger = loggerFactory.CreateLogger<HypermediaEndpointMiddleware>();
-
-    protected override async Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override Task<string?> ParseRequestAsync(HttpContext httpContext, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(httpContext);
 
-        _logger.LogDebug("InvokeAsync({Method}, {Path})", context.Request.Method, context.Request.Path.Value);
-        string requestUri = GetRequestUri(context.Request);
-        return await EndpointHandler.InvokeAsync(requestUri, cancellationToken);
-    }
-
-    private static string GetRequestUri(HttpRequest request)
-    {
-        string scheme = request.Scheme;
-
-        if (request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues headerScheme))
-        {
-            scheme = headerScheme.ToString();
-        }
+        string scheme = httpContext.Request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues headerScheme)
+            ? headerScheme.ToString()
+            : httpContext.Request.Scheme;
 
         // request.Host automatically includes or excludes the port based on whether it is standard for the scheme
         // ... except when we manually change the scheme to match the X-Forwarded-Proto
-        if (scheme == "https" && request.Host.Port == 443)
-        {
-            return $"{scheme}://{request.Host.Host}{request.PathBase}{request.Path}";
-        }
+        string requestUri = scheme == "https" && httpContext.Request.Host.Port == 443
+            ? $"{scheme}://{httpContext.Request.Host.Host}{httpContext.Request.PathBase}{httpContext.Request.Path}"
+            : $"{scheme}://{httpContext.Request.Host}{httpContext.Request.PathBase}{httpContext.Request.Path}";
 
-        return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
+        return Task.FromResult<string?>(requestUri);
+    }
+
+    protected override async Task<Links> InvokeEndpointHandlerAsync(string? requestUri, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(requestUri);
+
+        return await EndpointHandler.InvokeAsync(requestUri, cancellationToken);
     }
 }
