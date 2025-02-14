@@ -13,17 +13,17 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
-public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddleware
+public abstract class EndpointMiddleware<TRequest, TResponse> : IEndpointMiddleware
 {
     private readonly ILogger _logger;
     protected IOptionsMonitor<ManagementOptions> ManagementOptionsMonitor { get; }
-    protected IEndpointHandler<TArgument, TResult> EndpointHandler { get; }
+    protected IEndpointHandler<TRequest, TResponse> EndpointHandler { get; }
 
     public EndpointOptions EndpointOptions => EndpointHandler.Options;
 
     private protected virtual string ContentType => "application/vnd.spring-boot.actuator.v3+json";
 
-    protected EndpointMiddleware(IEndpointHandler<TArgument, TResult> endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+    protected EndpointMiddleware(IEndpointHandler<TRequest, TResponse> endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(endpointHandler);
@@ -32,7 +32,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
 
         EndpointHandler = endpointHandler;
         ManagementOptionsMonitor = managementOptionsMonitor;
-        _logger = loggerFactory.CreateLogger<EndpointMiddleware<TArgument, TResult>>();
+        _logger = loggerFactory.CreateLogger<EndpointMiddleware<TRequest, TResponse>>();
     }
 
     public virtual ActuatorMetadataProvider GetMetadataProvider()
@@ -57,6 +57,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
             {
                 if (!allowedVerbs.Contains(context.Request.Method))
                 {
+                    _logger.LogTrace("{Method} method is unavailable at path {Path}.", context.Request.Method, context.Request.Path.Value);
                     context.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
                 }
                 else if (!IsValidContentType(context.Request))
@@ -73,31 +74,39 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
                 }
                 else
                 {
-                    TResult result = await InvokeEndpointHandlerAsync(context, context.RequestAborted);
-                    await WriteResponseAsync(result, context, context.RequestAborted);
+                    _logger.LogDebug("Reading {Method} request at path {Path} using {MiddlewareType}.", context.Request.Method, context.Request.Path.Value,
+                        GetType());
+
+                    TRequest? request = await ParseRequestAsync(context, context.RequestAborted);
+                    TResponse response = await InvokeEndpointHandlerAsync(request, context.RequestAborted);
+                    await WriteResponseAsync(response, context, context.RequestAborted);
                 }
 
                 return;
             }
         }
+        else
+        {
+            _logger.LogTrace("CanInvoke returned false for {Method} request at path {Path}.", context.Request.Method, context.Request.Path.Value);
+        }
 
         context.Response.StatusCode = (int)HttpStatusCode.NotFound;
     }
 
-    private bool IsValidContentType(HttpRequest request)
+    private bool IsValidContentType(HttpRequest httpRequest)
     {
-        if (request.ContentType == null)
+        if (httpRequest.ContentType == null)
         {
             return true;
         }
 
         // Media types are case-insensitive, according to https://stackoverflow.com/a/9842589.
-        return MediaTypeHeaderValue.TryParse(request.ContentType, out MediaTypeHeaderValue? headerValue) && headerValue.MatchesMediaType(ContentType);
+        return MediaTypeHeaderValue.TryParse(httpRequest.ContentType, out MediaTypeHeaderValue? headerValue) && headerValue.MatchesMediaType(ContentType);
     }
 
-    private bool IsCompatibleAcceptHeader(HttpRequest request)
+    private bool IsCompatibleAcceptHeader(HttpRequest httpRequest)
     {
-        string[] acceptHeaderValues = request.Headers.GetCommaSeparatedValues("Accept");
+        string[] acceptHeaderValues = httpRequest.Headers.GetCommaSeparatedValues("Accept");
 
         if (acceptHeaderValues.Length == 0)
         {
@@ -115,20 +124,27 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         return false;
     }
 
-    protected abstract Task<TResult> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken);
-
-    protected virtual async Task WriteResponseAsync(TResult result, HttpContext context, CancellationToken cancellationToken)
+    protected virtual Task<TRequest?> ParseRequestAsync(HttpContext httpContext, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(httpContext);
 
-        if (Equals(result, null))
+        return Task.FromResult<TRequest?>(default);
+    }
+
+    protected abstract Task<TResponse> InvokeEndpointHandlerAsync(TRequest? request, CancellationToken cancellationToken);
+
+    protected virtual async Task WriteResponseAsync(TResponse response, HttpContext httpContext, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(httpContext);
+
+        if (Equals(response, null))
         {
             return;
         }
 
-        context.Response.Headers.Append("Content-Type", ContentType);
+        httpContext.Response.Headers.Append("Content-Type", ContentType);
 
         JsonSerializerOptions options = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
-        await JsonSerializer.SerializeAsync(context.Response.Body, result, options, cancellationToken);
+        await JsonSerializer.SerializeAsync(httpContext.Response.Body, response, options, cancellationToken);
     }
 }

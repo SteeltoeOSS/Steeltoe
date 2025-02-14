@@ -33,15 +33,15 @@ public static class CoreActuatorServiceCollectionExtensions
     /// The actuator-specific <see cref="IEndpointMiddleware" />.
     /// </typeparam>
     /// <typeparam name="TEndpointHandlerInterface">
-    /// The actuator-specific <see cref="IEndpointHandler{TArgument, TResult}" /> interface.
+    /// The actuator-specific <see cref="IEndpointHandler{TRequest, TResponse}" /> interface.
     /// </typeparam>
     /// <typeparam name="TEndpointHandler">
-    /// The actuator-specific <see cref="IEndpointHandler{TArgument, TResult}" /> implementation.
+    /// The actuator-specific <see cref="IEndpointHandler{TRequest, TResponse}" /> implementation.
     /// </typeparam>
-    /// <typeparam name="TArgument">
+    /// <typeparam name="TRequest">
     /// The actuator-specific endpoint handler input type.
     /// </typeparam>
-    /// <typeparam name="TResult">
+    /// <typeparam name="TResponse">
     /// The actuator-specific endpoint handler output type.
     /// </typeparam>
     /// <param name="services">
@@ -55,11 +55,11 @@ public static class CoreActuatorServiceCollectionExtensions
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddCoreActuatorServices<TEndpointOptions, TConfigureEndpointOptions, TMiddleware, TEndpointHandlerInterface,
-        TEndpointHandler, TArgument, TResult>(this IServiceCollection services, bool configureMiddleware)
+        TEndpointHandler, TRequest, TResponse>(this IServiceCollection services, bool configureMiddleware)
         where TEndpointOptions : EndpointOptions
         where TConfigureEndpointOptions : class, IConfigureOptionsWithKey<TEndpointOptions>
         where TMiddleware : class, IEndpointMiddleware
-        where TEndpointHandlerInterface : class, IEndpointHandler<TArgument, TResult>
+        where TEndpointHandlerInterface : class, IEndpointHandler<TRequest, TResponse>
         where TEndpointHandler : class, TEndpointHandlerInterface
     {
         ArgumentNullException.ThrowIfNull(services);

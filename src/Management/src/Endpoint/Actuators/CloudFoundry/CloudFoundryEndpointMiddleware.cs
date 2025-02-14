@@ -20,27 +20,22 @@ internal sealed class CloudFoundryEndpointMiddleware(
     ICloudFoundryEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
     : EndpointMiddleware<string, Links>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    private readonly ILogger _logger = loggerFactory.CreateLogger<CloudFoundryEndpointMiddleware>();
-
-    protected override async Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override Task<string?> ParseRequestAsync(HttpContext httpContext, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(httpContext);
 
-        _logger.LogDebug("InvokeAsync({Method}, {Path})", context.Request.Method, context.Request.Path.Value);
-        string uri = GetRequestUri(context);
-        return await EndpointHandler.InvokeAsync(uri, cancellationToken);
+        string scheme = httpContext.Request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues headerScheme)
+            ? headerScheme.ToString()
+            : httpContext.Request.Scheme;
+
+        string uri = $"{scheme}://{httpContext.Request.Host}{httpContext.Request.PathBase}{httpContext.Request.Path}";
+        return Task.FromResult<string?>(uri);
     }
 
-    private string GetRequestUri(HttpContext context)
+    protected override async Task<Links> InvokeEndpointHandlerAsync(string? uri, CancellationToken cancellationToken)
     {
-        HttpRequest request = context.Request;
-        string scheme = request.Scheme;
+        ArgumentNullException.ThrowIfNull(uri);
 
-        if (request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues headerScheme))
-        {
-            scheme = headerScheme.ToString();
-        }
-
-        return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
+        return await EndpointHandler.InvokeAsync(uri, cancellationToken);
     }
 }

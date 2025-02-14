@@ -19,29 +19,21 @@ internal sealed class LoggersEndpointMiddleware(
 {
     private readonly ILogger<LoggersEndpointMiddleware> _logger = loggerFactory.CreateLogger<LoggersEndpointMiddleware>();
 
-    protected override async Task<LoggersResponse?> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<LoggersRequest?> ParseRequestAsync(HttpContext httpContext, CancellationToken cancellationToken)
     {
-        LoggersRequest? loggersRequest = await GetLoggersRequestAsync(context);
-        return loggersRequest == null ? LoggersResponse.Error : await EndpointHandler.InvokeAsync(loggersRequest, cancellationToken);
-    }
+        ArgumentNullException.ThrowIfNull(httpContext);
 
-    private async Task<LoggersRequest?> GetLoggersRequestAsync(HttpContext context)
-    {
-        HttpRequest request = context.Request;
-
-        if (context.Request.Method == "POST")
+        if (httpContext.Request.Method == "POST")
         {
             // POST - change a logger level
-            _logger.LogDebug("Incoming path: {Path}", request.Path.Value);
-
-            string? basePath = ManagementOptionsMonitor.CurrentValue.GetBasePath(context.Request.Path);
+            string? basePath = ManagementOptionsMonitor.CurrentValue.GetBasePath(httpContext.Request.Path);
             string path = EndpointOptions.GetEndpointPath(basePath);
 
-            if (request.Path.StartsWithSegments(path, out PathString remaining) && remaining.HasValue)
+            if (httpContext.Request.Path.StartsWithSegments(path, out PathString remaining) && remaining.HasValue)
             {
                 string loggerName = remaining.Value!.TrimStart('/');
 
-                Dictionary<string, string> change = await DeserializeRequestAsync(request.Body);
+                Dictionary<string, string> change = await DeserializeRequestAsync(httpContext.Request.Body, cancellationToken);
 
                 change.TryGetValue("configuredLevel", out string? level);
 
@@ -63,11 +55,11 @@ internal sealed class LoggersEndpointMiddleware(
         return new LoggersRequest();
     }
 
-    private async Task<Dictionary<string, string>> DeserializeRequestAsync(Stream stream)
+    private async Task<Dictionary<string, string>> DeserializeRequestAsync(Stream stream, CancellationToken cancellationToken)
     {
         try
         {
-            var dictionary = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(stream);
+            var dictionary = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(stream, cancellationToken: cancellationToken);
 
             if (dictionary != null)
             {
@@ -82,25 +74,29 @@ internal sealed class LoggersEndpointMiddleware(
         return [];
     }
 
-    protected override async Task WriteResponseAsync(LoggersResponse? result, HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<LoggersResponse?> InvokeEndpointHandlerAsync(LoggersRequest? request, CancellationToken cancellationToken)
     {
-        if (result is { HasError: true })
+        return request == null ? LoggersResponse.Error : await EndpointHandler.InvokeAsync(request, cancellationToken);
+    }
+
+    protected override async Task WriteResponseAsync(LoggersResponse? response, HttpContext httpContext, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(httpContext);
+
+        if (response is { HasError: true })
         {
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        }
+        else if (response == null)
+        {
+            httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
         }
         else
         {
-            if (result == null)
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.NoContent;
-            }
-            else
-            {
-                context.Response.Headers.Append("Content-Type", ContentType);
+            httpContext.Response.Headers.Append("Content-Type", ContentType);
 
-                JsonSerializerOptions options = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
-                await JsonSerializer.SerializeAsync(context.Response.Body, result, options, cancellationToken);
-            }
+            JsonSerializerOptions options = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
+            await JsonSerializer.SerializeAsync(httpContext.Response.Body, response, options, cancellationToken);
         }
     }
 }
