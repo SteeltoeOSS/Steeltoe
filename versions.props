@@ -47,7 +47,7 @@
       Exposed dependencies, observable by Steeltoe library consumers.
       Be cautious with updates:
       - Wildcards are only allowed at the patch level, so we automatically benefit from vulnerability fixes.
-      - Major/minor versions here must not change between minor/patch versions of Steeltoe.
+      - Major/minor versions here generally should not change between minor/patch versions of Steeltoe.
     -->
 
     <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
