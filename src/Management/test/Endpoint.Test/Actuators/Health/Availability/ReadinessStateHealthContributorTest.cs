@@ -9,7 +9,7 @@ using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.Availability;
 
-public sealed class ReadinessStateContributorTest
+public sealed class ReadinessStateHealthContributorTest
 {
     private readonly ApplicationAvailability _availability = new(NullLogger<ApplicationAvailability>.Instance);
 
@@ -21,7 +21,7 @@ public sealed class ReadinessStateContributorTest
     [Fact]
     public async Task HandlesUnknown()
     {
-        var contributor = new ReadinessStateContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
+        var contributor = new ReadinessStateHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
@@ -33,7 +33,7 @@ public sealed class ReadinessStateContributorTest
     public async Task HandlesAccepting()
     {
         _availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, "tests");
-        var contributor = new ReadinessStateContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
+        var contributor = new ReadinessStateHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
@@ -45,7 +45,7 @@ public sealed class ReadinessStateContributorTest
     public async Task HandlesRefusing()
     {
         _availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.RefusingTraffic, "tests");
-        var contributor = new ReadinessStateContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
+        var contributor = new ReadinessStateHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 

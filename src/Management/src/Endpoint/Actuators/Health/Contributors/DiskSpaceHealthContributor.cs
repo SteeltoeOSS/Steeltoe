@@ -7,13 +7,13 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 
-internal sealed class DiskSpaceContributor : IHealthContributor
+internal sealed class DiskSpaceHealthContributor : IHealthContributor
 {
     private readonly IOptionsMonitor<DiskSpaceContributorOptions> _optionsMonitor;
 
     public string Id => "diskSpace";
 
-    public DiskSpaceContributor(IOptionsMonitor<DiskSpaceContributorOptions> optionsMonitor)
+    public DiskSpaceHealthContributor(IOptionsMonitor<DiskSpaceContributorOptions> optionsMonitor)
     {
         ArgumentNullException.ThrowIfNull(optionsMonitor);
 

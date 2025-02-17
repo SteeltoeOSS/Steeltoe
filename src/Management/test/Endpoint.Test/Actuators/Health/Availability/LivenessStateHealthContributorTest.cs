@@ -9,7 +9,7 @@ using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.Availability;
 
-public sealed class LivenessStateContributorTest
+public sealed class LivenessStateHealthContributorTest
 {
     private readonly ApplicationAvailability _availability = new(NullLogger<ApplicationAvailability>.Instance);
 
@@ -21,7 +21,7 @@ public sealed class LivenessStateContributorTest
     [Fact]
     public async Task HandlesUnknown()
     {
-        var contributor = new LivenessStateContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
+        var contributor = new LivenessStateHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
@@ -33,7 +33,7 @@ public sealed class LivenessStateContributorTest
     public async Task HandlesCorrect()
     {
         _availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, "tests");
-        var contributor = new LivenessStateContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
+        var contributor = new LivenessStateHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
@@ -45,7 +45,7 @@ public sealed class LivenessStateContributorTest
     public async Task HandlesBroken()
     {
         _availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Broken, "tests");
-        var contributor = new LivenessStateContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
+        var contributor = new LivenessStateHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 

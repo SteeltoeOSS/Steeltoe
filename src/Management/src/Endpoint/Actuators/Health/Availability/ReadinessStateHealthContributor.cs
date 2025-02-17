@@ -8,7 +8,7 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
-internal sealed class ReadinessStateContributor : AvailabilityStateHealthContributor
+internal sealed class ReadinessStateHealthContributor : AvailabilityStateHealthContributor
 {
     private readonly ApplicationAvailability _availability;
     private readonly IOptionsMonitor<ReadinessStateContributorOptions> _optionsMonitor;
@@ -17,7 +17,7 @@ internal sealed class ReadinessStateContributor : AvailabilityStateHealthContrib
 
     public override string Id => "readinessState";
 
-    public ReadinessStateContributor(ApplicationAvailability availability, IOptionsMonitor<ReadinessStateContributorOptions> optionsMonitor,
+    public ReadinessStateHealthContributor(ApplicationAvailability availability, IOptionsMonitor<ReadinessStateContributorOptions> optionsMonitor,
         ILoggerFactory loggerFactory)
         : base(new Dictionary<AvailabilityState, HealthStatus>
         {

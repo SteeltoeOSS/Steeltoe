@@ -7,13 +7,13 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 
-internal sealed class PingContributor : IHealthContributor
+internal sealed class PingHealthContributor : IHealthContributor
 {
     private readonly IOptionsMonitor<PingContributorOptions> _optionsMonitor;
 
     public string Id => "ping";
 
-    public PingContributor(IOptionsMonitor<PingContributorOptions> optionsMonitor)
+    public PingHealthContributor(IOptionsMonitor<PingContributorOptions> optionsMonitor)
     {
         ArgumentNullException.ThrowIfNull(optionsMonitor);
 

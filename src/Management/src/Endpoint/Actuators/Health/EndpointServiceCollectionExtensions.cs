@@ -58,19 +58,19 @@ public static class EndpointServiceCollectionExtensions
     private static void RegisterDefaultHealthContributors(IServiceCollection services)
     {
         services.ConfigureOptionsWithChangeTokenSource<DiskSpaceContributorOptions, ConfigureDiskSpaceContributorOptions>();
-        AddHealthContributor<DiskSpaceContributor>(services);
+        AddHealthContributor<DiskSpaceHealthContributor>(services);
 
         services.ConfigureOptionsWithChangeTokenSource<PingContributorOptions, ConfigurePingContributorOptions>();
-        AddHealthContributor<PingContributor>(services);
+        AddHealthContributor<PingHealthContributor>(services);
 
         services.TryAddSingleton<ApplicationAvailability>();
         services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, AvailabilityStartupFilter>());
 
         services.ConfigureOptionsWithChangeTokenSource<LivenessStateContributorOptions, ConfigureLivenessStateContributorOptions>();
-        AddHealthContributor<LivenessStateContributor>(services);
+        AddHealthContributor<LivenessStateHealthContributor>(services);
 
         services.ConfigureOptionsWithChangeTokenSource<ReadinessStateContributorOptions, ConfigureReadinessStateContributorOptions>();
-        AddHealthContributor<ReadinessStateContributor>(services);
+        AddHealthContributor<ReadinessStateHealthContributor>(services);
     }
 
     /// <summary>
