@@ -238,7 +238,7 @@ Steeltoe.Management.Endpoint.Actuators.HttpExchanges.IHttpExchangesRepository.Ge
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.HypermediaEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.HypermediaEndpointOptions.HypermediaEndpointOptions() -> void
-Steeltoe.Management.Endpoint.Actuators.Hypermedia.IActuatorEndpointHandler
+Steeltoe.Management.Endpoint.Actuators.Hypermedia.IHypermediaEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Href.get -> string!
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Href.set -> void

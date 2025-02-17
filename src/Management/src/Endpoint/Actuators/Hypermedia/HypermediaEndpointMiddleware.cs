@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.Middleware;
 namespace Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 
 internal sealed class HypermediaEndpointMiddleware(
-    IActuatorEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
+    IHypermediaEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
     : EndpointMiddleware<string, Links>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
     protected override Task<string?> ParseRequestAsync(HttpContext httpContext, CancellationToken cancellationToken)

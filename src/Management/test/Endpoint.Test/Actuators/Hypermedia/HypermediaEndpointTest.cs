@@ -32,7 +32,7 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
             });
         };
 
-        var handler = testContext.GetRequiredService<IActuatorEndpointHandler>();
+        var handler = testContext.GetRequiredService<IHypermediaEndpointHandler>();
 
         Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         links.Entries.Should().Contain(entry => entry.Key == "self" && entry.Value.Href == "http://localhost:5000/foobar");
@@ -50,7 +50,7 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
             services.AddHypermediaActuator();
         };
 
-        var handler = testContext.GetRequiredService<IActuatorEndpointHandler>();
+        var handler = testContext.GetRequiredService<IHypermediaEndpointHandler>();
 
         Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         links.Entries.Should().Contain(entry => entry.Key == "self" && entry.Value.Href == "http://localhost:5000/foobar");
@@ -76,7 +76,7 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
             });
         };
 
-        var handler = testContext.GetRequiredService<IActuatorEndpointHandler>();
+        var handler = testContext.GetRequiredService<IHypermediaEndpointHandler>();
 
         Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         links.Entries.Should().Contain(entry => entry.Key == "self" && entry.Value.Href == "http://localhost:5000/foobar");
@@ -103,7 +103,7 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
             });
         };
 
-        var handler = testContext.GetRequiredService<IActuatorEndpointHandler>();
+        var handler = testContext.GetRequiredService<IHypermediaEndpointHandler>();
 
         Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         links.Entries.Should().BeEmpty();

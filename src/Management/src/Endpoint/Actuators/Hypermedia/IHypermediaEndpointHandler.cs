@@ -4,4 +4,4 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 
-public interface IActuatorEndpointHandler : IEndpointHandler<string, Links>;
+public interface IHypermediaEndpointHandler : IEndpointHandler<string, Links>;

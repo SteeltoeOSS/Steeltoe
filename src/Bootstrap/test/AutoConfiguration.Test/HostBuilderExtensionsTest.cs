@@ -351,7 +351,7 @@ public sealed class HostBuilderExtensionsTest
 
     private static async Task AssertAllActuatorsAreAutowiredAsync(HostWrapper hostWrapper, bool expectHealthy)
     {
-        hostWrapper.Services.GetServices<IActuatorEndpointHandler>().Should().ContainSingle();
+        hostWrapper.Services.GetServices<IHypermediaEndpointHandler>().Should().ContainSingle();
         hostWrapper.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
 
         if (hostWrapper.Services.GetService<IServer>() != null)
