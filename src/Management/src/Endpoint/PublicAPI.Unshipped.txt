@@ -357,8 +357,6 @@ Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.Key.get -> s
 Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.Scope.get -> string!
 Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.ServiceRegistration(Microsoft.Extensions.DependencyInjection.ServiceDescriptor! descriptor) -> void
 Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.Type.get -> string!
-Steeltoe.Management.Endpoint.Actuators.Services.ServicesEndpointMiddleware
-Steeltoe.Management.Endpoint.Actuators.Services.ServicesEndpointMiddleware.ServicesEndpointMiddleware(Steeltoe.Management.Endpoint.Actuators.Services.IServicesEndpointHandler! endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Configuration.ManagementOptions!>! managementOptionsMonitor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
 Steeltoe.Management.Endpoint.Actuators.Services.ServicesEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Services.ServicesEndpointOptions.ServicesEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.EndpointServiceCollectionExtensions

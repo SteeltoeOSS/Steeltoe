@@ -9,7 +9,7 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Services;
 
-public sealed class ServicesEndpointMiddleware(
+internal sealed class ServicesEndpointMiddleware(
     IServicesEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
     : EndpointMiddleware<object?, IList<ServiceRegistration>>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
