@@ -362,9 +362,6 @@ Steeltoe.Management.Endpoint.Actuators.Services.ServicesEndpointMiddleware.Servi
 Steeltoe.Management.Endpoint.Actuators.Services.ServicesEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Services.ServicesEndpointOptions.ServicesEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.EndpointServiceCollectionExtensions
-Steeltoe.Management.Endpoint.Actuators.ThreadDump.EventPipeThreadDumper
-Steeltoe.Management.Endpoint.Actuators.ThreadDump.EventPipeThreadDumper.DumpThreadsAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo!>!>!
-Steeltoe.Management.Endpoint.Actuators.ThreadDump.EventPipeThreadDumper.EventPipeThreadDumper(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadDumpEndpointOptions!>! optionsMonitor, Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Endpoint.Actuators.ThreadDump.EventPipeThreadDumper!>! logger) -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.IThreadDumpEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.ClassName.get -> string?
