@@ -40,7 +40,7 @@ public static class EndpointServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddCoreActuatorServices<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions, HypermediaEndpointMiddleware,
-            IActuatorEndpointHandler, ActuatorEndpointHandler, string, Links>(configureMiddleware);
+            IHypermediaEndpointHandler, HypermediaEndpointHandler, string, Links>(configureMiddleware);
 
         return services;
     }

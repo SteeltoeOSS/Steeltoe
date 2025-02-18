@@ -21,7 +21,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddHypermediaActuator();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var handler = serviceProvider.GetService<IActuatorEndpointHandler>();
+        var handler = serviceProvider.GetService<IHypermediaEndpointHandler>();
         Assert.NotNull(handler);
     }
 }

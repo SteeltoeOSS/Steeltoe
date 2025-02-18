@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 /// <summary>
 /// Provides the hypermedia link collection for all registered and enabled actuators.
 /// </summary>
-internal sealed class ActuatorEndpointHandler : IActuatorEndpointHandler
+internal sealed class HypermediaEndpointHandler : IHypermediaEndpointHandler
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IOptionsMonitor<HypermediaEndpointOptions> _endpointOptionsMonitor;
@@ -22,7 +22,7 @@ internal sealed class ActuatorEndpointHandler : IActuatorEndpointHandler
 
     public EndpointOptions Options => _endpointOptionsMonitor.CurrentValue;
 
-    public ActuatorEndpointHandler(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+    public HypermediaEndpointHandler(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         IOptionsMonitor<HypermediaEndpointOptions> endpointOptionsMonitor, IEnumerable<IEndpointOptionsMonitorProvider> endpointOptionsMonitorProviders,
         ILoggerFactory loggerFactory)
     {

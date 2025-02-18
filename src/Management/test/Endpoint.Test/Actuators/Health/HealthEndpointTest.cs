@@ -139,7 +139,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     {
         using var testContext = new TestContext(_testOutputHelper);
 
-        List<IHealthContributor> contributors = [new DiskSpaceContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>())];
+        List<IHealthContributor> contributors = [new DiskSpaceHealthContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>())];
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -189,8 +189,8 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         List<IHealthContributor> contributors =
         [
-            new DiskSpaceContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>()),
-            new LivenessStateContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
+            new DiskSpaceHealthContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>()),
+            new LivenessStateHealthContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
         ];
 
         testContext.AdditionalServices = (services, _) =>
@@ -236,7 +236,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
             new UnknownContributor(),
             new DisabledContributor(),
             new UpContributor(),
-            new ReadinessStateContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
+            new ReadinessStateHealthContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
         ];
 
         testContext.AdditionalServices = (services, _) =>

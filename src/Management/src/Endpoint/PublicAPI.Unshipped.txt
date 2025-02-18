@@ -1,5 +1,5 @@
 #nullable enable
-abstract Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.InvokeEndpointHandlerAsync(Microsoft.AspNetCore.Http.HttpContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>!
+abstract Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TRequest, TResponse>.InvokeEndpointHandlerAsync(TRequest? request, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResponse>!
 const Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.LivenessKey = "Liveness" -> string!
 const Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.ReadinessKey = "Readiness" -> string!
 override Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityState.ToString() -> string!
@@ -53,7 +53,7 @@ static Steeltoe.Management.Endpoint.ApplicationBuilderExtensions.UseActuatorEndp
 static Steeltoe.Management.Endpoint.ApplicationBuilderExtensions.UseActuatorEndpoints(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>? configureEndpoints) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
 static Steeltoe.Management.Endpoint.ApplicationBuilderExtensions.UseActuatorsCorsPolicy(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
 static Steeltoe.Management.Endpoint.ApplicationBuilderExtensions.UseManagementPort(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
-static Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions.AddCoreActuatorServices<TEndpointOptions, TConfigureEndpointOptions, TMiddleware, TEndpointHandlerInterface, TEndpointHandler, TArgument, TResult>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions.AddCoreActuatorServices<TEndpointOptions, TConfigureEndpointOptions, TMiddleware, TEndpointHandlerInterface, TEndpointHandler, TRequest, TResponse>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions.ConfigureActuatorEndpoints(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!>! configureEndpoints) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions.ConfigureActuatorsCorsPolicy(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>! configureCorsPolicy) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.SpringBootAdminClient.ServiceCollectionExtensions.AddSpringBootAdminClient(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
@@ -238,7 +238,7 @@ Steeltoe.Management.Endpoint.Actuators.HttpExchanges.IHttpExchangesRepository.Ge
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.HypermediaEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.HypermediaEndpointOptions.HypermediaEndpointOptions() -> void
-Steeltoe.Management.Endpoint.Actuators.Hypermedia.IActuatorEndpointHandler
+Steeltoe.Management.Endpoint.Actuators.Hypermedia.IHypermediaEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Href.get -> string!
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Href.set -> void
@@ -357,14 +357,9 @@ Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.Key.get -> s
 Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.Scope.get -> string!
 Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.ServiceRegistration(Microsoft.Extensions.DependencyInjection.ServiceDescriptor! descriptor) -> void
 Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.Type.get -> string!
-Steeltoe.Management.Endpoint.Actuators.Services.ServicesEndpointMiddleware
-Steeltoe.Management.Endpoint.Actuators.Services.ServicesEndpointMiddleware.ServicesEndpointMiddleware(Steeltoe.Management.Endpoint.Actuators.Services.IServicesEndpointHandler! endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Configuration.ManagementOptions!>! managementOptionsMonitor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
 Steeltoe.Management.Endpoint.Actuators.Services.ServicesEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Services.ServicesEndpointOptions.ServicesEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.EndpointServiceCollectionExtensions
-Steeltoe.Management.Endpoint.Actuators.ThreadDump.EventPipeThreadDumper
-Steeltoe.Management.Endpoint.Actuators.ThreadDump.EventPipeThreadDumper.DumpThreadsAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo!>!>!
-Steeltoe.Management.Endpoint.Actuators.ThreadDump.EventPipeThreadDumper.EventPipeThreadDumper(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadDumpEndpointOptions!>! optionsMonitor, Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Endpoint.Actuators.ThreadDump.EventPipeThreadDumper!>! logger) -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.IThreadDumpEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.ClassName.get -> string?
@@ -446,18 +441,18 @@ Steeltoe.Management.Endpoint.Configuration.ManagementOptions.SslEnabled.set -> v
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.UseStatusCodeFromResponse.get -> bool
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.UseStatusCodeFromResponse.set -> void
 Steeltoe.Management.Endpoint.CoreActuatorServiceCollectionExtensions
-Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>
-Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>.InvokeAsync(TArgument argument, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>!
-Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>.Options.get -> Steeltoe.Management.Configuration.EndpointOptions!
+Steeltoe.Management.Endpoint.IEndpointHandler<TRequest, TResponse>
+Steeltoe.Management.Endpoint.IEndpointHandler<TRequest, TResponse>.InvokeAsync(TRequest argument, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResponse>!
+Steeltoe.Management.Endpoint.IEndpointHandler<TRequest, TResponse>.Options.get -> Steeltoe.Management.Configuration.EndpointOptions!
 Steeltoe.Management.Endpoint.Middleware.ActuatorMetadataProvider
 Steeltoe.Management.Endpoint.Middleware.ActuatorMetadataProvider.ActuatorMetadataProvider(string! defaultContentType) -> void
 Steeltoe.Management.Endpoint.Middleware.ActuatorMetadataProvider.DefaultContentType.get -> string!
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointHandler.get -> Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>!
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointMiddleware(Steeltoe.Management.Endpoint.IEndpointHandler<TArgument, TResult>! endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Configuration.ManagementOptions!>! managementOptionsMonitor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointOptions.get -> Steeltoe.Management.Configuration.EndpointOptions!
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext! context, Microsoft.AspNetCore.Http.RequestDelegate? next) -> System.Threading.Tasks.Task!
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ManagementOptionsMonitor.get -> Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Configuration.ManagementOptions!>!
+Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TRequest, TResponse>
+Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TRequest, TResponse>.EndpointHandler.get -> Steeltoe.Management.Endpoint.IEndpointHandler<TRequest, TResponse>!
+Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TRequest, TResponse>.EndpointMiddleware(Steeltoe.Management.Endpoint.IEndpointHandler<TRequest, TResponse>! endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Configuration.ManagementOptions!>! managementOptionsMonitor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TRequest, TResponse>.EndpointOptions.get -> Steeltoe.Management.Configuration.EndpointOptions!
+Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TRequest, TResponse>.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext! context, Microsoft.AspNetCore.Http.RequestDelegate? next) -> System.Threading.Tasks.Task!
+Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TRequest, TResponse>.ManagementOptionsMonitor.get -> Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Configuration.ManagementOptions!>!
 Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware
 Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware.EndpointOptions.get -> Steeltoe.Management.Configuration.EndpointOptions!
 Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware.GetMetadataProvider() -> Steeltoe.Management.Endpoint.Middleware.ActuatorMetadataProvider!
@@ -477,6 +472,7 @@ Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.set -> void
 virtual Steeltoe.Management.Endpoint.Configuration.ConfigureEndpointOptions<TOptions>.Configure(TOptions! options) -> void
 virtual Steeltoe.Management.Endpoint.Middleware.ActuatorMetadataProvider.GetMetadata(string! httpMethod) -> Microsoft.AspNetCore.Http.EndpointMetadataCollection!
-virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.CanInvoke(Microsoft.AspNetCore.Http.PathString requestPath) -> bool
-virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.GetMetadataProvider() -> Steeltoe.Management.Endpoint.Middleware.ActuatorMetadataProvider!
-virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.WriteResponseAsync(TResult result, Microsoft.AspNetCore.Http.HttpContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TRequest, TResponse>.CanInvoke(Microsoft.AspNetCore.Http.PathString requestPath) -> bool
+virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TRequest, TResponse>.GetMetadataProvider() -> Steeltoe.Management.Endpoint.Middleware.ActuatorMetadataProvider!
+virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TRequest, TResponse>.ParseRequestAsync(Microsoft.AspNetCore.Http.HttpContext! httpContext, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TRequest?>!
+virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TRequest, TResponse>.WriteResponseAsync(TResponse response, Microsoft.AspNetCore.Http.HttpContext! httpContext, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!

@@ -9,13 +9,13 @@ using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.Contributors;
 
-public sealed class DiskSpaceContributorTest : BaseTest
+public sealed class DiskSpaceHealthContributorTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
         IOptionsMonitor<DiskSpaceContributorOptions> optionsMonitor = GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>();
-        var contributor = new DiskSpaceContributor(optionsMonitor);
+        var contributor = new DiskSpaceHealthContributor(optionsMonitor);
         Assert.Equal("diskSpace", contributor.Id);
     }
 
@@ -23,7 +23,7 @@ public sealed class DiskSpaceContributorTest : BaseTest
     public async Task Health_InitializedWithDefaults_ReturnsExpected()
     {
         IOptionsMonitor<DiskSpaceContributorOptions> optionsMonitor = GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>();
-        var contributor = new DiskSpaceContributor(optionsMonitor);
+        var contributor = new DiskSpaceHealthContributor(optionsMonitor);
         Assert.Equal("diskSpace", contributor.Id);
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
         Assert.NotNull(result);
@@ -44,7 +44,7 @@ public sealed class DiskSpaceContributorTest : BaseTest
             Path = OperatingSystem.IsWindows() ? @"C:\does-not-exist" : "/does/not/exist"
         });
 
-        var contributor = new DiskSpaceContributor(optionsMonitor);
+        var contributor = new DiskSpaceHealthContributor(optionsMonitor);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
@@ -98,7 +98,7 @@ public sealed class DiskSpaceContributorTest : BaseTest
                 new DriveInfo("/dev/shm")
             ];
 
-        DriveInfo? drive = DiskSpaceContributor.FindVolume(path, systemDrives);
+        DriveInfo? drive = DiskSpaceHealthContributor.FindVolume(path, systemDrives);
 
         if (expected == null)
         {
