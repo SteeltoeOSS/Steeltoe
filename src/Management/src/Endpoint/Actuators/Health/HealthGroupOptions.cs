@@ -12,12 +12,12 @@ public sealed class HealthGroupOptions
     public string? Include { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show components in this group, overriding the endpoint-level setting.
+    /// Gets or sets when to show components in this group, overriding the endpoint-level setting.
     /// </summary>
     public ShowValues? ShowComponents { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show details of components in this group, overriding the endpoint-level setting.
+    /// Gets or sets when to show details of components in this group, overriding the endpoint-level setting.
     /// </summary>
     public ShowValues? ShowDetails { get; set; }
 }
