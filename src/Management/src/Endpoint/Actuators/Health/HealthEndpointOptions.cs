@@ -9,12 +9,12 @@ namespace Steeltoe.Management.Endpoint.Actuators.Health;
 public sealed class HealthEndpointOptions : EndpointOptions
 {
     /// <summary>
-    /// Gets or sets whether to show components in responses.
+    /// Gets or sets when to show components in responses.
     /// </summary>
     public ShowValues ShowComponents { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show details of components in responses.
+    /// Gets or sets when to show details of components in responses.
     /// </summary>
     public ShowValues ShowDetails { get; set; }
 

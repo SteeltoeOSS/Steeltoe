@@ -266,7 +266,7 @@
                           "WhenAuthorized",
                           "Always"
                         ],
-                        "description": "Gets or sets whether to show components in this group, overriding the endpoint-level setting."
+                        "description": "Gets or sets when to show components in this group, overriding the endpoint-level setting."
                       },
                       "ShowDetails": {
                         "enum": [
@@ -274,7 +274,7 @@
                           "WhenAuthorized",
                           "Always"
                         ],
-                        "description": "Gets or sets whether to show details of components in this group, overriding the endpoint-level setting."
+                        "description": "Gets or sets when to show details of components in this group, overriding the endpoint-level setting."
                       }
                     }
                   },
@@ -333,7 +333,7 @@
                     "WhenAuthorized",
                     "Always"
                   ],
-                  "description": "Gets or sets whether to show components in responses."
+                  "description": "Gets or sets when to show components in responses."
                 },
                 "ShowDetails": {
                   "enum": [
@@ -341,7 +341,7 @@
                     "WhenAuthorized",
                     "Always"
                   ],
-                  "description": "Gets or sets whether to show details of components in responses."
+                  "description": "Gets or sets when to show details of components in responses."
                 }
               }
             },
