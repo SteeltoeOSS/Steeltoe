@@ -651,7 +651,7 @@ public sealed class ActuatorRouteMappingsTest
                       "dispatcherServlet": [
                         {
                           "handler": "/actuator/mappings",
-                          "predicate": "{GET [/actuator/mappings], produces [application/vnd.spring-boot.actuator.v2+json]}",
+                          "predicate": "{GET [/actuator/mappings], produces [application/vnd.spring-boot.actuator.v3+json]}",
                           "details": {
                             "handlerMethod": {
                               "className": "Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware`2",
@@ -668,7 +668,7 @@ public sealed class ActuatorRouteMappingsTest
                               "consumes": [],
                               "produces": [
                                 {
-                                  "mediaType": "application/vnd.spring-boot.actuator.v2+json",
+                                  "mediaType": "application/vnd.spring-boot.actuator.v3+json",
                                   "negated": false
                                 }
                               ],
