@@ -17,9 +17,6 @@ internal sealed class RouteMappingsEndpointMiddleware(
     IRouteMappingsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
     : EndpointMiddleware<object?, RouteMappingsResponse>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    // There is no difference between v2 and v3 responses. This override is a workaround for Spring Boot Admin: https://github.com/codecentric/spring-boot-admin/issues/4001.
-    private protected override string ContentType => "application/vnd.spring-boot.actuator.v2+json";
-
     protected override async Task<RouteMappingsResponse> InvokeEndpointHandlerAsync(object? request, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(request, cancellationToken);

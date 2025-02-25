@@ -49,6 +49,11 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
     {
         SpringBootAdminClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
 
+        if (clientOptions.Url == null)
+        {
+            throw new InvalidOperationException("Spring Boot Admin Server Url must be provided in options.");
+        }
+
         _logger.LogInformation("Registering with Spring Boot Admin Server at {Url}", clientOptions.Url);
 
         if (clientOptions.ApplicationName == null || !Uri.TryCreate(clientOptions.BasePath, UriKind.Absolute, out Uri? baseUri))
@@ -69,7 +74,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            _logger.LogError(exception, "Error connecting to Spring Boot Admin Server: {Message}", exception.Message);
+            _logger.LogError(exception, "Error connecting to Spring Boot Admin Server.");
             return;
         }
 
@@ -132,7 +137,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            _logger.LogError(exception, "Error connecting to Spring Boot Admin Server: {Message}", exception.Message);
+            _logger.LogError(exception, "Error connecting to Spring Boot Admin Server.");
             return;
         }
 

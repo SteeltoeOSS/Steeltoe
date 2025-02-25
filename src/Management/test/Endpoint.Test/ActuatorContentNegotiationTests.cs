@@ -38,7 +38,7 @@ public sealed class ActuatorContentNegotiationTests
     [InlineData("httpexchanges", SpringBootStandardAccept, ActuatorV3)]
     [InlineData("info", $"{ActuatorV3},{SpringBootStandardAccept}", ActuatorV3)]
     [InlineData("loggers", SpringBootStandardAccept, ActuatorV3)]
-    [InlineData("mappings", SpringBootStandardAccept, ActuatorV2)]
+    [InlineData("mappings", SpringBootStandardAccept, ActuatorV3)]
     [InlineData("threaddump", SpringBootStandardAccept, ActuatorV3)]
     [Theory]
     public async Task Responses_for_SpringBootAdmin_match_expectations(string endpoint, string acceptHeader, string responseContentType)
