@@ -137,7 +137,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            _logger.LogError(exception, "Error connecting to Spring Boot Admin Server: {Message}", exception.Message);
+            _logger.LogError(exception, "Error connecting to Spring Boot Admin Server.");
             return;
         }
 
