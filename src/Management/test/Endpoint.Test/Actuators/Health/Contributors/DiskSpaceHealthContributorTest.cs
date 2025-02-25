@@ -49,7 +49,7 @@ public sealed class DiskSpaceHealthContributorTest : BaseTest
         HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
         result.Should().NotBeNull();
-        result!.Status.Should().Be(HealthStatus.Unknown);
+        result.Status.Should().Be(HealthStatus.Unknown);
         result.Description.Should().Be("Failed to determine free disk space.");
         result.Details.Should().Contain("error", "The configured path is invalid or does not exist.");
     }
@@ -107,7 +107,7 @@ public sealed class DiskSpaceHealthContributorTest : BaseTest
         else
         {
             drive.Should().NotBeNull();
-            drive!.RootDirectory.FullName.Should().Be(expected);
+            drive.RootDirectory.FullName.Should().Be(expected);
         }
     }
 }

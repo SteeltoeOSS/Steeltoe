@@ -41,7 +41,7 @@ public sealed class EurekaApplicationInfoManagerTest
         appManager.Instance.IsDirty.Should().BeTrue();
 
         eventMonitor.EventArgs.Should().NotBeNull();
-        eventMonitor.EventArgs!.PreviousInstance.Status.Should().Be(previousStatus);
+        eventMonitor.EventArgs.PreviousInstance.Status.Should().Be(previousStatus);
         eventMonitor.EventArgs.NewInstance.Status.Should().Be(InstanceStatus.OutOfService);
     }
 
@@ -136,7 +136,7 @@ public sealed class EurekaApplicationInfoManagerTest
         appManager.Instance.IsDirty.Should().BeTrue();
 
         eventMonitor.EventArgs.Should().NotBeNull();
-        eventMonitor.EventArgs!.PreviousInstance.VipAddress.Should().Be("some");
+        eventMonitor.EventArgs.PreviousInstance.VipAddress.Should().Be("some");
         eventMonitor.EventArgs.NewInstance.VipAddress.Should().Be("other");
     }
 
@@ -237,13 +237,13 @@ public sealed class EurekaApplicationInfoManagerTest
         appManager.Instance.IPAddress.Should().Be("192.168.0.2");
 
         eventMonitor.EventArgs.Should().NotBeNull();
-        eventMonitor.EventArgs!.PreviousInstance.InstanceId.Should().Be("some");
+        eventMonitor.EventArgs.PreviousInstance.InstanceId.Should().Be("some");
         eventMonitor.EventArgs.NewInstance.InstanceId.Should().Be("some");
-        eventMonitor.EventArgs!.PreviousInstance.AppName.Should().Be("DEMO");
+        eventMonitor.EventArgs.PreviousInstance.AppName.Should().Be("DEMO");
         eventMonitor.EventArgs.NewInstance.AppName.Should().Be("DEMO");
-        eventMonitor.EventArgs!.PreviousInstance.HostName.Should().Be("localhost");
+        eventMonitor.EventArgs.PreviousInstance.HostName.Should().Be("localhost");
         eventMonitor.EventArgs.NewInstance.HostName.Should().Be("new-host");
-        eventMonitor.EventArgs!.PreviousInstance.IPAddress.Should().Be("192.168.0.1");
+        eventMonitor.EventArgs.PreviousInstance.IPAddress.Should().Be("192.168.0.1");
         eventMonitor.EventArgs.NewInstance.IPAddress.Should().Be("192.168.0.2");
     }
 

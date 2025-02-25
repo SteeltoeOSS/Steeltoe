@@ -32,7 +32,7 @@ public sealed class CorsPolicyTest
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
         corsPolicy.Should().NotBeNull();
-        corsPolicy!.AllowAnyOrigin.Should().BeTrue();
+        corsPolicy.AllowAnyOrigin.Should().BeTrue();
         corsPolicy.Methods.Should().ContainSingle();
         corsPolicy.Methods.Should().Contain("GET");
 
@@ -58,7 +58,7 @@ public sealed class CorsPolicyTest
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
         corsPolicy.Should().NotBeNull();
-        corsPolicy!.AllowAnyOrigin.Should().BeTrue();
+        corsPolicy.AllowAnyOrigin.Should().BeTrue();
         corsPolicy.Methods.Should().ContainSingle();
         corsPolicy.Methods.Should().Contain("POST");
 
@@ -88,7 +88,7 @@ public sealed class CorsPolicyTest
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
         corsPolicy.Should().NotBeNull();
-        corsPolicy!.AllowAnyOrigin.Should().BeFalse();
+        corsPolicy.AllowAnyOrigin.Should().BeFalse();
         corsPolicy.IsOriginAllowed("http://example.api.com").Should().BeTrue();
         corsPolicy.IsOriginAllowed("http://google.com").Should().BeFalse();
         corsPolicy.Methods.Should().ContainSingle();
@@ -126,7 +126,7 @@ public sealed class CorsPolicyTest
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
         corsPolicy.Should().NotBeNull();
-        corsPolicy!.AllowAnyOrigin.Should().BeTrue();
+        corsPolicy.AllowAnyOrigin.Should().BeTrue();
         corsPolicy.PreflightMaxAge.Should().Be(TimeSpan.FromSeconds(preflightMaxAge));
         corsPolicy.Methods.Should().ContainSingle();
         corsPolicy.Methods.Should().Contain("POST");
@@ -200,7 +200,7 @@ public sealed class CorsPolicyTest
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
         corsPolicy.Should().NotBeNull();
-        corsPolicy!.AllowAnyOrigin.Should().BeTrue();
+        corsPolicy.AllowAnyOrigin.Should().BeTrue();
         corsPolicy.Methods.Should().ContainSingle();
         corsPolicy.Methods.Should().Contain("GET");
         corsPolicy.Headers.Should().BeEquivalentTo("Authorization", "X-Cf-App-Instance", "Content-Type", "Content-Disposition");

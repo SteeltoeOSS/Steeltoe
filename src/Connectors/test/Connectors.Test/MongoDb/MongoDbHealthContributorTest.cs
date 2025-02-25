@@ -34,7 +34,7 @@ public sealed class MongoDbHealthContributorTest
         HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         result.Should().NotBeNull();
-        result!.Status.Should().Be(HealthStatus.Down);
+        result.Status.Should().Be(HealthStatus.Down);
         result.Description.Should().Be("MongoDB health check failed");
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
@@ -57,7 +57,7 @@ public sealed class MongoDbHealthContributorTest
         HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         result.Should().NotBeNull();
-        result!.Status.Should().Be(HealthStatus.Up);
+        result.Status.Should().Be(HealthStatus.Up);
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");
@@ -110,7 +110,7 @@ public sealed class MongoDbHealthContributorTest
         HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         result.Should().NotBeNull();
-        result!.Status.Should().Be(HealthStatus.Up);
+        result.Status.Should().Be(HealthStatus.Up);
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");

@@ -197,7 +197,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         ConfigServerConfigurationProvider? provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         provider.Should().NotBeNull();
-        provider!.ClientOptions.Name.Should().Be("myApp");
+        provider.ClientOptions.Name.Should().Be("myApp");
     }
 
     [Fact]
@@ -219,7 +219,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         ConfigServerConfigurationProvider? provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         provider.Should().NotBeNull();
-        provider!.ClientOptions.Name.Should().Be("myApp");
+        provider.ClientOptions.Name.Should().Be("myApp");
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         ConfigServerConfigurationProvider? provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         provider.Should().NotBeNull();
-        provider!.ClientOptions.Name.Should().Be("myApp");
+        provider.ClientOptions.Name.Should().Be("myApp");
     }
 
     [Fact]
@@ -265,7 +265,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         ConfigServerConfigurationProvider? provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         provider.Should().NotBeNull();
-        provider!.ClientOptions.Name.Should().Be("myApp");
+        provider.ClientOptions.Name.Should().Be("myApp");
     }
 
     [Fact]
@@ -287,7 +287,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         ConfigServerConfigurationProvider? provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         provider.Should().NotBeNull();
-        provider!.ClientOptions.Environment.Should().Be("TestEnv");
+        provider.ClientOptions.Environment.Should().Be("TestEnv");
     }
 
     [Fact]
@@ -309,6 +309,6 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         ConfigServerConfigurationProvider? provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         provider.Should().NotBeNull();
-        provider!.ClientOptions.Environment.Should().Be("TestEnv");
+        provider.ClientOptions.Environment.Should().Be("TestEnv");
     }
 }

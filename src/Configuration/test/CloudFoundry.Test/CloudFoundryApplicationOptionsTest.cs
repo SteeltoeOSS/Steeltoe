@@ -123,9 +123,9 @@ public sealed class CloudFoundryApplicationOptionsTest
         options.ApplicationVersion.Should().Be("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca");
         options.Api.Should().Be("https://api.system.test-cloud.com");
         options.Limits.Should().NotBeNull();
-        options.Limits!.Disk.Should().Be(1024);
-        options.Limits!.FileDescriptor.Should().Be(16384);
-        options.Limits!.Memory.Should().Be(256);
+        options.Limits.Disk.Should().Be(1024);
+        options.Limits.FileDescriptor.Should().Be(16384);
+        options.Limits.Memory.Should().Be(256);
         options.OrganizationId.Should().BeNull();
         options.OrganizationName.Should().BeNull();
         options.ProcessId.Should().BeNull();

@@ -62,8 +62,8 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         testSourceA.LastProvider.Should().NotBeNull().And.BeOfType<TestConfigurationProvider>();
         testSourceB.LastProvider.Should().NotBeNull().And.BeOfType<TestConfigurationProvider>();
 
-        testSourceA.LastProvider!.LoadCount.Should().Be(1);
-        testSourceB.LastProvider!.LoadCount.Should().Be(1);
+        testSourceA.LastProvider.LoadCount.Should().Be(1);
+        testSourceB.LastProvider.LoadCount.Should().Be(1);
 
         Guid lastProviderIdA = testSourceA.LastProvider.Id;
         Guid lastProviderIdB = testSourceB.LastProvider.Id;
@@ -101,8 +101,8 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         testSourceA.LastProvider.Should().NotBeNull();
         testSourceB.LastProvider.Should().NotBeNull();
 
-        testSourceA.LastProvider!.DisposeCount.Should().Be(0);
-        testSourceB.LastProvider!.DisposeCount.Should().Be(0);
+        testSourceA.LastProvider.DisposeCount.Should().Be(0);
+        testSourceB.LastProvider.DisposeCount.Should().Be(0);
 
         configurationRoot.Dispose();
 
@@ -130,19 +130,25 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         builder.Add(testSourceB);
         builder.AddPlaceholderResolver(_loggerFactory);
 
-        TestConfigurationProvider previousProviderA;
-        TestConfigurationProvider previousProviderB;
+        TestConfigurationProvider? previousProviderA;
+        TestConfigurationProvider? previousProviderB;
 
         using ((ConfigurationRoot)builder.Build())
         {
-            previousProviderA = testSourceA.LastProvider!;
-            previousProviderB = testSourceA.LastProvider!;
+            previousProviderA = testSourceA.LastProvider;
+            previousProviderB = testSourceA.LastProvider;
         }
 
         _ = builder.Build();
 
-        TestConfigurationProvider nextProviderA = testSourceA.LastProvider!;
-        TestConfigurationProvider nextProviderB = testSourceA.LastProvider!;
+        TestConfigurationProvider? nextProviderA = testSourceA.LastProvider;
+        TestConfigurationProvider? nextProviderB = testSourceA.LastProvider;
+
+        previousProviderA.Should().NotBeNull();
+        previousProviderB.Should().NotBeNull();
+
+        nextProviderA.Should().NotBeNull();
+        nextProviderB.Should().NotBeNull();
 
         previousProviderA.Id.Should().NotBe(nextProviderA.Id);
         previousProviderB.Id.Should().NotBe(nextProviderB.Id);
@@ -178,8 +184,8 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         testSourceA.LastProvider.Should().NotBeNull();
         testSourceB.LastProvider.Should().NotBeNull();
 
-        testSourceA.LastProvider!.Set("testRoot:keyA", "valueA");
-        testSourceB.LastProvider!.Set("testRoot:keyB", "valueB");
+        testSourceA.LastProvider.Set("testRoot:keyA", "valueA");
+        testSourceB.LastProvider.Set("testRoot:keyB", "valueB");
 
         configurationRoot["testRoot:keyA"].Should().Be("valueA");
         configurationRoot["testRoot:keyB"].Should().Be("valueB");

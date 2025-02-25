@@ -197,7 +197,7 @@ public sealed class ServicesEndpointTest(ITestOutputHelper testOutputHelper) : B
         ServiceRegistration? registration = registrations.SingleOrDefault(registration => registration.Name == registrationName);
         registration.Should().NotBeNull();
 
-        return registration!;
+        return registration;
     }
 
     private interface IExampleService;

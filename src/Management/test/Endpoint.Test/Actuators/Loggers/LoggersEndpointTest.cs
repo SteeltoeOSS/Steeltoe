@@ -44,7 +44,7 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         LoggersResponse? response = await handler.InvokeAsync(new LoggersRequest(), CancellationToken.None);
 
         response.Should().NotBeNull();
-        response!.HasError.Should().BeFalse();
+        response.HasError.Should().BeFalse();
 
         response.Groups.Should().BeEmpty();
 

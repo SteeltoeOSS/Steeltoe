@@ -98,7 +98,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
         health.Should().ContainKey("components");
-        health!["components"].ToString().Should().Contain("diskSpace").And.NotContain("details");
+        health["components"].ToString().Should().Contain("diskSpace").And.NotContain("details");
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
         health.Should().ContainKey("components");
-        string componentString = health!["components"].ToString() ?? string.Empty;
+        string componentString = health["components"].ToString() ?? string.Empty;
         componentString.Should().Contain("diskSpace");
         componentString.Should().Contain("details");
     }
@@ -160,10 +160,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
         health.Should().ContainKey("components");
-        var components = JsonSerializer.Deserialize<Dictionary<string, object>>(health!["components"].ToString()!);
+        var components = JsonSerializer.Deserialize<Dictionary<string, object>>(health["components"].ToString()!);
         components.Should().ContainKey("diskSpace");
         components.Should().ContainKey("test-registration");
-        components!["test-registration"].ToString().Should().NotContain("\"tags\":[\"test-tag-1\",\"test-tag-2\"]");
+        components["test-registration"].ToString().Should().NotContain("\"tags\":[\"test-tag-1\",\"test-tag-2\"]");
     }
 
     [Fact]
@@ -194,10 +194,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
         health.Should().ContainKey("components");
-        var components = JsonSerializer.Deserialize<Dictionary<string, object>>(health!["components"].ToString()!);
+        var components = JsonSerializer.Deserialize<Dictionary<string, object>>(health["components"].ToString()!);
         components.Should().ContainKey("diskSpace");
         components.Should().ContainKey("test-registration");
-        components!["test-registration"].ToString().Should().Contain("\"tags\":[\"test-tag-1\",\"test-tag-2\"]");
+        components["test-registration"].ToString().Should().Contain("\"tags\":[\"test-tag-1\",\"test-tag-2\"]");
     }
 
     [Fact]
@@ -227,7 +227,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         health.Should().NotBeNull();
         health.Should().ContainKey("status");
         health.Should().ContainKey("components");
-        health!["components"].ToString().Should().NotContain("diskSpace");
+        health["components"].ToString().Should().NotContain("diskSpace");
     }
 
     [Fact]
