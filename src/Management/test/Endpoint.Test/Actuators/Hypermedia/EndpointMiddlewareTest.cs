@@ -32,7 +32,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var links = await client.GetFromJsonAsync<Links>($"{requestUriString}/actuator", SerializerOptions);
 
         links.Should().NotBeNull();
-        links!.Entries.Should().ContainKey("self").WhoseValue.Href.Should().Be($"{calculatedHost}/actuator");
+        links.Entries.Should().ContainKey("self").WhoseValue.Href.Should().Be($"{calculatedHost}/actuator");
         links.Entries.Should().ContainKey("info").WhoseValue.Href.Should().Be($"{calculatedHost}/actuator/info");
     }
 

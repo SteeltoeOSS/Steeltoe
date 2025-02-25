@@ -591,7 +591,7 @@ public sealed class EurekaClientTest
         ApplicationInfo? app = apps.GetRegisteredApplication("foo");
 
         app.Should().NotBeNull();
-        app!.Name.Should().Be("FOO");
+        app.Name.Should().Be("FOO");
 
         app.Instances.Should().ContainSingle();
         app.Instances[0].InstanceId.Should().Be("localhost:foo");
@@ -665,7 +665,7 @@ public sealed class EurekaClientTest
         ApplicationInfo? app = apps.GetRegisteredApplication("foo");
 
         app.Should().NotBeNull();
-        app!.Name.Should().Be("FOO");
+        app.Name.Should().Be("FOO");
 
         app.Instances.Should().ContainSingle();
         app.Instances[0].InstanceId.Should().Be("localhost:foo");
@@ -702,7 +702,7 @@ public sealed class EurekaClientTest
         ApplicationInfo? app = apps.GetRegisteredApplication("foo");
 
         app.Should().NotBeNull();
-        app!.Name.Should().Be("FOO");
+        app.Name.Should().Be("FOO");
 
         app.Instances.Should().ContainSingle();
         app.Instances[0].InstanceId.Should().Be("localhost:foo");

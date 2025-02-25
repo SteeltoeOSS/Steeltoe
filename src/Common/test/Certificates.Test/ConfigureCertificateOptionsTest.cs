@@ -89,7 +89,7 @@ public sealed class ConfigureCertificateOptionsTest
         configureOptions.Configure(CertificateName, options);
 
         options.Certificate.Should().NotBeNull();
-        options.Certificate!.HasPrivateKey.Should().BeTrue();
+        options.Certificate.HasPrivateKey.Should().BeTrue();
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public sealed class ConfigureCertificateOptionsTest
         configureOptions.Configure(CertificateName, options);
 
         options.Certificate.Should().NotBeNull();
-        options.Certificate!.HasPrivateKey.Should().BeTrue();
+        options.Certificate.HasPrivateKey.Should().BeTrue();
     }
 
     [Fact]

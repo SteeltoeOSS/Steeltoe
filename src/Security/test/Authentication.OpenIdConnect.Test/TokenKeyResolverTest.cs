@@ -118,7 +118,7 @@ public sealed class TokenKeyResolverTest
         JsonWebKeySet? result = await resolver.FetchKeySetAsync(CancellationToken.None);
 
         result.Should().NotBeNull();
-        result!.Keys.Should().NotBeEmpty();
+        result.Keys.Should().NotBeEmpty();
     }
 
     private sealed class TestMessageHandler : HttpMessageHandler

@@ -109,9 +109,9 @@ public sealed class ServiceBindingMapperTest
 
         tempPath.Should().NotBeNull();
         source["test-destination-key"].Should().Be(tempPath);
-        File.ReadAllText(tempPath!).Should().Be("test-source-value");
+        File.ReadAllText(tempPath).Should().Be("test-source-value");
 
-        File.Delete(tempPath!);
+        File.Delete(tempPath);
     }
 
     [Fact]

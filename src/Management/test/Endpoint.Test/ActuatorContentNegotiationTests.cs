@@ -67,7 +67,7 @@ public sealed class ActuatorContentNegotiationTests
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Content.Headers.ContentType.Should().NotBeNull();
-        response.Content.Headers.ContentType!.MediaType.Should().Be(responseContentType);
+        response.Content.Headers.ContentType.MediaType.Should().Be(responseContentType);
     }
 
     // Values captured from Spring Boot Admin 3.4.1

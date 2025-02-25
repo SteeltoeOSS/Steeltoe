@@ -187,10 +187,10 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
         queuedExchange.Response.Headers["HeaderB"][0].Should().Be("headerBValue");
         queuedExchange.Response.Headers[HeaderNames.SetCookie][0].Should().Be("some-value-that-should-be-redacted");
         queuedExchange.Principal.Should().NotBeNull();
-        queuedExchange.Principal!.Name.Should().Be("MyTestName");
+        queuedExchange.Principal.Name.Should().Be("MyTestName");
         queuedExchange.Request.RemoteAddress.Should().Be("127.0.0.1");
         queuedExchange.Session.Should().NotBeNull();
-        queuedExchange.Session!.Id.Should().Be("TestSessionId");
+        queuedExchange.Session.Id.Should().Be("TestSessionId");
 
         HttpExchange filteredHeaders = observer.GetHttpExchanges().Exchanges[0];
         filteredHeaders.Should().NotBeNull();
@@ -205,10 +205,10 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
         filteredHeaders.Response.Headers["HeaderB"][0].Should().Be("headerBValue");
         filteredHeaders.Response.Headers[HeaderNames.SetCookie][0].Should().Be(HttpExchangesDiagnosticObserver.Redacted);
         filteredHeaders.Principal.Should().NotBeNull();
-        filteredHeaders.Principal!.Name.Should().Be("MyTestName");
+        filteredHeaders.Principal.Name.Should().Be("MyTestName");
         filteredHeaders.Request.RemoteAddress.Should().Be("127.0.0.1");
         filteredHeaders.Session.Should().NotBeNull();
-        filteredHeaders.Session!.Id.Should().Be("TestSessionId");
+        filteredHeaders.Session.Id.Should().Be("TestSessionId");
 
         optionsMonitor.CurrentValue.RequestHeaders.Add(HeaderNames.Authorization);
         optionsMonitor.CurrentValue.RequestHeaders.Add("header1");
@@ -277,7 +277,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
         observer.Queue.Should().ContainSingle();
         observer.Queue.TryPeek(out HttpExchange? result).Should().BeTrue();
         result.Should().NotBeNull();
-        result!.Request.Method.Should().Be("GET");
+        result.Request.Method.Should().Be("GET");
         result.Request.Uri.Should().Be("http://localhost:1111/myPath?foo=bar&bar=foo");
         result.Request.Headers.Should().ContainKeys(HeaderNames.Accept, HeaderNames.Authorization, HeaderNames.UserAgent, "Header1", "Header2");
 

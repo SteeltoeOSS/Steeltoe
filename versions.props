@@ -8,7 +8,7 @@
     <AspNetCoreHealthChecksVersion>9.0.*</AspNetCoreHealthChecksVersion>
     <CoverletVersion>6.0.*</CoverletVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
-    <FluentAssertionsVersion>7.1.*</FluentAssertionsVersion>
+    <FluentAssertionsVersion>7.2.*</FluentAssertionsVersion>
     <MicrosoftAzureCosmosVersion>3.46.*</MicrosoftAzureCosmosVersion>
     <MicrosoftCodeAnalysisVersion>4.12.0</MicrosoftCodeAnalysisVersion>
     <MicrosoftSqlClientVersion>6.0.*</MicrosoftSqlClientVersion>

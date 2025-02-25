@@ -121,7 +121,7 @@ public sealed class HostBuilderTests : IDisposable
         var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<SerilogOptions>>();
         MinimumLevel? minimumLevel = optionsMonitor.CurrentValue.MinimumLevel;
         minimumLevel.Should().NotBeNull();
-        minimumLevel!.Default.Should().Be(LogEventLevel.Information);
+        minimumLevel.Default.Should().Be(LogEventLevel.Information);
         minimumLevel.Override.Should().BeEmpty();
 
         var logger = host.Services.GetRequiredService<ILogger<HostBuilderTests>>();
@@ -156,7 +156,7 @@ public sealed class HostBuilderTests : IDisposable
         var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<SerilogOptions>>();
         MinimumLevel? minimumLevel = optionsMonitor.CurrentValue.MinimumLevel;
         minimumLevel.Should().NotBeNull();
-        minimumLevel!.Default.Should().Be(LogEventLevel.Error);
+        minimumLevel.Default.Should().Be(LogEventLevel.Error);
         minimumLevel.Override.Should().BeEmpty();
 
         var logger = host.Services.GetRequiredService<ILogger<HostBuilderTests>>();
@@ -190,7 +190,7 @@ public sealed class HostBuilderTests : IDisposable
         var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<SerilogOptions>>();
         MinimumLevel? minimumLevel = optionsMonitor.CurrentValue.MinimumLevel;
         minimumLevel.Should().NotBeNull();
-        minimumLevel!.Default.Should().Be(LogEventLevel.Error);
+        minimumLevel.Default.Should().Be(LogEventLevel.Error);
         minimumLevel.Override.Should().BeEmpty();
 
         var logger = host.Services.GetRequiredService<ILogger<HostBuilderTests>>();
@@ -224,7 +224,7 @@ public sealed class HostBuilderTests : IDisposable
         var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<SerilogOptions>>();
         MinimumLevel? minimumLevel = optionsMonitor.CurrentValue.MinimumLevel;
         minimumLevel.Should().NotBeNull();
-        minimumLevel!.Default.Should().Be(LogEventLevel.Information);
+        minimumLevel.Default.Should().Be(LogEventLevel.Information);
         minimumLevel.Override.Should().ContainSingle();
         minimumLevel.Override.Should().Contain("Steeltoe", LogEventLevel.Error);
 
@@ -262,7 +262,7 @@ public sealed class HostBuilderTests : IDisposable
         var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<SerilogOptions>>();
         MinimumLevel? minimumLevel = optionsMonitor.CurrentValue.MinimumLevel;
         minimumLevel.Should().NotBeNull();
-        minimumLevel!.Default.Should().Be(LogEventLevel.Error);
+        minimumLevel.Default.Should().Be(LogEventLevel.Error);
         minimumLevel.Override.Should().BeEmpty();
 
         var logger = host.Services.GetRequiredService<ILogger<HostBuilderTests>>();
@@ -299,7 +299,7 @@ public sealed class HostBuilderTests : IDisposable
         var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<SerilogOptions>>();
         MinimumLevel? minimumLevel = optionsMonitor.CurrentValue.MinimumLevel;
         minimumLevel.Should().NotBeNull();
-        minimumLevel!.Default.Should().Be(LogEventLevel.Information);
+        minimumLevel.Default.Should().Be(LogEventLevel.Information);
         minimumLevel.Override.Should().ContainSingle();
         minimumLevel.Override.Should().Contain("Steeltoe", LogEventLevel.Error);
 

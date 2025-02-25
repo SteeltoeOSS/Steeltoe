@@ -1037,7 +1037,7 @@ public sealed class ActuatorRouteMappingsTest
         var responseNode = await httpClient.GetFromJsonAsync<JsonNode>(new Uri("http://localhost/actuator/mappings"));
         responseNode.Should().NotBeNull();
 
-        return removeMappingsActuatorInResponse ? RemoveMappingsActuatorInResponse(responseNode!) : responseNode!;
+        return removeMappingsActuatorInResponse ? RemoveMappingsActuatorInResponse(responseNode) : responseNode;
     }
 
     private static JsonNode RemoveMappingsActuatorInResponse(JsonNode responseNode)

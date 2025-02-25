@@ -43,7 +43,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var links = await client.GetFromJsonAsync<Links>("http://localhost/cloudfoundryapplication", SerializerOptions);
 
         links.Should().NotBeNull();
-        links!.Entries["beans"].Href.Should().Be("http://localhost/cloudfoundryapplication/beans");
+        links.Entries["beans"].Href.Should().Be("http://localhost/cloudfoundryapplication/beans");
         links.Entries["dbmigrations"].Href.Should().Be("http://localhost/cloudfoundryapplication/dbmigrations");
         links.Entries["env"].Href.Should().Be("http://localhost/cloudfoundryapplication/env");
         links.Entries["health"].Href.Should().Be("http://localhost/cloudfoundryapplication/health");
