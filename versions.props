@@ -9,25 +9,25 @@
     <CoverletVersion>6.0.*</CoverletVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
     <FluentAssertionsVersion>7.2.*</FluentAssertionsVersion>
-    <MicrosoftAzureCosmosVersion>3.46.*</MicrosoftAzureCosmosVersion>
-    <MicrosoftCodeAnalysisVersion>4.12.0</MicrosoftCodeAnalysisVersion>
+    <MicrosoftAzureCosmosVersion>3.47.*</MicrosoftAzureCosmosVersion>
+    <MicrosoftCodeAnalysisVersion>4.12.*</MicrosoftCodeAnalysisVersion>
     <MicrosoftSqlClientVersion>6.0.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>7.0.*</MockHttpVersion>
-    <MongoDbDriverVersion>3.1.*</MongoDbDriverVersion>
+    <MongoDbDriverVersion>3.2.*</MongoDbDriverVersion>
     <MoqVersion>4.20.69</MoqVersion>
     <MySqlConnectorVersion>2.4.*</MySqlConnectorVersion>
     <MySqlDataVersion>9.2.*</MySqlDataVersion>
     <NerdbankGitVersioningVersion>3.7.*</NerdbankGitVersioningVersion>
-    <NewtonsoftJsonVersion>13.0.3</NewtonsoftJsonVersion>
+    <NewtonsoftJsonVersion>13.0.*</NewtonsoftJsonVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
-    <RabbitClientTestVersion>7.0.*</RabbitClientTestVersion>
+    <RabbitClientTestVersion>7.1.*</RabbitClientTestVersion>
     <SerilogEnrichersThreadVersion>4.0.*</SerilogEnrichersThreadVersion>
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
     <SonarAnalyzerVersion>10.6.0.109712</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>8.0.*</SourceLinkGitHubVersion>
     <StyleCopVersion>1.2.0-beta.556</StyleCopVersion>
     <SystemCommandLineVersion>2.0.0-beta4.24324.3</SystemCommandLineVersion>
-    <SystemIdentityModelVersion>8.4.0</SystemIdentityModelVersion>
+    <SystemIdentityModelVersion>8.4.*</SystemIdentityModelVersion>
     <SystemSqlClientVersion>4.9.*</SystemSqlClientVersion>
     <TestSdkVersion>17.13.*</TestSdkVersion>
     <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
