@@ -3,7 +3,7 @@
   "version": "4.0-beta",
   "publicReleaseRefSpec": [
     "^refs/heads/main$",
-    "^refs/heads/release/\\d+(?:\\.\\d+)?$"
+    "^refs/heads/release/[0-9]+.*$"
   ],
   "cloudBuild": {
     // https://github.com/dotnet/Nerdbank.GitVersioning/blob/main/doc/cloudbuild.md#set-cloud-build-variables-only-once-in-a-build
