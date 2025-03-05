@@ -41,7 +41,7 @@ public static class CertificateConfigurationExtensions
 
         var keys = new Dictionary<string, string?>
         {
-            { $"{keyPrefix}CertificateFilePath", certificateFilePath }
+            [$"{keyPrefix}CertificateFilePath"] = certificateFilePath
         };
 
         if (!string.IsNullOrEmpty(privateKeyFilePath))

@@ -36,8 +36,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
                     Name = "source",
                     Source =
                     {
-                        { "key1", "value1" },
-                        { "key2", 10 }
+                        ["key1"] = "value1",
+                        ["key2"] = 10
                     }
                 }
             }
@@ -291,8 +291,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "development",
             Headers =
             {
-                { "foo", "bar" },
-                { "bar", "foo" }
+                ["foo"] = "bar",
+                ["bar"] = "foo"
             }
         };
 
@@ -324,7 +324,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         var values = new Dictionary<string, string?>
         {
-            { "spring:cloud:config:discovery:enabled", "True" }
+            ["spring:cloud:config:discovery:enabled"] = "True"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
@@ -348,7 +348,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         var values = new Dictionary<string, string?>
         {
-            { "spring:cloud:config:discovery:enabled", "True" }
+            ["spring:cloud:config:discovery:enabled"] = "True"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
@@ -370,14 +370,14 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         var metadata1 = new Dictionary<string, string?>
         {
-            { "password", "firstPassword" }
+            ["password"] = "firstPassword"
         };
 
         var metadata2 = new Dictionary<string, string?>
         {
-            { "password", "secondPassword" },
-            { "user", "secondUser" },
-            { "configPath", "configPath" }
+            ["password"] = "secondPassword",
+            ["user"] = "secondUser",
+            ["configPath"] = "configPath"
         };
 
         List<IServiceInstance> instances =
@@ -397,9 +397,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         var values = new Dictionary<string, string?>
         {
-            { "spring:cloud:config:discovery:enabled", "True" },
-            { "spring:cloud:config:failFast", "True" },
-            { "eureka:client:eurekaServer:retryCount", "0" }
+            ["spring:cloud:config:discovery:enabled"] = "True",
+            ["spring:cloud:config:failFast"] = "True",
+            ["eureka:client:eurekaServer:retryCount"] = "0"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(values).Build();

@@ -47,9 +47,9 @@ internal sealed class ConfigServerDiscoveryService
         // force settings to make sure we don't register the app here
         IConfiguration tempConfiguration = new ConfigurationBuilder().AddConfiguration(_configuration).AddInMemoryCollection(new Dictionary<string, string?>
         {
-            { "Eureka:Client:ShouldRegisterWithEureka", "false" },
-            { "Eureka:Client:ShouldFetchRegistry", "true" },
-            { "Consul:Discovery:Register", "false" }
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Client:ShouldFetchRegistry"] = "true",
+            ["Consul:Discovery:Register"] = "false"
         }).Build();
 
         tempServices.AddSingleton(tempConfiguration);

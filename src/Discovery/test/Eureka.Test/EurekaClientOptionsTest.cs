@@ -139,7 +139,7 @@ public sealed class EurekaClientOptionsTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "eureka:client:serviceUrl", "http://testhost/eureka" }
+            ["eureka:client:serviceUrl"] = "http://testhost/eureka"
         };
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
@@ -158,8 +158,8 @@ public sealed class EurekaClientOptionsTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:cloud:discovery:enabled", "false" },
-            { "eureka:client:serviceUrl", "http://testhost/eureka" }
+            ["spring:cloud:discovery:enabled"] = "false",
+            ["eureka:client:serviceUrl"] = "http://testhost/eureka"
         };
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
@@ -261,9 +261,9 @@ public sealed class EurekaClientOptionsTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:cloud:discovery:enabled", "false" },
-            { "eureka:client:enabled", "true" },
-            { "eureka:client:serviceUrl", "http://testhost/eureka" }
+            ["spring:cloud:discovery:enabled"] = "false",
+            ["eureka:client:enabled"] = "true",
+            ["eureka:client:serviceUrl"] = "http://testhost/eureka"
         };
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
