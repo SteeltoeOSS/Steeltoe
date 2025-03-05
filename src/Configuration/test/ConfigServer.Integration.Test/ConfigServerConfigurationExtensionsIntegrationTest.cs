@@ -223,6 +223,9 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
                         "failFast": "true",
                         "discovery": {
                             "enabled": true
+                        },
+                        "retry": {
+                            "enabled": true
                         }
                     }
                   }
