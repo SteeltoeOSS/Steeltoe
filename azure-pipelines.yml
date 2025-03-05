@@ -18,7 +18,7 @@ jobs:
 - job: Steeltoe_CI
   timeoutInMinutes: 60
   variables:
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    DOTNET_NOLOGO: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
   strategy:
     matrix:
