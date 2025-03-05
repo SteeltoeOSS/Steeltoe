@@ -100,7 +100,9 @@ jobs:
       projects: src/Steeltoe.All.sln
       arguments: --no-restore -c $(buildConfiguration) -v minimal
   - script: |
-      docker run -d --name eurekaserver -p 8761:8761 steeltoe.azurecr.io/eureka-server; sleep 30s
+      docker run -d --name eurekaserver -p 8761:8761 steeltoe.azurecr.io/eureka-server
+      echo 'Waiting a minute for Eureka Server to start...'
+      sleep 60s
       docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management; sleep 10s
       docker run -d --name configserver -p 8888:8888 steeltoe.azurecr.io/config-server --spring.cloud.config.server.git.default-label=main; sleep 10s
     condition: eq(variables['integrationTests'], 'true')
