@@ -1,6 +1,6 @@
 parameters:
   component: ''
-  runConfigAndEurekaServers: false
+  #runConfigAndEurekaServers: false
   runRabbitMQ: false
   skipFilter: ''
   OS: ubuntu
@@ -23,6 +23,9 @@ jobs:
     CommonTestArgs: --blame-crash --blame-hang-timeout 3m --no-build -c Release --collect "XPlat Code Coverage" -maxcpucount:1 --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)
   pool:
     vmImage: ${{parameters.OS}}-latest
+  services:
+    eureka: eureka
+    configServer: configServer
   steps:
   - checkout: self
     fetchDepth: 0
@@ -61,15 +64,15 @@ jobs:
       command: build
       projects: $(SolutionFile)
       arguments: --no-restore -c Release -v minimal
-  - script: docker run -d --name eurekaserver -p 8761:8761 steeltoe.azurecr.io/eureka-server; sleep 60s
-    condition: eq(${{parameters.runConfigAndEurekaServers}}, 'true')
-    displayName: Start Eureka Server
+  # - script: docker run -d --name eurekaserver -p 8761:8761 steeltoe.azurecr.io/eureka-server; sleep 60s
+  #   condition: eq(${{parameters.runConfigAndEurekaServers}}, 'true')
+  #   displayName: Start Eureka Server
   - script: docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management; sleep 10s
     condition: eq(${{parameters.runRabbitMQ}}, 'true')
     displayName: Start RabbitMQ
-  - script: docker run -d --name configserver -p 8888:8888 -e eureka.client.enabled=true steeltoe.azurecr.io/config-server --spring.cloud.config.server.git.default-label=main; sleep 10s
-    condition: eq(${{parameters.runConfigAndEurekaServers}}, 'true')
-    displayName: Start Config Server
+  # - script: docker run -d --name configserver -p 8888:8888 -e eureka.client.enabled=true steeltoe.azurecr.io/config-server --spring.cloud.config.server.git.default-label=main; sleep 10s
+  #   condition: eq(${{parameters.runConfigAndEurekaServers}}, 'true')
+  #   displayName: Start Config Server
   - task: DotNetCoreCLI@2
     displayName: dotnet test
     inputs:
@@ -91,16 +94,16 @@ jobs:
       docker rm rabbitmq
     condition: eq(${{parameters.runRabbitMQ}}, 'true')
     displayName: Stop RabbitMQ
-  - script: |
-      docker kill configserver
-      docker rm configserver
-    condition: eq(${{parameters.runConfigAndEurekaServers}}, 'true')
-    displayName: Stop Config Server
-  - script: |
-      docker kill eurekaserver
-      docker rm eurekaserver
-    condition: eq(${{parameters.runConfigAndEurekaServers}}, 'true')
-    displayName: Stop Eureka Server
+  # - script: |
+  #     docker kill configserver
+  #     docker rm configserver
+  #   condition: eq(${{parameters.runConfigAndEurekaServers}}, 'true')
+  #   displayName: Stop Config Server
+  # - script: |
+  #     docker kill eurekaserver
+  #     docker rm eurekaserver
+  #   condition: eq(${{parameters.runConfigAndEurekaServers}}, 'true')
+  #   displayName: Stop Eureka Server
   - task: PublishTestResults@2
     condition: succeededOrFailed()
     displayName: Publish test results
