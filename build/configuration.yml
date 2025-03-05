@@ -17,4 +17,4 @@ jobs:
   - template: templates/component-build.yaml
     parameters:
       component: Configuration
-      runConfigServer: true
+      runConfigAndEurekaServers: true

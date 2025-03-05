@@ -100,8 +100,9 @@ jobs:
       projects: src/Steeltoe.All.sln
       arguments: --no-restore -c $(buildConfiguration) -v minimal
   - script: |
-      docker run -d --name configserver -p 8888:8888 steeltoe.azurecr.io/config-server --spring.cloud.config.server.git.default-label=main
-      docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+      docker run -d --name eurekaserver -p 8761:8761 steeltoe.azurecr.io/eureka-server; sleep 30s
+      docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management; sleep 10s
+      docker run -d --name configserver -p 8888:8888 steeltoe.azurecr.io/config-server --spring.cloud.config.server.git.default-label=main; sleep 10s
     condition: eq(variables['integrationTests'], 'true')
     displayName: Start Docker services
   - task: DotNetCoreCLI@2
@@ -125,6 +126,8 @@ jobs:
       docker rm configserver
       docker kill rabbitmq
       docker rm rabbitmq
+      docker kill eurekaserver
+      docker rm eurekaserver
     condition: eq(variables['integrationTests'], 'true')
     displayName: Stop Docker services
   - task: PublishTestResults@2

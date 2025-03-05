@@ -202,99 +202,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         Assert.Equal("spamfrom foo developmentSpring Cloud Sampleshttps://github.com/spring-cloud-samples", result);
     }
 
-    [Fact(Skip = "Requires matching PCF environment with Spring Cloud Config Server provisioned")]
-    [Trait("Category", "Integration")]
-    public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv()
-    {
-        const string vcapApplication = """
-            {
-                "limits": {
-                "mem": 1024,
-                "disk": 1024,
-                "fds": 16384
-                },
-                "application_id": "c2e03250-62e3-4494-82fb-1bc6e2e25ad0",
-                "application_version": "ef087dfd-2955-4854-86c1-4a2cf30e05b3",
-                "application_name": "test",
-                "application_uris": [
-                "test.apps.test-cloud.com"
-                ],
-                "version": "ef087dfd-2955-4854-86c1-4a2cf30e05b3",
-                "name": "test",
-                "space_name": "development",
-                "space_id": "ff257d70-eeed-4487-9d6c-4ac709f76aea",
-                "uris": [
-                "test.apps.test-cloud.com"
-                ],
-                "users": null
-            }
-            """;
-
-        const string vcapServices = """
-            {
-                "p-config-server": [
-                {
-                    "name": "myConfigServer",
-                    "label": "p-config-server",
-                    "tags": [
-                    "configuration",
-                    "spring-cloud"
-                    ],
-                    "plan": "standard",
-                    "credentials": {
-                    "uri": "https://config-5b3af2c9-754f-4eb6-9d4b-da50d33d5a5f.apps.test-cloud.com",
-                    "client_id": "p-config-server-690772bc-2820-4a2c-9c76-6d8ccf8e8de5",
-                    "client_secret": "Ib9RFhVPuLub",
-                    "access_token_uri": "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token"
-                    }
-                }
-                ]
-            }
-            """;
-
-        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", vcapApplication);
-        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
-
-        const string appSettings = """
-            {
-                "spring": {
-                    "cloud": {
-                        "config": {
-                            "validate_certificates": false,
-                            "failFast": "true"
-                        }
-                    }
-                }
-            }
-            """;
-
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
-
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseEnvironment("development");
-        builder.UseStartup<TestServerStartup>();
-
-        builder.ConfigureAppConfiguration(configurationBuilder =>
-        {
-            configurationBuilder.SetBasePath(directory);
-            configurationBuilder.AddJsonFile(fileName);
-        });
-
-        builder.AddConfigServer();
-
-        using IWebHost host = builder.Build();
-        await host.StartAsync();
-
-        using HttpClient client = host.GetTestClient();
-        string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"));
-
-        Assert.Equal("spambarcelonaSpring Cloud Sampleshttps://github.com/spring-cloud-samples", result);
-    }
-
-    [Fact(Skip = "Integration test - Requires local Eureka server and local Config Server with discovery-first enabled")]
+    [Fact]
     [Trait("Category", "Integration")]
     public void SpringCloudConfigServer_DiscoveryFirst_ReturnsExpectedDefaultData()
     {
@@ -306,7 +214,6 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
                   },
                   "cloud": {
                     "config": {
-                        "uri": "http://localhost:8888",
                         "env": "development",
                         "failFast": "true",
                         "discovery": {
