@@ -35,8 +35,8 @@ public sealed class InfoBuilderTest : BaseTest
 
         var items = new Dictionary<string, object>
         {
-            { "foo", "bar" },
-            { "bar", 100 }
+            ["foo"] = "bar",
+            ["bar"] = 100
         };
 
         builder.WithInfo(items);

@@ -86,17 +86,17 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
     {
         var template = new Dictionary<string, string?>
         {
-            { "placeholder", "${value}" }
+            ["placeholder"] = "${value}"
         };
 
         var valueProviderA = new Dictionary<string, string?>
         {
-            { "value", "A" }
+            ["value"] = "A"
         };
 
         var valueProviderB = new Dictionary<string, string?>
         {
-            { "value", "B" }
+            ["value"] = "B"
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();

@@ -16,7 +16,7 @@ public sealed class PropertyPlaceholderHelperTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "foo", "bar" }
+            ["foo"] = "bar"
         };
 
         var builder = new ConfigurationBuilder();
@@ -36,7 +36,7 @@ public sealed class PropertyPlaceholderHelperTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "foo", "bar" }
+            ["foo"] = "bar"
         };
 
         var builder = new ConfigurationBuilder();
@@ -90,7 +90,7 @@ public sealed class PropertyPlaceholderHelperTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "foo:bar", "bar" }
+            ["foo:bar"] = "bar"
         };
 
         var builder = new ConfigurationBuilder();
@@ -110,7 +110,7 @@ public sealed class PropertyPlaceholderHelperTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "foo:bar", "bar" }
+            ["foo:bar"] = "bar"
         };
 
         var builder = new ConfigurationBuilder();
@@ -144,8 +144,8 @@ public sealed class PropertyPlaceholderHelperTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "foo", "bar" },
-            { "bar", "baz" }
+            ["foo"] = "bar",
+            ["bar"] = "baz"
         };
 
         var builder = new ConfigurationBuilder();
@@ -165,8 +165,8 @@ public sealed class PropertyPlaceholderHelperTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "foo:boo", "bar" },
-            { "bar:far", "baz" }
+            ["foo:boo"] = "bar",
+            ["bar:far"] = "baz"
         };
 
         var builder = new ConfigurationBuilder();
@@ -186,8 +186,8 @@ public sealed class PropertyPlaceholderHelperTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "bar", "${baz}" },
-            { "baz", "bar" }
+            ["bar"] = "${baz}",
+            ["baz"] = "bar"
         };
 
         var builder = new ConfigurationBuilder();
@@ -207,8 +207,8 @@ public sealed class PropertyPlaceholderHelperTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "bar:boo", "${baz.faz}" },
-            { "baz:faz", "bar" }
+            ["bar:boo"] = "${baz.faz}",
+            ["baz:faz"] = "bar"
         };
 
         var builder = new ConfigurationBuilder();
@@ -228,8 +228,8 @@ public sealed class PropertyPlaceholderHelperTest
 
         var appSettings1 = new Dictionary<string, string?>
         {
-            { "bar", "bar" },
-            { "inner", "ar" }
+            ["bar"] = "bar",
+            ["inner"] = "ar"
         };
 
         var builder1 = new ConfigurationBuilder();
@@ -240,10 +240,10 @@ public sealed class PropertyPlaceholderHelperTest
 
         var appSettings2 = new Dictionary<string, string?>
         {
-            { "top", "${child}+${child}" },
-            { "child", "${${differentiator}.grandchild}" },
-            { "differentiator", "first" },
-            { "first.grandchild", "actualValue" }
+            ["top"] = "${child}+${child}",
+            ["child"] = "${${differentiator}.grandchild}",
+            ["differentiator"] = "first",
+            ["first.grandchild"] = "actualValue"
         };
 
         var builder2 = new ConfigurationBuilder();
@@ -266,8 +266,8 @@ public sealed class PropertyPlaceholderHelperTest
 
         var appSettings1 = new Dictionary<string, string?>
         {
-            { "bar", "bar" },
-            { "inner:placeholder", "ar" }
+            ["bar"] = "bar",
+            ["inner:placeholder"] = "ar"
         };
 
         var builder1 = new ConfigurationBuilder();
@@ -278,10 +278,10 @@ public sealed class PropertyPlaceholderHelperTest
 
         var appSettings2 = new Dictionary<string, string?>
         {
-            { "top", "${child}+${child}" },
-            { "child", "${${differentiator}.grandchild}" },
-            { "differentiator", "first" },
-            { "first:grandchild", "actualValue" }
+            ["top"] = "${child}+${child}",
+            ["child"] = "${${differentiator}.grandchild}",
+            ["differentiator"] = "first",
+            ["first:grandchild"] = "actualValue"
         };
 
         var builder2 = new ConfigurationBuilder();
@@ -304,7 +304,7 @@ public sealed class PropertyPlaceholderHelperTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "foo", "bar" }
+            ["foo"] = "bar"
         };
 
         var builder = new ConfigurationBuilder();

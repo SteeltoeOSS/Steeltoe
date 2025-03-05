@@ -33,7 +33,7 @@ public sealed class ConfigServerDiscoveryServiceTest
     {
         var appSettings = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery))
         {
-            { "eureka:client:eurekaServer:retryCount", "0" }
+            ["eureka:client:eurekaServer:retryCount"] = "0"
         };
 
         var builder = new ConfigurationBuilder();
@@ -51,7 +51,7 @@ public sealed class ConfigServerDiscoveryServiceTest
     {
         var appSettings = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery))
         {
-            { "eureka:client:eurekaServer:retryCount", "1" }
+            ["eureka:client:eurekaServer:retryCount"] = "1"
         };
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
@@ -76,7 +76,7 @@ public sealed class ConfigServerDiscoveryServiceTest
     {
         var appSettings = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery))
         {
-            { "eureka:client:eurekaServer:retryCount", "0" }
+            ["eureka:client:eurekaServer:retryCount"] = "0"
         };
 
         var builder = new ConfigurationBuilder();

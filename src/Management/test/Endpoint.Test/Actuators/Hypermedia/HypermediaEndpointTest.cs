@@ -28,7 +28,7 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                { "management:endpoints:path", "foobar" }
+                ["management:endpoints:path"] = "foobar"
             });
         };
 
@@ -72,7 +72,7 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                { "management:endpoints:info:enabled", "false" }
+                ["management:endpoints:info:enabled"] = "false"
             });
         };
 
@@ -98,8 +98,8 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                { "management:endpoints:actuator:enabled", "false" },
-                { "management:endpoints:info:enabled", "true" }
+                ["management:endpoints:actuator:enabled"] = "false",
+                ["management:endpoints:info:enabled"] = "true"
             });
         };
 
