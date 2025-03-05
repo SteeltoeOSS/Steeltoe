@@ -61,7 +61,7 @@ jobs:
       command: build
       projects: $(SolutionFile)
       arguments: --no-restore -c Release -v minimal
-  - script: docker run -d --name eurekaserver -p 8761:8761 steeltoe.azurecr.io/eureka-server; sleep 30s
+  - script: docker run -d --name eurekaserver -p 8761:8761 steeltoe.azurecr.io/eureka-server; sleep 60s
     condition: eq(${{parameters.runConfigAndEurekaServers}}, 'true')
     displayName: Start Eureka Server
   - script: docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management; sleep 10s
