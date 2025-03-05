@@ -208,6 +208,11 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
     {
         const string appSettings = """
             {
+                "Logging": {
+                    "LogLevel": {
+                        "Steeltoe.Configuration.ConfigServer": "Debug"
+                    }
+                },
                 "spring": {
                   "application": {
                     "name" : "foo"

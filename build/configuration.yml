@@ -13,8 +13,21 @@ pr:
     - build/configuration.yml
     - src/Configuration
 
+resources:
+  containers:
+  - container: eureka
+    image: steeltoe.azurecr.io/eureka-server
+    ports:
+    - 8761:8761
+  - container: configServer
+    image: steeltoe.azurecr.io/config-server
+    env:
+      eureka.client.enabled: true
+    ports:
+    - 8888:8888
+
 jobs:
   - template: templates/component-build.yaml
     parameters:
       component: Configuration
-      runConfigAndEurekaServers: true
+      #runConfigAndEurekaServers: true
