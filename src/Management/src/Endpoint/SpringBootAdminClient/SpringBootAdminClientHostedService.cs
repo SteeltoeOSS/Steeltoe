@@ -106,7 +106,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
 
         var metadata = new Dictionary<string, object>
         {
-            { "startup", _timeProvider.GetUtcNow().UtcDateTime }
+            ["startup"] = _timeProvider.GetUtcNow().UtcDateTime
         };
 
         return new Application(applicationName, managementUriBuilder.Uri, healthUriBuilder.Uri, baseUri, metadata);

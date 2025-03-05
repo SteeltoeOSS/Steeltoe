@@ -119,7 +119,7 @@ public sealed class ApplicationInfoTest
             IsCoordinatingDiscoveryServer = false,
             Metadata = new Dictionary<string, string?>
             {
-                { "@class", "java.util.Collections$EmptyMap" }
+                ["@class"] = "java.util.Collections$EmptyMap"
             },
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,

@@ -32,7 +32,7 @@ public sealed class ConfigureCertificateOptionsTest
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
-            { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath", "does-not-exist.crt" }
+            [$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath"] = "does-not-exist.crt"
         }).Build();
 
         var configureOptions = new ConfigureCertificateOptions(configurationRoot);
@@ -49,7 +49,7 @@ public sealed class ConfigureCertificateOptionsTest
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
-            { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath", "empty.crt" }
+            [$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath"] = "empty.crt"
         }).Build();
 
         var configureOptions = new ConfigureCertificateOptions(configurationRoot);
@@ -66,8 +66,8 @@ public sealed class ConfigureCertificateOptionsTest
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
-            { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath", "instance.crt" },
-            { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:privateKeyFilePath", "invalid.key" }
+            [$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath"] = "instance.crt",
+            [$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:privateKeyFilePath"] = "invalid.key"
         }).Build();
 
         var configureOptions = new ConfigureCertificateOptions(configurationRoot);

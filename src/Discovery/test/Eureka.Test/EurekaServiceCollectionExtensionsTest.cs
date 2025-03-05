@@ -38,7 +38,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "management:endpoints:health:path", "/non-default" }
+            ["management:endpoints:health:path"] = "/non-default"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
@@ -61,8 +61,8 @@ public sealed class EurekaServiceCollectionExtensionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "Eureka:Client:EurekaServer:ConnectTimeoutSeconds", "1" },
-            { "Eureka:Client:EurekaServer:RetryCount", "1" }
+            ["Eureka:Client:EurekaServer:ConnectTimeoutSeconds"] = "1",
+            ["Eureka:Client:EurekaServer:RetryCount"] = "1"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
@@ -140,7 +140,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "management:endpoints:health:path", "/non-default" }
+            ["management:endpoints:health:path"] = "/non-default"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
@@ -162,8 +162,8 @@ public sealed class EurekaServiceCollectionExtensionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "eureka:instance:healthCheckUrlPath", "/customHealth" },
-            { "eureka:instance:statusPageUrlPath", "/customStatus" }
+            ["eureka:instance:healthCheckUrlPath"] = "/customHealth",
+            ["eureka:instance:statusPageUrlPath"] = "/customStatus"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();

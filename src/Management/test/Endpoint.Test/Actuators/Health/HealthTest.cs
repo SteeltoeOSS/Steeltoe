@@ -46,9 +46,9 @@ public sealed class HealthTest : BaseTest
                 {
                     Details =
                     {
-                        { "item1", new HealthData() },
-                        { "item2", "String" },
-                        { "item3", false }
+                        ["item1"] = new HealthData(),
+                        ["item2"] = "String",
+                        ["item3"] = false
                     }
                 }
             }

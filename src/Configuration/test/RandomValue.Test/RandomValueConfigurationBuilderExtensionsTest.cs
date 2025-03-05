@@ -14,7 +14,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     {
         IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string?>
         {
-            { "foo:bar", "value" }
+            ["foo:bar"] = "value"
         });
 
         IConfigurationRoot configurationRoot = builder.Build();
@@ -25,10 +25,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     [Fact]
     public void AddRandomValueSource_String()
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            { "foo:bar", "value" }
-        });
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
 
         IConfigurationRoot configurationRoot = builder.Build();
         string? value = configurationRoot["random:string"];
@@ -38,10 +35,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     [Fact]
     public void AddRandomValueSource_Uuid()
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            { "foo:bar", "value" }
-        });
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
 
         IConfigurationRoot configurationRoot = builder.Build();
         string? value = configurationRoot["random:uuid"];
@@ -51,10 +45,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     [Fact]
     public void AddRandomValueSource_RandomInt()
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            { "foo:bar", "value" }
-        });
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
 
         IConfigurationRoot configurationRoot = builder.Build();
         string? value = configurationRoot["random:int"];
@@ -64,10 +55,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     [Fact]
     public void AddRandomValueSource_RandomIntRange()
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            { "foo:bar", "value" }
-        });
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
 
         IConfigurationRoot configurationRoot = builder.Build();
         string? value = configurationRoot["random:int[4,10]"];
@@ -79,10 +67,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     [Fact]
     public void AddRandomValueSource_RandomIntMax()
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            { "foo:bar", "value" }
-        });
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
 
         IConfigurationRoot configurationRoot = builder.Build();
         string? value = configurationRoot["random:int(10)"];
@@ -94,10 +79,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     [Fact]
     public void AddRandomValueSource_RandomLong()
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            { "foo:bar", "value" }
-        });
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
 
         IConfigurationRoot configurationRoot = builder.Build();
         string? value = configurationRoot["random:long"];
@@ -107,10 +89,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     [Fact]
     public void AddRandomValueSource_RandomLongRange()
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            { "foo:bar", "value" }
-        });
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
 
         IConfigurationRoot configurationRoot = builder.Build();
         string? value = configurationRoot["random:long[4,10]"];
@@ -122,10 +101,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     [Fact]
     public void AddRandomValueSource_RandomLongMax()
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            { "foo:bar", "value" }
-        });
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
 
         IConfigurationRoot configurationRoot = builder.Build();
         string? value = configurationRoot["random:long(10)"];

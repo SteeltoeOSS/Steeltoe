@@ -26,7 +26,7 @@ public sealed class ConsulServiceRegistryTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:application:name", "foobar" }
+            ["spring:application:name"] = "foobar"
         };
 
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
@@ -52,7 +52,7 @@ public sealed class ConsulServiceRegistryTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:application:name", "foobar" }
+            ["spring:application:name"] = "foobar"
         };
 
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
@@ -81,7 +81,7 @@ public sealed class ConsulServiceRegistryTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:application:name", "foobar" }
+            ["spring:application:name"] = "foobar"
         };
 
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
@@ -102,7 +102,7 @@ public sealed class ConsulServiceRegistryTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:application:name", "foobar" }
+            ["spring:application:name"] = "foobar"
         };
 
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
@@ -122,7 +122,7 @@ public sealed class ConsulServiceRegistryTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:application:name", "foobar" }
+            ["spring:application:name"] = "foobar"
         };
 
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);

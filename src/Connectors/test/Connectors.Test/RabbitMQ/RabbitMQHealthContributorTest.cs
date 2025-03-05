@@ -45,7 +45,7 @@ public sealed class RabbitMQHealthContributorTest
 
         connectionMock.Setup(connection => connection.ServerProperties).Returns(new Dictionary<string, object?>
         {
-            { "version", "1.2.3"u8.ToArray() }
+            ["version"] = "1.2.3"u8.ToArray()
         });
 
         var connectionFactoryMock = new Mock<IConnectionFactory>();
@@ -74,7 +74,7 @@ public sealed class RabbitMQHealthContributorTest
 
         connectionMock.Setup(connection => connection.ServerProperties).Returns(new Dictionary<string, object?>
         {
-            { "version", "1.2.3"u8.ToArray() }
+            ["version"] = "1.2.3"u8.ToArray()
         });
 
         var connectionFactoryMock = new Mock<IConnectionFactory>();

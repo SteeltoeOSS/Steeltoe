@@ -20,13 +20,13 @@ public sealed class ConsulServiceCollectionExtensionsTest
     {
         Dictionary<string, string?> appSettings = new()
         {
-            { "spring:application:name", "myName" },
-            { "spring:cloud:inet:defaultHostName", "from-test" },
-            { "spring:cloud:inet:skipReverseDnsLookup", "true" },
-            { "consul:discovery:UseNetworkInterfaces", "true" },
-            { "consul:discovery:register", "false" },
-            { "consul:discovery:deregister", "false" },
-            { "consul:host", "http://testhost:8500" }
+            ["spring:application:name"] = "myName",
+            ["spring:cloud:inet:defaultHostName"] = "from-test",
+            ["spring:cloud:inet:skipReverseDnsLookup"] = "true",
+            ["consul:discovery:UseNetworkInterfaces"] = "true",
+            ["consul:discovery:register"] = "false",
+            ["consul:discovery:deregister"] = "false",
+            ["consul:host"] = "http://testhost:8500"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
@@ -67,7 +67,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:cloud:discovery:enabled", "false" }
+            ["spring:cloud:discovery:enabled"] = "false"
         };
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
@@ -87,8 +87,8 @@ public sealed class ConsulServiceCollectionExtensionsTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:cloud:discovery:enabled", "false" },
-            { "consul:discovery:enabled", "true" }
+            ["spring:cloud:discovery:enabled"] = "false",
+            ["consul:discovery:enabled"] = "true"
         };
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());

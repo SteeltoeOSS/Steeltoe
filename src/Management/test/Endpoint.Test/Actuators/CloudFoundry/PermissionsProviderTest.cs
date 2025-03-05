@@ -37,7 +37,7 @@ public sealed class PermissionsProviderTest : BaseTest
 
         var permissions = new Dictionary<string, object>
         {
-            { "read_sensitive_data", true }
+            ["read_sensitive_data"] = true
         };
 
         response.Content = JsonContent.Create(permissions);

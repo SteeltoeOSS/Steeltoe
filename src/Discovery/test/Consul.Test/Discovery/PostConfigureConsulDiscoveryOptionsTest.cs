@@ -78,7 +78,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            { "consul:discovery:UseNetworkInterfaces", "true" }
+            ["consul:discovery:UseNetworkInterfaces"] = "true"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
@@ -105,8 +105,8 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "consul:discovery:UseNetworkInterfaces", "true" },
-            { "spring:cloud:inet:SkipReverseDnsLookup", "true" }
+            ["consul:discovery:UseNetworkInterfaces"] = "true",
+            ["spring:cloud:inet:SkipReverseDnsLookup"] = "true"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();

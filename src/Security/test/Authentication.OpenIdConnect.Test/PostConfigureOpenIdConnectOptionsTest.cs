@@ -18,8 +18,8 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "Authentication:Schemes:OpenIdConnect:Authority", "https://authority.com" },
-            { "Authentication:Schemes:OpenIdConnect:ClientId", "testClient" }
+            ["Authentication:Schemes:OpenIdConnect:Authority"] = "https://authority.com",
+            ["Authentication:Schemes:OpenIdConnect:ClientId"] = "testClient"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
