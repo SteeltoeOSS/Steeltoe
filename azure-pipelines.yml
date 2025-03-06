@@ -49,7 +49,7 @@ jobs:
       #  skipFilter: '--filter "Category!=Integration&Category!=SkipOnMacOS"'
       Windows:
         imageName: windows-latest
-        skipFilter: '--filter "Category!=Integration"'
+        #skipFilter: '--filter "Category!=Integration"'
         integrationTests: true
   pool:
     vmImage: $(imageName)
