@@ -15,7 +15,7 @@ pr:
 
 resources:
   containers:
-  - container: eureka
+  - container: eurekaServer
     image: steeltoe.azurecr.io/eureka-server
     ports:
     - 8761:8761
@@ -23,7 +23,7 @@ resources:
     image: steeltoe.azurecr.io/config-server
     env:
       eureka.client.enabled: true
-      eureka.client.serviceUrl.defaultZone: http://eureka:8761/eureka
+      eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
       eureka.instance.hostname: localhost
       eureka.instance.instanceId: localhost:configserver:8888
     ports:
@@ -33,6 +33,4 @@ jobs:
   - template: templates/component-build.yaml
     parameters:
       component: Configuration
-    services:
-      eureka: eureka
-      configServer: configServer
+      runConfigServer: true

@@ -14,6 +14,22 @@ trigger:
     - README.md
     - roadmaps/*
 
+resources:
+  containers:
+  - container: eurekaServer
+    image: steeltoe.azurecr.io/eureka-server
+    ports:
+    - 8761:8761
+  - container: configServer
+    image: steeltoe.azurecr.io/config-server
+    env:
+      eureka.client.enabled: true
+      eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
+      eureka.instance.hostname: localhost
+      eureka.instance.instanceId: localhost:configserver:8888
+    ports:
+    - 8888:8888
+
 jobs:
 - job: Steeltoe_CI
   timeoutInMinutes: 60
@@ -34,8 +50,13 @@ jobs:
       Windows:
         imageName: windows-latest
         skipFilter: '--filter "Category!=Integration"'
+        integrationTests: true
   pool:
     vmImage: $(imageName)
+  services:
+    ${{ if eq(parameters.integrationTests, 'true') }}:
+      eurekaServer: eurekaServer
+      configServer: configServer
   steps:
   - task: PowerShell@2
     displayName: Turn off certificates on macOS
@@ -99,14 +120,6 @@ jobs:
       command: build
       projects: src/Steeltoe.All.sln
       arguments: --no-restore -c $(buildConfiguration) -v minimal
-  - script: |
-      docker run -d --name eurekaserver -p 8761:8761 steeltoe.azurecr.io/eureka-server
-      echo 'Waiting a minute for Eureka Server to start...'
-      sleep 60s
-      docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management; sleep 10s
-      docker run -d --name configserver -p 8888:8888 steeltoe.azurecr.io/config-server --spring.cloud.config.server.git.default-label=main; sleep 10s
-    condition: eq(variables['integrationTests'], 'true')
-    displayName: Start Docker services
   - task: DotNetCoreCLI@2
     displayName: dotnet test
     inputs:
@@ -123,15 +136,6 @@ jobs:
     condition: failed()
     displayName: Publish test result files if tests fail
     artifact: FailedTestOutput-$(Agent.JobName)
-  - script: |
-      docker kill configserver
-      docker rm configserver
-      docker kill rabbitmq
-      docker rm rabbitmq
-      docker kill eurekaserver
-      docker rm eurekaserver
-    condition: eq(variables['integrationTests'], 'true')
-    displayName: Stop Docker services
   - task: PublishTestResults@2
     condition: succeededOrFailed()
     displayName: Publish test results
