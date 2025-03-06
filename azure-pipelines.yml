@@ -26,7 +26,6 @@ jobs:
         imageName: ubuntu-latest
         skipFilter: '--filter "Category!=SkipOnLinux"'
         sonarAnalyze: true
-        integrationTests: true
       # MacOS is turned off because it causes flaky builds.
       #MacOS:
       #  imageName: macOS-latest
@@ -34,24 +33,22 @@ jobs:
       Windows:
         imageName: windows-latest
         #skipFilter: '--filter "Category!=Integration"'
-        integrationTests: true
   pool:
     vmImage: $(imageName)
   services:
-    ${{ if eq(variables['integrationTests'], 'true') }}:
-      eurekaServer: 
-        image: steeltoe.azurecr.io/eureka-server
-        ports:
-        - 8761:8761
-      configServer: 
-        image: steeltoe.azurecr.io/config-server
-        env:
-          eureka.client.enabled: true
-          eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
-          eureka.instance.hostname: localhost
-          eureka.instance.instanceId: localhost:configserver:8888
-        ports:
-        - 8888:8888
+    eurekaServer:
+      image: steeltoe.azurecr.io/eureka-server
+      ports:
+      - 8761:8761
+    configServer:
+      image: steeltoe.azurecr.io/config-server
+      env:
+        eureka.client.enabled: true
+        eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
+        eureka.instance.hostname: localhost
+        eureka.instance.instanceId: localhost:configserver:8888
+      ports:
+      - 8888:8888
 
   steps:
   - task: PowerShell@2
