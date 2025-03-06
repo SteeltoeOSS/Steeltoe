@@ -102,7 +102,7 @@ jobs:
   - script: |
       docker run -d --name eurekaserver -p 8761:8761 steeltoe.azurecr.io/eureka-server
       sleep 20s
-      docker run -d --name configserver -p 8888:8888 steeltoe.azurecr.io/config-server --eureka.client.enabled=true --eureka.instance.hostname=localhost --eureka.instance.instanceId="localhost:configserver:8888"
+      docker run -d --name configserver -p 8888:8888 --add-host=host.docker.internal:host-gateway steeltoe.azurecr.io/config-server --eureka.client.enabled=true --eureka.instance.hostname=localhost --eureka.instance.instanceId="localhost:configserver:8888"
       sleep 20s
     condition: eq(variables['integrationTests'], 'true')
     displayName: Start Docker services
