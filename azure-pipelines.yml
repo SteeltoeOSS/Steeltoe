@@ -14,22 +14,6 @@ trigger:
     - README.md
     - roadmaps/*
 
-resources:
-  containers:
-  - container: eurekaServer
-    image: steeltoe.azurecr.io/eureka-server
-    ports:
-    - 8761:8761
-  - container: configServer
-    image: steeltoe.azurecr.io/config-server
-    env:
-      eureka.client.enabled: true
-      eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
-      eureka.instance.hostname: localhost
-      eureka.instance.instanceId: localhost:configserver:8888
-    ports:
-    - 8888:8888
-
 jobs:
 - job: Steeltoe_CI
   timeoutInMinutes: 60
@@ -54,9 +38,21 @@ jobs:
   pool:
     vmImage: $(imageName)
   services:
-    ${{ if eq(parameters.integrationTests, 'true') }}:
-      eurekaServer: eurekaServer
-      configServer: configServer
+    ${{ if eq(variables['integrationTests'], 'true') }}:
+      eurekaServer: 
+        image: steeltoe.azurecr.io/eureka-server
+        ports:
+        - 8761:8761
+      configServer: 
+        image: steeltoe.azurecr.io/config-server
+        env:
+          eureka.client.enabled: true
+          eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
+          eureka.instance.hostname: localhost
+          eureka.instance.instanceId: localhost:configserver:8888
+        ports:
+        - 8888:8888
+
   steps:
   - task: PowerShell@2
     displayName: Turn off certificates on macOS
