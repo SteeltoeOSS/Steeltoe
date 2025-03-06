@@ -14,7 +14,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
 {
     private readonly Dictionary<string, string?> _quickTests = new()
     {
-        { "spring:cloud:config:timeout", "10" }
+        ["spring:cloud:config:timeout"] = "10"
     };
 
     [Fact]

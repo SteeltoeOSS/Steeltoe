@@ -149,7 +149,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         Dictionary<string, string?> settings = new()
         {
-            { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConverter" }
+            ["management:endpoints:CustomJsonConverters:0"] = "Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConverter"
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();

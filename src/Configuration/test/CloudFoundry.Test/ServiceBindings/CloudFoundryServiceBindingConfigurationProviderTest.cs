@@ -139,7 +139,7 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
 
         builder.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            { "some:value:in:configuration:path", "true" }
+            ["some:value:in:configuration:path"] = "true"
         });
 
         builder.Build();

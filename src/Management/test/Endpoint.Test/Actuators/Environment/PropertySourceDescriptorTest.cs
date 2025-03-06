@@ -14,8 +14,8 @@ public sealed class PropertySourceDescriptorTest : BaseTest
     {
         var properties = new Dictionary<string, PropertyValueDescriptor>
         {
-            { "key1", new PropertyValueDescriptor("value") },
-            { "key2", new PropertyValueDescriptor(false) }
+            ["key1"] = new("value"),
+            ["key2"] = new(false)
         };
 
         var descriptor = new PropertySourceDescriptor("name", properties);
@@ -28,8 +28,8 @@ public sealed class PropertySourceDescriptorTest : BaseTest
     {
         var properties = new Dictionary<string, PropertyValueDescriptor>
         {
-            { "key1", new PropertyValueDescriptor("value") },
-            { "key2", new PropertyValueDescriptor(false) }
+            ["key1"] = new("value"),
+            ["key2"] = new(false)
         };
 
         var descriptor = new PropertySourceDescriptor("name", properties);

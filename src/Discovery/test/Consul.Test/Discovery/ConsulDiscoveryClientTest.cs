@@ -110,18 +110,16 @@ public sealed class ConsulDiscoveryClientTest
         {
             Response = new Dictionary<string, string[]>
             {
-                {
-                    "foo", [
-                        "I1",
-                        "I2"
-                    ]
-                },
-                {
-                    "bar", [
-                        "I1",
-                        "I2"
-                    ]
-                }
+                ["foo"] =
+                [
+                    "I1",
+                    "I2"
+                ],
+                ["bar"] =
+                [
+                    "I1",
+                    "I2"
+                ]
             }
         };
 
@@ -154,12 +152,11 @@ public sealed class ConsulDiscoveryClientTest
         {
             Response = new Dictionary<string, string[]>
             {
-                {
-                    "ServiceId", [
-                        "I1",
-                        "I2"
-                    ]
-                }
+                ["ServiceId"] =
+                [
+                    "I1",
+                    "I2"
+                ]
             }
         };
 

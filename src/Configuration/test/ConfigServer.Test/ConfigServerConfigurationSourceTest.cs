@@ -20,7 +20,7 @@ public sealed class ConfigServerConfigurationSourceTest
 
         var source = new ConfigServerConfigurationSource(options, sources, new Dictionary<string, object>
         {
-            { "foo", "bar" }
+            ["foo"] = "bar"
         }, NullLoggerFactory.Instance);
 
         Assert.Equal(options, source.DefaultOptions);

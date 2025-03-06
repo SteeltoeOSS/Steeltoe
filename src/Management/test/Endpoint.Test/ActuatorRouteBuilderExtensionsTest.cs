@@ -68,7 +68,7 @@ public sealed class ActuatorRouteBuilderExtensionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "management:endpoints:actuator:exposure:include:0", "*" }
+            ["management:endpoints:actuator:exposure:include:0"] = "*"
         };
 
         HostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();

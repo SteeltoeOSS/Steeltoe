@@ -29,7 +29,7 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                { "management:endpoints:path", "foobar" }
+                ["management:endpoints:path"] = "foobar"
             });
         };
 
@@ -73,8 +73,8 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                { "management:endpoints:enabled", "true" },
-                { "management:endpoints:path", "foobar" }
+                ["management:endpoints:enabled"] = "true",
+                ["management:endpoints:path"] = "foobar"
             });
         };
 
@@ -101,8 +101,8 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                { "management:cloudfoundry:enabled", "false" },
-                { "management:endpoints:info:enabled", "true" }
+                ["management:cloudfoundry:enabled"] = "false",
+                ["management:endpoints:info:enabled"] = "true"
             });
         };
 

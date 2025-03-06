@@ -11,7 +11,7 @@ public sealed class ServiceBindingMapperTest
     {
         var source = new Dictionary<string, string?>
         {
-            { "test-source-key", "test-source-value" }
+            ["test-source-key"] = "test-source-value"
         };
 
         var mapper = new ServiceBindingMapper(source, string.Empty);
@@ -37,9 +37,9 @@ public sealed class ServiceBindingMapperTest
     {
         var source = new Dictionary<string, string?>
         {
-            { "test-source-key-1", "test-source-value-1" },
-            { "test-source-key-2", "test-source-value-2" },
-            { "test-source-key-3", "test-source-value-3" }
+            ["test-source-key-1"] = "test-source-value-1",
+            ["test-source-key-2"] = "test-source-value-2",
+            ["test-source-key-3"] = "test-source-value-3"
         };
 
         var mapper = new ServiceBindingMapper(source, string.Empty);
@@ -55,8 +55,8 @@ public sealed class ServiceBindingMapperTest
     {
         var source = new Dictionary<string, string?>
         {
-            { "test-destination-key", "test-source-value-1" },
-            { "test-source-key", "test-source-value-2" }
+            ["test-destination-key"] = "test-source-value-1",
+            ["test-source-key"] = "test-source-value-2"
         };
 
         var mapper = new ServiceBindingMapper(source, string.Empty);
@@ -71,7 +71,7 @@ public sealed class ServiceBindingMapperTest
     {
         var source = new Dictionary<string, string?>
         {
-            { "test-destination-key", "test-source-value" }
+            ["test-destination-key"] = "test-source-value"
         };
 
         var mapper = new ServiceBindingMapper(source, string.Empty);
@@ -86,7 +86,7 @@ public sealed class ServiceBindingMapperTest
     {
         var source = new Dictionary<string, string?>
         {
-            { "test-source-key", "test-source-value" }
+            ["test-source-key"] = "test-source-value"
         };
 
         var mapper = new ServiceBindingMapper(source, string.Empty);
@@ -101,7 +101,7 @@ public sealed class ServiceBindingMapperTest
     {
         var source = new Dictionary<string, string?>
         {
-            { "test-source-key", "test-source-value" }
+            ["test-source-key"] = "test-source-value"
         };
 
         var mapper = new ServiceBindingMapper(source, string.Empty);
