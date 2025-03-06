@@ -24,6 +24,8 @@ resources:
     env:
       eureka.client.enabled: true
       eureka.client.serviceUrl.defaultZone: http://eureka:8761/eureka
+      eureka.instance.hostname: localhost
+      eureka.instance.instanceId: localhost:configserver:8888
     ports:
     - 8888:8888
 
