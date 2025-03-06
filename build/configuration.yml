@@ -33,4 +33,6 @@ jobs:
   - template: templates/component-build.yaml
     parameters:
       component: Configuration
-      #runConfigAndEurekaServers: true
+    services:
+      eureka: eureka
+      configServer: configServer
