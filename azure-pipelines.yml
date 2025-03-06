@@ -26,30 +26,16 @@ jobs:
         imageName: ubuntu-latest
         skipFilter: '--filter "Category!=SkipOnLinux"'
         sonarAnalyze: true
+        integrationTests: true
       # MacOS is turned off because it causes flaky builds.
       #MacOS:
       #  imageName: macOS-latest
       #  skipFilter: '--filter "Category!=Integration&Category!=SkipOnMacOS"'
       Windows:
         imageName: windows-latest
-        #skipFilter: '--filter "Category!=Integration"'
+        skipFilter: '--filter "Category!=Integration"'
   pool:
     vmImage: $(imageName)
-  services:
-    eurekaServer:
-      image: steeltoe.azurecr.io/eureka-server
-      ports:
-      - 8761:8761
-    configServer:
-      image: steeltoe.azurecr.io/config-server
-      env:
-        eureka.client.enabled: true
-        eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
-        eureka.instance.hostname: localhost
-        eureka.instance.instanceId: localhost:configserver:8888
-      ports:
-      - 8888:8888
-
   steps:
   - task: PowerShell@2
     displayName: Turn off certificates on macOS
@@ -113,6 +99,11 @@ jobs:
       command: build
       projects: src/Steeltoe.All.sln
       arguments: --no-restore -c $(buildConfiguration) -v minimal
+  - script: |
+      docker run -d --name eurekaserver -p 8761:8761 steeltoe.azurecr.io/eureka-server; sleep 10s
+      docker run -d --name configserver -p 8888:8888 steeltoe.azurecr.io/config-server --eureka.client.enabled=true --eureka.client.serviceUrl.defaultZone=http://eurekaServer:8761/eureka --eureka.instance.hostname=localhost; sleep 10s
+    condition: eq(variables['integrationTests'], 'true')
+    displayName: Start Docker services
   - task: DotNetCoreCLI@2
     displayName: dotnet test
     inputs:
@@ -129,6 +120,13 @@ jobs:
     condition: failed()
     displayName: Publish test result files if tests fail
     artifact: FailedTestOutput-$(Agent.JobName)
+  - script: |
+      docker kill configserver
+      docker rm configserver
+      docker kill eurekaserver
+      docker rm eurekaserver
+    condition: eq(variables['integrationTests'], 'true')
+    displayName: Stop Docker services
   - task: PublishTestResults@2
     condition: succeededOrFailed()
     displayName: Publish test results
