@@ -21,8 +21,8 @@ internal sealed class ReadinessStateHealthContributor : AvailabilityStateHealthC
         ILoggerFactory loggerFactory)
         : base(new Dictionary<AvailabilityState, HealthStatus>
         {
-            { ReadinessState.AcceptingTraffic, HealthStatus.Up },
-            { ReadinessState.RefusingTraffic, HealthStatus.OutOfService }
+            [ReadinessState.AcceptingTraffic] = HealthStatus.Up,
+            [ReadinessState.RefusingTraffic] = HealthStatus.OutOfService
         }, loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(availability);
