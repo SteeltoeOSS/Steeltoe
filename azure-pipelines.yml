@@ -133,7 +133,7 @@ jobs:
       docker rm configserver
       docker kill eurekaserver
       docker rm eurekaserver
-    condition: eq(variables['integrationTests'], 'true')
+    condition: and(succeededOrFailed(), eq(variables['integrationTests'], 'true'))
     displayName: Stop Docker services
   - task: PublishTestResults@2
     condition: succeededOrFailed()
