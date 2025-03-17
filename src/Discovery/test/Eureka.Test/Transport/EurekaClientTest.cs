@@ -712,6 +712,34 @@ public sealed class EurekaClientTest
         app.Instances[0].Status.Should().Be(InstanceStatus.Up);
     }
 
+    [Fact]
+    public async Task Redacts_HTTP_headers()
+    {
+        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("System.Net.Http.HttpClient", StringComparison.Ordinal));
+
+        var services = new ServiceCollection();
+        services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
+        services.AddOptions();
+        services.AddSingleton<EurekaServiceUriStateManager>();
+        services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
+
+        var httpClientHandler = new DelegateToMockHttpClientHandler();
+        httpClientHandler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", "{}");
+        services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(_ => httpClientHandler);
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var client = serviceProvider.GetRequiredService<EurekaClient>();
+
+        _ = await client.GetApplicationsAsync(CancellationToken.None);
+
+        httpClientHandler.Mock.VerifyNoOutstandingExpectation();
+
+        string logMessages = string.Join(Environment.NewLine, capturingLoggerProvider.GetAll());
+        logMessages.Should().Contain("User-Agent: *");
+        logMessages.Should().Contain("Content-Type: *");
+    }
+
     private sealed class TestHttpClientFactory(HttpClient? httpClient) : IHttpClientFactory, IDisposable
     {
         private readonly HttpClient _httpClient = httpClient ?? new HttpClient();

@@ -3,16 +3,19 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Configuration;
@@ -307,6 +310,35 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         Action action = () => app.UseCloudFoundrySecurity();
         action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Please call IServiceCollection.AddCloudFoundryActuator first.");
+    }
+
+    [Fact]
+    public async Task Redacts_HTTP_headers()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["vcap:application:application_id"] = "foobar",
+            ["vcap:application:cf_api"] = "http://domain-name-that-does-not-exist.com:9999/foo"
+        };
+
+        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("System.Net.Http.HttpClient", StringComparison.Ordinal));
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Configuration.AddCloudFoundry();
+        builder.Services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
+        builder.Services.AddCloudFoundryActuator();
+        await using WebApplication app = builder.Build();
+        await app.StartAsync();
+
+        using HttpClient httpClient = app.GetTestClient();
+        var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
+        requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "some");
+
+        _ = await httpClient.SendAsync(requestMessage);
+
+        string logMessages = string.Join(System.Environment.NewLine, capturingLoggerProvider.GetAll());
+        logMessages.Should().Contain("Authorization: *");
     }
 
     protected override void Dispose(bool disposing)

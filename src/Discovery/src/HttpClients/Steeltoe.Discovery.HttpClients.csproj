@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="$(FoundationalVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="$(FoundationalVersion)" />
   </ItemGroup>
 
   <ItemGroup>
