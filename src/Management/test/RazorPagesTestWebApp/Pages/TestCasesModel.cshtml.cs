@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 #pragma warning disable S2360 // Optional parameters should not be used
 
-namespace Steeltoe.Management.Endpoint.RazorPagesWebApp.Test.Pages;
+namespace Steeltoe.Management.Endpoint.RazorPagesTestWebApp.Pages;
 
 public class TestCasesModel : PageModel
 {

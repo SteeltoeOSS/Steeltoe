@@ -6,7 +6,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Steeltoe.Management.Endpoint.RazorPagesWebApp.Test.Pages;
+namespace Steeltoe.Management.Endpoint.RazorPagesTestWebApp.Pages;
 
 [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 [IgnoreAntiforgeryToken]

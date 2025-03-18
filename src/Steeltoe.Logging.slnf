@@ -4,6 +4,7 @@
     "projects": [
       "Common\\src\\Common\\Steeltoe.Common.csproj",
       "Common\\src\\Hosting\\Steeltoe.Common.Hosting.csproj",
+      "Common\\src\\Logging\\Steeltoe.Common.Logging.csproj",
       "Common\\test\\TestResources\\Steeltoe.Common.TestResources.csproj",
       "Logging\\src\\Abstractions\\Steeltoe.Logging.Abstractions.csproj",
       "Logging\\src\\DynamicConsole\\Steeltoe.Logging.DynamicConsole.csproj",

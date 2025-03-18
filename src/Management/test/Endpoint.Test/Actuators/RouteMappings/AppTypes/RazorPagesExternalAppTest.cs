@@ -4,7 +4,7 @@
 
 using System.Net;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Steeltoe.Management.Endpoint.RazorPagesWebApp.Test.Pages;
+using Steeltoe.Management.Endpoint.RazorPagesTestWebApp.Pages;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.RouteMappings.AppTypes;
 
@@ -34,7 +34,7 @@ public sealed class RazorPagesExternalAppTest(WebApplicationFactory<IndexModel> 
                           "predicate": "{GET [Error]}",
                           "details": {
                             "handlerMethod": {
-                              "className": "Steeltoe.Management.Endpoint.RazorPagesWebApp.Test.Pages.ErrorModel",
+                              "className": "Steeltoe.Management.Endpoint.RazorPagesTestWebApp.Pages.ErrorModel",
                               "name": "OnGet",
                               "descriptor": "Void OnGet()"
                             },
@@ -57,7 +57,7 @@ public sealed class RazorPagesExternalAppTest(WebApplicationFactory<IndexModel> 
                           "predicate": "{GET [Index]}",
                           "details": {
                             "handlerMethod": {
-                              "className": "Steeltoe.Management.Endpoint.RazorPagesWebApp.Test.Pages.IndexModel",
+                              "className": "Steeltoe.Management.Endpoint.RazorPagesTestWebApp.Pages.IndexModel",
                               "name": "OnGet",
                               "descriptor": "Void OnGet()"
                             },
@@ -80,7 +80,7 @@ public sealed class RazorPagesExternalAppTest(WebApplicationFactory<IndexModel> 
                           "predicate": "{GET []}",
                           "details": {
                             "handlerMethod": {
-                              "className": "Steeltoe.Management.Endpoint.RazorPagesWebApp.Test.Pages.IndexModel",
+                              "className": "Steeltoe.Management.Endpoint.RazorPagesTestWebApp.Pages.IndexModel",
                               "name": "OnGet",
                               "descriptor": "Void OnGet()"
                             },
@@ -103,7 +103,7 @@ public sealed class RazorPagesExternalAppTest(WebApplicationFactory<IndexModel> 
                           "predicate": "{GET [Privacy]}",
                           "details": {
                             "handlerMethod": {
-                              "className": "Steeltoe.Management.Endpoint.RazorPagesWebApp.Test.Pages.PrivacyModel",
+                              "className": "Steeltoe.Management.Endpoint.RazorPagesTestWebApp.Pages.PrivacyModel",
                               "name": "OnGet",
                               "descriptor": "Void OnGet()"
                             },
@@ -126,7 +126,7 @@ public sealed class RazorPagesExternalAppTest(WebApplicationFactory<IndexModel> 
                           "predicate": "{GET [custom-route/{languageId:int?}]}",
                           "details": {
                             "handlerMethod": {
-                              "className": "Steeltoe.Management.Endpoint.RazorPagesWebApp.Test.Pages.TestCasesModel",
+                              "className": "Steeltoe.Management.Endpoint.RazorPagesTestWebApp.Pages.TestCasesModel",
                               "name": "OnGet",
                               "descriptor": "Void OnGet(System.Nullable`1[System.Int32], System.String, Int32, System.Nullable`1[System.Int32])"
                             },
@@ -173,7 +173,7 @@ public sealed class RazorPagesExternalAppTest(WebApplicationFactory<IndexModel> 
                           "predicate": "{POST [custom-route/{languageId:int?}]}",
                           "details": {
                             "handlerMethod": {
-                              "className": "Steeltoe.Management.Endpoint.RazorPagesWebApp.Test.Pages.TestCasesModel",
+                              "className": "Steeltoe.Management.Endpoint.RazorPagesTestWebApp.Pages.TestCasesModel",
                               "name": "OnPostAsync",
                               "descriptor": "System.Threading.Tasks.Task OnPostAsync()"
                             },
@@ -202,7 +202,7 @@ public sealed class RazorPagesExternalAppTest(WebApplicationFactory<IndexModel> 
                           "predicate": "{PATCH [custom-route/{languageId:int?}], headers [X-Media-Version]}",
                           "details": {
                             "handlerMethod": {
-                              "className": "Steeltoe.Management.Endpoint.RazorPagesWebApp.Test.Pages.TestCasesModel",
+                              "className": "Steeltoe.Management.Endpoint.RazorPagesTestWebApp.Pages.TestCasesModel",
                               "name": "OnPatchAsync",
                               "descriptor": "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] OnPatchAsync(System.Guid, System.String, System.Nullable`1[System.Text.Json.JsonElement])"
                             },
@@ -242,7 +242,7 @@ public sealed class RazorPagesExternalAppTest(WebApplicationFactory<IndexModel> 
                           "predicate": "{DELETE [custom-route/{languageId:int?}]}",
                           "details": {
                             "handlerMethod": {
-                              "className": "Steeltoe.Management.Endpoint.RazorPagesWebApp.Test.Pages.TestCasesModel",
+                              "className": "Steeltoe.Management.Endpoint.RazorPagesTestWebApp.Pages.TestCasesModel",
                               "name": "OnDeleteAllAsync",
                               "descriptor": "System.Threading.Tasks.Task OnDeleteAllAsync()"
                             },

@@ -4,9 +4,9 @@
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Steeltoe.Management.Endpoint.RazorPagesWebApp.Test.Pages;
+namespace Steeltoe.Management.Endpoint.RazorPagesTestWebApp.Pages;
 
-public class PrivacyModel : PageModel
+public class IndexModel : PageModel
 {
     public void OnGet()
     {
