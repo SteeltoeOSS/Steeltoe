@@ -6,6 +6,8 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
+#pragma warning disable S4502 // Disabling CSRF protection is security-sensitive
+
 namespace Steeltoe.Management.Endpoint.RazorPagesTestWebApp.Pages;
 
 [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
