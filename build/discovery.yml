@@ -12,6 +12,7 @@ pr:
     - build/templates
     - build/discovery.yml
     - src/Discovery
+    - src/Steeltoe.Discovery.slnf
 
 jobs:
   - template: templates/component-build.yaml
