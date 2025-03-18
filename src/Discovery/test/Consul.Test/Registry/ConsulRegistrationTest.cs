@@ -125,7 +125,7 @@ public sealed class ConsulRegistrationTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "consul:discovery:serviceName", "serviceName" }
+            ["consul:discovery:serviceName"] = "serviceName"
         };
 
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
@@ -178,9 +178,9 @@ public sealed class ConsulRegistrationTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:application:name", "foobar" },
-            { "consul:discovery:hostName", "some-host" },
-            { "consul:discovery:port", "1100" }
+            ["spring:application:name"] = "foobar",
+            ["consul:discovery:hostName"] = "some-host",
+            ["consul:discovery:port"] = "1100"
         };
 
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);

@@ -37,7 +37,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
-            { "spring:cloud:config:timeout", "30000" }
+            ["spring:cloud:config:timeout"] = "30000"
         }).Build();
 
         var options = new ConfigServerClientOptions();

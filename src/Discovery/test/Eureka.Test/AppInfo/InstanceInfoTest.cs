@@ -94,7 +94,7 @@ public sealed class InstanceInfoTest
             IsCoordinatingDiscoveryServer = false,
             Metadata = new Dictionary<string, string?>
             {
-                { "@class", "java.util.Collections$EmptyMap" }
+                ["@class"] = "java.util.Collections$EmptyMap"
             },
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
@@ -197,7 +197,7 @@ public sealed class InstanceInfoTest
             IsCoordinatingDiscoveryServer = false,
             Metadata = new Dictionary<string, string?>
             {
-                { "@class", "java.util.Collections$EmptyMap" }
+                ["@class"] = "java.util.Collections$EmptyMap"
             },
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
@@ -260,7 +260,7 @@ public sealed class InstanceInfoTest
             IsCoordinatingDiscoveryServer = false,
             Metadata = new Dictionary<string, string?>
             {
-                { "@class", "java.util.Collections$EmptyMap" }
+                ["@class"] = "java.util.Collections$EmptyMap"
             },
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,

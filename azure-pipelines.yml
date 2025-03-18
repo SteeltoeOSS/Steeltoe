@@ -18,7 +18,7 @@ jobs:
 - job: Steeltoe_CI
   timeoutInMinutes: 60
   variables:
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    DOTNET_NOLOGO: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
   strategy:
     matrix:
@@ -100,10 +100,18 @@ jobs:
       projects: src/Steeltoe.All.sln
       arguments: --no-restore -c $(buildConfiguration) -v minimal
   - script: |
-      docker run -d --name configserver -p 8888:8888 steeltoe.azurecr.io/config-server --spring.cloud.config.server.git.default-label=main
-      docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+      docker run -d --name eurekaserver -p 8761:8761 steeltoe.azurecr.io/eureka-server
+      sleep 10s
+      docker run -d --name configserver -p 8888:8888 --add-host=host.docker.internal:host-gateway steeltoe.azurecr.io/config-server --eureka.client.enabled=true --eureka.instance.hostname=localhost --eureka.instance.instanceId="localhost:configserver:8888"
+      sleep 10s
     condition: eq(variables['integrationTests'], 'true')
     displayName: Start Docker services
+  # - script: |
+  #       echo "Fetching logs from Config Server container..."
+  #       docker logs $(docker ps --filter "name=configserver" --format "{{.ID}}")
+  #       echo "Fetching logs from Eureka Server container..."
+  #       docker logs $(docker ps --filter "name=eurekaserver" --format "{{.ID}}")
+  #   displayName: "Get Config Server Logs"
   - task: DotNetCoreCLI@2
     displayName: dotnet test
     inputs:
@@ -123,9 +131,9 @@ jobs:
   - script: |
       docker kill configserver
       docker rm configserver
-      docker kill rabbitmq
-      docker rm rabbitmq
-    condition: eq(variables['integrationTests'], 'true')
+      docker kill eurekaserver
+      docker rm eurekaserver
+    condition: and(succeededOrFailed(), eq(variables['integrationTests'], 'true'))
     displayName: Stop Docker services
   - task: PublishTestResults@2
     condition: succeededOrFailed()

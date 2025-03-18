@@ -228,8 +228,8 @@ public sealed class ActuatorsHostBuilderTest
     {
         var appSettings = new Dictionary<string, string?>(AppSettings)
         {
-            { "Management:Endpoints:Health:DiskSpace:Enabled", "false" },
-            { "Management:Endpoints:Health:Ping:Enabled", "false" }
+            ["Management:Endpoints:Health:DiskSpace:Enabled"] = "false",
+            ["Management:Endpoints:Health:Ping:Enabled"] = "false"
         };
 
         await using HostWrapper host = hostBuilderType.Build(builder =>

@@ -1,14 +1,13 @@
 parameters:
   component: ''
   runConfigServer: false
-  runRabbitMQ: false
   skipFilter: ''
   OS: ubuntu
 
 jobs:
 - job: ${{parameters.component}}_${{parameters.OS}}
   variables:
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    DOTNET_NOLOGO: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
     # Setting DOTNET_GENERATE_ASPNET_CERTIFICATE to "false" makes it easier to determine which test failed on macOS when it tried to start a web server with https enabled.
     # Without setting this, the following message appears in the logs:
@@ -23,6 +22,10 @@ jobs:
     CommonTestArgs: --blame-crash --blame-hang-timeout 3m --no-build -c Release --collect "XPlat Code Coverage" -maxcpucount:1 --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)
   pool:
     vmImage: ${{parameters.OS}}-latest
+  services:
+    ${{ if eq(parameters.runConfigServer, 'true') }}:
+      eurekaServer: eurekaServer
+      configServer: configServer
   steps:
   - checkout: self
     fetchDepth: 0
@@ -61,12 +64,6 @@ jobs:
       command: build
       projects: $(SolutionFile)
       arguments: --no-restore -c Release -v minimal
-  - script: docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management; sleep 10s
-    condition: eq(${{parameters.runRabbitMQ}}, 'true')
-    displayName: Start RabbitMQ
-  - script: docker run -d --name configserver -p 8888:8888 steeltoe.azurecr.io/config-server --spring.cloud.config.server.git.default-label=main; sleep 10s
-    condition: eq(${{parameters.runConfigServer}}, 'true')
-    displayName: Start Config Server
   - task: DotNetCoreCLI@2
     displayName: dotnet test
     inputs:
@@ -83,16 +80,6 @@ jobs:
     condition: failed()
     displayName: Publish test result files if tests fail
     artifact: FailedTestOutput-$(Agent.JobName)
-  - script: |
-      docker kill rabbitmq
-      docker rm rabbitmq
-    condition: eq(${{parameters.runRabbitMQ}}, 'true')
-    displayName: Stop RabbitMQ
-  - script: |
-      docker kill configserver
-      docker rm configserver
-    condition: eq(${{parameters.runConfigServer}}, 'true')
-    displayName: Stop Config Server
   - task: PublishTestResults@2
     condition: succeededOrFailed()
     displayName: Publish test results

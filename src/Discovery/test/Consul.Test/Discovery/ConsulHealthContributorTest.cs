@@ -36,18 +36,16 @@ public sealed class ConsulHealthContributorTest
         {
             Response = new Dictionary<string, string[]>
             {
-                {
-                    "foo", [
-                        "I1",
-                        "I2"
-                    ]
-                },
-                {
-                    "bar", [
-                        "I1",
-                        "I2"
-                    ]
-                }
+                ["foo"] =
+                [
+                    "I1",
+                    "I2"
+                ],
+                ["bar"] =
+                [
+                    "I1",
+                    "I2"
+                ]
             }
         };
 
@@ -73,18 +71,17 @@ public sealed class ConsulHealthContributorTest
         {
             Response = new Dictionary<string, string[]>
             {
-                {
-                    "foo", [
-                        "I1",
-                        "I2"
-                    ]
-                },
-                {
-                    "bar", [
-                        "I1",
-                        "I2"
-                    ]
-                }
+                ["foo"] =
+                [
+                    "I1",
+                    "I2"
+                ],
+
+                ["bar"] =
+                [
+                    "I1",
+                    "I2"
+                ]
             }
         };
 

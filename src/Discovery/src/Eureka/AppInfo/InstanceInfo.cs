@@ -414,7 +414,7 @@ public sealed class InstanceInfo
             Metadata = Metadata.Count == 0
                 ? new Dictionary<string, string?>
                 {
-                    { "@class", "java.util.Collections$EmptyMap" }
+                    ["@class"] = "java.util.Collections$EmptyMap"
                 }
                 : Metadata.ToDictionary(pair => pair.Key, pair => pair.Value),
             LastUpdatedTimestamp = DateTimeConversions.ToNullableJavaMilliseconds(LastUpdatedTimeUtc),

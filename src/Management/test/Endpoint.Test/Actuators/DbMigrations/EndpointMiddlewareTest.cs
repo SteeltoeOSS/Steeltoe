@@ -50,7 +50,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         string expected = Serialize(new Dictionary<string, DbMigrationsDescriptor>
         {
-            { nameof(MockDbContext), descriptor }
+            [nameof(MockDbContext)] = descriptor
         });
 
         Assert.Equal(expected, json);
@@ -77,7 +77,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         string expected = Serialize(new Dictionary<string, DbMigrationsDescriptor>
         {
-            { nameof(MockDbContext), descriptor }
+            [nameof(MockDbContext)] = descriptor
         });
 
         Assert.Equal(expected, json);

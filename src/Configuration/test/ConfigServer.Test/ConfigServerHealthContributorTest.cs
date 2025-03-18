@@ -17,10 +17,10 @@ public sealed class ConfigServerHealthContributorTest
     {
         var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
-            { "spring:cloud:config:uri", "http://localhost:8888/" },
-            { "spring:cloud:config:name", "myName" },
-            { "spring:cloud:config:label", "myLabel" },
-            { "spring:cloud:config:timeout", "10" }
+            ["spring:cloud:config:uri"] = "http://localhost:8888/",
+            ["spring:cloud:config:name"] = "myName",
+            ["spring:cloud:config:label"] = "myLabel",
+            ["spring:cloud:config:timeout"] = "10"
         };
 
         var builder = new ConfigurationBuilder();
@@ -39,10 +39,10 @@ public sealed class ConfigServerHealthContributorTest
     {
         var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
-            { "spring:cloud:config:uri", "http://localhost:8888/" },
-            { "spring:cloud:config:name", "myName" },
-            { "spring:cloud:config:label", "myLabel" },
-            { "spring:cloud:config:timeout", "10" }
+            ["spring:cloud:config:uri"] = "http://localhost:8888/",
+            ["spring:cloud:config:name"] = "myName",
+            ["spring:cloud:config:label"] = "myLabel",
+            ["spring:cloud:config:timeout"] = "10"
         };
 
         var builder = new ConfigurationBuilder();
@@ -60,11 +60,11 @@ public sealed class ConfigServerHealthContributorTest
     {
         var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
-            { "spring:cloud:config:uri", "http://localhost:8888/" },
-            { "spring:cloud:config:name", "myName" },
-            { "spring:cloud:config:label", "myLabel" },
-            { "spring:cloud:config:health:timeToLive", "100000" },
-            { "spring:cloud:config:timeout", "10" }
+            ["spring:cloud:config:uri"] = "http://localhost:8888/",
+            ["spring:cloud:config:name"] = "myName",
+            ["spring:cloud:config:label"] = "myLabel",
+            ["spring:cloud:config:health:timeToLive"] = "100000",
+            ["spring:cloud:config:timeout"] = "10"
         };
 
         var builder = new ConfigurationBuilder();
@@ -82,11 +82,11 @@ public sealed class ConfigServerHealthContributorTest
     {
         var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
-            { "spring:cloud:config:uri", "http://localhost:8888/" },
-            { "spring:cloud:config:name", "myName" },
-            { "spring:cloud:config:label", "myLabel" },
-            { "spring:cloud:config:health:enabled", "true" },
-            { "spring:cloud:config:timeout", "10" }
+            ["spring:cloud:config:uri"] = "http://localhost:8888/",
+            ["spring:cloud:config:name"] = "myName",
+            ["spring:cloud:config:label"] = "myLabel",
+            ["spring:cloud:config:health:enabled"] = "true",
+            ["spring:cloud:config:timeout"] = "10"
         };
 
         var builder = new ConfigurationBuilder();
@@ -104,12 +104,12 @@ public sealed class ConfigServerHealthContributorTest
     {
         var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
-            { "spring:cloud:config:uri", "http://localhost:8888/" },
-            { "spring:cloud:config:name", "myName" },
-            { "spring:cloud:config:label", "myLabel" },
-            { "spring:cloud:config:health:enabled", "true" },
-            { "spring:cloud:config:health:timeToLive", "1" },
-            { "spring:cloud:config:timeout", "10" }
+            ["spring:cloud:config:name"] = "myName",
+            ["spring:cloud:config:label"] = "myLabel",
+            ["spring:cloud:config:health:enabled"] = "true",
+            ["spring:cloud:config:health:timeToLive"] = "1",
+            ["spring:cloud:config:timeout"] = "10",
+            ["spring:cloud:config:uri"] = "http://localhost:8888/"
         };
 
         var builder = new ConfigurationBuilder();
@@ -132,12 +132,12 @@ public sealed class ConfigServerHealthContributorTest
         // this test does NOT expect to find a running Config Server
         var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
-            { "spring:cloud:config:uri", "http://localhost:8887/" },
-            { "spring:cloud:config:name", "myName" },
-            { "spring:cloud:config:label", "myLabel" },
-            { "spring:cloud:config:health:enabled", "true" },
-            { "spring:cloud:config:health:timeToLive", "1" },
-            { "spring:cloud:config:timeout", "1" }
+            ["spring:cloud:config:uri"] = "http://localhost:8887/",
+            ["spring:cloud:config:name"] = "myName",
+            ["spring:cloud:config:label"] = "myLabel",
+            ["spring:cloud:config:health:enabled"] = "true",
+            ["spring:cloud:config:health:timeToLive"] = "1",
+            ["spring:cloud:config:timeout"] = "1"
         };
 
         var builder = new ConfigurationBuilder();
@@ -164,12 +164,12 @@ public sealed class ConfigServerHealthContributorTest
     {
         var values = new Dictionary<string, string?>
         {
-            { "spring:cloud:config:uri", "http://localhost:8888/" },
-            { "spring:cloud:config:name", "myName" },
-            { "spring:cloud:config:label", "myLabel" },
-            { "spring:cloud:config:health:enabled", "true" },
-            { "spring:cloud:config:health:timeToLive", "1" },
-            { "spring:cloud:config:timeout", "10" }
+            ["spring:cloud:config:uri"] = "http://localhost:8888/",
+            ["spring:cloud:config:name"] = "myName",
+            ["spring:cloud:config:label"] = "myLabel",
+            ["spring:cloud:config:health:enabled"] = "true",
+            ["spring:cloud:config:health:timeToLive"] = "1",
+            ["spring:cloud:config:timeout"] = "10"
         };
 
         var builder = new ConfigurationBuilder();
@@ -189,12 +189,12 @@ public sealed class ConfigServerHealthContributorTest
     {
         var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
-            { "spring:cloud:config:uri", "http://localhost:8888/" },
-            { "spring:cloud:config:name", "myName" },
-            { "spring:cloud:config:label", "myLabel" },
-            { "spring:cloud:config:health:enabled", "false" },
-            { "spring:cloud:config:health:timeToLive", "1" },
-            { "spring:cloud:config:timeout", "10" }
+            ["spring:cloud:config:uri"] = "http://localhost:8888/",
+            ["spring:cloud:config:name"] = "myName",
+            ["spring:cloud:config:label"] = "myLabel",
+            ["spring:cloud:config:health:enabled"] = "false",
+            ["spring:cloud:config:health:timeToLive"] = "1",
+            ["spring:cloud:config:timeout"] = "10"
         };
 
         var builder = new ConfigurationBuilder();
@@ -214,12 +214,12 @@ public sealed class ConfigServerHealthContributorTest
         // this test does NOT expect to find a running Config Server
         var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
-            { "spring:cloud:config:uri", "http://localhost:8887/" },
-            { "spring:cloud:config:name", "myName" },
-            { "spring:cloud:config:label", "myLabel" },
-            { "spring:cloud:config:health:enabled", "true" },
-            { "spring:cloud:config:health:timeToLive", "1" },
-            { "spring:cloud:config:timeout", "10" }
+            ["spring:cloud:config:uri"] = "http://localhost:8887/",
+            ["spring:cloud:config:name"] = "myName",
+            ["spring:cloud:config:label"] = "myLabel",
+            ["spring:cloud:config:health:enabled"] = "true",
+            ["spring:cloud:config:health:timeToLive"] = "1",
+            ["spring:cloud:config:timeout"] = "10"
         };
 
         var builder = new ConfigurationBuilder();
@@ -240,12 +240,12 @@ public sealed class ConfigServerHealthContributorTest
     {
         var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
-            { "spring:cloud:config:uri", "http://localhost:8888/" },
-            { "spring:cloud:config:name", "myName" },
-            { "spring:cloud:config:label", "myLabel" },
-            { "spring:cloud:config:health:enabled", "true" },
-            { "spring:cloud:config:health:timeToLive", "1" },
-            { "spring:cloud:config:timeout", "10" }
+            ["spring:cloud:config:uri"] = "http://localhost:8888/",
+            ["spring:cloud:config:name"] = "myName",
+            ["spring:cloud:config:label"] = "myLabel",
+            ["spring:cloud:config:health:enabled"] = "true",
+            ["spring:cloud:config:health:timeToLive"] = "1",
+            ["spring:cloud:config:timeout"] = "10"
         };
 
         var builder = new ConfigurationBuilder();

@@ -21,7 +21,7 @@ internal sealed class BuildInfoContributor : IInfoContributor
         // this is for Spring Boot Admin
         builder.WithInfo("build", new Dictionary<string, string?>
         {
-            { "version", _applicationAssembly.GetName().Version?.ToString() }
+            ["version"] = _applicationAssembly.GetName().Version?.ToString()
         });
 
         return Task.CompletedTask;
@@ -34,9 +34,9 @@ internal sealed class BuildInfoContributor : IInfoContributor
 
         return new Dictionary<string, string?>
         {
-            { "ProductName", assembly.GetName().Name },
-            { "FileVersion", fileVersion },
-            { "ProductVersion", productVersion }
+            ["ProductName"] = assembly.GetName().Name,
+            ["FileVersion"] = fileVersion,
+            ["ProductVersion"] = productVersion
         };
     }
 }

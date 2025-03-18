@@ -32,9 +32,9 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 {
     private static readonly Dictionary<string, string?> FastDiscovery = new()
     {
-        { "eureka:client:ShouldRegisterWithEureka", "false" },
-        { "eureka:client:ShouldFetchRegistry", "false" },
-        { "Consul:Discovery:Register", "false" }
+        ["eureka:client:ShouldRegisterWithEureka"] = "false",
+        ["eureka:client:ShouldFetchRegistry"] = "false",
+        ["Consul:Discovery:Register"] = "false"
     };
 
     [Fact]
@@ -85,12 +85,12 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:application:name", "myName" },
-            { "spring:cloud:inet:defaultHostname", "from-test" },
-            { "spring:cloud:inet:skipReverseDnsLookup", "true" },
-            { "eureka:client:shouldFetchRegistry", "false" },
-            { "eureka:client:shouldRegisterWithEureka", "false" },
-            { "eureka:instance:UseNetworkInterfaces", "true" }
+            ["spring:application:name"] = "myName",
+            ["spring:cloud:inet:defaultHostname"] = "from-test",
+            ["spring:cloud:inet:skipReverseDnsLookup"] = "true",
+            ["eureka:client:shouldFetchRegistry"] = "false",
+            ["eureka:client:shouldRegisterWithEureka"] = "false",
+            ["eureka:instance:UseNetworkInterfaces"] = "true"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
@@ -549,8 +549,8 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            { "Eureka:Client:ShouldRegisterWithEureka", "false" },
-            { "Eureka:Client:ShouldFetchRegistry", "false" }
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Client:ShouldFetchRegistry"] = "false"
         });
 
         builder.Services.AddEurekaDiscoveryClient();
@@ -621,10 +621,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            { "Eureka:Client:ShouldRegisterWithEureka", "false" },
-            { "Eureka:Client:ShouldFetchRegistry", "false" },
-            { "Eureka:Client:AccessTokenUri", "https://api.auth-server.com/get-token" },
-            { "Eureka:Client:ServiceUrl", $"https://{username}:{password}@api.eureka-server.com/eureka" }
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:AccessTokenUri"] = "https://api.auth-server.com/get-token",
+            ["Eureka:Client:ServiceUrl"] = $"https://{username}:{password}@api.eureka-server.com/eureka"
         });
 
         builder.Services.AddEurekaDiscoveryClient();
@@ -704,12 +704,12 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:application:name", "myName" },
-            { "spring:cloud:inet:defaultHostname", "from-test" },
-            { "spring:cloud:inet:skipReverseDnsLookup", "true" },
-            { "consul:discovery:UseNetworkInterfaces", "true" },
-            { "consul:discovery:register", "false" },
-            { "consul:discovery:deregister", "false" }
+            ["spring:application:name"] = "myName",
+            ["spring:cloud:inet:defaultHostname"] = "from-test",
+            ["spring:cloud:inet:skipReverseDnsLookup"] = "true",
+            ["consul:discovery:UseNetworkInterfaces"] = "true",
+            ["consul:discovery:register"] = "false",
+            ["consul:discovery:deregister"] = "false"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
@@ -742,10 +742,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:application:name", "myName" },
-            { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" },
-            { "consul:discovery:register", "false" },
-            { "consul:discovery:deregister", "false" }
+            ["spring:application:name"] = "myName",
+            ["urls"] = "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233",
+            ["consul:discovery:register"] = "false",
+            ["consul:discovery:deregister"] = "false"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
@@ -778,11 +778,11 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:application:name", "myName" },
-            { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" },
-            { "consul:discovery:register", "false" },
-            { "consul:discovery:deregister", "false" },
-            { "Consul:Discovery:UseAspNetCoreUrls", "false" }
+            ["spring:application:name"] = "myName",
+            ["urls"] = "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233",
+            ["consul:discovery:register"] = "false",
+            ["consul:discovery:deregister"] = "false",
+            ["Consul:Discovery:UseAspNetCoreUrls"] = "false"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
@@ -808,11 +808,11 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:application:name", "myName" },
-            { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" },
-            { "consul:discovery:register", "false" },
-            { "consul:discovery:deregister", "false" },
-            { "Consul:Discovery:Port", "8080" }
+            ["spring:application:name"] = "myName",
+            ["urls"] = "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233",
+            ["consul:discovery:register"] = "false",
+            ["consul:discovery:deregister"] = "false",
+            ["Consul:Discovery:Port"] = "8080"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();

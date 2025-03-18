@@ -21,8 +21,8 @@ internal sealed class LivenessStateHealthContributor : AvailabilityStateHealthCo
         ILoggerFactory loggerFactory)
         : base(new Dictionary<AvailabilityState, HealthStatus>
         {
-            { LivenessState.Correct, HealthStatus.Up },
-            { LivenessState.Broken, HealthStatus.Down }
+            [LivenessState.Correct] = HealthStatus.Up,
+            [LivenessState.Broken] = HealthStatus.Down
         }, loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(availability);

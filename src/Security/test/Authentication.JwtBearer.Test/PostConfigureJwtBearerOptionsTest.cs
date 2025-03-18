@@ -18,7 +18,7 @@ public sealed class PostConfigureJwtBearerOptionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            { "Authentication:Schemes:Bearer:ClientId", "testClient" }
+            ["Authentication:Schemes:Bearer:ClientId"] = "testClient"
         };
 
         var jwtBearerOptions = new JwtBearerOptions
