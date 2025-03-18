@@ -3,6 +3,7 @@
     "path": "Steeltoe.All.sln",
     "projects": [
       "Common\\src\\Common\\Steeltoe.Common.csproj",
+      "Common\\src\\Hosting\\Steeltoe.Common.Hosting.csproj",
       "Common\\test\\TestResources\\Steeltoe.Common.TestResources.csproj",
       "Configuration\\src\\Abstractions\\Steeltoe.Configuration.Abstractions.csproj",
       "Configuration\\src\\CloudFoundry\\Steeltoe.Configuration.CloudFoundry.csproj",
@@ -11,6 +12,7 @@
       "Connectors\\src\\EntityFrameworkCore\\Steeltoe.Connectors.EntityFrameworkCore.csproj",
       "Connectors\\test\\Connectors.Test\\Steeltoe.Connectors.Test.csproj",
       "Connectors\\test\\EntityFrameworkCore.Test\\Steeltoe.Connectors.EntityFrameworkCore.Test.csproj",
+      "Management\\src\\Tasks\\Steeltoe.Management.Tasks.csproj",
       "Tools\\src\\ConfigurationSchemaGenerator\\ConfigurationSchemaGenerator.csproj"
     ]
   }

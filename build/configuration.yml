@@ -12,6 +12,7 @@ pr:
     - build/templates
     - build/configuration.yml
     - src/Configuration
+    - src/Steeltoe.Configuration.slnf
 
 jobs:
   - template: templates/component-build.yaml

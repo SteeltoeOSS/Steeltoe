@@ -12,6 +12,7 @@ pr:
     - build/templates
     - build/logging.yml
     - src/Logging
+    - src/Steeltoe.Logging.slnf
 
 jobs:
   - template: templates/component-build.yaml

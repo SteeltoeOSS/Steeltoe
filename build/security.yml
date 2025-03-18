@@ -12,6 +12,7 @@ pr:
     - build/templates
     - build/security.yml
     - src/Security
+    - src/Steeltoe.Security.slnf
 
 jobs:
   - template: templates/component-build.yaml

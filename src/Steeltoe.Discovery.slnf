@@ -6,7 +6,6 @@
       "Common\\src\\Common\\Steeltoe.Common.csproj",
       "Common\\src\\Hosting\\Steeltoe.Common.Hosting.csproj",
       "Common\\src\\Http\\Steeltoe.Common.Http.csproj",
-      "Common\\src\\Logging\\Steeltoe.Common.Logging.csproj",
       "Common\\test\\TestResources\\Steeltoe.Common.TestResources.csproj",
       "Configuration\\src\\Abstractions\\Steeltoe.Configuration.Abstractions.csproj",
       "Configuration\\src\\CloudFoundry\\Steeltoe.Configuration.CloudFoundry.csproj",

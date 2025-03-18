@@ -4,6 +4,7 @@
     "projects": [
       "Common\\src\\Certificates\\Steeltoe.Common.Certificates.csproj",
       "Common\\src\\Common\\Steeltoe.Common.csproj",
+      "Common\\src\\Hosting\\Steeltoe.Common.Hosting.csproj",
       "Common\\test\\TestResources\\Steeltoe.Common.TestResources.csproj",
       "Configuration\\src\\Abstractions\\Steeltoe.Configuration.Abstractions.csproj",
       "Configuration\\src\\CloudFoundry\\Steeltoe.Configuration.CloudFoundry.csproj",
