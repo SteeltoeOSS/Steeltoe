@@ -9,6 +9,11 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
+    <!-- Referencing v9 of Microsoft.Extensions.Http to get HTTP header redaction by default in .NET 8. -->
+    <PackageReference Include="Microsoft.Extensions.Http" Version="$(FoundationalVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Certificates\Steeltoe.Common.Certificates.csproj" />
     <ProjectReference Include="..\Common\Steeltoe.Common.csproj" />
   </ItemGroup>
