@@ -368,6 +368,8 @@ public class RabbitAdminIntegrationTest : IDisposable
         rabbitAdmin.DeleteQueue(queue2.QueueName);
     }
 
+    // TODO: Fix test compatibility with RabbitMQ newer than 3.13.2
+    // docker run --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13.2-management
     [Fact]
     public async Task TestDeclareDelayedExchange()
     {

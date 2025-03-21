@@ -251,9 +251,8 @@ public static class RabbitServicesExtensions
                     if (connectionFactory is not null)
                     {
                         var scheme = connectionFactory.Ssl.Enabled
-                            ? "amqps://"
+                            ? "ampqs://"
                             : "ampq://";
-                        //var scheme = "";
 
                         options.Addresses = $"{scheme}{connectionFactory.UserName}:{connectionFactory.Password}@{connectionFactory.HostName}:{connectionFactory.Port}";
                         options.VirtualHost = connectionFactory.VirtualHost;

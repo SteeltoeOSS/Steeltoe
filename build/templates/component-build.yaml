@@ -38,7 +38,7 @@ jobs:
       projects: $(SolutionFile)
       arguments: --no-restore -c Release -v n /p:TreatWarningsAsErrors=True
   # RabbitMQ is pinned to 3.13.2 due to failure in Steeltoe.Messaging.RabbitMQ.Core.RabbitAdminIntegrationTest.TestDeclareDelayedExchange
-  # Currently failing versions include 3.13.3 and 3.13.4
+  # This test fails on EVERY higher version, and is the only reason we can't upgrade to "4-management"
   - script: docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13.2-management; sleep 10s
     condition: eq(${{parameters.runRabbitMQ}}, 'true')
     displayName: Start RabbitMQ

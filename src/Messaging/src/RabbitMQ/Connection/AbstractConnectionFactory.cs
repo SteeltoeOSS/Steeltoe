@@ -231,19 +231,6 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
 
                 return;
             }
-
-            /*
-            var endpoints = RC.AmqpTcpEndpoint.ParseMultiple(addresses);
-            if (endpoints.Length > 0)
-            {
-                Addresses = endpoints.ToList();
-                if (PublisherConnectionFactory != null)
-                {
-                    AbstractPublisherConnectionFactory.SetAddresses(addresses);
-                }
-
-                return;
-            }*/
         }
 
         _logger?.LogInformation("SetAddresses() called with an empty value, will be using the host+port properties for connections");
