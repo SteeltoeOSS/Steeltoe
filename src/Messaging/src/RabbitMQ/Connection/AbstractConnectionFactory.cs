@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Steeltoe.Common.Net;
 using Steeltoe.Messaging.RabbitMQ.Support;
@@ -205,6 +206,33 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
     {
         if (!string.IsNullOrEmpty(addresses))
         {
+            var factory = _rabbitConnectionFactory as RC.ConnectionFactory;
+
+            var addressesToSet = new List<AmqpTcpEndpoint>();
+
+            foreach (var address in addresses.Split(',').Select(address => address.Trim()))
+            {
+                if (address.Length > 0)
+                {
+                    var endpoint = AmqpTcpEndpoint.Parse(address);
+                    endpoint.Ssl = factory?.Ssl;
+                    addressesToSet.Add(endpoint);
+                }
+            }
+
+            if (addressesToSet.Count > 0)
+            {
+                Addresses = addressesToSet;
+
+                if (PublisherConnectionFactory != null)
+                {
+                    AbstractPublisherConnectionFactory.SetAddresses(addresses);
+                }
+
+                return;
+            }
+
+            /*
             var endpoints = RC.AmqpTcpEndpoint.ParseMultiple(addresses);
             if (endpoints.Length > 0)
             {
@@ -215,7 +243,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
                 }
 
                 return;
-            }
+            }*/
         }
 
         _logger?.LogInformation("SetAddresses() called with an empty value, will be using the host+port properties for connections");
