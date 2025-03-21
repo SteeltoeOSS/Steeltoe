@@ -98,13 +98,13 @@ public class RabbitMQHostTest
     [Fact]
     public void ShouldWorkWithRabbitMQConnection()
     {
-        using (var host = RabbitMQHost.CreateDefaultBuilder()
-                   .ConfigureServices(svc => svc.AddRabbitMQConnection(new ConfigurationBuilder().Build()))
-                   .Start())
-        {
-            var connectionFactory = host.Services.GetRequiredService<RC.IConnectionFactory>();
+        using var host = RabbitMQHost.CreateDefaultBuilder()
+            .ConfigureServices(svc => svc.AddRabbitMQConnection(new ConfigurationBuilder().Build()))
+            .Start();
+        using var scope = host.Services.CreateScope();
 
-            Assert.NotNull(connectionFactory);
-        }
+        var connectionFactory = scope.ServiceProvider.GetRequiredService<RC.IConnectionFactory>();
+
+        Assert.NotNull(connectionFactory);
     }
 }
