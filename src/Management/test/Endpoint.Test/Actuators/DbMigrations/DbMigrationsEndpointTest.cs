@@ -38,7 +38,7 @@ public sealed class DbMigrationsEndpointTest(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Invoke_WhenExistingDatabase_ReturnsExpected()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -59,7 +59,7 @@ public sealed class DbMigrationsEndpointTest(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Invoke_NonExistingDatabase_ReturnsExpected()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         var migrationScanner = new TestDatabaseMigrationScanner
         {
@@ -85,7 +85,7 @@ public sealed class DbMigrationsEndpointTest(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Invoke_NoDbContextRegistered_ReturnsExpected()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {

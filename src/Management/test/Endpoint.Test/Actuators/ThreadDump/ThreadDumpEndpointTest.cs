@@ -15,7 +15,7 @@ public sealed class ThreadDumpEndpointTest(ITestOutputHelper testOutputHelper) :
     [Fact]
     public async Task Invoke_CallsDumpThreads()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {

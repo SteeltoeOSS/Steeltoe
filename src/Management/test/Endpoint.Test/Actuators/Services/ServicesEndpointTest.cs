@@ -183,7 +183,7 @@ public sealed class ServicesEndpointTest(ITestOutputHelper testOutputHelper) : B
 
     private async Task<ServiceRegistration> GetRegistrationForAsync(string? registrationName, Action<IServiceCollection>? registerService = null)
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {

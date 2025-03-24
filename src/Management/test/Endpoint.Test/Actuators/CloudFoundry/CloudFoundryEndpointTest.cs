@@ -17,7 +17,7 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Invoke_ReturnsExpectedLinks()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -44,7 +44,7 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Invoke_OnlyCloudFoundryEndpoint_ReturnsExpectedLinks()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -61,7 +61,7 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -89,7 +89,7 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
     [Fact]
     public void Invoke_CloudFoundryDisabled_DoesNotInvoke()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {

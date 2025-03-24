@@ -138,7 +138,7 @@ public sealed class EndpointMiddlewareTest(ITestOutputHelper testOutputHelper) :
     [Fact]
     public async Task DoInvoke_ReturnsExpected()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
         testContext.AdditionalServices = (services, _) => services.AddServicesActuator();
         testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(AppSettings);
 

@@ -15,7 +15,7 @@ public sealed class HttpExchangesEndpointTest(ITestOutputHelper testOutputHelper
     [Fact]
     public async Task HttpExchangeEndpointHandler_CallsHttpExchangeRepository()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
         var repository = new TestHttpExchangesRepository();
 
         testContext.AdditionalServices = (services, _) =>

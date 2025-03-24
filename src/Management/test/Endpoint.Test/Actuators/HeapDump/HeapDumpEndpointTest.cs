@@ -15,7 +15,7 @@ public sealed class HeapDumpEndpointTest(ITestOutputHelper testOutputHelper) : B
     [Fact]
     public async Task Invoke_CreatesDump()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {

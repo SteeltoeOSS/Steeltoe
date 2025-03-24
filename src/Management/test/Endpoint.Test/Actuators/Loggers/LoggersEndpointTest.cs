@@ -17,7 +17,7 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     [Fact]
     public async Task GetLoggerConfiguration_CallsProvider()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -36,7 +36,7 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     [Fact]
     public async Task GetLoggerConfiguration_ReturnsExpected()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
         testContext.AdditionalServices = (services, _) => services.AddLoggersActuator();
 
         var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
@@ -63,7 +63,7 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     [Fact]
     public async Task SetLogLevel_CallsProvider()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -86,7 +86,7 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     [Fact]
     public async Task SetLogLevel_ReturnsExpected()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
         testContext.AdditionalServices = (services, _) => services.AddLoggersActuator();
 
         var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();

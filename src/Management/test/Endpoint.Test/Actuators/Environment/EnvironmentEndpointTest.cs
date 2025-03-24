@@ -17,7 +17,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
     [Fact]
     public void GetPropertySourceName_ReturnsExpected()
     {
-        using (var testContext = new TestContext(_testOutputHelper))
+        using (var testContext = new SteeltoeTestContext(_testOutputHelper))
         {
             testContext.AdditionalServices = (services, _) =>
             {
@@ -37,7 +37,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
             Assert.Equal(provider.GetType().Name, name);
         }
 
-        using (var testContext = new TestContext(_testOutputHelper))
+        using (var testContext = new SteeltoeTestContext(_testOutputHelper))
         {
             testContext.AdditionalServices = (services, _) =>
             {
@@ -80,7 +80,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
             ["charSize"] = "should not duplicate"
         };
 
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -132,7 +132,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -172,7 +172,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
             ["appsManagerBase"] = "${management:endpoints:path}"
         };
 
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -210,7 +210,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -259,7 +259,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
             ["vcap_services"] = "my-secret"
         };
 
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -300,7 +300,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
             ["password"] = "my-secret"
         };
 
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {

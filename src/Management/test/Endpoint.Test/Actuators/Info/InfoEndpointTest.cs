@@ -16,7 +16,7 @@ public sealed class InfoEndpointTest(ITestOutputHelper testOutputHelper) : BaseT
     [Fact]
     public async Task Invoke_NoContributors_ReturnsExpectedInfo()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -34,7 +34,7 @@ public sealed class InfoEndpointTest(ITestOutputHelper testOutputHelper) : BaseT
     [Fact]
     public async Task Invoke_CallsAllContributors()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         List<IInfoContributor> contributors =
         [
@@ -63,7 +63,7 @@ public sealed class InfoEndpointTest(ITestOutputHelper testOutputHelper) : BaseT
     [Fact]
     public async Task Invoke_HandlesExceptions()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         List<IInfoContributor> contributors =
         [
