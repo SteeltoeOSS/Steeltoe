@@ -51,15 +51,20 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
 
         if (clientOptions.Url == null)
         {
-            throw new InvalidOperationException("Spring Boot Admin Server Url must be provided in options.");
+            throw new InvalidOperationException($"{nameof(SpringBootAdminClientOptions.Url)} must be provided in options.");
+        }
+
+        if (clientOptions.ApplicationName == null)
+        {
+            throw new InvalidOperationException($"{nameof(SpringBootAdminClientOptions.ApplicationName)} must be provided in options.");
+        }
+
+        if (!Uri.TryCreate(clientOptions.BasePath, UriKind.Absolute, out Uri? baseUri))
+        {
+            throw new InvalidOperationException($"{nameof(SpringBootAdminClientOptions.BasePath)} must be provided in options as a fully-qualified URL.");
         }
 
         _logger.LogInformation("Registering with Spring Boot Admin Server at {Url}", clientOptions.Url);
-
-        if (clientOptions.ApplicationName == null || !Uri.TryCreate(clientOptions.BasePath, UriKind.Absolute, out Uri? baseUri))
-        {
-            throw new InvalidOperationException("BasePath and ApplicationName must be provided in options.");
-        }
 
         Application app = CreateApplication(baseUri, clientOptions.ApplicationName);
         Merge(app.Metadata, clientOptions.Metadata);

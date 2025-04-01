@@ -80,4 +80,105 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
+
+    [Fact]
+    public async Task SpringBootAdminClient_Throws_WhenUrlMissing()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["URLS"] = "http://localhost:8080;https://localhost:8082"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSpringBootAdminClient();
+
+        builder.Services.Configure<SpringBootAdminClientOptions>(options =>
+        {
+            options.Url = null;
+        });
+
+        await using WebApplication app = builder.Build();
+        SpringBootAdminClientHostedService hostedService = app.Services.GetServices<IHostedService>().OfType<SpringBootAdminClientHostedService>().Single();
+
+        Func<Task> action = async () => await hostedService.StartAsync(CancellationToken.None);
+        await action.Should().ThrowExactlyAsync<InvalidOperationException>().WithMessage("Url must be provided in options.");
+    }
+
+    [Fact]
+    public async Task SpringBootAdminClient_Throws_WhenApplicationNameMissing()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["URLS"] = "http://localhost:8080;https://localhost:8082"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSpringBootAdminClient();
+
+        builder.Services.Configure<SpringBootAdminClientOptions>(options =>
+        {
+            options.Url = "http://www.example.com";
+            options.ApplicationName = null;
+        });
+
+        await using WebApplication app = builder.Build();
+        SpringBootAdminClientHostedService hostedService = app.Services.GetServices<IHostedService>().OfType<SpringBootAdminClientHostedService>().Single();
+
+        Func<Task> action = async () => await hostedService.StartAsync(CancellationToken.None);
+        await action.Should().ThrowExactlyAsync<InvalidOperationException>().WithMessage("ApplicationName must be provided in options.");
+    }
+
+    [Fact]
+    public async Task SpringBootAdminClient_Throws_WhenBasePathMissing()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["URLS"] = "http://localhost:8080;https://localhost:8082"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSpringBootAdminClient();
+
+        builder.Services.Configure<SpringBootAdminClientOptions>(options =>
+        {
+            options.Url = "http://www.example.com";
+            options.ApplicationName = "app";
+            options.BasePath = null;
+        });
+
+        await using WebApplication app = builder.Build();
+        SpringBootAdminClientHostedService hostedService = app.Services.GetServices<IHostedService>().OfType<SpringBootAdminClientHostedService>().Single();
+
+        Func<Task> action = async () => await hostedService.StartAsync(CancellationToken.None);
+        await action.Should().ThrowExactlyAsync<InvalidOperationException>().WithMessage("BasePath must be provided in options as a fully-qualified URL.");
+    }
+
+    [Fact]
+    public async Task SpringBootAdminClient_Throws_WhenBasePathNotAbsolute()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["URLS"] = "http://localhost:8080;https://localhost:8082"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSpringBootAdminClient();
+
+        builder.Services.Configure<SpringBootAdminClientOptions>(options =>
+        {
+            options.Url = "http://www.example.com";
+            options.ApplicationName = "app";
+            options.BasePath = "/some/path";
+        });
+
+        await using WebApplication app = builder.Build();
+        SpringBootAdminClientHostedService hostedService = app.Services.GetServices<IHostedService>().OfType<SpringBootAdminClientHostedService>().Single();
+
+        Func<Task> action = async () => await hostedService.StartAsync(CancellationToken.None);
+        await action.Should().ThrowExactlyAsync<InvalidOperationException>().WithMessage("BasePath must be provided in options as a fully-qualified URL.");
+    }
 }
