@@ -8,7 +8,6 @@ using Moq;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Registry;
-using Xunit.Sdk;
 
 namespace Steeltoe.Discovery.Consul.Test.Registry;
 
@@ -116,7 +115,10 @@ public sealed class ConsulServiceRegistrarTest
     private static (Mock<IConsulClient> ClientMock, Mock<IAgentEndpoint> AgentMock) CreateConsulClientAgentMock(ConsulRegistration registration)
     {
         var agentMock = new Mock<IAgentEndpoint>();
-        agentMock.Setup(agent => agent.ServiceRegister(registration.InnerRegistration, It.IsAny<CancellationToken>())).Returns(Task.FromResult(DefaultWriteResult));
+
+        agentMock.Setup(agent => agent.ServiceRegister(registration.InnerRegistration, It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(DefaultWriteResult));
+
         agentMock.Setup(agent => agent.ServiceDeregister(registration.InstanceId, It.IsAny<CancellationToken>())).Returns(Task.FromResult(DefaultWriteResult));
 
         var clientMock = new Mock<IConsulClient>();

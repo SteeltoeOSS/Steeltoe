@@ -20,7 +20,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var options = new ConfigServerClientOptions();
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<UriFormatException>(async () => await provider.RemoteLoadAsync([@"foobar\foobar\"], null, TestContext.Current.CancellationToken));
+        await Assert.ThrowsAsync<UriFormatException>(async () =>
+            await provider.RemoteLoadAsync([@"foobar\foobar\"], null, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -59,7 +60,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<HttpRequestException>(async () => await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken));
+        await Assert.ThrowsAsync<HttpRequestException>(async () =>
+            await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken));
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);

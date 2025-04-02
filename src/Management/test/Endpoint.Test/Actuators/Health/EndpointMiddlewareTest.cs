@@ -366,7 +366,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage responseMessage = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"), TestContext.Current.CancellationToken);
+
+        HttpResponseMessage responseMessage =
+            await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"), TestContext.Current.CancellationToken);
+
         responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string json = await responseMessage.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);

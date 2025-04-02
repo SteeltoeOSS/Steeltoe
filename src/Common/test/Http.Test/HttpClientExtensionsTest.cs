@@ -33,8 +33,8 @@ public sealed class HttpClientExtensionsTest
 
         var httpClient = new HttpClient(handler);
 
-        string accessToken =
-            await httpClient.GetAccessTokenAsync(new Uri("https://auth-server.com/oauth/token"), "test-user", "test-password", TestContext.Current.CancellationToken);
+        string accessToken = await httpClient.GetAccessTokenAsync(new Uri("https://auth-server.com/oauth/token"), "test-user", "test-password",
+            TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
@@ -54,8 +54,8 @@ public sealed class HttpClientExtensionsTest
 
         var httpClient = new HttpClient(handler);
 
-        string accessToken =
-            await httpClient.GetAccessTokenAsync(new Uri("https://auth-server.com/oauth/token"), null, "test-password", TestContext.Current.CancellationToken);
+        string accessToken = await httpClient.GetAccessTokenAsync(new Uri("https://auth-server.com/oauth/token"), null, "test-password",
+            TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 

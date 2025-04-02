@@ -36,8 +36,8 @@ public sealed class HealthAggregatorTest : BaseTest
         List<IHealthContributor> contributors = [new DisabledContributor()];
         var aggregator = new HealthAggregator();
 
-        SteeltoeHealthCheckResult result =
-            await aggregator.AggregateAsync(contributors, EmptyHealthCheckRegistrations, EmptyServiceProvider, TestContext.Current.CancellationToken);
+        SteeltoeHealthCheckResult result = await aggregator.AggregateAsync(contributors, EmptyHealthCheckRegistrations, EmptyServiceProvider,
+            TestContext.Current.CancellationToken);
 
         Assert.NotNull(result);
         Assert.Equal(SteeltoeHealthStatus.Unknown, result.Status);
@@ -50,8 +50,8 @@ public sealed class HealthAggregatorTest : BaseTest
         List<IHealthContributor> contributors = [new UpContributor()];
         var aggregator = new HealthAggregator();
 
-        SteeltoeHealthCheckResult result =
-            await aggregator.AggregateAsync(contributors, EmptyHealthCheckRegistrations, EmptyServiceProvider, TestContext.Current.CancellationToken);
+        SteeltoeHealthCheckResult result = await aggregator.AggregateAsync(contributors, EmptyHealthCheckRegistrations, EmptyServiceProvider,
+            TestContext.Current.CancellationToken);
 
         Assert.NotNull(result);
         Assert.Equal(SteeltoeHealthStatus.Up, result.Status);
@@ -86,8 +86,8 @@ public sealed class HealthAggregatorTest : BaseTest
 
         var aggregator = new HealthAggregator();
 
-        SteeltoeHealthCheckResult result =
-            await aggregator.AggregateAsync(contributors, EmptyHealthCheckRegistrations, EmptyServiceProvider, TestContext.Current.CancellationToken);
+        SteeltoeHealthCheckResult result = await aggregator.AggregateAsync(contributors, EmptyHealthCheckRegistrations, EmptyServiceProvider,
+            TestContext.Current.CancellationToken);
 
         Assert.NotNull(result);
         Assert.Equal(SteeltoeHealthStatus.Down, result.Status);
@@ -106,8 +106,8 @@ public sealed class HealthAggregatorTest : BaseTest
 
         var aggregator = new HealthAggregator();
 
-        SteeltoeHealthCheckResult result =
-            await aggregator.AggregateAsync(contributors, EmptyHealthCheckRegistrations, EmptyServiceProvider, TestContext.Current.CancellationToken);
+        SteeltoeHealthCheckResult result = await aggregator.AggregateAsync(contributors, EmptyHealthCheckRegistrations, EmptyServiceProvider,
+            TestContext.Current.CancellationToken);
 
         Assert.NotNull(result);
         Assert.Equal(SteeltoeHealthStatus.Up, result.Status);
@@ -127,8 +127,8 @@ public sealed class HealthAggregatorTest : BaseTest
 
         var aggregator = new HealthAggregator();
 
-        SteeltoeHealthCheckResult result =
-            await aggregator.AggregateAsync(contributors, EmptyHealthCheckRegistrations, EmptyServiceProvider, TestContext.Current.CancellationToken);
+        SteeltoeHealthCheckResult result = await aggregator.AggregateAsync(contributors, EmptyHealthCheckRegistrations, EmptyServiceProvider,
+            TestContext.Current.CancellationToken);
 
         Assert.NotNull(result);
         Assert.Equal(SteeltoeHealthStatus.OutOfService, result.Status);
@@ -150,8 +150,8 @@ public sealed class HealthAggregatorTest : BaseTest
         var aggregator = new HealthAggregator();
         stopwatch.Start();
 
-        SteeltoeHealthCheckResult result =
-            await aggregator.AggregateAsync(contributors, EmptyHealthCheckRegistrations, EmptyServiceProvider, TestContext.Current.CancellationToken);
+        SteeltoeHealthCheckResult result = await aggregator.AggregateAsync(contributors, EmptyHealthCheckRegistrations, EmptyServiceProvider,
+            TestContext.Current.CancellationToken);
 
         stopwatch.Stop();
         Assert.NotNull(result);

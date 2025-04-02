@@ -87,7 +87,9 @@ public sealed class ConsulServiceRegistryTest
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
 
         await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
-        await Assert.ThrowsAsync<ArgumentException>(async () => await registry.SetStatusAsync(registration, string.Empty, TestContext.Current.CancellationToken));
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await registry.SetStatusAsync(registration, string.Empty, TestContext.Current.CancellationToken));
     }
 
     [Fact]

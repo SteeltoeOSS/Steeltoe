@@ -66,7 +66,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using HttpClient client = host.GetTestClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"BadData\"}", ContentType);
-        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content, TestContext.Current.CancellationToken);
+
+        HttpResponseMessage response =
+            await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -86,7 +88,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using HttpClient client = host.GetTestClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}", ContentType);
-        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content, TestContext.Current.CancellationToken);
+
+        HttpResponseMessage response =
+            await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -141,7 +145,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using HttpClient client = host.GetTestClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"TRACE\"}", ContentType);
-        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Steeltoe"), content, TestContext.Current.CancellationToken);
+
+        HttpResponseMessage response =
+            await client.PostAsync(new Uri("http://localhost/actuator/loggers/Steeltoe"), content, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);

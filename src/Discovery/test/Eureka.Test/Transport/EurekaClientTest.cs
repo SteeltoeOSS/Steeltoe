@@ -559,7 +559,8 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        await client.HeartbeatAsync("FOO", "localhost:bar:1234", new DateTime(638_439_667_057_566_585, DateTimeKind.Utc), TestContext.Current.CancellationToken);
+        await client.HeartbeatAsync("FOO", "localhost:bar:1234", new DateTime(638_439_667_057_566_585, DateTimeKind.Utc),
+            TestContext.Current.CancellationToken);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
     }

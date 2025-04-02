@@ -45,7 +45,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         var content = JsonContent.Create(environment);
 
-        var env = await content.ReadFromJsonAsync<ConfigEnvironment>(ConfigServerConfigurationProvider.SerializerOptions, TestContext.Current.CancellationToken);
+        var env = await content.ReadFromJsonAsync<ConfigEnvironment>(ConfigServerConfigurationProvider.SerializerOptions,
+            TestContext.Current.CancellationToken);
+
         Assert.NotNull(env);
         Assert.Equal("test-name", env.Name);
         Assert.NotNull(env.Profiles);
@@ -414,7 +416,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
         using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
-        var exception = await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
+        var exception = await Assert.ThrowsAsync<ConfigServerException>(async () =>
+            await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
+
         Assert.StartsWith("Could not locate Config Server via discovery", exception.Message, StringComparison.Ordinal);
     }
 

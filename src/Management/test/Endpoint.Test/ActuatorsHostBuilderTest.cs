@@ -307,13 +307,17 @@ public sealed class ActuatorsHostBuilderTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage livenessResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/liveness"), TestContext.Current.CancellationToken);
+        HttpResponseMessage livenessResponse =
+            await httpClient.GetAsync(new Uri("http://localhost/actuator/health/liveness"), TestContext.Current.CancellationToken);
+
         livenessResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string livenessResponseText = await livenessResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         livenessResponseText.Should().Be("""{"status":"UP","components":{"livenessState":{"status":"UP"}}}""");
 
-        HttpResponseMessage readinessResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/readiness"), TestContext.Current.CancellationToken);
+        HttpResponseMessage readinessResponse =
+            await httpClient.GetAsync(new Uri("http://localhost/actuator/health/readiness"), TestContext.Current.CancellationToken);
+
         readinessResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string readinessResponseText = await readinessResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -491,7 +495,10 @@ public sealed class ActuatorsHostBuilderTest
             """;
 
         var requestContent = new StringContent(requestBody, MediaTypeHeaderValue.Parse("application/vnd.spring-boot.actuator.v3+json"));
-        HttpResponseMessage postResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Microsoft"), requestContent, TestContext.Current.CancellationToken);
+
+        HttpResponseMessage postResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Microsoft"), requestContent,
+            TestContext.Current.CancellationToken);
+
         postResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         HttpResponseMessage getResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);

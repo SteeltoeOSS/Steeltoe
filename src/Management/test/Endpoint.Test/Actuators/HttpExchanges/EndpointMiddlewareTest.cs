@@ -35,9 +35,15 @@ public sealed class EndpointMiddlewareTest : BaseTest
         host.MapGet("/hello", () => "Hello World!");
         await host.StartAsync(TestContext.Current.CancellationToken);
         using var httpClient = new HttpClient();
-        HttpResponseMessage helloResponse = await httpClient.GetAsync(new Uri("http://localhost:5000/hello?someQuery=value"), TestContext.Current.CancellationToken);
+
+        HttpResponseMessage helloResponse =
+            await httpClient.GetAsync(new Uri("http://localhost:5000/hello?someQuery=value"), TestContext.Current.CancellationToken);
+
         helloResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri("http://localhost:5000/actuator/httpexchanges"), TestContext.Current.CancellationToken);
+
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri("http://localhost:5000/actuator/httpexchanges"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var actuatorRootElement = await actuatorResponse.Content.ReadFromJsonAsync<JsonElement>(TestContext.Current.CancellationToken);
         JsonElement[] exchangesArray = [.. actuatorRootElement.GetProperty("exchanges").EnumerateArray()];

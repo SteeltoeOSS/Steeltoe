@@ -54,12 +54,14 @@ public sealed class HostWrapper : IAsyncDisposable
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        return _host?.StartAsync(cancellationToken) ?? _webHost?.StartAsync(cancellationToken) ?? _webApplication?.StartAsync(cancellationToken) ?? throw new NotSupportedException();
+        return _host?.StartAsync(cancellationToken) ?? _webHost?.StartAsync(cancellationToken) ??
+            _webApplication?.StartAsync(cancellationToken) ?? throw new NotSupportedException();
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        return _host?.StopAsync(cancellationToken) ?? _webHost?.StopAsync(cancellationToken) ?? _webApplication?.StopAsync(cancellationToken) ?? throw new NotSupportedException();
+        return _host?.StopAsync(cancellationToken) ??
+            _webHost?.StopAsync(cancellationToken) ?? _webApplication?.StopAsync(cancellationToken) ?? throw new NotSupportedException();
     }
 
     public async ValueTask DisposeAsync()

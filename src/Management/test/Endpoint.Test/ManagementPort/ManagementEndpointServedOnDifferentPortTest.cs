@@ -35,7 +35,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         HttpResponseMessage appResponse = await httpClient.GetAsync(new Uri($"http://localhost:{AspNetDefaultPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{AspNetDefaultPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{AspNetDefaultPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -60,7 +62,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         HttpResponseMessage appResponse = await httpClient.GetAsync(new Uri($"http://localhost:{AspNetDefaultPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{AspNetDefaultPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{AspNetDefaultPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -91,7 +95,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"http://localhost:{managementPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{AspNetDefaultPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{AspNetDefaultPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{managementPort}/actuator"), TestContext.Current.CancellationToken);
@@ -126,7 +132,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
 
         using HttpClient httpClient = CreateHttpClient();
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{managementPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{managementPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{internalTlsProxyPort}/actuator"), TestContext.Current.CancellationToken);
@@ -165,7 +173,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"https://localhost:{managementPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{AspNetDefaultPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{AspNetDefaultPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{managementPort}/actuator"), TestContext.Current.CancellationToken);
@@ -201,7 +211,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}/actuator"), TestContext.Current.CancellationToken);
@@ -238,7 +250,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}/actuator"), TestContext.Current.CancellationToken);
@@ -280,7 +294,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"http://localhost:{managementPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}/actuator"), TestContext.Current.CancellationToken);
@@ -326,7 +342,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"https://localhost:{managementPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}/actuator"), TestContext.Current.CancellationToken);
@@ -363,7 +381,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}/actuator"), TestContext.Current.CancellationToken);
@@ -402,7 +422,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}/actuator"), TestContext.Current.CancellationToken);
@@ -446,7 +468,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"http://localhost:{managementPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}/actuator"), TestContext.Current.CancellationToken);
@@ -494,7 +518,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"https://localhost:{managementPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}/actuator"), TestContext.Current.CancellationToken);
@@ -532,7 +558,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}/actuator"), TestContext.Current.CancellationToken);
@@ -572,7 +600,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}/actuator"), TestContext.Current.CancellationToken);
@@ -617,7 +647,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"http://localhost:{managementPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}/actuator"), TestContext.Current.CancellationToken);
@@ -666,7 +698,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"https://localhost:{managementPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}/actuator"), TestContext.Current.CancellationToken);
@@ -706,7 +740,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}/actuator"), TestContext.Current.CancellationToken);
@@ -750,7 +786,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"http://localhost:{managementPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}/actuator"), TestContext.Current.CancellationToken);
@@ -798,7 +836,9 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         appResponse = await httpClient.GetAsync(new Uri($"https://localhost:{managementPort}"), TestContext.Current.CancellationToken);
         appResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{appHttpPort}/actuator"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         actuatorResponse = await httpClient.GetAsync(new Uri($"https://localhost:{appHttpsPort}/actuator"), TestContext.Current.CancellationToken);

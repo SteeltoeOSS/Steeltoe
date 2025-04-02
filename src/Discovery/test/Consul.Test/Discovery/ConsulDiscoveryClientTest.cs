@@ -60,7 +60,8 @@ public sealed class ConsulDiscoveryClientTest
 
         var healthMoq = new Mock<IHealthEndpoint>();
 
-        healthMoq.Setup(endpoint => endpoint.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, It.IsAny<CancellationToken>()))
+        healthMoq.Setup(endpoint =>
+                endpoint.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(queryResult));
 
         var clientMoq = new Mock<IConsulClient>();
@@ -70,7 +71,10 @@ public sealed class ConsulDiscoveryClientTest
         var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
 
         List<IServiceInstance> serviceInstances = [];
-        await discoveryClient.AddInstancesToListAsync(serviceInstances, "ServiceId", QueryOptions.Default, optionsMonitor.CurrentValue, TestContext.Current.CancellationToken);
+
+        await discoveryClient.AddInstancesToListAsync(serviceInstances, "ServiceId", QueryOptions.Default, optionsMonitor.CurrentValue,
+            TestContext.Current.CancellationToken);
+
         Assert.Equal(2, serviceInstances.Count);
 
         Assert.Equal("foo.bar.com", serviceInstances[0].Host);
