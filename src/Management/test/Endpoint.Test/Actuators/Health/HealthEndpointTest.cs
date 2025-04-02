@@ -39,7 +39,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         HealthEndpointRequest healthRequest = GetHealthRequest();
 
-        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
+        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Unknown, result.Status);
     }
@@ -64,7 +64,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
         HealthEndpointRequest healthRequest = GetHealthRequest();
-        await handler.InvokeAsync(healthRequest, CancellationToken.None);
+        await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
 
         foreach (TestHealthContributor testContributor in contributors.Cast<TestHealthContributor>())
         {
@@ -117,7 +117,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
 
         HealthEndpointRequest healthRequest = GetHealthRequest();
-        HealthEndpointResponse info = await handler.InvokeAsync(healthRequest, CancellationToken.None);
+        HealthEndpointResponse info = await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
 
         foreach (TestHealthContributor testContributor in contributors.Cast<TestHealthContributor>())
         {
@@ -204,7 +204,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         var healthRequest = new HealthEndpointRequest("liVeness", true);
 
-        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
+        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
 
         result.Status.Should().Be(HealthStatus.Up);
         result.Components.Keys.Should().ContainSingle();
@@ -250,7 +250,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         var healthRequest = new HealthEndpointRequest("readiness", true);
 
-        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
+        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
 
         result.Status.Should().Be(HealthStatus.Up);
         result.Components.Keys.Should().ContainSingle();
@@ -283,7 +283,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         var healthRequest = new HealthEndpointRequest("msft", true);
 
-        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
+        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
 
         result.Components.Keys.Should().HaveCount(2);
         result.Components.Should().ContainKey("alwaysUp");
@@ -369,7 +369,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         var healthRequest = new HealthEndpointRequest("test", hasClaim);
 
-        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
+        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
 
         result.Status.Should().Be(HealthStatus.Up);
 

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,9 +63,9 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
             "AppName": "AppTwo"
           }
         }
-        """);
+        """, TestContext.Current.CancellationToken);
 
-        await Task.Delay(TimeSpan.FromSeconds(2));
+        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
         optionsMonitor.CurrentValue.Value.Should().Be("AppTwo");
 
@@ -74,9 +75,9 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
             "AppName": "AppThree"
           }
         }
-        """);
+        """, TestContext.Current.CancellationToken);
 
-        await Task.Delay(TimeSpan.FromSeconds(2));
+        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
         optionsMonitor.CurrentValue.Value.Should().Be("AppThree");
     }

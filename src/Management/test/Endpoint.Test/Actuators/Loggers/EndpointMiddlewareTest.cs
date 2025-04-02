@@ -37,10 +37,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers");
+        var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers", TestContext.Current.CancellationToken);
 
         json.TryGetProperty("levels", out JsonElement levels).Should().BeTrue();
         levels.ToString().Should().Be("""["OFF","FATAL","ERROR","WARN","INFO","DEBUG","TRACE"]""");
@@ -62,14 +62,14 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"BadData\"}", ContentType);
-        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content);
+        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().BeEmpty();
     }
 
@@ -82,17 +82,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}", ContentType);
-        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content);
+        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), content, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().BeEmpty();
 
-        var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers");
+        var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers", TestContext.Current.CancellationToken);
 
         json.TryGetProperty("loggers", out JsonElement loggers).Should().BeTrue();
         AssertLoggerCategoryHasJson(loggers, "Default", """{"configuredLevel":"WARN","effectiveLevel":"ERROR"}""");
@@ -112,17 +112,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}", ContentType);
-        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/loggers/Default"), content);
+        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/loggers/Default"), content, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().BeEmpty();
 
-        var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/loggers");
+        var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/loggers", TestContext.Current.CancellationToken);
 
         json.TryGetProperty("loggers", out JsonElement loggers).Should().BeTrue();
         AssertLoggerCategoryHasJson(loggers, "Default", """{"configuredLevel":"WARN","effectiveLevel":"ERROR"}""");
@@ -137,17 +137,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"TRACE\"}", ContentType);
-        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Steeltoe"), content);
+        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Steeltoe"), content, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().BeEmpty();
 
-        var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers");
+        var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers", TestContext.Current.CancellationToken);
 
         json.TryGetProperty("loggers", out JsonElement loggers).Should().BeTrue();
         AssertLoggerCategoryHasJson(loggers, "Steeltoe", """{"configuredLevel":"INFO","effectiveLevel":"TRACE"}""");
@@ -187,10 +187,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.Logging.AddDebug();
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers");
+        var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/actuator/loggers", TestContext.Current.CancellationToken);
 
         json.TryGetProperty("levels", out JsonElement levels).Should().BeTrue();
         levels.ToString().Should().Be("""["OFF","FATAL","ERROR","WARN","INFO","DEBUG","TRACE"]""");

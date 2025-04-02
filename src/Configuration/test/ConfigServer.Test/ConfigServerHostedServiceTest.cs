@@ -25,8 +25,8 @@ public sealed class ConfigServerHostedServiceTest
 
         Func<Task> startStopAction = async () =>
         {
-            await service.StartAsync(CancellationToken.None);
-            await service.StopAsync(CancellationToken.None);
+            await service.StartAsync(TestContext.Current.CancellationToken);
+            await service.StopAsync(TestContext.Current.CancellationToken);
         };
 
         await startStopAction.Should().NotThrowAsync("ConfigServerHostedService should start");
@@ -42,8 +42,8 @@ public sealed class ConfigServerHostedServiceTest
 
         Func<Task> startStopAction = async () =>
         {
-            await service.StartAsync(CancellationToken.None);
-            await service.StopAsync(CancellationToken.None);
+            await service.StartAsync(TestContext.Current.CancellationToken);
+            await service.StopAsync(TestContext.Current.CancellationToken);
         };
 
         await startStopAction.Should().NotThrowAsync("ConfigServerHostedService should start");

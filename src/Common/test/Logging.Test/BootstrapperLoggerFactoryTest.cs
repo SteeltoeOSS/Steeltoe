@@ -33,7 +33,7 @@ public sealed class BootstrapperLoggerFactoryTest
         builder.Services.UpgradeBootstrapLoggerFactory(bootstrapLoggerFactory);
 
         await using WebApplication app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
         ILogger afterStartLogger = loggerFactory.CreateLogger("Test_AfterStart");

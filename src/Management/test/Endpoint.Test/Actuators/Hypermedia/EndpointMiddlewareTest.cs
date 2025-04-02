@@ -25,11 +25,11 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.UseStartup<Startup>();
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
         client.DefaultRequestHeaders.Add("X-Forwarded-Proto", xForwarded);
-        var links = await client.GetFromJsonAsync<Links>($"{requestUriString}/actuator", SerializerOptions);
+        var links = await client.GetFromJsonAsync<Links>($"{requestUriString}/actuator", SerializerOptions, TestContext.Current.CancellationToken);
 
         links.Should().NotBeNull();
         links.Entries.Should().ContainKey("self").WhoseValue.Href.Should().Be($"{calculatedHost}/actuator");
@@ -43,11 +43,11 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.UseStartup<Startup>();
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator"));
-        string json = await response.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator"), TestContext.Current.CancellationToken);
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         json.Should().BeJson("""
             {
@@ -79,11 +79,11 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/"));
-        string json = await response.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/"), TestContext.Current.CancellationToken);
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         json.Should().BeJson("""
             {

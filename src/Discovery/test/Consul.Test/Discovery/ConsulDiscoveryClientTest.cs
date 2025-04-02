@@ -70,7 +70,7 @@ public sealed class ConsulDiscoveryClientTest
         var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
 
         List<IServiceInstance> serviceInstances = [];
-        await discoveryClient.AddInstancesToListAsync(serviceInstances, "ServiceId", QueryOptions.Default, optionsMonitor.CurrentValue, CancellationToken.None);
+        await discoveryClient.AddInstancesToListAsync(serviceInstances, "ServiceId", QueryOptions.Default, optionsMonitor.CurrentValue, TestContext.Current.CancellationToken);
         Assert.Equal(2, serviceInstances.Count);
 
         Assert.Equal("foo.bar.com", serviceInstances[0].Host);
@@ -131,7 +131,7 @@ public sealed class ConsulDiscoveryClientTest
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
-        ISet<string> serviceIds = await discoveryClient.GetServiceIdsAsync(QueryOptions.Default, CancellationToken.None);
+        ISet<string> serviceIds = await discoveryClient.GetServiceIdsAsync(QueryOptions.Default, TestContext.Current.CancellationToken);
 
         Assert.Equal(2, serviceIds.Count);
         Assert.Contains("foo", serviceIds);
@@ -209,7 +209,7 @@ public sealed class ConsulDiscoveryClientTest
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
-        IList<IServiceInstance> serviceInstances = await discoveryClient.GetAllInstancesAsync(QueryOptions.Default, CancellationToken.None);
+        IList<IServiceInstance> serviceInstances = await discoveryClient.GetAllInstancesAsync(QueryOptions.Default, TestContext.Current.CancellationToken);
 
         Assert.Equal(2, serviceInstances.Count);
 

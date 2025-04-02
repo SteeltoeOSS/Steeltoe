@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -21,7 +22,7 @@ public sealed class TaskHostExtensionsTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         WebApplication app = builder.Build();
 
-        using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+        using var timeoutSource = new CancellationTokenSource(1.Seconds());
 
         app.HasApplicationTask().Should().BeFalse();
         await app.RunWithTasksAsync(timeoutSource.Token);
@@ -44,7 +45,7 @@ public sealed class TaskHostExtensionsTest
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         app.HasApplicationTask().Should().BeTrue();
-        await app.RunWithTasksAsync(CancellationToken.None);
+        await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
         sharedState.HasExecuted.Should().BeTrue();
     }
@@ -64,7 +65,7 @@ public sealed class TaskHostExtensionsTest
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         app.HasApplicationTask().Should().BeTrue();
-        await app.RunWithTasksAsync(CancellationToken.None);
+        await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
         sharedState.HasExecuted.Should().BeTrue();
     }
@@ -84,7 +85,7 @@ public sealed class TaskHostExtensionsTest
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         app.HasApplicationTask().Should().BeTrue();
-        await app.RunWithTasksAsync(CancellationToken.None);
+        await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
         sharedState.HasExecuted.Should().BeTrue();
     }
@@ -105,7 +106,7 @@ public sealed class TaskHostExtensionsTest
         WebApplication app = builder.Build();
 
         app.HasApplicationTask().Should().BeTrue();
-        await app.RunWithTasksAsync(CancellationToken.None);
+        await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
         sharedState.HasExecuted.Should().BeTrue();
     }
@@ -134,7 +135,7 @@ public sealed class TaskHostExtensionsTest
         WebApplication app = builder.Build();
 
         app.HasApplicationTask().Should().BeTrue();
-        await app.RunWithTasksAsync(CancellationToken.None);
+        await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
         hasExecuted.Should().BeTrue();
     }
@@ -164,7 +165,7 @@ public sealed class TaskHostExtensionsTest
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         app.HasApplicationTask().Should().BeTrue();
-        await app.RunWithTasksAsync(CancellationToken.None);
+        await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
         sharedState.HasExecuted.Should().BeTrue();
     }
@@ -185,7 +186,7 @@ public sealed class TaskHostExtensionsTest
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         app.HasApplicationTask().Should().BeTrue();
-        await app.RunWithTasksAsync(CancellationToken.None);
+        await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
         sharedState.HasExecuted.Should().BeTrue();
     }
@@ -203,7 +204,7 @@ public sealed class TaskHostExtensionsTest
         WebApplication app = builder.Build();
 
         app.HasApplicationTask().Should().BeTrue();
-        await app.RunWithTasksAsync(CancellationToken.None);
+        await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
         IList<string> logMessages = capturingLoggerProvider.GetAll();
 
@@ -225,7 +226,7 @@ public sealed class TaskHostExtensionsTest
         WebApplication app = builder.Build();
 
         app.HasApplicationTask().Should().BeTrue();
-        Func<Task> action = async () => await app.RunWithTasksAsync(CancellationToken.None);
+        Func<Task> action = async () => await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<InvalidOperationException>();
     }
@@ -246,7 +247,7 @@ public sealed class TaskHostExtensionsTest
         WebApplication app = builder.Build();
 
         app.HasApplicationTask().Should().BeTrue();
-        await app.RunWithTasksAsync(CancellationToken.None);
+        await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
         Action action = () => _ = app.Services.GetRequiredService<ILoggerFactory>();
 
@@ -267,7 +268,7 @@ public sealed class TaskHostExtensionsTest
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         app.HasApplicationTask().Should().BeTrue();
-        await app.RunWithTasksAsync(CancellationToken.None);
+        await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
         sharedState.HasExecuted.Should().BeTrue();
     }
@@ -292,7 +293,7 @@ public sealed class TaskHostExtensionsTest
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         app.HasApplicationTask().Should().BeTrue();
-        await app.RunWithTasksAsync(CancellationToken.None);
+        await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
         sharedState.HasExecuted.Should().BeTrue();
     }
@@ -316,7 +317,7 @@ public sealed class TaskHostExtensionsTest
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         app.HasApplicationTask().Should().BeTrue();
-        await app.RunWithTasksAsync(CancellationToken.None);
+        await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
         sharedState.HasExecuted.Should().BeTrue();
     }

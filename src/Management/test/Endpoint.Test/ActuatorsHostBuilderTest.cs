@@ -4,6 +4,7 @@
 
 using System.Net;
 using System.Net.Http.Headers;
+using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -82,16 +83,16 @@ public sealed class ActuatorsHostBuilderTest
 
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
         var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
         request.Headers.Authorization = AuthenticationHeaderValue.Parse($"bearer {token}");
 
-        HttpResponseMessage response = await httpClient.SendAsync(request);
+        HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Contain("\"http://localhost/cloudfoundryapplication\"");
 
         handler.Mock.VerifyNoOutstandingExpectation();
@@ -109,10 +110,10 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddDbMigrationsActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/dbmigrations"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/dbmigrations"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -128,10 +129,10 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddEnvironmentActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -147,13 +148,13 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddHealthActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Be("""{"status":"UP"}""");
     }
 
@@ -175,13 +176,13 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddHealthActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         responseText.Should().Be("""
             {"status":"UP","groups":["liveness","readiness"]}
@@ -207,13 +208,13 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddHealthActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         responseText.Should().Be("""
             {"status":"UP","components":{"ping":{"status":"UP"},"diskSpace":{"status":"UP"},"readinessState":{"status":"UP"},"livenessState":{"status":"UP"}},"groups":["liveness","readiness"]}
@@ -238,13 +239,13 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddHealthActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         responseText.Should().Be("""{"status":"UNKNOWN"}""");
     }
@@ -271,13 +272,13 @@ public sealed class ActuatorsHostBuilderTest
             });
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         responseText.Should().Be("""
             {"status":"DOWN","components":{"alwaysDown":{"status":"DOWN"},"ping":{"status":"UP"},"diskSpace":{"status":"UP"}}}
@@ -303,23 +304,23 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddHealthActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage livenessResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/liveness"));
+        HttpResponseMessage livenessResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/liveness"), TestContext.Current.CancellationToken);
         livenessResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string livenessResponseText = await livenessResponse.Content.ReadAsStringAsync();
+        string livenessResponseText = await livenessResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         livenessResponseText.Should().Be("""{"status":"UP","components":{"livenessState":{"status":"UP"}}}""");
 
-        HttpResponseMessage readinessResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/readiness"));
+        HttpResponseMessage readinessResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/readiness"), TestContext.Current.CancellationToken);
         readinessResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string readinessResponseText = await readinessResponse.Content.ReadAsStringAsync();
+        string readinessResponseText = await readinessResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         readinessResponseText.Should().Be("""{"status":"UP","components":{"readinessState":{"status":"UP"}}}""");
 
         var availability = host.Services.GetRequiredService<ApplicationAvailability>();
-        await host.StopAsync();
+        await host.StopAsync(TestContext.Current.CancellationToken);
 
         availability.GetLivenessState().Should().Be(LivenessState.Correct);
         availability.GetReadinessState().Should().Be(ReadinessState.RefusingTraffic);
@@ -342,10 +343,10 @@ public sealed class ActuatorsHostBuilderTest
             });
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/heapdump"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/heapdump"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -361,17 +362,17 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddHttpExchangesActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        _ = await httpClient.GetAsync(new Uri("http://localhost/does-not-exist"));
+        _ = await httpClient.GetAsync(new Uri("http://localhost/does-not-exist"), TestContext.Current.CancellationToken);
 
-        await Task.Delay(250);
+        await Task.Delay(250.Milliseconds(), TestContext.Current.CancellationToken);
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/httpexchanges"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/httpexchanges"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Contain("/does-not-exist");
     }
 
@@ -387,10 +388,10 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddHypermediaActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -406,13 +407,13 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddInfoActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/info"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/info"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Contain("\"buildmaster@springframework.org\"");
         responseText.Should().Contain("\"Steeltoe.Management.Endpoint\"");
     }
@@ -434,13 +435,13 @@ public sealed class ActuatorsHostBuilderTest
             });
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/info"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/info"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Contain("\"buildmaster@springframework.org\"");
         responseText.Should().Contain("\"Steeltoe.Management.Endpoint\"");
         responseText.Should().Contain("\"IsTest\"");
@@ -458,13 +459,13 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddLoggersActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Contain("\"Microsoft.AspNetCore.");
     }
 
@@ -480,7 +481,7 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddLoggersActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
         const string requestBody = """
@@ -490,13 +491,13 @@ public sealed class ActuatorsHostBuilderTest
             """;
 
         var requestContent = new StringContent(requestBody, MediaTypeHeaderValue.Parse("application/vnd.spring-boot.actuator.v3+json"));
-        HttpResponseMessage postResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Microsoft"), requestContent);
+        HttpResponseMessage postResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Microsoft"), requestContent, TestContext.Current.CancellationToken);
         postResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        HttpResponseMessage getResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"));
+        HttpResponseMessage getResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await getResponse.Content.ReadAsStringAsync();
+        string responseText = await getResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Contain("\"Microsoft.AspNetCore\":{\"effectiveLevel\":\"FATAL\"}");
     }
 
@@ -513,13 +514,13 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddLoggersActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Contain("\"Microsoft.AspNetCore.");
     }
 
@@ -535,10 +536,10 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddRefreshActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/refresh"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/refresh"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
     }
 
@@ -554,13 +555,13 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddRefreshActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null);
+        HttpResponseMessage response = await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Contain("\"Management:Endpoints:Actuator:Exposure:Include\"");
     }
 
@@ -576,13 +577,13 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddRouteMappingsActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Contain("\"dispatcherServlet\"");
     }
 
@@ -598,13 +599,13 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddServicesActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/beans"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/beans"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Contain("\"Microsoft.Extensions.Configuration.IConfiguration\"");
     }
 
@@ -620,13 +621,13 @@ public sealed class ActuatorsHostBuilderTest
             builder.ConfigureServices(services => services.AddThreadDumpActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/threaddump"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/threaddump"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Contain("\"stackTrace\"");
     }
 

@@ -480,7 +480,7 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             }
         }
 
-        await _consoleOutput.WaitForFlushAsync();
+        await _consoleOutput.WaitForFlushAsync(TestContext.Current.CancellationToken);
         string logOutput = _consoleOutput.ToString();
 
         logOutput.Should().Be("""
@@ -521,7 +521,7 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
 
         logger.LogInformation("Three");
 
-        await _consoleOutput.WaitForFlushAsync();
+        await _consoleOutput.WaitForFlushAsync(TestContext.Current.CancellationToken);
         string logOutput = _consoleOutput.ToString();
 
         logOutput.Should().Contain("One");
@@ -683,7 +683,7 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             _logger.LogTrace($"Test:{CategoryName}:Trace");
 #pragma warning restore CA2254 // Template should be a static expression
 
-            await _consoleOutput.WaitForFlushAsync();
+            await _consoleOutput.WaitForFlushAsync(TestContext.Current.CancellationToken);
 
             return _consoleOutput.ToString();
         }

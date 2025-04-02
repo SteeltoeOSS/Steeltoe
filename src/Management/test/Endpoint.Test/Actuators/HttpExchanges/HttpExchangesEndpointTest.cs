@@ -25,7 +25,7 @@ public sealed class HttpExchangesEndpointTest(ITestOutputHelper testOutputHelper
         };
 
         var handler = testContext.GetRequiredService<IHttpExchangesEndpointHandler>();
-        HttpExchangesResult result = await handler.InvokeAsync(null, CancellationToken.None);
+        HttpExchangesResult result = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
         repository.GetHttpExchangesCalled.Should().BeTrue();
     }

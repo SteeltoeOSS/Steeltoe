@@ -247,11 +247,11 @@ public sealed class RedisConnectorTest
         connectorFactory.ServiceBindingNames.Should().Contain("myRedisServiceTwo");
 
         var connectionOne = (RedisCache)connectorFactory.Get("myRedisServiceOne").GetConnection();
-        IConnectionMultiplexer connectionMultiplexerOne = await ExtractUnderlyingMultiplexerFromRedisCacheAsync(connectionOne);
+        IConnectionMultiplexer connectionMultiplexerOne = await ExtractUnderlyingMultiplexerFromRedisCacheAsync(connectionOne, TestContext.Current.CancellationToken);
         connectionMultiplexerOne.Configuration.Should().Be("server1:6380,keepAlive=30");
 
         var connectionTwo = (RedisCache)connectorFactory.Get("myRedisServiceTwo").GetConnection();
-        IConnectionMultiplexer connectionMultiplexerTwo = await ExtractUnderlyingMultiplexerFromRedisCacheAsync(connectionTwo);
+        IConnectionMultiplexer connectionMultiplexerTwo = await ExtractUnderlyingMultiplexerFromRedisCacheAsync(connectionTwo, TestContext.Current.CancellationToken);
         connectionMultiplexerTwo.Configuration.Should().Be("server2:6380,allowAdmin=true");
 
         IDistributedCache connectionOneAgain = connectorFactory.Get("myRedisServiceOne").GetConnection();
@@ -378,9 +378,9 @@ public sealed class RedisConnectorTest
         return connectionMultiplexerMock.Object;
     }
 
-    private static async Task<IConnectionMultiplexer> ExtractUnderlyingMultiplexerFromRedisCacheAsync(RedisCache redisCache)
+    private static async Task<IConnectionMultiplexer> ExtractUnderlyingMultiplexerFromRedisCacheAsync(RedisCache redisCache, CancellationToken cancellationToken)
     {
-        _ = await redisCache.GetAsync("ignored");
+        _ = await redisCache.GetAsync("ignored", cancellationToken);
 
         FieldInfo cacheField = typeof(RedisCache).GetField("_cache", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var database = (IDatabase)cacheField.GetValue(redisCache)!;

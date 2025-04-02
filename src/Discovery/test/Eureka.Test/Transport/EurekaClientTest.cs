@@ -154,7 +154,7 @@ public sealed class EurekaClientTest
             LastDirtyTimeUtc = new DateTime(638_440_245_328_236_418, DateTimeKind.Utc)
         };
 
-        Func<Task> asyncAction = async () => await client.RegisterAsync(instance, CancellationToken.None);
+        Func<Task> asyncAction = async () => await client.RegisterAsync(instance, TestContext.Current.CancellationToken);
 
         await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
 
@@ -198,7 +198,7 @@ public sealed class EurekaClientTest
             LastDirtyTimeUtc = new DateTime(638_440_245_328_236_418, DateTimeKind.Utc)
         };
 
-        Func<Task> asyncAction = async () => await client.RegisterAsync(instance, CancellationToken.None);
+        Func<Task> asyncAction = async () => await client.RegisterAsync(instance, TestContext.Current.CancellationToken);
 
         await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
 
@@ -244,7 +244,7 @@ public sealed class EurekaClientTest
             LastDirtyTimeUtc = new DateTime(638_440_245_328_236_418, DateTimeKind.Utc)
         };
 
-        Func<Task> asyncAction = async () => await client.RegisterAsync(instance, CancellationToken.None);
+        Func<Task> asyncAction = async () => await client.RegisterAsync(instance, TestContext.Current.CancellationToken);
 
         await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Retry limit reached; giving up on completing the HTTP request.");
 
@@ -284,7 +284,7 @@ public sealed class EurekaClientTest
 
         var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
 
-        Func<Task> asyncAction = async () => await client.RegisterAsync(instance, CancellationToken.None);
+        Func<Task> asyncAction = async () => await client.RegisterAsync(instance, TestContext.Current.CancellationToken);
 
         await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
 
@@ -356,7 +356,7 @@ public sealed class EurekaClientTest
             LastDirtyTimeUtc = new DateTime(638_440_245_328_236_418, DateTimeKind.Utc)
         };
 
-        await client.RegisterAsync(instance, CancellationToken.None);
+        await client.RegisterAsync(instance, TestContext.Current.CancellationToken);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
 
@@ -400,7 +400,7 @@ public sealed class EurekaClientTest
             LastDirtyTimeUtc = new DateTime(638_440_245_328_236_418, DateTimeKind.Utc)
         };
 
-        await client.RegisterAsync(instance, CancellationToken.None);
+        await client.RegisterAsync(instance, TestContext.Current.CancellationToken);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
 
@@ -440,7 +440,7 @@ public sealed class EurekaClientTest
 
         var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
 
-        await client.RegisterAsync(instance, CancellationToken.None);
+        await client.RegisterAsync(instance, TestContext.Current.CancellationToken);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -467,7 +467,7 @@ public sealed class EurekaClientTest
 
         var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
 
-        await client.RegisterAsync(instance, CancellationToken.None);
+        await client.RegisterAsync(instance, TestContext.Current.CancellationToken);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -512,7 +512,7 @@ public sealed class EurekaClientTest
 
         var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
 
-        await client.RegisterAsync(instance, CancellationToken.None);
+        await client.RegisterAsync(instance, TestContext.Current.CancellationToken);
 
         eurekaHttpClientHandler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -534,7 +534,7 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        await client.DeregisterAsync("foo", "localhost:bar:1234", CancellationToken.None);
+        await client.DeregisterAsync("foo", "localhost:bar:1234", TestContext.Current.CancellationToken);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -559,7 +559,7 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        await client.HeartbeatAsync("FOO", "localhost:bar:1234", new DateTime(638_439_667_057_566_585, DateTimeKind.Utc), CancellationToken.None);
+        await client.HeartbeatAsync("FOO", "localhost:bar:1234", new DateTime(638_439_667_057_566_585, DateTimeKind.Utc), TestContext.Current.CancellationToken);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -581,7 +581,7 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        ApplicationInfoCollection apps = await client.GetApplicationsAsync(CancellationToken.None);
+        ApplicationInfoCollection apps = await client.GetApplicationsAsync(TestContext.Current.CancellationToken);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
 
@@ -622,7 +622,7 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        Func<Task> asyncAction = async () => _ = await client.GetApplicationsAsync(CancellationToken.None);
+        Func<Task> asyncAction = async () => _ = await client.GetApplicationsAsync(TestContext.Current.CancellationToken);
 
         await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
 
@@ -655,7 +655,7 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        ApplicationInfoCollection apps = await client.GetDeltaAsync(CancellationToken.None);
+        ApplicationInfoCollection apps = await client.GetDeltaAsync(TestContext.Current.CancellationToken);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
 
@@ -692,7 +692,7 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        ApplicationInfoCollection apps = await client.GetByVipAsync("foo", CancellationToken.None);
+        ApplicationInfoCollection apps = await client.GetByVipAsync("foo", TestContext.Current.CancellationToken);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
 
@@ -731,7 +731,7 @@ public sealed class EurekaClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        _ = await client.GetApplicationsAsync(CancellationToken.None);
+        _ = await client.GetApplicationsAsync(TestContext.Current.CancellationToken);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
 

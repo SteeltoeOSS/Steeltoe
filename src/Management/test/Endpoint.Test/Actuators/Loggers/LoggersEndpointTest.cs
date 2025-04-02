@@ -28,7 +28,7 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
         var provider = (TestLoggerProvider)testContext.GetRequiredService<IDynamicLoggerProvider>();
 
-        _ = await handler.InvokeAsync(new LoggersRequest(), CancellationToken.None);
+        _ = await handler.InvokeAsync(new LoggersRequest(), TestContext.Current.CancellationToken);
 
         provider.HasCalledGetLogLevels.Should().BeTrue();
     }
@@ -41,7 +41,7 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
 
         var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
 
-        LoggersResponse? response = await handler.InvokeAsync(new LoggersRequest(), CancellationToken.None);
+        LoggersResponse? response = await handler.InvokeAsync(new LoggersRequest(), TestContext.Current.CancellationToken);
 
         response.Should().NotBeNull();
         response.HasError.Should().BeFalse();
@@ -75,7 +75,7 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         var provider = (TestLoggerProvider)testContext.GetRequiredService<IDynamicLoggerProvider>();
 
         var changeRequest = new LoggersRequest("foobar", "WARN");
-        LoggersResponse? response = await handler.InvokeAsync(changeRequest, CancellationToken.None);
+        LoggersResponse? response = await handler.InvokeAsync(changeRequest, TestContext.Current.CancellationToken);
 
         response.Should().BeNull();
 
@@ -92,7 +92,7 @@ public sealed class LoggersEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
 
         var changeRequest = new LoggersRequest("foobar", "WARN");
-        LoggersResponse? response = await handler.InvokeAsync(changeRequest, CancellationToken.None);
+        LoggersResponse? response = await handler.InvokeAsync(changeRequest, TestContext.Current.CancellationToken);
 
         response.Should().BeNull();
     }

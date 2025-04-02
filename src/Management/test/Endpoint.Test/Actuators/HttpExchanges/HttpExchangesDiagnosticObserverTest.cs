@@ -5,6 +5,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Security.Claims;
+using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -64,7 +65,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
             HttpContext = context
         });
 
-        await Task.Delay(1000);
+        await Task.Delay(1.Seconds(), TestContext.Current.CancellationToken);
 
         listener.StopActivity(current, context);
 

@@ -26,7 +26,7 @@ public sealed class InfoEndpointTest(ITestOutputHelper testOutputHelper) : BaseT
 
         var handler = testContext.GetRequiredService<IInfoEndpointHandler>();
 
-        IDictionary<string, object> info = await handler.InvokeAsync(null, CancellationToken.None);
+        IDictionary<string, object> info = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
         Assert.NotNull(info);
         Assert.Empty(info);
     }
@@ -51,7 +51,7 @@ public sealed class InfoEndpointTest(ITestOutputHelper testOutputHelper) : BaseT
 
         var handler = testContext.GetRequiredService<IInfoEndpointHandler>();
 
-        await handler.InvokeAsync(null, CancellationToken.None);
+        await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
 
         foreach (IInfoContributor contributor in contributors)
         {
@@ -80,7 +80,7 @@ public sealed class InfoEndpointTest(ITestOutputHelper testOutputHelper) : BaseT
 
         var handler = testContext.GetRequiredService<IInfoEndpointHandler>();
 
-        await handler.InvokeAsync(null, CancellationToken.None);
+        await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
 
         foreach (IInfoContributor contributor in contributors)
         {

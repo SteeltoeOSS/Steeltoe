@@ -8,6 +8,7 @@ using Moq;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Registry;
+using Xunit.Sdk;
 
 namespace Steeltoe.Discovery.Consul.Test.Registry;
 
@@ -25,7 +26,7 @@ public sealed class ConsulServiceRegistrarTest
         await using var registry = new ConsulServiceRegistry(clientMock.Object, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
         await using var registrar = new ConsulServiceRegistrar(registry, optionsMonitor, registration, NullLogger<ConsulServiceRegistrar>.Instance);
 
-        await registrar.StartAsync(CancellationToken.None);
+        await registrar.StartAsync(TestContext.Current.CancellationToken);
 
         registrar.IsRunning.Should().BeTrue();
         agentMock.Verify(agent => agent.ServiceRegister(registration.InnerRegistration, It.IsAny<CancellationToken>()), Times.Once);
@@ -45,7 +46,7 @@ public sealed class ConsulServiceRegistrarTest
         await using var registry = new ConsulServiceRegistry(clientMock.Object, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
         await using var registrar = new ConsulServiceRegistrar(registry, optionsMonitor, registration, NullLogger<ConsulServiceRegistrar>.Instance);
 
-        await registrar.StartAsync(CancellationToken.None);
+        await registrar.StartAsync(TestContext.Current.CancellationToken);
 
         registrar.IsRunning.Should().BeTrue();
         agentMock.Verify(agent => agent.ServiceRegister(registration.InnerRegistration, It.IsAny<CancellationToken>()), Times.Never);
@@ -65,7 +66,7 @@ public sealed class ConsulServiceRegistrarTest
         await using var registry = new ConsulServiceRegistry(clientMock.Object, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
         await using var registrar = new ConsulServiceRegistrar(registry, optionsMonitor, registration, NullLogger<ConsulServiceRegistrar>.Instance);
 
-        await registrar.StartAsync(CancellationToken.None);
+        await registrar.StartAsync(TestContext.Current.CancellationToken);
 
         registrar.IsRunning.Should().BeFalse();
         agentMock.Verify(agent => agent.ServiceRegister(registration.InnerRegistration, It.IsAny<CancellationToken>()), Times.Never);
@@ -83,7 +84,7 @@ public sealed class ConsulServiceRegistrarTest
 
         await using (registrar)
         {
-            await registrar.StartAsync(CancellationToken.None);
+            await registrar.StartAsync(TestContext.Current.CancellationToken);
         }
 
         registrar.IsRunning.Should().BeFalse();
@@ -106,7 +107,7 @@ public sealed class ConsulServiceRegistrarTest
 
         await using (registrar)
         {
-            await registrar.StartAsync(CancellationToken.None);
+            await registrar.StartAsync(TestContext.Current.CancellationToken);
         }
 
         agentMock.Verify(agent => agent.ServiceDeregister(registration.InstanceId, It.IsAny<CancellationToken>()), Times.Never);

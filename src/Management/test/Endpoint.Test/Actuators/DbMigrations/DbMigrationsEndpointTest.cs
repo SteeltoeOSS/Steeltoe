@@ -48,7 +48,7 @@ public sealed class DbMigrationsEndpointTest(ITestOutputHelper testOutputHelper)
         };
 
         var sut = testContext.GetRequiredService<IDbMigrationsEndpointHandler>();
-        Dictionary<string, DbMigrationsDescriptor> result = await sut.InvokeAsync(null, CancellationToken.None);
+        Dictionary<string, DbMigrationsDescriptor> result = await sut.InvokeAsync(null, TestContext.Current.CancellationToken);
 
         const string contextName = nameof(MockDbContext);
         result.Should().ContainKey(contextName);
@@ -74,7 +74,7 @@ public sealed class DbMigrationsEndpointTest(ITestOutputHelper testOutputHelper)
         };
 
         var handler = testContext.GetRequiredService<IDbMigrationsEndpointHandler>();
-        Dictionary<string, DbMigrationsDescriptor> result = await handler.InvokeAsync(null, CancellationToken.None);
+        Dictionary<string, DbMigrationsDescriptor> result = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
 
         const string contextName = nameof(MockDbContext);
         result.Should().ContainKey(contextName);
@@ -94,7 +94,7 @@ public sealed class DbMigrationsEndpointTest(ITestOutputHelper testOutputHelper)
         };
 
         var handler = testContext.GetRequiredService<IDbMigrationsEndpointHandler>();
-        Dictionary<string, DbMigrationsDescriptor> result = await handler.InvokeAsync(null, CancellationToken.None);
+        Dictionary<string, DbMigrationsDescriptor> result = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
 
         result.Should().BeEmpty();
     }

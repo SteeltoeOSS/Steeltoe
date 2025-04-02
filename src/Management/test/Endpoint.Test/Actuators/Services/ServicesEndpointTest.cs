@@ -192,7 +192,7 @@ public sealed class ServicesEndpointTest(ITestOutputHelper testOutputHelper) : B
         };
 
         var handler = testContext.GetRequiredService<IServicesEndpointHandler>();
-        IList<ServiceRegistration> registrations = await handler.InvokeAsync(null, CancellationToken.None);
+        IList<ServiceRegistration> registrations = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
 
         ServiceRegistration? registration = registrations.SingleOrDefault(registration => registration.Name == registrationName);
         registration.Should().NotBeNull();

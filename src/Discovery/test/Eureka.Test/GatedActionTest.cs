@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions.Extensions;
+
 namespace Steeltoe.Discovery.Eureka.Test;
 
 public sealed class GatedActionTest
@@ -14,7 +16,7 @@ public sealed class GatedActionTest
         Interlocked.Exchange(ref _timerFuncCount, 0);
         var timedTask = new GatedAction(TimerFunc);
         await using var timer = new Timer(_ => timedTask.Run(), null, 10, 100);
-        await Task.Delay(1000);
+        await Task.Delay(1.Seconds(), TestContext.Current.CancellationToken);
         Assert.Equal(1, _timerFuncCount);
     }
 

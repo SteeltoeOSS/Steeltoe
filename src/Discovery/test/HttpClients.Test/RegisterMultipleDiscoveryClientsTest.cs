@@ -138,7 +138,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-        _ = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
+        _ = await discoveryClient.FetchFullRegistryAsync(TestContext.Current.CancellationToken);
 
         Assert.NotNull(handler.ClientCertificates);
         Assert.NotEmpty(handler.ClientCertificates);
@@ -171,7 +171,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-        _ = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
+        _ = await discoveryClient.FetchFullRegistryAsync(TestContext.Current.CancellationToken);
 
         Assert.NotNull(handler.ClientCertificates);
         Assert.NotEmpty(handler.ClientCertificates);
@@ -569,7 +569,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        ApplicationInfoCollection apps = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
+        ApplicationInfoCollection apps = await discoveryClient.FetchFullRegistryAsync(TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
@@ -639,7 +639,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        ApplicationInfoCollection apps = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
+        ApplicationInfoCollection apps = await discoveryClient.FetchFullRegistryAsync(TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
@@ -865,13 +865,13 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         Assert.Single(discoveryClients);
         Assert.IsType<ConfigurationDiscoveryClient>(discoveryClients[0]);
 
-        Assert.Contains("fruitService", await discoveryClients[0].GetServiceIdsAsync(CancellationToken.None));
-        Assert.Contains("vegetableService", await discoveryClients[0].GetServiceIdsAsync(CancellationToken.None));
+        Assert.Contains("fruitService", await discoveryClients[0].GetServiceIdsAsync(TestContext.Current.CancellationToken));
+        Assert.Contains("vegetableService", await discoveryClients[0].GetServiceIdsAsync(TestContext.Current.CancellationToken));
 
-        IList<IServiceInstance> fruitInstances = await discoveryClients[0].GetInstancesAsync("fruitService", CancellationToken.None);
+        IList<IServiceInstance> fruitInstances = await discoveryClients[0].GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
         Assert.Equal(2, fruitInstances.Count);
 
-        IList<IServiceInstance> vegetableInstances = await discoveryClients[0].GetInstancesAsync("vegetableService", CancellationToken.None);
+        IList<IServiceInstance> vegetableInstances = await discoveryClients[0].GetInstancesAsync("vegetableService", TestContext.Current.CancellationToken);
         Assert.Equal(2, vegetableInstances.Count);
     }
 

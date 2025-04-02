@@ -17,7 +17,7 @@ public sealed class GitInfoContributorTest : BaseTest
     {
         var contributor = new GitInfoContributor("foobar", NullLogger<GitInfoContributor>.Instance);
 
-        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync(CancellationToken.None);
+        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync(TestContext.Current.CancellationToken);
 
         Assert.Null(configuration);
     }
@@ -28,7 +28,7 @@ public sealed class GitInfoContributorTest : BaseTest
         string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}empty.git.properties";
         var contributor = new GitInfoContributor(path, NullLogger<GitInfoContributor>.Instance);
 
-        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync(CancellationToken.None);
+        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync(TestContext.Current.CancellationToken);
 
         Assert.Null(configuration);
     }
@@ -39,7 +39,7 @@ public sealed class GitInfoContributorTest : BaseTest
         string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}garbage.git.properties";
         var contributor = new GitInfoContributor(path, NullLogger<GitInfoContributor>.Instance);
 
-        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync(CancellationToken.None);
+        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync(TestContext.Current.CancellationToken);
 
         Assert.NotNull(configuration);
         Assert.Null(configuration["git"]);
@@ -51,7 +51,7 @@ public sealed class GitInfoContributorTest : BaseTest
         string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}git.properties";
         var contributor = new GitInfoContributor(path, NullLogger<GitInfoContributor>.Instance);
 
-        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync(CancellationToken.None);
+        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync(TestContext.Current.CancellationToken);
 
         Assert.NotNull(configuration);
         Assert.Equal("true", configuration["git:dirty"]);
@@ -67,7 +67,7 @@ public sealed class GitInfoContributorTest : BaseTest
     {
         // Uses git.properties file in test project
         var contributor = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await contributor.ContributeAsync(null!, CancellationToken.None));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await contributor.ContributeAsync(null!, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public sealed class GitInfoContributorTest : BaseTest
         // Uses git.properties file in test project
         var contributor = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
         var builder = new InfoBuilder();
-        await contributor.ContributeAsync(builder, CancellationToken.None);
+        await contributor.ContributeAsync(builder, TestContext.Current.CancellationToken);
 
         IDictionary<string, object> result = builder.Build();
         Assert.NotNull(result);

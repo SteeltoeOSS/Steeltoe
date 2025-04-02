@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -87,7 +88,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["spring:cloud:config:pollingInterval"] = TimeSpan.FromSeconds(1).ToString()
+            ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString()
         };
 
         HostBuilder hostBuilder = TestHostBuilderFactory.Create();
@@ -111,7 +112,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["spring:cloud:config:pollingInterval"] = TimeSpan.FromSeconds(1).ToString()
+            ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString()
         };
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
@@ -135,7 +136,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["spring:cloud:config:pollingInterval"] = TimeSpan.FromSeconds(1).ToString()
+            ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString()
         };
 
         WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
@@ -159,7 +160,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["spring:cloud:config:pollingInterval"] = TimeSpan.FromSeconds(1).ToString()
+            ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString()
         };
 
         HostApplicationBuilder hostBuilder = TestHostApplicationBuilderFactory.Create();

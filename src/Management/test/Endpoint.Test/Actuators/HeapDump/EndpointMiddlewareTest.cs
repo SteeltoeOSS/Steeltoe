@@ -29,10 +29,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
         using IWebHost app = builder.Build();
 
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/heapdump"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/heapdump"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         response.Content.Headers.Should().ContainKey("Content-Type").WhoseValue.Should().HaveCount(1).And.Contain("application/octet-stream");
@@ -40,10 +40,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using var memoryStream = new MemoryStream();
 
-        await using (Stream responseStream = await response.Content.ReadAsStreamAsync())
+        await using (Stream responseStream = await response.Content.ReadAsStreamAsync(TestContext.Current.CancellationToken))
         {
             await using var zipStream = new GZipStream(responseStream, CompressionMode.Decompress);
-            await zipStream.CopyToAsync(memoryStream);
+            await zipStream.CopyToAsync(memoryStream, TestContext.Current.CancellationToken);
 
             responseStream.Length.Should().BeLessThan(memoryStream.Length);
         }

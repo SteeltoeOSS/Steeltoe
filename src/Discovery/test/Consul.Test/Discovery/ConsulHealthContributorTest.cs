@@ -24,7 +24,7 @@ public sealed class ConsulHealthContributorTest
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
-        string result = await healthContributor.GetLeaderStatusAsync(CancellationToken.None);
+        string result = await healthContributor.GetLeaderStatusAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal("the-status", result);
     }
@@ -57,7 +57,7 @@ public sealed class ConsulHealthContributorTest
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
-        Dictionary<string, string[]> result = await healthContributor.GetCatalogServicesAsync(CancellationToken.None);
+        Dictionary<string, string[]> result = await healthContributor.GetCatalogServicesAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(2, result.Count);
         Assert.Contains("foo", result.Keys);
@@ -97,7 +97,7 @@ public sealed class ConsulHealthContributorTest
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
@@ -119,7 +119,7 @@ public sealed class ConsulHealthContributorTest
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         Assert.Null(result);
     }

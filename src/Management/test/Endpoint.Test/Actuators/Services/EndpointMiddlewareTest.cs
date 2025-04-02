@@ -52,7 +52,7 @@ public sealed class EndpointMiddlewareTest(ITestOutputHelper testOutputHelper) :
 
         httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
         using var reader = new StreamReader(httpContext.Response.Body, Encoding.UTF8);
-        string json = await reader.ReadToEndAsync();
+        string json = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
 
         json.Should().BeJson($$"""
             {
@@ -97,13 +97,13 @@ public sealed class EndpointMiddlewareTest(ITestOutputHelper testOutputHelper) :
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/beans"));
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/beans"), TestContext.Current.CancellationToken);
         result.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string json = await result.Content.ReadAsStringAsync();
+        string json = await result.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         using JsonDocument sourceJson = JsonDocument.Parse(json);
 
         string jsonFragment = sourceJson.RootElement.GetProperty("contexts").GetProperty("application").GetProperty("beans")
@@ -152,7 +152,7 @@ public sealed class EndpointMiddlewareTest(ITestOutputHelper testOutputHelper) :
         httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
         using var reader = new StreamReader(httpContext.Response.Body, Encoding.UTF8);
 
-        string response = await reader.ReadToEndAsync();
+        string response = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
         response.Should().StartWith("""{"contexts":{"application":{"beans":{""");
     }
 

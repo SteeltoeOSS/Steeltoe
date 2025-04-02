@@ -53,7 +53,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         await middleware.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
-        string? json = await reader.ReadLineAsync();
+        string? json = await reader.ReadLineAsync(TestContext.Current.CancellationToken);
 
         json.Should().BeJson("""
             {
@@ -97,13 +97,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/env"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         json.Should().BeJson("""
             {
@@ -171,13 +171,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         });
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/env"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         json.Should().BeJson("""
             {
@@ -290,13 +290,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.Services.AddEnvironmentActuator();
 
         await using WebApplication app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         json.Should().BeJson("""
             {
@@ -356,10 +356,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         fileProvider.NotifyChanged();
 
-        response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"));
+        response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        json = await response.Content.ReadAsStringAsync();
+        json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         json.Should().BeJson("""
             {

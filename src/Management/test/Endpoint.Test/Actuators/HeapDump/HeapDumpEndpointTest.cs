@@ -25,7 +25,7 @@ public sealed class HeapDumpEndpointTest(ITestOutputHelper testOutputHelper) : B
 
         var handler = testContext.GetRequiredService<IHeapDumpEndpointHandler>();
 
-        string? path = await handler.InvokeAsync(null, CancellationToken.None);
+        string? path = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
 
         path.Should().NotBeNull();
         File.Exists(path).Should().BeTrue();

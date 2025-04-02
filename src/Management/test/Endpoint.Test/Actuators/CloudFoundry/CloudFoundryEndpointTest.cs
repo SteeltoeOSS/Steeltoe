@@ -35,7 +35,7 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
 
         var handler = testContext.GetRequiredService<ICloudFoundryEndpointHandler>();
 
-        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
+        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", TestContext.Current.CancellationToken);
         links.Entries.Should().Contain(entry => entry.Key == "self" && entry.Value.Href == "http://localhost:5000/foobar");
         links.Entries.Should().Contain(entry => entry.Key == "info" && entry.Value.Href == "http://localhost:5000/foobar/info");
         links.Entries.Should().HaveCount(2);
@@ -53,7 +53,7 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
 
         var handler = testContext.GetRequiredService<ICloudFoundryEndpointHandler>();
 
-        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
+        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", TestContext.Current.CancellationToken);
         links.Entries.Should().Contain(entry => entry.Key == "self" && entry.Value.Href == "http://localhost:5000/foobar");
         links.Entries.Should().ContainSingle();
     }
@@ -80,7 +80,7 @@ public sealed class CloudFoundryEndpointTest(ITestOutputHelper testOutputHelper)
 
         var handler = testContext.GetRequiredService<ICloudFoundryEndpointHandler>();
 
-        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
+        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", TestContext.Current.CancellationToken);
         links.Entries.Should().Contain(entry => entry.Key == "self" && entry.Value.Href == "http://localhost:5000/foobar");
         links.Entries.Should().Contain(entry => entry.Key == "info" && entry.Value.Href == "http://localhost:5000/foobar/info");
         links.Entries.Should().HaveCount(2);

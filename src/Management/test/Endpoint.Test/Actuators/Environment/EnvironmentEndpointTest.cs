@@ -224,7 +224,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
         };
 
         var handler = testContext.GetRequiredService<IEnvironmentEndpointHandler>();
-        EnvironmentResponse result = await handler.InvokeAsync(null, CancellationToken.None);
+        EnvironmentResponse result = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
         Assert.NotNull(result);
         Assert.Single(result.ActiveProfiles);
         Assert.Equal("Test", result.ActiveProfiles[0]);
@@ -273,7 +273,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
         };
 
         var handler = testContext.GetRequiredService<IEnvironmentEndpointHandler>();
-        EnvironmentResponse result = await handler.InvokeAsync(null, CancellationToken.None);
+        EnvironmentResponse result = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
         Assert.NotNull(result);
 
         PropertySourceDescriptor desc = result.PropertySources[0];
@@ -314,7 +314,7 @@ public sealed class EnvironmentEndpointTest(ITestOutputHelper testOutputHelper) 
         };
 
         var handler = testContext.GetRequiredService<IEnvironmentEndpointHandler>();
-        EnvironmentResponse result = await handler.InvokeAsync(null, CancellationToken.None);
+        EnvironmentResponse result = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
         Assert.NotNull(result);
 
         PropertySourceDescriptor desc = result.PropertySources[0];

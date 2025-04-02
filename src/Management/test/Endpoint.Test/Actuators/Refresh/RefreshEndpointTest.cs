@@ -34,7 +34,7 @@ public sealed class RefreshEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         };
 
         var handler = testContext.GetRequiredService<IRefreshEndpointHandler>();
-        IList<string> result = await handler.InvokeAsync(null, CancellationToken.None);
+        IList<string> result = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
         Assert.NotNull(result);
 
         Assert.Contains("management:endpoints:loggers:enabled", result);

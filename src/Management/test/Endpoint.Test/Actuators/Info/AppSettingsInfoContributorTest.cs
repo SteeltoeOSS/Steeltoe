@@ -25,7 +25,7 @@ public sealed class AppSettingsInfoContributorTest : BaseTest
     {
         var contributor = new AppSettingsInfoContributor(null);
         var builder = new InfoBuilder();
-        contributor.ContributeAsync(builder, CancellationToken.None);
+        contributor.ContributeAsync(builder, TestContext.Current.CancellationToken);
         IDictionary<string, object> result = builder.Build();
         Assert.NotNull(result);
         Assert.Empty(result);
@@ -39,7 +39,7 @@ public sealed class AppSettingsInfoContributorTest : BaseTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         var settings = new AppSettingsInfoContributor(configurationRoot);
 
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await settings.ContributeAsync(null!, CancellationToken.None));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await settings.ContributeAsync(null!, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public sealed class AppSettingsInfoContributorTest : BaseTest
         var settings = new AppSettingsInfoContributor(configurationRoot);
 
         var builder = new InfoBuilder();
-        settings.ContributeAsync(builder, CancellationToken.None);
+        settings.ContributeAsync(builder, TestContext.Current.CancellationToken);
 
         IDictionary<string, object> info = builder.Build();
         Assert.NotNull(info);

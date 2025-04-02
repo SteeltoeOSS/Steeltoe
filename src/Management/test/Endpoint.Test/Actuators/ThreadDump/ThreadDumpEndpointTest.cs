@@ -24,7 +24,7 @@ public sealed class ThreadDumpEndpointTest(ITestOutputHelper testOutputHelper) :
         };
 
         var handler = testContext.GetRequiredService<IThreadDumpEndpointHandler>();
-        IList<ThreadInfo> result = await handler.InvokeAsync(null, CancellationToken.None);
+        IList<ThreadInfo> result = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
 
         result.Should().NotBeEmpty();
     }

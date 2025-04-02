@@ -68,7 +68,7 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
             {
                 string sessionValue = Encoding.UTF8.GetString(bytes);
                 httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
-                httpContext.Response.WriteAsync(sessionValue);
+                httpContext.Response.WriteAsync(sessionValue, httpContext.RequestAborted);
             }
             else
             {
@@ -78,10 +78,10 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
             return Task.CompletedTask;
         });
 
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/set-session"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/set-session"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string setCookieHeaderText = response.Headers.Single(header => header.Key == "Set-Cookie").Value.Single();
@@ -90,10 +90,10 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
 
         var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/get-session"));
         request.Headers.Add("Cookie", cookie.ToString());
-        response = await httpClient.SendAsync(request);
+        response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        string responseContent = await response.Content.ReadAsStringAsync();
+        string responseContent = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseContent.Should().Be("example-value");
     }
 }

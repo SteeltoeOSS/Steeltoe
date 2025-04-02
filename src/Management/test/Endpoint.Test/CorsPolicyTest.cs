@@ -36,12 +36,12 @@ public sealed class CorsPolicyTest
         corsPolicy.Methods.Should().ContainSingle();
         corsPolicy.Methods.Should().Contain("GET");
 
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
 
         var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/info"));
         request.Headers.Add("Origin", "http://example.api.com");
-        HttpResponseMessage response = await httpClient.SendAsync(request);
+        HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Headers.Should().ContainKey("Access-Control-Allow-Origin");
@@ -62,13 +62,13 @@ public sealed class CorsPolicyTest
         corsPolicy.Methods.Should().ContainSingle();
         corsPolicy.Methods.Should().Contain("POST");
 
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
 
         var request = new HttpRequestMessage(HttpMethod.Options, new Uri("http://localhost/actuator/refresh"));
         request.Headers.Add("Origin", "http://example.api.com");
         request.Headers.Add("Access-Control-Request-Method", "POST");
-        HttpResponseMessage response = await httpClient.SendAsync(request);
+        HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         response.Headers.Should().ContainKey("Access-Control-Allow-Origin");
@@ -94,12 +94,12 @@ public sealed class CorsPolicyTest
         corsPolicy.Methods.Should().ContainSingle();
         corsPolicy.Methods.Should().Contain("GET");
 
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
 
         var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/info"));
         request.Headers.Add("Origin", "http://example.api.com");
-        HttpResponseMessage response = await httpClient.SendAsync(request);
+        HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Headers.Should().ContainKey("Access-Control-Allow-Origin");
@@ -107,7 +107,7 @@ public sealed class CorsPolicyTest
 
         request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/info"));
         request.Headers.Add("Origin", "http://google.com");
-        response = await httpClient.SendAsync(request);
+        response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Headers.Should().NotContainKey("Access-Control-Allow-Origin");
@@ -131,13 +131,13 @@ public sealed class CorsPolicyTest
         corsPolicy.Methods.Should().ContainSingle();
         corsPolicy.Methods.Should().Contain("POST");
 
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
 
         var request = new HttpRequestMessage(HttpMethod.Options, new Uri("http://localhost/actuator/refresh"));
         request.Headers.Add("Origin", "http://example.api.com");
         request.Headers.Add("Access-Control-Request-Method", "POST");
-        HttpResponseMessage response = await httpClient.SendAsync(request);
+        HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         response.Headers.Should().ContainKey("Access-Control-Allow-Origin");
@@ -205,13 +205,13 @@ public sealed class CorsPolicyTest
         corsPolicy.Methods.Should().Contain("GET");
         corsPolicy.Headers.Should().BeEquivalentTo("Authorization", "X-Cf-App-Instance", "Content-Type", "Content-Disposition");
 
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
 
         var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication/info"));
         request.Headers.Authorization = AuthenticationHeaderValue.Parse($"bearer {token}");
         request.Headers.Add("Origin", "http://example.api.com");
-        HttpResponseMessage response = await httpClient.SendAsync(request);
+        HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
@@ -229,14 +229,14 @@ public sealed class CorsPolicyTest
         builder.Services.AddCloudFoundryActuator();
         await using WebApplication app = builder.Build();
 
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
         var corsRequest = new HttpRequestMessage(HttpMethod.Options, new Uri("http://localhost/cloudfoundryapplication"));
         corsRequest.Headers.Add("access-control-request-method", "GET");
         corsRequest.Headers.Add("access-control-request-headers", "authorization");
         corsRequest.Headers.Add("origin", "http://example.api.com");
-        HttpResponseMessage corsResponse = await httpClient.SendAsync(corsRequest);
+        HttpResponseMessage corsResponse = await httpClient.SendAsync(corsRequest, TestContext.Current.CancellationToken);
 
         corsResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         corsResponse.Headers.Should().ContainKey("Access-Control-Allow-Origin");
@@ -251,7 +251,7 @@ public sealed class CorsPolicyTest
 
         var actuatorRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
         actuatorRequest.Headers.Add("Origin", "http://example.api.com");
-        HttpResponseMessage response = await httpClient.SendAsync(actuatorRequest);
+        HttpResponseMessage response = await httpClient.SendAsync(actuatorRequest, TestContext.Current.CancellationToken);
 
         // Returns ServiceUnavailable because UseCloudFoundrySecurity is invoked, but not fully mocked
         response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);

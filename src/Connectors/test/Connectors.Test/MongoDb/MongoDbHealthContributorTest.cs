@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using MongoDB.Driver;
@@ -31,7 +32,7 @@ public sealed class MongoDbHealthContributorTest
         var healthContributor = new MongoDbHealthContributor(serviceName, serviceProvider, MongoDbPackageResolver.Default,
             NullLogger<MongoDbHealthContributor>.Instance);
 
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.Status.Should().Be(HealthStatus.Down);
@@ -54,7 +55,7 @@ public sealed class MongoDbHealthContributorTest
         var healthContributor = new MongoDbHealthContributor(serviceName, serviceProvider, MongoDbPackageResolver.Default,
             NullLogger<MongoDbHealthContributor>.Instance);
 
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.Status.Should().Be(HealthStatus.Up);
@@ -99,7 +100,7 @@ public sealed class MongoDbHealthContributorTest
         var mongoClient = new MongoClient(new MongoClientSettings
         {
             Server = new MongoServerAddress("localhost"),
-            ServerSelectionTimeout = TimeSpan.FromSeconds(5)
+            ServerSelectionTimeout = 5.Seconds()
         });
 
         await using ServiceProvider serviceProvider = CreateServiceProvider(serviceName, connectionString, mongoClient);
@@ -107,7 +108,7 @@ public sealed class MongoDbHealthContributorTest
         var healthContributor = new MongoDbHealthContributor(serviceName, serviceProvider, MongoDbPackageResolver.Default,
             NullLogger<MongoDbHealthContributor>.Instance);
 
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.Status.Should().Be(HealthStatus.Up);
