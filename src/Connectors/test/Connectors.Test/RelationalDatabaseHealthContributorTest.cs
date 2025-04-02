@@ -137,7 +137,7 @@ public sealed class RelationalDatabaseHealthContributorTest
     public async Task Is_Connected_Returns_Up_Status()
     {
         var commandMock = new Mock<DbCommand>();
-        commandMock.Setup(command => command.ExecuteScalar()).Returns(1);
+        commandMock.Setup(command => command.ExecuteScalarAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult<object?>(1));
 
         var connectionMock = new Mock<DbConnection>();
         connectionMock.Setup(connection => connection.Open());
