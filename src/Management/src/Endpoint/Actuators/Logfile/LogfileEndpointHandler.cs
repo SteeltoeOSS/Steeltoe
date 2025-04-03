@@ -14,6 +14,8 @@ public sealed class LogfileEndpointHandler : ILogfileEndpointHandler
     private readonly IOptionsMonitor<LogfileEndpointOptions> _optionsMonitor;
     private readonly ILogger<LogfileEndpointHandler> _logger;
 
+    public EndpointOptions Options => _optionsMonitor.CurrentValue;
+
     public LogfileEndpointHandler(IOptionsMonitor<LogfileEndpointOptions> optionsMonitorMonitor, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(optionsMonitorMonitor);
@@ -22,8 +24,6 @@ public sealed class LogfileEndpointHandler : ILogfileEndpointHandler
         _optionsMonitor = optionsMonitorMonitor;
         _logger = loggerFactory.CreateLogger<LogfileEndpointHandler>();
     }
-
-    public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
     public async Task<string> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
@@ -34,12 +34,11 @@ public sealed class LogfileEndpointHandler : ILogfileEndpointHandler
 
         if (!string.IsNullOrEmpty(logFilePath))
         {
-            return await File.ReadAllTextAsync(logFilePath, cancellationToken: cancellationToken);
+            return await File.ReadAllTextAsync(logFilePath, cancellationToken);
         }
 
         _logger.LogWarning("Log file path is not set");
         return string.Empty;
-
     }
 
     internal string GetLogFilePath()

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -14,8 +13,6 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Logfile;
 
 public sealed class EndpointMiddlewareTest : BaseTest
 {
-    private readonly TempFile _tempLogFile = new();
-
     private static readonly Dictionary<string, string?> AppSettings = new()
     {
         ["Logging:Console:IncludeScopes"] = "false",
@@ -25,6 +22,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:actuator:exposure:include:0"] = "*"
     };
+
+    private readonly TempFile _tempLogFile = new();
 
     [Fact]
     public async Task LogfileActuator_ReturnsExpectedData()

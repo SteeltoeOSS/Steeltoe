@@ -7,8 +7,7 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Logfile;
 
-internal sealed class ConfigureLogfileEndpointOptions
-    : ConfigureEndpointOptions<LogfileEndpointOptions>
+internal sealed class ConfigureLogfileEndpointOptions : ConfigureEndpointOptions<LogfileEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:logfile";
 

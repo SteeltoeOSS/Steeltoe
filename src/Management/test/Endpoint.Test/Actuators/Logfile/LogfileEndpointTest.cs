@@ -22,6 +22,7 @@ public sealed class LogfileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         // arrange
         string directoryName = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!;
         string expectedFilePath = Path.Combine(directoryName, "logs/testfile.log");
+
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:logfile:filePath"] = "logs/testfile.log",
@@ -57,6 +58,7 @@ public sealed class LogfileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     {
         // arrange
         const string expectedFilePath = "/logs/testfile.log";
+
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:logfile:filePath"] = expectedFilePath,
@@ -92,6 +94,7 @@ public sealed class LogfileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     {
         // arrange
         string expectedFilePath = string.Empty;
+
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:logfile:enabled"] = "true"
@@ -148,7 +151,7 @@ public sealed class LogfileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         var handler = (LogfileEndpointHandler)testContext.GetRequiredService<ILogfileEndpointHandler>();
 
         // act
-        LogfileEndpointOptions options = (handler.Options as LogfileEndpointOptions)!;
+        var options = (handler.Options as LogfileEndpointOptions)!;
 
         // assert
         options.Id.Should().Be("logfile");
@@ -164,8 +167,9 @@ public sealed class LogfileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     {
         // arrange
         const string expectedLogFileContents = "This is a test log file content.";
-        using TempFile tempLogFile = new TempFile();
+        using var tempLogFile = new TempFile();
         await File.WriteAllTextAsync(tempLogFile.FullPath, expectedLogFileContents);
+
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:logfile:filePath"] = tempLogFile.FullPath,
