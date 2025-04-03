@@ -3,22 +3,25 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Logfile;
 
-internal sealed class ConfigureLogfileEndpointOptions(IConfiguration configuration)
-    : ConfigureEndpointOptions<LogfileEndpointOptions>(configuration, ManagementInfoPrefix, "logfile")
+internal sealed class ConfigureLogfileEndpointOptions
+    : ConfigureEndpointOptions<LogfileEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:logfile";
+
+    public ConfigureLogfileEndpointOptions(IConfiguration configuration)
+        : base(configuration, ManagementInfoPrefix, "logfile")
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+    }
 
     public override void Configure(LogfileEndpointOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
 
         base.Configure(options);
-
-        options.FilePath = configuration.GetValue<string?>($"{ManagementInfoPrefix}:filePath");
     }
 }

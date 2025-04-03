@@ -194,7 +194,7 @@ public sealed class LogfileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         // assert
         logFileContents.Should().Be(expectedLogFileContents);
     }
-    
+
     [Fact]
     public async Task Invoke_ReturnsEmptyStringWhenNoLogFileSpecified()
     {

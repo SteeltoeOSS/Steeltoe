@@ -38,6 +38,8 @@ static Steeltoe.Management.Endpoint.Actuators.Info.EndpointServiceCollectionExte
 static Steeltoe.Management.Endpoint.Actuators.Info.EndpointServiceCollectionExtensions.AddInfoActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Info.EndpointServiceCollectionExtensions.AddInfoContributor(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Type! infoContributorType) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Info.EndpointServiceCollectionExtensions.AddInfoContributor<T>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.Logfile.EndpointServiceCollectionExtensions.AddLogfileActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.Logfile.EndpointServiceCollectionExtensions.AddLogfileActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Loggers.EndpointServiceCollectionExtensions.AddLoggersActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Loggers.EndpointServiceCollectionExtensions.AddLoggersActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse.Error.get -> Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersResponse!
@@ -262,6 +264,8 @@ Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.WithInfo(string! key, ob
 Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.WithInfo(System.Collections.Generic.IDictionary<string!, object!>! details) -> Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder!
 Steeltoe.Management.Endpoint.Actuators.Info.InfoEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Info.InfoEndpointOptions.InfoEndpointOptions() -> void
+Steeltoe.Management.Endpoint.Actuators.Logfile.EndpointServiceCollectionExtensions
+Steeltoe.Management.Endpoint.Actuators.Logfile.ILogfileEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.Logfile.LogfileEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.Logfile.LogfileEndpointHandler.InvokeAsync(object? argument, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<string!>!
 Steeltoe.Management.Endpoint.Actuators.Logfile.LogfileEndpointHandler.LogfileEndpointHandler(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Actuators.Logfile.LogfileEndpointOptions!>! optionsMonitorMonitor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
