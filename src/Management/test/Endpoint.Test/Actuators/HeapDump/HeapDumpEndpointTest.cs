@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
-using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 

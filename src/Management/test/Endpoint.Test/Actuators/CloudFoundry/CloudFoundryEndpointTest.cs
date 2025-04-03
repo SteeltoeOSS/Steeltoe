@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
-using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
 
