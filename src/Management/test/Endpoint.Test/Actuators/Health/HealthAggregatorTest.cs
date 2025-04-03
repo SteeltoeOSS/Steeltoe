@@ -142,9 +142,9 @@ public sealed class HealthAggregatorTest : BaseTest
 
         List<IHealthContributor> contributors =
         [
-            new UpContributor(500),
-            new UpContributor(500),
-            new UpContributor(500)
+            new UpContributor(1000),
+            new UpContributor(1500),
+            new UpContributor(2500)
         ];
 
         var aggregator = new HealthAggregator();
@@ -156,6 +156,6 @@ public sealed class HealthAggregatorTest : BaseTest
         stopwatch.Stop();
         Assert.NotNull(result);
         Assert.Equal(SteeltoeHealthStatus.Up, result.Status);
-        Assert.InRange(stopwatch.ElapsedMilliseconds, 450, 1200);
+        Assert.InRange(stopwatch.ElapsedMilliseconds, 900, 4500);
     }
 }
