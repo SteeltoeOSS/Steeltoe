@@ -66,7 +66,7 @@ public sealed class EurekaClientOptions : IValidateCertificatesOptions
     public bool Enabled { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a comma-delimited list of Eureka server endpoints. Default value: http://localhost:8761/eureka/.
+    /// Gets or sets a comma-separated list of Eureka server endpoints. Default value: http://localhost:8761/eureka/.
     /// </summary>
     [ConfigurationKeyName("ServiceUrl")]
     public string? EurekaServerServiceUrls { get; set; } = "http://localhost:8761/eureka/";

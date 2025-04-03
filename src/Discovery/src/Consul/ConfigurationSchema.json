@@ -265,11 +265,11 @@
                 },
                 "IgnoredInterfaces": {
                   "type": "string",
-                  "description": "Gets or sets a comma-delimited list of network interfaces to ignore."
+                  "description": "Gets or sets a comma-separated list of network interfaces to ignore."
                 },
                 "PreferredNetworks": {
                   "type": "string",
-                  "description": "Gets or sets a comma-delimited list of preferred networks."
+                  "description": "Gets or sets a comma-separated list of preferred networks."
                 },
                 "SkipReverseDnsLookup": {
                   "type": "boolean",

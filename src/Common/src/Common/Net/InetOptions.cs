@@ -22,7 +22,7 @@ public sealed class InetOptions
     public string? DefaultIPAddress { get; set; } = "127.0.0.1";
 
     /// <summary>
-    /// Gets or sets a comma-delimited list of network interfaces to ignore.
+    /// Gets or sets a comma-separated list of network interfaces to ignore.
     /// </summary>
     public string? IgnoredInterfaces { get; set; }
 
@@ -32,7 +32,7 @@ public sealed class InetOptions
     public bool UseOnlySiteLocalInterfaces { get; set; }
 
     /// <summary>
-    /// Gets or sets a comma-delimited list of preferred networks.
+    /// Gets or sets a comma-separated list of preferred networks.
     /// </summary>
     public string? PreferredNetworks { get; set; }
 

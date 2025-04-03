@@ -19,7 +19,7 @@ public sealed class ManagementOptions
     /// Gets which management endpoints are included and/or excluded.
     /// </summary>
     /// <remarks>
-    /// The property value is obtained from configuration keys management:endpoints:web:exposure (a comma-delimited list), falling back to
+    /// The property value is obtained from configuration keys management:endpoints:web:exposure (a comma-separated list), falling back to
     /// management:endpoints:actuator:exposure. So it does NOT bind from management:endpoints:exposure. This property is provided here internally to easily
     /// read the settings.
     /// </remarks>
