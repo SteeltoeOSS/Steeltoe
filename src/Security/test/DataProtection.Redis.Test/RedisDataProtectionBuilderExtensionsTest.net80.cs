@@ -5,6 +5,9 @@
 using Moq;
 using StackExchange.Redis;
 
+// @formatter:wrap_chained_method_calls chop_always
+// @formatter:wrap_before_first_method_call true
+
 namespace Steeltoe.Security.DataProtection.Redis.Test;
 
 partial class RedisDataProtectionBuilderExtensionsTest
@@ -14,27 +17,35 @@ partial class RedisDataProtectionBuilderExtensionsTest
         Dictionary<string, byte[]> innerStore = [];
         var databaseMock = new Mock<IDatabase>();
 
-        databaseMock.Setup(database => database.HashGet(It.IsAny<RedisKey>(), It.IsAny<RedisValue[]>(), It.IsAny<CommandFlags>()))
+        databaseMock
+            .Setup(database => database.HashGet(It.IsAny<RedisKey>(), It.IsAny<RedisValue[]>(), It.IsAny<CommandFlags>()))
             .Returns((RedisKey key, RedisValue[] _, CommandFlags _) => GetRedisValues(key));
 
-        databaseMock.Setup(database => database.HashGetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue[]>(), It.IsAny<CommandFlags>())).Returns(
-            (RedisKey key, RedisValue[] _, CommandFlags _) => Task.FromResult(GetRedisValues(key)));
+        databaseMock
+            .Setup(database => database.HashGetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue[]>(), It.IsAny<CommandFlags>()))
+            .Returns((RedisKey key, RedisValue[] _, CommandFlags _) => Task.FromResult(GetRedisValues(key)));
 
-        databaseMock.Setup(database =>
-            database.ScriptEvaluateAsync(It.IsAny<string>(), It.IsAny<RedisKey[]?>(), It.IsAny<RedisValue[]?>(), It.IsAny<CommandFlags>())).Returns(
-            (string _, RedisKey[]? keys, RedisValue[]? values, CommandFlags _) =>
+        databaseMock
+            .Setup(database => database.ScriptEvaluateAsync(It.IsAny<string>(), It.IsAny<RedisKey[]?>(), It.IsAny<RedisValue[]?>(), It.IsAny<CommandFlags>()))
+            .Returns((string _, RedisKey[]? keys, RedisValue[]? values, CommandFlags _) =>
             {
                 innerStore[keys![0]!] = values![3]!;
                 return Task.FromResult(RedisResult.Create(keys[0]));
             });
 
         var connectionMultiplexerMock = new Mock<IConnectionMultiplexer>();
-        connectionMultiplexerMock.Setup(connectionMultiplexer => connectionMultiplexer.Configuration).Returns(connectionString!);
 
-        connectionMultiplexerMock.Setup(connectionMultiplexer => connectionMultiplexer.GetDatabase(It.IsAny<int>(), It.IsAny<object?>()))
+        connectionMultiplexerMock
+            .Setup(connectionMultiplexer => connectionMultiplexer.Configuration)
+            .Returns(connectionString!);
+
+        connectionMultiplexerMock
+            .Setup(connectionMultiplexer => connectionMultiplexer.GetDatabase(It.IsAny<int>(), It.IsAny<object?>()))
             .Returns(databaseMock.Object);
 
-        databaseMock.Setup(database => database.Multiplexer).Returns(connectionMultiplexerMock.Object);
+        databaseMock
+            .Setup(database => database.Multiplexer)
+            .Returns(connectionMultiplexerMock.Object);
 
         return connectionMultiplexerMock.Object;
 
