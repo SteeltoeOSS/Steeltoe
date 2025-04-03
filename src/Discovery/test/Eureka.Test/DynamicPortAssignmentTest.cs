@@ -27,7 +27,7 @@ public sealed class DynamicPortAssignmentTest
         builder.Services.AddEurekaDiscoveryClient();
 
         await using WebApplication app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();
 

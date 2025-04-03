@@ -41,12 +41,12 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
 
         var dictionary = await client.GetFromJsonAsync<Dictionary<string, Dictionary<string, JsonElement>>>("http://localhost/management/info-management",
-            SerializerOptions);
+            SerializerOptions, TestContext.Current.CancellationToken);
 
         Assert.NotNull(dictionary);
 
@@ -93,10 +93,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        string response = await client.GetStringAsync(new Uri("http://localhost/actuator/info"));
+        string response = await client.GetStringAsync(new Uri("http://localhost/actuator/info"), TestContext.Current.CancellationToken);
 
         Assert.Contains("1499884839000", response, StringComparison.Ordinal);
         Assert.DoesNotContain("2017-07-12T18:40:39Z", response, StringComparison.Ordinal);

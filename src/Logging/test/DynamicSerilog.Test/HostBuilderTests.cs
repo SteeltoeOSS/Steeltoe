@@ -87,7 +87,7 @@ public sealed class HostBuilderTests : IDisposable
         logger.LogInformation("TestInfo");
         logger.LogError("TestError");
 
-        await _consoleOutput.WaitForFlushAsync();
+        await _consoleOutput.WaitForFlushAsync(TestContext.Current.CancellationToken);
         string logOutput = _consoleOutput.ToString();
 
         logOutput.Should().Contain("SERILOG [INF] TestInfo");

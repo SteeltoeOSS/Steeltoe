@@ -41,7 +41,7 @@ public sealed class TestConfigServerStartup
     {
         app.Run(async context =>
         {
-            LastRequest = await HttpRequestInfo.CopyFromAsync(context.Request);
+            LastRequest = await HttpRequestInfo.CopyFromAsync(context);
             context.Response.StatusCode = GetStatusCode(context.Request.Path);
             RequestCount++;
 
@@ -51,7 +51,7 @@ public sealed class TestConfigServerStartup
 
                 if (Response != null)
                 {
-                    await context.Response.WriteAsync(Response);
+                    await context.Response.WriteAsync(Response, context.RequestAborted);
                 }
             }
 

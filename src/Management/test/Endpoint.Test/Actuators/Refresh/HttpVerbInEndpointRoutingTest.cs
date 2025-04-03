@@ -29,15 +29,15 @@ public sealed class HttpVerbInEndpointRoutingTest
 
         await using WebApplication app = builder.Build();
         app.MapDefaultControllerRoute();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
-        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
+        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
         getResponse.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
 
-        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null);
+        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null, TestContext.Current.CancellationToken);
         postResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -56,15 +56,15 @@ public sealed class HttpVerbInEndpointRoutingTest
 
         await using WebApplication app = builder.Build();
         app.MapDefaultControllerRoute();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
-        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
+        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null);
+        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null, TestContext.Current.CancellationToken);
         postResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
@@ -84,15 +84,15 @@ public sealed class HttpVerbInEndpointRoutingTest
 
         await using WebApplication app = builder.Build();
         app.MapDefaultControllerRoute();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
-        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
+        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null);
+        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null, TestContext.Current.CancellationToken);
         postResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
@@ -112,15 +112,15 @@ public sealed class HttpVerbInEndpointRoutingTest
 
         await using WebApplication app = builder.Build();
         app.MapDefaultControllerRoute();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
-        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
+        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null);
+        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null, TestContext.Current.CancellationToken);
         postResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
@@ -140,15 +140,15 @@ public sealed class HttpVerbInEndpointRoutingTest
 
         await using WebApplication app = builder.Build();
         app.MapDefaultControllerRoute();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
-        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
+        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null);
+        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null, TestContext.Current.CancellationToken);
         postResponse.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
     }
 
@@ -169,15 +169,15 @@ public sealed class HttpVerbInEndpointRoutingTest
 
         await using WebApplication app = builder.Build();
         app.MapDefaultControllerRoute();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
-        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
+        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null);
+        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null, TestContext.Current.CancellationToken);
         postResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -208,15 +208,15 @@ public sealed class HttpVerbInEndpointRoutingTest
 
         await using WebApplication app = builder.Build();
         app.MapDefaultControllerRoute();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
-        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri);
+        HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
         getResponse.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
 
-        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null);
+        HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null, TestContext.Current.CancellationToken);
         postResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         fileProvider.ReplaceFile(fileName, """
@@ -238,10 +238,10 @@ public sealed class HttpVerbInEndpointRoutingTest
 
         fileProvider.NotifyChanged();
 
-        getResponse = await httpClient.GetAsync(requestUri);
+        getResponse = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        postResponse = await httpClient.PostAsync(requestUri, null);
+        postResponse = await httpClient.PostAsync(requestUri, null, TestContext.Current.CancellationToken);
         postResponse.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
     }
 }

@@ -37,7 +37,7 @@ public sealed class CosmosDbHealthContributorTest
         using var healthContributor = new CosmosDbHealthContributor(serviceName, serviceProvider, CosmosDbPackageResolver.Default,
             NullLogger<CosmosDbHealthContributor>.Instance);
 
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.Status.Should().Be(HealthStatus.Down);
@@ -62,7 +62,7 @@ public sealed class CosmosDbHealthContributorTest
 
         healthContributor.Timeout = 1.Milliseconds();
 
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.Status.Should().Be(HealthStatus.Down);
@@ -85,7 +85,7 @@ public sealed class CosmosDbHealthContributorTest
         using var healthContributor = new CosmosDbHealthContributor(serviceName, serviceProvider, CosmosDbPackageResolver.Default,
             NullLogger<CosmosDbHealthContributor>.Instance);
 
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.Status.Should().Be(HealthStatus.Up);
@@ -104,7 +104,7 @@ public sealed class CosmosDbHealthContributorTest
 
         cosmosClientMock.Setup(client => client.ReadAccountAsync()).Returns(async () =>
         {
-            await Task.Delay(3.Seconds());
+            await Task.Delay(3.Seconds(), TestContext.Current.CancellationToken);
             return null!;
         });
 
@@ -136,7 +136,7 @@ public sealed class CosmosDbHealthContributorTest
         using var healthContributor = new CosmosDbHealthContributor(serviceName, serviceProvider, CosmosDbPackageResolver.Default,
             NullLogger<CosmosDbHealthContributor>.Instance);
 
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.Status.Should().Be(HealthStatus.Up);

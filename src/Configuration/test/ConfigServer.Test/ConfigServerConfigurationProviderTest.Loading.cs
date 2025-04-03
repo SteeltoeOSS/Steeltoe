@@ -20,7 +20,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var options = new ConfigServerClientOptions();
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<UriFormatException>(async () => await provider.RemoteLoadAsync([@"foobar\foobar\"], null, CancellationToken.None));
+        await Assert.ThrowsAsync<UriFormatException>(async () =>
+            await provider.RemoteLoadAsync([@"foobar\foobar\"], null, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -34,7 +35,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var httpClientHandler = new SlowHttpClientHandler(1.Seconds(), new HttpResponseMessage());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        Func<Task> action = async () => await provider.RemoteLoadAsync(["http://localhost:9999/app/profile"], null, CancellationToken.None);
+        Func<Task> action = async () => await provider.RemoteLoadAsync(["http://localhost:9999/app/profile"], null, TestContext.Current.CancellationToken);
 
         (await action.Should().ThrowExactlyAsync<TaskCanceledException>()).WithInnerExceptionExactly<TimeoutException>();
     }
@@ -50,7 +51,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -59,7 +60,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<HttpRequestException>(async () => await provider.RemoteLoadAsync(options.GetUris(), null, CancellationToken.None));
+        await Assert.ThrowsAsync<HttpRequestException>(async () =>
+            await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken));
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
@@ -76,7 +78,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -85,7 +87,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        ConfigEnvironment? result = await provider.RemoteLoadAsync(options.GetUris(), null, CancellationToken.None);
+        ConfigEnvironment? result = await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken);
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
@@ -115,7 +117,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -129,9 +131,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
-        Assert.True(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(60)));
+        Assert.True(TestConfigServerStartup.InitialRequestLatch.Wait(1.Minutes(), TestContext.Current.CancellationToken));
         Assert.True(TestConfigServerStartup.RequestCount >= 1);
-        await Task.Delay(1000);
+        await Task.Delay(1.Seconds(), TestContext.Current.CancellationToken);
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.True(TestConfigServerStartup.RequestCount >= 2);
@@ -163,7 +165,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -180,9 +182,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        Assert.True(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(60)));
+        Assert.True(TestConfigServerStartup.InitialRequestLatch.Wait(1.Minutes(), TestContext.Current.CancellationToken));
         Assert.True(TestConfigServerStartup.RequestCount >= 1);
-        await Task.Delay(1000);
+        await Task.Delay(1.Seconds(), TestContext.Current.CancellationToken);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.True(TestConfigServerStartup.RequestCount >= 2);
         Assert.False(provider.GetReloadToken().HasChanged);
@@ -211,7 +213,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -228,7 +230,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        Assert.False(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(2)));
+        Assert.False(TestConfigServerStartup.InitialRequestLatch.Wait(2.Seconds(), TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -268,7 +270,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -278,7 +280,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await provider.DoLoadAsync(true, CancellationToken.None);
+        await provider.DoLoadAsync(true, TestContext.Current.CancellationToken);
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal(2, TestConfigServerStartup.RequestCount);
@@ -314,7 +316,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -323,7 +325,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        ConfigEnvironment? env = await provider.RemoteLoadAsync(options.GetUris(), null, CancellationToken.None);
+        ConfigEnvironment? env = await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.NotNull(env);
@@ -356,7 +358,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -366,7 +368,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await provider.LoadInternalAsync(true, CancellationToken.None);
+        await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.Equal(1, TestConfigServerStartup.RequestCount);
@@ -387,7 +389,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -397,7 +399,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await provider.LoadInternalAsync(true, CancellationToken.None);
+        await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.Equal(1, TestConfigServerStartup.RequestCount);
@@ -414,7 +416,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -423,7 +425,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await provider.LoadInternalAsync(true, CancellationToken.None);
+        await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.Equal(27, provider.Properties.Count);
@@ -440,7 +442,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -450,7 +452,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
+        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -463,7 +465,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -478,7 +480,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             200
         ];
 
-        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
+        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
         Assert.Equal(1, TestConfigServerStartup.RequestCount);
     }
 
@@ -493,7 +495,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -503,7 +505,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
+        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -522,7 +524,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -533,7 +535,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
+        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
         Assert.Equal(1, TestConfigServerStartup.RequestCount);
     }
 
@@ -556,7 +558,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -576,7 +578,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
+        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
         Assert.Equal(6, TestConfigServerStartup.RequestCount);
     }
 
@@ -609,7 +611,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -618,7 +620,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await provider.LoadInternalAsync(true, CancellationToken.None);
+        await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
 
@@ -659,7 +661,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         builder.UseStartup<TestConfigServerStartup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -828,7 +830,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         ConfigServerClientOptions clientOptions = GetCommonOptions();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using TestServer server = app.GetTestServer();
         server.BaseAddress = new Uri(clientOptions.Uri!);

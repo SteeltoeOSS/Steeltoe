@@ -30,12 +30,14 @@ public sealed class ContentNegotiationTests
         builder.Services.AddLoggersActuator();
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
         MediaTypeHeaderValue contentType = MediaTypeHeaderValue.Parse("APPLICATION/vnd.Spring-Boot.Actuator.v3+JSON");
         HttpContent requestContent = new StringContent("{}", contentType);
-        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), requestContent);
+
+        HttpResponseMessage response =
+            await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), requestContent, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
@@ -48,12 +50,14 @@ public sealed class ContentNegotiationTests
         builder.Services.AddLoggersActuator();
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
         MediaTypeHeaderValue contentType = MediaTypeHeaderValue.Parse("application/vnd.spring-boot.actuator.v3+json; charset=utf-8");
         HttpContent requestContent = new StringContent("{}", contentType);
-        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), requestContent);
+
+        HttpResponseMessage response =
+            await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), requestContent, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
@@ -66,15 +70,17 @@ public sealed class ContentNegotiationTests
         builder.Services.AddLoggersActuator();
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
         MediaTypeHeaderValue contentType = MediaTypeHeaderValue.Parse("application/xhtml+xml");
         HttpContent requestContent = new StringContent("{}", contentType);
-        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), requestContent);
+
+        HttpResponseMessage response =
+            await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), requestContent, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.UnsupportedMediaType);
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Be("Only the 'application/vnd.spring-boot.actuator.v3+json' content type is supported.");
     }
 
@@ -86,10 +92,10 @@ public sealed class ContentNegotiationTests
         builder.Services.AddLoggersActuator();
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/loggers"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -102,7 +108,7 @@ public sealed class ContentNegotiationTests
         builder.Services.AddLoggersActuator();
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         var requestMessage = new HttpRequestMessage
         {
@@ -119,10 +125,10 @@ public sealed class ContentNegotiationTests
         };
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.SendAsync(requestMessage);
+        HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Be("Only the 'application/vnd.spring-boot.actuator.v3+json' content type is supported.");
     }
 
@@ -134,7 +140,7 @@ public sealed class ContentNegotiationTests
         builder.Services.AddLoggersActuator();
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         var requestMessage = new HttpRequestMessage
         {
@@ -151,7 +157,7 @@ public sealed class ContentNegotiationTests
         };
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.SendAsync(requestMessage);
+        HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -164,7 +170,7 @@ public sealed class ContentNegotiationTests
         builder.Services.AddLoggersActuator();
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         var requestMessage = new HttpRequestMessage
         {
@@ -181,7 +187,7 @@ public sealed class ContentNegotiationTests
         };
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.SendAsync(requestMessage);
+        HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -199,12 +205,12 @@ public sealed class ContentNegotiationTests
         builder.Services.AddHeapDumpActuator();
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
         using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/heapdump"));
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        HttpResponseMessage response = await client.SendAsync(request);
+        HttpResponseMessage response = await client.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
     }
@@ -223,12 +229,12 @@ public sealed class ContentNegotiationTests
         builder.Services.AddSingleton<IHeapDumper, FakeHeapDumper>();
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
         using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/heapdump"));
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/octet-stream"));
-        HttpResponseMessage response = await client.SendAsync(request);
+        HttpResponseMessage response = await client.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }

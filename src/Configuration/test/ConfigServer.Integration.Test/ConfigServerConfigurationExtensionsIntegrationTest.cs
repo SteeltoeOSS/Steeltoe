@@ -103,10 +103,10 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         builder.AddConfigServer();
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"));
+        string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"), TestContext.Current.CancellationToken);
 
         Assert.Equal("spamfrom foo developmentSpring Cloud Sampleshttps://github.com/spring-cloud-samples", result);
     }
@@ -194,10 +194,10 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         builder.AddConfigServer();
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"));
+        string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"), TestContext.Current.CancellationToken);
 
         Assert.Equal("spamfrom foo developmentSpring Cloud Sampleshttps://github.com/spring-cloud-samples", result);
     }
@@ -291,10 +291,10 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         builder.AddConfigServer();
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        string result = await client.GetStringAsync(new Uri("http://localhost/Home/Health"));
+        string result = await client.GetStringAsync(new Uri("http://localhost/Home/Health"), TestContext.Current.CancellationToken);
 
         // after switching to newer config server image, the health response has changed to
         // https://github.com/spring-cloud-samples/config-repo/Config resource 'file [/tmp/config-repo-4389533880216684481/application.yml' via location '' (document #0)"

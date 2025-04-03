@@ -4,6 +4,7 @@
 
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using FluentAssertions.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -109,11 +110,11 @@ public sealed class ConfigureCertificateOptionsTest
     public async Task CertificateOptionsUpdateOnFileContentChange()
     {
         using var sandbox = new Sandbox();
-        string firstCertificateContent = await File.ReadAllTextAsync("instance.crt");
-        string firstPrivateKeyContent = await File.ReadAllTextAsync("instance.key");
+        string firstCertificateContent = await File.ReadAllTextAsync("instance.crt", TestContext.Current.CancellationToken);
+        string firstPrivateKeyContent = await File.ReadAllTextAsync("instance.key", TestContext.Current.CancellationToken);
         var firstX509 = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
-        string secondCertificateContent = await File.ReadAllTextAsync("instance2.crt");
-        string secondPrivateKeyContent = await File.ReadAllTextAsync("instance2.key");
+        string secondCertificateContent = await File.ReadAllTextAsync("instance2.crt", TestContext.Current.CancellationToken);
+        string secondPrivateKeyContent = await File.ReadAllTextAsync("instance2.key", TestContext.Current.CancellationToken);
         var secondX509 = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
         string certificateFilePath = sandbox.CreateFile("cert", firstCertificateContent);
         string privateKeyFilePath = sandbox.CreateFile("key", firstPrivateKeyContent);
@@ -133,9 +134,9 @@ public sealed class ConfigureCertificateOptionsTest
 
         optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);
 
-        await File.WriteAllTextAsync(certificateFilePath, secondCertificateContent);
-        await File.WriteAllTextAsync(privateKeyFilePath, secondPrivateKeyContent);
-        await Task.Delay(2000);
+        await File.WriteAllTextAsync(certificateFilePath, secondCertificateContent, TestContext.Current.CancellationToken);
+        await File.WriteAllTextAsync(privateKeyFilePath, secondPrivateKeyContent, TestContext.Current.CancellationToken);
+        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
         optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(secondX509);
     }
@@ -144,11 +145,11 @@ public sealed class ConfigureCertificateOptionsTest
     public async Task CertificateOptionsUpdateOnFileLocationChange()
     {
         using var sandbox = new Sandbox();
-        string instance1Certificate = await File.ReadAllTextAsync("instance.crt");
-        string instance1PrivateKey = await File.ReadAllTextAsync("instance.key");
+        string instance1Certificate = await File.ReadAllTextAsync("instance.crt", TestContext.Current.CancellationToken);
+        string instance1PrivateKey = await File.ReadAllTextAsync("instance.key", TestContext.Current.CancellationToken);
         var firstX509 = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
-        string instance2Certificate = await File.ReadAllTextAsync("instance2.crt");
-        string instance2PrivateKey = await File.ReadAllTextAsync("instance2.key");
+        string instance2Certificate = await File.ReadAllTextAsync("instance2.crt", TestContext.Current.CancellationToken);
+        string instance2PrivateKey = await File.ReadAllTextAsync("instance2.key", TestContext.Current.CancellationToken);
         var secondX509 = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
         string certificate1FilePath = sandbox.CreateFile("cert", instance1Certificate);
         string privateKey1FilePath = sandbox.CreateFile("key", instance1PrivateKey);
@@ -182,9 +183,9 @@ public sealed class ConfigureCertificateOptionsTest
         changeCalled.Should().BeTrue("file path information changed");
 
         _ = changeToken.RegisterChangeCallback(_ => changeCalled = true, "state");
-        await File.WriteAllTextAsync(certificate2FilePath, instance1Certificate);
-        await File.WriteAllTextAsync(privateKey2FilePath, instance1PrivateKey);
-        await Task.Delay(2000);
+        await File.WriteAllTextAsync(certificate2FilePath, instance1Certificate, TestContext.Current.CancellationToken);
+        await File.WriteAllTextAsync(privateKey2FilePath, instance1PrivateKey, TestContext.Current.CancellationToken);
+        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
         optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);
         changeCalled.Should().BeTrue("file contents changed");
     }

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Consul;
+using FluentAssertions.Extensions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Steeltoe.Common.TestResources;
@@ -135,7 +136,7 @@ public sealed class TtlSchedulerTest
         var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
         scheduler.Add("foobar");
 
-        await Task.Delay(2500);
+        await Task.Delay(2500.Milliseconds(), TestContext.Current.CancellationToken);
 
         agentMoq.Verify(a => a.PassTTL("service:foobar", "ttl", It.IsAny<CancellationToken>()), Times.AtLeastOnce);
         await scheduler.RemoveAsync("foobar");

@@ -57,13 +57,13 @@ public sealed class PrometheusExtensionsTest
             builder.ConfigureServices(services => services.AddPrometheusActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/prometheus"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/prometheus"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Contain("# EOF");
     }
 
@@ -76,12 +76,12 @@ public sealed class PrometheusExtensionsTest
         await using WebApplication app = hostBuilder.Build();
         app.UsePrometheusActuator();
 
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/prometheus"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/prometheus"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Contain("# EOF");
     }
 
@@ -106,10 +106,10 @@ public sealed class PrometheusExtensionsTest
             });
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/prometheus"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/prometheus"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
@@ -131,12 +131,12 @@ public sealed class PrometheusExtensionsTest
             builder.ConfigureServices(services => services.AddPrometheusActuator());
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/prometheus"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/prometheus"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        response = await httpClient.GetAsync(new Uri("http://localhost/cloudfoundryapplication/prometheus"));
+        response = await httpClient.GetAsync(new Uri("http://localhost/cloudfoundryapplication/prometheus"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
@@ -164,12 +164,12 @@ public sealed class PrometheusExtensionsTest
             });
         });
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/prometheus"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/prometheus"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        response = await httpClient.GetAsync(new Uri("http://localhost/cloudfoundryapplication/prometheus"));
+        response = await httpClient.GetAsync(new Uri("http://localhost/cloudfoundryapplication/prometheus"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }

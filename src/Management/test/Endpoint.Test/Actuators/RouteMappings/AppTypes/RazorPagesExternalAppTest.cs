@@ -16,11 +16,11 @@ public sealed class RazorPagesExternalAppTest(WebApplicationFactory<IndexModel> 
     public async Task Can_get_routes_for_razor_pages()
     {
         using HttpClient client = _factory.CreateClient();
-        using HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/mappings"));
+        using HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string responseText = await response.Content.ReadAsStringAsync();
+        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         responseText.Should().Be("""
             {

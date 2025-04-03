@@ -115,7 +115,7 @@ public sealed class TokenKeyResolverTest
         using var httpClient = new HttpClient(handler);
         var resolver = new TokenKeyResolver("https://foo.bar", httpClient);
 
-        JsonWebKeySet? result = await resolver.FetchKeySetAsync(CancellationToken.None);
+        JsonWebKeySet? result = await resolver.FetchKeySetAsync(TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.Keys.Should().NotBeEmpty();
