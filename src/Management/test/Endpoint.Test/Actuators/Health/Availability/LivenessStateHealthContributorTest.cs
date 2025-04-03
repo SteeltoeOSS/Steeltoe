@@ -23,7 +23,7 @@ public sealed class LivenessStateHealthContributorTest
     {
         var contributor = new LivenessStateHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
-        HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Unknown, result.Status);
@@ -35,7 +35,7 @@ public sealed class LivenessStateHealthContributorTest
         _availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, "tests");
         var contributor = new LivenessStateHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
-        HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
@@ -47,7 +47,7 @@ public sealed class LivenessStateHealthContributorTest
         _availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Broken, "tests");
         var contributor = new LivenessStateHealthContributor(_availability, _optionsMonitor, NullLoggerFactory.Instance);
 
-        HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Down, result.Status);

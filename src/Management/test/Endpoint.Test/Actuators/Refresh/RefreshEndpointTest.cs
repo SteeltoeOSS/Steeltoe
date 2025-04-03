@@ -21,7 +21,7 @@ public sealed class RefreshEndpointTest(ITestOutputHelper testOutputHelper) : Ba
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -34,7 +34,7 @@ public sealed class RefreshEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         };
 
         var handler = testContext.GetRequiredService<IRefreshEndpointHandler>();
-        IList<string> result = await handler.InvokeAsync(null, CancellationToken.None);
+        IList<string> result = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
         Assert.NotNull(result);
 
         Assert.Contains("management:endpoints:loggers:enabled", result);

@@ -19,7 +19,7 @@ public sealed class CertificateHttpClientBuilderExtensionsTest
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", "not empty");
         using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
-        using IHost host = await GetHostBuilder().StartAsync();
+        using IHost host = await GetHostBuilder().StartAsync(TestContext.Current.CancellationToken);
         var factory = host.Services.GetRequiredService<IHttpClientFactory>();
         using HttpClient client = factory.CreateClient("test");
 
@@ -37,7 +37,7 @@ public sealed class CertificateHttpClientBuilderExtensionsTest
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", "not empty");
         using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
-        using IHost host = await GetHostBuilder(customCertificateHeader).StartAsync();
+        using IHost host = await GetHostBuilder(customCertificateHeader).StartAsync(TestContext.Current.CancellationToken);
         var factory = host.Services.GetRequiredService<IHttpClientFactory>();
         using HttpClient client = factory.CreateClient("test");
 

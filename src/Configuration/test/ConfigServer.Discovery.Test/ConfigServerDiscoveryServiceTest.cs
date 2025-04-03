@@ -42,7 +42,7 @@ public sealed class ConfigServerDiscoveryServiceTest
         var options = new ConfigServerClientOptions();
 
         var service = new ConfigServerDiscoveryService(configurationRoot, options, NullLoggerFactory.Instance);
-        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(CancellationToken.None);
+        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(TestContext.Current.CancellationToken);
         Assert.Empty(result);
     }
 
@@ -67,7 +67,7 @@ public sealed class ConfigServerDiscoveryServiceTest
         };
 
         var service = new ConfigServerDiscoveryService(configurationRoot, options, NullLoggerFactory.Instance);
-        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(CancellationToken.None);
+        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(TestContext.Current.CancellationToken);
         Assert.Empty(result);
     }
 
@@ -93,7 +93,7 @@ public sealed class ConfigServerDiscoveryServiceTest
         };
 
         var service = new ConfigServerDiscoveryService(configurationRoot, options, NullLoggerFactory.Instance);
-        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(CancellationToken.None);
+        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(TestContext.Current.CancellationToken);
         Assert.Empty(result);
     }
 
@@ -105,7 +105,7 @@ public sealed class ConfigServerDiscoveryServiceTest
         var testDiscoveryClient = new TestDiscoveryClient();
         var service = new ConfigServerDiscoveryService(configurationRoot, new ConfigServerClientOptions(), NullLoggerFactory.Instance);
 
-        await service.ProvideRuntimeReplacementsAsync([testDiscoveryClient], CancellationToken.None);
+        await service.ProvideRuntimeReplacementsAsync([testDiscoveryClient], TestContext.Current.CancellationToken);
 
         service.DiscoveryClients.Should().ContainSingle();
         service.DiscoveryClients.First().Should().Be(testDiscoveryClient);

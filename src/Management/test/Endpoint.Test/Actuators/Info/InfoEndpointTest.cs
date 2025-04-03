@@ -16,7 +16,7 @@ public sealed class InfoEndpointTest(ITestOutputHelper testOutputHelper) : BaseT
     [Fact]
     public async Task Invoke_NoContributors_ReturnsExpectedInfo()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -26,7 +26,7 @@ public sealed class InfoEndpointTest(ITestOutputHelper testOutputHelper) : BaseT
 
         var handler = testContext.GetRequiredService<IInfoEndpointHandler>();
 
-        IDictionary<string, object> info = await handler.InvokeAsync(null, CancellationToken.None);
+        IDictionary<string, object> info = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
         Assert.NotNull(info);
         Assert.Empty(info);
     }
@@ -34,7 +34,7 @@ public sealed class InfoEndpointTest(ITestOutputHelper testOutputHelper) : BaseT
     [Fact]
     public async Task Invoke_CallsAllContributors()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         List<IInfoContributor> contributors =
         [
@@ -51,7 +51,7 @@ public sealed class InfoEndpointTest(ITestOutputHelper testOutputHelper) : BaseT
 
         var handler = testContext.GetRequiredService<IInfoEndpointHandler>();
 
-        await handler.InvokeAsync(null, CancellationToken.None);
+        await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
 
         foreach (IInfoContributor contributor in contributors)
         {
@@ -63,7 +63,7 @@ public sealed class InfoEndpointTest(ITestOutputHelper testOutputHelper) : BaseT
     [Fact]
     public async Task Invoke_HandlesExceptions()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         List<IInfoContributor> contributors =
         [
@@ -80,7 +80,7 @@ public sealed class InfoEndpointTest(ITestOutputHelper testOutputHelper) : BaseT
 
         var handler = testContext.GetRequiredService<IInfoEndpointHandler>();
 
-        await handler.InvokeAsync(null, CancellationToken.None);
+        await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
 
         foreach (IInfoContributor contributor in contributors)
         {

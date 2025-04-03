@@ -29,13 +29,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         json.Should().NotBeNull();
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
@@ -57,13 +57,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         json.Should().NotBeNull();
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
@@ -85,13 +85,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         json.Should().NotBeNull();
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
@@ -115,13 +115,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         json.Should().NotBeNull();
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
@@ -147,13 +147,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         json.Should().NotBeNull();
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
@@ -181,13 +181,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         json.Should().NotBeNull();
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
@@ -214,13 +214,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         json.Should().NotBeNull();
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
@@ -247,13 +247,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         });
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         json.Should().NotBeNull();
     }
 
@@ -282,13 +282,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         });
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(expectedStatusCode);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         json.Should().Contain(expectedJson);
     }
 
@@ -310,13 +310,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         });
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         json.Should().Be("""{"status":"DOWN"}""");
     }
 
@@ -338,16 +338,16 @@ public sealed class EndpointMiddlewareTest : BaseTest
         });
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication/health"));
         requestMessage.Headers.Add("X-Use-Status-Code-From-Response", "true");
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.SendAsync(requestMessage);
+        HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         json.Should().Be("""{"status":"DOWN"}""");
     }
 
@@ -363,13 +363,16 @@ public sealed class EndpointMiddlewareTest : BaseTest
         }));
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage responseMessage = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+
+        HttpResponseMessage responseMessage =
+            await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"), TestContext.Current.CancellationToken);
+
         responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string json = await responseMessage.Content.ReadAsStringAsync();
+        string json = await responseMessage.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         json.Should().Be("""{"status":"UP"}""");
     }
 
@@ -380,13 +383,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.UseStartup<Startup>();
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage responseMessage = await client.GetAsync(new Uri("http://localhost/actuator/health/foo"));
+        HttpResponseMessage responseMessage = await client.GetAsync(new Uri("http://localhost/actuator/health/foo"), TestContext.Current.CancellationToken);
         responseMessage.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        string body = await responseMessage.Content.ReadAsStringAsync();
+        string body = await responseMessage.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         body.Should().BeEmpty();
     }
 

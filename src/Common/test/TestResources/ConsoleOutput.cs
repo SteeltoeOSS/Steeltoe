@@ -45,16 +45,16 @@ public sealed class ConsoleOutput : IDisposable
         _outputBuilder.Clear();
     }
 
-    public async Task WaitForFlushAsync()
+    public async Task WaitForFlushAsync(CancellationToken cancellationToken)
     {
         // Microsoft.Extensions.Logging.Console.ConsoleLogger writes messages to a queue,
         // it takes a bit of time for the background thread to write them to Console.Out.
-        await Task.Delay(1);
+        await Task.Delay(1, cancellationToken);
 
         if (_outputBuilder.Length == 0)
         {
             // Wait a bit longer in case of high contention while running tests on build server.
-            await Task.Delay(100);
+            await Task.Delay(100, cancellationToken);
         }
     }
 

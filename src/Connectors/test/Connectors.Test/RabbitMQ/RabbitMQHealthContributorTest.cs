@@ -27,7 +27,7 @@ public sealed class RabbitMQHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.Status.Should().Be(HealthStatus.Down);
@@ -56,7 +56,7 @@ public sealed class RabbitMQHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.Status.Should().Be(HealthStatus.Up);
@@ -86,11 +86,11 @@ public sealed class RabbitMQHealthContributorTest
         };
 
         // Ensure initial connection is obtained.
-        _ = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        _ = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         connectionMock.Setup(connection => connection.IsOpen).Returns(false);
 
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.Status.Should().Be(HealthStatus.Down);
@@ -127,7 +127,7 @@ public sealed class RabbitMQHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.Status.Should().Be(HealthStatus.Up);

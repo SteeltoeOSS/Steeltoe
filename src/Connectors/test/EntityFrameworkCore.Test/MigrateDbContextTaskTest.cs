@@ -26,7 +26,7 @@ public sealed class MigrateDbContextTaskTest
 
         await using WebApplication app = builder.Build();
 
-        await app.RunWithTasksAsync(CancellationToken.None);
+        await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
         TestMigrator.HasMigrated.Should().BeTrue();
     }

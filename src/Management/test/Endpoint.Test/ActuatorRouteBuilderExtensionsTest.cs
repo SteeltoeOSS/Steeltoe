@@ -135,7 +135,7 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 
     private async Task ActAndAssertAsync(IHostBuilder builder, Type endpointOptionsType, bool expectSuccess)
     {
-        using IHost host = await builder.StartAsync();
+        using IHost host = await builder.StartAsync(TestContext.Current.CancellationToken);
 
         Type optionsMonitorType = typeof(IOptionsMonitor<>).MakeGenericType(endpointOptionsType);
         object optionsMonitor = host.Services.GetRequiredService(optionsMonitorType);
@@ -150,11 +150,11 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 
         if (options.AllowedVerbs.Contains("Get"))
         {
-            response = await httpClient.GetAsync(new Uri(path, UriKind.RelativeOrAbsolute));
+            response = await httpClient.GetAsync(new Uri(path, UriKind.RelativeOrAbsolute), TestContext.Current.CancellationToken);
         }
         else
         {
-            response = await httpClient.PostAsync(new Uri(path, UriKind.RelativeOrAbsolute), null);
+            response = await httpClient.PostAsync(new Uri(path, UriKind.RelativeOrAbsolute), null, TestContext.Current.CancellationToken);
         }
 
         response.StatusCode.Should().Be(expectSuccess ? HttpStatusCode.OK : HttpStatusCode.Forbidden);

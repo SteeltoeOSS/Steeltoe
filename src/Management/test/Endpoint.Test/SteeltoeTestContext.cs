@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Test;
 /// <summary>
 /// Provides encapsulation of data for a single test.
 /// </summary>
-internal sealed class TestContext : IDisposable
+internal sealed class SteeltoeTestContext : IDisposable
 {
     private readonly XunitLoggerProvider _loggerProvider;
     private readonly ServiceCollection _serviceCollection = [];
@@ -69,7 +69,7 @@ internal sealed class TestContext : IDisposable
         }
     }
 
-    public TestContext(ITestOutputHelper testOutputHelper)
+    public SteeltoeTestContext(ITestOutputHelper testOutputHelper)
     {
         ArgumentNullException.ThrowIfNull(testOutputHelper);
 

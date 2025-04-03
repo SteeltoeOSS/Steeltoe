@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +38,7 @@ public sealed class EurekaHealthCheckHandlerTest
 
         var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
         var handler = new EurekaHealthCheckHandler(new HealthAggregator(), optionsMonitor, serviceProvider);
-        InstanceStatus result = await handler.GetStatusAsync(false, CancellationToken.None);
+        InstanceStatus result = await handler.GetStatusAsync(false, TestContext.Current.CancellationToken);
 
         result.Should().Be(expectedStatus);
     }
@@ -50,7 +51,7 @@ public sealed class EurekaHealthCheckHandlerTest
 
         var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
         var handler = new EurekaHealthCheckHandler(new HealthAggregator(), optionsMonitor, serviceProvider);
-        InstanceStatus result = await handler.GetStatusAsync(false, CancellationToken.None);
+        InstanceStatus result = await handler.GetStatusAsync(false, TestContext.Current.CancellationToken);
 
         result.Should().Be(InstanceStatus.Up);
     }
@@ -66,7 +67,7 @@ public sealed class EurekaHealthCheckHandlerTest
 
         var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
         var handler = new EurekaHealthCheckHandler(new HealthAggregator(), optionsMonitor, serviceProvider);
-        InstanceStatus result = await handler.GetStatusAsync(false, CancellationToken.None);
+        InstanceStatus result = await handler.GetStatusAsync(false, TestContext.Current.CancellationToken);
 
         result.Should().Be(InstanceStatus.Unknown);
     }
@@ -113,7 +114,7 @@ public sealed class EurekaHealthCheckHandlerTest
 
         var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
         var handler = new EurekaHealthCheckHandler(new HealthAggregator(), optionsMonitor, serviceProvider);
-        InstanceStatus result = await handler.GetStatusAsync(false, CancellationToken.None);
+        InstanceStatus result = await handler.GetStatusAsync(false, TestContext.Current.CancellationToken);
 
         result.Should().Be(expectedStatus);
     }
@@ -150,7 +151,7 @@ public sealed class EurekaHealthCheckHandlerTest
         IDiscoveryClient[] discoveryClients = [.. app.Services.GetServices<IDiscoveryClient>()];
         Assert.Single(discoveryClients);
 
-        await Task.Delay(TimeSpan.FromSeconds(2));
+        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
         contributor.IsAwaited.Should().BeTrue();
 

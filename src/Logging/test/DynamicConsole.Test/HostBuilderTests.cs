@@ -163,7 +163,7 @@ public sealed class HostBuilderTests
         builder.Services.UpgradeBootstrapLoggerFactory(bootstrapLoggerFactory);
         await using WebApplication host = builder.Build();
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         microsoftLogger.ProbeMinLevel().Should().Be(LogLevel.Warning);
         steeltoeLogger.ProbeMinLevel().Should().Be(LogLevel.Error);

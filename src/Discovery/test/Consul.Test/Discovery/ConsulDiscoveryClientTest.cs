@@ -60,7 +60,8 @@ public sealed class ConsulDiscoveryClientTest
 
         var healthMoq = new Mock<IHealthEndpoint>();
 
-        healthMoq.Setup(endpoint => endpoint.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, CancellationToken.None))
+        healthMoq.Setup(endpoint =>
+                endpoint.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(queryResult));
 
         var clientMoq = new Mock<IConsulClient>();
@@ -70,7 +71,10 @@ public sealed class ConsulDiscoveryClientTest
         var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
 
         List<IServiceInstance> serviceInstances = [];
-        await discoveryClient.AddInstancesToListAsync(serviceInstances, "ServiceId", QueryOptions.Default, optionsMonitor.CurrentValue, CancellationToken.None);
+
+        await discoveryClient.AddInstancesToListAsync(serviceInstances, "ServiceId", QueryOptions.Default, optionsMonitor.CurrentValue,
+            TestContext.Current.CancellationToken);
+
         Assert.Equal(2, serviceInstances.Count);
 
         Assert.Equal("foo.bar.com", serviceInstances[0].Host);
@@ -124,14 +128,14 @@ public sealed class ConsulDiscoveryClientTest
         };
 
         var catalogMoq = new Mock<ICatalogEndpoint>();
-        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, CancellationToken.None)).Returns(Task.FromResult(queryResult));
+        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, It.IsAny<CancellationToken>())).Returns(Task.FromResult(queryResult));
 
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Catalog).Returns(catalogMoq.Object);
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
-        ISet<string> serviceIds = await discoveryClient.GetServiceIdsAsync(QueryOptions.Default, CancellationToken.None);
+        ISet<string> serviceIds = await discoveryClient.GetServiceIdsAsync(QueryOptions.Default, TestContext.Current.CancellationToken);
 
         Assert.Equal(2, serviceIds.Count);
         Assert.Contains("foo", serviceIds);
@@ -196,7 +200,7 @@ public sealed class ConsulDiscoveryClientTest
         };
 
         var catalogMoq = new Mock<ICatalogEndpoint>();
-        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, CancellationToken.None)).Returns(Task.FromResult(queryResult1));
+        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, It.IsAny<CancellationToken>())).Returns(Task.FromResult(queryResult1));
 
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Catalog).Returns(catalogMoq.Object);
@@ -204,12 +208,12 @@ public sealed class ConsulDiscoveryClientTest
         var healthMoq = new Mock<IHealthEndpoint>();
         clientMoq.Setup(client => client.Health).Returns(healthMoq.Object);
 
-        healthMoq.Setup(h => h.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, CancellationToken.None))
+        healthMoq.Setup(h => h.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(queryResult2));
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
-        IList<IServiceInstance> serviceInstances = await discoveryClient.GetAllInstancesAsync(QueryOptions.Default, CancellationToken.None);
+        IList<IServiceInstance> serviceInstances = await discoveryClient.GetAllInstancesAsync(QueryOptions.Default, TestContext.Current.CancellationToken);
 
         Assert.Equal(2, serviceInstances.Count);
 

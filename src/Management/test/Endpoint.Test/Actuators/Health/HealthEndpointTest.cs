@@ -25,7 +25,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     [Fact]
     public async Task Invoke_NoContributors_ReturnsExpectedHealth()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -39,7 +39,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         HealthEndpointRequest healthRequest = GetHealthRequest();
 
-        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
+        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Unknown, result.Status);
     }
@@ -47,7 +47,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     [Fact]
     public async Task Invoke_CallsAllContributors()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         List<IHealthContributor> contributors =
         [
@@ -64,7 +64,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
         HealthEndpointRequest healthRequest = GetHealthRequest();
-        await handler.InvokeAsync(healthRequest, CancellationToken.None);
+        await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
 
         foreach (TestHealthContributor testContributor in contributors.Cast<TestHealthContributor>())
         {
@@ -75,7 +75,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     [Fact]
     public async Task Invoke_HandlesCancellation_Throws()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         List<IHealthContributor> contributors = [new UpContributor(5000)];
 
@@ -99,7 +99,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     [Fact]
     public async Task Invoke_HandlesExceptions_ReturnsExpectedHealth()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         List<IHealthContributor> contributors =
         [
@@ -117,7 +117,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
 
         HealthEndpointRequest healthRequest = GetHealthRequest();
-        HealthEndpointResponse info = await handler.InvokeAsync(healthRequest, CancellationToken.None);
+        HealthEndpointResponse info = await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
 
         foreach (TestHealthContributor testContributor in contributors.Cast<TestHealthContributor>())
         {
@@ -137,7 +137,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     [Fact]
     public void GetStatusCode_ReturnsExpected()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         List<IHealthContributor> contributors = [new DiskSpaceHealthContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>())];
 
@@ -173,7 +173,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     [Fact]
     public async Task InvokeWithLivenessGroupReturnsGroupResults()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         var appSettings = new Dictionary<string, string?>
         {
@@ -204,7 +204,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         var healthRequest = new HealthEndpointRequest("liVeness", true);
 
-        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
+        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
 
         result.Status.Should().Be(HealthStatus.Up);
         result.Components.Keys.Should().ContainSingle();
@@ -214,7 +214,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     [Fact]
     public async Task InvokeWithReadinessGroupReturnsGroupResults()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         var appSettings = new Dictionary<string, string?>
         {
@@ -250,7 +250,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         var healthRequest = new HealthEndpointRequest("readiness", true);
 
-        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
+        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
 
         result.Status.Should().Be(HealthStatus.Up);
         result.Components.Keys.Should().ContainSingle();
@@ -283,7 +283,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         var healthRequest = new HealthEndpointRequest("msft", true);
 
-        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
+        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
 
         result.Components.Keys.Should().HaveCount(2);
         result.Components.Should().ContainKey("alwaysUp");
@@ -349,7 +349,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     public async Task InvokeWithGroupUsesShowComponentShowDetailOptions(string? endpointShowComponents, string? endpointShowDetails,
         string? groupShowComponents, string? groupShowDetails, bool hasClaim, bool returnComponents, bool returnDetails)
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalConfiguration = configuration => configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -369,7 +369,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         var healthRequest = new HealthEndpointRequest("test", hasClaim);
 
-        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
+        HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
 
         result.Status.Should().Be(HealthStatus.Up);
 

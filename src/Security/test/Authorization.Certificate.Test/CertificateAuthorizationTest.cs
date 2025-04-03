@@ -21,10 +21,10 @@ public sealed class CertificateAuthorizationTest
     public async Task CertificateAuth_ForbiddenWithoutCert()
     {
         var requestUri = new Uri($"http://localhost/{CertificateAuthorizationPolicies.SameSpace}");
-        using IHost host = await GetHostBuilder().StartAsync();
+        using IHost host = await GetHostBuilder().StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
@@ -33,12 +33,12 @@ public sealed class CertificateAuthorizationTest
     public async Task CertificateAuth_AcceptsSameOrg()
     {
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrg}");
-        using IHost host = await GetHostBuilder().StartAsync();
+        using IHost host = await GetHostBuilder().StartAsync(TestContext.Current.CancellationToken);
         var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         X509Certificate2 certificate = optionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName).Certificate!;
         using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), certificate);
 
-        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -47,12 +47,12 @@ public sealed class CertificateAuthorizationTest
     public async Task CertificateAuth_AcceptsSameSpace()
     {
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
-        using IHost host = await GetHostBuilder().StartAsync();
+        using IHost host = await GetHostBuilder().StartAsync(TestContext.Current.CancellationToken);
         var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         X509Certificate2 certificate = optionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName).Certificate!;
         using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), certificate);
 
-        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -61,10 +61,10 @@ public sealed class CertificateAuthorizationTest
     public async Task CertificateAuth_RejectsOrgMismatch()
     {
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrg}");
-        using IHost host = await GetHostBuilder().StartAsync();
+        using IHost host = await GetHostBuilder().StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), Certificates.SpaceMatch);
 
-        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
@@ -73,10 +73,10 @@ public sealed class CertificateAuthorizationTest
     public async Task CertificateAuth_RejectsSpaceMismatch()
     {
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
-        using IHost host = await GetHostBuilder().StartAsync();
+        using IHost host = await GetHostBuilder().StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), Certificates.OrgMatch);
 
-        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
@@ -89,10 +89,10 @@ public sealed class CertificateAuthorizationTest
         using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
         using var caScope = new EnvironmentVariableScope("CF_SYSTEM_CERT_PATH", Path.Join(LocalCertificateWriter.AppBasePath, "root_certificates"));
-        using IHost host = await GetHostBuilder().StartAsync();
+        using IHost host = await GetHostBuilder().StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), Certificates.FromDiego);
 
-        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -105,10 +105,10 @@ public sealed class CertificateAuthorizationTest
         using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
         using var caScope = new EnvironmentVariableScope("CF_SYSTEM_CERT_PATH", Path.Join(LocalCertificateWriter.AppBasePath, "root_certificates"));
-        using IHost host = await GetHostBuilder().StartAsync();
+        using IHost host = await GetHostBuilder().StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), Certificates.FromDiego);
 
-        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -127,12 +127,12 @@ public sealed class CertificateAuthorizationTest
         await using WebApplication application = builder.Build();
         application.UseCertificateAuthorization();
         application.MapGet("/request", () => "response").RequireAuthorization();
-        await application.StartAsync();
+        await application.StartAsync(TestContext.Current.CancellationToken);
         var optionsMonitor = application.Services.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         X509Certificate2 certificate = optionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName).Certificate!;
         using HttpClient httpClient = ClientWithCertificate(application.GetTestClient(), certificate);
 
-        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -151,12 +151,12 @@ public sealed class CertificateAuthorizationTest
         await using WebApplication application = builder.Build();
         application.UseCertificateAuthorization();
         application.MapGet("/request", () => "response").RequireAuthorization();
-        await application.StartAsync();
+        await application.StartAsync(TestContext.Current.CancellationToken);
         var optionsMonitor = application.Services.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         X509Certificate2 certificate = optionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName).Certificate!;
         using HttpClient httpClient = ClientWithCertificate(application.GetTestClient(), certificate);
 
-        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -175,12 +175,12 @@ public sealed class CertificateAuthorizationTest
         await using WebApplication application = builder.Build();
         application.UseCertificateAuthorization();
         application.MapGet("/request", () => "response").RequireAuthorization();
-        await application.StartAsync();
+        await application.StartAsync(TestContext.Current.CancellationToken);
         var optionsMonitor = application.Services.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         X509Certificate2 certificate = optionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName).Certificate!;
         using HttpClient httpClient = ClientWithCertificate(application.GetTestClient(), certificate, "a-custom-header");
 
-        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }

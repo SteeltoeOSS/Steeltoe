@@ -37,10 +37,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.UseStartup<Startup>();
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        var links = await client.GetFromJsonAsync<Links>("http://localhost/cloudfoundryapplication", SerializerOptions);
+        var links = await client.GetFromJsonAsync<Links>("http://localhost/cloudfoundryapplication", SerializerOptions, TestContext.Current.CancellationToken);
 
         links.Should().NotBeNull();
         links.Entries["beans"].Href.Should().Be("http://localhost/cloudfoundryapplication/beans");
@@ -65,11 +65,11 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.UseStartup<Startup>();
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication"));
-        string json = await response.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication"), TestContext.Current.CancellationToken);
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         json.Should().BeJson("""
             {
@@ -135,10 +135,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.UseStartup<Startup>();
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        string response = await client.GetStringAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        string response = await client.GetStringAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
 
         response.Should().Contain("2017-07-12T18:40:39Z");
         response.Should().Contain("2017-06-08T12:47:02Z");
@@ -157,10 +157,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        string response = await client.GetStringAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        string response = await client.GetStringAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
 
         response.Should().Contain("1499884839000");
         response.Should().NotContain("2017-07-12T18:40:39Z");
@@ -177,7 +177,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.Services.AddInfoActuator();
         await using WebApplication app = builder.Build();
 
-        Func<Task> action = async () => await app.StartAsync();
+        Func<Task> action = async () => await app.StartAsync(TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<InvalidOperationException>()
             .WithMessage("Running on Cloud Foundry without security middleware. Call services.AddCloudFoundryActuator() to fix this.");

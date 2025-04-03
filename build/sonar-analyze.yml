@@ -14,6 +14,11 @@ jobs:
   pool:
     vmImage: ubuntu-latest
   steps:
+  - script: |
+      docker run -d --name eurekaserver -p 8761:8761 steeltoe.azurecr.io/eureka-server
+      sleep 10s
+      docker run -d --name configserver -p 8888:8888 --add-host=host.docker.internal:host-gateway steeltoe.azurecr.io/config-server --eureka.client.enabled=true --eureka.instance.hostname=localhost --eureka.instance.instanceId="localhost:configserver:8888"
+    displayName: Start Docker services
   - checkout: self
     fetchDepth: 0
   - task: UseDotNet@2
@@ -38,7 +43,7 @@ jobs:
       targetType: 'inline'
       script: |
         nbgv cloud
-  - task: SonarCloudPrepare@1
+  - task: SonarCloudPrepare@3
     displayName: Prepare analysis on SonarCloud
     inputs:
       SonarCloud: SonarCloud
@@ -54,10 +59,6 @@ jobs:
       command: build
       projects: src/Steeltoe.All.sln
       arguments: --no-restore -c $(buildConfiguration) -v minimal
-  - script: |
-      docker run -d --name configserver -p 8888:8888 steeltoe.azurecr.io/config-server --spring.cloud.config.server.git.default-label=main
-      docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
-    displayName: Start Docker services
   - task: DotNetCoreCLI@2
     displayName: dotnet test
     inputs:
@@ -77,8 +78,9 @@ jobs:
   - script: |
       docker kill configserver
       docker rm configserver
-      docker kill rabbitmq
-      docker rm rabbitmq
+      docker kill eurekaserver
+      docker rm eurekaserver
+    condition: and(succeededOrFailed(), eq(variables['integrationTests'], 'true'))
     displayName: Stop Docker services
   - task: PublishTestResults@2
     condition: succeededOrFailed()
@@ -87,9 +89,9 @@ jobs:
       testResultsFormat: VSTest
       testResultsFiles: '*.trx'
       mergeTestResults: true
-  - task: SonarCloudAnalyze@1
+  - task: SonarCloudAnalyze@3
     condition: succeededOrFailed()
     displayName: Run code analysis
-  - task: SonarCloudPublish@1
+  - task: SonarCloudPublish@3
     condition: succeededOrFailed()
     displayName: Publish quality gate result
