@@ -64,7 +64,7 @@ jobs:
     inputs:
       command: 'test'
       projects: 'src/*/test/*/*.csproj'
-      arguments: '--collect "Code Coverage"'
+      arguments: '--no-restore --collect "Code Coverage"'
   # - task: DotNetCoreCLI@2
   #   displayName: dotnet test
   #   inputs:
