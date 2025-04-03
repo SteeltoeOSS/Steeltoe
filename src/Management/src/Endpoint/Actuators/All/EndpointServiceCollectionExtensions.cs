@@ -12,6 +12,7 @@ using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
+using Steeltoe.Management.Endpoint.Actuators.Logfile;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
@@ -70,6 +71,7 @@ public static class EndpointServiceCollectionExtensions
         services.AddRouteMappingsActuator(configureMiddleware);
         services.AddRefreshActuator(configureMiddleware);
         services.AddServicesActuator(configureMiddleware);
+        services.AddLogfileActuator(configureMiddleware);
 
         return services;
     }

@@ -636,7 +636,7 @@ public sealed class ActuatorsHostBuilderTest
     [InlineData(HostBuilderType.WebApplication)]
     public async Task AddAllActuatorsDoesNotRegisterDuplicateServices(HostBuilderType hostBuilderType)
     {
-        const int actuatorCount = 12;
+        const int actuatorCount = 13;
 
         await using HostWrapper host = hostBuilderType.Build(builder =>
         {

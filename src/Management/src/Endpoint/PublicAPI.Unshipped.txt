@@ -262,6 +262,14 @@ Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.WithInfo(string! key, ob
 Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.WithInfo(System.Collections.Generic.IDictionary<string!, object!>! details) -> Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder!
 Steeltoe.Management.Endpoint.Actuators.Info.InfoEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Info.InfoEndpointOptions.InfoEndpointOptions() -> void
+Steeltoe.Management.Endpoint.Actuators.Logfile.LogfileEndpointHandler
+Steeltoe.Management.Endpoint.Actuators.Logfile.LogfileEndpointHandler.InvokeAsync(object? argument, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<string!>!
+Steeltoe.Management.Endpoint.Actuators.Logfile.LogfileEndpointHandler.LogfileEndpointHandler(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Actuators.Logfile.LogfileEndpointOptions!>! optionsMonitorMonitor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+Steeltoe.Management.Endpoint.Actuators.Logfile.LogfileEndpointHandler.Options.get -> Steeltoe.Management.Configuration.EndpointOptions!
+Steeltoe.Management.Endpoint.Actuators.Logfile.LogfileEndpointOptions
+Steeltoe.Management.Endpoint.Actuators.Logfile.LogfileEndpointOptions.FilePath.get -> string?
+Steeltoe.Management.Endpoint.Actuators.Logfile.LogfileEndpointOptions.FilePath.set -> void
+Steeltoe.Management.Endpoint.Actuators.Logfile.LogfileEndpointOptions.LogfileEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Loggers.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.Loggers.ILoggersEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.Loggers.LoggerGroup
