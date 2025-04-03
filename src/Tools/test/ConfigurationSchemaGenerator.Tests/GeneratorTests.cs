@@ -1571,7 +1571,7 @@ public partial class GeneratorTests
         Assert.NotNull(configSchemaInfo);
 
         var parser = new ConfigurationBindingGenerator.Parser(configSchemaInfo, new KnownTypeSymbols(compilation));
-        var spec = parser.GetSchemaGenerationSpec(CancellationToken.None);
+        var spec = parser.GetSchemaGenerationSpec(TestContext.Current.CancellationToken);
         Assert.NotNull(spec);
 
         var emitter = new ConfigSchemaEmitter(spec, compilation);

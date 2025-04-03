@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
-using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Refresh;
 
