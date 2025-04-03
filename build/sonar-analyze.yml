@@ -12,13 +12,13 @@ jobs:
     DOTNET_NOLOGO: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
   pool:
-    vmImage: ubuntu-latest
+    vmImage: windows-latest
   steps:
-  - script: |
-      docker run -d --name eurekaserver -p 8761:8761 steeltoe.azurecr.io/eureka-server
-      sleep 10s
-      docker run -d --name configserver -p 8888:8888 --add-host=host.docker.internal:host-gateway steeltoe.azurecr.io/config-server --eureka.client.enabled=true --eureka.instance.hostname=localhost --eureka.instance.instanceId="localhost:configserver:8888"
-    displayName: Start Docker services
+  # - script: |
+  #     docker run -d --name eurekaserver -p 8761:8761 steeltoe.azurecr.io/eureka-server
+  #     sleep 10s
+  #     docker run -d --name configserver -p 8888:8888 --add-host=host.docker.internal:host-gateway steeltoe.azurecr.io/config-server --eureka.client.enabled=true --eureka.instance.hostname=localhost --eureka.instance.instanceId="localhost:configserver:8888"
+  #   displayName: Start Docker services
   - checkout: self
     fetchDepth: 0
   - task: UseDotNet@2
@@ -49,10 +49,11 @@ jobs:
       SonarCloud: SonarCloud
       organization: steeltoeoss
       projectKey: SteeltoeOSS_steeltoe
-      extraProperties: |
-          sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/*opencover.xml
-          sonar.cs.vstest.reportsPaths=$(Build.SourcesDirectory)/*.trx
-          sonar.coverage.exclusions=**/test/**/*
+      scannerMode: 'dotnet'
+      # extraProperties: |
+      #     sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/*opencover.xml
+      #     sonar.cs.vstest.reportsPaths=$(Build.SourcesDirectory)/*.trx
+      #     sonar.coverage.exclusions=**/test/**/*
   - task: DotNetCoreCLI@2
     displayName: dotnet build
     inputs:
@@ -60,12 +61,17 @@ jobs:
       projects: src/Steeltoe.All.sln
       arguments: --no-restore -c $(buildConfiguration) -v minimal
   - task: DotNetCoreCLI@2
-    displayName: dotnet test
     inputs:
-      command: test
-      projects: '**/*.csproj'
-      arguments: '--blame-hang-timeout 3m --no-build -c $(buildConfiguration) -maxcpucount:1 --filter "Category!=SkipOnLinux" --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
-      publishTestResults: false
+      command: 'test'
+      projects: 'src/*/test/*/*.csproj'
+      arguments: '--collect "Code Coverage"'
+  # - task: DotNetCoreCLI@2
+  #   displayName: dotnet test
+  #   inputs:
+  #     command: test
+  #     projects: '**/*.csproj'
+  #     arguments: '--blame-hang-timeout 3m --no-build -c $(buildConfiguration) -maxcpucount:1 --filter "Category!=SkipOnLinux" --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+  #     publishTestResults: false
   - task: CopyFiles@2
     condition: failed()
     inputs:
@@ -73,7 +79,7 @@ jobs:
       targetFolder: $(Build.ArtifactStagingDirectory)/hangdumps
   - publish: $(Build.ArtifactStagingDirectory)/hangdumps
     condition: failed()
-    displayName: Publish test result files if tests fail
+    displayName: Publish hang dumps if tests fail
     artifact: FailedTestOutput-$(Agent.JobName)
   - script: |
       docker kill configserver
