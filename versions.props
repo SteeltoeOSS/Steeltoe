@@ -30,8 +30,8 @@
     <SystemIdentityModelVersion>8.4.*</SystemIdentityModelVersion>
     <SystemSqlClientVersion>4.9.*</SystemSqlClientVersion>
     <TestSdkVersion>17.13.*</TestSdkVersion>
-    <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
-    <XunitVersion>2.9.*</XunitVersion>
+    <XunitVersion>2.0.*</XunitVersion>
+    <XunitVisualStudioVersion>3.0.*</XunitVisualStudioVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
