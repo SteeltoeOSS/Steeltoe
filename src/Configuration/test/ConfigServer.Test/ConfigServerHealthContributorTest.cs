@@ -152,7 +152,7 @@ public sealed class ConfigServerHealthContributorTest
         };
 
         long lastAccess = contributor.LastAccess = DateTimeOffset.Now.ToUnixTimeMilliseconds() - 100;
-        IList<PropertySource>? sources = await contributor.GetPropertySourcesAsync(contributor.Provider!, CancellationToken.None);
+        IList<PropertySource>? sources = await contributor.GetPropertySourcesAsync(contributor.Provider!, TestContext.Current.CancellationToken);
 
         Assert.NotEqual(lastAccess, contributor.LastAccess);
         Assert.Null(sources);
@@ -178,7 +178,7 @@ public sealed class ConfigServerHealthContributorTest
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.Null(contributor.Provider);
-        HealthCheckResult? health = await contributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? health = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
         Assert.True(health.Details.ContainsKey("error"));
@@ -204,7 +204,7 @@ public sealed class ConfigServerHealthContributorTest
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.NotNull(contributor.Provider);
-        HealthCheckResult? health = await contributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? health = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
         Assert.Null(health);
     }
 
@@ -229,7 +229,7 @@ public sealed class ConfigServerHealthContributorTest
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.NotNull(contributor.Provider);
-        HealthCheckResult? health = await contributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? health = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
         Assert.True(health.Details.ContainsKey("error"));

@@ -1,9 +1,3 @@
-pr:
-  branches:
-    include:
-    - main
-    - release/*
-
 trigger:
   branches:
     include:

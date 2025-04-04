@@ -15,7 +15,7 @@ public sealed class BuildInfoContributorTest
         var contributor = new BuildInfoContributor();
         var builder = new InfoBuilder();
 
-        contributor.ContributeAsync(builder, CancellationToken.None);
+        contributor.ContributeAsync(builder, TestContext.Current.CancellationToken);
         IDictionary<string, object> results = builder.Build();
 
         Assert.True(results.ContainsKey("applicationVersionInfo"));

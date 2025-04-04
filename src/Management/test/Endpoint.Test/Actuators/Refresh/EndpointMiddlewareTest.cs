@@ -45,7 +45,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         await middleware.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
-        string? json = await reader.ReadLineAsync();
+        string? json = await reader.ReadLineAsync(TestContext.Current.CancellationToken);
 
         json.Should().BeJson("""
             [
@@ -79,13 +79,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/refresh"), null);
+        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         json.Should().BeJson("""
             [

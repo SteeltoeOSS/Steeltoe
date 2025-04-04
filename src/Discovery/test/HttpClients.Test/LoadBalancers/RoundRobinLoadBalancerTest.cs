@@ -23,24 +23,24 @@ public sealed class RoundRobinLoadBalancerTest
         var resolver = new ServiceInstancesResolver([client], NullLogger<ServiceInstancesResolver>.Instance);
         var loadBalancer = new RoundRobinLoadBalancer(resolver, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
 
-        Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruit-service/api"), CancellationToken.None);
-        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), CancellationToken.None);
-        Uri vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), CancellationToken.None);
+        Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruit-service/api"), TestContext.Current.CancellationToken);
+        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), TestContext.Current.CancellationToken);
+        Uri vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), TestContext.Current.CancellationToken);
 
         fruitUri.Port.Should().Be(8000);
         vegetableUri.Port.Should().Be(8011);
 
         // wrap around
-        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), CancellationToken.None);
-        vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), CancellationToken.None);
+        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), TestContext.Current.CancellationToken);
+        vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), TestContext.Current.CancellationToken);
 
         vegetableUri.Port.Should().Be(8010);
 
         // reset when service has disappeared
-        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), CancellationToken.None);
+        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), TestContext.Current.CancellationToken);
         options.Services.RemoveAt(options.Services.Count - 1);
 
-        vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), CancellationToken.None);
+        vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), TestContext.Current.CancellationToken);
         vegetableUri.Port.Should().Be(8010);
     }
 
@@ -54,25 +54,25 @@ public sealed class RoundRobinLoadBalancerTest
         IDistributedCache distributedCache = GetCache();
         var loadBalancer = new RoundRobinLoadBalancer(resolver, distributedCache, null, NullLogger<RoundRobinLoadBalancer>.Instance);
 
-        Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruit-service/api"), CancellationToken.None);
-        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), CancellationToken.None);
-        Uri vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), CancellationToken.None);
+        Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruit-service/api"), TestContext.Current.CancellationToken);
+        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), TestContext.Current.CancellationToken);
+        Uri vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), TestContext.Current.CancellationToken);
 
         fruitUri.Port.Should().Be(8000);
         vegetableUri.Port.Should().Be(8011);
 
         // wrap around
-        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), CancellationToken.None);
-        vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), CancellationToken.None);
+        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), TestContext.Current.CancellationToken);
+        vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), TestContext.Current.CancellationToken);
 
         vegetableUri.Port.Should().Be(8010);
 
         // reset when service has disappeared
-        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), CancellationToken.None);
+        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), TestContext.Current.CancellationToken);
         options.Services.RemoveAt(options.Services.Count - 1);
-        await distributedCache.RemoveAsync("Steeltoe-LoadBalancerIndex-vegetable-service");
+        await distributedCache.RemoveAsync("Steeltoe-LoadBalancerIndex-vegetable-service", TestContext.Current.CancellationToken);
 
-        vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), CancellationToken.None);
+        vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetable-service/api"), TestContext.Current.CancellationToken);
         vegetableUri.Port.Should().Be(8010);
     }
 
@@ -84,7 +84,7 @@ public sealed class RoundRobinLoadBalancerTest
         var loadBalancer = new RoundRobinLoadBalancer(resolver, NullLogger<RoundRobinLoadBalancer>.Instance);
         var uri = new Uri("https://foo:8080/test");
 
-        Uri result = await loadBalancer.ResolveServiceInstanceAsync(uri, CancellationToken.None);
+        Uri result = await loadBalancer.ResolveServiceInstanceAsync(uri, TestContext.Current.CancellationToken);
         Assert.Equal(uri, result);
     }
 
@@ -96,7 +96,7 @@ public sealed class RoundRobinLoadBalancerTest
         var handler = new RoundRobinLoadBalancer(resolver, NullLogger<RoundRobinLoadBalancer>.Instance);
         var uri = new Uri("https://foo/test");
 
-        Uri result = await handler.ResolveServiceInstanceAsync(uri, CancellationToken.None);
+        Uri result = await handler.ResolveServiceInstanceAsync(uri, TestContext.Current.CancellationToken);
         Assert.Equal(uri, result);
     }
 
@@ -108,7 +108,7 @@ public sealed class RoundRobinLoadBalancerTest
         var handler = new RoundRobinLoadBalancer(resolver, NullLogger<RoundRobinLoadBalancer>.Instance);
         var uri = new Uri("https://foo/test/bar/foo?test=1&test2=2");
 
-        Uri result = await handler.ResolveServiceInstanceAsync(uri, CancellationToken.None);
+        Uri result = await handler.ResolveServiceInstanceAsync(uri, TestContext.Current.CancellationToken);
         Assert.Equal(new Uri("https://foundit:5555/test/bar/foo?test=1&test2=2"), result);
     }
 
@@ -127,7 +127,7 @@ public sealed class RoundRobinLoadBalancerTest
         var resolver = new ServiceInstancesResolver(clients, NullLogger<ServiceInstancesResolver>.Instance);
         var loadBalancer = new RoundRobinLoadBalancer(resolver, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
 
-        Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruit-service/api"), CancellationToken.None);
+        Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruit-service/api"), TestContext.Current.CancellationToken);
         fruitUri.Should().Be("https://fruit-ball:8000/api");
     }
 
@@ -141,7 +141,7 @@ public sealed class RoundRobinLoadBalancerTest
         var resolver = new ServiceInstancesResolver([client], distributedCache, null, NullLogger<ServiceInstancesResolver>.Instance);
         var loadBalancer = new RoundRobinLoadBalancer(resolver, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
 
-        Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruit-service/api"), CancellationToken.None);
+        Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruit-service/api"), TestContext.Current.CancellationToken);
         fruitUri.Should().Be("https://fruit-ball:8000/api");
 
         optionsMonitor.Change(new ConfigurationDiscoveryOptions
@@ -158,7 +158,7 @@ public sealed class RoundRobinLoadBalancerTest
             }
         });
 
-        fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruit-service/api"), CancellationToken.None);
+        fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruit-service/api"), TestContext.Current.CancellationToken);
         fruitUri.Should().Be("https://fruit-ball:8000/api");
     }
 

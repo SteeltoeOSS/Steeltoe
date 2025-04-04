@@ -33,12 +33,15 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         builder.UseStartup<StartupWithSecurity>();
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
-        Assert.Equal("""{"security_error":"Application ID is not available"}""", await response.Content.ReadAsStringAsync());
+
+        Assert.Equal("""{"security_error":"Application ID is not available"}""",
+            await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
         Assert.NotNull(response.Content.Headers.ContentType);
         Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
     }
@@ -56,12 +59,15 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
-        Assert.Equal("""{"security_error":"Cloud controller URL is not available"}""", await response.Content.ReadAsStringAsync());
+
+        Assert.Equal("""{"security_error":"Cloud controller URL is not available"}""",
+            await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
         Assert.NotNull(response.Content.Headers.ContentType);
         Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
     }
@@ -80,12 +86,15 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/does-not-exist"));
+
+        HttpResponseMessage response =
+            await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/does-not-exist"), TestContext.Current.CancellationToken);
+
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        Assert.Equal(string.Empty, await response.Content.ReadAsStringAsync());
+        Assert.Equal(string.Empty, await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
         Assert.Null(response.Content.Headers.ContentType);
     }
 
@@ -103,12 +112,15 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""", await response.Content.ReadAsStringAsync());
+
+        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""",
+            await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
         Assert.NotNull(response.Content.Headers.ContentType);
         Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
     }
@@ -126,12 +138,15 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal("""{"security_error":"Application ID is not available"}""", await response.Content.ReadAsStringAsync());
+
+        Assert.Equal("""{"security_error":"Application ID is not available"}""",
+            await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
         Assert.NotNull(response.Content.Headers.ContentType);
         Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
     }
@@ -151,12 +166,15 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""", await response.Content.ReadAsStringAsync());
+
+        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""",
+            await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
         Assert.NotNull(response.Content.Headers.ContentType);
         Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
     }
@@ -174,12 +192,12 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
         using IWebHost host = builder.Build();
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        string responseBody = await response.Content.ReadAsStringAsync();
+        string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseBody.Should().BeEmpty();
     }
 
@@ -196,10 +214,10 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(response.Content.Headers.ContentType);
         Assert.NotEqual("application/json", response.Content.Headers.ContentType.MediaType);
@@ -215,10 +233,10 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddEnvironmentVariables());
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(response.Content.Headers.ContentType);
         Assert.NotEqual("application/json", response.Content.Headers.ContentType.MediaType);
@@ -239,18 +257,24 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using IWebHost host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode); // We expect the authorization to fail, but the FindTargetEndpoint logic to work.
-        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""", await response.Content.ReadAsStringAsync());
+
+        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""",
+            await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
         Assert.NotNull(response.Content.Headers.ContentType);
         Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
 
-        HttpResponseMessage response2 = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        HttpResponseMessage response2 = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.Unauthorized, response2.StatusCode);
-        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""", await response2.Content.ReadAsStringAsync());
+
+        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""",
+            await response2.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
         Assert.NotNull(response2.Content.Headers.ContentType);
         Assert.Equal("application/json", response2.Content.Headers.ContentType.MediaType);
     }
@@ -329,13 +353,13 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         builder.Services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
         builder.Services.AddCloudFoundryActuator();
         await using WebApplication app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
         var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
         requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "some");
 
-        _ = await httpClient.SendAsync(requestMessage);
+        _ = await httpClient.SendAsync(requestMessage, TestContext.Current.CancellationToken);
 
         string logMessages = string.Join(System.Environment.NewLine, capturingLoggerProvider.GetAll());
         logMessages.Should().Contain("Authorization: *");

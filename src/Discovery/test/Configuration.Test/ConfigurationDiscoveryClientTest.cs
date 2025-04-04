@@ -64,13 +64,13 @@ public sealed class ConfigurationDiscoveryClientTest
         TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var client = new ConfigurationDiscoveryClient(optionsMonitor);
 
-        IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);
+        IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
         Assert.Equal(3, fruitInstances.Count);
 
-        IList<IServiceInstance> vegetableInstances = await client.GetInstancesAsync("vegetableService", CancellationToken.None);
+        IList<IServiceInstance> vegetableInstances = await client.GetInstancesAsync("vegetableService", TestContext.Current.CancellationToken);
         Assert.Equal(3, vegetableInstances.Count);
 
-        ISet<string> servicesIds = await client.GetServiceIdsAsync(CancellationToken.None);
+        ISet<string> servicesIds = await client.GetServiceIdsAsync(TestContext.Current.CancellationToken);
         Assert.Equal(2, servicesIds.Count);
     }
 
@@ -94,7 +94,7 @@ public sealed class ConfigurationDiscoveryClientTest
         TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var client = new ConfigurationDiscoveryClient(optionsMonitor);
 
-        IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);
+        IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
 
         Assert.Single(fruitInstances);
         Assert.Equal("fruit-ball", fruitInstances[0].Host);
@@ -141,13 +141,13 @@ public sealed class ConfigurationDiscoveryClientTest
         Assert.Single(discoveryClients);
         Assert.IsType<ConfigurationDiscoveryClient>(discoveryClients[0]);
 
-        ISet<string> servicesIds = await discoveryClients[0].GetServiceIdsAsync(CancellationToken.None);
+        ISet<string> servicesIds = await discoveryClients[0].GetServiceIdsAsync(TestContext.Current.CancellationToken);
         Assert.Equal(2, servicesIds.Count);
 
-        IList<IServiceInstance> fruitInstances = await discoveryClients[0].GetInstancesAsync("fruitService", CancellationToken.None);
+        IList<IServiceInstance> fruitInstances = await discoveryClients[0].GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
         Assert.Equal(2, fruitInstances.Count);
 
-        IList<IServiceInstance> vegetableInstances = await discoveryClients[0].GetInstancesAsync("vegetableService", CancellationToken.None);
+        IList<IServiceInstance> vegetableInstances = await discoveryClients[0].GetInstancesAsync("vegetableService", TestContext.Current.CancellationToken);
         Assert.Equal(2, vegetableInstances.Count);
     }
 

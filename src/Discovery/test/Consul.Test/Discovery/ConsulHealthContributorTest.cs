@@ -17,14 +17,14 @@ public sealed class ConsulHealthContributorTest
     public async Task GetLeaderStatusAsync_ReturnsExpected()
     {
         var statusMoq = new Mock<IStatusEndpoint>();
-        statusMoq.Setup(endpoint => endpoint.Leader(CancellationToken.None)).Returns(Task.FromResult("the-status"));
+        statusMoq.Setup(endpoint => endpoint.Leader(It.IsAny<CancellationToken>())).Returns(Task.FromResult("the-status"));
 
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Status).Returns(statusMoq.Object);
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
-        string result = await healthContributor.GetLeaderStatusAsync(CancellationToken.None);
+        string result = await healthContributor.GetLeaderStatusAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal("the-status", result);
     }
@@ -50,14 +50,14 @@ public sealed class ConsulHealthContributorTest
         };
 
         var catalogMoq = new Mock<ICatalogEndpoint>();
-        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, CancellationToken.None)).Returns(Task.FromResult(queryResult));
+        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, It.IsAny<CancellationToken>())).Returns(Task.FromResult(queryResult));
 
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Catalog).Returns(catalogMoq.Object);
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
-        Dictionary<string, string[]> result = await healthContributor.GetCatalogServicesAsync(CancellationToken.None);
+        Dictionary<string, string[]> result = await healthContributor.GetCatalogServicesAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(2, result.Count);
         Assert.Contains("foo", result.Keys);
@@ -86,10 +86,10 @@ public sealed class ConsulHealthContributorTest
         };
 
         var statusMoq = new Mock<IStatusEndpoint>();
-        statusMoq.Setup(endpoint => endpoint.Leader(CancellationToken.None)).Returns(Task.FromResult("the-status"));
+        statusMoq.Setup(endpoint => endpoint.Leader(It.IsAny<CancellationToken>())).Returns(Task.FromResult("the-status"));
 
         var catalogMoq = new Mock<ICatalogEndpoint>();
-        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, CancellationToken.None)).Returns(Task.FromResult(queryResult));
+        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, It.IsAny<CancellationToken>())).Returns(Task.FromResult(queryResult));
 
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Status).Returns(statusMoq.Object);
@@ -97,7 +97,7 @@ public sealed class ConsulHealthContributorTest
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
@@ -119,7 +119,7 @@ public sealed class ConsulHealthContributorTest
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         Assert.Null(result);
     }

@@ -24,7 +24,7 @@ public sealed class EurekaApplicationsHealthContributorTest
 
         (EurekaApplicationsHealthContributor contributor, _) = CreateHealthContributor(appSettings);
 
-        HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         result.Should().BeNull();
     }

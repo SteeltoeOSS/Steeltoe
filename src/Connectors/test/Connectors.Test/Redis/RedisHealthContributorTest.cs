@@ -28,7 +28,7 @@ public sealed class RedisHealthContributorTest
 
         healthContributor.SetConnectionMultiplexer(connectionMultiplexerMock.Object);
 
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.Status.Should().Be(HealthStatus.Down);
@@ -56,7 +56,7 @@ public sealed class RedisHealthContributorTest
 
         healthContributor.SetConnectionMultiplexer(connectionMultiplexerMock.Object);
 
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.Status.Should().Be(HealthStatus.Up);
@@ -89,7 +89,7 @@ public sealed class RedisHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.Status.Should().Be(HealthStatus.Up);

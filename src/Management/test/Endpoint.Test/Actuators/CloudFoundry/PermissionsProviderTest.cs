@@ -25,7 +25,7 @@ public sealed class PermissionsProviderTest : BaseTest
     public async Task GetPermissionsAsyncTest()
     {
         PermissionsProvider permissionsProvider = GetPermissionsProvider();
-        SecurityResult result = await permissionsProvider.GetPermissionsAsync("testToken", CancellationToken.None);
+        SecurityResult result = await permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken);
         Assert.NotNull(result);
     }
 
@@ -41,7 +41,7 @@ public sealed class PermissionsProviderTest : BaseTest
         };
 
         response.Content = JsonContent.Create(permissions);
-        EndpointPermissions result = await permissionsProvider.GetPermissionsAsync(response, CancellationToken.None);
+        EndpointPermissions result = await permissionsProvider.GetPermissionsAsync(response, TestContext.Current.CancellationToken);
         Assert.Equal(EndpointPermissions.Full, result);
     }
 

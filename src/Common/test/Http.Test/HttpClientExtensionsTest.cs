@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions.Extensions;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.TestResources;
 
@@ -14,12 +15,12 @@ public sealed class HttpClientExtensionsTest
     {
         var httpClient = new HttpClient();
 
-        httpClient.ConfigureForSteeltoe(TimeSpan.FromSeconds(5));
+        httpClient.ConfigureForSteeltoe(5.Seconds());
 
         httpClient.DefaultRequestHeaders.UserAgent.Should().ContainSingle();
         httpClient.DefaultRequestHeaders.UserAgent.ElementAt(0).ToString().Should().Be(HttpClientExtensions.SteeltoeUserAgent);
 
-        httpClient.Timeout.Should().Be(TimeSpan.FromSeconds(5));
+        httpClient.Timeout.Should().Be(5.Seconds());
     }
 
     [Fact]
@@ -32,8 +33,8 @@ public sealed class HttpClientExtensionsTest
 
         var httpClient = new HttpClient(handler);
 
-        string accessToken =
-            await httpClient.GetAccessTokenAsync(new Uri("https://auth-server.com/oauth/token"), "test-user", "test-password", CancellationToken.None);
+        string accessToken = await httpClient.GetAccessTokenAsync(new Uri("https://auth-server.com/oauth/token"), "test-user", "test-password",
+            TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
@@ -53,8 +54,8 @@ public sealed class HttpClientExtensionsTest
 
         var httpClient = new HttpClient(handler);
 
-        string accessToken =
-            await httpClient.GetAccessTokenAsync(new Uri("https://auth-server.com/oauth/token"), null, "test-password", CancellationToken.None);
+        string accessToken = await httpClient.GetAccessTokenAsync(new Uri("https://auth-server.com/oauth/token"), null, "test-password",
+            TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 

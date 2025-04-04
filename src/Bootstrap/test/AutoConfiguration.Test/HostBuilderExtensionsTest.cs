@@ -216,9 +216,9 @@ public sealed class HostBuilderExtensionsTest
     public async Task AllActuators_AreAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementEndpoint, hostBuilderType);
-        await hostWrapper.StartAsync();
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
-        await AssertAllActuatorsAreAutowiredAsync(hostWrapper, true);
+        await AssertAllActuatorsAreAutowiredAsync(hostWrapper, true, TestContext.Current.CancellationToken);
     }
 
     [Theory]
@@ -254,9 +254,9 @@ public sealed class HostBuilderExtensionsTest
         AssertPrometheusIsAutowired(hostWrapper);
         AssertTracingIsAutowired(hostWrapper);
 
-        await hostWrapper.StartAsync();
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
-        await AssertAllActuatorsAreAutowiredAsync(hostWrapper, false);
+        await AssertAllActuatorsAreAutowiredAsync(hostWrapper, false, TestContext.Current.CancellationToken);
     }
 
     private static void AssertConfigServerConfigurationIsAutowired(HostWrapper hostWrapper)
@@ -349,7 +349,7 @@ public sealed class HostBuilderExtensionsTest
         hostWrapper.Services.GetService<MeterProvider>().Should().NotBeNull();
     }
 
-    private static async Task AssertAllActuatorsAreAutowiredAsync(HostWrapper hostWrapper, bool expectHealthy)
+    private static async Task AssertAllActuatorsAreAutowiredAsync(HostWrapper hostWrapper, bool expectHealthy, CancellationToken cancellationToken)
     {
         hostWrapper.Services.GetServices<IHypermediaEndpointHandler>().Should().ContainSingle();
         hostWrapper.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
@@ -358,23 +358,23 @@ public sealed class HostBuilderExtensionsTest
         {
             using HttpClient httpClient = hostWrapper.GetTestClient();
 
-            HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative));
+            HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative), cancellationToken);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            response = await httpClient.GetAsync(new Uri("/actuator/info", UriKind.Relative));
+            response = await httpClient.GetAsync(new Uri("/actuator/info", UriKind.Relative), cancellationToken);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            response = await httpClient.GetAsync(new Uri("/actuator/health", UriKind.Relative));
+            response = await httpClient.GetAsync(new Uri("/actuator/health", UriKind.Relative), cancellationToken);
             response.StatusCode.Should().Be(expectHealthy ? HttpStatusCode.OK : HttpStatusCode.ServiceUnavailable);
 
-            response = await httpClient.GetAsync(new Uri("/actuator/health/liveness", UriKind.Relative));
+            response = await httpClient.GetAsync(new Uri("/actuator/health/liveness", UriKind.Relative), cancellationToken);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            string responseContent = await response.Content.ReadAsStringAsync();
+            string responseContent = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
             responseContent.Should().Contain("""LivenessState":"CORRECT""");
 
-            response = await httpClient.GetAsync(new Uri("/actuator/health/readiness", UriKind.Relative));
+            response = await httpClient.GetAsync(new Uri("/actuator/health/readiness", UriKind.Relative), cancellationToken);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            responseContent = await response.Content.ReadAsStringAsync();
+            responseContent = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
             responseContent.Should().Contain("""ReadinessState":"ACCEPTING_TRAFFIC""");
         }
     }

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -152,7 +153,7 @@ public sealed class EurekaDiscoveryClientTest
 
         Assert.NotNull(discoveryClient.Description);
 
-        ISet<string> serviceIds = await discoveryClient.GetServiceIdsAsync(CancellationToken.None);
+        ISet<string> serviceIds = await discoveryClient.GetServiceIdsAsync(TestContext.Current.CancellationToken);
         Assert.Empty(serviceIds);
 
         IServiceInstance thisService = discoveryClient.GetLocalServiceInstance();
@@ -217,7 +218,7 @@ public sealed class EurekaDiscoveryClientTest
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-        ApplicationInfoCollection apps = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
+        ApplicationInfoCollection apps = await discoveryClient.FetchFullRegistryAsync(TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
@@ -259,7 +260,7 @@ public sealed class EurekaDiscoveryClientTest
 
         discoveryClient.Applications = apps;
 
-        ApplicationInfoCollection result = await discoveryClient.FetchRegistryDeltaAsync(CancellationToken.None);
+        ApplicationInfoCollection result = await discoveryClient.FetchRegistryDeltaAsync(TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
@@ -293,7 +294,7 @@ public sealed class EurekaDiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        Func<Task> action = async () => await discoveryClient.RegisterAsync(false, CancellationToken.None);
+        Func<Task> action = async () => await discoveryClient.RegisterAsync(false, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<EurekaTransportException>();
 
@@ -322,7 +323,7 @@ public sealed class EurekaDiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        await discoveryClient.RegisterAsync(false, CancellationToken.None);
+        await discoveryClient.RegisterAsync(false, TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -355,7 +356,7 @@ public sealed class EurekaDiscoveryClientTest
         var appManager = webApplication.Services.GetRequiredService<EurekaApplicationInfoManager>();
         appManager.Instance.IsDirty = true;
 
-        await discoveryClient.RenewAsync(CancellationToken.None);
+        await discoveryClient.RenewAsync(TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -387,7 +388,7 @@ public sealed class EurekaDiscoveryClientTest
         var appManager = webApplication.Services.GetRequiredService<EurekaApplicationInfoManager>();
         appManager.Instance.IsDirty = true;
 
-        await discoveryClient.RenewAsync(CancellationToken.None);
+        await discoveryClient.RenewAsync(TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -415,7 +416,7 @@ public sealed class EurekaDiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        await discoveryClient.DeregisterAsync(CancellationToken.None);
+        await discoveryClient.DeregisterAsync(TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -566,7 +567,7 @@ public sealed class EurekaDiscoveryClientTest
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
         var appInfoManager = webApplication.Services.GetRequiredService<EurekaApplicationInfoManager>();
 
-        await discoveryClient.RunHealthChecksAsync(CancellationToken.None);
+        await discoveryClient.RunHealthChecksAsync(TestContext.Current.CancellationToken);
 
         Assert.True(myHandler.Awaited);
         Assert.Equal(InstanceStatus.Down, appInfoManager.Instance.Status);
@@ -595,7 +596,7 @@ public sealed class EurekaDiscoveryClientTest
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
         var appInfoManager = webApplication.Services.GetRequiredService<EurekaApplicationInfoManager>();
 
-        await discoveryClient.RunHealthChecksAsync(CancellationToken.None);
+        await discoveryClient.RunHealthChecksAsync(TestContext.Current.CancellationToken);
 
         Assert.False(myHandler.Awaited);
         Assert.Equal(InstanceStatus.Starting, appInfoManager.Instance.Status);
@@ -635,7 +636,7 @@ public sealed class EurekaDiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        await discoveryClient.RegisterAsync(false, CancellationToken.None);
+        await discoveryClient.RegisterAsync(false, TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -665,12 +666,12 @@ public sealed class EurekaDiscoveryClientTest
 
         discoveryClient.ApplicationsFetched += (_, _) => eventCount++;
 
-        await discoveryClient.FetchRegistryAsync(true, CancellationToken.None);
-        await Task.Delay(500);
+        await discoveryClient.FetchRegistryAsync(true, TestContext.Current.CancellationToken);
+        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
         Assert.Equal(1, eventCount);
 
-        await discoveryClient.FetchRegistryAsync(false, CancellationToken.None);
-        await Task.Delay(500);
+        await discoveryClient.FetchRegistryAsync(false, TestContext.Current.CancellationToken);
+        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
         Assert.Equal(2, eventCount);
 
         handler.Mock.VerifyNoOutstandingExpectation();

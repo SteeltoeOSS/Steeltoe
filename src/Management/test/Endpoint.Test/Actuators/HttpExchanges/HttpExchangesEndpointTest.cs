@@ -15,7 +15,7 @@ public sealed class HttpExchangesEndpointTest(ITestOutputHelper testOutputHelper
     [Fact]
     public async Task HttpExchangeEndpointHandler_CallsHttpExchangeRepository()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
         var repository = new TestHttpExchangesRepository();
 
         testContext.AdditionalServices = (services, _) =>
@@ -25,7 +25,7 @@ public sealed class HttpExchangesEndpointTest(ITestOutputHelper testOutputHelper
         };
 
         var handler = testContext.GetRequiredService<IHttpExchangesEndpointHandler>();
-        HttpExchangesResult result = await handler.InvokeAsync(null, CancellationToken.None);
+        HttpExchangesResult result = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
         repository.GetHttpExchangesCalled.Should().BeTrue();
     }

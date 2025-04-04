@@ -16,7 +16,7 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
     [Fact]
     public async Task Invoke_ReturnsExpectedLinks()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -34,7 +34,7 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
 
         var handler = testContext.GetRequiredService<IHypermediaEndpointHandler>();
 
-        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
+        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", TestContext.Current.CancellationToken);
         links.Entries.Should().Contain(entry => entry.Key == "self" && entry.Value.Href == "http://localhost:5000/foobar");
         links.Entries.Should().Contain(entry => entry.Key == "info" && entry.Value.Href == "http://localhost:5000/foobar/info");
         links.Entries.Should().HaveCount(2);
@@ -43,7 +43,7 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
     [Fact]
     public async Task Invoke_OnlyActuatorHypermediaEndpoint_ReturnsExpectedLinks()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -52,7 +52,7 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
 
         var handler = testContext.GetRequiredService<IHypermediaEndpointHandler>();
 
-        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
+        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", TestContext.Current.CancellationToken);
         links.Entries.Should().Contain(entry => entry.Key == "self" && entry.Value.Href == "http://localhost:5000/foobar");
         links.Entries.Should().ContainSingle();
     }
@@ -60,7 +60,7 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
     [Fact]
     public async Task Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -78,7 +78,7 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
 
         var handler = testContext.GetRequiredService<IHypermediaEndpointHandler>();
 
-        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
+        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", TestContext.Current.CancellationToken);
         links.Entries.Should().Contain(entry => entry.Key == "self" && entry.Value.Href == "http://localhost:5000/foobar");
         links.Entries.Should().ContainSingle();
     }
@@ -86,7 +86,7 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
     [Fact]
     public async Task Invoke_CloudFoundryDisable_ReturnsExpectedLinks()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -105,7 +105,7 @@ public sealed class HypermediaEndpointTest(ITestOutputHelper testOutputHelper) :
 
         var handler = testContext.GetRequiredService<IHypermediaEndpointHandler>();
 
-        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
+        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", TestContext.Current.CancellationToken);
         links.Entries.Should().BeEmpty();
     }
 }

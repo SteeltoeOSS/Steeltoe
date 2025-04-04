@@ -17,7 +17,7 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 public sealed partial class ConfigServerConfigurationProviderTest
 {
     [Fact]
-    public async Task Deserialize_GoodJsonAsync()
+    public async Task Deserialize_GoodJson()
     {
         var environment = new ConfigEnvironment
         {
@@ -45,7 +45,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         var content = JsonContent.Create(environment);
 
-        var env = await content.ReadFromJsonAsync<ConfigEnvironment>(ConfigServerConfigurationProvider.SerializerOptions);
+        var env = await content.ReadFromJsonAsync<ConfigEnvironment>(ConfigServerConfigurationProvider.SerializerOptions,
+            TestContext.Current.CancellationToken);
+
         Assert.NotNull(env);
         Assert.Equal("test-name", env.Name);
         Assert.NotNull(env.Profiles);
@@ -155,7 +157,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
         Uri requestUri = provider.BuildConfigServerUri(options.Uri, null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, CancellationToken.None);
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpMethod.Get, request.Method);
         Assert.Equal(requestUri, request.RequestUri);
@@ -179,7 +181,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
         Uri requestUri = provider.BuildConfigServerUri(options.Uri, null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, CancellationToken.None);
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpMethod.Get, request.Method);
         Assert.Equal(requestUri, request.RequestUri);
@@ -203,7 +205,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
         Uri requestUri = provider.BuildConfigServerUri(options.Uri, null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, CancellationToken.None);
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpMethod.Get, request.Method);
         Assert.Equal(requestUri, request.RequestUri);
@@ -225,7 +227,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
         Uri requestUri = provider.BuildConfigServerUri(options.Uri!, null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, CancellationToken.None);
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpMethod.Get, request.Method);
         Assert.Equal(requestUri, request.RequestUri);
@@ -250,7 +252,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             .WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
 
         using var provider = new ConfigServerConfigurationProvider(options, null, handler, NullLoggerFactory.Instance);
-        await provider.RefreshVaultTokenAsync(CancellationToken.None);
+        await provider.RefreshVaultTokenAsync(TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -277,7 +279,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             .WithHeaders("Authorization", "Bearer secret").WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
 
         using var provider = new ConfigServerConfigurationProvider(options, null, handler, NullLoggerFactory.Instance);
-        await provider.RefreshVaultTokenAsync(CancellationToken.None);
+        await provider.RefreshVaultTokenAsync(TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -414,7 +416,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
         using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
-        var exception = await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
+        var exception = await Assert.ThrowsAsync<ConfigServerException>(async () =>
+            await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
+
         Assert.StartsWith("Could not locate Config Server via discovery", exception.Message, StringComparison.Ordinal);
     }
 

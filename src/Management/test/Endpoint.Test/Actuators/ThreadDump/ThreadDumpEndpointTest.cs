@@ -15,7 +15,7 @@ public sealed class ThreadDumpEndpointTest(ITestOutputHelper testOutputHelper) :
     [Fact]
     public async Task Invoke_CallsDumpThreads()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -24,7 +24,7 @@ public sealed class ThreadDumpEndpointTest(ITestOutputHelper testOutputHelper) :
         };
 
         var handler = testContext.GetRequiredService<IThreadDumpEndpointHandler>();
-        IList<ThreadInfo> result = await handler.InvokeAsync(null, CancellationToken.None);
+        IList<ThreadInfo> result = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
 
         result.Should().NotBeEmpty();
     }

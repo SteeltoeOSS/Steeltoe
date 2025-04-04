@@ -22,11 +22,11 @@ public sealed class HttpRequestInfo
         QueryString = request.QueryString;
     }
 
-    public static async Task<HttpRequestInfo> CopyFromAsync(HttpRequest request)
+    public static async Task<HttpRequestInfo> CopyFromAsync(HttpContext httpContext)
     {
-        var info = new HttpRequestInfo(request);
+        var info = new HttpRequestInfo(httpContext.Request);
 
-        await request.Body.CopyToAsync(info.Body);
+        await httpContext.Request.Body.CopyToAsync(info.Body, httpContext.RequestAborted);
         info.Body.Seek(0, SeekOrigin.Begin);
 
         return info;

@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -24,7 +25,7 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
     {
         const string appName = "SHARED-APP-NAME";
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -67,7 +68,7 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
             {
                 string sessionValue = Encoding.UTF8.GetString(bytes);
                 httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
-                httpContext.Response.WriteAsync(sessionValue);
+                httpContext.Response.WriteAsync(sessionValue, httpContext.RequestAborted);
             }
             else
             {
@@ -77,22 +78,22 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
             return Task.CompletedTask;
         });
 
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
-        using var httpClient = new HttpClient();
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost:5000/set-session"));
+        using HttpClient httpClient = app.GetTestClient();
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/set-session"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string setCookieHeaderText = response.Headers.Single(header => header.Key == "Set-Cookie").Value.Single();
         SetCookieHeaderValue setCookieHeaderValue = SetCookieHeaderValue.Parse(setCookieHeaderText);
         var cookie = new Cookie(setCookieHeaderValue.Name.Value!, setCookieHeaderValue.Value.Value);
 
-        var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost:5000/get-session"));
+        var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/get-session"));
         request.Headers.Add("Cookie", cookie.ToString());
-        response = await httpClient.SendAsync(request);
+        response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        string responseContent = await response.Content.ReadAsStringAsync();
+        string responseContent = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseContent.Should().Be("example-value");
     }
 }

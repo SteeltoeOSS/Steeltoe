@@ -99,10 +99,10 @@ public sealed class ConfigureOptionsTest
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
-        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
         fileProvider.ReplaceFile(fileName, """
@@ -114,7 +114,7 @@ public sealed class ConfigureOptionsTest
 
         fileProvider.NotifyChanged();
 
-        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response2.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
@@ -136,10 +136,10 @@ public sealed class ConfigureOptionsTest
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
-        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         fileProvider.ReplaceFile(fileName, """
@@ -150,7 +150,7 @@ public sealed class ConfigureOptionsTest
 
         fileProvider.NotifyChanged();
 
-        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -172,10 +172,10 @@ public sealed class ConfigureOptionsTest
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
-        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
         fileProvider.ReplaceFile(fileName, """
@@ -187,7 +187,7 @@ public sealed class ConfigureOptionsTest
 
         fileProvider.NotifyChanged();
 
-        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response2.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
@@ -209,10 +209,10 @@ public sealed class ConfigureOptionsTest
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
-        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         fileProvider.ReplaceFile(fileName, """
@@ -224,7 +224,7 @@ public sealed class ConfigureOptionsTest
 
         fileProvider.NotifyChanged();
 
-        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative));
+        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 

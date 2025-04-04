@@ -43,7 +43,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
-        string json = await reader.ReadToEndAsync();
+        string json = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
         var descriptor = new DbMigrationsDescriptor();
         descriptor.AppliedMigrations.Add("applied");
         descriptor.PendingMigrations.Add("pending");
@@ -64,13 +64,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
         using IWebHost app = builder.Build();
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = app.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/dbmigrations"));
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/dbmigrations"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var descriptor = new DbMigrationsDescriptor();
         descriptor.AppliedMigrations.Add("applied");
         descriptor.PendingMigrations.Add("pending");

@@ -33,13 +33,19 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.Services.AddHttpExchangesActuator();
         await using WebApplication host = builder.Build();
         host.MapGet("/hello", () => "Hello World!");
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
         using var httpClient = new HttpClient();
-        HttpResponseMessage helloResponse = await httpClient.GetAsync(new Uri("http://localhost:5000/hello?someQuery=value"));
+
+        HttpResponseMessage helloResponse =
+            await httpClient.GetAsync(new Uri("http://localhost:5000/hello?someQuery=value"), TestContext.Current.CancellationToken);
+
         helloResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri("http://localhost:5000/actuator/httpexchanges"));
+
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri("http://localhost:5000/actuator/httpexchanges"), TestContext.Current.CancellationToken);
+
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var actuatorRootElement = await actuatorResponse.Content.ReadFromJsonAsync<JsonElement>();
+        var actuatorRootElement = await actuatorResponse.Content.ReadFromJsonAsync<JsonElement>(TestContext.Current.CancellationToken);
         JsonElement[] exchangesArray = [.. actuatorRootElement.GetProperty("exchanges").EnumerateArray()];
         exchangesArray.Should().ContainSingle();
         JsonElement testExchange = exchangesArray[0];
@@ -48,7 +54,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         requestTimestamp.Should().EndWith("Z");
         string requestTimeTaken = testExchange.GetProperty("timeTaken").ToString();
         var timeTaken = XmlConvert.ToTimeSpan(requestTimeTaken);
-        timeTaken.Should().BeGreaterThan(TimeSpan.Zero).And.BeLessThan(TimeSpan.FromSeconds(1));
+        timeTaken.Should().BeGreaterThan(TimeSpan.Zero).And.BeLessThan(1.Seconds());
         testExchange.Invoking(jsonElement => jsonElement.GetProperty("principal")).Should().Throw<KeyNotFoundException>();
         testExchange.Invoking(jsonElement => jsonElement.GetProperty("session")).Should().Throw<KeyNotFoundException>();
 
@@ -96,17 +102,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.Services.AddHttpExchangesActuator();
         await using WebApplication host = builder.Build();
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         var observer = (HttpExchangesDiagnosticObserver)host.Services.GetRequiredService<IHttpExchangesRepository>();
         HttpExchange exchange = CreateTestHttpExchange();
         observer.Queue.Enqueue(exchange);
 
         using HttpClient httpClient = host.GetTestClient();
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/httpexchanges"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/httpexchanges"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         json.Should().BeJson("""
             {
@@ -171,17 +177,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
         builder.Services.AddHttpExchangesActuator();
         await using WebApplication host = builder.Build();
 
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         var observer = (HttpExchangesDiagnosticObserver)host.Services.GetRequiredService<IHttpExchangesRepository>();
         HttpExchange exchange = CreateTestHttpExchange();
         observer.Queue.Enqueue(exchange);
 
         using HttpClient httpClient = host.GetTestClient();
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/httpexchanges"));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/httpexchanges"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string json = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         json.Should().BeJson("""
             {

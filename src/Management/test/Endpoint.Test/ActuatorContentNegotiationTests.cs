@@ -49,7 +49,7 @@ public sealed class ActuatorContentNegotiationTests
         builder.Services.AddSingleton<IHeapDumper, FakeHeapDumper>();
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         var requestMessage = new HttpRequestMessage
         {
@@ -63,7 +63,7 @@ public sealed class ActuatorContentNegotiationTests
         }
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.SendAsync(requestMessage);
+        HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Content.Headers.ContentType.Should().NotBeNull();
@@ -79,7 +79,7 @@ public sealed class ActuatorContentNegotiationTests
         builder.Services.AddAllActuators();
 
         await using WebApplication host = builder.Build();
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         var requestMessage = new HttpRequestMessage
         {
@@ -94,7 +94,7 @@ public sealed class ActuatorContentNegotiationTests
         }
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.SendAsync(requestMessage);
+        HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         response.Content.Headers.ContentType.Should().BeNull();

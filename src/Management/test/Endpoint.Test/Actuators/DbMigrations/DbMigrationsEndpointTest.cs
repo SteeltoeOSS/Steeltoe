@@ -38,7 +38,7 @@ public sealed class DbMigrationsEndpointTest(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Invoke_WhenExistingDatabase_ReturnsExpected()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -48,7 +48,7 @@ public sealed class DbMigrationsEndpointTest(ITestOutputHelper testOutputHelper)
         };
 
         var sut = testContext.GetRequiredService<IDbMigrationsEndpointHandler>();
-        Dictionary<string, DbMigrationsDescriptor> result = await sut.InvokeAsync(null, CancellationToken.None);
+        Dictionary<string, DbMigrationsDescriptor> result = await sut.InvokeAsync(null, TestContext.Current.CancellationToken);
 
         const string contextName = nameof(MockDbContext);
         result.Should().ContainKey(contextName);
@@ -59,7 +59,7 @@ public sealed class DbMigrationsEndpointTest(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Invoke_NonExistingDatabase_ReturnsExpected()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         var migrationScanner = new TestDatabaseMigrationScanner
         {
@@ -74,7 +74,7 @@ public sealed class DbMigrationsEndpointTest(ITestOutputHelper testOutputHelper)
         };
 
         var handler = testContext.GetRequiredService<IDbMigrationsEndpointHandler>();
-        Dictionary<string, DbMigrationsDescriptor> result = await handler.InvokeAsync(null, CancellationToken.None);
+        Dictionary<string, DbMigrationsDescriptor> result = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
 
         const string contextName = nameof(MockDbContext);
         result.Should().ContainKey(contextName);
@@ -85,7 +85,7 @@ public sealed class DbMigrationsEndpointTest(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Invoke_NoDbContextRegistered_ReturnsExpected()
     {
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -94,7 +94,7 @@ public sealed class DbMigrationsEndpointTest(ITestOutputHelper testOutputHelper)
         };
 
         var handler = testContext.GetRequiredService<IDbMigrationsEndpointHandler>();
-        Dictionary<string, DbMigrationsDescriptor> result = await handler.InvokeAsync(null, CancellationToken.None);
+        Dictionary<string, DbMigrationsDescriptor> result = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
 
         result.Should().BeEmpty();
     }
