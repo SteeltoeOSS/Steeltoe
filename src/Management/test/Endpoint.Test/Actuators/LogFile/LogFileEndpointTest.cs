@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Logfile;
 
-public sealed class LogfileEndpointTest(ITestOutputHelper testOutputHelper) : BaseTest
+public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : BaseTest
 {
     private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
@@ -39,11 +39,11 @@ public sealed class LogfileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(TestHostEnvironmentFactory.Create());
-            services.ConfigureEndpointOptions<LogfileEndpointOptions, ConfigureLogfileEndpointOptions>();
-            services.AddSingleton<ILogfileEndpointHandler, LogfileEndpointHandler>();
+            services.ConfigureEndpointOptions<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
+            services.AddSingleton<ILogFileEndpointHandler, LogFileEndpointHandler>();
         };
 
-        var handler = (LogfileEndpointHandler)testContext.GetRequiredService<ILogfileEndpointHandler>();
+        var handler = (LogFileEndpointHandler)testContext.GetRequiredService<ILogFileEndpointHandler>();
 
         // act
         string result = handler.GetLogFilePath();
@@ -75,11 +75,11 @@ public sealed class LogfileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(TestHostEnvironmentFactory.Create());
-            services.ConfigureEndpointOptions<LogfileEndpointOptions, ConfigureLogfileEndpointOptions>();
-            services.AddSingleton<ILogfileEndpointHandler, LogfileEndpointHandler>();
+            services.ConfigureEndpointOptions<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
+            services.AddSingleton<ILogFileEndpointHandler, LogFileEndpointHandler>();
         };
 
-        var handler = (LogfileEndpointHandler)testContext.GetRequiredService<ILogfileEndpointHandler>();
+        var handler = (LogFileEndpointHandler)testContext.GetRequiredService<ILogFileEndpointHandler>();
 
         // act
         string result = handler.GetLogFilePath();
@@ -110,11 +110,11 @@ public sealed class LogfileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(TestHostEnvironmentFactory.Create());
-            services.ConfigureEndpointOptions<LogfileEndpointOptions, ConfigureLogfileEndpointOptions>();
-            services.AddSingleton<ILogfileEndpointHandler, LogfileEndpointHandler>();
+            services.ConfigureEndpointOptions<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
+            services.AddSingleton<ILogFileEndpointHandler, LogFileEndpointHandler>();
         };
 
-        var handler = (LogfileEndpointHandler)testContext.GetRequiredService<ILogfileEndpointHandler>();
+        var handler = (LogFileEndpointHandler)testContext.GetRequiredService<ILogFileEndpointHandler>();
 
         // act
         string result = handler.GetLogFilePath();
@@ -144,14 +144,14 @@ public sealed class LogfileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(TestHostEnvironmentFactory.Create());
-            services.ConfigureEndpointOptions<LogfileEndpointOptions, ConfigureLogfileEndpointOptions>();
-            services.AddSingleton<ILogfileEndpointHandler, LogfileEndpointHandler>();
+            services.ConfigureEndpointOptions<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
+            services.AddSingleton<ILogFileEndpointHandler, LogFileEndpointHandler>();
         };
 
-        var handler = (LogfileEndpointHandler)testContext.GetRequiredService<ILogfileEndpointHandler>();
+        var handler = (LogFileEndpointHandler)testContext.GetRequiredService<ILogFileEndpointHandler>();
 
         // act
-        var options = (handler.Options as LogfileEndpointOptions)!;
+        var options = (handler.Options as LogFileEndpointOptions)!;
 
         // assert
         options.Id.Should().Be("logfile");
@@ -186,11 +186,11 @@ public sealed class LogfileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(TestHostEnvironmentFactory.Create());
-            services.ConfigureEndpointOptions<LogfileEndpointOptions, ConfigureLogfileEndpointOptions>();
-            services.AddSingleton<ILogfileEndpointHandler, LogfileEndpointHandler>();
+            services.ConfigureEndpointOptions<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
+            services.AddSingleton<ILogFileEndpointHandler, LogFileEndpointHandler>();
         };
 
-        var handler = (LogfileEndpointHandler)testContext.GetRequiredService<ILogfileEndpointHandler>();
+        var handler = (LogFileEndpointHandler)testContext.GetRequiredService<ILogFileEndpointHandler>();
 
         // act
         string logFileContents = await handler.InvokeAsync("an object", CancellationToken.None);
@@ -218,11 +218,11 @@ public sealed class LogfileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(TestHostEnvironmentFactory.Create());
-            services.ConfigureEndpointOptions<LogfileEndpointOptions, ConfigureLogfileEndpointOptions>();
-            services.AddSingleton<ILogfileEndpointHandler, LogfileEndpointHandler>();
+            services.ConfigureEndpointOptions<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
+            services.AddSingleton<ILogFileEndpointHandler, LogFileEndpointHandler>();
         };
 
-        var handler = (LogfileEndpointHandler)testContext.GetRequiredService<ILogfileEndpointHandler>();
+        var handler = (LogFileEndpointHandler)testContext.GetRequiredService<ILogFileEndpointHandler>();
 
         // act
         string logFileContents = await handler.InvokeAsync("an object", CancellationToken.None);

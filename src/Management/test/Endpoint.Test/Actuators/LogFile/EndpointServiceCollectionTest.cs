@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Logfile;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public async Task AddLogfileActuator_AddsCorrectServices()
+    public async Task AddLogFileActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
         services.AddSingleton(TestHostEnvironmentFactory.Create());
@@ -29,13 +29,13 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         services.AddSingleton(configuration);
         services.AddLogging();
-        services.AddLogfileActuator();
+        services.AddLogFileActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var options = serviceProvider.GetRequiredService<IOptionsMonitor<LogfileEndpointOptions>>();
+        var options = serviceProvider.GetRequiredService<IOptionsMonitor<LogFileEndpointOptions>>();
         Assert.Equal("/some", options.CurrentValue.Path);
 
-        var handler = serviceProvider.GetService<ILogfileEndpointHandler>();
+        var handler = serviceProvider.GetService<ILogFileEndpointHandler>();
         Assert.NotNull(handler);
     }
 }

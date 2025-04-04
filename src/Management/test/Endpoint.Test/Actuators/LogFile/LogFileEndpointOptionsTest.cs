@@ -7,12 +7,12 @@ using Steeltoe.Management.Endpoint.Actuators.Logfile;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Logfile;
 
-public sealed class LogfileEndpointOptionsTest : BaseTest
+public sealed class LogFileEndpointOptionsTest : BaseTest
 {
     [Fact]
     public void AppliesDefaults()
     {
-        LogfileEndpointOptions options = GetOptionsFromSettings<LogfileEndpointOptions, ConfigureLogfileEndpointOptions>();
+        LogFileEndpointOptions options = GetOptionsFromSettings<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
 
         options.Id.Should().Be("logfile");
         options.RequiredPermissions.Should().Be(EndpointPermissions.Restricted);
@@ -31,7 +31,7 @@ public sealed class LogfileEndpointOptionsTest : BaseTest
             ["management:endpoints:logfile:filePath"] = "logs/application.log"
         };
 
-        LogfileEndpointOptions options = GetOptionsFromSettings<LogfileEndpointOptions, ConfigureLogfileEndpointOptions>(appSettings);
+        LogFileEndpointOptions options = GetOptionsFromSettings<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>(appSettings);
 
         options.Id.Should().Be("logfile");
         options.RequiredPermissions.Should().Be(EndpointPermissions.Restricted);

@@ -71,7 +71,7 @@ public static class EndpointServiceCollectionExtensions
         services.AddRouteMappingsActuator(configureMiddleware);
         services.AddRefreshActuator(configureMiddleware);
         services.AddServicesActuator(configureMiddleware);
-        services.AddLogfileActuator(configureMiddleware);
+        services.AddLogFileActuator(configureMiddleware);
 
         return services;
     }

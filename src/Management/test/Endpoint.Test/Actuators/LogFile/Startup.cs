@@ -12,7 +12,7 @@ public sealed class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddLogfileActuator();
+        services.AddLogFileActuator();
     }
 
     public void Configure(IApplicationBuilder app)

@@ -6,7 +6,7 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Logfile;
 
-public sealed class LogfileEndpointOptions : EndpointOptions
+public sealed class LogFileEndpointOptions : EndpointOptions
 {
     /// <summary>
     /// Gets or sets the file path to the log file on disk. The path can be absolute or relative to

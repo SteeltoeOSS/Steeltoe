@@ -19,9 +19,9 @@ public static class EndpointServiceCollectionExtensions
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
-    public static IServiceCollection AddLogfileActuator(this IServiceCollection services)
+    public static IServiceCollection AddLogFileActuator(this IServiceCollection services)
     {
-        return AddLogfileActuator(services, true);
+        return AddLogFileActuator(services, true);
     }
 
     /// <summary>
@@ -37,14 +37,14 @@ public static class EndpointServiceCollectionExtensions
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
-    public static IServiceCollection AddLogfileActuator(this IServiceCollection services, bool configureMiddleware)
+    public static IServiceCollection AddLogFileActuator(this IServiceCollection services, bool configureMiddleware)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddSingleton<IHostEnvironment>(serviceProvider => serviceProvider.GetService<IHostEnvironment>()!);
 
-        services.AddCoreActuatorServices<LogfileEndpointOptions, ConfigureLogfileEndpointOptions, LogfileEndpointMiddleware,
-            ILogfileEndpointHandler, LogfileEndpointHandler, object?, string>(configureMiddleware);
+        services.AddCoreActuatorServices<LogFileEndpointOptions, ConfigureLogFileEndpointOptions, LogFileEndpointMiddleware,
+            ILogFileEndpointHandler, LogFileEndpointHandler, object?, string>(configureMiddleware);
 
         return services;
     }

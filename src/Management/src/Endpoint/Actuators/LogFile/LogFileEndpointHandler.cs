@@ -9,20 +9,20 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Logfile;
 
-public sealed class LogfileEndpointHandler : ILogfileEndpointHandler
+public sealed class LogFileEndpointHandler : ILogFileEndpointHandler
 {
-    private readonly IOptionsMonitor<LogfileEndpointOptions> _optionsMonitor;
-    private readonly ILogger<LogfileEndpointHandler> _logger;
+    private readonly IOptionsMonitor<LogFileEndpointOptions> _optionsMonitor;
+    private readonly ILogger<LogFileEndpointHandler> _logger;
 
     public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
-    public LogfileEndpointHandler(IOptionsMonitor<LogfileEndpointOptions> optionsMonitorMonitor, ILoggerFactory loggerFactory)
+    public LogFileEndpointHandler(IOptionsMonitor<LogFileEndpointOptions> optionsMonitorMonitor, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(optionsMonitorMonitor);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _optionsMonitor = optionsMonitorMonitor;
-        _logger = loggerFactory.CreateLogger<LogfileEndpointHandler>();
+        _logger = loggerFactory.CreateLogger<LogFileEndpointHandler>();
     }
 
     public async Task<string> InvokeAsync(object? argument, CancellationToken cancellationToken)

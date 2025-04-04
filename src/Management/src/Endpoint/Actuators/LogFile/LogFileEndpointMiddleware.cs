@@ -9,8 +9,8 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Logfile;
 
-internal sealed class LogfileEndpointMiddleware(
-    ILogfileEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
+internal sealed class LogFileEndpointMiddleware(
+    ILogFileEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
     : EndpointMiddleware<object?, string>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
     protected override async Task<string> InvokeEndpointHandlerAsync(object? request, CancellationToken cancellationToken)

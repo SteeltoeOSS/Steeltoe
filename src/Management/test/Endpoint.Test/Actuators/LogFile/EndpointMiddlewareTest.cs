@@ -26,7 +26,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     private readonly TempFile _tempLogFile = new();
 
     [Fact]
-    public async Task LogfileActuator_ReturnsExpectedData()
+    public async Task LogFileActuator_ReturnsExpectedData()
     {
         AppSettings["management:endpoints:logfile:filePath"] = _tempLogFile.FullPath;
         await File.WriteAllTextAsync(_tempLogFile.FullPath, "This is a test log.");
