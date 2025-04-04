@@ -119,7 +119,7 @@
                 },
                 "Label": {
                   "type": "string",
-                  "description": "Gets or sets a comma-delimited list of labels to request from the server."
+                  "description": "Gets or sets a comma-separated list of labels to request from the server."
                 },
                 "Name": {
                   "type": "string",
@@ -181,7 +181,7 @@
                 },
                 "Uri": {
                   "type": "string",
-                  "description": "Gets or sets a comma-delimited list of Config Server addresses. Default value: \"http://localhost:8888\"."
+                  "description": "Gets or sets a comma-separated list of Config Server addresses. Default value: \"http://localhost:8888\"."
                 },
                 "Username": {
                   "type": "string",

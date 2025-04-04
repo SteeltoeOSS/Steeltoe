@@ -17,7 +17,7 @@ public sealed class EurekaHealthOptions
     public bool ContributorEnabled { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a comma-delimited list of applications in Eureka this app depends on. Leave empty for all apps. Their status is taken into account by
+    /// Gets or sets a comma-separated list of applications in Eureka this app depends on. Leave empty for all apps. Their status is taken into account by
     /// <see cref="EurekaApplicationsHealthContributor" />, which requires manual addition to the IoC container.
     /// </summary>
     public string? MonitoredApps { get; set; }

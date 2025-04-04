@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 namespace Steeltoe.Configuration.SpringBoot;
 
 /// <summary>
-/// Configuration provider that expands '.' delimited configuration keys that start with "spring." (typically originating from Spring Boot command-line
+/// Configuration provider that expands dot-separated configuration keys that start with "spring." (typically originating from Spring Boot command-line
 /// parameters) to .NET compatible form.
 /// </summary>
 internal sealed class SpringBootCommandLineProvider : ConfigurationProvider

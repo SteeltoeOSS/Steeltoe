@@ -38,7 +38,7 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     public string? Environment { get; set; } = "Production";
 
     /// <summary>
-    /// Gets or sets a comma-delimited list of labels to request from the server.
+    /// Gets or sets a comma-separated list of labels to request from the server.
     /// </summary>
     public string? Label { get; set; }
 
@@ -48,7 +48,7 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     public string? Name { get; set; }
 
     /// <summary>
-    /// Gets or sets a comma-delimited list of Config Server addresses. Default value: "http://localhost:8888".
+    /// Gets or sets a comma-separated list of Config Server addresses. Default value: "http://localhost:8888".
     /// </summary>
     public string? Uri { get; set; } = "http://localhost:8888";
 

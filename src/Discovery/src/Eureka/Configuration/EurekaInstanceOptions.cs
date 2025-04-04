@@ -62,7 +62,7 @@ public sealed class EurekaInstanceOptions
     public bool PreferIPAddress { get; set; }
 
     /// <summary>
-    /// Gets or sets the comma-delimited list of VIP (Virtual Internet Protocol) addresses for the instance.
+    /// Gets or sets the comma-separated list of VIP (Virtual Internet Protocol) addresses for the instance.
     /// </summary>
     /// <remarks>
     /// When using service discovery, VIP addresses are resolved into real addresses on outgoing HTTP requests.
@@ -70,7 +70,7 @@ public sealed class EurekaInstanceOptions
     public string? VipAddress { get; set; }
 
     /// <summary>
-    /// Gets or sets the comma-delimited list of secure VIP (Virtual Internet Protocol) addresses for the instance.
+    /// Gets or sets the comma-separated list of secure VIP (Virtual Internet Protocol) addresses for the instance.
     /// </summary>
     /// <remarks>
     /// When using service discovery, secure VIP addresses are resolved into real addresses on outgoing HTTP requests.

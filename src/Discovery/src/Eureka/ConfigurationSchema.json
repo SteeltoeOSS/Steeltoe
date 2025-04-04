@@ -104,7 +104,7 @@
                 },
                 "MonitoredApps": {
                   "type": "string",
-                  "description": "Gets or sets a comma-delimited list of applications in Eureka this app depends on. Leave empty for all apps. Their status is taken into account by 'Steeltoe.Discovery.Eureka.EurekaApplicationsHealthContributor', which requires manual addition to the IoC container."
+                  "description": "Gets or sets a comma-separated list of applications in Eureka this app depends on. Leave empty for all apps. Their status is taken into account by 'Steeltoe.Discovery.Eureka.EurekaApplicationsHealthContributor', which requires manual addition to the IoC container."
                 }
               },
               "description": "Gets Eureka health settings."
@@ -119,7 +119,7 @@
             },
             "ServiceUrl": {
               "type": "string",
-              "description": "Gets or sets a comma-delimited list of Eureka server endpoints. Default value: http://localhost:8761/eureka/."
+              "description": "Gets or sets a comma-separated list of Eureka server endpoints. Default value: http://localhost:8761/eureka/."
             },
             "ShouldDisableDelta": {
               "type": "boolean",
@@ -248,7 +248,7 @@
             },
             "SecureVipAddress": {
               "type": "string",
-              "description": "Gets or sets the comma-delimited list of secure VIP (Virtual Internet Protocol) addresses for the instance."
+              "description": "Gets or sets the comma-separated list of secure VIP (Virtual Internet Protocol) addresses for the instance."
             },
             "StatusPageUrl": {
               "type": "string",
@@ -264,7 +264,7 @@
             },
             "VipAddress": {
               "type": "string",
-              "description": "Gets or sets the comma-delimited list of VIP (Virtual Internet Protocol) addresses for the instance."
+              "description": "Gets or sets the comma-separated list of VIP (Virtual Internet Protocol) addresses for the instance."
             }
           }
         }
@@ -313,11 +313,11 @@
                 },
                 "IgnoredInterfaces": {
                   "type": "string",
-                  "description": "Gets or sets a comma-delimited list of network interfaces to ignore."
+                  "description": "Gets or sets a comma-separated list of network interfaces to ignore."
                 },
                 "PreferredNetworks": {
                   "type": "string",
-                  "description": "Gets or sets a comma-delimited list of preferred networks."
+                  "description": "Gets or sets a comma-separated list of preferred networks."
                 },
                 "SkipReverseDnsLookup": {
                   "type": "boolean",
