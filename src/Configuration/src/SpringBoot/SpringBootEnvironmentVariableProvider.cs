@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration.Json;
 namespace Steeltoe.Configuration.SpringBoot;
 
 /// <summary>
-/// Configuration provider that expands the contents of the SPRING_APPLICATION_JSON environment variable, using Spring-style '.'-separated configuration
+/// Configuration provider that expands the contents of the SPRING_APPLICATION_JSON environment variable, using Spring-style dot-separated configuration
 /// key/value pairs to .NET compatible form.
 /// </summary>
 internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigurationProvider
