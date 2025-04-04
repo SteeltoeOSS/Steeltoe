@@ -53,9 +53,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
         links.Entries["refresh"].Href.Should().Be("http://localhost/cloudfoundryapplication/refresh");
         links.Entries["mappings"].Href.Should().Be("http://localhost/cloudfoundryapplication/mappings");
         links.Entries["loggers"].Href.Should().Be("http://localhost/cloudfoundryapplication/loggers");
+        links.Entries["logfile"].Href.Should().Be("http://localhost/cloudfoundryapplication/logfile");
         links.Entries["self"].Href.Should().Be("http://localhost/cloudfoundryapplication");
         links.Entries["threaddump"].Href.Should().Be("http://localhost/cloudfoundryapplication/threaddump");
-        links.Entries.Should().HaveCount(12);
+        links.Entries.Should().HaveCount(13);
     }
 
     [Fact]
@@ -117,6 +118,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
                 },
                 "beans": {
                   "href": "http://localhost/cloudfoundryapplication/beans",
+                  "templated": false
+                },
+                "logfile": {
+                  "href": "http://localhost/cloudfoundryapplication/logfile",
                   "templated": false
                 },
                 "self": {
