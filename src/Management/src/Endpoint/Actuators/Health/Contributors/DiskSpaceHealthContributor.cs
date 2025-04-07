@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
@@ -37,6 +38,28 @@ internal sealed class DiskSpaceHealthContributor : IHealthContributor
 
         if (!string.IsNullOrEmpty(options.Path))
         {
+            if (Platform.IsWindows && options.Path.StartsWith(@"\\", StringComparison.OrdinalIgnoreCase))
+            {
+                bool directoryExists = Directory.Exists(options.Path);
+
+                if (directoryExists && NativeMethods.GetDiskFreeSpaceEx(options.Path, out ulong freeBytesAvailable, out ulong totalNumberOfBytes,
+                    out ulong totalNumberOfFreeBytes))
+                {
+                    return new HealthCheckResult
+                    {
+                        Status = totalNumberOfFreeBytes >= (ulong)options.Threshold ? HealthStatus.Up : HealthStatus.Down,
+                        Details =
+                        {
+                            ["total"] = totalNumberOfBytes,
+                            ["free"] = freeBytesAvailable,
+                            ["threshold"] = options.Threshold,
+                            ["path"] = options.Path,
+                            ["exists"] = directoryExists
+                        }
+                    };
+                }
+            }
+
             string absolutePath = Path.GetFullPath(options.Path);
 
             if (Directory.Exists(absolutePath))
@@ -48,17 +71,18 @@ internal sealed class DiskSpaceHealthContributor : IHealthContributor
                 {
                     long freeSpaceInBytes = driveInfo.TotalFreeSpace;
 
-                    var result = new HealthCheckResult
+                    return new HealthCheckResult
                     {
-                        Status = freeSpaceInBytes >= options.Threshold ? HealthStatus.Up : HealthStatus.Down
+                        Status = freeSpaceInBytes >= options.Threshold ? HealthStatus.Up : HealthStatus.Down,
+                        Details =
+                        {
+                            ["total"] = driveInfo.TotalSize,
+                            ["free"] = freeSpaceInBytes,
+                            ["threshold"] = options.Threshold,
+                            ["path"] = absolutePath,
+                            ["exists"] = driveInfo.RootDirectory.Exists
+                        }
                     };
-
-                    result.Details.Add("total", driveInfo.TotalSize);
-                    result.Details.Add("free", freeSpaceInBytes);
-                    result.Details.Add("threshold", options.Threshold);
-                    result.Details.Add("path", absolutePath);
-                    result.Details.Add("exists", driveInfo.RootDirectory.Exists);
-                    return result;
                 }
             }
         }

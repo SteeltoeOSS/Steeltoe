@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.ComponentModel;
 using System.Net;
 
 namespace Steeltoe.Common.Net;
@@ -12,57 +13,6 @@ namespace Steeltoe.Common.Net;
 public sealed class WindowsNetworkFileShare : IDisposable
 {
     private const int NoError = 0;
-    private const int ErrorAccessDenied = 5;
-    private const int ErrorAlreadyAssigned = 85;
-    private const int ErrorPathNotFound = 53;
-    private const int ErrorBadDevice = 1200;
-    private const int ErrorBadNetName = 67;
-    private const int ErrorBadProvider = 1204;
-    private const int ErrorCancelled = 1223;
-    private const int ErrorExtendedError = 1208;
-    private const int ErrorInvalidAddress = 487;
-    private const int ErrorInvalidParameter = 87;
-    private const int ErrorInvalidPassword = 86;
-    private const int ErrorInvalidPasswordName = 1216;
-    private const int ErrorMoreData = 234;
-    private const int ErrorNoMoreItems = 259;
-    private const int ErrorNoNetOrBadPath = 1203;
-    private const int ErrorNoNetwork = 1222;
-    private const int ErrorBadProfile = 1206;
-    private const int ErrorCannotOpenProfile = 1205;
-    private const int ErrorDeviceInUse = 2404;
-    private const int ErrorNotConnected = 2250;
-    private const int ErrorOpenFiles = 2401;
-    private const int ErrorLogonFailure = 1326;
-
-    // Created with excel formula:
-    // ="new ErrorClass("&A1&", """&PROPER(SUBSTITUTE(MID(A1,7,LEN(A1)-6), "_", " "))&"""), "
-    private static readonly Dictionary<int, string> ErrorMessageLookupTable = new()
-    {
-        [ErrorAccessDenied] = "Error: Access Denied",
-        [ErrorAlreadyAssigned] = "Error: Already Assigned",
-        [ErrorBadDevice] = "Error: Bad Device",
-        [ErrorBadNetName] = "Error: Bad Net Name",
-        [ErrorBadProvider] = "Error: Bad Provider",
-        [ErrorCancelled] = "Error: Cancelled",
-        [ErrorExtendedError] = "Error: Extended Error",
-        [ErrorInvalidAddress] = "Error: Invalid Address",
-        [ErrorInvalidParameter] = "Error: Invalid Parameter",
-        [ErrorInvalidPassword] = "Error: Invalid Password",
-        [ErrorInvalidPasswordName] = "Error: Invalid Password Format",
-        [ErrorMoreData] = "Error: More Data",
-        [ErrorNoMoreItems] = "Error: No More Items",
-        [ErrorNoNetOrBadPath] = "Error: No Net Or Bad Path",
-        [ErrorNoNetwork] = "Error: No Network",
-        [ErrorBadProfile] = "Error: Bad Profile",
-        [ErrorCannotOpenProfile] = "Error: Cannot Open Profile",
-        [ErrorDeviceInUse] = "Error: Device In Use",
-        [ErrorNotConnected] = "Error: Not Connected",
-        [ErrorOpenFiles] = "Error: Open Files",
-        [ErrorLogonFailure] = "The user name or password is incorrect",
-        [ErrorPathNotFound] = "The network path not found"
-    };
-
     private readonly string _networkName;
     private readonly IMultipleProviderRouter _multipleProviderRouter;
 
@@ -118,12 +68,9 @@ public sealed class WindowsNetworkFileShare : IDisposable
     {
         if (errorNumber != NoError)
         {
-            if (ErrorMessageLookupTable.TryGetValue(errorNumber, out string? errorMessage))
-            {
-                throw new IOException($"Failed to {operation} with error {errorNumber}: {errorMessage}.");
-            }
+            var innerException = new Win32Exception(errorNumber);
 
-            throw new IOException($"Failed to {operation} with error {errorNumber}.");
+            throw new IOException($"Failed to {operation}.", innerException);
         }
     }
 }
