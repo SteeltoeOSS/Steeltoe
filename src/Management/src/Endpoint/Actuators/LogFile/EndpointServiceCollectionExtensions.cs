@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.Logfile;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the logfile actuator to the service container and configure the ASP.NET Core middleware pipeline.
+    /// Adds the logfile actuator to the service container and configures the ASP.NET Core middleware pipeline.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
