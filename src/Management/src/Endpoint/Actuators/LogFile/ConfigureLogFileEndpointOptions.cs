@@ -7,20 +7,8 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Logfile;
 
-internal sealed class ConfigureLogFileEndpointOptions : ConfigureEndpointOptions<LogFileEndpointOptions>
+internal sealed class ConfigureLogFileEndpointOptions(IConfiguration configuration)
+    : ConfigureEndpointOptions<LogFileEndpointOptions>(configuration, ManagementInfoPrefix, "logfile")
 {
     private const string ManagementInfoPrefix = "management:endpoints:logfile";
-
-    public ConfigureLogFileEndpointOptions(IConfiguration configuration)
-        : base(configuration, ManagementInfoPrefix, "logfile")
-    {
-        ArgumentNullException.ThrowIfNull(configuration);
-    }
-
-    public override void Configure(LogFileEndpointOptions options)
-    {
-        ArgumentNullException.ThrowIfNull(options);
-
-        base.Configure(options);
-    }
 }
