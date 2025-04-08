@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
@@ -108,6 +109,31 @@ public sealed class DiskSpaceHealthContributorTest : BaseTest
         {
             drive.Should().NotBeNull();
             drive.RootDirectory.FullName.Should().Be(expected);
+        }
+    }
+
+    [Fact(Skip = "Integration test - Requires Windows file share")]
+    public async Task SupportsWindowsFileShare()
+    {
+        if (Platform.IsWindows)
+        {
+            Dictionary<string, string?> settings = new()
+            {
+                ["Management:Endpoints:Health:DiskSpace:Path"] = @"\\localhost\steeltoe_network_share"
+            };
+
+            IOptionsMonitor<DiskSpaceContributorOptions> optionsMonitor = GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>(settings);
+            var contributor = new DiskSpaceHealthContributor(optionsMonitor);
+            Assert.Equal("diskSpace", contributor.Id);
+            HealthCheckResult? result = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
+            Assert.NotNull(result);
+            Assert.Equal(HealthStatus.Up, result.Status);
+            Assert.NotNull(result.Details);
+            Assert.True(result.Details.ContainsKey("total"));
+            Assert.True(result.Details.ContainsKey("free"));
+            Assert.True(result.Details.ContainsKey("threshold"));
+            Assert.True(result.Details.ContainsKey("path"));
+            Assert.True(result.Details.ContainsKey("exists"));
         }
     }
 }

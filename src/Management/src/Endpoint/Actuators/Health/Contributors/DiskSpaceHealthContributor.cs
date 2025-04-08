@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
@@ -37,33 +38,22 @@ internal sealed class DiskSpaceHealthContributor : IHealthContributor
 
         if (!string.IsNullOrEmpty(options.Path))
         {
-            string absolutePath = Path.GetFullPath(options.Path);
+            HealthCheckResult? networkDiskHealth = GetNetworkDiskSpaceHealth(options);
 
-            if (Directory.Exists(absolutePath))
+            if (networkDiskHealth != null)
             {
-                DriveInfo[] systemDrives = DriveInfo.GetDrives();
-                DriveInfo? driveInfo = FindVolume(absolutePath, systemDrives);
+                return networkDiskHealth;
+            }
 
-                if (driveInfo != null)
-                {
-                    long freeSpaceInBytes = driveInfo.TotalFreeSpace;
+            HealthCheckResult? localDiskHealth = GetLocalDiskSpaceHealth(options);
 
-                    var result = new HealthCheckResult
-                    {
-                        Status = freeSpaceInBytes >= options.Threshold ? HealthStatus.Up : HealthStatus.Down
-                    };
-
-                    result.Details.Add("total", driveInfo.TotalSize);
-                    result.Details.Add("free", freeSpaceInBytes);
-                    result.Details.Add("threshold", options.Threshold);
-                    result.Details.Add("path", absolutePath);
-                    result.Details.Add("exists", driveInfo.RootDirectory.Exists);
-                    return result;
-                }
+            if (localDiskHealth != null)
+            {
+                return localDiskHealth;
             }
         }
 
-        return new HealthCheckResult
+        var unknownDiskHealth = new HealthCheckResult
         {
             Status = HealthStatus.Unknown,
             Description = "Failed to determine free disk space.",
@@ -72,6 +62,70 @@ internal sealed class DiskSpaceHealthContributor : IHealthContributor
                 ["error"] = "The configured path is invalid or does not exist."
             }
         };
+
+        if (!string.IsNullOrEmpty(options.Path))
+        {
+            unknownDiskHealth.Details["path"] = options.Path;
+        }
+
+        return unknownDiskHealth;
+    }
+
+    private static HealthCheckResult? GetNetworkDiskSpaceHealth(DiskSpaceContributorOptions options)
+    {
+        if (Platform.IsWindows && options.Path?.StartsWith(@"\\", StringComparison.Ordinal) == true)
+        {
+            bool directoryExists = Directory.Exists(options.Path);
+
+            if (directoryExists && NativeMethods.GetDiskFreeSpaceEx(options.Path, out ulong freeBytesAvailable, out ulong totalNumberOfBytes, out _))
+            {
+                return new HealthCheckResult
+                {
+                    Status = freeBytesAvailable >= (ulong)options.Threshold ? HealthStatus.Up : HealthStatus.Down,
+                    Details =
+                    {
+                        ["total"] = totalNumberOfBytes,
+                        ["free"] = freeBytesAvailable,
+                        ["threshold"] = options.Threshold,
+                        ["path"] = options.Path,
+                        ["exists"] = true
+                    }
+                };
+            }
+        }
+
+        return null;
+    }
+
+    private static HealthCheckResult? GetLocalDiskSpaceHealth(DiskSpaceContributorOptions options)
+    {
+        string absolutePath = Path.GetFullPath(options.Path!);
+
+        if (Directory.Exists(absolutePath))
+        {
+            DriveInfo[] systemDrives = DriveInfo.GetDrives();
+            DriveInfo? driveInfo = FindVolume(absolutePath, systemDrives);
+
+            if (driveInfo != null)
+            {
+                long freeSpaceInBytes = driveInfo.TotalFreeSpace;
+
+                return new HealthCheckResult
+                {
+                    Status = freeSpaceInBytes >= options.Threshold ? HealthStatus.Up : HealthStatus.Down,
+                    Details =
+                    {
+                        ["total"] = driveInfo.TotalSize,
+                        ["free"] = freeSpaceInBytes,
+                        ["threshold"] = options.Threshold,
+                        ["path"] = absolutePath,
+                        ["exists"] = driveInfo.RootDirectory.Exists
+                    }
+                };
+            }
+        }
+
+        return null;
     }
 
     internal static DriveInfo? FindVolume(string absolutePath, IEnumerable<DriveInfo> systemDrives)
