@@ -78,7 +78,7 @@ public sealed class HostBuilderTests : IDisposable
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Logging.AddSimpleConsole();
+        builder.Logging.AddSimpleConsole(options => options.ColorBehavior = LoggerColorBehavior.Disabled);
         builder.Logging.AddDynamicSerilog(true);
         await using WebApplication host = builder.Build();
 
