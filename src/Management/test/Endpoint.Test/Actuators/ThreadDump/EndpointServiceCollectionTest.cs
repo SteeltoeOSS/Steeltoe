@@ -33,7 +33,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<ThreadDumpEndpointOptions>>();
         Assert.False(options.CurrentValue.Enabled);
 
-        var threadDumper = serviceProvider.GetService<EventPipeThreadDumper>();
+        var threadDumper = serviceProvider.GetService<IThreadDumper>();
         Assert.NotNull(threadDumper);
 
         var handler = serviceProvider.GetService<IThreadDumpEndpointHandler>();

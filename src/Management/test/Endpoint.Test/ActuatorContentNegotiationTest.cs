@@ -11,7 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
+using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 using Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
+using Steeltoe.Management.Endpoint.Test.Actuators.ThreadDump;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -45,8 +47,9 @@ public sealed class ActuatorContentNegotiationTest
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
-        builder.Services.AddAllActuators();
         builder.Services.AddSingleton<IHeapDumper, FakeHeapDumper>();
+        builder.Services.AddSingleton<IThreadDumper, FakeThreadDumper>();
+        builder.Services.AddAllActuators();
 
         await using WebApplication host = builder.Build();
         await host.StartAsync(TestContext.Current.CancellationToken);
