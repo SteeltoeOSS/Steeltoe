@@ -9,19 +9,19 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Logfile;
 
-public sealed class LogFileEndpointHandler : ILogFileEndpointHandler
+internal sealed class LogFileEndpointHandler : ILogFileEndpointHandler
 {
     private readonly IOptionsMonitor<LogFileEndpointOptions> _optionsMonitor;
     private readonly ILogger<LogFileEndpointHandler> _logger;
 
     public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
-    public LogFileEndpointHandler(IOptionsMonitor<LogFileEndpointOptions> optionsMonitorMonitor, ILoggerFactory loggerFactory)
+    public LogFileEndpointHandler(IOptionsMonitor<LogFileEndpointOptions> optionsMonitor, ILoggerFactory loggerFactory)
     {
-        ArgumentNullException.ThrowIfNull(optionsMonitorMonitor);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        _optionsMonitor = optionsMonitorMonitor;
+        _optionsMonitor = optionsMonitor;
         _logger = loggerFactory.CreateLogger<LogFileEndpointHandler>();
     }
 
@@ -37,7 +37,6 @@ public sealed class LogFileEndpointHandler : ILogFileEndpointHandler
             return await File.ReadAllTextAsync(logFilePath, cancellationToken);
         }
 
-        _logger.LogWarning("Log file path is not set");
         return string.Empty;
     }
 

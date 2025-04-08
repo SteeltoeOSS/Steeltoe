@@ -19,7 +19,6 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     [Fact]
     public void GetLogFilePathWithRelativePath_ReturnsPathRelativeToEntryAssemblyDirectory()
     {
-        // arrange
         string directoryName = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!;
         string expectedFilePath = Path.Combine(directoryName, "logs/testfile.log");
 
@@ -29,7 +28,7 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
             ["management:endpoints:logfile:enabled"] = "true"
         };
 
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalConfiguration = configuration =>
         {
@@ -38,17 +37,13 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton(TestHostEnvironmentFactory.Create());
             services.ConfigureEndpointOptions<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
             services.AddSingleton<ILogFileEndpointHandler, LogFileEndpointHandler>();
         };
 
         var handler = (LogFileEndpointHandler)testContext.GetRequiredService<ILogFileEndpointHandler>();
-
-        // act
         string result = handler.GetLogFilePath();
 
-        // assert
         Assert.NotNull(result);
         Assert.Equal(expectedFilePath, result);
     }
@@ -56,7 +51,6 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     [Fact]
     public void GetLogFilePathWithAbsolutePath_ReturnsAbsolutePath()
     {
-        // arrange
         const string expectedFilePath = "/logs/testfile.log";
 
         var appSettings = new Dictionary<string, string?>
@@ -65,7 +59,7 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
             ["management:endpoints:logfile:enabled"] = "true"
         };
 
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalConfiguration = configuration =>
         {
@@ -74,17 +68,13 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton(TestHostEnvironmentFactory.Create());
             services.ConfigureEndpointOptions<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
             services.AddSingleton<ILogFileEndpointHandler, LogFileEndpointHandler>();
         };
 
         var handler = (LogFileEndpointHandler)testContext.GetRequiredService<ILogFileEndpointHandler>();
-
-        // act
         string result = handler.GetLogFilePath();
 
-        // assert
         Assert.NotNull(result);
         Assert.Equal(expectedFilePath, result);
     }
@@ -92,7 +82,6 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     [Fact]
     public void GetLogFilePathWithNoConfig_ReturnsEmptyString()
     {
-        // arrange
         string expectedFilePath = string.Empty;
 
         var appSettings = new Dictionary<string, string?>
@@ -100,7 +89,7 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
             ["management:endpoints:logfile:enabled"] = "true"
         };
 
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalConfiguration = configuration =>
         {
@@ -109,17 +98,13 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton(TestHostEnvironmentFactory.Create());
             services.ConfigureEndpointOptions<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
             services.AddSingleton<ILogFileEndpointHandler, LogFileEndpointHandler>();
         };
 
         var handler = (LogFileEndpointHandler)testContext.GetRequiredService<ILogFileEndpointHandler>();
-
-        // act
         string result = handler.GetLogFilePath();
 
-        // assert
         Assert.NotNull(result);
         Assert.Equal(expectedFilePath, result);
     }
@@ -127,14 +112,13 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     [Fact]
     public void Options_ReturnsExpected()
     {
-        // arrange
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:logfile:filePath"] = "logs/testfile.log",
             ["management:endpoints:logfile:enabled"] = "true"
         };
 
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalConfiguration = configuration =>
         {
@@ -143,17 +127,13 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton(TestHostEnvironmentFactory.Create());
             services.ConfigureEndpointOptions<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
             services.AddSingleton<ILogFileEndpointHandler, LogFileEndpointHandler>();
         };
 
         var handler = (LogFileEndpointHandler)testContext.GetRequiredService<ILogFileEndpointHandler>();
-
-        // act
         var options = (handler.Options as LogFileEndpointOptions)!;
 
-        // assert
         options.Id.Should().Be("logfile");
         options.RequiredPermissions.Should().Be(EndpointPermissions.Restricted);
         options.Path.Should().Be("logfile");
@@ -165,7 +145,6 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     [Fact]
     public async Task Invoke_ReturnsExpected()
     {
-        // arrange
         const string expectedLogFileContents = "This is a test log file content.";
         using var tempLogFile = new TempFile();
         await File.WriteAllTextAsync(tempLogFile.FullPath, expectedLogFileContents);
@@ -176,7 +155,7 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
             ["management:endpoints:logfile:enabled"] = "true"
         };
 
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalConfiguration = configuration =>
         {
@@ -185,30 +164,25 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton(TestHostEnvironmentFactory.Create());
             services.ConfigureEndpointOptions<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
             services.AddSingleton<ILogFileEndpointHandler, LogFileEndpointHandler>();
         };
 
         var handler = (LogFileEndpointHandler)testContext.GetRequiredService<ILogFileEndpointHandler>();
-
-        // act
         string logFileContents = await handler.InvokeAsync("an object", CancellationToken.None);
 
-        // assert
         logFileContents.Should().Be(expectedLogFileContents);
     }
 
     [Fact]
     public async Task Invoke_ReturnsEmptyStringWhenNoLogFileSpecified()
     {
-        // arrange
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:logfile:enabled"] = "true"
         };
 
-        using var testContext = new TestContext(_testOutputHelper);
+        using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
         testContext.AdditionalConfiguration = configuration =>
         {
@@ -217,17 +191,13 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton(TestHostEnvironmentFactory.Create());
             services.ConfigureEndpointOptions<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
             services.AddSingleton<ILogFileEndpointHandler, LogFileEndpointHandler>();
         };
 
         var handler = (LogFileEndpointHandler)testContext.GetRequiredService<ILogFileEndpointHandler>();
-
-        // act
         string logFileContents = await handler.InvokeAsync("an object", CancellationToken.None);
 
-        // assert
         logFileContents.Should().Be(string.Empty);
     }
 }

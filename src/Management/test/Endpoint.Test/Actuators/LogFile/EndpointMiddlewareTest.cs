@@ -13,27 +13,21 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Logfile;
 
 public sealed class EndpointMiddlewareTest : BaseTest
 {
-    private static readonly Dictionary<string, string?> AppSettings = new()
-    {
-        ["Logging:Console:IncludeScopes"] = "false",
-        ["Logging:LogLevel:Default"] = "Warning",
-        ["Logging:LogLevel:TestApp"] = "Information",
-        ["Logging:LogLevel:Steeltoe"] = "Information",
-        ["management:endpoints:enabled"] = "true",
-        ["management:endpoints:actuator:exposure:include:0"] = "*"
-    };
-
-    private readonly TempFile _tempLogFile = new();
 
     [Fact]
     public async Task LogFileActuator_ReturnsExpectedData()
     {
-        AppSettings["management:endpoints:logfile:filePath"] = _tempLogFile.FullPath;
-        await File.WriteAllTextAsync(_tempLogFile.FullPath, "This is a test log.");
+        Dictionary<string, string?> appSettings = new()
+        {
+            ["management:endpoints:actuator:exposure:include:0"] = "*"
+        };
+        using TempFile tempLogFile = new();
+        appSettings["management:endpoints:logfile:filePath"] = tempLogFile.FullPath;
+        await File.WriteAllTextAsync(tempLogFile.FullPath, "This is a test log.");
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using IWebHost app = builder.Build();
         await app.StartAsync();
@@ -45,6 +39,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         string actualLogContent = await response.Content.ReadAsStringAsync();
 
         // assert
-        actualLogContent.Trim().Should().BeEquivalentTo("\"This is a test log.\"");
+        actualLogContent.Trim().Should().Be("\"This is a test log.\"");
     }
 }

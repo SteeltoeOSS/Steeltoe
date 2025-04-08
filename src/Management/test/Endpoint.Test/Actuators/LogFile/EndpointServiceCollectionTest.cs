@@ -15,12 +15,10 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     public async Task AddLogFileActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
-        services.AddSingleton(TestHostEnvironmentFactory.Create());
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:logfile:path"] = "/some",
-            ["management:endpoints:logfile:filePath"] = "/var/logs/app.log"
+            ["management:endpoints:logfile:path"] = "/some"
         };
 
         var configurationBuilder = new ConfigurationBuilder();

@@ -52,8 +52,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         links.Entries["info"].Href.Should().Be("http://localhost/cloudfoundryapplication/info");
         links.Entries["refresh"].Href.Should().Be("http://localhost/cloudfoundryapplication/refresh");
         links.Entries["mappings"].Href.Should().Be("http://localhost/cloudfoundryapplication/mappings");
-        links.Entries["loggers"].Href.Should().Be("http://localhost/cloudfoundryapplication/loggers");
         links.Entries["logfile"].Href.Should().Be("http://localhost/cloudfoundryapplication/logfile");
+        links.Entries["loggers"].Href.Should().Be("http://localhost/cloudfoundryapplication/loggers");
         links.Entries["self"].Href.Should().Be("http://localhost/cloudfoundryapplication");
         links.Entries["threaddump"].Href.Should().Be("http://localhost/cloudfoundryapplication/threaddump");
         links.Entries.Should().HaveCount(13);

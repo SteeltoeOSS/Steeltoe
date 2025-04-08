@@ -41,8 +41,6 @@ internal static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.TryAddSingleton<IHostEnvironment>(serviceProvider => serviceProvider.GetService<IHostEnvironment>()!);
-
         services.AddCoreActuatorServices<LogFileEndpointOptions, ConfigureLogFileEndpointOptions, LogFileEndpointMiddleware,
             ILogFileEndpointHandler, LogFileEndpointHandler, object?, string>(configureMiddleware);
 
