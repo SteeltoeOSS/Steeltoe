@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Logfile;
 
-public static class EndpointServiceCollectionExtensions
+internal static class EndpointServiceCollectionExtensions
 {
     /// <summary>
     /// Adds the logfile actuator to the service container and configures the ASP.NET Core middleware pipeline.
