@@ -45,9 +45,7 @@ internal sealed class DiskSpaceHealthContributor : IHealthContributor
                 return networkDiskHealth;
             }
 
-            string absolutePath = Path.GetFullPath(options.Path);
-
-            HealthCheckResult? localDiskHealth = GetLocalDiskSpaceHealth(absolutePath, options);
+            HealthCheckResult? localDiskHealth = GetLocalDiskSpaceHealth(options);
 
             if (localDiskHealth != null)
             {
@@ -55,7 +53,7 @@ internal sealed class DiskSpaceHealthContributor : IHealthContributor
             }
         }
 
-        var unknownResult = new HealthCheckResult
+        var unknownDiskHealth = new HealthCheckResult
         {
             Status = HealthStatus.Unknown,
             Description = "Failed to determine free disk space.",
@@ -65,17 +63,17 @@ internal sealed class DiskSpaceHealthContributor : IHealthContributor
             }
         };
 
-        if (options.Path != null)
+        if (!string.IsNullOrEmpty(options.Path))
         {
-            unknownResult.Details["path"] = options.Path;
+            unknownDiskHealth.Details["path"] = options.Path;
         }
 
-        return unknownResult;
+        return unknownDiskHealth;
     }
 
     private static HealthCheckResult? GetNetworkDiskSpaceHealth(DiskSpaceContributorOptions options)
     {
-        if (Platform.IsWindows && options.Path!.StartsWith(@"\\", StringComparison.Ordinal))
+        if (Platform.IsWindows && options.Path?.StartsWith(@"\\", StringComparison.Ordinal) == true)
         {
             bool directoryExists = Directory.Exists(options.Path);
 
@@ -90,7 +88,7 @@ internal sealed class DiskSpaceHealthContributor : IHealthContributor
                         ["free"] = freeBytesAvailable,
                         ["threshold"] = options.Threshold,
                         ["path"] = options.Path,
-                        ["exists"] = directoryExists
+                        ["exists"] = true
                     }
                 };
             }
@@ -99,8 +97,10 @@ internal sealed class DiskSpaceHealthContributor : IHealthContributor
         return null;
     }
 
-    private static HealthCheckResult? GetLocalDiskSpaceHealth(string absolutePath, DiskSpaceContributorOptions options)
+    private static HealthCheckResult? GetLocalDiskSpaceHealth(DiskSpaceContributorOptions options)
     {
+        string absolutePath = Path.GetFullPath(options.Path!);
+
         if (Directory.Exists(absolutePath))
         {
             DriveInfo[] systemDrives = DriveInfo.GetDrives();
