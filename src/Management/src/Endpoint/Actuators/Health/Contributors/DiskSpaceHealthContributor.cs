@@ -38,16 +38,15 @@ internal sealed class DiskSpaceHealthContributor : IHealthContributor
 
         if (!string.IsNullOrEmpty(options.Path))
         {
-            if (Platform.IsWindows && options.Path.StartsWith(@"\\", StringComparison.OrdinalIgnoreCase))
+            if (Platform.IsWindows && options.Path.StartsWith(@"\\", StringComparison.Ordinal))
             {
                 bool directoryExists = Directory.Exists(options.Path);
 
-                if (directoryExists && NativeMethods.GetDiskFreeSpaceEx(options.Path, out ulong freeBytesAvailable, out ulong totalNumberOfBytes,
-                    out ulong totalNumberOfFreeBytes))
+                if (directoryExists && NativeMethods.GetDiskFreeSpaceEx(options.Path, out ulong freeBytesAvailable, out ulong totalNumberOfBytes, out _))
                 {
                     return new HealthCheckResult
                     {
-                        Status = totalNumberOfFreeBytes >= (ulong)options.Threshold ? HealthStatus.Up : HealthStatus.Down,
+                        Status = freeBytesAvailable >= (ulong)options.Threshold ? HealthStatus.Up : HealthStatus.Down,
                         Details =
                         {
                             ["total"] = totalNumberOfBytes,
