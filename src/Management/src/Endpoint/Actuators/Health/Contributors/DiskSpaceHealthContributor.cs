@@ -38,55 +38,24 @@ internal sealed class DiskSpaceHealthContributor : IHealthContributor
 
         if (!string.IsNullOrEmpty(options.Path))
         {
-            if (Platform.IsWindows && options.Path.StartsWith(@"\\", StringComparison.Ordinal))
-            {
-                bool directoryExists = Directory.Exists(options.Path);
+            HealthCheckResult? networkDiskHealth = GetNetworkDiskSpaceHealth(options);
 
-                if (directoryExists && NativeMethods.GetDiskFreeSpaceEx(options.Path, out ulong freeBytesAvailable, out ulong totalNumberOfBytes, out _))
-                {
-                    return new HealthCheckResult
-                    {
-                        Status = freeBytesAvailable >= (ulong)options.Threshold ? HealthStatus.Up : HealthStatus.Down,
-                        Details =
-                        {
-                            ["total"] = totalNumberOfBytes,
-                            ["free"] = freeBytesAvailable,
-                            ["threshold"] = options.Threshold,
-                            ["path"] = options.Path,
-                            ["exists"] = directoryExists
-                        }
-                    };
-                }
+            if (networkDiskHealth != null)
+            {
+                return networkDiskHealth;
             }
 
             string absolutePath = Path.GetFullPath(options.Path);
 
-            if (Directory.Exists(absolutePath))
+            HealthCheckResult? localDiskHealth = GetLocalDiskSpaceHealth(absolutePath, options);
+
+            if (localDiskHealth != null)
             {
-                DriveInfo[] systemDrives = DriveInfo.GetDrives();
-                DriveInfo? driveInfo = FindVolume(absolutePath, systemDrives);
-
-                if (driveInfo != null)
-                {
-                    long freeSpaceInBytes = driveInfo.TotalFreeSpace;
-
-                    return new HealthCheckResult
-                    {
-                        Status = freeSpaceInBytes >= options.Threshold ? HealthStatus.Up : HealthStatus.Down,
-                        Details =
-                        {
-                            ["total"] = driveInfo.TotalSize,
-                            ["free"] = freeSpaceInBytes,
-                            ["threshold"] = options.Threshold,
-                            ["path"] = absolutePath,
-                            ["exists"] = driveInfo.RootDirectory.Exists
-                        }
-                    };
-                }
+                return localDiskHealth;
             }
         }
 
-        return new HealthCheckResult
+        var unknownResult = new HealthCheckResult
         {
             Status = HealthStatus.Unknown,
             Description = "Failed to determine free disk space.",
@@ -95,6 +64,68 @@ internal sealed class DiskSpaceHealthContributor : IHealthContributor
                 ["error"] = "The configured path is invalid or does not exist."
             }
         };
+
+        if (options.Path != null)
+        {
+            unknownResult.Details["path"] = options.Path;
+        }
+
+        return unknownResult;
+    }
+
+    private static HealthCheckResult? GetNetworkDiskSpaceHealth(DiskSpaceContributorOptions options)
+    {
+        if (Platform.IsWindows && options.Path!.StartsWith(@"\\", StringComparison.Ordinal))
+        {
+            bool directoryExists = Directory.Exists(options.Path);
+
+            if (directoryExists && NativeMethods.GetDiskFreeSpaceEx(options.Path, out ulong freeBytesAvailable, out ulong totalNumberOfBytes, out _))
+            {
+                return new HealthCheckResult
+                {
+                    Status = freeBytesAvailable >= (ulong)options.Threshold ? HealthStatus.Up : HealthStatus.Down,
+                    Details =
+                    {
+                        ["total"] = totalNumberOfBytes,
+                        ["free"] = freeBytesAvailable,
+                        ["threshold"] = options.Threshold,
+                        ["path"] = options.Path,
+                        ["exists"] = directoryExists
+                    }
+                };
+            }
+        }
+
+        return null;
+    }
+
+    private static HealthCheckResult? GetLocalDiskSpaceHealth(string absolutePath, DiskSpaceContributorOptions options)
+    {
+        if (Directory.Exists(absolutePath))
+        {
+            DriveInfo[] systemDrives = DriveInfo.GetDrives();
+            DriveInfo? driveInfo = FindVolume(absolutePath, systemDrives);
+
+            if (driveInfo != null)
+            {
+                long freeSpaceInBytes = driveInfo.TotalFreeSpace;
+
+                return new HealthCheckResult
+                {
+                    Status = freeSpaceInBytes >= options.Threshold ? HealthStatus.Up : HealthStatus.Down,
+                    Details =
+                    {
+                        ["total"] = driveInfo.TotalSize,
+                        ["free"] = freeSpaceInBytes,
+                        ["threshold"] = options.Threshold,
+                        ["path"] = absolutePath,
+                        ["exists"] = driveInfo.RootDirectory.Exists
+                    }
+                };
+            }
+        }
+
+        return null;
     }
 
     internal static DriveInfo? FindVolume(string absolutePath, IEnumerable<DriveInfo> systemDrives)
