@@ -5,10 +5,8 @@
 
   <PropertyGroup>
     <!-- https://github.com/xunit/xunit/issues/3238#issuecomment-2770720936 -->
-    <!--
     <TestTfmsInParallel>false</TestTfmsInParallel>
     <DisableTestingPlatformServerCapability>true</DisableTestingPlatformServerCapability>
-    -->
   </PropertyGroup>
 
   <ItemGroup>
