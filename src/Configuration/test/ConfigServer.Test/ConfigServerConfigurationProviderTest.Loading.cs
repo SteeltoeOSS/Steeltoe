@@ -131,13 +131,14 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
-        Assert.True(TestConfigServerStartup.InitialRequestLatch.Wait(1.Minutes(), TestContext.Current.CancellationToken));
-        Assert.True(TestConfigServerStartup.RequestCount >= 1);
+        TestConfigServerStartup.InitialRequestLatch.Wait(1.Minutes(), TestContext.Current.CancellationToken).Should().BeTrue();
+        TestConfigServerStartup.RequestCount.Should().BeGreaterThanOrEqualTo(1);
+
         await Task.Delay(1.Seconds(), TestContext.Current.CancellationToken);
 
-        Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.True(TestConfigServerStartup.RequestCount >= 2);
-        Assert.False(provider.GetReloadToken().HasChanged);
+        TestConfigServerStartup.LastRequest.Should().NotBeNull();
+        TestConfigServerStartup.RequestCount.Should().BeGreaterThanOrEqualTo(2);
+        provider.GetReloadToken().HasChanged.Should().BeFalse();
     }
 
     [Fact]
