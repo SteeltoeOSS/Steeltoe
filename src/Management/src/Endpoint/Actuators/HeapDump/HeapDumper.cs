@@ -27,42 +27,30 @@ internal sealed class HeapDumper : IHeapDumper
         _logger = logger;
     }
 
-    public string? DumpHeapToFile(CancellationToken cancellationToken)
+    public string DumpHeapToFile(CancellationToken cancellationToken)
     {
         string fileName = CreateFileName();
 
-        try
+        int processId = System.Environment.ProcessId;
+
+        if (string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
         {
-            int processId = System.Environment.ProcessId;
+            _logger.LogInformation("Attempting to create a gcdump");
 
-            if (string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
-            {
-                _logger.LogInformation("Attempting to create a gcdump");
-
-                if (TryCollectMemoryGraph(processId, 30, out MemoryGraph memoryGraph, cancellationToken))
-                {
-                    GCHeapDump.WriteMemoryGraph(memoryGraph, fileName, "dotnet-gcdump");
-                    return fileName;
-                }
-
-                return null;
-            }
-
-            if (!Enum.TryParse(_optionsMonitor.CurrentValue.HeapDumpType, out DumpType dumpType))
-            {
-                dumpType = DumpType.Full;
-            }
-
-            _logger.LogInformation("Attempting to create a '{DumpType}' dump", dumpType);
-            var client = new DiagnosticsClient(processId);
-            client.WriteDump(dumpType, fileName);
+            MemoryGraph memoryGraph = CollectMemoryGraph(processId, 30, cancellationToken);
+            GCHeapDump.WriteMemoryGraph(memoryGraph, fileName, "dotnet-gcdump");
             return fileName;
         }
-        catch (DiagnosticsClientException exception)
+
+        if (!Enum.TryParse(_optionsMonitor.CurrentValue.HeapDumpType, out DumpType dumpType))
         {
-            _logger.LogError(exception, "Could not create core dump to process.");
-            return null;
+            dumpType = DumpType.Full;
         }
+
+        _logger.LogInformation("Attempting to create a '{DumpType}' dump", dumpType);
+        var client = new DiagnosticsClient(processId);
+        client.WriteDump(dumpType, fileName);
+        return fileName;
     }
 
     private string CreateFileName()
@@ -74,10 +62,11 @@ internal sealed class HeapDumper : IHeapDumper
             : $"minidump-{utcNow:yyyy-MM-dd-HH-mm-ss}-live.dmp";
     }
 
-    private bool TryCollectMemoryGraph(int processId, int timeout, out MemoryGraph memoryGraph, CancellationToken cancellationToken)
+    private MemoryGraph CollectMemoryGraph(int processId, int timeout, CancellationToken cancellationToken)
     {
         bool succeeded = false;
         using var logStream = new MemoryStream();
+        MemoryGraph memoryGraph;
 
         using (TextWriter logWriter = new StreamWriter(logStream, leaveOpen: true))
         {
@@ -94,8 +83,14 @@ internal sealed class HeapDumper : IHeapDumper
         logStream.Seek(0, SeekOrigin.Begin);
         using var logReader = new StreamReader(logStream);
         string message = logReader.ReadToEnd();
-        _logger.LogDebug("{HeapDumpLog}", message);
 
-        return succeeded;
+        if (!succeeded)
+        {
+            throw new InvalidOperationException(
+                $"Failed to collect memory graph, possibly timed out. See inner log for details:{System.Environment.NewLine}{message}");
+        }
+
+        _logger.LogDebug("{HeapDumpLog}", message);
+        return memoryGraph;
     }
 }

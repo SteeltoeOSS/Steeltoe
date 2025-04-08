@@ -13,13 +13,13 @@ namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
 internal sealed class HeapDumpEndpointMiddleware(
     IHeapDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
-    : EndpointMiddleware<object?, string?>(endpointHandler, managementOptionsMonitor, loggerFactory)
+    : EndpointMiddleware<object?, string>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
     private readonly ILogger<HeapDumpEndpointMiddleware> _logger = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
 
     private protected override string ContentType => "application/octet-stream";
 
-    protected override async Task<string?> InvokeEndpointHandlerAsync(object? request, CancellationToken cancellationToken)
+    protected override async Task<string> InvokeEndpointHandlerAsync(object? request, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(request, cancellationToken);
     }

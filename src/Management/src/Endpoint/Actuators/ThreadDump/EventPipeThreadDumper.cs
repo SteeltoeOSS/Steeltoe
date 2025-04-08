@@ -12,14 +12,13 @@ using Microsoft.Diagnostics.Tracing.Etlx;
 using Microsoft.Diagnostics.Tracing.Stacks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
 /// <summary>
 /// Thread dumper that uses the EventPipe to acquire the call stacks of all the running threads.
 /// </summary>
-internal sealed class EventPipeThreadDumper
+internal sealed class EventPipeThreadDumper : IThreadDumper
 {
     private static readonly StackTraceElement UnknownStackTraceElement = new()
     {
@@ -58,35 +57,28 @@ internal sealed class EventPipeThreadDumper
     /// </returns>
     public async Task<IList<ThreadInfo>> DumpThreadsAsync(CancellationToken cancellationToken)
     {
-        List<ThreadInfo> results = [];
-
         try
         {
-            _logger.LogDebug("Starting thread dump");
+            _logger.LogDebug("Starting thread dump.");
 
             var client = new DiagnosticsClient(System.Environment.ProcessId);
             List<EventPipeProvider> providers = [new("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)];
 
             using EventPipeSession session = client.StartEventPipeSession(providers);
-            await DumpThreadsAsync(session, results, cancellationToken);
-        }
-        catch (Exception exception) when (!exception.IsCancellation())
-        {
-            _logger.LogError(exception, "Unable to dump threads");
+            return await DumpThreadsAsync(session, cancellationToken);
         }
         finally
         {
             long totalMemory = GC.GetTotalMemory(true);
-            _logger.LogDebug("Total Memory {Memory}", totalMemory);
+            _logger.LogDebug("Total memory: {Memory}.", totalMemory);
         }
-
-        return results;
     }
 
     // Much of this code is from diagnostics/dotnet-stack
-    private async Task DumpThreadsAsync(EventPipeSession session, List<ThreadInfo> results, CancellationToken cancellationToken)
+    private async Task<List<ThreadInfo>> DumpThreadsAsync(EventPipeSession session, CancellationToken cancellationToken)
     {
         string? traceFileName = null;
+        List<ThreadInfo> results = [];
 
         try
         {
@@ -134,7 +126,7 @@ internal sealed class EventPipeThreadDumper
 
                 foreach ((int threadId, List<StackSourceSample> samples) in samplesForThread)
                 {
-                    _logger.LogDebug("Found {Stacks} stacks for thread {Thread}", samples.Count, threadId);
+                    _logger.LogDebug("Found {Stacks} stacks for thread {Thread}.", samples.Count, threadId);
 
                     var threadInfo = new ThreadInfo
                     {
@@ -158,11 +150,6 @@ internal sealed class EventPipeThreadDumper
                 }
             }
         }
-        catch (Exception exception) when (!exception.IsCancellation())
-        {
-            _logger.LogError(exception, "Error processing trace file for thread dump");
-            results.Clear();
-        }
         finally
         {
             if (!string.IsNullOrEmpty(traceFileName) && File.Exists(traceFileName))
@@ -171,7 +158,8 @@ internal sealed class EventPipeThreadDumper
             }
         }
 
-        _logger.LogTrace("Finished thread walk");
+        _logger.LogTrace("Finished thread walk.");
+        return results;
     }
 
     private bool IsThreadInNative(IList<StackTraceElement> frames)
@@ -197,7 +185,7 @@ internal sealed class EventPipeThreadDumper
     private List<StackTraceElement> GetStackTrace(int threadId, StackSourceSample stackSourceSample, TraceEventStackSource stackSource,
         SymbolReader symbolReader)
     {
-        _logger.LogDebug("Processing thread with ID: {Thread}", threadId);
+        _logger.LogDebug("Processing thread with ID: {Thread}.", threadId);
 
         List<StackTraceElement> result = [];
         StackSourceCallStackIndex stackIndex = stackSourceSample.StackIndex;
@@ -359,7 +347,7 @@ internal sealed class EventPipeThreadDumper
         if (methodIndex == MethodIndex.Invalid)
         {
             string hexAddress = log.CodeAddresses.Address(codeAddressIndex).ToString("X", CultureInfo.InvariantCulture);
-            _logger.LogTrace("GetSourceLine: Could not find method for {HexAddress}", hexAddress);
+            _logger.LogTrace("GetSourceLine: Could not find method for {HexAddress}.", hexAddress);
             return null;
         }
 
@@ -368,7 +356,7 @@ internal sealed class EventPipeThreadDumper
         if (methodToken == 0)
         {
             string hexAddress = log.CodeAddresses.Address(codeAddressIndex).ToString("X", CultureInfo.InvariantCulture);
-            _logger.LogTrace("GetSourceLine: Could not find method for {HexAddress}", hexAddress);
+            _logger.LogTrace("GetSourceLine: Could not find method for {HexAddress}.", hexAddress);
             return null;
         }
 
@@ -407,7 +395,7 @@ internal sealed class EventPipeThreadDumper
             {
                 if (moduleFile.PdbSignature != Guid.Empty && symbolReaderModule.PdbGuid != moduleFile.PdbSignature)
                 {
-                    _logger.LogTrace("ERROR: the PDB we opened does not match the PDB desired. PDB GUID = {PdbGuid}, DESIRED GUID = {DesiredGuid}",
+                    _logger.LogTrace("ERROR: The PDB opened does not match the PDB desired. PDB GUID = {PdbGuid}, DESIRED GUID = {DesiredGuid}",
                         symbolReaderModule.PdbGuid, moduleFile.PdbSignature);
 
                     return null;
@@ -441,7 +429,7 @@ internal sealed class EventPipeThreadDumper
 
                 if (completedTask == timeoutTask && !cancellationToken.IsCancellationRequested)
                 {
-                    _logger.LogInformation("Sufficiently large applications can cause this command to take non-trivial amounts of time");
+                    _logger.LogInformation("Sufficiently large applications can cause this command to take non-trivial amounts of time.");
                 }
 
                 await copyTask;
@@ -449,11 +437,6 @@ internal sealed class EventPipeThreadDumper
 
             // using the generated trace file, symbolocate and compute stacks.
             return TraceLog.CreateFromEventPipeDataFile(tempNetTraceFilename);
-        }
-        catch (Exception exception) when (!exception.IsCancellation())
-        {
-            _logger.LogError(exception, "Error creating trace file for thread dump");
-            return string.Empty;
         }
         finally
         {
