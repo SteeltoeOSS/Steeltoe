@@ -4,7 +4,7 @@
 
 using Steeltoe.Management.Configuration;
 
-namespace Steeltoe.Management.Endpoint.Actuators.Logfile;
+namespace Steeltoe.Management.Endpoint.Actuators.LogFile;
 
 public sealed class LogFileEndpointOptions : EndpointOptions
 {

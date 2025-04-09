@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.Actuators.Logfile;
+using Steeltoe.Management.Endpoint.Actuators.LogFile;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Logfile;
 

@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
-namespace Steeltoe.Management.Endpoint.Actuators.Logfile;
+namespace Steeltoe.Management.Endpoint.Actuators.LogFile;
 
 internal static class EndpointServiceCollectionExtensions
 {

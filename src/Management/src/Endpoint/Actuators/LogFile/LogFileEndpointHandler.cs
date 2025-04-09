@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Configuration;
 
-namespace Steeltoe.Management.Endpoint.Actuators.Logfile;
+namespace Steeltoe.Management.Endpoint.Actuators.LogFile;
 
 internal sealed class LogFileEndpointHandler : ILogFileEndpointHandler
 {

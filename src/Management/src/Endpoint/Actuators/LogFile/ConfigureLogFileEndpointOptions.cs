@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Configuration;
 
-namespace Steeltoe.Management.Endpoint.Actuators.Logfile;
+namespace Steeltoe.Management.Endpoint.Actuators.LogFile;
 
 internal sealed class ConfigureLogFileEndpointOptions(IConfiguration configuration)
     : ConfigureEndpointOptions<LogFileEndpointOptions>(configuration, ManagementInfoPrefix, "logfile")

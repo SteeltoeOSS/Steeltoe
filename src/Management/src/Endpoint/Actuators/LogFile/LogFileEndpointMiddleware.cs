@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Middleware;
 
-namespace Steeltoe.Management.Endpoint.Actuators.Logfile;
+namespace Steeltoe.Management.Endpoint.Actuators.LogFile;
 
 internal sealed class LogFileEndpointMiddleware(
     ILogFileEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)

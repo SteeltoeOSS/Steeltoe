@@ -26,7 +26,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         };
 
         await File.WriteAllTextAsync(logFile.FullPath, "This is a test log.");
-        await File.WriteAllTextAsync(tempLogFile.FullPath, "This is a test log.");
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<Startup>();
