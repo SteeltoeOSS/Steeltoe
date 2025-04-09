@@ -42,6 +42,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         string actualLogContent = await response.Content.ReadAsStringAsync();
 
         // assert
-        actualLogContent.Trim().Should().Be("\"This is a test log.\"");
+        actualLogContent.Should().Be("\"This is a test log.\"");
     }
 }
