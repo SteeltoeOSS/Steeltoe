@@ -27,7 +27,7 @@ internal sealed class LogFileEndpointHandler : ILogFileEndpointHandler
 
     public async Task<string> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
-        _logger.LogTrace("Invoking LogfileEndpointHandler with argument: {Argument}", argument);
+        _logger.LogTrace("Invoking {Handler} with argument: {Argument}", nameof(LogFileEndpointHandler), argument);
         cancellationToken.ThrowIfCancellationRequested();
 
         string logFilePath = GetLogFilePath();
