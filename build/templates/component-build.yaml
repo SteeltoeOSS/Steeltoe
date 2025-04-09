@@ -65,11 +65,18 @@ jobs:
       projects: $(SolutionFile)
       arguments: --no-restore -c Release -v minimal
   - task: DotNetCoreCLI@2
-    displayName: dotnet test
+    displayName: dotnet test net8.0
     inputs:
       command: test
       projects: $(SolutionFile)
-      arguments: ${{parameters.skipFilter}} $(CommonTestArgs)
+      arguments: --framework net8.0 ${{parameters.skipFilter}} $(CommonTestArgs)
+      publishTestResults: false
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test net9.0
+    inputs:
+      command: test
+      projects: $(SolutionFile)
+      arguments: --framework net9.0 ${{parameters.skipFilter}} $(CommonTestArgs)
       publishTestResults: false
   - task: CopyFiles@2
     condition: failed()

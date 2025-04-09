@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Encryption.Cryptography;
 using Steeltoe.Configuration.Placeholder;
-using Xunit.Abstractions;
 
 namespace Steeltoe.Configuration.Encryption.Test;
 

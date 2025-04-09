@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text;
+using FluentAssertions.Extensions;
 
 namespace Steeltoe.Common.TestResources;
 
@@ -14,6 +15,9 @@ namespace Steeltoe.Common.TestResources;
 /// </remarks>
 public sealed class ConsoleOutput : IDisposable
 {
+    private static readonly bool IsRunningOnBuildServer =
+        Environment.GetEnvironmentVariable("TF_BUILD") == "true" || Environment.GetEnvironmentVariable("CI") == "true";
+
     private static readonly SemaphoreSlim Lock = new(1, 1);
 
     private readonly TextWriter _backupWriter;
@@ -49,12 +53,22 @@ public sealed class ConsoleOutput : IDisposable
     {
         // Microsoft.Extensions.Logging.Console.ConsoleLogger writes messages to a queue,
         // it takes a bit of time for the background thread to write them to Console.Out.
-        await Task.Delay(1, cancellationToken);
+        await Task.Delay(1.Milliseconds(), cancellationToken);
 
+        // Wait a bit longer, in case of high contention.
         if (_outputBuilder.Length == 0)
         {
-            // Wait a bit longer in case of high contention while running tests on build server.
-            await Task.Delay(100, cancellationToken);
+            if (IsRunningOnBuildServer)
+            {
+                for (int index = 0; index < 10 && _outputBuilder.Length == 0; index++)
+                {
+                    await Task.Delay(50.Milliseconds(), cancellationToken);
+                }
+            }
+            else
+            {
+                await Task.Delay(10.Milliseconds(), cancellationToken);
+            }
         }
     }
 
