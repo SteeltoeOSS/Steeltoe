@@ -17,12 +17,15 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LogFileActuator_ReturnsExpectedData()
     {
-        Dictionary<string, string?> appSettings = new()
+        using var logFile = new TempFile();
+
+        var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:actuator:exposure:include:0"] = "*"
+            ["management:endpoints:actuator:exposure:include:0"] = "*",
+            ["management:endpoints:logfile:filePath"] = logFile.FullPath
         };
-        using TempFile tempLogFile = new();
-        appSettings["management:endpoints:logfile:filePath"] = tempLogFile.FullPath;
+
+        await File.WriteAllTextAsync(logFile.FullPath, "This is a test log.");
         await File.WriteAllTextAsync(tempLogFile.FullPath, "This is a test log.");
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
