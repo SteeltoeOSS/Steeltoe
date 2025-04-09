@@ -63,8 +63,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         await Assert.ThrowsAsync<HttpRequestException>(async () =>
             await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken));
 
-        Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
+        TestConfigServerStartup.LastRequest.Should().NotBeNull();
+        TestConfigServerStartup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
     }
 
     [Fact]
@@ -89,9 +89,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigEnvironment? result = await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken);
 
-        Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
-        Assert.Null(result);
+        TestConfigServerStartup.LastRequest.Should().NotBeNull();
+        TestConfigServerStartup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -180,15 +180,15 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        Assert.True(TestConfigServerStartup.InitialRequestLatch.Wait(1.Minutes(), TestContext.Current.CancellationToken));
-        Assert.True(TestConfigServerStartup.RequestCount >= 1);
+        TestConfigServerStartup.InitialRequestLatch.Wait(1.Minutes(), TestContext.Current.CancellationToken).Should().BeTrue();
+        TestConfigServerStartup.RequestCount.Should().BeGreaterThanOrEqualTo(1);
+
         await Task.Delay(1.Seconds(), TestContext.Current.CancellationToken);
-        Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.True(TestConfigServerStartup.RequestCount >= 2);
-        Assert.False(provider.GetReloadToken().HasChanged);
+        TestConfigServerStartup.LastRequest.Should().NotBeNull();
+        TestConfigServerStartup.RequestCount.Should().BeGreaterThanOrEqualTo(2);
+        provider.GetReloadToken().HasChanged.Should().BeFalse();
     }
 
     [Fact]
@@ -231,7 +231,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        Assert.False(TestConfigServerStartup.InitialRequestLatch.Wait(2.Seconds(), TestContext.Current.CancellationToken));
+        TestConfigServerStartup.InitialRequestLatch.Wait(2.Seconds(), TestContext.Current.CancellationToken).Should().BeFalse();
     }
 
     [Fact]
@@ -283,9 +283,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         await provider.DoLoadAsync(true, TestContext.Current.CancellationToken);
 
-        Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.Equal(2, TestConfigServerStartup.RequestCount);
-        Assert.Equal($"/{options.Name}/{options.Environment}/test-label", TestConfigServerStartup.LastRequest.Path.Value);
+        TestConfigServerStartup.LastRequest.Should().NotBeNull();
+        TestConfigServerStartup.RequestCount.Should().Be(2);
+        TestConfigServerStartup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}/test-label");
     }
 
     [Fact]
@@ -370,9 +370,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
-        Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
-        Assert.Equal(1, TestConfigServerStartup.RequestCount);
+
+        TestConfigServerStartup.LastRequest.Should().NotBeNull();
+        TestConfigServerStartup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
+        TestConfigServerStartup.RequestCount.Should().Be(1);
     }
 
     [Fact]
@@ -401,9 +402,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
-        Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
-        Assert.Equal(1, TestConfigServerStartup.RequestCount);
+
+        TestConfigServerStartup.LastRequest.Should().NotBeNull();
+        TestConfigServerStartup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
+        TestConfigServerStartup.RequestCount.Should().Be(1);
     }
 
     [Fact]
@@ -427,9 +429,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
-        Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
-        Assert.Equal(27, provider.Properties.Count);
+
+        TestConfigServerStartup.LastRequest.Should().NotBeNull();
+        TestConfigServerStartup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
+        provider.Properties.Count.Should().Be(27);
     }
 
     [Fact]
@@ -482,7 +485,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         ];
 
         await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
-        Assert.Equal(1, TestConfigServerStartup.RequestCount);
+        TestConfigServerStartup.RequestCount.Should().Be(1);
     }
 
     [Fact]
@@ -537,7 +540,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
         await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
-        Assert.Equal(1, TestConfigServerStartup.RequestCount);
+        TestConfigServerStartup.RequestCount.Should().Be(1);
     }
 
     [Fact]
@@ -580,7 +583,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
         await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
-        Assert.Equal(6, TestConfigServerStartup.RequestCount);
+        TestConfigServerStartup.RequestCount.Should().Be(6);
     }
 
     [Fact]
@@ -863,9 +866,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
             testOptions = configurationRoot.Get<TestOptions>();
         }
 
-        Assert.NotNull(testOptions);
-        Assert.Equal("my-app", testOptions.Name);
-        Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", testOptions.Version);
+        testOptions.Should().NotBeNull();
+        testOptions.Name.Should().Be("my-app");
+        testOptions.Version.Should().Be("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca");
     }
 
     private ConfigServerClientOptions GetCommonOptions()
