@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions.Extensions;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 
@@ -194,7 +195,7 @@ public sealed class CloudFoundryConfigurationProviderTest
 
         VcapApp? options = null;
 
-        using var tokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
+        using var tokenSource = new CancellationTokenSource(250.Milliseconds());
 
         _ = Task.Run(() =>
         {

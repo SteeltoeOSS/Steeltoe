@@ -249,6 +249,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var principal = new HttpExchangePrincipal("user1");
         var session = new HttpExchangeSession("C1823B32-3E02-420C-B6B4-83822BEA42B7");
 
-        return new HttpExchange(request, response, timestamp, principal, session, TimeSpan.FromMilliseconds(27));
+        return new HttpExchange(request, response, timestamp, principal, session, 27.Milliseconds());
     }
 }

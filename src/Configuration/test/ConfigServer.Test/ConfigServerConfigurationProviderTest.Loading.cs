@@ -125,7 +125,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var options = new ConfigServerClientOptions
         {
             Name = "myName",
-            PollingInterval = TimeSpan.FromMilliseconds(300),
+            PollingInterval = 300.Milliseconds(),
             Label = "label,test-label"
         };
 
@@ -174,7 +174,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var options = new ConfigServerClientOptions
         {
             Name = "myName",
-            PollingInterval = TimeSpan.FromMilliseconds(300),
+            PollingInterval = 300.Milliseconds(),
             FailFast = true,
             Label = "test-label"
         };
@@ -224,7 +224,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         {
             Name = "myName",
             Enabled = false,
-            PollingInterval = TimeSpan.FromMilliseconds(300),
+            PollingInterval = 300.Milliseconds(),
             Label = "label,test-label"
         };
 
@@ -730,7 +730,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Password = "password",
             Token = "vaultToken",
             Timeout = 75_000,
-            PollingInterval = TimeSpan.FromSeconds(35.5),
+            PollingInterval = 35.5.Seconds(),
             ValidateCertificates = false,
             AccessTokenUri = "https://token.server.com/",
             ClientSecret = "client_secret",
@@ -851,7 +851,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         TestOptions? testOptions = null;
 
-        using var tokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
+        using var tokenSource = new CancellationTokenSource(250.Milliseconds());
 
         _ = Task.Run(() =>
         {

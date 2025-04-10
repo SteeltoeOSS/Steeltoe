@@ -70,8 +70,8 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
         listener.StopActivity(current, context);
 
         HttpExchange result = PerformCommonAssertions(observer);
-        result.TimeTaken.Should().BeGreaterThan(TimeSpan.FromMilliseconds(900));
-        result.TimeTaken.Should().BeLessThan(TimeSpan.FromMilliseconds(1300));
+        result.TimeTaken.Should().BeGreaterThan(900.Milliseconds());
+        result.TimeTaken.Should().BeLessThan(1300.Milliseconds());
     }
 
     [Fact]
