@@ -46,7 +46,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
     }
 
     [Fact]
-    public async Task Subscribe_Listener_StopActivity_AddsToQueue()
+    public void Subscribe_Listener_StopActivity_AddsToQueue()
     {
         using var listener = new DiagnosticListener("Microsoft.AspNetCore");
 
@@ -65,7 +65,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
             HttpContext = context
         });
 
-        await Task.Delay(1.Seconds(), TestContext.Current.CancellationToken);
+        SpinWait.SpinUntil(() => false, 1.Seconds());
 
         listener.StopActivity(current, context);
 

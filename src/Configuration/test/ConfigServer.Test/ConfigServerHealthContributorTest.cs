@@ -74,7 +74,7 @@ public sealed class ConfigServerHealthContributorTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
-        Assert.Equal(100000, contributor.GetTimeToLive());
+        Assert.Equal(100_000, contributor.GetTimeToLive());
     }
 
     [Fact]

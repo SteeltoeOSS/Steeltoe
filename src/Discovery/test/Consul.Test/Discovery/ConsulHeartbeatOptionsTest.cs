@@ -20,10 +20,10 @@ public sealed class ConsulHeartbeatOptionsTest
     }
 
     [Theory]
-    [InlineData(30, "s", 2.0 / 3.0, 20000)]
-    [InlineData(30, "s", 1.0 / 3.0, 10000)]
-    [InlineData(10, "m", 0.1, 60000)]
-    [InlineData(1, "h", 0.1, 360000)]
+    [InlineData(30, "s", 2.0 / 3.0, 20_000)]
+    [InlineData(30, "s", 1.0 / 3.0, 10_000)]
+    [InlineData(10, "m", 0.1, 60_000)]
+    [InlineData(1, "h", 0.1, 360_000)]
     [InlineData(2, "s", 2.0 / 3.0, 1000)]
     [InlineData(1, "s", 2.0 / 3.0, 0)]
     [InlineData(0, "s", 2.0 / 3.0, -1000)]

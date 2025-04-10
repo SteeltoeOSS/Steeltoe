@@ -667,11 +667,11 @@ public sealed class EurekaDiscoveryClientTest
         discoveryClient.ApplicationsFetched += (_, _) => eventCount++;
 
         await discoveryClient.FetchRegistryAsync(true, TestContext.Current.CancellationToken);
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+        SpinWait.SpinUntil(() => false, 500.Milliseconds());
         Assert.Equal(1, eventCount);
 
         await discoveryClient.FetchRegistryAsync(false, TestContext.Current.CancellationToken);
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+        SpinWait.SpinUntil(() => false, 500.Milliseconds());
         Assert.Equal(2, eventCount);
 
         handler.Mock.VerifyNoOutstandingExpectation();

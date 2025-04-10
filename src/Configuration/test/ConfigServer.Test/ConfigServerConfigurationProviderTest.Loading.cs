@@ -134,7 +134,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.InitialRequestLatch.Wait(1.Minutes(), TestContext.Current.CancellationToken).Should().BeTrue();
         TestConfigServerStartup.RequestCount.Should().BeGreaterThanOrEqualTo(1);
 
-        await Task.Delay(1.Seconds(), TestContext.Current.CancellationToken);
+        SpinWait.SpinUntil(() => false, 1.Seconds());
 
         TestConfigServerStartup.LastRequest.Should().NotBeNull();
         TestConfigServerStartup.RequestCount.Should().BeGreaterThanOrEqualTo(2);
@@ -185,7 +185,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.InitialRequestLatch.Wait(1.Minutes(), TestContext.Current.CancellationToken).Should().BeTrue();
         TestConfigServerStartup.RequestCount.Should().BeGreaterThanOrEqualTo(1);
 
-        await Task.Delay(1.Seconds(), TestContext.Current.CancellationToken);
+        SpinWait.SpinUntil(() => false, 1.Seconds());
+
         TestConfigServerStartup.LastRequest.Should().NotBeNull();
         TestConfigServerStartup.RequestCount.Should().BeGreaterThanOrEqualTo(2);
         provider.GetReloadToken().HasChanged.Should().BeFalse();
