@@ -64,7 +64,7 @@ jobs:
     inputs:
       command: test
       projects: '**/*.csproj'
-      arguments: '--framework net8.0 --blame-hang-timeout 3m --no-build -c $(buildConfiguration) -maxcpucount:1 --filter "Category!=SkipOnLinux" --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      arguments: '--framework net8.0 --blame-hang-timeout 3m --no-build -c $(buildConfiguration) --filter "Category!=SkipOnLinux" --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - task: DotNetCoreCLI@2
     displayName: dotnet test net9.0
