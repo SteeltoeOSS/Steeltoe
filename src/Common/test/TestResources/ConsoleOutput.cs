@@ -35,7 +35,7 @@ public sealed class ConsoleOutput : IDisposable
 
     public static ConsoleOutput Capture()
     {
-        if (!Lock.Wait(TimeSpan.FromSeconds(5)))
+        if (!Lock.Wait(5.Seconds()))
         {
             throw new TimeoutException("Failed to obtain exclusive access to Console.Out.");
         }
