@@ -852,13 +852,29 @@
                       "type": "string",
                       "description": "Gets or sets the name used to register this application with in Spring Boot Admin server."
                     },
+                    "BaseHost": {
+                      "type": "string",
+                      "description": "Gets or sets the hostname or IP address to use in 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl'. This value should be set explicitly if Spring Boot Admin server is running in a container."
+                    },
                     "BasePath": {
+                      "type": "string",
+                      "description": "Gets or sets the path to use in 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl'."
+                    },
+                    "BasePort": {
+                      "type": "integer",
+                      "description": "Gets or sets the port number to use in 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl'."
+                    },
+                    "BaseScheme": {
+                      "type": "string",
+                      "description": "Gets or sets the scheme (\"http\" or \"https\") to use in 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl'."
+                    },
+                    "BaseUrl": {
                       "type": "string",
                       "description": "Gets or sets the base URL of this application, which Spring Boot Admin server uses to interact with this application."
                     },
                     "ConnectionTimeoutMs": {
                       "type": "integer",
-                      "description": "Gets or sets the connection timeout (in milliseconds) for interactions with Spring Boot Admin server. Default value: 100_000."
+                      "description": "Gets or sets the connection timeout (in milliseconds) for interactions with Spring Boot Admin server. Default value: 5_000."
                     },
                     "Metadata": {
                       "type": "object",
@@ -867,9 +883,22 @@
                       },
                       "description": "Gets metadata to use when registering with Spring Boot Admin server."
                     },
+                    "PreferIPAddress": {
+                      "type": "boolean",
+                      "description": "Gets or sets a value indicating whether to prefer using the local IP address over hostname in 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl'. Requires 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.UseNetworkInterfaces' to be true. Default value: false."
+                    },
+                    "RefreshInterval": {
+                      "type": "string",
+                      "pattern": "^-?(\\d{1,7}|((\\d{1,7}[\\.:])?(([01]?\\d|2[0-3]):[0-5]?\\d|([01]?\\d|2[0-3]):[0-5]?\\d:[0-5]?\\d)(\\.\\d{1,7})?))$",
+                      "description": "Gets or sets the interval for refreshing the registration with Spring Boot Admin server. Set to 'System.TimeSpan.Zero' to register only once at app startup. Default value: 10 seconds."
+                    },
                     "Url": {
                       "type": "string",
                       "description": "Gets or sets the URL of the Spring Boot Admin server."
+                    },
+                    "UseNetworkInterfaces": {
+                      "type": "boolean",
+                      "description": "Gets or sets a value indicating whether to use 'System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces' to determine the IP address or hostname for 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl'. Default value: false."
                     },
                     "ValidateCertificates": {
                       "type": "boolean",
