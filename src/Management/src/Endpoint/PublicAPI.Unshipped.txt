@@ -432,7 +432,7 @@ Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Enabled.set -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.ManagementOptions() -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Path.get -> string?
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Path.set -> void
-Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Port.get -> string?
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Port.get -> int
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Port.set -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.SerializerOptions.get -> System.Text.Json.JsonSerializerOptions!
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.SerializerOptions.set -> void

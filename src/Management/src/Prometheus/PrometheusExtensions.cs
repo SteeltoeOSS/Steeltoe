@@ -156,7 +156,7 @@ public static class PrometheusExtensions
             logger.LogWarning("Customizing endpoints is only supported when using endpoint routing.");
         }
 
-        if (managementOptions.Port is null && !applyActuatorConventions && configurePrometheusPipeline is null)
+        if (managementOptions.Port == 0 && !applyActuatorConventions && configurePrometheusPipeline is null)
         {
             logger.LogWarning(
                 "The Prometheus endpoint may not be configured securely. Consider using a dedicated management port, adding actuator conventions or configuring the Prometheus middleware pipeline.");

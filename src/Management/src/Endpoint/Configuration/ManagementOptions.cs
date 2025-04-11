@@ -38,7 +38,7 @@ public sealed class ManagementOptions
     /// <summary>
     /// Gets or sets the alternate HTTP port at which management endpoints are exposed.
     /// </summary>
-    public string? Port { get; set; }
+    public int Port { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether <see cref="Port" /> applies to HTTP or HTTPS requests. Default value: false.

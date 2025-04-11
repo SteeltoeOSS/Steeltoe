@@ -572,7 +572,7 @@
               "description": "Gets or sets the HTTP request path at which management endpoints are exposed. Default value: /actuator."
             },
             "Port": {
-              "type": "string",
+              "type": "integer",
               "description": "Gets or sets the alternate HTTP port at which management endpoints are exposed."
             },
             "Refresh": {
