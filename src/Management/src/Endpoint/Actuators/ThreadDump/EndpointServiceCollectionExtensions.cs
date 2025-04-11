@@ -52,7 +52,7 @@ public static class EndpointServiceCollectionExtensions
             }
         });
 
-        services.TryAddSingleton<EventPipeThreadDumper>();
+        services.TryAddSingleton<IThreadDumper, EventPipeThreadDumper>();
 
         return services;
     }

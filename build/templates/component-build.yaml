@@ -19,7 +19,7 @@ jobs:
     ${{ if eq(parameters.OS, 'macOS') }}:
       DOTNET_GENERATE_ASPNET_CERTIFICATE: false
     SolutionFile: src/Steeltoe.${{parameters.component}}.slnf
-    CommonTestArgs: --blame-crash --blame-hang-timeout 3m --no-build -c Release --collect "XPlat Code Coverage" -maxcpucount:1 --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)
+    CommonTestArgs: --blame-crash --blame-hang-timeout 3m --no-build -c Release --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)
   pool:
     vmImage: ${{parameters.OS}}-latest
   services:
@@ -65,11 +65,18 @@ jobs:
       projects: $(SolutionFile)
       arguments: --no-restore -c Release -v minimal
   - task: DotNetCoreCLI@2
-    displayName: dotnet test
+    displayName: dotnet test net8.0
     inputs:
       command: test
       projects: $(SolutionFile)
-      arguments: ${{parameters.skipFilter}} $(CommonTestArgs)
+      arguments: --framework net8.0 ${{parameters.skipFilter}} $(CommonTestArgs)
+      publishTestResults: false
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test net9.0
+    inputs:
+      command: test
+      projects: $(SolutionFile)
+      arguments: --framework net9.0 ${{parameters.skipFilter}} $(CommonTestArgs)
       publishTestResults: false
   - task: CopyFiles@2
     condition: failed()

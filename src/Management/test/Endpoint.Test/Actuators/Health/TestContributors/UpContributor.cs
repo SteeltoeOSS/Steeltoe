@@ -8,11 +8,11 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
 
 internal sealed class UpContributor : IHealthContributor
 {
-    private readonly int? _sleepTime;
+    private readonly TimeSpan? _sleepTime;
 
     public string Id => "alwaysUp";
 
-    internal UpContributor(int? sleepTime = null)
+    internal UpContributor(TimeSpan? sleepTime = null)
     {
         _sleepTime = sleepTime;
     }

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -77,7 +78,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     {
         using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
-        List<IHealthContributor> contributors = [new UpContributor(5000)];
+        List<IHealthContributor> contributors = [new UpContributor(5.Seconds())];
 
         testContext.AdditionalServices = (services, _) =>
         {

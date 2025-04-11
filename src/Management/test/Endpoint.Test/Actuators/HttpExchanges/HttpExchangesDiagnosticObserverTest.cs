@@ -46,7 +46,7 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
     }
 
     [Fact]
-    public async Task Subscribe_Listener_StopActivity_AddsToQueue()
+    public void Subscribe_Listener_StopActivity_AddsToQueue()
     {
         using var listener = new DiagnosticListener("Microsoft.AspNetCore");
 
@@ -65,13 +65,13 @@ public sealed class HttpExchangesDiagnosticObserverTest : BaseTest
             HttpContext = context
         });
 
-        await Task.Delay(1.Seconds(), TestContext.Current.CancellationToken);
+        SpinWait.SpinUntil(() => false, 1.Seconds());
 
         listener.StopActivity(current, context);
 
         HttpExchange result = PerformCommonAssertions(observer);
-        result.TimeTaken.Should().BeGreaterThan(TimeSpan.FromMilliseconds(900));
-        result.TimeTaken.Should().BeLessThan(TimeSpan.FromMilliseconds(1300));
+        result.TimeTaken.Should().BeGreaterThan(900.Milliseconds());
+        result.TimeTaken.Should().BeLessThan(1300.Milliseconds());
     }
 
     [Fact]

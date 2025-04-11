@@ -61,7 +61,10 @@ public sealed class XunitLoggerProvider : ILoggerProvider
         {
             if (IsEnabled(logLevel))
             {
-                string message = $"{FormatLevel(logLevel)} {_categoryName}: {formatter(state, exception)}";
+                string message = exception != null
+                    ? $"{FormatLevel(logLevel)} {_categoryName}: {formatter(state, exception)}{Environment.NewLine} {exception}"
+                    : $"{FormatLevel(logLevel)} {_categoryName}: {formatter(state, exception)}";
+
                 _owner._testOutputHelper.WriteLine(message);
             }
         }
