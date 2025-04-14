@@ -4,6 +4,7 @@
 
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 using Steeltoe.Common.Extensions;
@@ -12,7 +13,15 @@ namespace Steeltoe.Common.Http;
 
 internal static class HttpClientExtensions
 {
-    internal static readonly string SteeltoeUserAgent = $"Steeltoe/{typeof(HttpClientExtensions).Assembly.GetName().Version}";
+    internal static readonly string SteeltoeUserAgent = $"Steeltoe/{GetSteeltoeVersion()}";
+
+    private static string GetSteeltoeVersion()
+    {
+        Assembly assembly = typeof(HttpClientExtensions).Assembly;
+
+        return assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ??
+            assembly.GetName().Version?.ToString() ?? "unknown";
+    }
 
     /// <summary>
     /// Sends an HTTP GET request to obtain an access token.
