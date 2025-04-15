@@ -38,7 +38,7 @@ internal sealed class LogFileEndpointHandler : ILogFileEndpointHandler
             FileInfo logFile = new FileInfo(logFilePath);
             var logFileResult = new LogFileEndpointResponse(await File.ReadAllTextAsync(logFilePath, cancellationToken),
                 logFile.Length,
-                DetectFileEncoding(logFilePath),
+                Encoding.Default, // StreamReader.CurrentEncoding is not reliable based on unit tests, so just use default for this .NET implementation
                 logFile.LastWriteTimeUtc);
             return logFileResult;
         }
@@ -58,39 +58,5 @@ internal sealed class LogFileEndpointHandler : ILogFileEndpointHandler
 
         _logger.LogWarning("File path is not set");
         return string.Empty;
-    }
-
-    internal static Encoding DetectFileEncoding(string filePath)
-    {
-        using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-        using var reader = new BinaryReader(fileStream, Encoding.Default);
-
-        // Read the first 4 bytes (maximum BOM length)
-        byte[] bom = reader.ReadBytes(4);
-
-        // Check for known BOMs
-        if (bom.Length >= 3 && bom[0] == 0xEF && bom[1] == 0xBB && bom[2] == 0xBF)
-        {
-            return Encoding.UTF8; // UTF-8 with BOM
-        }
-        if (bom.Length >= 2 && bom[0] == 0xFF && bom[1] == 0xFE)
-        {
-            return Encoding.Unicode; // UTF-16 LE
-        }
-        if (bom.Length >= 2 && bom[0] == 0xFE && bom[1] == 0xFF)
-        {
-            return Encoding.BigEndianUnicode; // UTF-16 BE
-        }
-        if (bom is [0x00, 0x00, 0xFE, 0xFF, ..])
-        {
-            return Encoding.UTF32; // UTF-32 BE
-        }
-        if (bom is [0xFF, 0xFE, 0x00, 0x00, ..])
-        {
-            return Encoding.UTF32; // UTF-32 LE
-        }
-
-        // Default to UTF-8 if no BOM is found
-        return Encoding.UTF8;
     }
 }
