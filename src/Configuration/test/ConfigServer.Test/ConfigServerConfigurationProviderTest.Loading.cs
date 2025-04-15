@@ -7,6 +7,7 @@ using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 
@@ -35,6 +36,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var httpClientHandler = new SlowHttpClientHandler(1.Seconds(), new HttpResponseMessage());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
+        // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await provider.RemoteLoadAsync(["http://localhost:9999/app/profile"], null, TestContext.Current.CancellationToken);
 
         (await action.Should().ThrowExactlyAsync<TaskCanceledException>()).WithInnerExceptionExactly<TimeoutException>();
@@ -122,16 +124,28 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "label,test-label"
         };
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal))
+        {
+            IncludeStackTraces = true
+        };
 
-        startup.WaitForFirstRequest(1.Minutes()).Should().BeTrue();
+        using var loggerFactory = new LoggerFactory([capturingLoggerProvider], new LoggerFilterOptions
+        {
+            MinLevel = LogLevel.Trace
+        });
+
+        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
+        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, loggerFactory);
+
+        bool firstRequestCompleted = startup.WaitForFirstRequest(2.Seconds());
+        firstRequestCompleted.Should().BeTrue($"captured logs:\n{capturingLoggerProvider.GetAsText()}");
+
         startup.RequestCount.Should().BeGreaterThanOrEqualTo(1);
+        startup.LastRequest.Should().NotBeNull();
 
         await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.RequestCount.Should().BeGreaterThanOrEqualTo(2);
+        startup.RequestCount.Should().BeGreaterThanOrEqualTo(2, $"captured logs:\n{capturingLoggerProvider.GetAsText()}");
         provider.GetReloadToken().HasChanged.Should().BeFalse();
     }
 
@@ -172,16 +186,28 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "test-label"
         };
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal))
+        {
+            IncludeStackTraces = true
+        };
 
-        startup.WaitForFirstRequest(1.Minutes()).Should().BeTrue();
+        using var loggerFactory = new LoggerFactory([capturingLoggerProvider], new LoggerFilterOptions
+        {
+            MinLevel = LogLevel.Trace
+        });
+
+        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
+        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, loggerFactory);
+
+        bool firstRequestCompleted = startup.WaitForFirstRequest(2.Seconds());
+        firstRequestCompleted.Should().BeTrue($"captured logs:\n{capturingLoggerProvider.GetAsText()}");
+
         startup.RequestCount.Should().BeGreaterThanOrEqualTo(1);
+        startup.LastRequest.Should().NotBeNull();
 
         await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.RequestCount.Should().BeGreaterThanOrEqualTo(2);
+        startup.RequestCount.Should().BeGreaterThanOrEqualTo(2, $"captured logs:\n{capturingLoggerProvider.GetAsText()}");
         provider.GetReloadToken().HasChanged.Should().BeFalse();
     }
 
@@ -567,14 +593,24 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Timeout = 10
         };
 
+        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal))
+        {
+            IncludeStackTraces = true
+        };
+
+        using var loggerFactory = new LoggerFactory([capturingLoggerProvider], new LoggerFilterOptions
+        {
+            MinLevel = LogLevel.Trace
+        });
+
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, loggerFactory);
 
         await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
 
         await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-        startup.RequestCount.Should().BeGreaterThan(3);
+        startup.RequestCount.Should().BeGreaterThan(3, $"captured logs:\n{capturingLoggerProvider.GetAsText()}");
     }
 
     [Fact]
@@ -880,8 +916,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
 #pragma warning disable S3459 // Unassigned members should be removed
 #pragma warning disable S1144 // Unused private types or members should be removed
+        // ReSharper disable PropertyCanBeMadeInitOnly.Global
         public string? Name { get; set; }
         public string? Version { get; set; }
+        // ReSharper restore PropertyCanBeMadeInitOnly.Global
 #pragma warning restore S1144 // Unused private types or members should be removed
 #pragma warning restore S3459 // Unassigned members should be removed
     }

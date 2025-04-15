@@ -23,6 +23,8 @@ public sealed class CapturingLoggerProvider : ILoggerProvider
 
     private readonly List<string> _messages = [];
 
+    public bool IncludeStackTraces { get; init; }
+
     public CapturingLoggerProvider()
         : this(DefaultFilter)
     {
@@ -63,6 +65,14 @@ public sealed class CapturingLoggerProvider : ILoggerProvider
         }
     }
 
+    public string GetAsText()
+    {
+        lock (_lockObject)
+        {
+            return string.Join(Environment.NewLine, _messages);
+        }
+    }
+
     private void Add(string message)
     {
         lock (_lockObject)
@@ -90,7 +100,10 @@ public sealed class CapturingLoggerProvider : ILoggerProvider
         {
             if (IsEnabled(logLevel))
             {
-                string message = $"{FormatLevel(logLevel)} {_categoryName}: {formatter(state, exception)}";
+                string message = _owner.IncludeStackTraces && exception != null
+                    ? $"{FormatLevel(logLevel)} {_categoryName}: {formatter(state, exception)}{Environment.NewLine} {exception}"
+                    : $"{FormatLevel(logLevel)} {_categoryName}: {formatter(state, exception)}";
+
                 _owner.Add(message);
             }
         }
