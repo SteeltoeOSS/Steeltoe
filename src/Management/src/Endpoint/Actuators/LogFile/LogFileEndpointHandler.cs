@@ -26,7 +26,7 @@ internal sealed class LogFileEndpointHandler : ILogFileEndpointHandler
         _logger = loggerFactory.CreateLogger<LogFileEndpointHandler>();
     }
 
-    public async Task<LogFileEndpointResponse> InvokeAsync(LogFileEndpointRequest argument, CancellationToken cancellationToken)
+    public async Task<LogFileEndpointResponse> InvokeAsync(LogFileEndpointRequest? argument, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Invoking {Handler} with argument: {Argument}", nameof(LogFileEndpointHandler), argument);
         cancellationToken.ThrowIfCancellationRequested();
@@ -81,11 +81,11 @@ internal sealed class LogFileEndpointHandler : ILogFileEndpointHandler
         {
             return Encoding.BigEndianUnicode; // UTF-16 BE
         }
-        if (bom.Length >= 4 && bom[0] == 0x00 && bom[1] == 0x00 && bom[2] == 0xFE && bom[3] == 0xFF)
+        if (bom is [0x00, 0x00, 0xFE, 0xFF, ..])
         {
             return Encoding.UTF32; // UTF-32 BE
         }
-        if (bom.Length >= 4 && bom[0] == 0xFF && bom[1] == 0xFE && bom[2] == 0x00 && bom[3] == 0x00)
+        if (bom is [0xFF, 0xFE, 0x00, 0x00, ..])
         {
             return Encoding.UTF32; // UTF-32 LE
         }

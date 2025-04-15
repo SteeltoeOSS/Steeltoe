@@ -14,7 +14,7 @@ internal static class LogFileStreamer
         byte[] buffer = new byte[4096];
         int bytesRead;
 
-        while ((bytesRead = await fileStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
+        while ((bytesRead = await fileStream.ReadAsync(buffer, cancellationToken)) > 0)
         {
             yield return buffer[..bytesRead];
         }
@@ -27,13 +27,13 @@ internal static class LogFileStreamer
         int bytesRead;
         // Seek to the start index
         fileStream.Seek(startIndex, SeekOrigin.Begin);
-        while ((bytesRead = await fileStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
+        while ((bytesRead = await fileStream.ReadAsync(buffer, cancellationToken)) > 0)
         {
             yield return buffer[..bytesRead];
         }
     }
 
-    public static async IAsyncEnumerable<byte[]> ReadLogFileAsync(string fullPath, int startIndex, int endIndex, CancellationToken cancellationToken)
+    public static async IAsyncEnumerable<byte[]> ReadLogFileAsync(string fullPath, int startIndex, int endIndex, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         await using var fileStream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, useAsync: true);
         byte[] buffer = new byte[4096];
@@ -43,7 +43,7 @@ internal static class LogFileStreamer
         // Seek to the start index
         fileStream.Seek(startIndex, SeekOrigin.Begin);
 
-        while (remainingBytes > 0 && (bytesRead = await fileStream.ReadAsync(buffer, 0, Math.Min(buffer.Length, remainingBytes), cancellationToken)) > 0)
+        while (remainingBytes > 0 && (bytesRead = await fileStream.ReadAsync(buffer.AsMemory(0, Math.Min(buffer.Length, remainingBytes)), cancellationToken)) > 0)
         {
             yield return buffer[..bytesRead];
             remainingBytes -= bytesRead;
