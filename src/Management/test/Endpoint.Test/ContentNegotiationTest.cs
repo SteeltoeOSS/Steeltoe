@@ -15,7 +15,7 @@ using Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public sealed class ContentNegotiationTests
+public sealed class ContentNegotiationTest
 {
     private static readonly Dictionary<string, string?> AppSettings = new()
     {

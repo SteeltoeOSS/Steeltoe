@@ -15,7 +15,7 @@ using Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public sealed class ActuatorContentNegotiationTests
+public sealed class ActuatorContentNegotiationTest
 {
     private const string ActuatorV1 = "application/vnd.spring-boot.actuator.v1+json";
     private const string ActuatorV2 = "application/vnd.spring-boot.actuator.v2+json";
