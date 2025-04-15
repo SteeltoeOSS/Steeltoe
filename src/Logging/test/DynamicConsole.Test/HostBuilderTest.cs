@@ -13,7 +13,7 @@ using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Logging.DynamicConsole.Test;
 
-public sealed class HostBuilderTests
+public sealed class HostBuilderTest
 {
     [Fact]
     public async Task ReplacesExistingConsoleLoggerProvider()

@@ -17,11 +17,11 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Steeltoe.Logging.DynamicSerilog.Test;
 
-public sealed class HostBuilderTests : IDisposable
+public sealed class HostBuilderTest : IDisposable
 {
     private readonly ConsoleOutput _consoleOutput = ConsoleOutput.Capture();
 
-    public HostBuilderTests()
+    public HostBuilderTest()
     {
         DynamicSerilogLoggerProvider.ClearLogger();
     }
@@ -82,7 +82,7 @@ public sealed class HostBuilderTests : IDisposable
         builder.Logging.AddDynamicSerilog(true);
         await using WebApplication host = builder.Build();
 
-        var logger = host.Services.GetRequiredService<ILogger<HostBuilderTests>>();
+        var logger = host.Services.GetRequiredService<ILogger<HostBuilderTest>>();
         logger.LogTrace("TestTrace");
         logger.LogInformation("TestInfo");
         logger.LogError("TestError");
@@ -94,12 +94,12 @@ public sealed class HostBuilderTests : IDisposable
         logOutput.Should().Contain("SERILOG [ERR] TestError");
 
         logOutput.Should().Contain($"""
-            info: {typeof(HostBuilderTests).FullName}[0]
+            info: {typeof(HostBuilderTest).FullName}[0]
                   TestInfo
             """);
 
         logOutput.Should().Contain($"""
-            fail: {typeof(HostBuilderTests).FullName}[0]
+            fail: {typeof(HostBuilderTest).FullName}[0]
                   TestError
             """);
     }
@@ -124,7 +124,7 @@ public sealed class HostBuilderTests : IDisposable
         minimumLevel.Default.Should().Be(LogEventLevel.Information);
         minimumLevel.Override.Should().BeEmpty();
 
-        var logger = host.Services.GetRequiredService<ILogger<HostBuilderTests>>();
+        var logger = host.Services.GetRequiredService<ILogger<HostBuilderTest>>();
         logger.LogTrace("TestTrace");
         logger.LogInformation("TestInfo");
         logger.LogError("TestError");
@@ -159,7 +159,7 @@ public sealed class HostBuilderTests : IDisposable
         minimumLevel.Default.Should().Be(LogEventLevel.Error);
         minimumLevel.Override.Should().BeEmpty();
 
-        var logger = host.Services.GetRequiredService<ILogger<HostBuilderTests>>();
+        var logger = host.Services.GetRequiredService<ILogger<HostBuilderTest>>();
         logger.LogTrace("TestTrace");
         logger.LogInformation("TestInfo");
         logger.LogError("TestError");
@@ -193,7 +193,7 @@ public sealed class HostBuilderTests : IDisposable
         minimumLevel.Default.Should().Be(LogEventLevel.Error);
         minimumLevel.Override.Should().BeEmpty();
 
-        var logger = host.Services.GetRequiredService<ILogger<HostBuilderTests>>();
+        var logger = host.Services.GetRequiredService<ILogger<HostBuilderTest>>();
         logger.LogTrace("TestTrace");
         logger.LogInformation("TestInfo");
         logger.LogError("TestError");
@@ -228,7 +228,7 @@ public sealed class HostBuilderTests : IDisposable
         minimumLevel.Override.Should().ContainSingle();
         minimumLevel.Override.Should().Contain("Steeltoe", LogEventLevel.Error);
 
-        var logger = host.Services.GetRequiredService<ILogger<HostBuilderTests>>();
+        var logger = host.Services.GetRequiredService<ILogger<HostBuilderTest>>();
         logger.LogTrace("TestTrace");
         logger.LogInformation("TestInfo");
         logger.LogError("TestError");
@@ -265,7 +265,7 @@ public sealed class HostBuilderTests : IDisposable
         minimumLevel.Default.Should().Be(LogEventLevel.Error);
         minimumLevel.Override.Should().BeEmpty();
 
-        var logger = host.Services.GetRequiredService<ILogger<HostBuilderTests>>();
+        var logger = host.Services.GetRequiredService<ILogger<HostBuilderTest>>();
         logger.LogTrace("TestTrace");
         logger.LogInformation("TestInfo");
         logger.LogError("TestError");
@@ -303,7 +303,7 @@ public sealed class HostBuilderTests : IDisposable
         minimumLevel.Override.Should().ContainSingle();
         minimumLevel.Override.Should().Contain("Steeltoe", LogEventLevel.Error);
 
-        var logger = host.Services.GetRequiredService<ILogger<HostBuilderTests>>();
+        var logger = host.Services.GetRequiredService<ILogger<HostBuilderTest>>();
         logger.LogTrace("TestTrace");
         logger.LogInformation("TestInfo");
         logger.LogError("TestError");
