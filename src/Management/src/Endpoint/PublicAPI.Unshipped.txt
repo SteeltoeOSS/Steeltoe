@@ -262,6 +262,25 @@ Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.WithInfo(string! key, ob
 Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.WithInfo(System.Collections.Generic.IDictionary<string!, object!>! details) -> Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder!
 Steeltoe.Management.Endpoint.Actuators.Info.InfoEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Info.InfoEndpointOptions.InfoEndpointOptions() -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.ILogFileEndpointHandler
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions.FilePath.get -> string?
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions.FilePath.set -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions.LogFileEndpointOptions() -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointRequest
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointRequest.LogFileEndpointRequest() -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointRequest.LogFileEndpointRequest(long? rangeStartByte, long? rangeLastByte) -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointRequest.LogFileEndpointRequest(long? rangeStartByte, long? rangeLastByte, bool readContent) -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointRequest.RangeLastByte.get -> long?
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointRequest.RangeStartByte.get -> long?
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointRequest.ReadContent.get -> bool
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointResponse
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointResponse.Content.get -> string?
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointResponse.ContentLength.get -> long?
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointResponse.LastModified.get -> System.DateTime?
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointResponse.LogFileEncoding.get -> System.Text.Encoding?
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointResponse.LogFileEndpointResponse() -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointResponse.LogFileEndpointResponse(string? content, long? contentLength, System.Text.Encoding? logFileEncoding, System.DateTime? lastModified) -> void
 Steeltoe.Management.Endpoint.Actuators.Loggers.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.Loggers.ILoggersEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.Loggers.LoggerGroup
