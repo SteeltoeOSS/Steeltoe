@@ -9,6 +9,8 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Logfile;
 
 public sealed class LogFileEndpointOptionsTest : BaseTest
 {
+    private readonly string[] _expectedAllowedVerbs = ["Get", "Head"];
+
     [Fact]
     public void AppliesDefaults()
     {
@@ -18,8 +20,8 @@ public sealed class LogFileEndpointOptionsTest : BaseTest
         options.RequiredPermissions.Should().Be(EndpointPermissions.Restricted);
         options.Path.Should().Be("logfile");
         options.FilePath.Should().BeNull();
-        options.AllowedVerbs.Should().Contain("Get");
-        options.AllowedVerbs.Should().HaveCount(1);
+        options.AllowedVerbs.Should().Contain(_expectedAllowedVerbs);
+        options.AllowedVerbs.Should().HaveCount(2);
     }
 
     [Fact]
@@ -36,9 +38,8 @@ public sealed class LogFileEndpointOptionsTest : BaseTest
         options.Id.Should().Be("logfile");
         options.RequiredPermissions.Should().Be(EndpointPermissions.Restricted);
         options.Path.Should().Be("testPath");
-        options.AllowedVerbs.Should().Contain("Get");
         options.FilePath.Should().Be("logs/application.log");
-        options.AllowedVerbs.Should().Contain("Get");
-        options.AllowedVerbs.Should().HaveCount(1);
+        options.AllowedVerbs.Should().Contain(_expectedAllowedVerbs);
+        options.AllowedVerbs.Should().HaveCount(2);
     }
 }

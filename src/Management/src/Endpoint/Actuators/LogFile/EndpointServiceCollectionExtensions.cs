@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Management.Endpoint.Actuators.LogFile;
 
@@ -42,7 +40,7 @@ internal static class EndpointServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddCoreActuatorServices<LogFileEndpointOptions, ConfigureLogFileEndpointOptions, LogFileEndpointMiddleware,
-            ILogFileEndpointHandler, LogFileEndpointHandler, object?, string>(configureMiddleware);
+            ILogFileEndpointHandler, LogFileEndpointHandler, LogFileEndpointRequest?, LogFileEndpointResponse>(configureMiddleware);
 
         return services;
     }

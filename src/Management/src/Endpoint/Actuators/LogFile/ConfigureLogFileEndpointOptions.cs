@@ -11,4 +11,11 @@ internal sealed class ConfigureLogFileEndpointOptions(IConfiguration configurati
     : ConfigureEndpointOptions<LogFileEndpointOptions>(configuration, ManagementInfoPrefix, "logfile")
 {
     private const string ManagementInfoPrefix = "management:endpoints:logfile";
+
+    public override void Configure(LogFileEndpointOptions options)
+    {
+        options.AllowedVerbs.Add("Get");
+        options.AllowedVerbs.Add("Head");
+        base.Configure(options);
+    }
 }

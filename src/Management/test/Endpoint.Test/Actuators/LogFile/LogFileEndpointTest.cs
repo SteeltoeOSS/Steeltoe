@@ -14,6 +14,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Logfile;
 
 public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : BaseTest
 {
+    private readonly string[] _expectedAllowedVerbs = ["Get", "Head"];
     private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
     [Fact]
@@ -127,8 +128,7 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.ConfigureEndpointOptions<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
-            services.AddSingleton<ILogFileEndpointHandler, LogFileEndpointHandler>();
+            services.AddLogFileActuator();
         };
 
         var handler = (LogFileEndpointHandler)testContext.GetRequiredService<ILogFileEndpointHandler>();
@@ -138,8 +138,7 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
         options.RequiredPermissions.Should().Be(EndpointPermissions.Restricted);
         options.Path.Should().Be("logfile");
         options.FilePath.Should().Be("logs/testfile.log");
-        options.AllowedVerbs.Should().Contain("Get");
-        options.AllowedVerbs.Should().HaveCount(1);
+        options.AllowedVerbs.Should().Contain(_expectedAllowedVerbs);
     }
 
     [Fact]
@@ -147,7 +146,7 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
     {
         const string expectedLogFileContents = "This is a test log file content.";
         using var tempLogFile = new TempFile();
-        await File.WriteAllTextAsync(tempLogFile.FullPath, expectedLogFileContents);
+        await File.WriteAllTextAsync(tempLogFile.FullPath, expectedLogFileContents, TestContext.Current.CancellationToken);
 
         var appSettings = new Dictionary<string, string?>
         {
@@ -164,14 +163,13 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.ConfigureEndpointOptions<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
-            services.AddSingleton<ILogFileEndpointHandler, LogFileEndpointHandler>();
+            services.AddLogFileActuator();
         };
 
         var handler = (LogFileEndpointHandler)testContext.GetRequiredService<ILogFileEndpointHandler>();
-        string logFileContents = await handler.InvokeAsync("an object", CancellationToken.None);
+        var logFileContents = await handler.InvokeAsync(new LogFileEndpointRequest(), TestContext.Current.CancellationToken);
 
-        logFileContents.Should().Be(expectedLogFileContents);
+        logFileContents.Content.Should().Be(expectedLogFileContents);
     }
 
     [Fact]
@@ -191,13 +189,12 @@ public sealed class LogFileEndpointTest(ITestOutputHelper testOutputHelper) : Ba
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.ConfigureEndpointOptions<LogFileEndpointOptions, ConfigureLogFileEndpointOptions>();
-            services.AddSingleton<ILogFileEndpointHandler, LogFileEndpointHandler>();
+            services.AddLogFileActuator();
         };
 
         var handler = (LogFileEndpointHandler)testContext.GetRequiredService<ILogFileEndpointHandler>();
-        string logFileContents = await handler.InvokeAsync("an object", CancellationToken.None);
+        var logFileContents = await handler.InvokeAsync(new LogFileEndpointRequest(), TestContext.Current.CancellationToken);
 
-        logFileContents.Should().Be(string.Empty);
+        logFileContents.Content.Should().Be(null);
     }
 }
