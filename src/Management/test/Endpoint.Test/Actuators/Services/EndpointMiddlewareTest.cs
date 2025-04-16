@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Services;
 using Steeltoe.Management.Endpoint.Configuration;
-using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Services;
 

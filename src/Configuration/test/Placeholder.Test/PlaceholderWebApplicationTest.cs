@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Common.TestResources.IO;
-using Xunit.Abstractions;
 
 namespace Steeltoe.Configuration.Placeholder.Test;
 
