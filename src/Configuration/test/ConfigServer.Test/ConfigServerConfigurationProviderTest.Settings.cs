@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using FluentAssertions.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -46,7 +47,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using HttpClient httpClient = provider.CreateHttpClient(options);
 
         Assert.NotNull(httpClient);
-        Assert.Equal(TimeSpan.FromMilliseconds(30000), httpClient.Timeout);
+        Assert.Equal(30.Seconds(), httpClient.Timeout);
     }
 
     [Fact]

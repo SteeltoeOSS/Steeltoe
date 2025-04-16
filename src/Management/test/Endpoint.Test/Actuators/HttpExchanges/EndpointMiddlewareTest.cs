@@ -31,9 +31,11 @@ public sealed class EndpointMiddlewareTest : BaseTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHttpExchangesActuator();
+
         await using WebApplication host = builder.Build();
         host.MapGet("/hello", () => "Hello World!");
         await host.StartAsync(TestContext.Current.CancellationToken);
+
         using var httpClient = new HttpClient();
 
         HttpResponseMessage helloResponse =
@@ -45,16 +47,21 @@ public sealed class EndpointMiddlewareTest : BaseTest
             await httpClient.GetAsync(new Uri("http://localhost:5000/actuator/httpexchanges"), TestContext.Current.CancellationToken);
 
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
         var actuatorRootElement = await actuatorResponse.Content.ReadFromJsonAsync<JsonElement>(TestContext.Current.CancellationToken);
+
         JsonElement[] exchangesArray = [.. actuatorRootElement.GetProperty("exchanges").EnumerateArray()];
         exchangesArray.Should().ContainSingle();
+
         JsonElement testExchange = exchangesArray[0];
         string requestTimestamp = testExchange.GetProperty("timestamp").ToString();
         requestTimestamp.Should().StartWith($"{DateTime.UtcNow.Date:yyyy-MM-dd}T");
         requestTimestamp.Should().EndWith("Z");
+
         string requestTimeTaken = testExchange.GetProperty("timeTaken").ToString();
         var timeTaken = XmlConvert.ToTimeSpan(requestTimeTaken);
         timeTaken.Should().BeGreaterThan(TimeSpan.Zero).And.BeLessThan(1.Seconds());
+
         testExchange.Invoking(jsonElement => jsonElement.GetProperty("principal")).Should().Throw<KeyNotFoundException>();
         testExchange.Invoking(jsonElement => jsonElement.GetProperty("session")).Should().Throw<KeyNotFoundException>();
 
@@ -242,6 +249,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         var principal = new HttpExchangePrincipal("user1");
         var session = new HttpExchangeSession("C1823B32-3E02-420C-B6B4-83822BEA42B7");
 
-        return new HttpExchange(request, response, timestamp, principal, session, TimeSpan.FromMilliseconds(27));
+        return new HttpExchange(request, response, timestamp, principal, session, 27.Milliseconds());
     }
 }

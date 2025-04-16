@@ -45,6 +45,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
     private ConfigServerDiscoveryService? _configServerDiscoveryService;
     private Timer? _refreshTimer;
+    private SemaphoreSlim? _timerTickLock = new(1, 1);
 
     internal static JsonSerializerOptions SerializerOptions { get; } = new()
     {
@@ -145,13 +146,49 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// </remarks>
     private async Task DoPolledLoadAsync()
     {
+        _logger.LogTrace("Entering timer cycle");
+        bool lockTaken = false;
+
         try
         {
-            await DoLoadAsync(true, CancellationToken.None);
+            lockTaken = _timerTickLock != null && await _timerTickLock.WaitAsync(0);
+        }
+        catch (ObjectDisposedException)
+        {
+            // Ignore exception originating from potential race condition.
+        }
+
+        try
+        {
+            if (lockTaken)
+            {
+                _logger.LogTrace("Exclusive lock obtained");
+                await DoLoadAsync(true, CancellationToken.None);
+            }
+            else
+            {
+                _logger.LogTrace("Previous cycle is still running, or already disposed; skipping this cycle");
+            }
         }
         catch (Exception exception)
         {
             _logger.LogWarning(exception, "Could not reload configuration during polling");
+        }
+        finally
+        {
+            if (lockTaken)
+            {
+                _logger.LogTrace("Timer cycle completed, releasing exclusive lock");
+
+                try
+                {
+                    _timerTickLock?.Release();
+                }
+                catch (ObjectDisposedException)
+                {
+                    // Ignore exception originating from potential race condition.
+                }
+            }
         }
     }
 
@@ -230,6 +267,8 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         {
             foreach (string label in GetLabels())
             {
+                _logger.LogTrace("Processing label '{Label}'", label);
+
                 if (uris.Count > 1)
                 {
                     _logger.LogDebug("Multiple Config Server Uris listed.");
@@ -271,8 +310,13 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
                         if (!AreDictionariesEqual(Data, data))
                         {
+                            _logger.LogTrace("Data has changed, raising configuration reload");
                             Data = data;
                             OnReload();
+                        }
+                        else
+                        {
+                            _logger.LogTrace("Data has not changed");
                         }
                     }
 
@@ -289,6 +333,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
         if (ClientOptions.FailFast)
         {
+            _logger.LogTrace(error, "Failure with FailFast enabled, throwing ConfigServerException");
             throw new ConfigServerException("Could not locate PropertySource, fail fast property is set, failing", error);
         }
 
@@ -494,6 +539,8 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
     internal async Task<ConfigEnvironment?> RemoteLoadAsync(IEnumerable<string> requestUris, string? label, CancellationToken cancellationToken)
     {
+        _logger.LogTrace("Entered {Method}", nameof(RemoteLoadAsync));
+
         // Get client if not already set
         using HttpClient httpClient = CreateHttpClient(ClientOptions);
 
@@ -505,11 +552,13 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             Uri uri = BuildConfigServerUri(requestUri, label);
 
             // Get the request message
+            _logger.LogTrace("Building HTTP request message");
             HttpRequestMessage request = await GetRequestMessageAsync(uri, cancellationToken);
 
             // Invoke Config Server
             try
             {
+                _logger.LogTrace("Sending HTTP request");
                 using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
                 _logger.LogDebug("Config Server returned status: {StatusCode} invoking path: {RequestUri}", response.StatusCode, uri.ToMaskedString());
@@ -530,6 +579,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                     return null;
                 }
 
+                _logger.LogTrace("Parsing JSON response");
                 return await response.Content.ReadFromJsonAsync<ConfigEnvironment>(SerializerOptions, cancellationToken);
             }
             catch (Exception exception) when (!exception.IsCancellation())
@@ -538,6 +588,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
                 if (IsSocketError(exception))
                 {
+                    _logger.LogTrace(exception, "Socket error detected");
                     continue;
                 }
 
@@ -769,6 +820,12 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     {
         _refreshTimer?.Dispose();
         _refreshTimer = null;
+
+        if (_timerTickLock != null)
+        {
+            _timerTickLock.Dispose();
+            _timerTickLock = null;
+        }
 
         if (_ownsHttpClientHandler)
         {

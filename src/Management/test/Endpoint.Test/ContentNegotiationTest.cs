@@ -202,6 +202,7 @@ public sealed class ContentNegotiationTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSingleton<IHeapDumper, FakeHeapDumper>();
         builder.Services.AddHeapDumpActuator();
 
         await using WebApplication host = builder.Build();
@@ -225,8 +226,8 @@ public sealed class ContentNegotiationTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddHeapDumpActuator();
         builder.Services.AddSingleton<IHeapDumper, FakeHeapDumper>();
+        builder.Services.AddHeapDumpActuator();
 
         await using WebApplication host = builder.Build();
         await host.StartAsync(TestContext.Current.CancellationToken);

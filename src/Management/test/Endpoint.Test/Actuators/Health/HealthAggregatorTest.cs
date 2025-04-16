@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using FluentAssertions.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Steeltoe.Common.HealthChecks;
@@ -61,7 +62,7 @@ public sealed class HealthAggregatorTest : BaseTest
     [Fact]
     public async Task Aggregate_SingleCanceledContributor_Throws()
     {
-        List<IHealthContributor> contributors = [new UpContributor(5000)];
+        List<IHealthContributor> contributors = [new UpContributor(5.Seconds())];
         using var source = new CancellationTokenSource();
 
         await source.CancelAsync();
@@ -142,9 +143,9 @@ public sealed class HealthAggregatorTest : BaseTest
 
         List<IHealthContributor> contributors =
         [
-            new UpContributor(1000),
-            new UpContributor(1500),
-            new UpContributor(2500)
+            new UpContributor(1.Seconds()),
+            new UpContributor(2.Seconds()),
+            new UpContributor(3.Seconds())
         ];
 
         var aggregator = new HealthAggregator();
@@ -156,6 +157,6 @@ public sealed class HealthAggregatorTest : BaseTest
         stopwatch.Stop();
         Assert.NotNull(result);
         Assert.Equal(SteeltoeHealthStatus.Up, result.Status);
-        Assert.InRange(stopwatch.ElapsedMilliseconds, 900, 4500);
+        Assert.InRange(stopwatch.Elapsed, 500.Milliseconds(), 5.Seconds());
     }
 }

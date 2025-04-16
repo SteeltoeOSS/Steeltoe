@@ -24,7 +24,7 @@ public sealed class MongoDbHealthContributorTest
         var mongoClient = new MongoClient(new MongoClientSettings
         {
             Server = new MongoServerAddress("localhost"),
-            ServerSelectionTimeout = TimeSpan.FromMilliseconds(1)
+            ServerSelectionTimeout = 1.Milliseconds()
         });
 
         await using ServiceProvider serviceProvider = CreateServiceProvider(serviceName, connectionString, mongoClient);
