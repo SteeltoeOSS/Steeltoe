@@ -217,7 +217,7 @@ public sealed class EurekaClientOptionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["eureka:client:ServiceUrl"] = "http://server,bad,https://eureka.com,broken"
+            ["eureka:client:ServiceUrl"] = "http://server,/not-fully-qualified,https://eureka.com,broken"
         };
 
         var services = new ServiceCollection();
@@ -230,7 +230,7 @@ public sealed class EurekaClientOptionsTest
         Action action = () => _ = clientOptions.Value;
 
         OptionsValidationException? exception = action.Should().ThrowExactly<OptionsValidationException>().Which;
-        exception.Failures.Should().ContainSingle(message => message == "Eureka URL 'bad' is invalid.");
+        exception.Failures.Should().ContainSingle(message => message == "Eureka URL '/not-fully-qualified' is invalid.");
         exception.Failures.Should().ContainSingle(message => message == "Eureka URL 'broken' is invalid.");
     }
 

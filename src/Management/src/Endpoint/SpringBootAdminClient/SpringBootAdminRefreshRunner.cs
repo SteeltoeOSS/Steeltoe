@@ -81,7 +81,7 @@ internal sealed class SpringBootAdminRefreshRunner
         {
             errors.Add($"{nameof(SpringBootAdminClientOptions.Url)} must be configured to register with Spring Boot Admin server");
         }
-        else if (!Uri.TryCreate(options.Url, UriKind.Absolute, out _))
+        else if (!Uri.IsWellFormedUriString(options.Url, UriKind.Absolute))
         {
             errors.Add($"{nameof(SpringBootAdminClientOptions.Url)} must be configured as a fully-qualified URL to register with Spring Boot Admin server");
         }
@@ -103,7 +103,7 @@ internal sealed class SpringBootAdminRefreshRunner
         {
             errors.Add($"{nameof(SpringBootAdminClientOptions.BaseUrl)} must be configured to register with Spring Boot Admin server");
         }
-        else if (!Uri.TryCreate(options.BaseUrl, UriKind.Absolute, out _))
+        else if (!Uri.IsWellFormedUriString(options.BaseUrl, UriKind.Absolute))
         {
             errors.Add($"{nameof(SpringBootAdminClientOptions.BaseUrl)} must be configured as a fully-qualified URL to register with Spring Boot Admin server");
         }
