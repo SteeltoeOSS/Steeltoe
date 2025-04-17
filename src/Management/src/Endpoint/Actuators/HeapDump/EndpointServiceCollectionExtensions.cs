@@ -41,7 +41,7 @@ public static class EndpointServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddCoreActuatorServices<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions, HeapDumpEndpointMiddleware, IHeapDumpEndpointHandler,
-            HeapDumpEndpointHandler, object?, string?>(configureMiddleware);
+            HeapDumpEndpointHandler, object?, string>(configureMiddleware);
 
         services.TryAddSingleton(TimeProvider.System);
         services.TryAddSingleton<IHeapDumper, HeapDumper>();

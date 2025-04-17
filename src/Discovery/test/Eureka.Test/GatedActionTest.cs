@@ -16,13 +16,13 @@ public sealed class GatedActionTest
         Interlocked.Exchange(ref _timerFuncCount, 0);
         var timedTask = new GatedAction(TimerFunc);
         await using var timer = new Timer(_ => timedTask.Run(), null, 10, 100);
-        await Task.Delay(1.Seconds(), TestContext.Current.CancellationToken);
+        SpinWait.SpinUntil(() => false, 1.Seconds());
         Assert.Equal(1, _timerFuncCount);
     }
 
     private void TimerFunc()
     {
         Interlocked.Increment(ref _timerFuncCount);
-        Thread.Sleep(3000);
+        Thread.Sleep(3.Seconds());
     }
 }

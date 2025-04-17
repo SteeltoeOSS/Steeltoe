@@ -60,11 +60,18 @@ jobs:
       projects: src/Steeltoe.All.sln
       arguments: --no-restore -c $(buildConfiguration) -v minimal
   - task: DotNetCoreCLI@2
-    displayName: dotnet test
+    displayName: dotnet test net8.0
     inputs:
       command: test
       projects: '**/*.csproj'
-      arguments: '--blame-hang-timeout 3m --no-build -c $(buildConfiguration) -maxcpucount:1 --filter "Category!=SkipOnLinux" --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      arguments: '--framework net8.0 --blame-hang-timeout 3m --no-build -c $(buildConfiguration) --filter "Category!=SkipOnLinux" --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      publishTestResults: false
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test net9.0
+    inputs:
+      command: test
+      projects: '**/*.csproj'
+      arguments: '--framework net9.0 --blame-hang-timeout 3m --no-build -c $(buildConfiguration) --filter "Category!=SkipOnLinux" --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - task: CopyFiles@2
     condition: failed()

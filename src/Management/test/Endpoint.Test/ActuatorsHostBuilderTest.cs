@@ -36,6 +36,7 @@ using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
 using Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 using Steeltoe.Management.Endpoint.Test.Actuators.Info;
+using Steeltoe.Management.Endpoint.Test.Actuators.ThreadDump;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -342,8 +343,8 @@ public sealed class ActuatorsHostBuilderTest
 
             builder.ConfigureServices(services =>
             {
-                services.AddHeapDumpActuator();
                 services.AddSingleton<IHeapDumper, FakeHeapDumper>();
+                services.AddHeapDumpActuator();
             });
         });
 
@@ -625,7 +626,12 @@ public sealed class ActuatorsHostBuilderTest
         await using HostWrapper host = hostBuilderType.Build(builder =>
         {
             builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
-            builder.ConfigureServices(services => services.AddThreadDumpActuator());
+
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<IThreadDumper, FakeThreadDumper>();
+                services.AddThreadDumpActuator();
+            });
         });
 
         await host.StartAsync(TestContext.Current.CancellationToken);

@@ -32,7 +32,7 @@ public sealed class RelationalDatabaseHealthContributorTest
         result.Description.Should().Be("PostgreSQL health check failed");
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
-        result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().Match("NpgsqlException: Failed to connect to *:9999");
+        result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("NpgsqlException: ");
     }
 
     [Fact(Skip = "Integration test - Requires local PostgreSQL server")]

@@ -6,11 +6,8 @@
         public IList<string> KeysToSanitize { get; } = new List<string>();
       Taking the suggestion TODAY produces List<string>(), but the spec doesn't require that, so the compiler may change it over time.
       As a result, callers that cast back to List<string> will face a breaking change.
-
-      Disabled IDE analyzers for "Remove unused member" (IDE0051, IDE0052) because they currently don't "see" code added
-      by source generators, resulting in false positives. See https://github.com/dotnet/roslyn/issues/75483.
      -->
-    <NoWarn>$(NoWarn);CS1591;IDE0028;IDE0051;IDE0052;IDE0300;IDE0301;IDE0302;IDE0303;IDE0304;IDE0305;IDE0306</NoWarn>
+    <NoWarn>$(NoWarn);CS1591;IDE0028;IDE0300;IDE0301;IDE0302;IDE0303;IDE0304;IDE0305;IDE0306</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 

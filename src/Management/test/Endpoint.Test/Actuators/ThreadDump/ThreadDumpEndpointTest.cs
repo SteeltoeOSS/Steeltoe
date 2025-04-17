@@ -19,7 +19,7 @@ public sealed class ThreadDumpEndpointTest(ITestOutputHelper testOutputHelper) :
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton<EventPipeThreadDumper>();
+            services.AddSingleton<IThreadDumper, FakeThreadDumper>();
             services.AddThreadDumpActuator();
         };
 

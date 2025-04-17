@@ -28,7 +28,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<ThreadDumpEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(AppSettings);
 
-        var threadDumper = new EventPipeThreadDumper(endpointOptionsMonitor, NullLogger<EventPipeThreadDumper>.Instance);
+        var threadDumper = new FakeThreadDumper();
         var handler = new ThreadDumpEndpointHandler(endpointOptionsMonitor, threadDumper, NullLoggerFactory.Instance);
         var middleware = new ThreadDumpEndpointMiddleware(handler, managementOptions, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest("GET", "/threaddump");

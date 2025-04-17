@@ -21,7 +21,6 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     {
         WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(builder => builder.Add(FastTestConfigurations.ConfigServer));
-        hostBuilder.UseStartup<TestConfigServerStartup>();
         hostBuilder.AddConfigServer();
 
         using IWebHost host = hostBuilder.Build();

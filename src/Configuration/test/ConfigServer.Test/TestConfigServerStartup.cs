@@ -7,34 +7,69 @@ using Microsoft.AspNetCore.Http;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
-public sealed class TestConfigServerStartup
+internal sealed class TestConfigServerStartup : IDisposable
 {
-    internal static CountdownEvent InitialRequestLatch { get; private set; } = new(1);
+    private volatile CountdownEvent _firstRequestCountdownEvent = new(1);
+    private volatile string? _response;
+    private volatile int[] _returnStatus = [200];
+    private volatile HttpRequestInfo? _lastRequest;
+    private volatile int _requestCount;
+    private volatile string _label = string.Empty;
+    private volatile string _appName = string.Empty;
+    private volatile string _env = string.Empty;
 
-    public static string? Response { get; set; }
+    public string? Response
+    {
+        get => _response;
+        set => _response = value;
+    }
 
-    public static int[] ReturnStatus { get; set; } = [200];
+    public int[] ReturnStatus
+    {
+        get => _returnStatus;
+        set => _returnStatus = value;
+    }
 
-    public static HttpRequestInfo? LastRequest { get; set; }
+    public HttpRequestInfo? LastRequest
+    {
+        get => _lastRequest;
+        set => _lastRequest = value;
+    }
 
-    public static int RequestCount { get; set; }
+    public int RequestCount
+    {
+        get => _requestCount;
+        set => _requestCount = value;
+    }
 
-    public static string Label { get; set; } = string.Empty;
+    public string Label
+    {
+        get => _label;
+        set => _label = value;
+    }
 
-    public static string AppName { get; set; } = string.Empty;
+    public string AppName
+    {
+        get => _appName;
+        set => _appName = value;
+    }
 
-    public static string Env { get; set; } = string.Empty;
+    public string Env
+    {
+        get => _env;
+        set => _env = value;
+    }
 
-    public static void Reset()
+    public void Reset()
     {
         Response = null;
-
         ReturnStatus = [200];
-
         LastRequest = null;
         RequestCount = 0;
         Label = AppName = Env = string.Empty;
-        InitialRequestLatch = new CountdownEvent(1);
+
+        _firstRequestCountdownEvent.Dispose();
+        _firstRequestCountdownEvent = new CountdownEvent(1);
     }
 
     public void Configure(IApplicationBuilder app)
@@ -57,12 +92,12 @@ public sealed class TestConfigServerStartup
 
             if (RequestCount == 1)
             {
-                InitialRequestLatch.Signal();
+                _firstRequestCountdownEvent.Signal();
             }
         });
     }
 
-    public int GetStatusCode(string path)
+    private int GetStatusCode(string path)
     {
         if (!string.IsNullOrEmpty(Label) && !path.Contains(Label, StringComparison.Ordinal))
         {
@@ -80,5 +115,15 @@ public sealed class TestConfigServerStartup
         }
 
         return ReturnStatus[RequestCount];
+    }
+
+    public bool WaitForFirstRequest(TimeSpan timeout)
+    {
+        return _firstRequestCountdownEvent.Wait(timeout, TestContext.Current.CancellationToken);
+    }
+
+    public void Dispose()
+    {
+        _firstRequestCountdownEvent.Dispose();
     }
 }

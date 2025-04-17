@@ -110,14 +110,14 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         Assert.Equal(55555, options.Retry.InitialInterval);
         Assert.Equal(55555, options.Retry.MaxInterval);
         Assert.Equal(5.5, options.Retry.Multiplier);
-        Assert.Equal(10000, options.Timeout);
+        Assert.Equal(10_000, options.Timeout);
         Assert.Equal("vault-token", options.Token);
         Assert.Null(options.AccessTokenUri);
         Assert.Null(options.ClientId);
         Assert.Null(options.ClientSecret);
-        Assert.Equal(50000, options.TokenRenewRate);
+        Assert.Equal(50_000, options.TokenRenewRate);
         Assert.True(options.DisableTokenRenewal);
-        Assert.Equal(50000, options.TokenTtl);
+        Assert.Equal(50_000, options.TokenTtl);
     }
 
     [Fact]
