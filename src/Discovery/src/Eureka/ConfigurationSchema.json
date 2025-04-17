@@ -260,7 +260,7 @@
             },
             "UseNetworkInterfaces": {
               "type": "boolean",
-              "description": "Gets or sets a value indicating whether 'System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces' is used to determine 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.IPAddress' and 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.HostName' ."
+              "description": "Gets or sets a value indicating whether 'System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces' is used to determine 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.IPAddress' and 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.HostName'. Default value: false."
             },
             "VipAddress": {
               "type": "string",

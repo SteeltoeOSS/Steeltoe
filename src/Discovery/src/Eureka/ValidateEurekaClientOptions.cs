@@ -31,7 +31,7 @@ internal sealed class ValidateEurekaClientOptions : IValidateOptions<EurekaClien
 
             foreach (string url in urls)
             {
-                if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? uri))
+                if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? uri) || !uri.IsWellFormedOriginalString())
                 {
                     errors.Add($"Eureka URL '{url}' is invalid.");
                 }

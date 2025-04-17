@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
@@ -56,11 +55,11 @@ internal sealed class ManagementPortMiddleware
 
     private bool IsRequestAllowed(HttpRequest request, ManagementOptions managementOptions)
     {
-        if (int.TryParse(managementOptions.Port, CultureInfo.InvariantCulture, out int managementPort) && managementPort > 0)
+        if (managementOptions.Port is > 0 and < 65536)
         {
             bool isManagementPath = request.Path.StartsWithSegments(managementOptions.Path);
             bool isManagementScheme = managementOptions.SslEnabled ? request.Scheme == Uri.UriSchemeHttps : request.Scheme == Uri.UriSchemeHttp;
-            bool isManagementPort = request.Host.Port == managementPort || HasMappedInstancePort(managementPort, request.Host.Port);
+            bool isManagementPort = request.Host.Port == managementOptions.Port || HasMappedInstancePort(managementOptions.Port, request.Host.Port);
 
             return isManagementPath ? isManagementScheme && isManagementPort : !isManagementScheme || !isManagementPort;
         }
@@ -96,7 +95,7 @@ internal sealed class ManagementPortMiddleware
         return false;
     }
 
-    private void SetResponseError(HttpContext context, string? managementPort)
+    private void SetResponseError(HttpContext context, int managementPort)
     {
         int? defaultPort = null;
 

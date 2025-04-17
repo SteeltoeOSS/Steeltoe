@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http.HttpClientPooling;
+using Steeltoe.Common.Net;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Configuration;
 
@@ -27,17 +28,18 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddApplicationInstanceInfo();
-
         services.AddOptions();
-        services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<ManagementOptions>, ConfigureManagementOptions>());
-
-        services.ConfigureEndpointOptions<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
+        services.ConfigureOptionsWithChangeTokenSource<ManagementOptions, ConfigureManagementOptions>();
         services.ConfigureOptionsWithChangeTokenSource<SpringBootAdminClientOptions, ConfigureSpringBootAdminClientOptions>();
+        services.ConfigureEndpointOptions<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
 
         ConfigureHttpClient(services);
 
+        services.AddApplicationInstanceInfo();
+        services.TryAddSingleton<InetUtils>();
         services.TryAddSingleton(TimeProvider.System);
+        services.TryAddSingleton<AppUrlCalculator>();
+        services.TryAddSingleton<SpringBootAdminRefreshRunner>();
         services.AddHostedService<SpringBootAdminClientHostedService>();
 
         return services;
@@ -48,7 +50,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<HttpClientHandlerFactory>();
         services.TryAddSingleton<ValidateCertificatesHttpClientHandlerConfigurer<SpringBootAdminClientOptions>>();
 
-        IHttpClientBuilder httpClientBuilder = services.AddHttpClient(SpringBootAdminClientHostedService.HttpClientName);
+        IHttpClientBuilder httpClientBuilder = services.AddHttpClient(SpringBootAdminApiClient.HttpClientName);
 
         httpClientBuilder.ConfigurePrimaryHttpMessageHandler(serviceProvider =>
         {
@@ -62,5 +64,7 @@ public static class ServiceCollectionExtensions
 
             return handler;
         });
+
+        services.TryAddSingleton<SpringBootAdminApiClient>();
     }
 }
