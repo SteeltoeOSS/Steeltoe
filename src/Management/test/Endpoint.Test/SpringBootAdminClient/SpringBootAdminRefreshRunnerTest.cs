@@ -41,7 +41,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
             ["Spring:Boot:Admin:Client:UseNetworkInterfaces"] = "true",
             ["Spring:Boot:Admin:Client:PreferIPAddress"] = "true",
             ["Spring:Boot:Admin:Client:ValidateCertificates"] = "false",
-            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = "500",
+            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = "3500",
             ["Spring:Boot:Admin:Client:RefreshInterval"] = "00:01:00",
             ["Spring:Boot:Admin:Client:Metadata:user.name"] = "test-username",
             ["Spring:Boot:Admin:Client:Metadata:user.password"] = "test-password"
@@ -72,7 +72,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
         options.UseNetworkInterfaces.Should().BeTrue();
         options.PreferIPAddress.Should().BeTrue();
         options.ValidateCertificates.Should().BeFalse();
-        options.ConnectionTimeout.Should().Be(500.Milliseconds());
+        options.ConnectionTimeout.Should().Be(3500.Milliseconds());
         options.RefreshInterval.Should().Be(1.Minutes());
         options.Metadata.Should().HaveCount(2);
         options.Metadata.Should().ContainKey("user.name").WhoseValue.Should().Be("test-username");
