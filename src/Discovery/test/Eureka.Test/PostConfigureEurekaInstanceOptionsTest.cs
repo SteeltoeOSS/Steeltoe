@@ -25,8 +25,8 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     [Fact]
     public async Task Applies_defaults_when_not_configured()
     {
-        string? hostName = DnsTools.ResolveHostName();
-        string? ipAddress = DnsTools.ResolveHostAddress(hostName!);
+        string? hostName = DomainNameResolver.Instance.ResolveHostName();
+        string? ipAddress = DomainNameResolver.Instance.ResolveHostAddress(hostName!);
         string appName = Assembly.GetEntryAssembly()!.GetName().Name!;
 
         await using ServiceProvider serviceProvider = BuildTestServiceProvider(null);
@@ -173,10 +173,16 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     [Fact]
     public async Task Does_not_use_network_interfaces_by_default()
     {
-        var inetUtilsMock = new Mock<InetUtils>(new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
+        var domainNameResolverMock = new Mock<IDomainNameResolver>();
+        var inetUtilsMock = new Mock<InetUtils>(domainNameResolverMock.Object, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
         inetUtilsMock.Setup(inetUtils => inetUtils.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254"));
 
-        await using ServiceProvider serviceProvider = BuildTestServiceProvider(null, services => services.AddSingleton(inetUtilsMock.Object));
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(null, services =>
+        {
+            services.AddSingleton(domainNameResolverMock.Object);
+            services.AddSingleton(inetUtilsMock.Object);
+        });
+
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
 
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
@@ -188,7 +194,8 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     [Fact]
     public async Task Can_use_network_interfaces()
     {
-        var inetUtilsMock = new Mock<InetUtils>(new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
+        var domainNameResolverMock = new Mock<IDomainNameResolver>();
+        var inetUtilsMock = new Mock<InetUtils>(domainNameResolverMock.Object, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
         inetUtilsMock.Setup(inetUtils => inetUtils.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254"));
 
         var appSettings = new Dictionary<string, string?>
@@ -196,7 +203,12 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
             ["eureka:instance:UseNetworkInterfaces"] = "true"
         };
 
-        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings, services => services.AddSingleton(inetUtilsMock.Object));
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings, services =>
+        {
+            services.AddSingleton(domainNameResolverMock.Object);
+            services.AddSingleton(inetUtilsMock.Object);
+        });
+
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
 
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
@@ -349,6 +361,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         configureServices?.Invoke(services);
         services.AddSingleton(configuration);
         services.AddLogging();
+        services.TryAddSingleton<IDomainNameResolver>(DomainNameResolver.Instance);
         services.TryAddSingleton<InetUtils>();
 
         services.AddApplicationInstanceInfo();

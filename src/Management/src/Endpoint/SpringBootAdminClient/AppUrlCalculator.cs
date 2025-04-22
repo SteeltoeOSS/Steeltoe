@@ -18,16 +18,20 @@ internal sealed class AppUrlCalculator
 {
     private readonly IServer _server;
     private readonly InetUtils _inetUtils;
+    private readonly IDomainNameResolver _domainNameResolver;
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
 
-    public AppUrlCalculator(IServer server, InetUtils inetUtils, IOptionsMonitor<ManagementOptions> managementOptionsMonitor)
+    public AppUrlCalculator(IServer server, IDomainNameResolver domainNameResolver, InetUtils inetUtils,
+        IOptionsMonitor<ManagementOptions> managementOptionsMonitor)
     {
         ArgumentNullException.ThrowIfNull(server);
         ArgumentNullException.ThrowIfNull(inetUtils);
+        ArgumentNullException.ThrowIfNull(domainNameResolver);
         ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
 
         _server = server;
         _inetUtils = inetUtils;
+        _domainNameResolver = domainNameResolver;
         _managementOptionsMonitor = managementOptionsMonitor;
     }
 
@@ -69,10 +73,25 @@ internal sealed class AppUrlCalculator
         }
 
         HostInfo? hostInfo = clientOptions.UseNetworkInterfaces ? _inetUtils.FindFirstNonLoopbackHostInfo() : null;
-        string? hostName = hostInfo != null ? hostInfo.Hostname : DnsTools.ResolveHostName();
+        string? hostName = hostInfo != null ? hostInfo.Hostname : _domainNameResolver.ResolveHostName();
+
+        if (clientOptions.PreferIPAddress)
+        {
+            if (hostInfo != null)
+            {
+                return hostInfo.IPAddress;
+            }
+
+            if (hostName != null)
+            {
+                return _domainNameResolver.ResolveHostAddress(hostName);
+            }
+
+            return null;
+        }
 
 #pragma warning disable S4040 // Strings should be normalized to uppercase
-        return clientOptions.PreferIPAddress && hostInfo != null ? hostInfo.IPAddress : hostName?.ToLowerInvariant();
+        return hostName?.ToLowerInvariant();
 #pragma warning restore S4040 // Strings should be normalized to uppercase
     }
 

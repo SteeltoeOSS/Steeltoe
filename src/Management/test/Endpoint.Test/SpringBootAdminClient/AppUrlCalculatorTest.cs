@@ -23,12 +23,6 @@ public sealed class AppUrlCalculatorTest
     private const string ManagementPort = "8888";
     private const string OverriddenPort = "9999";
 
-    private static readonly Lazy<string> LazySystemHostName = new(() =>
-#pragma warning disable S4040 // Strings should be normalized to uppercase
-            DnsTools.ResolveHostName()?.ToLowerInvariant() ?? throw new InvalidOperationException("Hostname is unavailable for running tests."),
-#pragma warning restore S4040 // Strings should be normalized to uppercase
-        LazyThreadSafetyMode.None);
-
     [Fact]
     public void Selects_default_binding_when_nothing_configured()
     {
@@ -39,7 +33,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{LazySystemHostName.Value}:5000");
+        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:5000");
     }
 
     [Fact]
@@ -57,7 +51,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{LazySystemHostName.Value}:{ListenSecurePort1}");
+        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ListenSecurePort1}");
     }
 
     [Fact]
@@ -76,7 +70,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{LazySystemHostName.Value}:{ListenNonSecurePort1}");
+        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{ListenNonSecurePort1}");
     }
 
     [Fact]
@@ -95,7 +89,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{LazySystemHostName.Value}:{ListenSecurePort1}");
+        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ListenSecurePort1}");
     }
 
     [Fact]
@@ -114,7 +108,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{LazySystemHostName.Value}:7890");
+        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:7890");
     }
 
     [Fact]
@@ -133,7 +127,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{LazySystemHostName.Value}:{OverriddenPort}");
+        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{OverriddenPort}");
     }
 
     [Fact]
@@ -151,7 +145,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{LazySystemHostName.Value}:{ManagementPort}");
+        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{ManagementPort}");
     }
 
     [Fact]
@@ -170,7 +164,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{LazySystemHostName.Value}:{ManagementPort}");
+        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ManagementPort}");
     }
 
     [Fact]
@@ -189,7 +183,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{LazySystemHostName.Value}:{ManagementPort}");
+        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ManagementPort}");
     }
 
     [Fact]
@@ -209,7 +203,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{LazySystemHostName.Value}:{ManagementPort}");
+        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{ManagementPort}");
     }
 
     [Fact]
@@ -228,7 +222,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{LazySystemHostName.Value}:{OverriddenPort}");
+        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{OverriddenPort}");
     }
 
     [Fact]
@@ -248,7 +242,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{LazySystemHostName.Value}:{OverriddenPort}");
+        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{OverriddenPort}");
     }
 
     [Fact]
@@ -284,7 +278,25 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be("http://inet-host-name:5000");
+        url.Should().Be($"http://{FakeInetUtils.HostName}:5000");
+    }
+
+    [Fact]
+    public void Uses_IP_address_from_DomainNameResolver()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Spring:Boot:Admin:Client:PreferIPAddress"] = "true"
+        };
+
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+
+        var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
+        var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
+        string? url = calculator.AutoDetectAppUrl(options.Value);
+
+        url.Should().Be($"http://{FakeDomainNameResolver.IPAddress}:5000");
     }
 
     [Fact]
@@ -303,7 +315,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be("http://10.11.12.13:5000");
+        url.Should().Be($"http://{FakeInetUtils.IPAddress}:5000");
     }
 
     [Fact]
@@ -321,7 +333,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{LazySystemHostName.Value}:5000/api");
+        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:5000/api");
     }
 
     [Fact]
@@ -350,6 +362,7 @@ public sealed class AppUrlCalculatorTest
         services.AddSingleton<IConfigureOptions<ManagementOptions>, ConfigureManagementOptions>();
         services.AddLogging();
         services.AddSingleton<IServer, FakeServer>();
+        services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         services.AddSingleton<InetUtils, FakeInetUtils>();
         services.AddSingleton<AppUrlCalculator>();
 
@@ -357,11 +370,14 @@ public sealed class AppUrlCalculatorTest
     }
 
     private sealed class FakeInetUtils(IOptionsMonitor<InetOptions> optionsMonitor, ILogger<InetUtils> logger)
-        : InetUtils(optionsMonitor, logger)
+        : InetUtils(new FakeDomainNameResolver(), optionsMonitor, logger)
     {
+        public const string IPAddress = "10.11.12.13";
+        public const string HostName = "inet-host-name";
+
         public override HostInfo FindFirstNonLoopbackHostInfo()
         {
-            return new HostInfo("inet-host-name", "10.11.12.13");
+            return new HostInfo(HostName, IPAddress);
         }
     }
 }

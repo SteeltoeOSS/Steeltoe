@@ -885,7 +885,7 @@
                     },
                     "PreferIPAddress": {
                       "type": "boolean",
-                      "description": "Gets or sets a value indicating whether to prefer using the local IP address over hostname in 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl'. Requires 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.UseNetworkInterfaces' to be true. Default value: false."
+                      "description": "Gets or sets a value indicating whether to prefer using the local IP address over hostname in 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl'. Default value: false."
                     },
                     "RefreshInterval": {
                       "type": "string",

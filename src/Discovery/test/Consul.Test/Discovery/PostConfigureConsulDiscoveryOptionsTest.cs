@@ -50,13 +50,15 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
     [Fact]
     public async Task DoesNotUseNetworkInterfacesByDefault()
     {
-        var inetUtilsMock = new Mock<InetUtils>(new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
+        var domainNameResolverMock = new Mock<IDomainNameResolver>();
+        var inetUtilsMock = new Mock<InetUtils>(domainNameResolverMock.Object, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
         inetUtilsMock.Setup(inetUtils => inetUtils.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254")).Verifiable();
 
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
+        services.AddSingleton(domainNameResolverMock.Object);
         services.AddSingleton(inetUtilsMock.Object);
         services.AddApplicationInstanceInfo();
         services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
@@ -73,7 +75,8 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
     [Fact]
     public async Task CanUseNetworkInterfaces()
     {
-        var inetUtilsMock = new Mock<InetUtils>(new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
+        var domainNameResolverMock = new Mock<IDomainNameResolver>();
+        var inetUtilsMock = new Mock<InetUtils>(domainNameResolverMock.Object, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
         inetUtilsMock.Setup(inetUtils => inetUtils.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254")).Verifiable();
 
         var appSettings = new Dictionary<string, string?>
@@ -85,6 +88,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
+        services.AddSingleton(domainNameResolverMock.Object);
         services.AddSingleton(inetUtilsMock.Object);
         services.AddApplicationInstanceInfo();
         services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
@@ -114,6 +118,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddLogging();
+        services.AddSingleton<IDomainNameResolver>(DomainNameResolver.Instance);
         services.AddSingleton<InetUtils>();
         services.AddApplicationInstanceInfo();
         services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);

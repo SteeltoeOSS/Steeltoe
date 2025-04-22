@@ -7,8 +7,14 @@ using System.Net.Sockets;
 
 namespace Steeltoe.Common.Net;
 
-internal static class DnsTools
+internal sealed class DomainNameResolver : IDomainNameResolver
 {
+    public static DomainNameResolver Instance { get; } = new();
+
+    private DomainNameResolver()
+    {
+    }
+
     /// <summary>
     /// Get the first listed <see cref="AddressFamily.InterNetwork" /> for the hostname.
     /// </summary>
@@ -16,15 +22,16 @@ internal static class DnsTools
     /// The hostname or address to use.
     /// </param>
     /// <returns>
-    /// String representation of the IP Address or <see langword="null" />.
+    /// A string representation of the IP Address, or <see langword="null" />.
     /// </returns>
-    public static string? ResolveHostAddress(string hostName)
+    public string? ResolveHostAddress(string hostName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(hostName);
 
         try
         {
-            return Array.Find(Dns.GetHostAddresses(hostName), ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString();
+            IPAddress[] hostAddresses = Dns.GetHostAddresses(hostName);
+            return Array.Find(hostAddresses, ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString();
         }
         catch (Exception)
         {
@@ -33,7 +40,7 @@ internal static class DnsTools
         }
     }
 
-    public static string? ResolveHostName(bool throwOnError = false)
+    public string? ResolveHostName(bool throwOnError = false)
     {
         try
         {

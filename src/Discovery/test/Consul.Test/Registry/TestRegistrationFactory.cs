@@ -31,8 +31,9 @@ internal static class TestRegistrationFactory
         var options = new ConsulDiscoveryOptions();
         configuration.GetSection("consul:discovery").Bind(options);
 
-        var inetUtilsMock = new Mock<InetUtils>(new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
-        var configurer = new PostConfigureConsulDiscoveryOptions(configuration, inetUtilsMock.Object, appInfo);
+        var domainNameResolverMock = new Mock<IDomainNameResolver>();
+        var inetUtilsMock = new Mock<InetUtils>(domainNameResolverMock.Object, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
+        var configurer = new PostConfigureConsulDiscoveryOptions(configuration, domainNameResolverMock.Object, inetUtilsMock.Object, appInfo);
         configurer.PostConfigure(null, options);
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);

@@ -15,14 +15,17 @@ namespace Steeltoe.Common.Net;
 // Non-sealed because this type is mocked by tests.
 internal class InetUtils
 {
+    private readonly IDomainNameResolver _domainNameResolver;
     private readonly IOptionsMonitor<InetOptions> _optionsMonitor;
     private readonly ILogger<InetUtils> _logger;
 
-    public InetUtils(IOptionsMonitor<InetOptions> optionsMonitor, ILogger<InetUtils> logger)
+    public InetUtils(IDomainNameResolver domainNameResolver, IOptionsMonitor<InetOptions> optionsMonitor, ILogger<InetUtils> logger)
     {
+        ArgumentNullException.ThrowIfNull(domainNameResolver);
         ArgumentNullException.ThrowIfNull(optionsMonitor);
         ArgumentNullException.ThrowIfNull(logger);
 
+        _domainNameResolver = domainNameResolver;
         _optionsMonitor = optionsMonitor;
         _logger = logger;
     }
@@ -227,7 +230,7 @@ internal class InetUtils
     {
         try
         {
-            return DnsTools.ResolveHostName(true);
+            return _domainNameResolver.ResolveHostName(true);
         }
         catch (Exception exception)
         {

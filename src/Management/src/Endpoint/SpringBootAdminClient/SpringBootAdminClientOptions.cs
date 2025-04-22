@@ -55,8 +55,7 @@ public sealed class SpringBootAdminClientOptions : IValidateCertificatesOptions
     public bool UseNetworkInterfaces { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether to prefer using the local IP address over hostname in <see cref="BaseUrl" />. Requires
-    /// <see cref="UseNetworkInterfaces" /> to be <c>true</c>. Default value: false.
+    /// Gets or sets a value indicating whether to prefer using the local IP address over hostname in <see cref="BaseUrl" />. Default value: false.
     /// </summary>
     public bool PreferIPAddress { get; set; }
 

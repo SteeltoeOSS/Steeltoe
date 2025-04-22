@@ -36,6 +36,7 @@ public static class ServiceCollectionExtensions
         ConfigureHttpClient(services);
 
         services.AddApplicationInstanceInfo();
+        services.TryAddSingleton<IDomainNameResolver>(DomainNameResolver.Instance);
         services.TryAddSingleton<InetUtils>();
         services.TryAddSingleton(TimeProvider.System);
         services.TryAddSingleton<AppUrlCalculator>();

@@ -26,10 +26,6 @@ public sealed class SpringBootAdminRefreshRunnerTest
     private const string CurrentTime = "2021-03-31T23:57:53.896653Z";
     private static readonly string CurrentAppName = Assembly.GetEntryAssembly()!.GetName().Name!;
 
-#pragma warning disable S4040 // Strings should be normalized to uppercase
-    private static readonly string? SystemHostName = DnsTools.ResolveHostName()?.ToLowerInvariant();
-#pragma warning restore S4040 // Strings should be normalized to uppercase
-
     [Fact]
     public async Task BindsConfiguration()
     {
@@ -89,6 +85,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
     public async Task FailsOnMissingConfiguration()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
         await using WebApplication app = builder.Build();
@@ -174,9 +171,9 @@ public sealed class SpringBootAdminRefreshRunnerTest
         string expectedJson = JsonNode.Parse($$"""
             {
               "name": "{{CurrentAppName}}",
-              "managementUrl": "http://{{SystemHostName}}:5000/actuator",
-              "healthUrl": "http://{{SystemHostName}}:5000/actuator/health",
-              "serviceUrl": "http://{{SystemHostName}}:5000",
+              "managementUrl": "http://{{FakeDomainNameResolver.HostName}}:5000/actuator",
+              "healthUrl": "http://{{FakeDomainNameResolver.HostName}}:5000/actuator/health",
+              "serviceUrl": "http://{{FakeDomainNameResolver.HostName}}:5000",
               "metadata": {
                 "startup": "{{CurrentTime}}"
               }
@@ -192,6 +189,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddSingleton<TimeProvider>(timeProvider);
         builder.Services.AddSingleton<IServer, FakeServer>();
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();

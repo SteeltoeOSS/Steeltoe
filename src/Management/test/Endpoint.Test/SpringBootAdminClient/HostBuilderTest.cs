@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.Http.HttpClientPooling;
+using Steeltoe.Common.Net;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
@@ -21,10 +22,6 @@ public sealed class HostBuilderTest
     // Prevents HttpClient from timing out while stepping through code.
     private const string VeryHighConnectionTimeoutForDebuggingTests = "900000"; // 15 minutes
 
-    // On macOS build servers, the call to Dns.GetHostName() takes roughly 5 seconds,
-    // which makes the timing-based tests here unreliable, which is why we avoid doing that call.
-    private const string HostNameForRunningTests = "test-host-name";
-
     [Fact]
     public async Task CanUseDynamicHttpPort()
     {
@@ -32,12 +29,12 @@ public sealed class HostBuilderTest
         {
             ["urls"] = "http://*:0",
             ["Spring:Boot:Admin:Client:Url"] = "http://sba-server.com",
-            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests,
-            ["Spring:Boot:Admin:Client:BaseHost"] = HostNameForRunningTests
+            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
@@ -69,12 +66,12 @@ public sealed class HostBuilderTest
         {
             ["urls"] = "https://*:0",
             ["Spring:Boot:Admin:Client:Url"] = "http://sba-server.com",
-            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests,
-            ["Spring:Boot:Admin:Client:BaseHost"] = HostNameForRunningTests
+            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
@@ -105,12 +102,12 @@ public sealed class HostBuilderTest
         {
             ["Spring:Boot:Admin:Client:Url"] = "http://sba-server.com",
             ["Spring:Boot:Admin:Client:RefreshInterval"] = 100.Milliseconds().ToString(),
-            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests,
-            ["Spring:Boot:Admin:Client:BaseHost"] = HostNameForRunningTests
+            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
@@ -132,12 +129,12 @@ public sealed class HostBuilderTest
         {
             ["Spring:Boot:Admin:Client:Url"] = "http://sba-server.com",
             ["Spring:Boot:Admin:Client:RefreshInterval"] = "0",
-            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests,
-            ["Spring:Boot:Admin:Client:BaseHost"] = HostNameForRunningTests
+            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
@@ -166,8 +163,7 @@ public sealed class HostBuilderTest
                     "Client": {
                       "Url": "http://sba-server.com",
                       "RefreshInterval": "0",
-                      "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}},
-                      "BaseHost": "{{HostNameForRunningTests}}"
+                      "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}}
                     }
                   }
                 }
@@ -177,6 +173,7 @@ public sealed class HostBuilderTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
@@ -198,8 +195,7 @@ public sealed class HostBuilderTest
                     "Client": {
                       "Url": "http://sba-server.com",
                       "RefreshInterval": "{{100.Milliseconds()}}",
-                      "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}},
-                      "BaseHost": "{{HostNameForRunningTests}}"
+                      "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}}
                     }
                   }
                 }
@@ -227,8 +223,7 @@ public sealed class HostBuilderTest
                     "Client": {
                       "Url": "http://sba-server.com",
                       "RefreshInterval": "{{100.Milliseconds()}}",
-                      "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}},
-                      "BaseHost": "{{HostNameForRunningTests}}"
+                      "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}}
                     }
                   }
                 }
@@ -238,6 +233,7 @@ public sealed class HostBuilderTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
@@ -260,8 +256,7 @@ public sealed class HostBuilderTest
                     "Client": {
                       "Url": "http://other-server.com",
                       "RefreshInterval": "0",
-                      "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}},
-                      "BaseHost": "{{HostNameForRunningTests}}"
+                      "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}}
                     }
                   }
                 }
@@ -282,12 +277,12 @@ public sealed class HostBuilderTest
         {
             ["Spring:Boot:Admin:Client:Url"] = "http://sba-server.com",
             ["Spring:Boot:Admin:Client:RefreshInterval"] = "0",
-            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests,
-            ["Spring:Boot:Admin:Client:BaseHost"] = HostNameForRunningTests
+            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
@@ -314,12 +309,12 @@ public sealed class HostBuilderTest
         {
             ["Spring:Boot:Admin:Client:Url"] = "http://sba-server.com",
             ["Spring:Boot:Admin:Client:RefreshInterval"] = "0",
-            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests,
-            ["Spring:Boot:Admin:Client:BaseHost"] = HostNameForRunningTests
+            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
@@ -346,12 +341,12 @@ public sealed class HostBuilderTest
         {
             ["Spring:Boot:Admin:Client:Url"] = "http://sba-server.com",
             ["Spring:Boot:Admin:Client:RefreshInterval"] = "0",
-            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests,
-            ["Spring:Boot:Admin:Client:BaseHost"] = HostNameForRunningTests
+            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
@@ -386,8 +381,7 @@ public sealed class HostBuilderTest
                     "Client": {
                       "Url": "http://sba-server1.com",
                       "RefreshInterval": "{{100.Milliseconds()}}",
-                      "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}},
-                      "BaseHost": "{{HostNameForRunningTests}}"
+                      "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}}
                     }
                   }
                 }
@@ -397,6 +391,7 @@ public sealed class HostBuilderTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
@@ -421,8 +416,7 @@ public sealed class HostBuilderTest
                     "Client": {
                       "Url": "http://sba-server2.com",
                       "RefreshInterval": "{{100.Milliseconds()}}",
-                      "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}},
-                      "BaseHost": "{{HostNameForRunningTests}}"
+                      "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}}
                     }
                   }
                 }
@@ -452,8 +446,7 @@ public sealed class HostBuilderTest
                     "Client": {
                       "Url": "http://sba-server1.com",
                       "RefreshInterval": "{{100.Milliseconds()}}",
-                      "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}},
-                      "BaseHost": "{{HostNameForRunningTests}}"
+                      "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}}
                     }
                   }
                 }
@@ -463,6 +456,7 @@ public sealed class HostBuilderTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
@@ -488,8 +482,7 @@ public sealed class HostBuilderTest
                         "Client": {
                           "Url": "http://sba-server2.com",
                           "BaseUrl": "not-a-valid-uri",
-                          "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}},
-                          "BaseHost": "{{HostNameForRunningTests}}"
+                          "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}}
                         }
                       }
                     }
@@ -515,12 +508,12 @@ public sealed class HostBuilderTest
         {
             ["Spring:Boot:Admin:Client:Url"] = "http://sba-server.com",
             ["Spring:Boot:Admin:Client:RefreshInterval"] = 100.Milliseconds().ToString(),
-            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests,
-            ["Spring:Boot:Admin:Client:BaseHost"] = HostNameForRunningTests
+            ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
         bool isServerOnline = false;

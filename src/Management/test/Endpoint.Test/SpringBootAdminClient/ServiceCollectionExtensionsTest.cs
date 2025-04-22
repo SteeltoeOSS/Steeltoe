@@ -30,6 +30,7 @@ public sealed class ServiceCollectionExtensionsTest
         serviceProvider.GetService<IApplicationInstanceInfo>().Should().NotBeNull();
         serviceProvider.GetService<InetUtils>().Should().NotBeNull();
         serviceProvider.GetService<TimeProvider>().Should().NotBeNull();
+        serviceProvider.GetService<IDomainNameResolver>().Should().NotBeNull();
         serviceProvider.GetService<AppUrlCalculator>().Should().NotBeNull();
         serviceProvider.GetService<SpringBootAdminRefreshRunner>().Should().NotBeNull();
         serviceProvider.GetServices<IHostedService>().OfType<SpringBootAdminClientHostedService>().Should().ContainSingle();

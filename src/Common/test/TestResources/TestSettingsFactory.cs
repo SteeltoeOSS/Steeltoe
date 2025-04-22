@@ -21,8 +21,12 @@ public static class TestSettingsFactory
         if (configurations.HasFlag(FastTestConfigurations.Discovery))
         {
             settings["consul:discovery:enabled"] = "false";
+            settings["consul:discovery:hostname"] = "localhost";
+            settings["consul:discovery:ipaddress"] = "127.0.0.1";
             settings["eureka:client:enabled"] = "false";
             settings["eureka:client:serviceUrl"] = "http://127.0.0.1";
+            settings["eureka:instance:hostname"] = "localhost";
+            settings["eureka:instance:ipaddress"] = "127.0.0.1";
         }
 
         if (configurations.HasFlag(FastTestConfigurations.Connectors))

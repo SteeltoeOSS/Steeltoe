@@ -41,6 +41,7 @@ public static class ConsulServiceCollectionExtensions
     private static void ConfigureConsulServices(IServiceCollection services)
     {
         services.AddApplicationInstanceInfo();
+        services.TryAddSingleton<IDomainNameResolver>(DomainNameResolver.Instance);
         services.TryAddSingleton<InetUtils>();
 
         ConfigureConsulOptions(services);
