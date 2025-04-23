@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Management.Endpoint.Actuators.Environment;
-using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Environment;
 
