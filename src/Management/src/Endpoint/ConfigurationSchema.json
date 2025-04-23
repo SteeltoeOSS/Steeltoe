@@ -890,7 +890,7 @@
                     "RefreshInterval": {
                       "type": "string",
                       "pattern": "^-?(\\d{1,7}|((\\d{1,7}[\\.:])?(([01]?\\d|2[0-3]):[0-5]?\\d|([01]?\\d|2[0-3]):[0-5]?\\d:[0-5]?\\d)(\\.\\d{1,7})?))$",
-                      "description": "Gets or sets the interval for refreshing the registration with Spring Boot Admin server. Set to 'System.TimeSpan.Zero' to register only once at app startup. Default value: 10 seconds."
+                      "description": "Gets or sets the interval for refreshing the registration with Spring Boot Admin server. Set to 'System.TimeSpan.Zero' to register only once at app startup. Default value: 15 seconds."
                     },
                     "Url": {
                       "type": "string",

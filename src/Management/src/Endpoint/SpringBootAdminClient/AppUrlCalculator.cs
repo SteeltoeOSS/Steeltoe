@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.Configuration;
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
 /// <summary>
-/// Calculates the URL for this app to register with in Spring Boot Admin server.
+/// Calculates the URL for this app to register under in Spring Boot Admin server.
 /// </summary>
 internal sealed class AppUrlCalculator
 {
@@ -40,29 +40,26 @@ internal sealed class AppUrlCalculator
         ArgumentNullException.ThrowIfNull(clientOptions);
 
         string? host = GetHostnameOrIPAddress(clientOptions);
-        string? url = null;
+        Uri? uri = null;
 
         if (host != null)
         {
-            url = GetFromOptions(clientOptions, _managementOptionsMonitor.CurrentValue, host);
+            uri = GetFromOptions(clientOptions, _managementOptionsMonitor.CurrentValue, host);
 
-            if (url == null)
+            if (uri == null)
             {
                 BindingAddress? bindingAddress = SelectBindingAddress(clientOptions);
 
                 if (bindingAddress != null)
                 {
                     int port = clientOptions.BasePort ?? bindingAddress.Port;
-                    string path = clientOptions.BasePathRooted ?? bindingAddress.PathBase;
-
-                    url = port > 0
-                        ? $"{bindingAddress.Scheme}{Uri.SchemeDelimiter}{host}:{port}{path}"
-                        : $"{bindingAddress.Scheme}{Uri.SchemeDelimiter}{host}{path}";
+                    string path = clientOptions.BasePath ?? bindingAddress.PathBase;
+                    uri = TryCreateUri(bindingAddress.Scheme, host, port, path);
                 }
             }
         }
 
-        return url;
+        return uri == null || !uri.IsWellFormedOriginalString() ? null : uri.AbsoluteUri;
     }
 
     private string? GetHostnameOrIPAddress(SpringBootAdminClientOptions clientOptions)
@@ -95,18 +92,18 @@ internal sealed class AppUrlCalculator
 #pragma warning restore S4040 // Strings should be normalized to uppercase
     }
 
-    private static string? GetFromOptions(SpringBootAdminClientOptions clientOptions, ManagementOptions managementOptions, string host)
+    private static Uri? GetFromOptions(SpringBootAdminClientOptions clientOptions, ManagementOptions managementOptions, string host)
     {
         if (clientOptions is { BaseScheme: not null, BasePort: not null })
         {
-            return $"{clientOptions.BaseScheme}{Uri.SchemeDelimiter}{host}:{clientOptions.BasePort}{clientOptions.BasePathRooted}";
+            return TryCreateUri(clientOptions.BaseScheme, host, clientOptions.BasePort.Value, clientOptions.BasePath);
         }
 
         if (IsPortValid(managementOptions.Port))
         {
             int port = clientOptions.BasePort ?? managementOptions.Port;
             string scheme = clientOptions.BaseScheme ?? (managementOptions.SslEnabled ? Uri.UriSchemeHttps : Uri.UriSchemeHttp);
-            return $"{scheme}{Uri.SchemeDelimiter}{host}:{port}{clientOptions.BasePathRooted}";
+            return TryCreateUri(scheme, host, port, clientOptions.BasePath);
         }
 
         return null;
@@ -136,5 +133,29 @@ internal sealed class AppUrlCalculator
     private static bool IsPortValid(int port)
     {
         return port is > 0 and < 65536;
+    }
+
+    private static Uri? TryCreateUri(string scheme, string host, int port, string? path)
+    {
+        var builder = new UriBuilder(scheme, host);
+
+        if (IsPortValid(port))
+        {
+            builder.Port = port;
+        }
+
+        if (path != null)
+        {
+            builder.Path = path;
+        }
+
+        try
+        {
+            return builder.Uri;
+        }
+        catch (UriFormatException)
+        {
+            return null;
+        }
     }
 }

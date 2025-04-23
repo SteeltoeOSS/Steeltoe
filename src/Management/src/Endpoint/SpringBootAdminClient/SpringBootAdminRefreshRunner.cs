@@ -79,11 +79,11 @@ internal sealed class SpringBootAdminRefreshRunner
 
         if (string.IsNullOrEmpty(options.Url))
         {
-            errors.Add($"{nameof(SpringBootAdminClientOptions.Url)} must be configured to register with Spring Boot Admin server");
+            errors.Add($"{nameof(SpringBootAdminClientOptions.Url)} must be configured");
         }
         else if (!Uri.IsWellFormedUriString(options.Url, UriKind.Absolute))
         {
-            errors.Add($"{nameof(SpringBootAdminClientOptions.Url)} must be configured as a fully-qualified URL to register with Spring Boot Admin server");
+            errors.Add($"{nameof(SpringBootAdminClientOptions.Url)} must be configured as a fully-qualified URL");
         }
 
         if (options.BaseScheme is not null and not "http" and not "https")
@@ -96,16 +96,26 @@ internal sealed class SpringBootAdminRefreshRunner
             errors.Add($"{nameof(SpringBootAdminClientOptions.BasePort)} must be in range 1-65535");
         }
 
-        options.ApplicationName ??= _applicationInstanceInfo.ApplicationName;
-        options.BaseUrl ??= _appUrlCalculator.AutoDetectAppUrl(options);
-
-        if (string.IsNullOrEmpty(options.BaseUrl))
+        if (options.BasePath != null && (options.BasePath.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            options.BasePath.StartsWith("https://", StringComparison.OrdinalIgnoreCase)))
         {
-            errors.Add($"{nameof(SpringBootAdminClientOptions.BaseUrl)} must be configured to register with Spring Boot Admin server");
+            // In Steeltoe v4, the BasePath setting was renamed to BaseUrl, and the meaning of BasePath changed.
+            errors.Add($"Use {nameof(SpringBootAdminClientOptions.BaseUrl)} instead of {nameof(SpringBootAdminClientOptions.BasePath)} " +
+                $"to configure the fully-qualified URL to register with");
         }
-        else if (!Uri.IsWellFormedUriString(options.BaseUrl, UriKind.Absolute))
+        else
         {
-            errors.Add($"{nameof(SpringBootAdminClientOptions.BaseUrl)} must be configured as a fully-qualified URL to register with Spring Boot Admin server");
+            options.ApplicationName ??= _applicationInstanceInfo.ApplicationName;
+            options.BaseUrl ??= _appUrlCalculator.AutoDetectAppUrl(options);
+
+            if (string.IsNullOrEmpty(options.BaseUrl))
+            {
+                errors.Add($"{nameof(SpringBootAdminClientOptions.BaseUrl)} must be configured");
+            }
+            else if (!Uri.IsWellFormedUriString(options.BaseUrl, UriKind.Absolute))
+            {
+                errors.Add($"{nameof(SpringBootAdminClientOptions.BaseUrl)} must be configured as a fully-qualified URL");
+            }
         }
 
         if (errors.Count > 0)

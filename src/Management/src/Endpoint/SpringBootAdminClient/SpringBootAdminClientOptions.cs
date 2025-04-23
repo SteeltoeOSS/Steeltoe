@@ -10,7 +10,6 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 public sealed class SpringBootAdminClientOptions : IValidateCertificatesOptions
 {
     internal TimeSpan ConnectionTimeout => TimeSpan.FromMilliseconds(ConnectionTimeoutMs);
-    internal string? BasePathRooted => BasePath == null ? null : '/' + BasePath.TrimStart('/');
 
     /// <summary>
     /// Gets or sets the URL of the Spring Boot Admin server.
@@ -71,7 +70,7 @@ public sealed class SpringBootAdminClientOptions : IValidateCertificatesOptions
 
     /// <summary>
     /// Gets or sets the interval for refreshing the registration with Spring Boot Admin server. Set to <see cref="TimeSpan.Zero" /> to register only once at
-    /// app startup. Default value: 10 seconds.
+    /// app startup. Default value: 15 seconds.
     /// </summary>
     public TimeSpan RefreshInterval { get; set; } = TimeSpan.FromSeconds(15);
 

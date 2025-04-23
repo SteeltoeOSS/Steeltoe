@@ -33,7 +33,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:5000");
+        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:5000/");
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ListenSecurePort1}");
+        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ListenSecurePort1}/");
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{ListenNonSecurePort1}");
+        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{ListenNonSecurePort1}/");
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ListenSecurePort1}");
+        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ListenSecurePort1}/");
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:7890");
+        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:7890/");
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{OverriddenPort}");
+        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{OverriddenPort}/");
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{ManagementPort}");
+        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{ManagementPort}/");
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ManagementPort}");
+        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ManagementPort}/");
     }
 
     [Fact]
@@ -183,7 +183,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ManagementPort}");
+        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ManagementPort}/");
     }
 
     [Fact]
@@ -203,7 +203,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{ManagementPort}");
+        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{ManagementPort}/");
     }
 
     [Fact]
@@ -222,7 +222,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{OverriddenPort}");
+        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{OverriddenPort}/");
     }
 
     [Fact]
@@ -242,7 +242,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{OverriddenPort}");
+        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{OverriddenPort}/");
     }
 
     [Fact]
@@ -260,7 +260,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be("http://test.host.com:5000");
+        url.Should().Be("http://test.host.com:5000/");
     }
 
     [Fact]
@@ -278,7 +278,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeInetUtils.HostName}:5000");
+        url.Should().Be($"http://{FakeInetUtils.HostName}:5000/");
     }
 
     [Fact]
@@ -296,7 +296,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeDomainNameResolver.IPAddress}:5000");
+        url.Should().Be($"http://{FakeDomainNameResolver.IPAddress}:5000/");
     }
 
     [Fact]
@@ -315,7 +315,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeInetUtils.IPAddress}:5000");
+        url.Should().Be($"http://{FakeInetUtils.IPAddress}:5000/");
     }
 
     [Fact]
@@ -350,6 +350,60 @@ public sealed class AppUrlCalculatorTest
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
         url.Should().BeNull();
+    }
+
+    [Fact]
+    public void Unable_when_invalid_host_configured()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Spring:Boot:Admin:Client:BaseHost"] = "host:name"
+        };
+
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+
+        var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
+        var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
+        string? url = calculator.AutoDetectAppUrl(options.Value);
+
+        url.Should().BeNull();
+    }
+
+    [Fact]
+    public void Escapes_special_characters_in_configuration()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Spring:Boot:Admin:Client:BasePath"] = "path???/some"
+        };
+
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+
+        var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
+        var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
+        string? url = calculator.AutoDetectAppUrl(options.Value);
+
+        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:5000/path%3F%3F%3F/some");
+    }
+
+    [Fact]
+    public void Preserves_escaped_special_characters_in_configuration()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Spring:Boot:Admin:Client:BasePath"] = "path%3F%3F%3F/some"
+        };
+
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+
+        var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
+        var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
+        string? url = calculator.AutoDetectAppUrl(options.Value);
+
+        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:5000/path%3F%3F%3F/some");
     }
 
     private static ServiceProvider BuildServiceProvider(IConfiguration configuration)

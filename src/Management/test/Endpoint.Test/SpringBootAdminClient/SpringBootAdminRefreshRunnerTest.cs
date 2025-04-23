@@ -95,8 +95,8 @@ public sealed class SpringBootAdminRefreshRunnerTest
 
         string[] errorsExpected =
         [
-            "Url must be configured to register with Spring Boot Admin server",
-            "BaseUrl must be configured to register with Spring Boot Admin server"
+            "Url must be configured",
+            "BaseUrl must be configured"
         ];
 
         await action.Should().ThrowExactlyAsync<OptionsValidationException>().WithMessage(string.Join("; ", errorsExpected));
@@ -124,13 +124,36 @@ public sealed class SpringBootAdminRefreshRunnerTest
 
         string[] errorsExpected =
         [
-            "Url must be configured as a fully-qualified URL to register with Spring Boot Admin server",
+            "Url must be configured as a fully-qualified URL",
             "BaseScheme must be null, 'http' or 'https'",
             "BasePort must be in range 1-65535",
-            "BaseUrl must be configured as a fully-qualified URL to register with Spring Boot Admin server"
+            "BaseUrl must be configured as a fully-qualified URL"
         ];
 
         await action.Should().ThrowExactlyAsync<OptionsValidationException>().WithMessage(string.Join("; ", errorsExpected));
+    }
+
+    [Fact]
+    public async Task FailsWhenConfigurationForBasePathIsUrl()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Spring:Boot:Admin:Client:Url"] = "http://spring-boot-admin-server.com:9090",
+            ["Spring:Boot:Admin:Client:BasePath"] = "http://api.localhost.com:1234/path",
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSingleton<IServer, FakeServer>();
+        builder.Services.AddSpringBootAdminClient();
+
+        await using WebApplication app = builder.Build();
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+
+        Func<Task> action = async () => await runner.RunAsync(CancellationToken.None);
+
+        await action.Should().ThrowExactlyAsync<OptionsValidationException>()
+            .WithMessage("Use BaseUrl instead of BasePath to configure the fully-qualified URL to register with");
     }
 
     [Fact]
@@ -173,7 +196,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
               "name": "{{CurrentAppName}}",
               "managementUrl": "http://{{FakeDomainNameResolver.HostName}}:5000/actuator",
               "healthUrl": "http://{{FakeDomainNameResolver.HostName}}:5000/actuator/health",
-              "serviceUrl": "http://{{FakeDomainNameResolver.HostName}}:5000",
+              "serviceUrl": "http://{{FakeDomainNameResolver.HostName}}:5000/",
               "metadata": {
                 "startup": "{{CurrentTime}}"
               }
