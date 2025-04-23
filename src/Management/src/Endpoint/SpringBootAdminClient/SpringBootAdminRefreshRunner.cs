@@ -177,6 +177,7 @@ internal sealed class SpringBootAdminRefreshRunner
             {
                 _logger.LogInformation("Unregistering from Spring Boot Admin Server at {Url}.", clientOptions.Url);
                 await _springBootAdminApiClient.UnregisterAsync(_lastRegistrationId, clientOptions, cancellationToken);
+                _lastRegistrationId = null;
             }
             catch (Exception exception)
             {
@@ -184,10 +185,6 @@ internal sealed class SpringBootAdminRefreshRunner
                 {
                     _logger.LogWarning(exception, "Failed to unregister from Spring Boot Admin server at {Url}.", clientOptions.Url);
                 }
-            }
-            finally
-            {
-                _lastRegistrationId = null;
             }
         }
     }
