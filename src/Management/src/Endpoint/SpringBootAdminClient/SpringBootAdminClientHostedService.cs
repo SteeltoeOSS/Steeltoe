@@ -53,6 +53,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedLifecycleServi
         if (_refresh != null)
         {
             await _refresh.StopAsync(cancellationToken);
+            await DisposeAsync();
         }
     }
 
@@ -71,6 +72,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedLifecycleServi
         if (_refresh != null)
         {
             await _refresh.DisposeAsync();
+            _refresh = null;
         }
     }
 }
