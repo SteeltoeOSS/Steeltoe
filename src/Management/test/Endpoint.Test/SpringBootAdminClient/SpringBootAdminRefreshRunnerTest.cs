@@ -139,7 +139,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
         var appSettings = new Dictionary<string, string?>
         {
             ["Spring:Boot:Admin:Client:Url"] = "http://spring-boot-admin-server.com:9090",
-            ["Spring:Boot:Admin:Client:BasePath"] = "http://api.localhost.com:1234/path",
+            ["Spring:Boot:Admin:Client:BasePath"] = "http://api.localhost.com:1234/path"
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
