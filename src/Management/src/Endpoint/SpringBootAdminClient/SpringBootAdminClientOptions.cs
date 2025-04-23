@@ -18,7 +18,7 @@ public sealed class SpringBootAdminClientOptions : IValidateCertificatesOptions
     public string? Url { get; set; }
 
     /// <summary>
-    /// Gets or sets the name used to register this application with in Spring Boot Admin server.
+    /// Gets or sets the name this application registers under in Spring Boot Admin server.
     /// </summary>
     public string? ApplicationName { get; set; }
 
