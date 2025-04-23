@@ -850,7 +850,7 @@
                   "properties": {
                     "ApplicationName": {
                       "type": "string",
-                      "description": "Gets or sets the name used to register this application with in Spring Boot Admin server."
+                      "description": "Gets or sets the name this application registers under in Spring Boot Admin server."
                     },
                     "BaseHost": {
                       "type": "string",
