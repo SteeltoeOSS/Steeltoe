@@ -294,7 +294,7 @@ public sealed class HostBuilderTest
             app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
             await app.StartAsync(TestContext.Current.CancellationToken);
 
-            await Task.Delay(500.Milliseconds());
+            await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
 
             await app.StopAsync(TestContext.Current.CancellationToken);
         }
@@ -326,7 +326,7 @@ public sealed class HostBuilderTest
             app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
             await app.StartAsync(TestContext.Current.CancellationToken);
 
-            await Task.Delay(500.Milliseconds());
+            await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
 
             await app.StopAsync(TestContext.Current.CancellationToken);
         }
@@ -358,7 +358,7 @@ public sealed class HostBuilderTest
             app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
             await app.StartAsync(TestContext.Current.CancellationToken);
 
-            await Task.Delay(500.Milliseconds());
+            await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
 
             await app.StopAsync(TestContext.Current.CancellationToken);
         }
@@ -470,7 +470,7 @@ public sealed class HostBuilderTest
             app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
             await app.StartAsync(TestContext.Current.CancellationToken);
 
-            await Task.Delay(500.Milliseconds());
+            await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
 
             handler.Mock.GetMatchCount(registerMock1).Should().BeGreaterThan(1);
 
