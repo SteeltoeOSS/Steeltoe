@@ -11,7 +11,7 @@
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(MatchTargetFrameworkVersion)" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <PackageReference Include="RichardSzalay.MockHttp" Version="$(MockHttpVersion)" />
-    <PackageReference Include="xunit.abstractions" Version="$(XunitAbstractionsVersion)" />
-    <PackageReference Include="xunit.assert" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.v3.assert" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.v3.extensibility.core" Version="$(XunitVersion)" />
   </ItemGroup>
 </Project>
