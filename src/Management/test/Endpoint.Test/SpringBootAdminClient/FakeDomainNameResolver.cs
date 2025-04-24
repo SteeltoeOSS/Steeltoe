@@ -14,13 +14,15 @@ internal sealed class FakeDomainNameResolver : IDomainNameResolver
     public const string IPAddress = "127.1.2.3";
     public const string HostName = "dns-host-name";
 
-    public string ResolveHostAddress(string hostName)
+    public bool ReturnsNull { get; set; }
+
+    public string? ResolveHostAddress(string hostName)
     {
-        return IPAddress;
+        return ReturnsNull ? null : IPAddress;
     }
 
-    public string ResolveHostName(bool throwOnError = false)
+    public string? ResolveHostName(bool throwOnError = false)
     {
-        return HostName;
+        return ReturnsNull ? null : HostName;
     }
 }

@@ -194,9 +194,9 @@ public sealed class SpringBootAdminRefreshRunnerTest
         string expectedJson = JsonNode.Parse($$"""
             {
               "name": "{{CurrentAppName}}",
-              "managementUrl": "http://{{FakeDomainNameResolver.HostName}}:5000/actuator",
-              "healthUrl": "http://{{FakeDomainNameResolver.HostName}}:5000/actuator/health",
-              "serviceUrl": "http://{{FakeDomainNameResolver.HostName}}:5000/",
+              "managementUrl": "http://localhost:5000/actuator",
+              "healthUrl": "http://localhost:5000/actuator/health",
+              "serviceUrl": "http://localhost:5000/",
               "metadata": {
                 "startup": "{{CurrentTime}}"
               }

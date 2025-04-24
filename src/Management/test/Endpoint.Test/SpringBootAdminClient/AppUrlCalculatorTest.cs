@@ -33,7 +33,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:5000/");
+        url.Should().Be("http://localhost:5000/");
     }
 
     [Fact]
@@ -264,11 +264,11 @@ public sealed class AppUrlCalculatorTest
     }
 
     [Fact]
-    public void Uses_hostname_from_InetUtils()
+    public void Selects_localhost_when_multiple_urls_configured()
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["Spring:Boot:Admin:Client:UseNetworkInterfaces"] = "true"
+            ["urls"] = $"http://dontcare:{ListenNonSecurePort1};https://dontcare:{ListenSecurePort1};https://localhost:{ListenSecurePort2}"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
@@ -278,14 +278,15 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeInetUtils.HostName}:5000/");
+        url.Should().Be($"https://localhost:{ListenSecurePort2}/");
     }
 
     [Fact]
-    public void Uses_IP_address_from_DomainNameResolver()
+    public void Selects_IP_address_when_multiple_urls_configured()
     {
         var appSettings = new Dictionary<string, string?>
         {
+            ["urls"] = $"http://dontcare:{ListenNonSecurePort1};https://localhost:{ListenSecurePort1};https://10.20.30.40:{ListenSecurePort2}",
             ["Spring:Boot:Admin:Client:PreferIPAddress"] = "true"
         };
 
@@ -296,7 +297,45 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeDomainNameResolver.IPAddress}:5000/");
+        url.Should().Be($"https://10.20.30.40:{ListenSecurePort2}/");
+    }
+
+    [Fact]
+    public void Uses_hostname_from_InetUtils()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["urls"] = $"http://dontcare:{ListenNonSecurePort1};http://dontcare:{ListenNonSecurePort2}",
+            ["Spring:Boot:Admin:Client:UseNetworkInterfaces"] = "true"
+        };
+
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+
+        var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
+        var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
+        string? url = calculator.AutoDetectAppUrl(options.Value);
+
+        url.Should().Be($"http://{FakeInetUtils.HostName}:{ListenNonSecurePort1}/");
+    }
+
+    [Fact]
+    public void Uses_IP_address_from_DomainNameResolver()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["urls"] = $"https://dontcare:{ListenSecurePort1};https://dontcare:{ListenSecurePort2}",
+            ["Spring:Boot:Admin:Client:PreferIPAddress"] = "true"
+        };
+
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+
+        var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
+        var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
+        string? url = calculator.AutoDetectAppUrl(options.Value);
+
+        url.Should().Be($"https://{FakeDomainNameResolver.IPAddress}:{ListenSecurePort1}/");
     }
 
     [Fact]
@@ -304,6 +343,7 @@ public sealed class AppUrlCalculatorTest
     {
         var appSettings = new Dictionary<string, string?>
         {
+            ["urls"] = $"http://dontcare:{ListenNonSecurePort1};https://dontcare:{ListenSecurePort1}",
             ["Spring:Boot:Admin:Client:UseNetworkInterfaces"] = "true",
             ["Spring:Boot:Admin:Client:PreferIPAddress"] = "true"
         };
@@ -315,7 +355,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeInetUtils.IPAddress}:5000/");
+        url.Should().Be($"https://{FakeInetUtils.IPAddress}:{ListenSecurePort1}/");
     }
 
     [Fact]
@@ -333,7 +373,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:5000/api");
+        url.Should().Be("http://localhost:5000/api");
     }
 
     [Fact]
@@ -371,6 +411,49 @@ public sealed class AppUrlCalculatorTest
     }
 
     [Fact]
+    public void Unable_when_hostname_lookup_fails()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["urls"] = $"http://dontcare:{ListenNonSecurePort1}"
+        };
+
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+
+        var fakeDomainNameResolver = (FakeDomainNameResolver)serviceProvider.GetRequiredService<IDomainNameResolver>();
+        fakeDomainNameResolver.ReturnsNull = true;
+
+        var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
+        var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
+        string? url = calculator.AutoDetectAppUrl(options.Value);
+
+        url.Should().BeNull();
+    }
+
+    [Fact]
+    public void Unable_when_IP_address_lookup_fails()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["urls"] = $"http://dontcare:{ListenNonSecurePort1}",
+            ["Spring:Boot:Admin:Client:PreferIPAddress"] = "true"
+        };
+
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+
+        var fakeDomainNameResolver = (FakeDomainNameResolver)serviceProvider.GetRequiredService<IDomainNameResolver>();
+        fakeDomainNameResolver.ReturnsNull = true;
+
+        var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
+        var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
+        string? url = calculator.AutoDetectAppUrl(options.Value);
+
+        url.Should().BeNull();
+    }
+
+    [Fact]
     public void Escapes_special_characters_in_configuration()
     {
         var appSettings = new Dictionary<string, string?>
@@ -385,7 +468,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:5000/path%3F%3F%3F/some");
+        url.Should().Be("http://localhost:5000/path%3F%3F%3F/some");
     }
 
     [Fact]
@@ -403,7 +486,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:5000/path%3F%3F%3F/some");
+        url.Should().Be("http://localhost:5000/path%3F%3F%3F/some");
     }
 
     private static ServiceProvider BuildServiceProvider(IConfiguration configuration)
