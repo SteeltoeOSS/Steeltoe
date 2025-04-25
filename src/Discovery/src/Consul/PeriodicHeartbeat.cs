@@ -78,5 +78,6 @@ internal sealed class PeriodicHeartbeat : IAsyncDisposable
         await _task;
         _cancellationTokenSource.Dispose();
         _task.Dispose();
+        _periodicTimer.Dispose();
     }
 }

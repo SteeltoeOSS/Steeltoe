@@ -2,9 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
+namespace Steeltoe.Common.Net;
 
-internal sealed class RegistrationResult
+internal interface IDomainNameResolver
 {
-    public string? Id { get; set; }
+    string? ResolveHostAddress(string hostName);
+
+    string? ResolveHostName(bool throwOnError = false);
 }

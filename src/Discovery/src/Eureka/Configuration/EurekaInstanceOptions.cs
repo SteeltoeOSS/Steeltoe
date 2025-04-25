@@ -207,7 +207,7 @@ public sealed class EurekaInstanceOptions
 
     /// <summary>
     /// Gets or sets a value indicating whether <see cref="NetworkInterface.GetAllNetworkInterfaces" /> is used to determine <see cref="IPAddress" /> and
-    /// <see cref="HostName" /> .
+    /// <see cref="HostName" />. Default value: false.
     /// </summary>
     public bool UseNetworkInterfaces { get; set; }
 

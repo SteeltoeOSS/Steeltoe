@@ -7,7 +7,6 @@ using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 
@@ -30,7 +29,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         var options = new ConfigServerClientOptions
         {
-            Timeout = 100
+            Timeout = 10
         };
 
         var httpClientHandler = new SlowHttpClientHandler(1.Seconds(), new HttpResponseMessage());
@@ -93,122 +92,108 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Create_WithPollingTimer()
     {
-        const string environment = """
+        await TestFailureTracer.CaptureAsync(async tracer =>
+        {
+            const string environment = """
+                {
+                  "name": "test-name",
+                  "profiles": [
+                    "Production"
+                  ],
+                  "label": "test-label",
+                  "version": "test-version",
+                  "propertySources": []
+                }
+                """;
+
+            using var startup = new TestConfigServerStartup();
+            startup.Response = environment;
+            startup.ReturnStatus = [.. Enumerable.Repeat(200, 100)];
+            startup.Label = "test-label";
+
+            await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
+            startup.Configure(app);
+            await app.StartAsync(TestContext.Current.CancellationToken);
+
+            using TestServer server = app.GetTestServer();
+            server.BaseAddress = new Uri("http://localhost:8888");
+
+            var options = new ConfigServerClientOptions
             {
-              "name": "test-name",
-              "profiles": [
-                "Production"
-              ],
-              "label": "test-label",
-              "version": "test-version",
-              "propertySources": []
-            }
-            """;
+                Name = "myName",
+                PollingInterval = 300.Milliseconds(),
+                Label = "label,test-label"
+            };
 
-        using var startup = new TestConfigServerStartup();
-        startup.Response = environment;
-        startup.ReturnStatus = [.. Enumerable.Repeat(200, 100)];
-        startup.Label = "test-label";
+            using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
+            using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, tracer.LoggerFactory);
 
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
+            bool firstRequestCompleted = startup.WaitForFirstRequest(2.Seconds());
+            firstRequestCompleted.Should().BeTrue();
 
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
+            startup.RequestCount.Should().BeGreaterThanOrEqualTo(1);
+            startup.LastRequest.Should().NotBeNull();
 
-        var options = new ConfigServerClientOptions
-        {
-            Name = "myName",
-            PollingInterval = 300.Milliseconds(),
-            Label = "label,test-label"
-        };
+            await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal))
-        {
-            IncludeStackTraces = true
-        };
-
-        using var loggerFactory = new LoggerFactory([capturingLoggerProvider], new LoggerFilterOptions
-        {
-            MinLevel = LogLevel.Trace
+            startup.RequestCount.Should().BeGreaterThanOrEqualTo(2);
+            provider.GetReloadToken().HasChanged.Should().BeFalse();
         });
-
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, loggerFactory);
-
-        bool firstRequestCompleted = startup.WaitForFirstRequest(2.Seconds());
-        firstRequestCompleted.Should().BeTrue($"captured logs:\n{capturingLoggerProvider.GetAsText()}");
-
-        startup.RequestCount.Should().BeGreaterThanOrEqualTo(1);
-        startup.LastRequest.Should().NotBeNull();
-
-        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
-
-        startup.RequestCount.Should().BeGreaterThanOrEqualTo(2, $"captured logs:\n{capturingLoggerProvider.GetAsText()}");
-        provider.GetReloadToken().HasChanged.Should().BeFalse();
     }
 
     [Fact]
     public async Task Create_FailFastEnabledAndExceptionThrownDuringPolling_DoesNotCrash()
     {
-        const string environment = """
+        await TestFailureTracer.CaptureAsync(async tracer =>
+        {
+            const string environment = """
+                {
+                  "name": "test-name",
+                  "profiles": [
+                    "Production"
+                  ],
+                  "label": "test-label",
+                  "version": "test-version",
+                  "propertySources": []
+                }
+                """;
+
+            using var startup = new TestConfigServerStartup();
+            startup.Response = environment;
+
+            // Initial requests succeed, but later requests return 400 status code so that an exception is thrown during polling
+            startup.ReturnStatus = [.. Enumerable.Repeat(200, 2).Concat(Enumerable.Repeat(400, 100))];
+            startup.Label = "test-label";
+
+            await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
+            startup.Configure(app);
+            await app.StartAsync(TestContext.Current.CancellationToken);
+
+            using TestServer server = app.GetTestServer();
+            server.BaseAddress = new Uri("http://localhost:8888");
+
+            var options = new ConfigServerClientOptions
             {
-              "name": "test-name",
-              "profiles": [
-                "Production"
-              ],
-              "label": "test-label",
-              "version": "test-version",
-              "propertySources": []
-            }
-            """;
+                Name = "myName",
+                PollingInterval = 300.Milliseconds(),
+                FailFast = true,
+                Label = "test-label"
+            };
 
-        using var startup = new TestConfigServerStartup();
-        startup.Response = environment;
+            using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
+            using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, tracer.LoggerFactory);
 
-        // Initial requests succeed, but later requests return 400 status code so that an exception is thrown during polling
-        startup.ReturnStatus = [.. Enumerable.Repeat(200, 2).Concat(Enumerable.Repeat(400, 100))];
-        startup.Label = "test-label";
+            bool firstRequestCompleted = startup.WaitForFirstRequest(2.Seconds());
+            firstRequestCompleted.Should().BeTrue();
 
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
+            startup.RequestCount.Should().BeGreaterThanOrEqualTo(1);
+            startup.LastRequest.Should().NotBeNull();
 
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
+            await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-        var options = new ConfigServerClientOptions
-        {
-            Name = "myName",
-            PollingInterval = 300.Milliseconds(),
-            FailFast = true,
-            Label = "test-label"
-        };
-
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal))
-        {
-            IncludeStackTraces = true
-        };
-
-        using var loggerFactory = new LoggerFactory([capturingLoggerProvider], new LoggerFilterOptions
-        {
-            MinLevel = LogLevel.Trace
+            startup.RequestCount.Should().BeGreaterThanOrEqualTo(2);
+            provider.GetReloadToken().HasChanged.Should().BeFalse();
         });
-
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, loggerFactory);
-
-        bool firstRequestCompleted = startup.WaitForFirstRequest(2.Seconds());
-        firstRequestCompleted.Should().BeTrue($"captured logs:\n{capturingLoggerProvider.GetAsText()}");
-
-        startup.RequestCount.Should().BeGreaterThanOrEqualTo(1);
-        startup.LastRequest.Should().NotBeNull();
-
-        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
-
-        startup.RequestCount.Should().BeGreaterThanOrEqualTo(2, $"captured logs:\n{capturingLoggerProvider.GetAsText()}");
-        provider.GetReloadToken().HasChanged.Should().BeFalse();
     }
 
     [Fact]
@@ -496,6 +481,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+
         startup.Reset();
 
         startup.ReturnStatus =
@@ -571,46 +557,39 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_ConfigServerReturnsBadStatus_FailFastEnabled_RetryEnabled()
     {
-        using var startup = new TestConfigServerStartup();
-        startup.ReturnStatus = [.. Enumerable.Repeat(500, 100)];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
-        var options = new ConfigServerClientOptions
+        await TestFailureTracer.CaptureAsync(async tracer =>
         {
-            Name = "myName",
-            FailFast = true,
-            Retry =
+            using var startup = new TestConfigServerStartup();
+            startup.ReturnStatus = [.. Enumerable.Repeat(500, 100)];
+
+            await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
+            startup.Configure(app);
+            await app.StartAsync(TestContext.Current.CancellationToken);
+
+            using TestServer server = app.GetTestServer();
+            server.BaseAddress = new Uri("http://localhost:8888");
+
+            var options = new ConfigServerClientOptions
             {
-                Enabled = true,
-                InitialInterval = 10
-            },
-            Timeout = 10
-        };
+                Name = "myName",
+                FailFast = true,
+                Retry =
+                {
+                    Enabled = true,
+                    InitialInterval = 10
+                },
+                Timeout = 1000
+            };
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal))
-        {
-            IncludeStackTraces = true
-        };
+            using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
+            using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, tracer.LoggerFactory);
 
-        using var loggerFactory = new LoggerFactory([capturingLoggerProvider], new LoggerFilterOptions
-        {
-            MinLevel = LogLevel.Trace
+            await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
+
+            await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+
+            startup.RequestCount.Should().BeGreaterThan(3);
         });
-
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, loggerFactory);
-
-        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
-
-        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
-
-        startup.RequestCount.Should().BeGreaterThan(3, $"captured logs:\n{capturingLoggerProvider.GetAsText()}");
     }
 
     [Fact]

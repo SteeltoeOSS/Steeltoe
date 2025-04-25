@@ -18,16 +18,20 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
     private const char SafeChar = '-';
 
     private readonly IConfiguration _configuration;
+    private readonly IDomainNameResolver _domainNameResolver;
     private readonly InetUtils _inetUtils;
     private readonly IApplicationInstanceInfo _applicationInstanceInfo;
 
-    public PostConfigureConsulDiscoveryOptions(IConfiguration configuration, InetUtils inetUtils, IApplicationInstanceInfo applicationInstanceInfo)
+    public PostConfigureConsulDiscoveryOptions(IConfiguration configuration, IDomainNameResolver domainNameResolver, InetUtils inetUtils,
+        IApplicationInstanceInfo applicationInstanceInfo)
     {
         ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(domainNameResolver);
         ArgumentNullException.ThrowIfNull(inetUtils);
         ArgumentNullException.ThrowIfNull(applicationInstanceInfo);
 
         _configuration = configuration;
+        _domainNameResolver = domainNameResolver;
         _inetUtils = inetUtils;
         _applicationInstanceInfo = applicationInstanceInfo;
     }
@@ -39,7 +43,7 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
         options.ServiceName = GetServiceName(options);
 
         HostInfo? hostInfo = options.UseNetworkInterfaces ? _inetUtils.FindFirstNonLoopbackHostInfo() : null;
-        options.HostName ??= hostInfo != null ? hostInfo.Hostname : DnsTools.ResolveHostName();
+        options.HostName ??= hostInfo != null ? hostInfo.Hostname : _domainNameResolver.ResolveHostName();
 
         if (string.IsNullOrWhiteSpace(options.IPAddress))
         {
@@ -49,7 +53,7 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
             }
             else if (!string.IsNullOrEmpty(options.HostName))
             {
-                options.IPAddress = DnsTools.ResolveHostAddress(options.HostName);
+                options.IPAddress = _domainNameResolver.ResolveHostAddress(options.HostName);
             }
         }
 

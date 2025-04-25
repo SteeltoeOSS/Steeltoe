@@ -26,19 +26,22 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
     private static readonly AssemblyLoader AssemblyLoader = new();
     private readonly IServiceProvider _serviceProvider;
     private readonly IConfiguration _configuration;
+    private readonly IDomainNameResolver _domainNameResolver;
     private readonly UnifiedApplicationInfo _appInfo;
     private readonly InetUtils _inetUtils;
 
     public PostConfigureEurekaInstanceOptions(IServiceProvider serviceProvider, IConfiguration configuration, IApplicationInstanceInfo applicationInstanceInfo,
-        InetUtils inetUtils)
+        IDomainNameResolver domainNameResolver, InetUtils inetUtils)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(applicationInstanceInfo);
+        ArgumentNullException.ThrowIfNull(domainNameResolver);
         ArgumentNullException.ThrowIfNull(inetUtils);
 
         _serviceProvider = serviceProvider;
         _configuration = configuration;
+        _domainNameResolver = domainNameResolver;
         _appInfo = ToUnifiedApplicationInfo(applicationInstanceInfo);
         _inetUtils = inetUtils;
     }
@@ -97,7 +100,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
         }
 
         HostInfo? hostInfo = options.UseNetworkInterfaces ? _inetUtils.FindFirstNonLoopbackHostInfo() : null;
-        options.HostName ??= hostInfo != null ? hostInfo.Hostname : DnsTools.ResolveHostName();
+        options.HostName ??= hostInfo != null ? hostInfo.Hostname : _domainNameResolver.ResolveHostName();
 
         if (!string.IsNullOrWhiteSpace(_appInfo.InternalIP))
         {
@@ -112,7 +115,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
             }
             else if (!string.IsNullOrWhiteSpace(options.HostName))
             {
-                options.IPAddress = DnsTools.ResolveHostAddress(options.HostName);
+                options.IPAddress = _domainNameResolver.ResolveHostAddress(options.HostName);
             }
         }
 

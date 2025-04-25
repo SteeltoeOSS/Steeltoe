@@ -432,7 +432,7 @@ Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Enabled.set -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.ManagementOptions() -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Path.get -> string?
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Path.set -> void
-Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Port.get -> string?
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Port.get -> int
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Port.set -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.SerializerOptions.get -> System.Text.Json.JsonSerializerOptions!
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.SerializerOptions.set -> void
@@ -460,14 +460,28 @@ Steeltoe.Management.Endpoint.SpringBootAdminClient.ServiceCollectionExtensions
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ApplicationName.get -> string?
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ApplicationName.set -> void
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseHost.get -> string?
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseHost.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BasePath.get -> string?
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BasePath.set -> void
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BasePort.get -> int?
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BasePort.set -> void
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseScheme.get -> string?
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseScheme.set -> void
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl.get -> string?
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ConnectionTimeoutMs.get -> int
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ConnectionTimeoutMs.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Metadata.get -> System.Collections.Generic.IDictionary<string!, object!>!
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.PreferIPAddress.get -> bool
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.PreferIPAddress.set -> void
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.RefreshInterval.get -> System.TimeSpan
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.RefreshInterval.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.SpringBootAdminClientOptions() -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Url.get -> string?
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Url.set -> void
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.UseNetworkInterfaces.get -> bool
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.UseNetworkInterfaces.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.get -> bool
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.set -> void
 virtual Steeltoe.Management.Endpoint.Configuration.ConfigureEndpointOptions<TOptions>.Configure(TOptions! options) -> void

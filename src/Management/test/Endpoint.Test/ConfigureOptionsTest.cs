@@ -57,7 +57,7 @@ public sealed class ConfigureOptionsTest
         configurers.OfType<CustomManagementOptionsConfigurer>().Should().ContainSingle();
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ManagementOptions>>();
-        optionsMonitor.CurrentValue.Port.Should().Be("9999");
+        optionsMonitor.CurrentValue.Port.Should().Be(9999);
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public sealed class ConfigureOptionsTest
         configurers.OfType<CustomManagementOptionsConfigurer>().Should().ContainSingle();
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ManagementOptions>>();
-        optionsMonitor.CurrentValue.Port.Should().Be("9999");
+        optionsMonitor.CurrentValue.Port.Should().Be(9999);
     }
 
     [Fact]
@@ -232,7 +232,7 @@ public sealed class ConfigureOptionsTest
     {
         public void Configure(ManagementOptions options)
         {
-            options.Port = "9999";
+            options.Port = 9999;
         }
     }
 }

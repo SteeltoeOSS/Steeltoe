@@ -224,6 +224,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
                 },
                 "eureka": {
                     "client": {
+                        "enabled": true,
                         "serviceUrl": "http://localhost:8761/eureka/"
                     }
                 }
@@ -234,11 +235,11 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         string path = sandbox.CreateFile("appsettings.json", appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
+
         var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.Add(FastTestConfigurations.Discovery);
         configurationBuilder.SetBasePath(directory);
-
         configurationBuilder.AddJsonFile(fileName);
-
         configurationBuilder.AddConfigServer();
         IConfigurationRoot root = configurationBuilder.Build();
 

@@ -2,156 +2,77 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Net.Http.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.Extensions;
-using Steeltoe.Common.Http;
-using Steeltoe.Management.Endpoint.Actuators.Health;
-using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
-internal sealed class SpringBootAdminClientHostedService : IHostedService
+internal sealed class SpringBootAdminClientHostedService : IHostedLifecycleService, IAsyncDisposable
 {
-    internal const string HttpClientName = "SpringBootAdmin";
-
-    private readonly IOptionsMonitor<SpringBootAdminClientOptions> _clientOptionsMonitor;
-    private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
-    private readonly IOptionsMonitor<HealthEndpointOptions> _healthOptionsMonitor;
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly SpringBootAdminRefreshRunner _springBootAdminRefreshRunner;
     private readonly TimeProvider _timeProvider;
-    private readonly ILogger<SpringBootAdminClientHostedService> _logger;
+    private readonly IOptionsMonitor<SpringBootAdminClientOptions> _optionsMonitor;
+    private readonly ILoggerFactory _loggerFactory;
 
-    internal RegistrationResult? RegistrationResult { get; private set; }
+    private SpringBootAdminPeriodicRefresh? _refresh;
 
-    public SpringBootAdminClientHostedService(IOptionsMonitor<SpringBootAdminClientOptions> clientOptionsMonitor,
-        IOptionsMonitor<ManagementOptions> managementOptionsMonitor, IOptionsMonitor<HealthEndpointOptions> healthOptionsMonitor,
-        IHttpClientFactory httpClientFactory, TimeProvider timeProvider, ILogger<SpringBootAdminClientHostedService> logger)
+    public SpringBootAdminClientHostedService(SpringBootAdminRefreshRunner springBootAdminRefreshRunner, TimeProvider timeProvider,
+        IOptionsMonitor<SpringBootAdminClientOptions> optionsMonitor, ILoggerFactory loggerFactory)
     {
-        ArgumentNullException.ThrowIfNull(clientOptionsMonitor);
-        ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
-        ArgumentNullException.ThrowIfNull(healthOptionsMonitor);
-        ArgumentNullException.ThrowIfNull(httpClientFactory);
+        ArgumentNullException.ThrowIfNull(springBootAdminRefreshRunner);
         ArgumentNullException.ThrowIfNull(timeProvider);
-        ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        _clientOptionsMonitor = clientOptionsMonitor;
-        _managementOptionsMonitor = managementOptionsMonitor;
-        _healthOptionsMonitor = healthOptionsMonitor;
-        _httpClientFactory = httpClientFactory;
+        _springBootAdminRefreshRunner = springBootAdminRefreshRunner;
         _timeProvider = timeProvider;
-        _logger = logger;
+        _optionsMonitor = optionsMonitor;
+        _loggerFactory = loggerFactory;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public Task StartingAsync(CancellationToken cancellationToken)
     {
-        SpringBootAdminClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
+        return Task.CompletedTask;
+    }
 
-        if (clientOptions.Url == null)
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task StartedAsync(CancellationToken cancellationToken)
+    {
+        ILogger<SpringBootAdminPeriodicRefresh> logger = _loggerFactory.CreateLogger<SpringBootAdminPeriodicRefresh>();
+        _refresh = new SpringBootAdminPeriodicRefresh(_optionsMonitor, _timeProvider, _springBootAdminRefreshRunner, logger);
+        return Task.CompletedTask;
+    }
+
+    public async Task StoppingAsync(CancellationToken cancellationToken)
+    {
+        if (_refresh != null)
         {
-            throw new InvalidOperationException("Spring Boot Admin Server Url must be provided in options.");
-        }
-
-        _logger.LogInformation("Registering with Spring Boot Admin Server at {Url}", clientOptions.Url);
-
-        if (clientOptions.ApplicationName == null || !Uri.TryCreate(clientOptions.BasePath, UriKind.Absolute, out Uri? baseUri))
-        {
-            throw new InvalidOperationException("BasePath and ApplicationName must be provided in options.");
-        }
-
-        Application app = CreateApplication(baseUri, clientOptions.ApplicationName);
-        Merge(app.Metadata, clientOptions.Metadata);
-
-        using HttpClient httpClient = CreateHttpClient(clientOptions.ConnectionTimeout);
-
-        HttpResponseMessage? response;
-
-        try
-        {
-            response = await httpClient.PostAsJsonAsync($"{clientOptions.Url}/instances", app, cancellationToken);
-        }
-        catch (Exception exception) when (!exception.IsCancellation())
-        {
-            _logger.LogError(exception, "Error connecting to Spring Boot Admin Server.");
-            return;
-        }
-
-        if (response.IsSuccessStatusCode)
-        {
-            RegistrationResult = await response.Content.ReadFromJsonAsync<RegistrationResult>(cancellationToken);
-        }
-        else
-        {
-            string errorResponse = await response.Content.ReadAsStringAsync(cancellationToken);
-            _logger.LogError("Error registering with Spring Boot Admin Server: {Message} \n {Response} ", response.ToString(), errorResponse);
+            await _refresh.StopAsync(cancellationToken);
+            await DisposeAsync();
         }
     }
 
-    private Application CreateApplication(Uri baseUri, string applicationName)
+    public Task StopAsync(CancellationToken cancellationToken)
     {
-        ManagementOptions managementOptions = _managementOptionsMonitor.CurrentValue;
-        HealthEndpointOptions healthOptions = _healthOptionsMonitor.CurrentValue;
-
-        var healthUriBuilder = new UriBuilder(baseUri)
-        {
-            Path = healthOptions.GetEndpointPath(managementOptions.Path)
-        };
-
-        var managementUriBuilder = new UriBuilder(baseUri)
-        {
-            Path = managementOptions.Path
-        };
-
-        var metadata = new Dictionary<string, object>
-        {
-            ["startup"] = _timeProvider.GetUtcNow().UtcDateTime
-        };
-
-        return new Application(applicationName, managementUriBuilder.Uri, healthUriBuilder.Uri, baseUri, metadata);
+        return Task.CompletedTask;
     }
 
-    private static void Merge<TKey, TValue>(IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from)
+    public Task StoppedAsync(CancellationToken cancellationToken)
     {
-        from.ToList().ForEach(to.Add);
+        return Task.CompletedTask;
     }
 
-    public async Task StopAsync(CancellationToken cancellationToken)
+    public async ValueTask DisposeAsync()
     {
-        if (RegistrationResult == null || string.IsNullOrEmpty(RegistrationResult.Id))
+        if (_refresh != null)
         {
-            return;
+            await _refresh.DisposeAsync();
+            _refresh = null;
         }
-
-        SpringBootAdminClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
-        var requestUri = new Uri($"{clientOptions.Url}/instances/{RegistrationResult.Id}");
-
-        using HttpClient httpClient = CreateHttpClient(clientOptions.ConnectionTimeout);
-
-        HttpResponseMessage? response;
-
-        try
-        {
-            response = await httpClient.DeleteAsync(requestUri, cancellationToken);
-        }
-        catch (Exception exception) when (!exception.IsCancellation())
-        {
-            _logger.LogError(exception, "Error connecting to Spring Boot Admin Server.");
-            return;
-        }
-
-        if (!response.IsSuccessStatusCode)
-        {
-            string errorResponse = await response.Content.ReadAsStringAsync(cancellationToken);
-            _logger.LogError("Error deleting from Spring Boot Admin Server: {Message} \n {Response} ", response.ToString(), errorResponse);
-        }
-    }
-
-    private HttpClient CreateHttpClient(TimeSpan timeout)
-    {
-        HttpClient httpClient = _httpClientFactory.CreateClient(HttpClientName);
-        httpClient.ConfigureForSteeltoe(timeout);
-        return httpClient;
     }
 }
