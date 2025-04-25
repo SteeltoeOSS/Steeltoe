@@ -437,7 +437,7 @@ public sealed class AppUrlCalculatorTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["urls"] = $"http://dontcare:{ListenNonSecurePort1};http://localhost:{ListenNonSecurePort2};http://10.20.30.40:{ListenNonSecurePort3}"
+            ["urls"] = $"http://localhost:{ListenNonSecurePort2};http://dontcare:{ListenNonSecurePort1}"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
