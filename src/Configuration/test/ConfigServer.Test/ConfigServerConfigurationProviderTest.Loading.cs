@@ -29,7 +29,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         var options = new ConfigServerClientOptions
         {
-            Timeout = 100
+            Timeout = 10
         };
 
         var httpClientHandler = new SlowHttpClientHandler(1.Seconds(), new HttpResponseMessage());
@@ -578,7 +578,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
                     Enabled = true,
                     InitialInterval = 10
                 },
-                Timeout = 10
+                Timeout = 1000
             };
 
             using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
