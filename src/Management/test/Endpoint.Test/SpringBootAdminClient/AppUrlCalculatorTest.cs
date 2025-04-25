@@ -16,8 +16,9 @@ namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
 public sealed class AppUrlCalculatorTest
 {
-    private const string ListenNonSecurePort1 = "4444";
-    private const string ListenNonSecurePort2 = "5555";
+    private const string ListenNonSecurePort1 = "3333";
+    private const string ListenNonSecurePort2 = "4444";
+    private const string ListenNonSecurePort3 = "5555";
     private const string ListenSecurePort1 = "6666";
     private const string ListenSecurePort2 = "7777";
     private const string ManagementPort = "8888";
@@ -268,7 +269,7 @@ public sealed class AppUrlCalculatorTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["urls"] = $"http://dontcare:{ListenNonSecurePort1};https://dontcare:{ListenSecurePort1};https://localhost:{ListenSecurePort2}"
+            ["urls"] = $"http://dontcare:{ListenNonSecurePort1};http://localhost:{ListenNonSecurePort2};http://10.20.30.40:{ListenNonSecurePort3}"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
@@ -278,7 +279,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://localhost:{ListenSecurePort2}/");
+        url.Should().Be($"http://localhost:{ListenNonSecurePort2}/");
     }
 
     [Fact]
@@ -286,8 +287,7 @@ public sealed class AppUrlCalculatorTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["urls"] = $"http://dontcare:{ListenNonSecurePort1};https://localhost:{ListenSecurePort1};https://10.20.30.40:{ListenSecurePort2}",
-            ["Spring:Boot:Admin:Client:PreferIPAddress"] = "true"
+            ["urls"] = $"http://dontcare:{ListenNonSecurePort1};http://10.20.30.40:{ListenNonSecurePort2};http://localhost:{ListenNonSecurePort3}"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
@@ -297,7 +297,7 @@ public sealed class AppUrlCalculatorTest
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://10.20.30.40:{ListenSecurePort2}/");
+        url.Should().Be($"http://10.20.30.40:{ListenNonSecurePort2}/");
     }
 
     [Fact]
@@ -374,6 +374,80 @@ public sealed class AppUrlCalculatorTest
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
         url.Should().Be("http://localhost:5000/api");
+    }
+
+    [Fact]
+    public void Prefers_IP_address_over_wildcard_host_when_multiple_urls_configured_with_PreferIPAddress()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["urls"] = $"http://dontcare:{ListenNonSecurePort1};http://10.20.30.40:{ListenNonSecurePort2};http://localhost:{ListenNonSecurePort3}",
+            ["Spring:Boot:Admin:Client:PreferIPAddress"] = "true"
+        };
+
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+
+        var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
+        var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
+        string? url = calculator.AutoDetectAppUrl(options.Value);
+
+        url.Should().Be($"http://10.20.30.40:{ListenNonSecurePort2}/");
+    }
+
+    [Fact]
+    public void Prefers_IP_address_over_https_when_multiple_urls_configured_with_PreferIPAddress()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["urls"] = $"https://dontcare:{ListenSecurePort1};http://10.20.30.40:{ListenNonSecurePort1};https://localhost:{ListenSecurePort2}",
+            ["Spring:Boot:Admin:Client:PreferIPAddress"] = "true"
+        };
+
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+
+        var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
+        var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
+        string? url = calculator.AutoDetectAppUrl(options.Value);
+
+        url.Should().Be($"http://10.20.30.40:{ListenNonSecurePort1}/");
+    }
+
+    [Fact]
+    public void Prefers_https_over_localhost_when_multiple_urls_configured()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["urls"] = $"https://dontcare:{ListenSecurePort1};http://localhost:{ListenNonSecurePort1};http://10.20.30.40:{ListenNonSecurePort2}"
+        };
+
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+
+        var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
+        var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
+        string? url = calculator.AutoDetectAppUrl(options.Value);
+
+        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ListenSecurePort1}/");
+    }
+
+    [Fact]
+    public void Prefers_localhost_over_wildcard_host_when_multiple_urls_configured()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["urls"] = $"http://dontcare:{ListenNonSecurePort1};http://localhost:{ListenNonSecurePort2};http://10.20.30.40:{ListenNonSecurePort3}"
+        };
+
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+
+        var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
+        var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
+        string? url = calculator.AutoDetectAppUrl(options.Value);
+
+        url.Should().Be($"http://localhost:{ListenNonSecurePort2}/");
     }
 
     [Fact]
