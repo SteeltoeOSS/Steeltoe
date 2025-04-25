@@ -83,7 +83,7 @@ internal sealed class SpringBootAdminRefreshRunner
         }
         else if (!Uri.IsWellFormedUriString(options.Url, UriKind.Absolute))
         {
-            errors.Add($"{nameof(SpringBootAdminClientOptions.Url)} must be configured as a fully-qualified URL");
+            errors.Add($"{nameof(SpringBootAdminClientOptions.Url)} must be configured as an absolute URL");
         }
 
         if (options.BaseScheme is not null and not "http" and not "https")
@@ -101,7 +101,7 @@ internal sealed class SpringBootAdminRefreshRunner
         {
             // In Steeltoe v4, the BasePath setting was renamed to BaseUrl, and the meaning of BasePath changed.
             errors.Add($"Use {nameof(SpringBootAdminClientOptions.BaseUrl)} instead of {nameof(SpringBootAdminClientOptions.BasePath)} " +
-                $"to configure the fully-qualified URL to register with");
+                $"to configure the absolute URL to register with");
         }
         else
         {
@@ -114,7 +114,7 @@ internal sealed class SpringBootAdminRefreshRunner
             }
             else if (!Uri.IsWellFormedUriString(options.BaseUrl, UriKind.Absolute))
             {
-                errors.Add($"{nameof(SpringBootAdminClientOptions.BaseUrl)} must be configured as a fully-qualified URL");
+                errors.Add($"{nameof(SpringBootAdminClientOptions.BaseUrl)} must be configured as an absolute URL");
             }
         }
 

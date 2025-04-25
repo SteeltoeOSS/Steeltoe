@@ -124,10 +124,10 @@ public sealed class SpringBootAdminRefreshRunnerTest
 
         string[] errorsExpected =
         [
-            "Url must be configured as a fully-qualified URL",
+            "Url must be configured as an absolute URL",
             "BaseScheme must be null, 'http' or 'https'",
             "BasePort must be in range 1-65535",
-            "BaseUrl must be configured as a fully-qualified URL"
+            "BaseUrl must be configured as an absolute URL"
         ];
 
         await action.Should().ThrowExactlyAsync<OptionsValidationException>().WithMessage(string.Join("; ", errorsExpected));
@@ -153,7 +153,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
         Func<Task> action = async () => await runner.RunAsync(CancellationToken.None);
 
         await action.Should().ThrowExactlyAsync<OptionsValidationException>()
-            .WithMessage("Use BaseUrl instead of BasePath to configure the fully-qualified URL to register with");
+            .WithMessage("Use BaseUrl instead of BasePath to configure the absolute URL to register with");
     }
 
     [Fact]
