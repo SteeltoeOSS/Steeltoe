@@ -11,7 +11,7 @@ trigger:
 jobs:
 - job: Steeltoe_Package
   pool:
-    vmImage: ubuntu-latest
+    vmImage: windows-latest
   variables:
     DOTNET_NOLOGO: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -71,15 +71,25 @@ jobs:
       configuration: Release
       packDirectory: $(Build.ArtifactStagingDirectory)/packages
       nobuild: true
-  - task: PowerShell@2
+  - task: DotNetCoreCLI@2
     condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
-    displayName: Authenticode sign packages
     inputs:
-      filePath: build/sign-packages.ps1
-    env:
-      SignClientUser: $(SignClientUser)
-      SignClientSecret: $(SignClientSecret)
-      ArtifactDirectory: $(Build.ArtifactStagingDirectory)/packages
+      command: custom
+      custom: tool
+      arguments: install --tool-path . sign --prerelease
+    displayName: Install code signing tool
+  - pwsh: |
+      .\sign code azure-key-vault "**/*.nupkg" `
+        --base-directory "$(Build.ArtifactStagingDirectory)/packages" `
+        --azure-key-vault-url "$(SignKeyVaultUrl)" `
+        --azure-key-vault-tenant-id "$(SignTenantId)" `
+        --azure-key-vault-client-id "$(SignClientId)" `
+        --azure-key-vault-client-secret "$(SignClientSecret)" `
+        --azure-key-vault-certificate "$(SignKeyVaultCertificate)" `
+        --description "Steeltoe" `
+        --description-url "https://github.com/SteeltoeOSS"
+    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
+    displayName: Sign packages
   - publish: $(Build.ArtifactStagingDirectory)/packages
     condition: succeeded()
     displayName: Publish build artifacts
