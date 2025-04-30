@@ -34,7 +34,9 @@ internal static class UriExtensions
         var builder = new UriBuilder(source)
         {
             UserName = "****",
+#pragma warning disable S2068 // Hard-coded credentials are security-sensitive
             Password = "****"
+#pragma warning restore S2068 // Hard-coded credentials are security-sensitive
         };
 
         return builder.Uri;

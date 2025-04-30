@@ -40,7 +40,9 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
+#pragma warning disable S4792 // Configuring loggers is security-sensitive
         services.AddLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
+#pragma warning restore S4792 // Configuring loggers is security-sensitive
 
         services.AddCoreActuatorServices<LoggersEndpointOptions, ConfigureLoggersEndpointOptions, LoggersEndpointMiddleware, ILoggersEndpointHandler,
             LoggersEndpointHandler, LoggersRequest, LoggersResponse?>(configureMiddleware);

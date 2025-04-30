@@ -51,7 +51,9 @@ public static class LoggingBuilderExtensions
     {
         if (builder.Services.All(descriptor => descriptor.SafeGetImplementationType() != typeof(ConsoleLoggerProvider)))
         {
+#pragma warning disable S4792 // Configuring loggers is security-sensitive
             builder.AddConsole();
+#pragma warning restore S4792 // Configuring loggers is security-sensitive
         }
     }
 

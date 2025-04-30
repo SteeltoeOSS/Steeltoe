@@ -152,7 +152,9 @@ internal sealed class HostBuilderWrapper
         }
         else
         {
+#pragma warning disable S4792 // Configuring loggers is security-sensitive
             _configureServicesActions.Add((contextWrapper, collection) => collection.AddLogging(builder => configureAction(contextWrapper, builder)));
+#pragma warning restore S4792 // Configuring loggers is security-sensitive
         }
 
         return this;

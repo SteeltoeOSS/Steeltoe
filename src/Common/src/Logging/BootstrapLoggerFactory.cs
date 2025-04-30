@@ -17,7 +17,9 @@ public sealed class BootstrapLoggerFactory : ILoggerFactory
     private static readonly Action<ILoggingBuilder> ConfigureConsole = loggingBuilder =>
     {
         loggingBuilder.SetMinimumLevel(LogLevel.Trace);
+#pragma warning disable S4792 // Configuring loggers is security-sensitive
         loggingBuilder.AddConsole(options => options.MaxQueueLength = 1);
+#pragma warning restore S4792 // Configuring loggers is security-sensitive
 
         loggingBuilder.AddConfiguration(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -69,7 +71,9 @@ public sealed class BootstrapLoggerFactory : ILoggerFactory
     {
         ArgumentNullException.ThrowIfNull(configure);
 
+#pragma warning disable S4792 // Configuring loggers is security-sensitive
         return new BootstrapLoggerFactory(configure);
+#pragma warning restore S4792 // Configuring loggers is security-sensitive
     }
 
     /// <inheritdoc />

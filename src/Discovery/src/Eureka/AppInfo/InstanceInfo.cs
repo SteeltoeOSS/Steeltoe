@@ -472,7 +472,9 @@ public sealed class InstanceInfo
 
             if (nonSecurePort != null)
             {
+#pragma warning disable S5332 // Using clear-text protocols is security-sensitive
                 return $"http://{hostName}:{nonSecurePort}{relativeUrl}";
+#pragma warning restore S5332 // Using clear-text protocols is security-sensitive
             }
         }
 

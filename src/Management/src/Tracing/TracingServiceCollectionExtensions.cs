@@ -31,7 +31,9 @@ public static class TracingServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddApplicationInstanceInfo();
+#pragma warning disable S4792 // Configuring loggers is security-sensitive
         services.AddLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
+#pragma warning restore S4792 // Configuring loggers is security-sensitive
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDynamicMessageProcessor, TracingLogProcessor>());
 
         return services;
