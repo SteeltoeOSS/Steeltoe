@@ -67,7 +67,9 @@ internal sealed class ManagementPortStartupFilter : IStartupFilter
                     addresses.Add($"http://localhost:{AspNetDefaultListenPort}");
                 }
 
+#pragma warning disable S5332 // Using clear-text protocols is security-sensitive
                 addresses.Add(useHttps ? $"https://*:{managementPort}" : $"http://*:{managementPort}");
+#pragma warning restore S5332 // Using clear-text protocols is security-sensitive
             }
         };
     }

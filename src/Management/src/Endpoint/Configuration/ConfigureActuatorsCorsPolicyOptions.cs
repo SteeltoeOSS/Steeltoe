@@ -54,7 +54,9 @@ internal sealed class ConfigureActuatorsCorsPolicyOptions : IConfigureOptions<Co
             }
             else
             {
+#pragma warning disable S5122 // Having a permissive Cross-Origin Resource Sharing policy is security-sensitive
                 policyBuilder.AllowAnyOrigin();
+#pragma warning restore S5122 // Having a permissive Cross-Origin Resource Sharing policy is security-sensitive
             }
         });
     }

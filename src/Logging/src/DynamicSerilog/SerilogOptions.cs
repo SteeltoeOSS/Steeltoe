@@ -50,7 +50,9 @@ public sealed class SerilogOptions
             MinimumLevel.Default = defaultLevel;
         }
 
+#pragma warning disable S4792 // Configuring loggers is security-sensitive
         _serilogConfiguration = new LoggerConfiguration().ReadFrom.Configuration(configuration).ClearLevels(MinimumLevel);
+#pragma warning restore S4792 // Configuring loggers is security-sensitive
     }
 
     /// <summary>
