@@ -424,12 +424,23 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
                 cancellationToken.ThrowIfCancellationRequested();
 
                 // check if rundown is taking more than 5 seconds and log
-                Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+                using var timeoutSource = new CancellationTokenSource();
+                Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(5), timeoutSource.Token);
+
                 Task completedTask = await Task.WhenAny(copyTask, timeoutTask);
 
-                if (completedTask == timeoutTask && !cancellationToken.IsCancellationRequested)
+                if (completedTask == timeoutTask)
                 {
-                    _logger.LogInformation("Sufficiently large applications can cause this command to take non-trivial amounts of time.");
+                    if (!cancellationToken.IsCancellationRequested)
+                    {
+                        _logger.LogInformation("Sufficiently large applications can cause this command to take non-trivial amounts of time.");
+                    }
+                }
+                else
+                {
+                    // Cancel the internal timer allocated inside Task.Delay, so that it does not fire and its resources are released.
+                    // See https://github.com/davidfowl/AspNetCoreDiagnosticScenarios/blob/master/AsyncGuidance.md#using-a-timeout.
+                    await timeoutSource.CancelAsync();
                 }
 
                 await copyTask;
