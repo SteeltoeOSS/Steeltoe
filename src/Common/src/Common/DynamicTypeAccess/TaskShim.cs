@@ -16,13 +16,19 @@ internal sealed class TaskShim<TResult>(object instance)
 {
     public override Task Instance => (Task)base.Instance;
 
-    public TResult Result => InstanceAccessor.GetPropertyValue<TResult>("Result");
-
     private static InstanceAccessor Wrap(object instance)
     {
         Type taskLikeType = instance.GetType();
         var typeAccessor = new TypeAccessor(taskLikeType);
         return new InstanceAccessor(typeAccessor, instance);
+    }
+
+    public TResult GetResult()
+    {
+        object awaiter = InstanceAccessor.InvokeMethod("GetAwaiter", true)!;
+        var awaiterAccessor = new InstanceAccessor(new TypeAccessor(awaiter.GetType()), awaiter);
+        object result = awaiterAccessor.InvokeMethod("GetResult", true)!;
+        return (TResult)result;
     }
 
     public void Dispose()
