@@ -10,17 +10,13 @@ namespace Steeltoe.Common.Certificates;
 internal sealed class LocalCertificateWriter
 {
     internal const string CertificateDirectoryName = "GeneratedCertificates";
-
     internal const string CertificateFilenamePrefix = "SteeltoeAppInstance";
-
-    internal static readonly string AppBasePath =
-        AppContext.BaseDirectory[..AppContext.BaseDirectory.LastIndexOf($"{Path.DirectorySeparatorChar}bin", StringComparison.Ordinal)];
-
+    internal static readonly string AppBasePath = GetAppBasePath();
     private static readonly string ParentPath = Directory.GetParent(AppBasePath)?.ToString() ?? string.Empty;
 
     internal static readonly string RootCaPfxPath = Path.Combine(ParentPath, CertificateDirectoryName, "SteeltoeCA.pfx");
-
     internal static readonly string IntermediatePfxPath = Path.Combine(ParentPath, CertificateDirectoryName, "SteeltoeIntermediate.pfx");
+
     private readonly TimeProvider _timeProvider;
 
     public LocalCertificateWriter(TimeProvider timeProvider)
@@ -28,6 +24,17 @@ internal sealed class LocalCertificateWriter
         ArgumentNullException.ThrowIfNull(timeProvider);
 
         _timeProvider = timeProvider;
+    }
+
+    private static string GetAppBasePath()
+    {
+        if (AppContext.BaseDirectory.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
+        {
+            // Traverse up to the project directory, if running from IDE. Strips off a sub-path like: \bin\Debug\net8.0\win-x64\
+            return AppContext.BaseDirectory[..AppContext.BaseDirectory.LastIndexOf($"{Path.DirectorySeparatorChar}bin", StringComparison.Ordinal)];
+        }
+
+        return AppContext.BaseDirectory[..^1];
     }
 
     public void Write(Guid orgId, Guid spaceId)
