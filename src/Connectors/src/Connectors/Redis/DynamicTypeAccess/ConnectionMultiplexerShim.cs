@@ -35,7 +35,8 @@ internal sealed class ConnectionMultiplexerShim(StackExchangeRedisPackageResolve
         await task;
 
         using var taskShim = new TaskShim<IDisposable>(task);
-        return new ConnectionMultiplexerInterfaceShim(packageResolver, taskShim.Result);
+        IDisposable connectionMultiplexer = taskShim.GetResult();
+        return new ConnectionMultiplexerInterfaceShim(packageResolver, connectionMultiplexer);
     }
 
     public void Dispose()

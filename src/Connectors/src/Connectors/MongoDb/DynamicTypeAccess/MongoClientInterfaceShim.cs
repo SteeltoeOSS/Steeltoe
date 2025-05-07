@@ -16,6 +16,6 @@ internal sealed class MongoClientInterfaceShim(MongoDbPackageResolver packageRes
         await task;
 
         using var taskShim = new TaskShim<IDisposable>(task);
-        return taskShim.Result;
+        return taskShim.GetResult();
     }
 }

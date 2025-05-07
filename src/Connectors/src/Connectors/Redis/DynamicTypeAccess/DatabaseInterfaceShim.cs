@@ -17,6 +17,6 @@ internal sealed class DatabaseInterfaceShim(StackExchangeRedisPackageResolver pa
         await task;
 
         using var taskShim = new TaskShim<TimeSpan>(task);
-        return taskShim.Result;
+        return taskShim.GetResult();
     }
 }

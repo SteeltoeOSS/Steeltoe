@@ -18,6 +18,7 @@ internal sealed class ConnectionFactoryInterfaceShim(RabbitMQPackageResolver pac
         await task;
 
         using var taskShim = new TaskShim<IDisposable>(task);
-        return new ConnectionInterfaceShim(_packageResolver, taskShim.Result);
+        IDisposable connection = taskShim.GetResult();
+        return new ConnectionInterfaceShim(_packageResolver, connection);
     }
 }
