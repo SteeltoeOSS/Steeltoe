@@ -1,4 +1,4 @@
-name: Component Build - Discovery
+name: Steeltoe.Discovery
 
 on:
   workflow_dispatch: {}
@@ -15,7 +15,7 @@ on:
     - src/Steeltoe.Discovery.slnf
 
 jobs:
-  build-linux:
+  linux:
     uses: ./.github/workflows/component-shared-workflow.yml
     with:
       component: Discovery

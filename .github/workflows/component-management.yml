@@ -1,4 +1,4 @@
-name: Component Build - Management
+name: Steeltoe.Management
 
 on:
   workflow_dispatch: {}
@@ -15,20 +15,20 @@ on:
     - src/Steeltoe.Management.slnf
 
 jobs:
-  build-linux:
+  linux:
     uses: ./.github/workflows/component-shared-workflow.yml
     with:
       component: Management
       os: ubuntu
 
-  build-macos:
+  macos:
     uses: ./.github/workflows/component-shared-workflow.yml
     with:
       component: Management
       os: macos
       skipFilter: --filter "Category!=SkipOnMacOS"
 
-  build-windows:
+  windows:
     uses: ./.github/workflows/component-shared-workflow.yml
     with:
       component: Management
