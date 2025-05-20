@@ -1,0 +1,83 @@
+# .github/workflows/component-shared-workflow.yml
+
+name: Component Build
+
+on:
+  workflow_call:
+    inputs:
+      component:
+        required: true
+        type: string
+      os:
+        required: true
+        type: string
+      skipFilter:
+        required: false
+        type: string
+
+jobs:
+  build:
+    name: Build ${{ inputs.component }} on ${{ inputs.os }}
+    runs-on: ${{ inputs.os }}-latest
+
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_GENERATE_ASPNET_CERTIFICATE: ${{ inputs.os == 'macos' && 'false' || '' }}
+      SolutionFile: src/Steeltoe.${{ inputs.component }}.slnf
+      CommonTestArgs: >-
+        --blame-crash --blame-hang-timeout 3m --no-build
+        -c Release --collect "XPlat Code Coverage"
+        --settings coverlet.runsettings --logger trx
+        --results-directory ${{ github.workspace }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Install Nerdbank.GitVersioning (macOS only)
+        if: ${{ inputs.os == 'macos' }}
+        run: dotnet tool install --global nbgv
+
+      - name: Set package version
+        run: nbgv cloud
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SolutionFile }} --verbosity minimal --configfile nuget.config
+
+      - name: Build solution
+        run: dotnet build ${{ env.SolutionFile }} --no-restore -c Release -v minimal
+
+      - name: Test (net8.0)
+        run: dotnet test ${{ env.SolutionFile }} --framework net8.0 ${{ inputs.skipFilter }} ${{ env.CommonTestArgs }}
+        continue-on-error: true
+
+      - name: Test (net9.0)
+        run: dotnet test ${{ env.SolutionFile }} --framework net9.0 ${{ inputs.skipFilter }} ${{ env.CommonTestArgs }}
+        continue-on-error: true
+
+      - name: Upload hang dumps (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: FailedTestOutput-${{ inputs.os }}
+          path: '**/*.dmp'
+
+      - name: Publish test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults-${{ inputs.os }}
+          path: '**/*.trx'
