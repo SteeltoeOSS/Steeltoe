@@ -1,4 +1,4 @@
-name: Component Build - Common
+name: Steeltoe.Common
 
 on:
   workflow_dispatch: {}
@@ -15,13 +15,13 @@ on:
     - src/Steeltoe.Common.slnf
 
 jobs:
-  build-linux:
+  linux:
     uses: ./.github/workflows/component-shared-workflow.yml
     with:
       component: Common
       os: ubuntu
 
-  build-windows:
+  windows:
     uses: ./.github/workflows/component-shared-workflow.yml
     with:
       component: Common
