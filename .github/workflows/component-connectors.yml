@@ -1,0 +1,22 @@
+name: Component Build - Connectors
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+    - .editorconfig
+    - stylecop.json
+    - '*.props'
+    - '*.ruleset'
+    - .config/dotnet-tools.json
+    - .github/workflows/component-shared-workflow.yml
+    - .github/workflows/component-connectors.yml
+    - src/Connectors/**
+    - src/Steeltoe.Connectors.slnf
+
+jobs:
+  build-linux:
+    uses: ./.github/workflows/component-shared-workflow.yml
+    with:
+      component: Connectors
+      os: ubuntu

@@ -1,0 +1,22 @@
+name: Component Build - Logging
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+    - .editorconfig
+    - stylecop.json
+    - '*.props'
+    - '*.ruleset'
+    - .config/dotnet-tools.json
+    - .github/workflows/component-shared-workflow.yml
+    - .github/workflows/component-Logging.yml
+    - src/Logging/**
+    - src/Steeltoe.Logging.slnf
+
+jobs:
+  build-linux:
+    uses: ./.github/workflows/component-shared-workflow.yml
+    with:
+      component: Logging
+      os: ubuntu

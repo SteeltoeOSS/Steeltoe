@@ -1,0 +1,28 @@
+name: Component Build - Common
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+    - .editorconfig
+    - stylecop.json
+    - '*.props'
+    - '*.ruleset'
+    - .config/dotnet-tools.json
+    - .github/workflows/component-shared-workflow.yml
+    - .github/workflows/component-common.yml
+    - src/Common/**
+    - src/Steeltoe.Common.slnf
+
+jobs:
+  build-linux:
+    uses: ./.github/workflows/component-shared-workflow.yml
+    with:
+      component: Common
+      os: ubuntu
+
+  build-windows:
+    uses: ./.github/workflows/component-shared-workflow.yml
+    with:
+      component: Common
+      os: windows

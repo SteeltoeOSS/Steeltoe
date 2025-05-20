@@ -1,0 +1,22 @@
+name: Component Build - Discovery
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+    - .editorconfig
+    - stylecop.json
+    - '*.props'
+    - '*.ruleset'
+    - .config/dotnet-tools.json
+    - .github/workflows/component-shared-workflow.yml
+    - .github/workflows/component-Discovery.yml
+    - src/Discovery/**
+    - src/Steeltoe.Discovery.slnf
+
+jobs:
+  build-linux:
+    uses: ./.github/workflows/component-shared-workflow.yml
+    with:
+      component: Discovery
+      os: ubuntu
