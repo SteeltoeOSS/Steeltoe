@@ -74,3 +74,11 @@ jobs:
         with:
           name: TestResults-${{ inputs.OS }}
           path: '**/*.trx'
+
+      - name: Report test results
+        uses: dorny/test-reporter@v2
+        with:
+          artifact: TestResults-${{ inputs.OS }}
+          name: ${{ inputs.OS }} test results
+          reporter: dotnet-trx
+          path: '*.trx'
