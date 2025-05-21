@@ -29,6 +29,11 @@ jobs:
     services:
       configServer:
         image: steeltoe.azurecr.io/config-server
+        env:
+          eureka.client.enabled: true
+          eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
+          eureka.instance.hostname: localhost
+          eureka.instance.instanceId: localhost:configserver:8888
         ports:
           - 8888:8888
 
@@ -42,15 +47,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup .NET 8
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
-
-      - name: Setup .NET 9
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0.x
+          dotnet-version: |
+            8.0.*
+            9.0.*
 
       - name: Set package version
         run: nbgv cloud
@@ -59,15 +61,13 @@ jobs:
         run: dotnet restore ${{ env.SolutionFile }} --verbosity minimal --configfile nuget.config
 
       - name: Build solution
-        run: dotnet build ${{ env.SolutionFile }} --no-restore -c Release -v minimal
+        run: dotnet build ${{ env.SolutionFile }} --no-restore --configuration Release --verbosity minimal
 
       - name: Test (net8.0)
         run: dotnet test ${{ env.SolutionFile }} --framework net8.0 ${{ env.CommonTestArgs }}
-        continue-on-error: true
 
       - name: Test (net9.0)
         run: dotnet test ${{ env.SolutionFile }} --framework net9.0 ${{ env.CommonTestArgs }}
-        continue-on-error: true
 
       - name: Upload hang dumps (on failure)
         if: failure()
