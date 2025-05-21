@@ -53,15 +53,13 @@ jobs:
         run: dotnet restore ${{ env.SolutionFile }} --verbosity minimal --configfile nuget.config
 
       - name: Build solution
-        run: dotnet build ${{ env.SolutionFile }} --no-restore -c Release -v minimal
+        run: dotnet build ${{ env.SolutionFile }} --no-restore --configuration Release --verbosity minimal
 
       - name: Test (net8.0)
         run: dotnet test ${{ env.SolutionFile }} --framework net8.0 ${{ inputs.skipFilter }} ${{ env.CommonTestArgs }}
-        continue-on-error: true
 
       - name: Test (net9.0)
         run: dotnet test ${{ env.SolutionFile }} --framework net9.0 ${{ inputs.skipFilter }} ${{ env.CommonTestArgs }}
-        continue-on-error: true
 
       - name: Upload hang dumps (on failure)
         if: failure()
