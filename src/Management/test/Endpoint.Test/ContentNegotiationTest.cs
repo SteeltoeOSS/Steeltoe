@@ -195,13 +195,8 @@ public sealed class ContentNegotiationTest
     [Fact]
     public async Task Cannot_use_incompatible_accept_header_in_heap_dump_actuator()
     {
-        var appSettings = new Dictionary<string, string?>(AppSettings)
-        {
-            ["management:endpoints:heapDump:heapDumpType"] = "gcdump"
-        };
-
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddSingleton<IHeapDumper, FakeHeapDumper>();
         builder.Services.AddHeapDumpActuator();
 
@@ -219,13 +214,8 @@ public sealed class ContentNegotiationTest
     [Fact]
     public async Task Can_use_compatible_accept_header_in_heap_dump_actuator()
     {
-        var appSettings = new Dictionary<string, string?>(AppSettings)
-        {
-            ["management:endpoints:heapDump:heapDumpType"] = "gcdump"
-        };
-
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddSingleton<IHeapDumper, FakeHeapDumper>();
         builder.Services.AddHeapDumpActuator();
 

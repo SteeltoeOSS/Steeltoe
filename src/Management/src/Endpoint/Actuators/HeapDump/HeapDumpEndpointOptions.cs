@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 public sealed class HeapDumpEndpointOptions : EndpointOptions
 {
     /// <summary>
-    /// Gets or sets the type of dump to create. Possible values: GcDump, Normal, WithHeap, Triage, Full. Default value: Full.
+    /// Gets or sets the type of dump to create. Default value: Full (on macOS: GCDump).
     /// </summary>
-    public string? HeapDumpType { get; set; }
+    public HeapDumpType? HeapDumpType { get; set; }
 }

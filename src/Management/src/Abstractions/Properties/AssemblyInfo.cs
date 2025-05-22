@@ -5,3 +5,4 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]
+[assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.Test")]

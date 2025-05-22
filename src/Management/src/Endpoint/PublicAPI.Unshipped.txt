@@ -9,6 +9,8 @@ override Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConvert
 override Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersEndpointOptions.RequiresExactMatch() -> bool
 override Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersRequest.ToString() -> string!
 override Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.ToString() -> string!
+override Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.ToString() -> string!
+override Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.ToString() -> string!
 static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState.Broken -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState!
 static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState.Correct -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState!
 static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessState.AcceptingTraffic -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessState!
@@ -176,8 +178,14 @@ Steeltoe.Management.Endpoint.Actuators.Health.ShowValues.WhenAuthorized = 1 -> S
 Steeltoe.Management.Endpoint.Actuators.HeapDump.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions.HeapDumpEndpointOptions() -> void
-Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions.HeapDumpType.get -> string?
+Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions.HeapDumpType.get -> Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpType?
 Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions.HeapDumpType.set -> void
+Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpType
+Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpType.Full = 0 -> Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpType
+Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpType.GCDump = 4 -> Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpType
+Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpType.Heap = 1 -> Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpType
+Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpType.Mini = 2 -> Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpType
+Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpType.Triage = 3 -> Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpType
 Steeltoe.Management.Endpoint.Actuators.HeapDump.IHeapDumpEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange
@@ -364,6 +372,8 @@ Steeltoe.Management.Endpoint.Actuators.ThreadDump.IThreadDumpEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.ClassName.get -> string?
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.ClassName.set -> void
+Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.ColumnNumber.get -> int?
+Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.ColumnNumber.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.FileName.get -> string?
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.FileName.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.IsNativeMethod.get -> bool
@@ -372,6 +382,8 @@ Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.LineNumber.g
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.LineNumber.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.MethodName.get -> string?
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.MethodName.set -> void
+Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.ModuleName.get -> string?
+Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.ModuleName.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.StackTraceElement() -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.State
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.State.Blocked = 2 -> Steeltoe.Management.Endpoint.Actuators.ThreadDump.State
@@ -385,13 +397,13 @@ Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadDumpEndpointOptions.Dura
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadDumpEndpointOptions.Duration.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadDumpEndpointOptions.ThreadDumpEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo
-Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.BlockedCount.get -> long
+Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.BlockedCount.get -> long?
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.BlockedCount.set -> void
-Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.BlockedTime.get -> long
+Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.BlockedTime.get -> long?
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.BlockedTime.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.IsInNative.get -> bool
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.IsInNative.set -> void
-Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.IsSuspended.get -> bool
+Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.IsSuspended.get -> bool?
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.IsSuspended.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.LockedMonitors.get -> System.Collections.Generic.IList<object!>?
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.LockedSynchronizers.get -> System.Collections.Generic.IList<object!>?
@@ -399,7 +411,7 @@ Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.LockInfo.get -> obj
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.LockInfo.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.LockName.get -> string?
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.LockName.set -> void
-Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.LockOwnerId.get -> long
+Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.LockOwnerId.get -> long?
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.LockOwnerId.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.LockOwnerName.get -> string?
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.LockOwnerName.set -> void
@@ -411,9 +423,9 @@ Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.ThreadName.get -> s
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.ThreadName.set -> void
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.ThreadState.get -> Steeltoe.Management.Endpoint.Actuators.ThreadDump.State
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.ThreadState.set -> void
-Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedCount.get -> long
+Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedCount.get -> long?
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedCount.set -> void
-Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.get -> long
+Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.get -> long?
 Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.WaitedTime.set -> void
 Steeltoe.Management.Endpoint.ApplicationBuilderExtensions
 Steeltoe.Management.Endpoint.Configuration.ConfigureEndpointOptions<TOptions>

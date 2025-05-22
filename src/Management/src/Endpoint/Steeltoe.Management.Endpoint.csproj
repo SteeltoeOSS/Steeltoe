@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Steeltoe management endpoints, also known as actuators. Includes support for Cloud Foundry integration.</Description>
@@ -10,8 +10,31 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="$(DiagnosticsTracingVersion)" />
+    <PackageReference Include="dotnet-gcdump" Version="$(DotnetGCDumpVersion)" IncludeAssets="None" ExcludeAssets="All" PrivateAssets="None"
+      GeneratePathProperty="true">
+      <!--
+          The dotnet-gcdump global tool can't be referenced, but we can download it.
+          GeneratePathProperty makes the path to the package available in $(Pkgdotnet-gcdump), so we can add an assembly reference.
+          See https://docs.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files#generatepathproperty.
+          Based on: https://blog.maartenballiauw.be/post/2020/04/22/referencing-specific-assembly-nuget-package.html.
+		    -->
+    </PackageReference>
+    <PackageReference Include="Microsoft.Diagnostics.NETCore.Client" Version="$(MicrosoftDiagnosticsNETCoreClientVersion)" />
+    <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="$(MicrosoftDiagnosticsTracingTraceEventVersion)" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(SystemIdentityModelVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="dotnet-gcdump">
+      <HintPath>$(Pkgdotnet-gcdump)\tools\net8.0\any\dotnet-gcdump.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Diagnostics.FastSerialization">
+      <!--
+        Caution: The version of this DLL must be binary compatible with the one embedded in Microsoft.Diagnostics.Tracing.TraceEvent,
+        otherwise a TypeLoadException will occur at runtime.
+      -->
+      <HintPath>$(Pkgdotnet-gcdump)\tools\net8.0\any\Microsoft.Diagnostics.FastSerialization.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

@@ -5,7 +5,7 @@ parameters:
   OS: ubuntu
 
 jobs:
-- job: ${{parameters.component}}_${{parameters.OS}}
+- job: ${{ parameters.component }}_${{ parameters.OS }}
   variables:
     DOTNET_NOLOGO: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -18,10 +18,12 @@ jobs:
     # To prevent the causing test from failing the testrun, disable it on macOS by adding [Trait("Category", "SkipOnMacOS")].
     ${{ if eq(parameters.OS, 'macOS') }}:
       DOTNET_GENERATE_ASPNET_CERTIFICATE: false
-    SolutionFile: src/Steeltoe.${{parameters.component}}.slnf
+    SolutionFile: src/Steeltoe.${{ parameters.component }}.slnf
     CommonTestArgs: --blame-crash --blame-hang-timeout 3m --no-build -c Release --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)
+    skipParameter: ${{ iif(eq(parameters.skipFilter, ''), '--filter Category!=MemoryDumps', format('--filter {0}&Category!=MemoryDumps', parameters.skipFilter)) }}
+    memoryDumpSkipParameter: ${{ iif(eq(parameters.skipFilter, ''), '--filter "Category=MemoryDumps"', format('--filter {0}&Category=MemoryDumps', parameters.skipFilter)) }}
   pool:
-    vmImage: ${{parameters.OS}}-latest
+    vmImage: ${{ parameters.OS }}-latest
   services:
     ${{ if eq(parameters.runConfigServer, 'true') }}:
       eurekaServer: eurekaServer
@@ -39,7 +41,7 @@ jobs:
       version: 9.0.x
   - task: DotNetCoreCLI@2
     displayName: Install Nerdbank.GitVersioning tool
-    condition: eq('${{parameters.OS}}', 'macOS')
+    condition: eq('${{ parameters.OS }}', 'macOS')
     inputs:
       command: custom
       custom: tool
@@ -69,14 +71,30 @@ jobs:
     inputs:
       command: test
       projects: $(SolutionFile)
-      arguments: --framework net8.0 ${{parameters.skipFilter}} $(CommonTestArgs)
+      arguments: --framework net8.0 $(skipParameter) $(CommonTestArgs)
+      publishTestResults: false
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test net8.0 (memory dumps)
+    condition: eq('${{ parameters.component }}', 'Management')
+    inputs:
+      command: test
+      projects: $(SolutionFile)
+      arguments: --framework net8.0 $(memoryDumpSkipParameter) $(CommonTestArgs)
       publishTestResults: false
   - task: DotNetCoreCLI@2
     displayName: dotnet test net9.0
     inputs:
       command: test
       projects: $(SolutionFile)
-      arguments: --framework net9.0 ${{parameters.skipFilter}} $(CommonTestArgs)
+      arguments: --framework net9.0 $(skipParameter) $(CommonTestArgs)
+      publishTestResults: false
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test net9.0 (memory dumps)
+    condition: eq('${{ parameters.component }}', 'Management')
+    inputs:
+      command: test
+      projects: $(SolutionFile)
+      arguments: --framework net9.0 $(memoryDumpSkipParameter) $(CommonTestArgs)
       publishTestResults: false
   - task: CopyFiles@2
     condition: failed()

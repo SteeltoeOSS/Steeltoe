@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.InteropServices;
 using Graphs;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.GCDump;
@@ -29,68 +30,153 @@ internal sealed class HeapDumper : IHeapDumper
 
     public string DumpHeapToFile(CancellationToken cancellationToken)
     {
-        string fileName = CreateFileName();
-
+        HeapDumpType? dumpType = _optionsMonitor.CurrentValue.HeapDumpType;
         int processId = System.Environment.ProcessId;
+        string? outputPath = null;
 
-        if (string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
+        string dumpDescription = dumpType switch
         {
-            _logger.LogInformation("Attempting to create a gcdump");
+            HeapDumpType.GCDump => "gcdump",
+            HeapDumpType.Heap => "dump with heap",
+            HeapDumpType.Mini => "minidump",
+            HeapDumpType.Triage => "triage dump",
+            _ => "full dump"
+        };
 
-            MemoryGraph memoryGraph = CollectMemoryGraph(processId, 30, cancellationToken);
-            GCHeapDump.WriteMemoryGraph(memoryGraph, fileName, "dotnet-gcdump");
-            return fileName;
+        _logger.LogInformation("Attempting to create a {DumpType}.", dumpDescription);
+
+        try
+        {
+            outputPath = GetOutputPath(dumpType);
+
+            if (dumpType == HeapDumpType.GCDump)
+            {
+                CreateGCDump(processId, outputPath, dumpDescription, cancellationToken);
+            }
+            else
+            {
+                CreateHeapDump(dumpType, processId, outputPath);
+            }
+        }
+        catch (Exception)
+        {
+            SafeDelete(outputPath);
+            throw;
         }
 
-        if (!Enum.TryParse(_optionsMonitor.CurrentValue.HeapDumpType, out DumpType dumpType))
-        {
-            dumpType = DumpType.Full;
-        }
-
-        _logger.LogInformation("Attempting to create a '{DumpType}' dump", dumpType);
-        var client = new DiagnosticsClient(processId);
-        client.WriteDump(dumpType, fileName);
-        return fileName;
+        _logger.LogInformation("Successfully created a {DumpType}.", dumpDescription);
+        return outputPath;
     }
 
-    private string CreateFileName()
+    private string GetOutputPath(HeapDumpType? heapDumpType)
     {
         DateTime utcNow = _timeProvider.GetUtcNow().UtcDateTime;
+        string timestamp = $"{utcNow:yyyyMMdd_HHmmss}";
 
-        return string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase)
-            ? $"gcdump-{utcNow:yyyy-MM-dd-HH-mm-ss}-live.gcdump"
-            : $"minidump-{utcNow:yyyy-MM-dd-HH-mm-ss}-live.dmp";
+        string name = heapDumpType switch
+        {
+            HeapDumpType.Heap => "heapdump",
+            HeapDumpType.Mini => "minidump",
+            HeapDumpType.Triage => "triagedump",
+            HeapDumpType.GCDump => "gcdump",
+            _ => "fulldump"
+        };
+
+        string extension = string.Empty;
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            extension = heapDumpType == HeapDumpType.GCDump ? ".gcdump" : ".dmp";
+        }
+
+        string fileName = $"{name}_{timestamp}{extension}";
+        return Path.GetFullPath(Path.Combine(Path.GetTempPath(), fileName));
     }
 
-    private MemoryGraph CollectMemoryGraph(int processId, int timeout, CancellationToken cancellationToken)
+    private void CreateGCDump(int processId, string outputPath, string dumpDescription, CancellationToken cancellationToken)
     {
-        bool succeeded = false;
+        CaptureLogOutput(logWriter =>
+        {
+            var heapInfo = new DotNetHeapInfo();
+            var memoryGraph = new MemoryGraph(50_000);
+
+            if (EventPipeDotNetHeapDumper.DumpFromEventPipe(cancellationToken, processId, null, memoryGraph, logWriter, 30, heapInfo))
+            {
+                memoryGraph.AllowReading();
+                GCHeapDump.WriteMemoryGraph(memoryGraph, outputPath, "dotnet-gcdump");
+                return true;
+            }
+
+            return false;
+        }, dumpDescription, cancellationToken);
+    }
+
+    private static void CreateHeapDump(HeapDumpType? heapDumpType, int processId, string outputPath)
+    {
+        var client = new DiagnosticsClient(processId);
+
+        DumpType dumpType = heapDumpType switch
+        {
+            HeapDumpType.Heap => DumpType.WithHeap,
+            HeapDumpType.Mini => DumpType.Normal,
+            HeapDumpType.Triage => DumpType.Triage,
+            _ => DumpType.Full
+        };
+
+#pragma warning disable S3265 // Non-flags enums should not be used in bitwise operations
+        // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
+        const WriteDumpFlags flags = WriteDumpFlags.LoggingEnabled | WriteDumpFlags.CrashReportEnabled;
+#pragma warning restore S3265 // Non-flags enums should not be used in bitwise operations
+
+        client.WriteDump(dumpType, outputPath, flags);
+    }
+
+    private void CaptureLogOutput(Func<TextWriter, bool> action, string dumpDescription, CancellationToken cancellationToken)
+    {
         using var logStream = new MemoryStream();
-        MemoryGraph memoryGraph;
+        Exception? error = null;
+        bool succeeded = false;
 
         using (TextWriter logWriter = new StreamWriter(logStream, leaveOpen: true))
         {
-            var heapInfo = new DotNetHeapInfo();
-            memoryGraph = new MemoryGraph(50_000);
-
-            if (EventPipeDotNetHeapDumper.DumpFromEventPipe(cancellationToken, processId, memoryGraph, logWriter, timeout, heapInfo))
+            try
             {
-                memoryGraph.AllowReading();
-                succeeded = true;
+                succeeded = action(logWriter);
+            }
+            catch (Exception exception)
+            {
+                error = exception;
             }
         }
 
         logStream.Seek(0, SeekOrigin.Begin);
         using var logReader = new StreamReader(logStream);
-        string message = logReader.ReadToEnd();
+        string logOutput = logReader.ReadToEnd();
 
-        if (!succeeded)
+        if (error != null || !succeeded)
         {
-            throw new InvalidOperationException(
-                $"Failed to collect memory graph, possibly timed out. See inner log for details:{System.Environment.NewLine}{message}");
+            cancellationToken.ThrowIfCancellationRequested();
+            throw new InvalidOperationException($"Failed to create a {dumpDescription}. Captured log:{System.Environment.NewLine}{logOutput}", error);
         }
 
-        _logger.LogDebug("{HeapDumpLog}", message);
-        return memoryGraph;
+        _logger.LogTrace("Captured log from {DumpType}:{LineBreak}{DumpLog}", dumpDescription, System.Environment.NewLine, logOutput);
+    }
+
+    private static void SafeDelete(string? outputPath)
+    {
+        if (outputPath != null)
+        {
+            try
+            {
+                if (File.Exists(outputPath))
+                {
+                    File.Delete(outputPath);
+                }
+            }
+            catch (Exception)
+            {
+                // Intentionally left empty.
+            }
+        }
     }
 }

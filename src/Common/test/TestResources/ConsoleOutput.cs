@@ -4,6 +4,7 @@
 
 using System.Text;
 using FluentAssertions.Extensions;
+using Xunit;
 
 namespace Steeltoe.Common.TestResources;
 
@@ -15,9 +16,6 @@ namespace Steeltoe.Common.TestResources;
 /// </remarks>
 public sealed class ConsoleOutput : IDisposable
 {
-    private static readonly bool IsRunningOnBuildServer = Environment.GetEnvironmentVariable("CI") == "true" ||
-        !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SYSTEM_TEAMPROJECT"));
-
     private static readonly SemaphoreSlim Lock = new(1, 1);
 
     private readonly TextWriter _backupWriter;
@@ -53,7 +51,7 @@ public sealed class ConsoleOutput : IDisposable
     {
         // Microsoft.Extensions.Logging.Console.ConsoleLogger writes messages to a queue,
         // it takes a bit of time for the background thread to write them to Console.Out.
-        if (IsRunningOnBuildServer)
+        if (TestContext.Current.IsRunningOnBuildServer())
         {
             await Task.Delay(500.Milliseconds(), cancellationToken);
         }

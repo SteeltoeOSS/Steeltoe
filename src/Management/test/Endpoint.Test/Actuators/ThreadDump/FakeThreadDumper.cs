@@ -10,23 +10,28 @@ internal sealed class FakeThreadDumper : IThreadDumper
 {
     public Task<IList<ThreadInfo>> DumpThreadsAsync(CancellationToken cancellationToken)
     {
-        IList<ThreadInfo> threadInfos =
+        IList<ThreadInfo> threads =
         [
             new()
             {
+                ThreadId = 18,
+                ThreadName = "Thread-00018",
+                ThreadState = State.Waiting,
                 StackTrace =
                 {
                     new StackTraceElement
                     {
-                        ClassName = "Test.FakeClass",
-                        FileName = "FakeClass.cs",
-                        LineNumber = 10,
+                        ModuleName = "FakeAssembly",
+                        ClassName = "FakeNamespace.FakeClass",
+                        FileName = @"C:\Source\Code\FakeClass.cs",
+                        LineNumber = 8,
+                        ColumnNumber = 16,
                         MethodName = "FakeMethod"
                     }
                 }
             }
         ];
 
-        return Task.FromResult(threadInfos);
+        return Task.FromResult(threads);
     }
 }

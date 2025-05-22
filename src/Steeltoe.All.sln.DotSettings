@@ -4,14 +4,12 @@
 	<s:Int64 x:Key="/Default/CodeEditing/NullCheckPatterns/PatternTypeNamesToPriority/=JetBrains_002EReSharper_002EFeature_002EServices_002ECSharp_002ENullChecking_002EThrowExpressionNullCheckPattern/@EntryIndexedValue">3000</s:Int64>
 	<s:Boolean x:Key="/Default/CodeInspection/CodeAnnotations/PropagateAnnotations/@EntryValue">False</s:Boolean>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=2A975FB7_002D401B_002D41BB_002D96A4_002D1DF0036888A9/@EntryIndexedValue">ExplicitlyExcluded</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=557AFE26_002DB89D_002D497D_002D92B6_002D8268D04396E5_002Fd_003AActuators_002Fd_003AHeapDump_002Fd_003ADotNetHeapDump/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=5CC834D7_002DC501_002D4FEC_002D9244_002DE829584192FB_002Ff_003AConfigurationSchemaAttributes_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=5CC834D7_002DC501_002D4FEC_002D9244_002DE829584192FB_002Ff_003AConfigurationSchemaAttribute_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=C4C38F83_002D8410_002D443C_002D9599_002DACFB5FA7CD2D/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=C4C38F83_002D8410_002D443C_002D9599_002DACFB5FA7CD2D_002Ff_003AConfigurationSchemaAttributes_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003FCommon_003Fsrc_003FAbstractions_003FConfigurationSchemaAttributes_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=DC1BC61A_002DE0FA_002D4CF9_002D9F24_002DD4C564A07836_002Ff_003ADirectory_002EBuild_002Etargets_002Fl_003A_002E_002E_003FDirectory_002EBuild_002Etargets/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/GeneratedFilesAndFolders/=2A975FB7_002D401B_002D41BB_002D96A4_002D1DF0036888A9/@EntryIndexedValue">2A975FB7-401B-41BB-96A4-1DF0036888A9</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/GeneratedFilesAndFolders/=557AFE26_002DB89D_002D497D_002D92B6_002D8268D04396E5_002Fd_003AActuators_002Fd_003AHeapDump_002Fd_003ADotNetHeapDump/@EntryIndexedValue">557AFE26-B89D-497D-92B6-8268D04396E5/d:Actuators/d:HeapDump/d:DotNetHeapDump</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/GeneratedFilesAndFolders/=61812938_002D5132_002D4AB6_002DB48D_002D2DF4189B3E37_002Ff_003AConfigurationSchemaAttributes_002Ecs/@EntryIndexedValue">61812938-5132-4AB6-B48D-2DF4189B3E37/f:ConfigurationSchemaAttributes.cs</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/GeneratedFilesAndFolders/=C4C38F83_002D8410_002D443C_002D9599_002DACFB5FA7CD2D/@EntryIndexedValue">C4C38F83-8410-443C-9599-ACFB5FA7CD2D</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/GeneratedFilesAndFolders/=C4C38F83_002D8410_002D443C_002D9599_002DACFB5FA7CD2D_002Ff_003AConfigurationSchemaAttributes_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003FCommon_003Fsrc_003FAbstractions_003FConfigurationSchemaAttributes_002Ecs/@EntryIndexedValue">C4C38F83-8410-443C-9599-ACFB5FA7CD2D/f:ConfigurationSchemaAttributes.cs/l:..?..?..?Common?src?Abstractions?ConfigurationSchemaAttributes.cs</s:String>
@@ -681,9 +679,11 @@ $left$ = $right$;</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=deregisters/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=deregistration/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=enrichers/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=fulldump/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=gcdump/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=gorouter/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=HashiCorp/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=heapdump/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=hwnd/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=instrumentations/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=liveness/@EntryIndexedValue">True</s:Boolean>
@@ -692,7 +692,9 @@ $left$ = $right$;</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=PostgreSQL/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=retryable/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Steeltoe/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=symbolocate/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=symbolicate/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Synchronizers/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=triagedump/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=VMware/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=vcap/@EntryIndexedValue">True</s:Boolean>
 </wpf:ResourceDictionary>
