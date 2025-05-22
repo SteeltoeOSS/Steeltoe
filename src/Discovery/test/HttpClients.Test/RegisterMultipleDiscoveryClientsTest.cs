@@ -7,7 +7,6 @@ using Consul;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RichardSzalay.MockHttp;
@@ -70,7 +69,6 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddOptions();
-        services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -99,7 +97,6 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddSingleton(configuration);
         services.AddLogging();
         services.AddOptions();
-        services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -893,16 +890,5 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         serviceProvider.GetServices<IHealthContributor>().OfType<ConsulHealthContributor>().Should().ContainSingle();
         serviceProvider.GetServices<IHealthContributor>().OfType<EurekaServerHealthContributor>().Should().ContainSingle();
         serviceProvider.GetServices<IHealthContributor>().OfType<EurekaApplicationsHealthContributor>().Should().BeEmpty();
-    }
-
-    private sealed class TestApplicationLifetime : IHostApplicationLifetime
-    {
-        public CancellationToken ApplicationStarted => CancellationToken.None;
-        public CancellationToken ApplicationStopping => CancellationToken.None;
-        public CancellationToken ApplicationStopped => CancellationToken.None;
-
-        public void StopApplication()
-        {
-        }
     }
 }
