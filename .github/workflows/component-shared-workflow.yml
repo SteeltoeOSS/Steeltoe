@@ -51,6 +51,8 @@ jobs:
       CommonTestArgs: >-
         --no-build --configuration Release --blame-crash --blame-hang-timeout 3m
         --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory ${{ github.workspace }}
+      SkipFilterWithoutMemoryDumps: ${{ inputs.skipFilter && format('--filter "{0}&Category!=MemoryDumps"', inputs.skipFilter) || '--filter "Category!=MemoryDumps"' }}
+      SkipFilterWithMemoryDumps: ${{ inputs.skipFilter && format('--filter "{0}&Category=MemoryDumps"', inputs.skipFilter) || '--filter "Category=MemoryDumps"' }}
 
     steps:
       - name: Checkout repo
@@ -79,10 +81,18 @@ jobs:
         run: dotnet build ${{ env.SolutionFile }} --no-restore --configuration Release --verbosity minimal
 
       - name: Test (net8.0)
-        run: dotnet test ${{ env.SolutionFile }} --framework net8.0 ${{ inputs.skipFilter }} ${{ env.CommonTestArgs }}
+        run: dotnet test ${{ env.SolutionFile }} --framework net8.0 ${{ env.SkipFilterWithoutMemoryDumps }} ${{ env.CommonTestArgs }}
+
+      - name: Test (net8.0) (memory dumps)
+        if: ${{ inputs.component == 'Management' }}
+        run: dotnet test ${{ env.SolutionFile }} --framework net8.0 ${{ env.SkipFilterWithMemoryDumps }} ${{ env.CommonTestArgs }}
 
       - name: Test (net9.0)
-        run: dotnet test ${{ env.SolutionFile }} --framework net9.0 ${{ inputs.skipFilter }} ${{ env.CommonTestArgs }}
+        run: dotnet test ${{ env.SolutionFile }} --framework net9.0 ${{ env.SkipFilterWithoutMemoryDumps }} ${{ env.CommonTestArgs }}
+
+      - name: dotnet test net9.0 (memory dumps)
+        if: ${{ inputs.component == 'Management' }}
+        run: dotnet test ${{ env.SolutionFile }} --framework net9.0 ${{ env.SkipFilterWithMemoryDumps }} ${{ env.CommonTestArgs }}
 
       - name: Upload hang dumps (on failure)
         if: failure()
