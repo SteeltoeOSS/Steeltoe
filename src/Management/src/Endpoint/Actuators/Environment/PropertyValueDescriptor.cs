@@ -6,23 +6,11 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Environment;
 
-public sealed class PropertyValueDescriptor
+public sealed class PropertyValueDescriptor(object? value, string? origin)
 {
     [JsonPropertyName("value")]
-    public object? Value { get; }
+    public object? Value { get; } = value;
 
     [JsonPropertyName("origin")]
-    public string? Origin { get; }
-
-    public PropertyValueDescriptor(object? value, string origin)
-    {
-        Value = value;
-        Origin = origin;
-    }
-
-    public PropertyValueDescriptor(object? value)
-    {
-        Value = value;
-        Origin = null;
-    }
+    public string? Origin { get; } = origin;
 }

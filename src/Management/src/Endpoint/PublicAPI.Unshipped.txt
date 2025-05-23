@@ -95,8 +95,7 @@ Steeltoe.Management.Endpoint.Actuators.Environment.PropertySourceDescriptor.Prop
 Steeltoe.Management.Endpoint.Actuators.Environment.PropertySourceDescriptor.PropertySourceDescriptor(string! name, System.Collections.Generic.IDictionary<string!, Steeltoe.Management.Endpoint.Actuators.Environment.PropertyValueDescriptor!>! properties) -> void
 Steeltoe.Management.Endpoint.Actuators.Environment.PropertyValueDescriptor
 Steeltoe.Management.Endpoint.Actuators.Environment.PropertyValueDescriptor.Origin.get -> string?
-Steeltoe.Management.Endpoint.Actuators.Environment.PropertyValueDescriptor.PropertyValueDescriptor(object? value) -> void
-Steeltoe.Management.Endpoint.Actuators.Environment.PropertyValueDescriptor.PropertyValueDescriptor(object? value, string! origin) -> void
+Steeltoe.Management.Endpoint.Actuators.Environment.PropertyValueDescriptor.PropertyValueDescriptor(object? value, string? origin) -> void
 Steeltoe.Management.Endpoint.Actuators.Environment.PropertyValueDescriptor.Value.get -> object?
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.ApplicationAvailability(Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability!>! logger) -> void
