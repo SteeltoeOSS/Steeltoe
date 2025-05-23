@@ -1,6 +1,6 @@
 # .github/workflows/component-shared-workflow.yml
 
-name: Trigger all the Component Builds
+name: Component Build
 
 on:
   workflow_call:
