@@ -8,9 +8,9 @@ using Steeltoe.Management.Endpoint.Actuators.DbMigrations;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.DbMigrations;
 
-internal sealed class TestDatabaseMigrationScanner : IDatabaseMigrationScanner
+internal sealed class FakeDatabaseMigrationScanner : IDatabaseMigrationScanner
 {
-    public Assembly AssemblyToScan => typeof(MockDbContext).Assembly;
+    public Assembly AssemblyToScan => typeof(TestDbContext).Assembly;
     public bool ThrowOnGetPendingMigrations { get; set; }
 
     public IEnumerable<string> GetPendingMigrations(object context)

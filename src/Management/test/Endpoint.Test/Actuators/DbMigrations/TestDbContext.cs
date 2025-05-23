@@ -6,4 +6,4 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.DbMigrations;
 
-public sealed class MockDbContext : DbContext;
+public sealed class TestDbContext : DbContext;
