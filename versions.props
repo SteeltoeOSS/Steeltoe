@@ -24,7 +24,6 @@
     <SerilogEnrichersThreadVersion>4.0.*</SerilogEnrichersThreadVersion>
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
     <SonarAnalyzerVersion>10.9.0.115408</SonarAnalyzerVersion>
-    <SourceLinkGitHubVersion>8.0.*</SourceLinkGitHubVersion>
     <StyleCopVersion>1.2.0-beta.556</StyleCopVersion>
     <SystemCommandLineVersion>2.0.0-beta4.24324.3</SystemCommandLineVersion>
     <SystemIdentityModelVersion>8.4.*</SystemIdentityModelVersion>
@@ -52,7 +51,7 @@
 
     <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
     <ConsulVersion>1.7.14.*</ConsulVersion>
-    <DiagnosticsTracingVersion>3.1.16</DiagnosticsTracingVersion>
+    <DotnetGCDumpVersion>9.0.621003</DotnetGCDumpVersion>
     <EntityFrameworkCoreVersion>8.0.*</EntityFrameworkCoreVersion>
     <FoundationalVersion>
       <!--
@@ -62,6 +61,8 @@
       9.0.*
     </FoundationalVersion>
     <MicrosoftIdentityModelVersion>8.4.*</MicrosoftIdentityModelVersion>
+    <MicrosoftDiagnosticsNETCoreClientVersion>0.2.621003</MicrosoftDiagnosticsNETCoreClientVersion>
+    <MicrosoftDiagnosticsTracingTraceEventVersion>3.1.16</MicrosoftDiagnosticsTracingTraceEventVersion>
     <OpenTelemetryExporterPrometheusVersion>1.11.*-*</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryVersion>1.11.*</OpenTelemetryVersion>
     <SerilogVersion>8.0.*</SerilogVersion>

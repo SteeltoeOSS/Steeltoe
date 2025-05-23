@@ -58,7 +58,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
         var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
 
-        await runner.RunAsync(CancellationToken.None);
+        await runner.RunAsync(TestContext.Current.CancellationToken);
         SpringBootAdminClientOptions? options = runner.LastGoodOptions;
 
         options.Should().NotBeNull();
@@ -91,7 +91,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
         await using WebApplication app = builder.Build();
         var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
 
-        Func<Task> action = async () => await runner.RunAsync(CancellationToken.None);
+        Func<Task> action = async () => await runner.RunAsync(TestContext.Current.CancellationToken);
 
         string[] errorsExpected =
         [
@@ -120,7 +120,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
         await using WebApplication app = builder.Build();
         var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
 
-        Func<Task> action = async () => await runner.RunAsync(CancellationToken.None);
+        Func<Task> action = async () => await runner.RunAsync(TestContext.Current.CancellationToken);
 
         string[] errorsExpected =
         [
@@ -150,7 +150,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
         await using WebApplication app = builder.Build();
         var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
 
-        Func<Task> action = async () => await runner.RunAsync(CancellationToken.None);
+        Func<Task> action = async () => await runner.RunAsync(TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<OptionsValidationException>()
             .WithMessage("Use BaseUrl instead of BasePath to configure the absolute URL to register with");
@@ -177,7 +177,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
         var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
 
-        await runner.RunAsync(CancellationToken.None);
+        await runner.RunAsync(TestContext.Current.CancellationToken);
         SpringBootAdminClientOptions? options = runner.LastGoodOptions;
 
         options.Should().NotBeNull();
@@ -224,7 +224,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
         var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
 
-        await runner.RunAsync(CancellationToken.None);
+        await runner.RunAsync(TestContext.Current.CancellationToken);
 
         runner.LastRegistrationId.Should().Be("1234567");
         runner.LastGoodOptions.Should().NotBeNull();
@@ -276,7 +276,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
         var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
 
-        await runner.RunAsync(CancellationToken.None);
+        await runner.RunAsync(TestContext.Current.CancellationToken);
 
         runner.LastRegistrationId.Should().Be("1234567");
         runner.LastGoodOptions.Should().NotBeNull();

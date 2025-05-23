@@ -111,14 +111,28 @@ jobs:
     inputs:
       command: test
       projects: '**/*.csproj'
-      arguments: '--framework net8.0 --blame-hang-timeout 3m --no-build -c $(buildConfiguration) $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      arguments: '--framework net8.0 --blame-hang-timeout 3m --no-build -c $(buildConfiguration) $(skipFilter)&Category!=MemoryDumps --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      publishTestResults: false
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test net8.0 (memory dumps)
+    inputs:
+      command: test
+      projects: '**/Steeltoe.Management.Endpoint.Test.csproj'
+      arguments: '--framework net8.0 --blame-hang-timeout 3m --no-build -c $(buildConfiguration) $(skipFilter)&Category=MemoryDumps --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - task: DotNetCoreCLI@2
     displayName: dotnet test net9.0
     inputs:
       command: test
       projects: '**/*.csproj'
-      arguments: '--framework net9.0 --blame-hang-timeout 3m --no-build -c $(buildConfiguration) $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      arguments: '--framework net9.0 --blame-hang-timeout 3m --no-build -c $(buildConfiguration) $(skipFilter)&Category!=MemoryDumps --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      publishTestResults: false
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test net9.0 (memory dumps)
+    inputs:
+      command: test
+      projects: '**/Steeltoe.Management.Endpoint.Test.csproj'
+      arguments: '--framework net9.0 --blame-hang-timeout 3m --no-build -c $(buildConfiguration) $(skipFilter)&Category=MemoryDumps --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - task: CopyFiles@2
     condition: failed()

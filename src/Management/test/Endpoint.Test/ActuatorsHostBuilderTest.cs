@@ -21,7 +21,6 @@ using Steeltoe.Management.Endpoint.Actuators.DbMigrations;
 using Steeltoe.Management.Endpoint.Actuators.Environment;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
-using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
@@ -29,14 +28,11 @@ using Steeltoe.Management.Endpoint.Actuators.Loggers;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
-using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.ManagementPort;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
-using Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 using Steeltoe.Management.Endpoint.Test.Actuators.Info;
-using Steeltoe.Management.Endpoint.Test.Actuators.ThreadDump;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -335,30 +331,6 @@ public sealed class ActuatorsHostBuilderTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
-    public async Task HeapDumpActuator(HostBuilderType hostBuilderType)
-    {
-        await using HostWrapper host = hostBuilderType.Build(builder =>
-        {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
-
-            builder.ConfigureServices(services =>
-            {
-                services.AddSingleton<IHeapDumper, FakeHeapDumper>();
-                services.AddHeapDumpActuator();
-            });
-        });
-
-        await host.StartAsync(TestContext.Current.CancellationToken);
-        using HttpClient httpClient = host.GetTestClient();
-
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/heapdump"), TestContext.Current.CancellationToken);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
-
-    [Theory]
-    [InlineData(HostBuilderType.Host)]
-    [InlineData(HostBuilderType.WebHost)]
-    [InlineData(HostBuilderType.WebApplication)]
     public async Task HttpExchangesActuator(HostBuilderType hostBuilderType)
     {
         await using HostWrapper host = hostBuilderType.Build(builder =>
@@ -615,33 +587,6 @@ public sealed class ActuatorsHostBuilderTest
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseText.Should().Contain("\"Microsoft.Extensions.Configuration.IConfiguration\"");
-    }
-
-    [Theory]
-    [InlineData(HostBuilderType.Host)]
-    [InlineData(HostBuilderType.WebHost)]
-    [InlineData(HostBuilderType.WebApplication)]
-    public async Task ThreadDumpActuator(HostBuilderType hostBuilderType)
-    {
-        await using HostWrapper host = hostBuilderType.Build(builder =>
-        {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
-
-            builder.ConfigureServices(services =>
-            {
-                services.AddSingleton<IThreadDumper, FakeThreadDumper>();
-                services.AddThreadDumpActuator();
-            });
-        });
-
-        await host.StartAsync(TestContext.Current.CancellationToken);
-        using HttpClient httpClient = host.GetTestClient();
-
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/threaddump"), TestContext.Current.CancellationToken);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        responseText.Should().Contain("\"stackTrace\"");
     }
 
     [Theory]

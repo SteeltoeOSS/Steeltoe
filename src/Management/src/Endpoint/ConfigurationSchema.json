@@ -359,9 +359,19 @@
                   "type": "boolean",
                   "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
+                "GCDumpTimeoutInSeconds": {
+                  "type": "integer",
+                  "description": "Gets or sets the time (in seconds) after which to give up on collecting a gcdump. Default value: 30."
+                },
                 "HeapDumpType": {
-                  "type": "string",
-                  "description": "Gets or sets the type of dump to create. Possible values: GcDump, Normal, WithHeap, Triage, Full. Default value: Full."
+                  "enum": [
+                    "Full",
+                    "Heap",
+                    "Mini",
+                    "Triage",
+                    "GCDump"
+                  ],
+                  "description": "Gets or sets the type of dump to create. Default value: Full (on macOS: GCDump)."
                 },
                 "Id": {
                   "type": "string",
@@ -768,7 +778,7 @@
                 },
                 "Duration": {
                   "type": "integer",
-                  "description": "Gets or sets the duration (in milliseconds) before signaling to stop the capture. Default value: 10."
+                  "description": "Gets or sets the time (in milliseconds) to trace for, before automatically stopping the trace. Default value: 10."
                 },
                 "Enabled": {
                   "type": "boolean",

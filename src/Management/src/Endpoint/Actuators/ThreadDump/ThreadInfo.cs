@@ -9,29 +9,35 @@ namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
 public sealed class ThreadInfo
 {
+    // Not available in .NET
     [JsonPropertyName("blockedCount")]
-    public long BlockedCount { get; set; } // Not available
+    public long? BlockedCount { get; set; }
 
+    // Not available in .NET
     [JsonPropertyName("blockedTime")]
-    public long BlockedTime { get; set; } = -1; // Not available
+    public long? BlockedTime { get; set; }
 
+    // Not available in .NET
     [JsonPropertyName("lockedMonitors")]
-    public IList<object>? LockedMonitors { get; } // Not available
+    public IList<object>? LockedMonitors { get; }
 
-    // ReSharper disable once StringLiteralTypo
+    // Not available in .NET
     [JsonPropertyName("lockedSynchronizers")]
-    // ReSharper disable once IdentifierTypo
-    public IList<object>? LockedSynchronizers { get; } // Not available
+    public IList<object>? LockedSynchronizers { get; }
 
+    // Not available in .NET
     [JsonPropertyName("lockInfo")]
     public object? LockInfo { get; set; }
 
+    // Not available in .NET
     [JsonPropertyName("lockName")]
     public string? LockName { get; set; }
 
+    // Not available in .NET
     [JsonPropertyName("lockOwnerId")]
-    public long LockOwnerId { get; set; } = -1;
+    public long? LockOwnerId { get; set; }
 
+    // Not available in .NET
     [JsonPropertyName("lockOwnerName")]
     public string? LockOwnerName { get; set; }
 
@@ -41,6 +47,7 @@ public sealed class ThreadInfo
     [JsonPropertyName("threadId")]
     public long ThreadId { get; set; }
 
+    // Not available in .NET, but Apps Manager crashes without it.
     [JsonPropertyName("threadName")]
     public string? ThreadName { get; set; }
 
@@ -48,15 +55,24 @@ public sealed class ThreadInfo
     [JsonConverter(typeof(SnakeCaseAllCapsEnumMemberJsonConverter))]
     public State ThreadState { get; set; }
 
+    // Not available in .NET
     [JsonPropertyName("waitedCount")]
-    public long WaitedCount { get; set; } // Not available
+    public long? WaitedCount { get; set; }
 
+    // Not available in .NET
     [JsonPropertyName("waitedTime")]
-    public long WaitedTime { get; set; } = -1; // Not available
+    public long? WaitedTime { get; set; }
 
     [JsonPropertyName("inNative")]
     public bool IsInNative { get; set; }
 
+    // Not available in .NET
     [JsonPropertyName("suspended")]
-    public bool IsSuspended { get; set; }
+    public bool? IsSuspended { get; set; }
+
+    public override string ToString()
+    {
+        string source = IsInNative ? "native" : "managed";
+        return $"{ThreadId:D5}, {ThreadState}, {source}, {StackTrace.Count} frames";
+    }
 }

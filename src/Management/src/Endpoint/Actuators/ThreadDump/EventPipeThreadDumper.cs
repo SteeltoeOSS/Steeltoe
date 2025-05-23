@@ -20,6 +20,8 @@ namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 /// </summary>
 internal sealed class EventPipeThreadDumper : IThreadDumper
 {
+    private const string ThreadIdTemplate = "Thread (";
+
     private static readonly StackTraceElement UnknownStackTraceElement = new()
     {
         ClassName = "[UnknownClass]",
@@ -57,154 +59,256 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
     /// </returns>
     public async Task<IList<ThreadInfo>> DumpThreadsAsync(CancellationToken cancellationToken)
     {
-        try
+        return await CaptureLogOutputAsync(async logWriter =>
         {
-            _logger.LogDebug("Starting thread dump.");
+            try
+            {
+                _logger.LogInformation("Attempting to create a thread dump.");
 
-            var client = new DiagnosticsClient(System.Environment.ProcessId);
-            List<EventPipeProvider> providers = [new("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)];
+                var client = new DiagnosticsClient(System.Environment.ProcessId);
+                List<EventPipeProvider> providers = [new("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)];
 
-            using EventPipeSession session = client.StartEventPipeSession(providers);
-            return await DumpThreadsAsync(session, cancellationToken);
-        }
-        finally
-        {
-            long totalMemory = GC.GetTotalMemory(true);
-            _logger.LogDebug("Total memory: {Memory}.", totalMemory);
-        }
+                // Based on the code at https://github.com/dotnet/diagnostics/tree/v9.0.621003/src/Tools/dotnet-stack.
+                using EventPipeSession session = client.StartEventPipeSession(providers);
+                List<ThreadInfo> threads = await GetThreadsFromEventPipeSessionAsync(session, logWriter, cancellationToken);
+
+                _logger.LogInformation("Successfully created a thread dump.");
+                return threads;
+            }
+            finally
+            {
+                long totalMemory = GC.GetTotalMemory(true);
+                _logger.LogDebug("Total memory: {Memory}.", totalMemory);
+            }
+        }, cancellationToken);
     }
 
-    // Much of this code is from diagnostics/dotnet-stack
-    private async Task<List<ThreadInfo>> DumpThreadsAsync(EventPipeSession session, CancellationToken cancellationToken)
+    internal async Task<TResult> CaptureLogOutputAsync<TResult>(Func<TextWriter, Task<TResult>> action, CancellationToken cancellationToken)
+    {
+        bool isLogEnabled = _logger.IsEnabled(LogLevel.Trace);
+        using var logStream = new MemoryStream();
+        Exception? error = null;
+        TResult? result = default;
+
+        await using (TextWriter logWriter = isLogEnabled ? new StreamWriter(logStream, leaveOpen: true) : TextWriter.Null)
+        {
+            try
+            {
+                result = await action(logWriter);
+                await logWriter.FlushAsync(cancellationToken);
+            }
+            catch (Exception exception)
+            {
+                error = exception;
+            }
+        }
+
+        string? logOutput = null;
+
+        if (isLogEnabled)
+        {
+            logStream.Seek(0, SeekOrigin.Begin);
+            using var logReader = new StreamReader(logStream);
+            logOutput = await logReader.ReadToEndAsync(cancellationToken);
+        }
+
+        if (error != null)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            string message = isLogEnabled
+                ? $"Failed to create a thread dump. Captured log:{System.Environment.NewLine}{logOutput}"
+                : "Failed to create a thread dump.";
+
+            throw new InvalidOperationException(message, error);
+        }
+
+        if (isLogEnabled)
+        {
+            _logger.LogTrace("Captured log from thread dump:{LineBreak}{DumpLog}", System.Environment.NewLine, logOutput);
+        }
+
+        return result!;
+    }
+
+    private async Task<List<ThreadInfo>> GetThreadsFromEventPipeSessionAsync(EventPipeSession session, TextWriter logWriter,
+        CancellationToken cancellationToken)
     {
         string? traceFileName = null;
-        List<ThreadInfo> results = [];
 
         try
         {
             traceFileName = await CreateTraceFileAsync(session, cancellationToken);
+            using SymbolReader symbolReader = CreateSymbolReader(logWriter);
+            using var eventLog = new TraceLog(traceFileName);
 
-            if (!string.IsNullOrEmpty(traceFileName))
+            var stackSource = new MutableTraceEventStackSource(eventLog)
             {
-                using var symbolReader = new SymbolReader(TextWriter.Null);
-                symbolReader.SymbolPath = System.Environment.CurrentDirectory;
+                OnlyManagedCodeStacks = true
+            };
 
-                using var eventLog = new TraceLog(traceFileName);
+            var computer = new SampleProfilerThreadTimeComputer(eventLog, symbolReader);
+            computer.GenerateThreadTimeStacks(stackSource);
 
-                var stackSource = new MutableTraceEventStackSource(eventLog)
-                {
-                    OnlyManagedCodeStacks = true
-                };
+            List<ThreadInfo> results = ReadStackSource(stackSource, symbolReader).ToList();
 
-                var computer = new SampleProfilerThreadTimeComputer(eventLog, symbolReader);
-                computer.GenerateThreadTimeStacks(stackSource);
-
-                var samplesForThread = new Dictionary<int, List<StackSourceSample>>();
-
-                stackSource.ForEach(sample =>
-                {
-                    StackSourceCallStackIndex stackIndex = sample.StackIndex;
-
-                    while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith("Thread (", StringComparison.Ordinal))
-                    {
-                        stackIndex = stackSource.GetCallerIndex(stackIndex);
-                    }
-
-                    const string template = "Thread (";
-                    string threadFrame = stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false);
-                    int threadId = int.Parse(threadFrame.AsSpan(template.Length, threadFrame.Length - (template.Length + 1)), CultureInfo.InvariantCulture);
-
-                    if (samplesForThread.TryGetValue(threadId, out List<StackSourceSample>? samples))
-                    {
-                        samples.Add(sample);
-                    }
-                    else
-                    {
-                        samplesForThread[threadId] = [sample];
-                    }
-                });
-
-                foreach ((int threadId, List<StackSourceSample> samples) in samplesForThread)
-                {
-                    _logger.LogDebug("Found {Stacks} stacks for thread {Thread}.", samples.Count, threadId);
-
-                    var threadInfo = new ThreadInfo
-                    {
-                        ThreadId = threadId,
-                        ThreadName = $"Thread-{threadId}",
-                        ThreadState = State.Runnable,
-                        IsInNative = false,
-                        IsSuspended = false
-                    };
-
-                    List<StackTraceElement> stackTrace = GetStackTrace(threadId, samples[0], stackSource, symbolReader);
-
-                    foreach (StackTraceElement stackFrame in stackTrace)
-                    {
-                        threadInfo.StackTrace.Add(stackFrame);
-                    }
-
-                    threadInfo.ThreadState = GetThreadState(threadInfo.StackTrace);
-                    threadInfo.IsInNative = IsThreadInNative(threadInfo.StackTrace);
-                    results.Add(threadInfo);
-                }
-            }
+            _logger.LogTrace("Finished thread walk.");
+            return results;
         }
         finally
         {
-            if (!string.IsNullOrEmpty(traceFileName) && File.Exists(traceFileName))
+            SafeDelete(traceFileName);
+        }
+    }
+
+    private async Task<string> CreateTraceFileAsync(EventPipeSession session, CancellationToken cancellationToken)
+    {
+        string tempNetTraceFilename = Path.Join(Path.GetTempPath(), Path.GetRandomFileName() + ".nettrace");
+
+        try
+        {
+            await using (FileStream outputStream = File.OpenWrite(tempNetTraceFilename))
             {
-                File.Delete(traceFileName);
+                Task copyTask = session.EventStream.CopyToAsync(outputStream, cancellationToken);
+                await Task.Delay(_optionsMonitor.CurrentValue.Duration, cancellationToken);
+                await session.StopAsync(cancellationToken);
+
+                // Check if rundown is taking more than 5 seconds and log.
+                try
+                {
+                    await copyTask.WaitAsync(TimeSpan.FromSeconds(5), cancellationToken);
+                }
+                catch (TimeoutException) when (!cancellationToken.IsCancellationRequested)
+                {
+#pragma warning disable S6667 // Logging in a catch clause should pass the caught exception as a parameter.
+                    _logger.LogInformation("Sufficiently large applications can cause this command to take non-trivial amounts of time.");
+#pragma warning restore S6667 // Logging in a catch clause should pass the caught exception as a parameter.
+
+                    throw;
+                }
+            }
+
+            // Using the generated trace file, symbolicate and compute stacks.
+            return TraceLog.CreateFromEventPipeDataFile(tempNetTraceFilename);
+        }
+        finally
+        {
+            SafeDelete(tempNetTraceFilename);
+        }
+    }
+
+    private static void SafeDelete(string? outputPath)
+    {
+        if (outputPath != null)
+        {
+            try
+            {
+                if (File.Exists(outputPath))
+                {
+                    File.Delete(outputPath);
+                }
+            }
+            catch (Exception)
+            {
+                // Intentionally left empty.
             }
         }
-
-        _logger.LogTrace("Finished thread walk.");
-        return results;
     }
 
-    private bool IsThreadInNative(IList<StackTraceElement> frames)
+    private static SymbolReader CreateSymbolReader(TextWriter logWriter)
     {
-        if (frames.Count > 0)
+        return new SymbolReader(logWriter)
         {
-            return frames[0] == NativeStackTraceElement;
-        }
+            SymbolPath = System.Environment.CurrentDirectory,
 
-        return false;
+            // The next line prevents the following message in captured logs:
+            //   Found PDB <path>.pdb, however this is in an unsafe location.
+            //   If you trust this location, place this directory the symbol path to correct this (or use the SecurityCheck method to override)
+            SecurityCheck = pdbPath => pdbPath.StartsWith(System.Environment.CurrentDirectory, StringComparison.OrdinalIgnoreCase)
+        };
     }
 
-    private State GetThreadState(IList<StackTraceElement> frames)
+    private IEnumerable<ThreadInfo> ReadStackSource(MutableTraceEventStackSource stackSource, SymbolReader symbolReader)
     {
-        if (IsThreadInNative(frames) && frames.Count > 1 && frames[1].MethodName!.Contains("Wait", StringComparison.OrdinalIgnoreCase))
-        {
-            return State.Waiting;
-        }
+        var samplesForThread = new Dictionary<int, List<StackSourceSample>>();
 
-        return State.Runnable;
+        stackSource.ForEach(sample =>
+        {
+            StackSourceCallStackIndex stackIndex = sample.StackIndex;
+
+            while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith(ThreadIdTemplate, StringComparison.Ordinal))
+            {
+                stackIndex = stackSource.GetCallerIndex(stackIndex);
+            }
+
+            string frameName = stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false);
+            int threadId = ExtractThreadId(frameName);
+
+            if (samplesForThread.TryGetValue(threadId, out List<StackSourceSample>? samples))
+            {
+                samples.Add(sample);
+            }
+            else
+            {
+                samplesForThread[threadId] = [sample];
+            }
+        });
+
+        // For every thread recorded in our trace, use the first stack.
+        foreach ((int threadId, List<StackSourceSample> samples) in samplesForThread)
+        {
+            _logger.LogDebug("Found {Stacks} stacks for thread {Thread}.", samples.Count, threadId);
+
+            var threadInfo = new ThreadInfo
+            {
+                ThreadId = threadId,
+                // Not available in .NET, but Apps Manager crashes without it.
+                ThreadName = $"Thread-{threadId:D5}"
+            };
+
+            List<StackTraceElement> stackTrace = GetStackTrace(threadId, samples[0], stackSource, symbolReader).ToList();
+
+            foreach (StackTraceElement stackFrame in stackTrace)
+            {
+                threadInfo.StackTrace.Add(stackFrame);
+            }
+
+            SetThreadState(threadInfo);
+            yield return threadInfo;
+        }
     }
 
-    private List<StackTraceElement> GetStackTrace(int threadId, StackSourceSample stackSourceSample, TraceEventStackSource stackSource,
+    private static int ExtractThreadId(string frameName)
+    {
+        // Handle a thread name like: Thread (4008) (.NET IO ThreadPool Worker)
+
+        int firstIndex = frameName.IndexOf(')');
+        return int.Parse(frameName.AsSpan(ThreadIdTemplate.Length, firstIndex - ThreadIdTemplate.Length), CultureInfo.InvariantCulture);
+    }
+
+    private IEnumerable<StackTraceElement> GetStackTrace(int threadId, StackSourceSample stackSourceSample, TraceEventStackSource stackSource,
         SymbolReader symbolReader)
     {
         _logger.LogDebug("Processing thread with ID: {Thread}.", threadId);
 
-        List<StackTraceElement> result = [];
         StackSourceCallStackIndex stackIndex = stackSourceSample.StackIndex;
+        StackSourceFrameIndex frameIndex = stackSource.GetFrameIndex(stackIndex);
+        string frameName = stackSource.GetFrameName(frameIndex, false);
 
-        while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith("Thread (", StringComparison.Ordinal))
+        while (!frameName.StartsWith(ThreadIdTemplate, StringComparison.Ordinal))
         {
-            StackSourceFrameIndex frameIndex = stackSource.GetFrameIndex(stackIndex);
-            string frameName = stackSource.GetFrameName(frameIndex, false);
-            SourceLocation? sourceLine = GetSourceLine(stackSource, frameIndex, symbolReader);
-            StackTraceElement stackElement = GetStackTraceElement(frameName, sourceLine);
-            result.Add(stackElement);
+            SourceLocation? sourceLocation = stackSource.GetSourceLine(frameIndex, symbolReader);
+            StackTraceElement stackElement = GetStackTraceElement(frameName, sourceLocation);
+
+            yield return stackElement;
 
             stackIndex = stackSource.GetCallerIndex(stackIndex);
+            frameIndex = stackSource.GetFrameIndex(stackIndex);
+            frameName = stackSource.GetFrameName(frameIndex, false);
         }
-
-        return result;
     }
 
-    private StackTraceElement GetStackTraceElement(string frameName, SourceLocation? sourceLocation)
+    private static StackTraceElement GetStackTraceElement(string frameName, SourceLocation? sourceLocation)
     {
         if (string.IsNullOrEmpty(frameName))
         {
@@ -223,238 +327,108 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
             ClassName = "Unknown"
         };
 
-        if (TryParseFrameName(frameName, out string? assemblyName, out string? className, out string? methodName, out string? parameters))
+        if (StackFrameSymbol.TryParse(frameName, out StackFrameSymbol? symbol))
         {
-            result.ClassName = $"{assemblyName}!{className}";
-            result.MethodName = $"{methodName}{parameters}";
+            result.ModuleName = symbol.AssemblyName;
+            result.ClassName = symbol.TypeName;
+            result.MethodName = $"{symbol.MemberName}{symbol.Parameters}";
         }
 
-        if (sourceLocation != null)
-        {
-            result.LineNumber = sourceLocation.LineNumber;
-
-            if (sourceLocation.SourceFile != null)
-            {
-                result.FileName = sourceLocation.SourceFile.BuildTimeFilePath;
-            }
-        }
+        result.FileName = sourceLocation?.SourceFile?.BuildTimeFilePath;
+        result.LineNumber = sourceLocation?.LineNumber;
+        result.ColumnNumber = sourceLocation?.ColumnNumber;
 
         return result;
     }
 
-    private bool TryParseFrameName(string frameName, [NotNullWhen(true)] out string? assemblyName, [NotNullWhen(true)] out string? className,
-        [NotNullWhen(true)] out string? methodName, [NotNullWhen(true)] out string? parameters)
+    private static void SetThreadState(ThreadInfo threadInfo)
     {
-        assemblyName = null;
-        className = null;
-        methodName = null;
-        parameters = null;
+        threadInfo.IsInNative = threadInfo.StackTrace.Count > 0 && threadInfo.StackTrace[0] == NativeStackTraceElement;
 
-        if (string.IsNullOrEmpty(frameName))
-        {
-            return false;
-        }
-
-        string remaining = frameName;
-
-        if (!TryParseParameters(remaining, ref remaining, out parameters))
-        {
-            return false;
-        }
-
-        if (!TryParseMethod(remaining, ref remaining, out methodName))
-        {
-            return false;
-        }
-
-        ParseClassName(remaining, out remaining, out className);
-
-        int dotIndex = remaining.IndexOf('.');
-        assemblyName = dotIndex > 0 ? remaining[..dotIndex] : remaining;
-
-        return true;
+        threadInfo.ThreadState =
+            threadInfo is { IsInNative: true, StackTrace.Count: > 1 } &&
+            threadInfo.StackTrace[1].MethodName?.Contains("Wait", StringComparison.OrdinalIgnoreCase) == true
+                ? State.Waiting
+                : State.Runnable;
     }
 
-    private void ParseClassName(string input, out string remaining, out string className)
+    private sealed record StackFrameSymbol(string AssemblyName, string TypeName, string MemberName, string Parameters)
     {
-        int classStartIndex = input.IndexOf('!');
-
-        if (classStartIndex == -1)
+        public static bool TryParse(string frameName, [NotNullWhen(true)] out StackFrameSymbol? symbol)
         {
-            className = input;
-            remaining = string.Empty;
-        }
-        else
-        {
-            remaining = input[..classStartIndex];
-            className = input[(classStartIndex + 1)..];
-        }
-    }
+            symbol = null;
 
-    private bool TryParseMethod(string input, ref string remaining, [NotNullWhen(true)] out string? methodName)
-    {
-        int methodStartIndex = input.LastIndexOf('.');
+            if (string.IsNullOrEmpty(frameName))
+            {
+                return false;
+            }
 
-        if (methodStartIndex > 0)
-        {
-            remaining = input[..methodStartIndex];
-            methodName = input[(methodStartIndex + 1)..];
+            ReadOnlySpan<char> remaining = frameName;
+
+            if (!TryEatParameters(ref remaining, out string? parameters))
+            {
+                return false;
+            }
+
+            if (!TryEatMemberName(ref remaining, out string? memberName))
+            {
+                return false;
+            }
+
+            if (!TryEatTypeName(ref remaining, out string? typeName))
+            {
+                return false;
+            }
+
+            string assemblyName = remaining.ToString();
+
+            symbol = new StackFrameSymbol(assemblyName, typeName, memberName, parameters);
             return true;
         }
 
-        methodName = null;
-        return false;
-    }
-
-    private bool TryParseParameters(string input, ref string remaining, [NotNullWhen(true)] out string? parameters)
-    {
-        int paramStartIndex = input.IndexOf('(');
-
-        if (paramStartIndex > 0)
+        private static bool TryEatParameters(ref ReadOnlySpan<char> remaining, [NotNullWhen(true)] out string? parameters)
         {
-            remaining = input[..paramStartIndex];
-            parameters = input[paramStartIndex..];
+            int startIndex = remaining.IndexOf('(');
+
+            if (startIndex < 0)
+            {
+                parameters = null;
+                return false;
+            }
+
+            parameters = remaining[startIndex..].ToString();
+            remaining = remaining[..startIndex];
             return true;
         }
 
-        parameters = null;
-        return false;
-    }
-
-    // Much of this code is from PerfView/TraceLog.cs
-    private SourceLocation? GetSourceLine(TraceEventStackSource stackSource, StackSourceFrameIndex frameIndex, SymbolReader reader)
-    {
-        TraceLog log = stackSource.TraceLog;
-        uint codeAddress = (uint)frameIndex - (uint)StackSourceFrameIndex.Start;
-
-        if (codeAddress >= log.CodeAddresses.Count)
+        private static bool TryEatMemberName(ref ReadOnlySpan<char> remaining, [NotNullWhen(true)] out string? memberName)
         {
-            return null;
-        }
+            int startIndex = remaining.LastIndexOf('.');
 
-        var codeAddressIndex = (CodeAddressIndex)codeAddress;
-        TraceModuleFile moduleFile = log.CodeAddresses.ModuleFile(codeAddressIndex);
-
-        if (moduleFile == null)
-        {
-            string hexAddress = log.CodeAddresses.Address(codeAddressIndex).ToString("X", CultureInfo.InvariantCulture);
-            _logger.LogTrace("GetSourceLine: Could not find moduleFile {HexAddress}.", hexAddress);
-            return null;
-        }
-
-        MethodIndex methodIndex = log.CodeAddresses.MethodIndex(codeAddressIndex);
-
-        if (methodIndex == MethodIndex.Invalid)
-        {
-            string hexAddress = log.CodeAddresses.Address(codeAddressIndex).ToString("X", CultureInfo.InvariantCulture);
-            _logger.LogTrace("GetSourceLine: Could not find method for {HexAddress}.", hexAddress);
-            return null;
-        }
-
-        int methodToken = log.CodeAddresses.Methods.MethodToken(methodIndex);
-
-        if (methodToken == 0)
-        {
-            string hexAddress = log.CodeAddresses.Address(codeAddressIndex).ToString("X", CultureInfo.InvariantCulture);
-            _logger.LogTrace("GetSourceLine: Could not find method for {HexAddress}.", hexAddress);
-            return null;
-        }
-
-        int ilOffset = log.CodeAddresses.ILOffset(codeAddressIndex);
-
-        if (ilOffset < 0)
-        {
-            ilOffset = 0;
-        }
-
-        string? pdbFileName = null;
-
-        if (moduleFile.PdbSignature != Guid.Empty)
-        {
-            pdbFileName = reader.FindSymbolFilePath(moduleFile.PdbName, moduleFile.PdbSignature, moduleFile.PdbAge, moduleFile.FilePath,
-                moduleFile.ProductVersion, true);
-        }
-
-        if (pdbFileName == null)
-        {
-            string simpleName = Path.GetFileNameWithoutExtension(moduleFile.FilePath);
-
-            if (simpleName.EndsWith(".il", StringComparison.Ordinal))
+            if (startIndex < 0)
             {
-                simpleName = Path.GetFileNameWithoutExtension(simpleName);
+                memberName = null;
+                return false;
             }
 
-            pdbFileName = reader.FindSymbolFilePath($"{simpleName}.pdb", Guid.Empty, 0);
+            memberName = remaining[(startIndex + 1)..].ToString();
+            remaining = remaining[..startIndex];
+            return true;
         }
 
-        if (pdbFileName != null)
+        private static bool TryEatTypeName(ref ReadOnlySpan<char> remaining, [NotNullWhen(true)] out string? typeName)
         {
-            ManagedSymbolModule symbolReaderModule = reader.OpenSymbolFile(pdbFileName);
+            int startIndex = remaining.IndexOf('!');
 
-            if (symbolReaderModule != null)
+            if (startIndex < 0)
             {
-                if (moduleFile.PdbSignature != Guid.Empty && symbolReaderModule.PdbGuid != moduleFile.PdbSignature)
-                {
-                    _logger.LogTrace("ERROR: The PDB opened does not match the PDB desired. PDB GUID = {PdbGuid}, DESIRED GUID = {DesiredGuid}",
-                        symbolReaderModule.PdbGuid, moduleFile.PdbSignature);
-
-                    return null;
-                }
-
-                symbolReaderModule.ExePath = moduleFile.FilePath;
-                return symbolReaderModule.SourceLocationForManagedCode((uint)methodToken, ilOffset);
-            }
-        }
-
-        return null;
-    }
-
-    private async Task<string> CreateTraceFileAsync(EventPipeSession session, CancellationToken cancellationToken)
-    {
-        string tempNetTraceFilename = $"{Path.GetRandomFileName()}.nettrace";
-
-        try
-        {
-            await using (FileStream outputStream = File.OpenWrite(tempNetTraceFilename))
-            {
-                Task copyTask = session.EventStream.CopyToAsync(outputStream, cancellationToken);
-                await Task.Delay(_optionsMonitor.CurrentValue.Duration, cancellationToken);
-                await session.StopAsync(cancellationToken);
-
-                cancellationToken.ThrowIfCancellationRequested();
-
-                // check if rundown is taking more than 5 seconds and log
-                using var timeoutSource = new CancellationTokenSource();
-                Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(5), timeoutSource.Token);
-
-                Task completedTask = await Task.WhenAny(copyTask, timeoutTask);
-
-                if (completedTask == timeoutTask)
-                {
-                    if (!cancellationToken.IsCancellationRequested)
-                    {
-                        _logger.LogInformation("Sufficiently large applications can cause this command to take non-trivial amounts of time.");
-                    }
-                }
-                else
-                {
-                    // Cancel the internal timer allocated inside Task.Delay, so that it does not fire and its resources are released.
-                    // See https://github.com/davidfowl/AspNetCoreDiagnosticScenarios/blob/master/AsyncGuidance.md#using-a-timeout.
-                    await timeoutSource.CancelAsync();
-                }
-
-                await copyTask;
+                typeName = null;
+                return false;
             }
 
-            // using the generated trace file, symbolocate and compute stacks.
-            return TraceLog.CreateFromEventPipeDataFile(tempNetTraceFilename);
-        }
-        finally
-        {
-            if (File.Exists(tempNetTraceFilename))
-            {
-                File.Delete(tempNetTraceFilename);
-            }
+            typeName = remaining[(startIndex + 1)..].ToString();
+            remaining = remaining[..startIndex];
+            return true;
         }
     }
 }

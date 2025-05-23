@@ -22,7 +22,7 @@ jobs:
     parameters:
       component: Management
       OS: macOS
-      skipFilter: --filter "Category!=SkipOnMacOS"
+      skipFilter: "Category!=SkipOnMacOS"
   - template: templates/component-build.yaml
     parameters:
       component: Management
