@@ -14,15 +14,19 @@ on:
     - src/Common/**
     - src/Steeltoe.Common.slnf
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   linux:
     uses: ./.github/workflows/component-shared-workflow.yml
     with:
       component: Common
-      os: ubuntu
+      OS: ubuntu
 
   windows:
     uses: ./.github/workflows/component-shared-workflow.yml
     with:
       component: Common
-      os: windows
+      OS: windows

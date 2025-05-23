@@ -14,9 +14,13 @@ on:
     - src/Discovery/**
     - src/Steeltoe.Discovery.slnf
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   linux:
     uses: ./.github/workflows/component-shared-workflow.yml
     with:
       component: Discovery
-      os: ubuntu
+      OS: ubuntu
