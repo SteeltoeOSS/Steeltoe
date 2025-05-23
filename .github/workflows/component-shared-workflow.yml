@@ -68,7 +68,7 @@ jobs:
         run: nbgv cloud
 
       - name: Restore dependencies
-        run: dotnet restore ${{ env.SolutionFile }} --verbosity minimal --configfile nuget.config
+        run: dotnet restore ${{ env.SolutionFile }} --verbosity minimal
 
       - name: Build solution
         run: dotnet build ${{ env.SolutionFile }} --no-restore --configuration Release --verbosity minimal
