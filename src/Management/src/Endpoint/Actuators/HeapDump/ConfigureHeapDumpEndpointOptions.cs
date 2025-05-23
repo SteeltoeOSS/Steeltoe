@@ -18,5 +18,10 @@ internal sealed class ConfigureHeapDumpEndpointOptions(IConfiguration configurat
         base.Configure(options);
 
         options.HeapDumpType ??= Platform.IsOSX ? HeapDumpType.GCDump : HeapDumpType.Full;
+
+        if (options.GCDumpTimeoutInSeconds < 1)
+        {
+            options.GCDumpTimeoutInSeconds = int.MaxValue;
+        }
     }
 }

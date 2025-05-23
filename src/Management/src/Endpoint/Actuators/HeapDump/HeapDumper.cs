@@ -30,11 +30,11 @@ internal sealed class HeapDumper : IHeapDumper
 
     public string DumpHeapToFile(CancellationToken cancellationToken)
     {
-        HeapDumpType? dumpType = _optionsMonitor.CurrentValue.HeapDumpType;
+        HeapDumpEndpointOptions options = _optionsMonitor.CurrentValue;
         int processId = System.Environment.ProcessId;
         string? outputPath = null;
 
-        string dumpDescription = dumpType switch
+        string dumpDescription = options.HeapDumpType switch
         {
             HeapDumpType.GCDump => "gcdump",
             HeapDumpType.Heap => "dump with heap",
@@ -47,15 +47,15 @@ internal sealed class HeapDumper : IHeapDumper
 
         try
         {
-            outputPath = GetOutputPath(dumpType);
+            outputPath = GetOutputPath(options.HeapDumpType);
 
-            if (dumpType == HeapDumpType.GCDump)
+            if (options.HeapDumpType == HeapDumpType.GCDump)
             {
-                CreateGCDump(processId, outputPath, dumpDescription, cancellationToken);
+                CreateGCDump(processId, outputPath, dumpDescription, options.GCDumpTimeoutInSeconds, cancellationToken);
             }
             else
             {
-                CreateHeapDump(dumpType, processId, outputPath);
+                CreateHeapDump(options.HeapDumpType, processId, outputPath);
             }
         }
         catch (Exception)
@@ -93,14 +93,14 @@ internal sealed class HeapDumper : IHeapDumper
         return Path.GetFullPath(Path.Combine(Path.GetTempPath(), fileName));
     }
 
-    private void CreateGCDump(int processId, string outputPath, string dumpDescription, CancellationToken cancellationToken)
+    private void CreateGCDump(int processId, string outputPath, string dumpDescription, int timeoutInSeconds, CancellationToken cancellationToken)
     {
         CaptureLogOutput(logWriter =>
         {
             var heapInfo = new DotNetHeapInfo();
             var memoryGraph = new MemoryGraph(50_000);
 
-            if (EventPipeDotNetHeapDumper.DumpFromEventPipe(cancellationToken, processId, null, memoryGraph, logWriter, 30, heapInfo))
+            if (EventPipeDotNetHeapDumper.DumpFromEventPipe(cancellationToken, processId, null, memoryGraph, logWriter, timeoutInSeconds, heapInfo))
             {
                 memoryGraph.AllowReading();
                 GCHeapDump.WriteMemoryGraph(memoryGraph, outputPath, "dotnet-gcdump");

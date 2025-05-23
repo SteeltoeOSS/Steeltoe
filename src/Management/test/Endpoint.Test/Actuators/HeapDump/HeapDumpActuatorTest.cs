@@ -27,6 +27,7 @@ public sealed class HeapDumpActuatorTest
         HeapDumpEndpointOptions options = host.Services.GetRequiredService<IOptions<HeapDumpEndpointOptions>>().Value;
 
         options.HeapDumpType.Should().Be(Platform.IsOSX ? HeapDumpType.GCDump : HeapDumpType.Full);
+        options.GCDumpTimeoutInSeconds.Should().Be(30);
         options.Enabled.Should().BeNull();
         options.Id.Should().Be("heapdump");
         options.Path.Should().Be("heapdump");
@@ -43,6 +44,7 @@ public sealed class HeapDumpActuatorTest
         var appSettings = new Dictionary<string, string?>
         {
             ["Management:Endpoints:HeapDump:HeapDumpType"] = "mini",
+            ["Management:Endpoints:HeapDump:GCDumpTimeoutInSeconds"] = "0",
             ["Management:Endpoints:HeapDump:Enabled"] = "true",
             ["Management:Endpoints:HeapDump:Id"] = "test-actuator-id",
             ["Management:Endpoints:HeapDump:Path"] = "test-actuator-path",
@@ -58,6 +60,7 @@ public sealed class HeapDumpActuatorTest
         HeapDumpEndpointOptions options = host.Services.GetRequiredService<IOptions<HeapDumpEndpointOptions>>().Value;
 
         options.HeapDumpType.Should().Be(HeapDumpType.Mini);
+        options.GCDumpTimeoutInSeconds.Should().Be(int.MaxValue);
         options.Enabled.Should().BeTrue();
         options.Id.Should().Be("test-actuator-id");
         options.Path.Should().Be("test-actuator-path");

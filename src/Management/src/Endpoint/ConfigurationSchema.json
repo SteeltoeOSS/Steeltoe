@@ -359,6 +359,10 @@
                   "type": "boolean",
                   "description": "Gets or sets a value indicating whether this endpoint is enabled."
                 },
+                "GCDumpTimeoutInSeconds": {
+                  "type": "integer",
+                  "description": "Gets or sets the time (in seconds) after which to give up on collecting a gcdump. Default value: 30."
+                },
                 "HeapDumpType": {
                   "enum": [
                     "Full",

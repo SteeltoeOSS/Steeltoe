@@ -177,6 +177,8 @@ Steeltoe.Management.Endpoint.Actuators.Health.ShowValues.Never = 0 -> Steeltoe.M
 Steeltoe.Management.Endpoint.Actuators.Health.ShowValues.WhenAuthorized = 1 -> Steeltoe.Management.Endpoint.Actuators.Health.ShowValues
 Steeltoe.Management.Endpoint.Actuators.HeapDump.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions
+Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions.GCDumpTimeoutInSeconds.get -> int
+Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions.GCDumpTimeoutInSeconds.set -> void
 Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions.HeapDumpEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions.HeapDumpType.get -> Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpType?
 Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions.HeapDumpType.set -> void

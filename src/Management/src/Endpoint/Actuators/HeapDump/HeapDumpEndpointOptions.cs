@@ -12,4 +12,9 @@ public sealed class HeapDumpEndpointOptions : EndpointOptions
     /// Gets or sets the type of dump to create. Default value: Full (on macOS: GCDump).
     /// </summary>
     public HeapDumpType? HeapDumpType { get; set; }
+
+    /// <summary>
+    /// Gets or sets the time (in seconds) after which to give up on collecting a gcdump. Default value: 30.
+    /// </summary>
+    public int GCDumpTimeoutInSeconds { get; set; } = 30;
 }
