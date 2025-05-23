@@ -131,7 +131,7 @@ internal sealed class HeapDumper : IHeapDumper
         client.WriteDump(dumpType, outputPath, flags);
     }
 
-    private void CaptureLogOutput(Func<TextWriter, bool> action, string dumpDescription, CancellationToken cancellationToken)
+    internal void CaptureLogOutput(Func<TextWriter, bool> action, string dumpDescription, CancellationToken cancellationToken)
     {
         using var logStream = new MemoryStream();
         Exception? error = null;

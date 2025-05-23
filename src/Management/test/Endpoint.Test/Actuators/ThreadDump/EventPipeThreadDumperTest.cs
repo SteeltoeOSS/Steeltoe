@@ -55,6 +55,28 @@ public sealed class EventPipeThreadDumperTest
         logText.Should().Contain("Created SymbolReader with SymbolPath");
     }
 
+    [Fact]
+    public async Task Includes_captured_log_for_thrown_exception()
+    {
+        var optionsMonitor = new TestOptionsMonitor<ThreadDumpEndpointOptions>();
+
+        using var loggerProvider = new CapturingLoggerProvider();
+        using var loggerFactory = new LoggerFactory([loggerProvider]);
+        ILogger<EventPipeThreadDumper> logger = loggerFactory.CreateLogger<EventPipeThreadDumper>();
+
+        var dumper = new EventPipeThreadDumper(optionsMonitor, logger);
+
+        Func<Task> action = async () => await dumper.CaptureLogOutputAsync<IList<ThreadInfo>>(writer =>
+        {
+            writer.WriteLine("Failed to perform this operation.");
+            throw new ArgumentException("Simulated failure.");
+        }, TestContext.Current.CancellationToken);
+
+        InvalidOperationException exception = (await action.Should().ThrowExactlyAsync<InvalidOperationException>()).Which;
+        exception.Message.Should().StartWith($"Failed to create a thread dump. Captured log:{System.Environment.NewLine}Failed to perform this operation.");
+        exception.InnerException.Should().BeOfType<ArgumentException>().Which.Message.Should().Be("Simulated failure.");
+    }
+
     private static class NestedType
     {
         public static void BackgroundThreadCallback(object? argument)

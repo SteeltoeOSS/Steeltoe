@@ -83,7 +83,7 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
         }, cancellationToken);
     }
 
-    private async Task<TResult> CaptureLogOutputAsync<TResult>(Func<TextWriter, Task<TResult>> action, CancellationToken cancellationToken)
+    internal async Task<TResult> CaptureLogOutputAsync<TResult>(Func<TextWriter, Task<TResult>> action, CancellationToken cancellationToken)
     {
         bool isLogEnabled = _logger.IsEnabled(LogLevel.Trace);
         using var logStream = new MemoryStream();

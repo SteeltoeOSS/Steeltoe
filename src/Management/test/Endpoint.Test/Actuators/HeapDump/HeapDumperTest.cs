@@ -4,6 +4,7 @@
 
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
@@ -59,5 +60,47 @@ public sealed class HeapDumperTest
             logText.Should().Contain($"TRCE {typeof(HeapDumper).FullName}: Captured log from gcdump:");
             logText.Should().Contain("Done Dumping .NET heap success=True");
         }
+    }
+
+    [Fact]
+    public void Includes_captured_log_for_thrown_exception()
+    {
+        var optionsMonitor = TestOptionsMonitor.Create(new HeapDumpEndpointOptions
+        {
+            HeapDumpType = HeapDumpType.GCDump
+        });
+
+        var dumper = new HeapDumper(optionsMonitor, TimeProvider.System, NullLogger<HeapDumper>.Instance);
+
+        Action action = () => dumper.CaptureLogOutput(writer =>
+        {
+            writer.WriteLine("Failed to perform this operation.");
+            throw new ArgumentException("Simulated failure.");
+        }, "gcdump", TestContext.Current.CancellationToken);
+
+        action.Should().ThrowExactly<InvalidOperationException>()
+            .WithMessage($"Failed to create a gcdump. Captured log:{System.Environment.NewLine}Failed to perform this operation.")
+            .WithInnerException<ArgumentException>().WithMessage("Simulated failure.");
+    }
+
+    [Fact]
+    public void Includes_captured_log_for_unsuccessful_action()
+    {
+        var optionsMonitor = TestOptionsMonitor.Create(new HeapDumpEndpointOptions
+        {
+            HeapDumpType = HeapDumpType.GCDump
+        });
+
+        var dumper = new HeapDumper(optionsMonitor, TimeProvider.System, NullLogger<HeapDumper>.Instance);
+
+        Action action = () => dumper.CaptureLogOutput(writer =>
+        {
+            writer.WriteLine("Failed to perform this operation.");
+            return false;
+        }, "gcdump", TestContext.Current.CancellationToken);
+
+        action.Should().ThrowExactly<InvalidOperationException>()
+            .WithMessage($"Failed to create a gcdump. Captured log:{System.Environment.NewLine}Failed to perform this operation.").And.InnerException.Should()
+            .BeNull();
     }
 }
