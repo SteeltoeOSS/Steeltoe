@@ -85,19 +85,12 @@ jobs:
         with:
           name: FailedTestOutput-${{ inputs.OS }}
           path: '**/*.dmp'
-
-      - name: Publish test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: TestResults-${{ inputs.OS }}
-          path: '**/*.trx'
+          if-no-files-found: ignore
 
       - name: Report test results
         if: always()
         uses: dorny/test-reporter@v2
         with:
-          artifact: TestResults-${{ inputs.OS }}
           name: ${{ inputs.OS }} test results
           reporter: dotnet-trx
-          path: '*.trx'
+          path: '**/*.trx'
