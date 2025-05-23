@@ -9,6 +9,7 @@ internal sealed class HostInfo
     public string Hostname { get; }
     public string IPAddress { get; }
 
+    // added a comment
     public HostInfo(string hostname, string ipAddress)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(hostname);
