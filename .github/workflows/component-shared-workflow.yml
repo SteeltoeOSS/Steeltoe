@@ -48,6 +48,9 @@ jobs:
         --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory ${{ github.workspace }}
 
     steps:
+      - name: Pause for discovery-first Config Server startup
+        if: ${{ inputs.runConfigServer }}
+        run: sleep 30
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
