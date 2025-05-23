@@ -15,12 +15,7 @@ internal static class EndpointOptionsExtensions
         ArgumentNullException.ThrowIfNull(endpointOptions);
         ArgumentNullException.ThrowIfNull(managementOptions);
 
-        if (endpointOptions.Enabled != null)
-        {
-            return endpointOptions.Enabled.Value;
-        }
-
-        return managementOptions.Enabled ?? true;
+        return endpointOptions.Enabled ?? managementOptions.Enabled;
     }
 
     public static bool IsExposed(this EndpointOptions endpointOptions, ManagementOptions managementOptions)
@@ -53,9 +48,9 @@ internal static class EndpointOptionsExtensions
 
         bool isEnabled = IsEnabled(endpointOptions, managementOptions);
         bool isExposed = IsExposed(endpointOptions, managementOptions);
-
         bool isAtCloudFoundryPath = requestPath.StartsWithSegments(ConfigureManagementOptions.DefaultCloudFoundryPath);
-        return isAtCloudFoundryPath ? managementOptions.IsCloudFoundryEnabled && isEnabled : isEnabled && isExposed;
+
+        return isAtCloudFoundryPath ? isEnabled && managementOptions is { IsCloudFoundryEnabled: true, HasCloudFoundrySecurity: true } : isEnabled && isExposed;
     }
 
     public static string GetPathMatchPattern(this EndpointOptions endpointOptions, string? basePath)

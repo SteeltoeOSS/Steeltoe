@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 internal sealed class HttpExchangesEndpointHandler : IHttpExchangesEndpointHandler
 {
     private readonly IOptionsMonitor<HttpExchangesEndpointOptions> _optionsMonitor;
-    private readonly IHttpExchangesRepository _httpExchangesRepository;
+    private readonly HttpExchangesRepository _httpExchangesRepository;
     private readonly ILogger<HttpExchangesEndpointHandler> _logger;
 
     public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
-    public HttpExchangesEndpointHandler(IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor, IHttpExchangesRepository httpExchangesRepository,
+    public HttpExchangesEndpointHandler(IOptionsMonitor<HttpExchangesEndpointOptions> optionsMonitor, HttpExchangesRepository httpExchangesRepository,
         ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(optionsMonitor);

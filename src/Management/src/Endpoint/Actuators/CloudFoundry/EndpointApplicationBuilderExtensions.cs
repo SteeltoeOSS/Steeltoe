@@ -30,6 +30,9 @@ public static class EndpointApplicationBuilderExtensions
 
         builder.UseMiddleware<CloudFoundrySecurityMiddleware>();
 
+        var marker = builder.ApplicationServices.GetRequiredService<HasCloudFoundrySecurityMiddlewareMarker>();
+        marker.Value = true;
+
         return builder;
     }
 }

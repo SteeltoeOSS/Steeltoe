@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
+using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health;
 

@@ -4,7 +4,6 @@
 
 using System.IO.Compression;
 using System.Net;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -17,14 +16,32 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 
 public sealed class HeapDumpActuatorTest
 {
+    private static readonly Dictionary<string, string?> AppSettings = new()
+    {
+        ["Management:Endpoints:Actuator:Exposure:Include:0"] = "heapdump"
+    };
+
+    [Fact]
+    public async Task Registers_dependent_services()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddHeapDumpActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        Func<HeapDumpEndpointMiddleware> action = serviceProvider.GetRequiredService<HeapDumpEndpointMiddleware>;
+        action.Should().NotThrow();
+    }
+
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddHeapDumpActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddHeapDumpActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        HeapDumpEndpointOptions options = host.Services.GetRequiredService<IOptions<HeapDumpEndpointOptions>>().Value;
+        HeapDumpEndpointOptions options = serviceProvider.GetRequiredService<IOptions<HeapDumpEndpointOptions>>().Value;
 
         options.HeapDumpType.Should().Be(Platform.IsOSX ? HeapDumpType.GCDump : HeapDumpType.Full);
         options.GCDumpTimeoutInSeconds.Should().Be(30);
@@ -52,12 +69,12 @@ public sealed class HeapDumpActuatorTest
             ["Management:Endpoints:HeapDump:AllowedVerbs:0"] = "post"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddHeapDumpActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddHeapDumpActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        HeapDumpEndpointOptions options = host.Services.GetRequiredService<IOptions<HeapDumpEndpointOptions>>().Value;
+        HeapDumpEndpointOptions options = serviceProvider.GetRequiredService<IOptions<HeapDumpEndpointOptions>>().Value;
 
         options.HeapDumpType.Should().Be(HeapDumpType.Mini);
         options.GCDumpTimeoutInSeconds.Should().Be(int.MaxValue);
@@ -89,9 +106,8 @@ public sealed class HeapDumpActuatorTest
     [InlineData(HostBuilderType.WebApplication, HeapDumpType.GCDump)]
     public async Task Endpoint_returns_expected_data(HostBuilderType hostBuilderType, HeapDumpType heapDumpType)
     {
-        var appSettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>(AppSettings)
         {
-            ["Management:Endpoints:Actuator:Exposure:Include:0"] = "heapdump",
             ["Management:Endpoints:HeapDump:HeapDumpType"] = heapDumpType.ToString()
         };
 

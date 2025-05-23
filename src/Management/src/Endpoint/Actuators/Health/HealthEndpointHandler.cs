@@ -9,7 +9,6 @@ using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Configuration;
 using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
-using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health;
 
@@ -44,13 +43,6 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         _healthOptionsMonitor = healthOptionsMonitor;
         _serviceProvider = serviceProvider;
         _logger = loggerFactory.CreateLogger<HealthEndpointHandler>();
-    }
-
-    public int GetStatusCode(HealthEndpointResponse response)
-    {
-        ArgumentNullException.ThrowIfNull(response);
-
-        return response.Status is HealthStatus.Down or HealthStatus.OutOfService ? 503 : 200;
     }
 
     public async Task<HealthEndpointResponse> InvokeAsync(HealthEndpointRequest healthRequest, CancellationToken cancellationToken)

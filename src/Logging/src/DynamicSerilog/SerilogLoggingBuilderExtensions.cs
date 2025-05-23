@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog;
+using Steeltoe.Common;
 
 namespace Steeltoe.Logging.DynamicSerilog;
 
@@ -103,7 +104,7 @@ public static class SerilogLoggingBuilderExtensions
     private static bool IsSerilogDynamicLoggerProviderAlreadyRegistered(ILoggingBuilder builder)
     {
         return builder.Services.Any(descriptor =>
-            descriptor.ServiceType == typeof(ILoggerProvider) && descriptor.ImplementationType == typeof(DynamicSerilogLoggerProvider));
+            descriptor.ServiceType == typeof(ILoggerProvider) && descriptor.SafeGetImplementationType() == typeof(DynamicSerilogLoggerProvider));
     }
 
     private static void AssertNoDynamicLoggerProviderRegistered(ILoggingBuilder builder)

@@ -15,20 +15,20 @@ internal abstract class ConfigurationContributor(IConfiguration? configuration)
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentException.ThrowIfNullOrEmpty(prefix);
 
-        Dictionary<string, object> dictionary = CreateDictionary(prefix, keepPrefix);
+        Dictionary<string, object?> dictionary = CreateDictionary(prefix, keepPrefix);
         builder.WithInfo(dictionary);
     }
 
-    private Dictionary<string, object> CreateDictionary(string prefix, bool keepPrefix)
+    private Dictionary<string, object?> CreateDictionary(string prefix, bool keepPrefix)
     {
-        var result = new Dictionary<string, object>();
+        var result = new Dictionary<string, object?>();
 
         if (Configuration != null)
         {
-            Dictionary<string, object> dictionary = result;
+            Dictionary<string, object?> dictionary = result;
 
             IConfigurationSection section = Configuration.GetSection(prefix);
-            IEnumerable<IConfigurationSection> children = section.GetChildren();
+            IEnumerable<IConfigurationSection> childSections = section.GetChildren();
 
             if (keepPrefix)
             {
@@ -36,33 +36,30 @@ internal abstract class ConfigurationContributor(IConfiguration? configuration)
                 result[prefix] = dictionary;
             }
 
-            AddChildren(dictionary, children);
+            AddChildren(dictionary, childSections);
         }
 
         return result;
     }
 
-    private void AddChildren(Dictionary<string, object> dictionary, IEnumerable<IConfigurationSection> sections)
+    private void AddChildren(Dictionary<string, object?> dictionary, IEnumerable<IConfigurationSection> sections)
     {
         foreach (IConfigurationSection section in sections)
         {
-            string key = section.Key;
-            string? value = section.Value;
-
-            if (value == null)
+            if (section.Value == null)
             {
-                var emptyDictionary = new Dictionary<string, object>();
-                dictionary[key] = emptyDictionary;
-                AddChildren(emptyDictionary, section.GetChildren());
+                var subDictionary = new Dictionary<string, object?>();
+                dictionary[section.Key] = subDictionary;
+                AddChildren(subDictionary, section.GetChildren());
             }
             else
             {
-                AddKeyValue(dictionary, key, value);
+                AddKeyValue(dictionary, section.Key, section.Value);
             }
         }
     }
 
-    protected virtual void AddKeyValue(IDictionary<string, object> dictionary, string key, string value)
+    protected virtual void AddKeyValue(IDictionary<string, object?> dictionary, string key, object? value)
     {
         ArgumentNullException.ThrowIfNull(dictionary);
         ArgumentException.ThrowIfNullOrEmpty(key);

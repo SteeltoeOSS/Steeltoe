@@ -2,109 +2,91 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Globalization;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Info.Contributors;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Info.Contributors;
 
-public sealed class GitInfoContributorTest : BaseTest
+public sealed class GitInfoContributorTest
 {
     [Fact]
-    public async Task ReadGitPropertiesMissingPropertiesFile()
+    public async Task Logs_warning_when_git_properties_file_not_found()
     {
-        var contributor = new GitInfoContributor("foobar", NullLogger<GitInfoContributor>.Instance);
+        using var loggerProvider = new CapturingLoggerProvider();
+        using var loggerFactory = new LoggerFactory([loggerProvider]);
+        ILogger<GitInfoContributor> logger = loggerFactory.CreateLogger<GitInfoContributor>();
 
-        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync(TestContext.Current.CancellationToken);
+        var contributor = new GitInfoContributor("/path/to/missing-file", logger);
+        var infoBuilder = new InfoBuilder();
 
-        Assert.Null(configuration);
+        await contributor.ContributeAsync(infoBuilder, TestContext.Current.CancellationToken);
+
+        IDictionary<string, object?> data = infoBuilder.Build();
+        data.Should().BeEmpty();
+
+        string logText = loggerProvider.GetAsText();
+        logText.Should().Be($"WARN {typeof(GitInfoContributor)}: File '/path/to/missing-file' does not exist.");
     }
 
     [Fact]
-    public async Task ReadEmptyGitPropertiesFile()
+    public async Task Can_read_empty_git_properties_file()
     {
-        string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}empty.git.properties";
-        var contributor = new GitInfoContributor(path, NullLogger<GitInfoContributor>.Instance);
+        using var loggerProvider = new CapturingLoggerProvider();
+        using var loggerFactory = new LoggerFactory([loggerProvider]);
+        ILogger<GitInfoContributor> logger = loggerFactory.CreateLogger<GitInfoContributor>();
 
-        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync(TestContext.Current.CancellationToken);
+        string path = Path.Combine(System.Environment.CurrentDirectory, "empty.git.properties");
 
-        Assert.Null(configuration);
+        var contributor = new GitInfoContributor(path, logger);
+        var infoBuilder = new InfoBuilder();
+
+        await contributor.ContributeAsync(infoBuilder, TestContext.Current.CancellationToken);
+
+        IDictionary<string, object?> data = infoBuilder.Build();
+        data.Should().BeEmpty();
+
+        loggerProvider.GetAsText().Should().BeEmpty();
     }
 
     [Fact]
-    public async Task ReadMalformedGitPropertiesFile()
+    public async Task Skips_malformed_lines_in_git_properties_file()
     {
-        string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}garbage.git.properties";
-        var contributor = new GitInfoContributor(path, NullLogger<GitInfoContributor>.Instance);
+        using var loggerProvider = new CapturingLoggerProvider();
+        using var loggerFactory = new LoggerFactory([loggerProvider]);
+        ILogger<GitInfoContributor> logger = loggerFactory.CreateLogger<GitInfoContributor>();
 
-        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync(TestContext.Current.CancellationToken);
+        string path = Path.Combine(System.Environment.CurrentDirectory, "garbage.git.properties");
 
-        Assert.NotNull(configuration);
-        Assert.Null(configuration["git"]);
-    }
+        var contributor = new GitInfoContributor(path, logger);
+        var infoBuilder = new InfoBuilder();
 
-    [Fact]
-    public async Task ReadGoodPropertiesFile()
-    {
-        string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}git.properties";
-        var contributor = new GitInfoContributor(path, NullLogger<GitInfoContributor>.Instance);
+        await contributor.ContributeAsync(infoBuilder, TestContext.Current.CancellationToken);
 
-        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync(TestContext.Current.CancellationToken);
+        IDictionary<string, object?> data = infoBuilder.Build();
 
-        Assert.NotNull(configuration);
-        Assert.Equal("true", configuration["git:dirty"]);
+        string json = JsonSerializer.Serialize(data);
 
-        // Verify `\:` strings get converted if they exist in the dates/URLs
-        Assert.Equal("https://github.com/spring-projects/spring-boot.git", configuration["git:remote:origin:url"]);
-        Assert.Equal("2017-07-12T12:40:39-0600", configuration["git:build:time"]);
-        Assert.Equal("2017-06-08T06:47:02-0600", configuration["git:commit:time"]);
-    }
+        json.Should().BeJson("""
+            {
+              "git": {
+                "build": {
+                  "user": {
+                    "name": "John Doe"
+                  }
+                },
+                "commit": {
+                  "id": "",
+                  "message": {
+                    "short": "Changed A=B=C"
+                  }
+                }
+              }
+            }
+            """);
 
-    [Fact]
-    public async Task ContributeWithNullBuilderThrows()
-    {
-        // Uses git.properties file in test project
-        var contributor = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await contributor.ContributeAsync(null!, TestContext.Current.CancellationToken));
-    }
-
-    [Fact]
-    public async Task ContributeAddsToBuilder()
-    {
-        // Uses git.properties file in test project
-        var contributor = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
-        var builder = new InfoBuilder();
-        await contributor.ContributeAsync(builder, TestContext.Current.CancellationToken);
-
-        IDictionary<string, object> result = builder.Build();
-        Assert.NotNull(result);
-        var gitDictionary = result["git"] as Dictionary<string, object>;
-        Assert.NotNull(gitDictionary);
-        Assert.Equal(7, gitDictionary.Count);
-        Assert.True(gitDictionary.ContainsKey("build"));
-        Assert.True(gitDictionary.ContainsKey("branch"));
-        Assert.True(gitDictionary.ContainsKey("commit"));
-        Assert.True(gitDictionary.ContainsKey("closest"));
-        Assert.True(gitDictionary.ContainsKey("dirty"));
-        Assert.True(gitDictionary.ContainsKey("remote"));
-        Assert.True(gitDictionary.ContainsKey("tags"));
-
-        var gitBuildDictionary = gitDictionary["build"] as Dictionary<string, object>;
-        Assert.NotNull(gitBuildDictionary);
-        Assert.True(gitBuildDictionary.ContainsKey("time"));
-
-        // Verify that datetime values are normalized correctly
-        object gitBuildTime = gitBuildDictionary["time"];
-        Assert.Equal(DateTime.Parse("2017-07-12T18:40:39Z", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal), gitBuildTime);
-
-        var gitCommitDictionary = gitDictionary["commit"] as Dictionary<string, object>;
-        Assert.NotNull(gitCommitDictionary);
-        Assert.True(gitCommitDictionary.ContainsKey("time"));
-
-        // Verify that datetime values are normalized correctly
-        object gitCommitTime = gitCommitDictionary["time"];
-        Assert.Equal(DateTime.Parse("2017-06-08T12:47:02Z", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal), gitCommitTime);
+        loggerProvider.GetAsText().Should().BeEmpty();
     }
 }

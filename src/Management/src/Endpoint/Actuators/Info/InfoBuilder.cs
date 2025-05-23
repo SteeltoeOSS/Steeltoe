@@ -6,14 +6,14 @@ namespace Steeltoe.Management.Endpoint.Actuators.Info;
 
 public sealed class InfoBuilder
 {
-    private readonly Dictionary<string, object> _info = [];
+    private readonly Dictionary<string, object?> _info = [];
 
-    public IDictionary<string, object> Build()
+    public IDictionary<string, object?> Build()
     {
         return _info;
     }
 
-    public InfoBuilder WithInfo(string key, object value)
+    public InfoBuilder WithInfo(string key, object? value)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
 
@@ -22,13 +22,13 @@ public sealed class InfoBuilder
         return this;
     }
 
-    public InfoBuilder WithInfo(IDictionary<string, object> details)
+    public InfoBuilder WithInfo(IDictionary<string, object?> details)
     {
         ArgumentNullException.ThrowIfNull(details);
 
-        foreach (KeyValuePair<string, object> pair in details)
+        foreach ((string key, object? value) in details)
         {
-            _info[pair.Key] = pair.Value;
+            _info[key] = value;
         }
 
         return this;

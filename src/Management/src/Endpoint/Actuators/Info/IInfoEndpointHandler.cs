@@ -4,4 +4,4 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.Info;
 
-public interface IInfoEndpointHandler : IEndpointHandler<object?, IDictionary<string, object>>;
+public interface IInfoEndpointHandler : IEndpointHandler<object?, IDictionary<string, object?>>;

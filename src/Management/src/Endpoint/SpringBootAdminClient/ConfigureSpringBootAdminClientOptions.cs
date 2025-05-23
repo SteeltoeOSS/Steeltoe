@@ -9,11 +9,9 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
 internal sealed class ConfigureSpringBootAdminClientOptions : IConfigureOptionsWithKey<SpringBootAdminClientOptions>
 {
-    private const string ManagementInfoPrefix = "spring:boot:admin:client";
-
     private readonly IConfiguration _configuration;
 
-    public string ConfigurationKey => ManagementInfoPrefix;
+    public string ConfigurationKey => "Spring:Boot:Admin:Client";
 
     public ConfigureSpringBootAdminClientOptions(IConfiguration configuration)
     {
@@ -24,6 +22,6 @@ internal sealed class ConfigureSpringBootAdminClientOptions : IConfigureOptionsW
 
     public void Configure(SpringBootAdminClientOptions options)
     {
-        _configuration.GetSection(ManagementInfoPrefix).Bind(options);
+        _configuration.GetSection(ConfigurationKey).Bind(options);
     }
 }

@@ -9,10 +9,9 @@ namespace Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 
 internal sealed class ConfigurePingContributorOptions : IConfigureOptionsWithKey<PingContributorOptions>
 {
-    private const string ManagementInfoPrefix = "management:endpoints:health:ping";
     private readonly IConfiguration _configuration;
 
-    public string ConfigurationKey => ManagementInfoPrefix;
+    public string ConfigurationKey => "Management:Endpoints:Health:Ping";
 
     public ConfigurePingContributorOptions(IConfiguration configuration)
     {
@@ -25,6 +24,6 @@ internal sealed class ConfigurePingContributorOptions : IConfigureOptionsWithKey
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        _configuration.GetSection(ManagementInfoPrefix).Bind(options);
+        _configuration.GetSection(ConfigurationKey).Bind(options);
     }
 }
