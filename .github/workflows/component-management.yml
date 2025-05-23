@@ -14,22 +14,26 @@ on:
     - src/Management/**
     - src/Steeltoe.Management.slnf
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   linux:
     uses: ./.github/workflows/component-shared-workflow.yml
     with:
       component: Management
-      os: ubuntu
+      OS: ubuntu
 
   macos:
     uses: ./.github/workflows/component-shared-workflow.yml
     with:
       component: Management
-      os: macos
+      OS: macos
       skipFilter: --filter "Category!=SkipOnMacOS"
 
   windows:
     uses: ./.github/workflows/component-shared-workflow.yml
     with:
       component: Management
-      os: windows
+      OS: windows

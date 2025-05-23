@@ -14,14 +14,18 @@ on:
     - src/Security/**
     - src/Steeltoe.Security.slnf
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   linux:
     uses: ./.github/workflows/component-shared-workflow.yml
     with:
       component: Security
-      os: ubuntu
+      OS: ubuntu
   windows:
     uses: ./.github/workflows/component-shared-workflow.yml
     with:
       component: Security
-      os: windows
+      OS: windows

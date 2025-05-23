@@ -14,11 +14,29 @@ on:
       skipFilter:
         required: false
         type: string
-
+      runConfigServer:
+        required: false
+        type: boolean
+        default: false
 jobs:
   build:
     name: Build ${{ inputs.component }} on ${{ inputs.OS }}
     runs-on: ${{ inputs.OS }}-latest
+
+    services:
+      configserver:
+        image: ${{ inputs.runConfigServer && 'steeltoe.azurecr.io/config-server' || null }}
+        env:
+          eureka.client.enabled: true
+          eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
+          eureka.instance.hostname: localhost
+          eureka.instance.instanceId: localhost:configserver:8888
+        ports:
+          - 8888:8888
+      eureka:
+        image: ${{ inputs.runConfigServer && 'steeltoe.azurecr.io/eureka-server' || null }}
+        ports:
+          - 8888:8888
 
     env:
       DOTNET_NOLOGO: true

@@ -14,79 +14,14 @@ on:
     - src/Configuration/**
     - src/Steeltoe.Configuration.slnf
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   linux:
-    runs-on: ubuntu-latest
-
-    env:
-      DOTNET_NOLOGO: true
-      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    uses: ./.github/workflows/component-shared-workflow.yml
+    with:
+      component: Configuration
       OS: ubuntu
-      SolutionFile: src/Steeltoe.Configuration.slnf
-      CommonTestArgs: >-
-        --no-build --configuration Release --blame-crash --blame-hang-timeout 3m
-        --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory ${{ github.workspace }}
-    services:
-      configServer:
-        image: steeltoe.azurecr.io/config-server
-        env:
-          eureka.client.enabled: true
-          eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
-          eureka.instance.hostname: localhost
-          eureka.instance.instanceId: localhost:configserver:8888
-        ports:
-          - 8888:8888
-
-      eurekaServer:
-        image: steeltoe.azurecr.io/eureka-server
-        ports:
-          - 8761:8761
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: |
-            8.0.*
-            9.0.*
-
-      - name: Set package version
-        run: nbgv cloud
-
-      - name: Restore dependencies
-        run: dotnet restore ${{ env.SolutionFile }} --verbosity minimal --configfile nuget.config
-
-      - name: Build solution
-        run: dotnet build ${{ env.SolutionFile }} --no-restore --configuration Release --verbosity minimal
-
-      - name: Test (net8.0)
-        run: dotnet test ${{ env.SolutionFile }} --framework net8.0 ${{ env.CommonTestArgs }}
-
-      - name: Test (net9.0)
-        run: dotnet test ${{ env.SolutionFile }} --framework net9.0 ${{ env.CommonTestArgs }}
-
-      - name: Upload hang dumps (on failure)
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: FailedTestOutput-${{ env.OS }}
-          path: '**/*.dmp'
-
-      - name: Publish test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: TestResults-${{ env.OS }}
-          path: '**/*.trx'
-
-      - name: Report test results
-        uses: dorny/test-reporter@v2
-        with:
-          artifact: TestResults-${{ env.OS }}
-          name: ${{ env.OS }} test results
-          reporter: dotnet-trx
-          path: '*.trx'
+      runConfigServer: true
