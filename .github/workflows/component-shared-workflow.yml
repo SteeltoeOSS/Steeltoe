@@ -18,6 +18,11 @@ on:
         required: false
         type: boolean
         default: false
+
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   build:
     name: Build ${{ inputs.component }} on ${{ inputs.OS }}
