@@ -24,6 +24,10 @@ jobs:
     runs-on: ${{ inputs.OS }}-latest
 
     services:
+      eureka:
+        image: ${{ inputs.runConfigServer && 'steeltoe.azurecr.io/eureka-server' || null }}
+        ports:
+          - 8761:8761
       configserver:
         image: ${{ inputs.runConfigServer && 'steeltoe.azurecr.io/config-server' || null }}
         env:
@@ -33,10 +37,6 @@ jobs:
           eureka.instance.instanceId: localhost:configserver:8888
         ports:
           - 8888:8888
-      eureka:
-        image: ${{ inputs.runConfigServer && 'steeltoe.azurecr.io/eureka-server' || null }}
-        ports:
-          - 8761:8761
 
     env:
       DOTNET_NOLOGO: true
