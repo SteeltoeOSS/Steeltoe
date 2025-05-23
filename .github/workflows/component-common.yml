@@ -1,0 +1,32 @@
+name: Steeltoe.Common
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+    - .editorconfig
+    - stylecop.json
+    - '*.props'
+    - '*.ruleset'
+    - .config/dotnet-tools.json
+    - .github/workflows/component-shared-workflow.yml
+    - .github/workflows/component-common.yml
+    - src/Common/**
+    - src/Steeltoe.Common.slnf
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux:
+    uses: ./.github/workflows/component-shared-workflow.yml
+    with:
+      component: Common
+      OS: ubuntu
+
+  windows:
+    uses: ./.github/workflows/component-shared-workflow.yml
+    with:
+      component: Common
+      OS: windows

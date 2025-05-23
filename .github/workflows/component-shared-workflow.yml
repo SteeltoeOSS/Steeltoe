@@ -1,0 +1,113 @@
+# .github/workflows/component-shared-workflow.yml
+
+name: Component Build
+
+on:
+  workflow_call:
+    inputs:
+      component:
+        required: true
+        type: string
+      OS:
+        required: true
+        type: string
+      skipFilter:
+        required: false
+        type: string
+      runConfigServer:
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  build:
+    name: Build ${{ inputs.component }} on ${{ inputs.OS }}
+    runs-on: ${{ inputs.OS }}-latest
+
+    services:
+      eurekaServer:
+        image: ${{ inputs.runConfigServer && 'steeltoe.azurecr.io/eureka-server' || null }}
+        ports:
+          - 8761:8761
+      configServer:
+        image: ${{ inputs.runConfigServer && 'steeltoe.azurecr.io/config-server' || null }}
+        env:
+          eureka.client.enabled: true
+          eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
+          eureka.instance.hostname: localhost
+          eureka.instance.instanceId: localhost:configServer:8888
+        ports:
+          - 8888:8888
+
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_GENERATE_ASPNET_CERTIFICATE: ${{ inputs.OS == 'macOS' && 'false' || '' }}
+      SolutionFile: src/Steeltoe.${{ inputs.component }}.slnf
+      CommonTestArgs: >-
+        --no-build --configuration Release --blame-crash --blame-hang-timeout 3m
+        --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory ${{ github.workspace }}
+      SkipFilterWithoutMemoryDumps: ${{ inputs.skipFilter && format('--filter "{0}&Category!=MemoryDumps"', inputs.skipFilter) || '--filter "Category!=MemoryDumps"' }}
+      SkipFilterWithMemoryDumps: ${{ inputs.skipFilter && format('--filter "{0}&Category=MemoryDumps"', inputs.skipFilter) || '--filter "Category=MemoryDumps"' }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.*
+            9.0.*
+
+      - name: Install Nerdbank.GitVersioning (macOS only)
+        if: ${{ inputs.OS == 'macos' }}
+        run: dotnet tool install --global nbgv
+
+      - name: Set package version
+        run: nbgv cloud
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SolutionFile }} --verbosity minimal
+
+      - name: Build solution
+        run: dotnet build ${{ env.SolutionFile }} --no-restore --configuration Release --verbosity minimal
+
+      - name: Test (net8.0)
+        run: dotnet test ${{ env.SolutionFile }} --framework net8.0 ${{ env.SkipFilterWithoutMemoryDumps }} ${{ env.CommonTestArgs }}
+
+      - name: Test (net8.0) (memory dumps)
+        if: ${{ inputs.component == 'Management' }}
+        run: dotnet test ${{ env.SolutionFile }} --framework net8.0 ${{ env.SkipFilterWithMemoryDumps }} ${{ env.CommonTestArgs }}
+
+      - name: Test (net9.0)
+        run: dotnet test ${{ env.SolutionFile }} --framework net9.0 ${{ env.SkipFilterWithoutMemoryDumps }} ${{ env.CommonTestArgs }}
+
+      - name: dotnet test net9.0 (memory dumps)
+        if: ${{ inputs.component == 'Management' }}
+        run: dotnet test ${{ env.SolutionFile }} --framework net9.0 ${{ env.SkipFilterWithMemoryDumps }} ${{ env.CommonTestArgs }}
+
+      - name: Upload hang dumps (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: FailedTestOutput-${{ inputs.OS }}
+          path: '**/*.dmp'
+          if-no-files-found: ignore
+
+      - name: Report test results
+        if: always()
+        uses: dorny/test-reporter@v2
+        with:
+          name: ${{ inputs.OS }} test results
+          reporter: dotnet-trx
+          path: '**/*.trx'
+          fail-on-empty: 'true'
+          fail-on-error: 'false'
