@@ -94,6 +94,7 @@ jobs:
           path: '**/*.trx'
 
       - name: Report test results
+        if: always()
         uses: dorny/test-reporter@v2
         with:
           artifact: TestResults-${{ inputs.OS }}
