@@ -24,17 +24,17 @@ jobs:
     runs-on: ${{ inputs.OS }}-latest
 
     services:
-      eureka:
+      eurekaServer:
         image: ${{ inputs.runConfigServer && 'steeltoe.azurecr.io/eureka-server' || null }}
         ports:
           - 8761:8761
-      configserver:
+      configServer:
         image: ${{ inputs.runConfigServer && 'steeltoe.azurecr.io/config-server' || null }}
         env:
           eureka.client.enabled: true
           eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
           eureka.instance.hostname: localhost
-          eureka.instance.instanceId: localhost:configserver:8888
+          eureka.instance.instanceId: localhost:configServer:8888
         ports:
           - 8888:8888
 
@@ -51,6 +51,7 @@ jobs:
       - name: Pause for discovery-first Config Server startup
         if: ${{ inputs.runConfigServer }}
         run: sleep 30
+
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
