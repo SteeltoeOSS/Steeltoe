@@ -17,12 +17,6 @@ namespace Steeltoe.Management.Tasks.Test;
 public sealed class TaskHostExtensionsTest
 {
     [Fact]
-    public void Fail_Always()
-    {
-        true.Should().BeFalse();
-    }
-
-    [Fact]
     public async Task WebApplication_RunsApp()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
