@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
+using Steeltoe.Management.Endpoint.Actuators.Health.Contributors.FileSystem;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health;
 
@@ -57,6 +58,7 @@ public static class EndpointServiceCollectionExtensions
 
     private static void RegisterDefaultHealthContributors(IServiceCollection services)
     {
+        services.TryAddSingleton<IDiskSpaceProvider, DiskSpaceProvider>();
         services.ConfigureOptionsWithChangeTokenSource<DiskSpaceContributorOptions, ConfigureDiskSpaceContributorOptions>();
         AddHealthContributor<DiskSpaceHealthContributor>(services);
 

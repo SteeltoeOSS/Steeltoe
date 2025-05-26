@@ -12,6 +12,7 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
+using Steeltoe.Management.Endpoint.Actuators.Health.Contributors.FileSystem;
 using Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
 using MicrosoftHealth = Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -139,7 +140,10 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     {
         using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
-        List<IHealthContributor> contributors = [new DiskSpaceHealthContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>())];
+        List<IHealthContributor> contributors =
+        [
+            new DiskSpaceHealthContributor(new DiskSpaceProvider(), GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>())
+        ];
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -189,7 +193,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         List<IHealthContributor> contributors =
         [
-            new DiskSpaceHealthContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>()),
+            new DiskSpaceHealthContributor(new DiskSpaceProvider(), GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>()),
             new LivenessStateHealthContributor(appAvailability, optionsMonitor, NullLoggerFactory.Instance)
         ];
 

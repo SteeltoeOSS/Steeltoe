@@ -7,6 +7,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
+using Steeltoe.Management.Endpoint.Actuators.Health.Contributors.FileSystem;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.Contributors;
 
@@ -16,7 +17,7 @@ public sealed class DiskSpaceHealthContributorTest : BaseTest
     public void Constructor_InitializesWithDefaults()
     {
         IOptionsMonitor<DiskSpaceContributorOptions> optionsMonitor = GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>();
-        var contributor = new DiskSpaceHealthContributor(optionsMonitor);
+        var contributor = new DiskSpaceHealthContributor(new DiskSpaceProvider(), optionsMonitor);
         Assert.Equal("diskSpace", contributor.Id);
     }
 
@@ -24,7 +25,7 @@ public sealed class DiskSpaceHealthContributorTest : BaseTest
     public async Task Health_InitializedWithDefaults_ReturnsExpected()
     {
         IOptionsMonitor<DiskSpaceContributorOptions> optionsMonitor = GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>();
-        var contributor = new DiskSpaceHealthContributor(optionsMonitor);
+        var contributor = new DiskSpaceHealthContributor(new DiskSpaceProvider(), optionsMonitor);
         Assert.Equal("diskSpace", contributor.Id);
         HealthCheckResult? result = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
         Assert.NotNull(result);
@@ -45,7 +46,7 @@ public sealed class DiskSpaceHealthContributorTest : BaseTest
             Path = OperatingSystem.IsWindows() ? @"C:\does-not-exist" : "/does/not/exist"
         });
 
-        var contributor = new DiskSpaceHealthContributor(optionsMonitor);
+        var contributor = new DiskSpaceHealthContributor(new DiskSpaceProvider(), optionsMonitor);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
@@ -86,20 +87,20 @@ public sealed class DiskSpaceHealthContributorTest : BaseTest
             return;
         }
 
-        DriveInfo[] systemDrives = OperatingSystem.IsWindows()
+        DriveInfoWrapper[] systemDrives = OperatingSystem.IsWindows()
             ?
             [
-                new DriveInfo(@"C:\"),
-                new DriveInfo(@"D:\")
+                new DriveInfoWrapper(new DriveInfo(@"C:\")),
+                new DriveInfoWrapper(new DriveInfo(@"D:\"))
             ]
             :
             [
-                new DriveInfo("/"),
-                new DriveInfo("/dev"),
-                new DriveInfo("/dev/shm")
+                new DriveInfoWrapper(new DriveInfo("/")),
+                new DriveInfoWrapper(new DriveInfo("/dev")),
+                new DriveInfoWrapper(new DriveInfo("/dev/shm"))
             ];
 
-        DriveInfo? drive = DiskSpaceHealthContributor.FindVolume(path, systemDrives);
+        IDriveInfoWrapper? drive = DiskSpaceHealthContributor.FindVolume(path, systemDrives);
 
         if (expected == null)
         {
@@ -123,7 +124,7 @@ public sealed class DiskSpaceHealthContributorTest : BaseTest
             };
 
             IOptionsMonitor<DiskSpaceContributorOptions> optionsMonitor = GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>(settings);
-            var contributor = new DiskSpaceHealthContributor(optionsMonitor);
+            var contributor = new DiskSpaceHealthContributor(new DiskSpaceProvider(), optionsMonitor);
             Assert.Equal("diskSpace", contributor.Id);
             HealthCheckResult? result = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
             Assert.NotNull(result);

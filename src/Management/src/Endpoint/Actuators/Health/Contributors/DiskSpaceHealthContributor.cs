@@ -3,21 +3,24 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.Actuators.Health.Contributors.FileSystem;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 
 internal sealed class DiskSpaceHealthContributor : IHealthContributor
 {
+    private readonly IDiskSpaceProvider _diskSpaceProvider;
     private readonly IOptionsMonitor<DiskSpaceContributorOptions> _optionsMonitor;
 
     public string Id => "diskSpace";
 
-    public DiskSpaceHealthContributor(IOptionsMonitor<DiskSpaceContributorOptions> optionsMonitor)
+    public DiskSpaceHealthContributor(IDiskSpaceProvider diskSpaceProvider, IOptionsMonitor<DiskSpaceContributorOptions> optionsMonitor)
     {
+        ArgumentNullException.ThrowIfNull(diskSpaceProvider);
         ArgumentNullException.ThrowIfNull(optionsMonitor);
 
+        _diskSpaceProvider = diskSpaceProvider;
         _optionsMonitor = optionsMonitor;
     }
 
@@ -71,40 +74,46 @@ internal sealed class DiskSpaceHealthContributor : IHealthContributor
         return unknownDiskHealth;
     }
 
-    private static HealthCheckResult? GetNetworkDiskSpaceHealth(DiskSpaceContributorOptions options)
+    private HealthCheckResult? GetNetworkDiskSpaceHealth(DiskSpaceContributorOptions options)
     {
-        if (Platform.IsWindows && options.Path?.StartsWith(@"\\", StringComparison.Ordinal) == true)
+        if (_diskSpaceProvider.IsRunningOnWindows && options.Path?.StartsWith(@"\\", StringComparison.Ordinal) == true)
         {
-            bool directoryExists = Directory.Exists(options.Path);
+            IDirectoryInfoWrapper directoryInfo = _diskSpaceProvider.GetDirectoryInfo(options.Path);
 
-            if (directoryExists && NativeMethods.GetDiskFreeSpaceEx(options.Path, out ulong freeBytesAvailable, out ulong totalNumberOfBytes, out _))
+            if (directoryInfo.Exists)
             {
-                return new HealthCheckResult
+                INetworkShareWrapper? networkShare = _diskSpaceProvider.TryGetNetworkShare(options.Path);
+
+                if (networkShare != null)
                 {
-                    Status = freeBytesAvailable >= (ulong)options.Threshold ? HealthStatus.Up : HealthStatus.Down,
-                    Details =
+                    return new HealthCheckResult
                     {
-                        ["total"] = totalNumberOfBytes,
-                        ["free"] = freeBytesAvailable,
-                        ["threshold"] = options.Threshold,
-                        ["path"] = options.Path,
-                        ["exists"] = true
-                    }
-                };
+                        Status = networkShare.FreeBytesAvailable >= (ulong)options.Threshold ? HealthStatus.Up : HealthStatus.Down,
+                        Details =
+                        {
+                            ["total"] = networkShare.TotalNumberOfBytes,
+                            ["free"] = networkShare.FreeBytesAvailable,
+                            ["threshold"] = options.Threshold,
+                            ["path"] = options.Path,
+                            ["exists"] = true
+                        }
+                    };
+                }
             }
         }
 
         return null;
     }
 
-    private static HealthCheckResult? GetLocalDiskSpaceHealth(DiskSpaceContributorOptions options)
+    private HealthCheckResult? GetLocalDiskSpaceHealth(DiskSpaceContributorOptions options)
     {
         string absolutePath = Path.GetFullPath(options.Path!);
+        var directoryInfo = _diskSpaceProvider.GetDirectoryInfo(absolutePath);
 
-        if (Directory.Exists(absolutePath))
+        if (directoryInfo.Exists)
         {
-            DriveInfo[] systemDrives = DriveInfo.GetDrives();
-            DriveInfo? driveInfo = FindVolume(absolutePath, systemDrives);
+            IList<IDriveInfoWrapper> systemDrives = _diskSpaceProvider.GetDrives();
+            IDriveInfoWrapper? driveInfo = FindVolume(absolutePath, systemDrives);
 
             if (driveInfo != null)
             {
@@ -128,12 +137,12 @@ internal sealed class DiskSpaceHealthContributor : IHealthContributor
         return null;
     }
 
-    internal static DriveInfo? FindVolume(string absolutePath, IEnumerable<DriveInfo> systemDrives)
+    internal static IDriveInfoWrapper? FindVolume(string absolutePath, IEnumerable<IDriveInfoWrapper> systemDrives)
     {
         // Prefer to match "/mnt/data/path/to/directory" against "/mnt/data" over "/".
-        DriveInfo? longestMatch = null;
+        IDriveInfoWrapper? longestMatch = null;
 
-        foreach (DriveInfo drive in systemDrives)
+        foreach (IDriveInfoWrapper drive in systemDrives)
         {
             string volumePath = drive.RootDirectory.FullName;
 
