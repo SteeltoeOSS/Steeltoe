@@ -112,20 +112,12 @@ internal sealed class HealthAggregator : IHealthAggregator
             IHealthCheck check = registration.Factory(serviceProvider);
             MicrosoftHealthCheckResult result = await check.CheckHealthAsync(context, cancellationToken);
 
-            SteeltoeHealthStatus status = ToHealthStatus(result.Status);
-            healthCheckResult.Status = status; // Only used for aggregate, doesn't get reported
+            healthCheckResult.Status = ToHealthStatus(result.Status);
             healthCheckResult.Description = result.Description;
 
             foreach ((string key, object value) in result.Data)
             {
                 healthCheckResult.Details[key] = value;
-            }
-
-            healthCheckResult.Details["status"] = status.ToSnakeCaseString(SnakeCaseStyle.AllCaps);
-
-            if (result.Description != null)
-            {
-                healthCheckResult.Details.Add("description", result.Description);
             }
 
             if (result.Exception != null && !string.IsNullOrEmpty(result.Exception.Message))
