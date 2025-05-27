@@ -10,7 +10,7 @@ on:
     - '*.ruleset'
     - .config/dotnet-tools.json
     - .github/workflows/component-shared-workflow.yml
-    - .github/workflows/component-Security.yml
+    - .github/workflows/component-security.yml
     - src/Security/**
     - src/Steeltoe.Security.slnf
 

@@ -10,7 +10,7 @@ on:
     - '*.ruleset'
     - .config/dotnet-tools.json
     - .github/workflows/component-shared-workflow.yml
-    - .github/workflows/component-Logging.yml
+    - .github/workflows/component-logging.yml
     - src/Logging/**
     - src/Steeltoe.Logging.slnf
 

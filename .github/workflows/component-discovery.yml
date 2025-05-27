@@ -10,7 +10,7 @@ on:
     - '*.ruleset'
     - .config/dotnet-tools.json
     - .github/workflows/component-shared-workflow.yml
-    - .github/workflows/component-Discovery.yml
+    - .github/workflows/component-discovery.yml
     - src/Discovery/**
     - src/Steeltoe.Discovery.slnf
 
