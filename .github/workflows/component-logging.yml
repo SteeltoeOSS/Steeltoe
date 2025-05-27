@@ -1,0 +1,26 @@
+name: Steeltoe.Logging
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+    - .editorconfig
+    - stylecop.json
+    - '*.props'
+    - '*.ruleset'
+    - .config/dotnet-tools.json
+    - .github/workflows/component-shared-workflow.yml
+    - .github/workflows/component-logging.yml
+    - src/Logging/**
+    - src/Steeltoe.Logging.slnf
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux:
+    uses: ./.github/workflows/component-shared-workflow.yml
+    with:
+      component: Logging
+      OS: ubuntu

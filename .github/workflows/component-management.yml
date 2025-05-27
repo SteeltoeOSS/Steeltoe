@@ -1,0 +1,39 @@
+name: Steeltoe.Management
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+    - .editorconfig
+    - stylecop.json
+    - '*.props'
+    - '*.ruleset'
+    - .config/dotnet-tools.json
+    - .github/workflows/component-shared-workflow.yml
+    - .github/workflows/component-management.yml
+    - src/Management/**
+    - src/Steeltoe.Management.slnf
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux:
+    uses: ./.github/workflows/component-shared-workflow.yml
+    with:
+      component: Management
+      OS: ubuntu
+
+  macos:
+    uses: ./.github/workflows/component-shared-workflow.yml
+    with:
+      component: Management
+      OS: macos
+      skipFilter: Category!=SkipOnMacOS
+
+  windows:
+    uses: ./.github/workflows/component-shared-workflow.yml
+    with:
+      component: Management
+      OS: windows
