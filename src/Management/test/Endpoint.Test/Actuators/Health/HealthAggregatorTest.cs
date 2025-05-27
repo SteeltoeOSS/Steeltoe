@@ -117,7 +117,7 @@ public sealed class HealthAggregatorTest : BaseTest
     }
 
     [Fact]
-    public async Task Aggregate_MultipleContributor_OrderDoesNotMatter_ReturnsExpectedHealth()
+    public async Task Aggregate_MultipleContributors_OrderDoesNotMatter_ReturnsExpectedHealth()
     {
         List<IHealthContributor> contributors =
         [
@@ -131,9 +131,12 @@ public sealed class HealthAggregatorTest : BaseTest
         SteeltoeHealthCheckResult result = await aggregator.AggregateAsync(contributors, EmptyHealthCheckRegistrations, EmptyServiceProvider,
             TestContext.Current.CancellationToken);
 
-        Assert.NotNull(result);
-        Assert.Equal(SteeltoeHealthStatus.OutOfService, result.Status);
-        Assert.NotEmpty(result.Details);
+        result.Should().NotBeNull();
+        result.Status.Should().Be(SteeltoeHealthStatus.OutOfService);
+        result.Details.Should().HaveCount(3);
+        result.Details.ElementAt(0).Value.Should().BeOfType<SteeltoeHealthCheckResult>().Subject.Status.Should().Be(SteeltoeHealthStatus.OutOfService);
+        result.Details.ElementAt(1).Value.Should().BeOfType<SteeltoeHealthCheckResult>().Subject.Status.Should().Be(SteeltoeHealthStatus.Unknown);
+        result.Details.ElementAt(2).Value.Should().BeOfType<SteeltoeHealthCheckResult>().Subject.Status.Should().Be(SteeltoeHealthStatus.Up);
     }
 
     [Fact]

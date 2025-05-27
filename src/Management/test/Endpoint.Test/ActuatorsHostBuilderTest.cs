@@ -173,8 +173,28 @@ public sealed class ActuatorsHostBuilderTest
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
-        responseText.Should().Be("""
-            {"status":"UP","components":{"ping":{"status":"UP"},"diskSpace":{"status":"UP"},"readinessState":{"status":"UP"},"livenessState":{"status":"UP"}},"groups":["liveness","readiness"]}
+        responseText.Should().BeJson("""
+            {
+              "status": "UP",
+              "components": {
+                "diskSpace": {
+                  "status": "UP"
+                },
+                "livenessState": {
+                  "status": "UP"
+                },
+                "ping": {
+                  "status": "UP"
+                },
+                "readinessState": {
+                  "status": "UP"
+                }
+              },
+              "groups": [
+                "liveness",
+                "readiness"
+              ]
+            }
             """);
     }
 
@@ -237,8 +257,21 @@ public sealed class ActuatorsHostBuilderTest
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
-        responseText.Should().Be("""
-            {"status":"DOWN","components":{"alwaysDown":{"status":"DOWN"},"ping":{"status":"UP"},"diskSpace":{"status":"UP"}}}
+        responseText.Should().BeJson("""
+            {
+              "status": "DOWN",
+              "components": {
+                "alwaysDown": {
+                  "status": "DOWN"
+                },
+                "diskSpace": {
+                  "status": "UP"
+                },
+                "ping": {
+                  "status": "UP"
+                }
+              }
+            }
             """);
     }
 
