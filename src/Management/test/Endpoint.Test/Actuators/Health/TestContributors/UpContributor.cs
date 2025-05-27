@@ -8,25 +8,13 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
 
 internal sealed class UpContributor : IHealthContributor
 {
-    private readonly TimeSpan? _sleepTime;
-
     public string Id => "alwaysUp";
 
-    internal UpContributor(TimeSpan? sleepTime = null)
+    public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
-        _sleepTime = sleepTime;
-    }
-
-    public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
-    {
-        if (_sleepTime != null)
-        {
-            await Task.Delay(_sleepTime.Value, cancellationToken);
-        }
-
-        return new HealthCheckResult
+        return Task.FromResult<HealthCheckResult?>(new HealthCheckResult
         {
             Status = HealthStatus.Up
-        };
+        });
     }
 }

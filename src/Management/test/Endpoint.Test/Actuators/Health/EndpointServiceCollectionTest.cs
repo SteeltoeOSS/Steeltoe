@@ -42,8 +42,8 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     public async Task AddHealthContributors_AddsNoDuplicates()
     {
         var services = new ServiceCollection();
-        services.AddHealthContributor<TestHealthContributor>();
-        services.AddHealthContributor<TestHealthContributor>();
+        services.AddHealthContributor<UpContributor>();
+        services.AddHealthContributor<UpContributor>();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 

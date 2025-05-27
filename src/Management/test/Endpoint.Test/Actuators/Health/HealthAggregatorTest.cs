@@ -62,7 +62,7 @@ public sealed class HealthAggregatorTest : BaseTest
     [Fact]
     public async Task Aggregate_SingleCanceledContributor_Throws()
     {
-        List<IHealthContributor> contributors = [new UpContributor(5.Seconds())];
+        List<IHealthContributor> contributors = [new SlowContributor(5.Seconds())];
         using var source = new CancellationTokenSource();
 
         await source.CancelAsync();
@@ -146,9 +146,9 @@ public sealed class HealthAggregatorTest : BaseTest
 
         List<IHealthContributor> contributors =
         [
-            new UpContributor(1.Seconds()),
-            new UpContributor(2.Seconds()),
-            new UpContributor(3.Seconds())
+            new SlowContributor(1.Seconds()),
+            new SlowContributor(2.Seconds()),
+            new SlowContributor(3.Seconds())
         ];
 
         var aggregator = new HealthAggregator();

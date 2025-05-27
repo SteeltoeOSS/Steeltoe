@@ -6,26 +6,13 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
 
-internal sealed class TestHealthContributor(string id = "Test", bool throws = false) : IHealthContributor
+internal sealed class ThrowingContributor : IHealthContributor
 {
-    public string Id { get; } = id;
-    public bool Throws { get; } = throws;
-    public bool Called { get; private set; }
+    public string Id => "alwaysThrowing";
 
     public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         await Task.Yield();
-
-        if (Throws)
-        {
-            throw new InvalidOperationException();
-        }
-
-        Called = true;
-
-        return new HealthCheckResult
-        {
-            Status = HealthStatus.Up
-        };
+        throw new InvalidOperationException();
     }
 }

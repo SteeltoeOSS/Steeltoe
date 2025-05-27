@@ -50,11 +50,11 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     {
         using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
-        List<IHealthContributor> contributors =
+        List<ObservableContributor> contributors =
         [
-            new TestHealthContributor("h1"),
-            new TestHealthContributor("h2"),
-            new TestHealthContributor("h3")
+            new(),
+            new(),
+            new()
         ];
 
         testContext.AdditionalServices = (services, _) =>
@@ -67,9 +67,9 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         HealthEndpointRequest healthRequest = GetHealthRequest();
         await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
 
-        foreach (TestHealthContributor testContributor in contributors.Cast<TestHealthContributor>())
+        foreach (ObservableContributor contributor in contributors)
         {
-            Assert.True(testContributor.Called);
+            contributor.InvocationCount.Should().Be(1);
         }
     }
 
@@ -78,7 +78,7 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
     {
         using var testContext = new SteeltoeTestContext(_testOutputHelper);
 
-        List<IHealthContributor> contributors = [new UpContributor(5.Seconds())];
+        List<IHealthContributor> contributors = [new SlowContributor(5.Seconds())];
 
         testContext.AdditionalServices = (services, _) =>
         {
@@ -104,9 +104,9 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
 
         List<IHealthContributor> contributors =
         [
-            new TestHealthContributor("h1"),
-            new TestHealthContributor("h2", true),
-            new TestHealthContributor("h3", true)
+            new ThrowingContributor(),
+            new ObservableContributor(),
+            new ThrowingContributor()
         ];
 
         testContext.AdditionalServices = (services, _) =>
@@ -120,16 +120,9 @@ public sealed class HealthEndpointTest(ITestOutputHelper testOutputHelper) : Bas
         HealthEndpointRequest healthRequest = GetHealthRequest();
         HealthEndpointResponse info = await handler.InvokeAsync(healthRequest, TestContext.Current.CancellationToken);
 
-        foreach (TestHealthContributor testContributor in contributors.Cast<TestHealthContributor>())
+        foreach (ObservableContributor observableContributor in contributors.OfType<ObservableContributor>())
         {
-            if (testContributor.Throws)
-            {
-                Assert.False(testContributor.Called);
-            }
-            else
-            {
-                Assert.True(testContributor.Called);
-            }
+            observableContributor.InvocationCount.Should().Be(1);
         }
 
         Assert.Equal(HealthStatus.Up, info.Status);
