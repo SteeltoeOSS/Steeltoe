@@ -15,6 +15,23 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.ThreadDump;
 
 public sealed class ThreadDumpActuatorTest
 {
+    private static readonly Dictionary<string, string?> AppSettings = new()
+    {
+        ["Management:Endpoints:Actuator:Exposure:Include:0"] = "threaddump"
+    };
+
+    [Fact]
+    public async Task Registers_required_services()
+    {
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Services.AddThreadDumpActuator();
+        await using WebApplication host = builder.Build();
+
+        var threadDumper = host.Services.GetService<IThreadDumper>();
+
+        threadDumper.Should().BeOfType<EventPipeThreadDumper>();
+    }
+
     [Fact]
     public async Task Configures_default_settings()
     {
@@ -72,14 +89,9 @@ public sealed class ThreadDumpActuatorTest
     [InlineData(HostBuilderType.WebApplication)]
     public async Task Endpoint_returns_expected_data(HostBuilderType hostBuilderType)
     {
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["Management:Endpoints:Actuator:Exposure:Include:0"] = "threaddump"
-        };
-
         await using HostWrapper host = hostBuilderType.Build(builder =>
         {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
 
             builder.ConfigureServices(services =>
             {
