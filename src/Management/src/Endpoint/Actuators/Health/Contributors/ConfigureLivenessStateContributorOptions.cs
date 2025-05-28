@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Configuration;
 
-namespace Steeltoe.Management.Endpoint.Actuators.Health.Availability;
+namespace Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 
 internal sealed class ConfigureLivenessStateContributorOptions : IConfigureOptionsWithKey<LivenessStateContributorOptions>
 {

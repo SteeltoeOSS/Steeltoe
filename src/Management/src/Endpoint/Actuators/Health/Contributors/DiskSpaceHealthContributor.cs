@@ -108,7 +108,7 @@ internal sealed class DiskSpaceHealthContributor : IHealthContributor
     private HealthCheckResult? GetLocalDiskSpaceHealth(DiskSpaceContributorOptions options)
     {
         string absolutePath = Path.GetFullPath(options.Path!);
-        var directoryInfo = _diskSpaceProvider.GetDirectoryInfo(absolutePath);
+        IDirectoryInfoWrapper directoryInfo = _diskSpaceProvider.GetDirectoryInfo(absolutePath);
 
         if (directoryInfo.Exists)
         {

@@ -5,8 +5,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
-namespace Steeltoe.Management.Endpoint.Actuators.Health.Availability;
+namespace Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 
 internal sealed class LivenessStateHealthContributor : AvailabilityStateHealthContributor
 {

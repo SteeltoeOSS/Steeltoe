@@ -111,15 +111,7 @@ Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityEventArgs
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityState
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityState.AvailabilityState(string! value) -> void
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessStateContributorOptions
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessStateContributorOptions.Enabled.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessStateContributorOptions.Enabled.set -> void
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessStateContributorOptions.LivenessStateContributorOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessState
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessStateContributorOptions
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessStateContributorOptions.Enabled.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessStateContributorOptions.Enabled.set -> void
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessStateContributorOptions.ReadinessStateContributorOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorOptions
 Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorOptions.DiskSpaceContributorOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorOptions.Enabled.get -> bool
@@ -128,6 +120,14 @@ Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorO
 Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorOptions.Path.set -> void
 Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorOptions.Threshold.get -> long
 Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorOptions.Threshold.set -> void
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.LivenessStateContributorOptions
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.LivenessStateContributorOptions.Enabled.get -> bool
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.LivenessStateContributorOptions.Enabled.set -> void
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.LivenessStateContributorOptions.LivenessStateContributorOptions() -> void
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.ReadinessStateContributorOptions
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.ReadinessStateContributorOptions.Enabled.get -> bool
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.ReadinessStateContributorOptions.Enabled.set -> void
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.ReadinessStateContributorOptions.ReadinessStateContributorOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.EndpointClaim
 Steeltoe.Management.Endpoint.Actuators.Health.EndpointClaim.EndpointClaim() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.EndpointClaim.Type.get -> string?
