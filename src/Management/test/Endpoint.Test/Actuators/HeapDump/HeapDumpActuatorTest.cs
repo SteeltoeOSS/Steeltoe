@@ -17,6 +17,23 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 
 public sealed class HeapDumpActuatorTest
 {
+    private static readonly Dictionary<string, string?> AppSettings = new()
+    {
+        ["Management:Endpoints:Actuator:Exposure:Include:0"] = "heapdump"
+    };
+
+    [Fact]
+    public async Task Registers_required_services()
+    {
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Services.AddHeapDumpActuator();
+        await using WebApplication host = builder.Build();
+
+        var heapDumper = host.Services.GetService<IHeapDumper>();
+
+        heapDumper.Should().BeOfType<HeapDumper>();
+    }
+
     [Fact]
     public async Task Configures_default_settings()
     {
@@ -89,9 +106,8 @@ public sealed class HeapDumpActuatorTest
     [InlineData(HostBuilderType.WebApplication, HeapDumpType.GCDump)]
     public async Task Endpoint_returns_expected_data(HostBuilderType hostBuilderType, HeapDumpType heapDumpType)
     {
-        var appSettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>(AppSettings)
         {
-            ["Management:Endpoints:Actuator:Exposure:Include:0"] = "heapdump",
             ["Management:Endpoints:HeapDump:HeapDumpType"] = heapDumpType.ToString()
         };
 
