@@ -25,6 +25,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         ["management:endpoints:actuator:exposure:include:0"] = "httpexchanges"
     };
 
+    [Trait("Category", "MemoryDumps")]
     [Fact]
     public async Task HttpExchangesActuator_ReturnsExpectedData()
     {

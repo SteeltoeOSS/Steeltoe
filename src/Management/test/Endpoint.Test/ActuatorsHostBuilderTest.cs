@@ -91,6 +91,7 @@ public sealed class ActuatorsHostBuilderTest
         handler.Mock.VerifyNoOutstandingExpectation();
     }
 
+    [Trait("Category", "MemoryDumps")]
     [Theory]
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
