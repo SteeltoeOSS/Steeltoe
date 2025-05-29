@@ -25,6 +25,7 @@ internal sealed class CloudFoundrySecurityMiddleware
     private readonly RequestDelegate? _next;
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
     private readonly PermissionsProvider _permissionsProvider;
+    private const string BearerTokenPrefix = "Bearer ";
 
     public CloudFoundrySecurityMiddleware(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor, IEnumerable<IEndpointOptionsMonitorProvider> endpointOptionsMonitorProviders,
@@ -101,13 +102,13 @@ internal sealed class CloudFoundrySecurityMiddleware
 
     internal string GetAccessToken(HttpRequest request)
     {
-        if (request.Headers.TryGetValue(PermissionsProvider.AuthorizationHeaderName, out StringValues headerValue))
+        if (request.Headers.TryGetValue(PermissionsProvider.AuthorizationHeaderName, out StringValues authorizationHeaderValue))
         {
-            string header = headerValue.ToString();
+            string authorizationValue = authorizationHeaderValue.ToString();
 
-            if (header.StartsWith(PermissionsProvider.BearerHeaderNamePrefix, StringComparison.OrdinalIgnoreCase))
+            if (authorizationValue.StartsWith(BearerTokenPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                return header[PermissionsProvider.BearerHeaderNamePrefix.Length..];
+                return authorizationValue[BearerTokenPrefix.Length..];
             }
         }
 
