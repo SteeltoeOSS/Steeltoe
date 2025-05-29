@@ -47,18 +47,6 @@ public sealed class PermissionsProviderTest : BaseTest
         result.Should().Be(EndpointPermissions.Full);
     }
 
-    private static PermissionsProvider GetPermissionsProvider()
-    {
-        IOptionsMonitor<CloudFoundryEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
-
-        var services = new ServiceCollection();
-        services.AddCloudFoundryActuator();
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
-
-        return new PermissionsProvider(optionsMonitor, httpClientFactory, NullLogger<PermissionsProvider>.Instance);
-    }
-
     [InlineData("unavailable", HttpStatusCode.ServiceUnavailable, PermissionsProvider.CloudfoundryNotReachableMessage)]
     [InlineData("not-found", HttpStatusCode.Unauthorized, PermissionsProvider.InvalidTokenMessage)]
     [InlineData("unauthorized", HttpStatusCode.Unauthorized, PermissionsProvider.InvalidTokenMessage)]
@@ -106,5 +94,17 @@ public sealed class PermissionsProviderTest : BaseTest
                 result.Permissions.Should().Be(EndpointPermissions.None);
                 break;
         }
+    }
+
+    private static PermissionsProvider GetPermissionsProvider()
+    {
+        IOptionsMonitor<CloudFoundryEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
+
+        var services = new ServiceCollection();
+        services.AddCloudFoundryActuator();
+        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+
+        return new PermissionsProvider(optionsMonitor, httpClientFactory, NullLogger<PermissionsProvider>.Instance);
     }
 }

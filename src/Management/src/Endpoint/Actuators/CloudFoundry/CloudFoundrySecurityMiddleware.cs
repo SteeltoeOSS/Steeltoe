@@ -19,13 +19,13 @@ namespace Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
 internal sealed class CloudFoundrySecurityMiddleware
 {
+    private const string BearerTokenPrefix = "Bearer ";
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _endpointOptionsMonitor;
     private readonly IEndpointOptionsMonitorProvider[] _endpointOptionsMonitorProviderArray;
     private readonly RequestDelegate? _next;
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
     private readonly PermissionsProvider _permissionsProvider;
-    private const string BearerTokenPrefix = "Bearer ";
 
     public CloudFoundrySecurityMiddleware(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor, IEnumerable<IEndpointOptionsMonitorProvider> endpointOptionsMonitorProviders,

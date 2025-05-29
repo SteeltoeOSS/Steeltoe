@@ -18,7 +18,7 @@ internal sealed class FakeServer : IServer
         string? urls = configuration.GetValue<string>("urls");
 
         Features.Set<IServerAddressesFeature>(urls != null
-            ? new FakeServerAddressesFeature(urls.Split(';').ToArray())
+            ? new FakeServerAddressesFeature(urls.Split(';'))
             : new FakeServerAddressesFeature(["http://localhost:5000"]));
     }
 
