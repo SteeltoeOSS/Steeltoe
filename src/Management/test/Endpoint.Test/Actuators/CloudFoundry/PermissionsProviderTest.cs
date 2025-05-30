@@ -78,21 +78,28 @@ public sealed class PermissionsProviderTest : BaseTest
 
         var permissionsProvider = new PermissionsProvider(optionsMonitor, httpClientFactory, NullLogger<PermissionsProvider>.Instance);
 
-        SecurityResult result = await permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken);
-        result.Code.Should().Be(steeltoeStatusCode);
-        result.Message.Should().Be(expectedMessage);
-
-        switch (cloudControllerResponse)
+        if (cloudControllerResponse == "timeout")
         {
-            case "success":
-                result.Permissions.Should().Be(EndpointPermissions.Full);
-                break;
-            case "no_sensitive_data":
-                result.Permissions.Should().Be(EndpointPermissions.Restricted);
-                break;
-            default:
-                result.Permissions.Should().Be(EndpointPermissions.None);
-                break;
+            await Assert.ThrowsAsync<TaskCanceledException>(() => permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken));
+        }
+        else
+        {
+            SecurityResult result = await permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken);
+            result.Code.Should().Be(steeltoeStatusCode);
+            result.Message.Should().Be(expectedMessage);
+
+            switch (cloudControllerResponse)
+            {
+                case "success":
+                    result.Permissions.Should().Be(EndpointPermissions.Full);
+                    break;
+                case "no_sensitive_data":
+                    result.Permissions.Should().Be(EndpointPermissions.Restricted);
+                    break;
+                default:
+                    result.Permissions.Should().Be(EndpointPermissions.None);
+                    break;
+            }
         }
     }
 

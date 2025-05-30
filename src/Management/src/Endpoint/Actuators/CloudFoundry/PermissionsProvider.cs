@@ -94,12 +94,6 @@ internal sealed class PermissionsProvider
 
             return new SecurityResult(HttpStatusCode.InternalServerError, exception.Message);
         }
-        catch (Exception exception)
-        {
-            _logger.LogInformation(exception, "Task cancelled or timed out while obtaining permissions from: {PermissionsUri}", checkPermissionsUri);
-
-            return new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
-        }
     }
 
     public async Task<EndpointPermissions> ParsePermissionsAsync(HttpResponseMessage response, CancellationToken cancellationToken)
