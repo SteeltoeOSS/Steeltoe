@@ -30,6 +30,9 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     private const string CFExceptionLog =
         "FAIL Steeltoe.Management.Endpoint.Actuators.CloudFoundry.PermissionsProvider: Cloud Foundry returned exception while obtaining permissions from: https://example.api.com/v2/apps/exception/permissions";
 
+    private const string CFTimeoutLog =
+        "TRCE Steeltoe.Management.Endpoint.Actuators.CloudFoundry.PermissionsProvider: Task cancelled or timed out while obtaining permissions from: https://example.api.com/v2/apps/timeout/permissions";
+
     private const string MiddlewareForbiddenLog =
         "FAIL Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundrySecurityMiddleware: Actuator Security Error: Forbidden - Access denied";
 
@@ -39,6 +42,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     private const string MiddlewareUnavailableLog =
         "FAIL Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundrySecurityMiddleware: Actuator Security Error: ServiceUnavailable - Cloud controller not reachable";
 
+    private const string CFExceptionMessage = @"Exception of type \u0027System.Net.Http.HttpRequestException\u0027 was thrown.";
     private readonly EnvironmentVariableScope _scope = new("VCAP_APPLICATION", "{}");
 
     [Fact]
@@ -388,11 +392,10 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     [InlineData("unauthorized", HttpStatusCode.Unauthorized, PermissionsProvider.InvalidTokenMessage, MiddlewareUnauthorizedLog, "false")]
     [InlineData("forbidden", HttpStatusCode.Forbidden, PermissionsProvider.AccessDeniedMessage, CFForbiddenLog, "true")]
     [InlineData("forbidden", HttpStatusCode.Forbidden, PermissionsProvider.AccessDeniedMessage, CFForbiddenLog, "false")]
-    [InlineData("timeout", null, null, CFExceptionLog, "true")]
-    [InlineData("timeout", null, null, CFExceptionLog, "false")]
-    [InlineData("exception", HttpStatusCode.InternalServerError, "Exception of type \\u0027System.Net.Http.HttpRequestException\\u0027 was thrown.",
-        CFExceptionLog, "true")]
-    [InlineData("exception", HttpStatusCode.OK, @"Exception of type \u0027System.Net.Http.HttpRequestException\u0027 was thrown.", CFExceptionLog, "false")]
+    [InlineData("timeout", null, null, CFTimeoutLog, "true")]
+    [InlineData("timeout", null, null, CFTimeoutLog, "false")]
+    [InlineData("exception", HttpStatusCode.InternalServerError, CFExceptionMessage, CFExceptionLog, "true")]
+    [InlineData("exception", HttpStatusCode.OK, CFExceptionMessage, CFExceptionLog, "false")]
     [InlineData("no_sensitive_data", HttpStatusCode.OK, null, MiddlewareForbiddenLog, "true")]
     [InlineData("success", HttpStatusCode.OK, null, null, "true")]
     [Theory]
@@ -410,7 +413,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using var loggerProvider = new CapturingLoggerProvider();
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<StartupWithSecurity>();
-        builder.ConfigureLogging(loggingBuilder => loggingBuilder.ClearProviders().AddProvider(loggerProvider));
+        builder.ConfigureLogging(loggingBuilder => loggingBuilder.ClearProviders().AddProvider(loggerProvider).SetMinimumLevel(LogLevel.Trace));
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using IWebHost host = builder.Build();
@@ -428,6 +431,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         {
             HttpResponseMessage response = await client.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
             response.StatusCode.Should().Be(steeltoeStatusCode);
+
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 string errorText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -447,11 +451,12 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
 
                 fullPermissionResponse.StatusCode.Should().Be(cloudControllerResponse == "success" ? HttpStatusCode.OK : HttpStatusCode.Forbidden);
             }
-            if (!string.IsNullOrEmpty(expectedLogs))
-            {
-                string logLines = loggerProvider.GetAsText();
-                logLines.Should().Contain(expectedLogs);
-            }
+        }
+
+        if (!string.IsNullOrEmpty(expectedLogs))
+        {
+            string logLines = loggerProvider.GetAsText();
+            logLines.Should().Contain(expectedLogs);
         }
     }
 

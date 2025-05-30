@@ -88,8 +88,15 @@ internal sealed class PermissionsProvider
             EndpointPermissions permissions = await ParsePermissionsAsync(response, cancellationToken);
             return new SecurityResult(permissions);
         }
-        catch (Exception exception) when (!exception.IsCancellation())
+        catch (Exception exception)
         {
+            if (exception.IsCancellation())
+            {
+                _logger.LogTrace(exception, "Task cancelled or timed out while obtaining permissions from: {PermissionsUri}", checkPermissionsUri);
+
+                throw;
+            }
+
             _logger.LogError(exception, "Cloud Foundry returned exception while obtaining permissions from: {PermissionsUri}", checkPermissionsUri);
 
             return new SecurityResult(HttpStatusCode.InternalServerError, exception.Message);
