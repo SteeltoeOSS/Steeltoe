@@ -28,15 +28,4 @@
     <ProjectReference Include="..\..\src\Endpoint\Steeltoe.Management.Endpoint.csproj" />
     <ProjectReference Include="..\RazorPagesTestWebApp\Steeltoe.Management.Endpoint.RazorPagesTestWebApp.csproj" />
   </ItemGroup>
-
-  <Target Name="DeleteAppSettingsFromRazorPagesTestWebApp" AfterTargets="_CopyOutOfDateSourceItemsToOutputDirectory">
-    <!--
-      The files below get copied to the build output from project Steeltoe.Management.Endpoint.RazorPagesTestWebApp.
-      That must not happen, because their presence affects the tests in this project. For example, setting the
-      minimum log level to Trace on WebApplicationBuilder won't work, because these files overrule log levels.
-      See https://stackoverflow.com/a/66757933.
-    -->
-    <Delete Files="$(TargetDir)appsettings.json"></Delete>
-    <Delete Files="$(TargetDir)appsettings.Development.json"></Delete>
-  </Target>
 </Project>

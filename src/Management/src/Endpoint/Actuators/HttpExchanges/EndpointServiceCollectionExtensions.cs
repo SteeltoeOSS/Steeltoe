@@ -47,10 +47,12 @@ public static class EndpointServiceCollectionExtensions
         services.TryAddSingleton(TimeProvider.System);
         services.TryAddSingleton<DiagnosticsManager>();
         services.AddHostedService<DiagnosticsService>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<DiagnosticObserver, HttpExchangesDiagnosticObserver>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<DiagnosticObserver, DiagnosticObserverHttpExchangeRecorder>());
 
-        services.TryAddSingleton<IHttpExchangesRepository>(serviceProvider =>
-            serviceProvider.GetServices<DiagnosticObserver>().OfType<HttpExchangesDiagnosticObserver>().Single());
+        services.TryAddSingleton<IHttpExchangeRecorder>(serviceProvider =>
+            serviceProvider.GetServices<DiagnosticObserver>().OfType<DiagnosticObserverHttpExchangeRecorder>().Single());
+
+        services.TryAddSingleton<HttpExchangesRepository>();
 
         return services;
     }

@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
-public interface IHttpExchangesRepository
+internal interface IHttpExchangeRecorder
 {
-    HttpExchangesResult GetHttpExchanges();
+    void HandleRecording(Action<HttpExchange> handler);
 }

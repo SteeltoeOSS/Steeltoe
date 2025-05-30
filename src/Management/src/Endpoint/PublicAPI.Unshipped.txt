@@ -190,14 +190,14 @@ Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpType.Triage = 3 -> Steel
 Steeltoe.Management.Endpoint.Actuators.HeapDump.IHeapDumpEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange
-Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.HttpExchange(Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest! request, Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeResponse! response, System.DateTime timestamp, Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal? principal, Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeSession? session, System.TimeSpan timeTaken) -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.HttpExchange(Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest! request, Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeResponse! response, System.DateTime timestamp, Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal? principal, Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeSession? session, System.TimeSpan? timeTaken) -> void
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Principal.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal?
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Request.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest!
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Response.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeResponse!
-Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.SerializedTimeTaken.get -> string!
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.SerializedTimeTaken.get -> string?
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Session.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeSession?
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Timestamp.get -> System.DateTime
-Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.TimeTaken.get -> System.TimeSpan
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.TimeTaken.get -> System.TimeSpan?
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal.HttpExchangePrincipal(string! name) -> void
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal.Name.get -> string!
@@ -242,8 +242,6 @@ Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesResult
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesResult.Exchanges.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange!>!
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesResult.HttpExchangesResult(System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange!>! exchanges) -> void
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.IHttpExchangesEndpointHandler
-Steeltoe.Management.Endpoint.Actuators.HttpExchanges.IHttpExchangesRepository
-Steeltoe.Management.Endpoint.Actuators.HttpExchanges.IHttpExchangesRepository.GetHttpExchanges() -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesResult!
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.HypermediaEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.HypermediaEndpointOptions.HypermediaEndpointOptions() -> void
