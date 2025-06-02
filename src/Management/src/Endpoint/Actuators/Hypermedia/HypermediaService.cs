@@ -70,7 +70,7 @@ internal sealed class HypermediaService
 
         foreach (EndpointOptions endpointOptions in _endpointOptionsMonitorProviders.Select(provider => provider.Get()))
         {
-            if (!endpointOptions.IsEnabled(managementOptions))
+            if (endpointOptions.Id == null || !endpointOptions.IsEnabled(managementOptions))
             {
                 continue;
             }
@@ -82,11 +82,19 @@ internal sealed class HypermediaService
 
             if (endpointOptions.Id == _endpointOptions.Id)
             {
-                selfLink = new Link(baseUrl.ToString());
+                selfLink = CreateLink(baseUrl, basePath, endpointOptions);
             }
             else
             {
-                AddToLinkEntries(baseUrl, basePath, links, endpointOptions);
+                if (links.Entries.ContainsKey(endpointOptions.Id))
+                {
+                    _logger.LogWarning("Duplicate endpoint with ID '{DuplicateEndpointId}' detected.", endpointOptions.Id);
+                }
+                else
+                {
+                    Link link = CreateLink(baseUrl, basePath, endpointOptions);
+                    links.Entries.Add(endpointOptions.Id, link);
+                }
             }
         }
 
@@ -98,24 +106,15 @@ internal sealed class HypermediaService
         return links;
     }
 
-    private void AddToLinkEntries(Uri baseUrl, string? basePath, Links links, EndpointOptions endpointOptions)
+    private static Link CreateLink(Uri baseUrl, string? basePath, EndpointOptions endpointOptions)
     {
-        if (!string.IsNullOrEmpty(endpointOptions.Id))
+        var builder = new UriBuilder(baseUrl)
         {
-            if (!links.Entries.ContainsKey(endpointOptions.Id))
-            {
-                var builder = new UriBuilder(baseUrl)
-                {
-                    Path = endpointOptions.GetEndpointPath(basePath)
-                };
+            Path = endpointOptions.GetEndpointPath(basePath)
+        };
 
-                string linkPath = builder.Uri.ToString();
-                links.Entries.Add(endpointOptions.Id, new Link(linkPath));
-            }
-            else
-            {
-                _logger.LogWarning("Duplicate endpoint ID detected: {DuplicateEndpointId}", endpointOptions.Id);
-            }
-        }
+        string href = builder.Uri.ToString();
+        bool isTemplated = !endpointOptions.RequiresExactMatch();
+        return new Link(href, isTemplated);
     }
 }

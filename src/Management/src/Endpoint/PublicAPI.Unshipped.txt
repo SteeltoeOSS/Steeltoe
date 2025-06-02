@@ -249,8 +249,8 @@ Steeltoe.Management.Endpoint.Actuators.Hypermedia.IHypermediaEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Href.get -> string!
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Href.set -> void
-Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Link(string! href) -> void
-Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Templated.get -> bool
+Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.IsTemplated.get -> bool
+Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Link(string! href, bool isTemplated) -> void
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Links
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Links.Entries.get -> System.Collections.Generic.IDictionary<string!, Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link!>!
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Links.Links() -> void

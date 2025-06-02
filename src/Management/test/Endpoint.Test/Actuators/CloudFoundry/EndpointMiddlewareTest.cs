@@ -97,11 +97,11 @@ public sealed class EndpointMiddlewareTest : BaseTest
                 },
                 "health": {
                   "href": "http://localhost/cloudfoundryapplication/health",
-                  "templated": false
+                  "templated": true
                 },
                 "loggers": {
                   "href": "http://localhost/cloudfoundryapplication/loggers",
-                  "templated": false
+                  "templated": true
                 },
                 "httpexchanges": {
                   "href": "http://localhost/cloudfoundryapplication/httpexchanges",

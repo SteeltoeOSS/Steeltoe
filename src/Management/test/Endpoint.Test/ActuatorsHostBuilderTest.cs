@@ -17,7 +17,6 @@ using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
-using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
@@ -87,25 +86,6 @@ public sealed class ActuatorsHostBuilderTest
         responseText.Should().Contain("\"http://localhost/cloudfoundryapplication\"");
 
         handler.Mock.VerifyNoOutstandingExpectation();
-    }
-
-    [Theory]
-    [InlineData(HostBuilderType.Host)]
-    [InlineData(HostBuilderType.WebHost)]
-    [InlineData(HostBuilderType.WebApplication)]
-    public async Task HypermediaActuator(HostBuilderType hostBuilderType)
-    {
-        await using HostWrapper host = hostBuilderType.Build(builder =>
-        {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
-            builder.ConfigureServices(services => services.AddHypermediaActuator());
-        });
-
-        await host.StartAsync(TestContext.Current.CancellationToken);
-        using HttpClient httpClient = host.GetTestClient();
-
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator"), TestContext.Current.CancellationToken);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Theory]

@@ -5,7 +5,7 @@
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Configuration;
 
-namespace Steeltoe.Management.Endpoint.Test.Actuators.Hypermedia;
+namespace Steeltoe.Management.Endpoint.Test;
 
 public sealed class ActuatorManagementOptionsTest : BaseTest
 {
