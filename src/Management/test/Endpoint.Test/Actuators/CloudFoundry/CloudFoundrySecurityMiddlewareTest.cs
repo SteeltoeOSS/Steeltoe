@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Management.Configuration;
@@ -42,11 +45,16 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     private const string MiddlewareUnavailableLog =
         "FAIL Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundrySecurityMiddleware: Actuator Security Error: ServiceUnavailable - Cloud controller not reachable";
 
-    private const string CFExceptionMessage = @"Exception of type \u0027System.Net.Http.HttpRequestException\u0027 was thrown.";
+    private const string CFExceptionMessage = "Exception of type 'System.Net.Http.HttpRequestException' was thrown.";
+
+    private static readonly string MockAccessToken =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0b3B0YWwuY29tIiwiZXhwIjoxNDI2NDIwODAwLCJhd2Vzb21lIjp0cnVlfQ." +
+        Convert.ToBase64String("signature"u8.ToArray());
+
     private readonly EnvironmentVariableScope _scope = new("VCAP_APPLICATION", "{}");
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_MissingApplicationID_ReturnsServiceUnavailable()
+    public async Task MissingApplicationIdReturnsServiceUnavailable()
     {
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<StartupWithSecurity>();
@@ -66,7 +74,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_MissingCloudFoundryApi_ReturnsServiceUnavailable()
+    public async Task MissingCloudFoundryApiReturnsServiceUnavailable()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -92,7 +100,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_TargetEndpointNotConfigured_DelegatesToEndpointMiddleware()
+    public async Task TargetEndpointNotConfiguredDelegatesToEndpointMiddleware()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -118,7 +126,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_MissingAccessToken_ReturnsUnauthorized()
+    public async Task MissingAccessTokenReturnsUnauthorized()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -145,7 +153,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_UseStatusCodeFromResponseFalse_ReturnsOkAndContent()
+    public async Task UseStatusCodeFromResponseFalseReturnsOkAndContent()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -171,7 +179,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_UseStatusCodeFromResponseFalse_ReturnsUnauthorized()
+    public async Task UseStatusCodeFromResponseFalseReturnsUnauthorized()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -199,7 +207,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfCloudFoundryDisabled()
+    public async Task SkipsSecurityCheckIfCloudFoundryDisabled()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -221,7 +229,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfCloudFoundryActuatorDisabled()
+    public async Task SkipsSecurityCheckIfCloudFoundryActuatorDisabled()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -243,7 +251,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfCloudFoundryActuatorDisabledViaEnvironmentVariable()
+    public async Task SkipsSecurityCheckIfCloudFoundryActuatorDisabledViaEnvironmentVariable()
     {
         using var scope = new EnvironmentVariableScope("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", "False");
 
@@ -262,44 +270,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_InvokeAsync_ReturnsExpected()
-    {
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["management:endpoints:info:enabled"] = "true",
-            ["vcap:application:application_id"] = "foobar",
-            ["vcap:application:cf_api"] = "http://localhost:9999/foo"
-        };
-
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<StartupWithSecurity>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
-
-        using IWebHost host = builder.Build();
-        await host.StartAsync(TestContext.Current.CancellationToken);
-
-        using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication"), TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode); // We expect the authorization to fail, but the FindTargetEndpoint logic to work.
-
-        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""",
-            await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
-
-        Assert.NotNull(response.Content.Headers.ContentType);
-        Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
-
-        HttpResponseMessage response2 = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.Unauthorized, response2.StatusCode);
-
-        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""",
-            await response2.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
-
-        Assert.NotNull(response2.Content.Headers.ContentType);
-        Assert.Equal("application/json", response2.Content.Headers.ContentType.MediaType);
-    }
-
-    [Fact]
-    public async Task GetAccessToken_ReturnsExpected()
+    public async Task GetAccessTokenReturnsExpected()
     {
         IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
@@ -324,7 +295,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task GetPermissions_ReturnsExpected()
+    public async Task GetPermissionsReturnsExpected()
     {
         IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
@@ -346,7 +317,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task Throws_when_Add_method_not_called()
+    public async Task ThrowsWhenAddMethodNotCalled()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         await using WebApplication app = builder.Build();
@@ -356,7 +327,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task Redacts_HTTP_headers()
+    public async Task RedactsHttpHeaders()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -384,30 +355,30 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         logMessages.Should().Contain("Authorization: *");
     }
 
-    [InlineData("unavailable", HttpStatusCode.ServiceUnavailable, PermissionsProvider.CloudfoundryNotReachableMessage, MiddlewareUnavailableLog, "true")]
-    [InlineData("unavailable", HttpStatusCode.OK, PermissionsProvider.CloudfoundryNotReachableMessage, MiddlewareUnavailableLog, "false")]
-    [InlineData("not-found", HttpStatusCode.Unauthorized, PermissionsProvider.InvalidTokenMessage, MiddlewareUnauthorizedLog, "true")]
-    [InlineData("not-found", HttpStatusCode.Unauthorized, PermissionsProvider.InvalidTokenMessage, MiddlewareUnauthorizedLog, "false")]
-    [InlineData("unauthorized", HttpStatusCode.Unauthorized, PermissionsProvider.InvalidTokenMessage, MiddlewareUnauthorizedLog, "true")]
-    [InlineData("unauthorized", HttpStatusCode.Unauthorized, PermissionsProvider.InvalidTokenMessage, MiddlewareUnauthorizedLog, "false")]
-    [InlineData("forbidden", HttpStatusCode.Forbidden, PermissionsProvider.AccessDeniedMessage, CFForbiddenLog, "true")]
-    [InlineData("forbidden", HttpStatusCode.Forbidden, PermissionsProvider.AccessDeniedMessage, CFForbiddenLog, "false")]
-    [InlineData("timeout", null, null, CFTimeoutLog, "true")]
-    [InlineData("timeout", null, null, CFTimeoutLog, "false")]
-    [InlineData("exception", HttpStatusCode.InternalServerError, CFExceptionMessage, CFExceptionLog, "true")]
-    [InlineData("exception", HttpStatusCode.OK, CFExceptionMessage, CFExceptionLog, "false")]
-    [InlineData("no_sensitive_data", HttpStatusCode.OK, null, MiddlewareForbiddenLog, "true")]
-    [InlineData("success", HttpStatusCode.OK, null, null, "true")]
+    [InlineData("unavailable", HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.CloudfoundryNotReachable, MiddlewareUnavailableLog, true)]
+    [InlineData("unavailable", HttpStatusCode.OK, PermissionsProvider.Messages.CloudfoundryNotReachable, MiddlewareUnavailableLog, false)]
+    [InlineData("not-found", HttpStatusCode.Unauthorized, PermissionsProvider.Messages.InvalidToken, MiddlewareUnauthorizedLog, true)]
+    [InlineData("not-found", HttpStatusCode.Unauthorized, PermissionsProvider.Messages.InvalidToken, MiddlewareUnauthorizedLog, false)]
+    [InlineData("unauthorized", HttpStatusCode.Unauthorized, PermissionsProvider.Messages.InvalidToken, MiddlewareUnauthorizedLog, true)]
+    [InlineData("unauthorized", HttpStatusCode.Unauthorized, PermissionsProvider.Messages.InvalidToken, MiddlewareUnauthorizedLog, false)]
+    [InlineData("forbidden", HttpStatusCode.Forbidden, PermissionsProvider.Messages.AccessDenied, CFForbiddenLog, true)]
+    [InlineData("forbidden", HttpStatusCode.Forbidden, PermissionsProvider.Messages.AccessDenied, CFForbiddenLog, false)]
+    [InlineData("timeout", null, null, CFTimeoutLog, true)]
+    [InlineData("timeout", null, null, CFTimeoutLog, false)]
+    [InlineData("exception", HttpStatusCode.InternalServerError, CFExceptionMessage, CFExceptionLog, true)]
+    [InlineData("exception", HttpStatusCode.OK, CFExceptionMessage, CFExceptionLog, false)]
+    [InlineData("no_sensitive_data", HttpStatusCode.OK, null, MiddlewareForbiddenLog, true)]
+    [InlineData("success", HttpStatusCode.OK, null, null, true)]
     [Theory]
-    public async Task CloudControllerScenarioTesting(string cloudControllerResponse, HttpStatusCode? steeltoeStatusCode, string? errorMessage,
-        string? expectedLogs, string useStatusCodeFromResponse)
+    public async Task InvokeAsyncReturnsExpected(string scenario, HttpStatusCode? steeltoeStatusCode, string? errorMessage, string? expectedLogs,
+        bool useStatusCodeFromResponse)
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["vcap:application:application_id"] = cloudControllerResponse,
+            ["vcap:application:application_id"] = scenario,
             ["vcap:application:cf_api"] = "https://example.api.com",
             ["management:endpoints:info:requiredPermissions"] = "FULL",
-            ["management:endpoints:UseStatusCodeFromResponse"] = useStatusCodeFromResponse
+            ["management:endpoints:UseStatusCodeFromResponse"] = useStatusCodeFromResponse.ToString(CultureInfo.InvariantCulture)
         };
 
         using var loggerProvider = new CapturingLoggerProvider();
@@ -417,40 +388,55 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using IWebHost host = builder.Build();
+        host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
-        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken());
+        var hypermediaRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
+        hypermediaRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken);
+        var fullPermissionRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication/info"));
+        fullPermissionRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken);
 
-        if (cloudControllerResponse == "timeout")
+        if (scenario == "timeout")
         {
-            await Assert.ThrowsAsync<TaskCanceledException>(() => client.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken));
+            await Assert.ThrowsAsync<TaskCanceledException>(() => client.SendAsync(hypermediaRequestMessage, TestContext.Current.CancellationToken));
+            await Assert.ThrowsAsync<TaskCanceledException>(() => client.SendAsync(fullPermissionRequestMessage, TestContext.Current.CancellationToken));
         }
         else
         {
-            HttpResponseMessage response = await client.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
+            HttpResponseMessage response = await client.SendAsync(hypermediaRequestMessage, TestContext.Current.CancellationToken);
             response.StatusCode.Should().Be(steeltoeStatusCode);
 
-            if (!string.IsNullOrEmpty(errorMessage))
+            string? jsonErrorValue = JsonValue.Create(errorMessage)?.ToJsonString();
+
+            if (jsonErrorValue != null)
             {
                 string errorText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-                errorText.Should().Be($$"""{"security_error":"{{errorMessage}}"}""");
+                errorText.Should().Be($$"""{"security_error":{{jsonErrorValue}}}""");
             }
             else
             {
                 string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
-                responseBody.Should()
-                    .Be(
-                        """{"type":"steeltoe","_links":{"info":{"href":"http://localhost/cloudfoundryapplication/info","templated":false},"self":{"href":"http://localhost/cloudfoundryapplication","templated":false}}}""");
-
-                var fullPermissionRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication/info"));
-                fullPermissionRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken());
-                HttpResponseMessage fullPermissionResponse = await client.SendAsync(fullPermissionRequest, TestContext.Current.CancellationToken);
-
-                fullPermissionResponse.StatusCode.Should().Be(cloudControllerResponse == "success" ? HttpStatusCode.OK : HttpStatusCode.Forbidden);
+                responseBody.Should().BeJson("""
+                    {
+                        "type":"steeltoe",
+                        "_links":{
+                            "info":{
+                                "href":"http://localhost/cloudfoundryapplication/info",
+                                "templated":false
+                            },
+                            "self":{
+                                "href":"http://localhost/cloudfoundryapplication",
+                                "templated":false
+                            }
+                        }
+                    }
+                    """);
             }
+
+            HttpResponseMessage fullPermissionResponse = await client.SendAsync(fullPermissionRequestMessage, TestContext.Current.CancellationToken);
+            fullPermissionResponse.StatusCode.Should().Be(scenario == "no_sensitive_data" ? HttpStatusCode.Forbidden : steeltoeStatusCode);
         }
 
         if (!string.IsNullOrEmpty(expectedLogs))
@@ -458,12 +444,6 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             string logLines = loggerProvider.GetAsText();
             logLines.Should().Contain(expectedLogs);
         }
-    }
-
-    private static string MockAccessToken()
-    {
-        return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0b3B0YWwuY29tIiwiZXhwIjoxNDI2NDIwODAwLCJhd2Vzb21lIjp0cnVlfQ." +
-            Convert.ToBase64String("signature"u8.ToArray());
     }
 
     protected override void Dispose(bool disposing)

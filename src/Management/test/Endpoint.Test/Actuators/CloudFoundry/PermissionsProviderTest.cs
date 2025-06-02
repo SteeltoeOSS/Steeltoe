@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
@@ -16,7 +17,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
 public sealed class PermissionsProviderTest : BaseTest
 {
     [Fact]
-    public void IsCloudFoundryRequest_ReturnsExpected()
+    public void IsCloudFoundryRequestReturnsExpected()
     {
         Assert.True(PermissionsProvider.IsCloudFoundryRequest("/cloudfoundryapplication"));
         Assert.True(PermissionsProvider.IsCloudFoundryRequest("/cloudfoundryapplication/badpath"));
@@ -28,40 +29,43 @@ public sealed class PermissionsProviderTest : BaseTest
         PermissionsProvider permissionsProvider = GetPermissionsProvider();
         SecurityResult unauthorized = await permissionsProvider.GetPermissionsAsync(string.Empty, TestContext.Current.CancellationToken);
         unauthorized.Code.Should().Be(HttpStatusCode.Unauthorized);
-        unauthorized.Message.Should().Be(PermissionsProvider.AuthorizationHeaderInvalid);
+        unauthorized.Message.Should().Be(PermissionsProvider.Messages.AuthorizationHeaderInvalid);
     }
 
-    [Fact]
-    public async Task GetPermissionsTest()
+    [InlineData(false, true, EndpointPermissions.Restricted)]
+    [InlineData(true, true, EndpointPermissions.Full)]
+    [Theory]
+    public async Task ParsePermissionsAsyncReturnsExpected(bool readSensitive, bool readBasic, EndpointPermissions expectedPermissions)
     {
         PermissionsProvider permissionsProvider = GetPermissionsProvider();
         var response = new HttpResponseMessage(HttpStatusCode.OK);
 
-        var permissions = new Dictionary<string, object>
+        var permissionsJson = new Dictionary<string, bool>
         {
-            ["read_sensitive_data"] = true
+            ["read_sensitive_data"] = readSensitive,
+            ["read_basic_data"] = readBasic
         };
 
-        response.Content = JsonContent.Create(permissions);
-        EndpointPermissions result = await permissionsProvider.ParsePermissionsAsync(response, TestContext.Current.CancellationToken);
-        result.Should().Be(EndpointPermissions.Full);
+        response.Content = JsonContent.Create(permissionsJson);
+        EndpointPermissions result = await permissionsProvider.ParsePermissionsResponseAsync(response, TestContext.Current.CancellationToken);
+        result.Should().Be(expectedPermissions);
     }
 
-    [InlineData("unavailable", HttpStatusCode.ServiceUnavailable, PermissionsProvider.CloudfoundryNotReachableMessage)]
-    [InlineData("not-found", HttpStatusCode.Unauthorized, PermissionsProvider.InvalidTokenMessage)]
-    [InlineData("unauthorized", HttpStatusCode.Unauthorized, PermissionsProvider.InvalidTokenMessage)]
-    [InlineData("forbidden", HttpStatusCode.Forbidden, PermissionsProvider.AccessDeniedMessage)]
-    [InlineData("timeout", HttpStatusCode.ServiceUnavailable, PermissionsProvider.CloudfoundryNotReachableMessage)]
+    [InlineData("unavailable", HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.CloudfoundryNotReachable)]
+    [InlineData("not-found", HttpStatusCode.Unauthorized, PermissionsProvider.Messages.InvalidToken)]
+    [InlineData("unauthorized", HttpStatusCode.Unauthorized, PermissionsProvider.Messages.InvalidToken)]
+    [InlineData("forbidden", HttpStatusCode.Forbidden, PermissionsProvider.Messages.AccessDenied)]
+    [InlineData("timeout", HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.CloudfoundryNotReachable)]
     [InlineData("exception", HttpStatusCode.InternalServerError, "Exception of type 'System.Net.Http.HttpRequestException' was thrown.")]
     [InlineData("no_sensitive_data", HttpStatusCode.OK, "")]
     [InlineData("success", HttpStatusCode.OK, "")]
     [Theory]
-    public async Task CloudControllerScenarioTesting(string cloudControllerResponse, HttpStatusCode steeltoeStatusCode, string? expectedMessage)
+    public async Task GetPermissionsAsyncReturnsExpected(string scenario, HttpStatusCode steeltoeStatusCode, string expectedMessage)
     {
         var appSettings = new Dictionary<string, string>
         {
             ["vcap:application:cf_api"] = "https://example.api.com",
-            ["vcap:application:application_id"] = cloudControllerResponse
+            ["vcap:application:application_id"] = scenario
         };
 
         IOptionsMonitor<CloudFoundryEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>(appSettings!);
@@ -70,15 +74,13 @@ public sealed class PermissionsProviderTest : BaseTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
 
-        services.AddHttpClient(PermissionsProvider.HttpClientName)
-            .ConfigurePrimaryHttpMessageHandler(_ => CloudControllerPermissionsMock.GetHttpMessageHandler());
-
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        serviceProvider.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
 
         var permissionsProvider = new PermissionsProvider(optionsMonitor, httpClientFactory, NullLogger<PermissionsProvider>.Instance);
 
-        if (cloudControllerResponse == "timeout")
+        if (scenario == "timeout")
         {
             await Assert.ThrowsAsync<TaskCanceledException>(() => permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken));
         }
@@ -88,7 +90,7 @@ public sealed class PermissionsProviderTest : BaseTest
             result.Code.Should().Be(steeltoeStatusCode);
             result.Message.Should().Be(expectedMessage);
 
-            switch (cloudControllerResponse)
+            switch (scenario)
             {
                 case "success":
                     result.Permissions.Should().Be(EndpointPermissions.Full);

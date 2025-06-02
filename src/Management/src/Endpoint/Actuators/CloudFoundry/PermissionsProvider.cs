@@ -20,14 +20,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 internal sealed class PermissionsProvider
 {
     private const string ReadSensitiveDataJsonPropertyName = "read_sensitive_data";
-    public const string AccessDeniedMessage = "Access denied";
-    public const string ApplicationIdMissingMessage = "Application ID is not available";
-    public const string AuthorizationHeaderName = "Authorization";
-    public const string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
-    public const string CloudfoundryApiMissingMessage = "Cloud controller URL is not available";
-    public const string CloudfoundryNotReachableMessage = "Cloud controller not reachable";
     public const string HttpClientName = "CloudFoundrySecurity";
-    public const string InvalidTokenMessage = "Invalid token";
     private static readonly TimeSpan GetPermissionsTimeout = TimeSpan.FromMilliseconds(5_000);
 
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _optionsMonitor;
@@ -55,7 +48,7 @@ internal sealed class PermissionsProvider
     {
         if (string.IsNullOrEmpty(accessToken))
         {
-            return new SecurityResult(HttpStatusCode.Unauthorized, AuthorizationHeaderInvalid);
+            return new SecurityResult(HttpStatusCode.Unauthorized, Messages.AuthorizationHeaderInvalid);
         }
 
         CloudFoundryEndpointOptions options = _optionsMonitor.CurrentValue;
@@ -77,15 +70,15 @@ internal sealed class PermissionsProvider
 
                 if (response.StatusCode is HttpStatusCode.Forbidden)
                 {
-                    return new SecurityResult(HttpStatusCode.Forbidden, AccessDeniedMessage);
+                    return new SecurityResult(HttpStatusCode.Forbidden, Messages.AccessDenied);
                 }
 
                 return (int)response.StatusCode is > 399 and < 500
-                    ? new SecurityResult(HttpStatusCode.Unauthorized, InvalidTokenMessage)
-                    : new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
+                    ? new SecurityResult(HttpStatusCode.Unauthorized, Messages.InvalidToken)
+                    : new SecurityResult(HttpStatusCode.ServiceUnavailable, Messages.CloudfoundryNotReachable);
             }
 
-            EndpointPermissions permissions = await ParsePermissionsAsync(response, cancellationToken);
+            EndpointPermissions permissions = await ParsePermissionsResponseAsync(response, cancellationToken);
             return new SecurityResult(permissions);
         }
         catch (Exception exception)
@@ -103,7 +96,7 @@ internal sealed class PermissionsProvider
         }
     }
 
-    public async Task<EndpointPermissions> ParsePermissionsAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+    public async Task<EndpointPermissions> ParsePermissionsResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(response);
 
@@ -138,5 +131,15 @@ internal sealed class PermissionsProvider
         HttpClient httpClient = _httpClientFactory.CreateClient(HttpClientName);
         httpClient.ConfigureForSteeltoe(GetPermissionsTimeout);
         return httpClient;
+    }
+
+    internal static class Messages
+    {
+        public const string AccessDenied = "Access denied";
+        public const string ApplicationIdMissing = "Application ID is not available";
+        public const string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
+        public const string CloudfoundryApiMissing = "Cloud controller URL is not available";
+        public const string CloudfoundryNotReachable = "Cloud controller not reachable";
+        public const string InvalidToken = "Invalid token";
     }
 }

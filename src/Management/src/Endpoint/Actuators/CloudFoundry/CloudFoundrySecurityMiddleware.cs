@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 using Steeltoe.Common;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
@@ -64,13 +65,13 @@ internal sealed class CloudFoundrySecurityMiddleware
                 _logger.LogCritical(
                     "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
 
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.ApplicationIdMissingMessage));
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.ApplicationIdMissing));
                 return;
             }
 
             if (string.IsNullOrEmpty(endpointOptions.Api))
             {
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.CloudfoundryApiMissingMessage));
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.CloudfoundryApiMissing));
                 return;
             }
 
@@ -88,7 +89,7 @@ internal sealed class CloudFoundrySecurityMiddleware
 
                 if (targetEndpointOptions.RequiredPermissions > givenPermissions.Permissions)
                 {
-                    await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, PermissionsProvider.AccessDeniedMessage));
+                    await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, PermissionsProvider.Messages.AccessDenied));
                     return;
                 }
             }
@@ -102,7 +103,7 @@ internal sealed class CloudFoundrySecurityMiddleware
 
     internal string GetAccessToken(HttpRequest request)
     {
-        if (request.Headers.TryGetValue(PermissionsProvider.AuthorizationHeaderName, out StringValues authorizationHeaderValue))
+        if (request.Headers.TryGetValue(HeaderNames.Authorization, out StringValues authorizationHeaderValue))
         {
             string authorizationValue = authorizationHeaderValue.ToString();
 
