@@ -40,13 +40,12 @@ public sealed class PermissionsProviderTest : BaseTest
         PermissionsProvider permissionsProvider = GetPermissionsProvider();
         var response = new HttpResponseMessage(HttpStatusCode.OK);
 
-        var permissionsJson = new Dictionary<string, bool>
+        response.Content = JsonContent.Create(new Dictionary<string, bool>
         {
             ["read_sensitive_data"] = readSensitive,
             ["read_basic_data"] = readBasic
-        };
+        });
 
-        response.Content = JsonContent.Create(permissionsJson);
         EndpointPermissions result = await permissionsProvider.ParsePermissionsResponseAsync(response, TestContext.Current.CancellationToken);
         result.Should().Be(expectedPermissions);
     }
