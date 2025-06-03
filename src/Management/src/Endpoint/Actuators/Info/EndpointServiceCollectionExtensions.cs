@@ -42,7 +42,7 @@ public static class EndpointServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddCoreActuatorServices<InfoEndpointOptions, ConfigureInfoEndpointOptions, InfoEndpointMiddleware, IInfoEndpointHandler,
-            InfoEndpointHandler, object?, IDictionary<string, object>>(configureMiddleware);
+            InfoEndpointHandler, object?, IDictionary<string, object?>>(configureMiddleware);
 
         RegisterDefaultInfoContributors(services);
 

@@ -263,10 +263,10 @@ Steeltoe.Management.Endpoint.Actuators.Info.IInfoContributor
 Steeltoe.Management.Endpoint.Actuators.Info.IInfoContributor.ContributeAsync(Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder! builder, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 Steeltoe.Management.Endpoint.Actuators.Info.IInfoEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder
-Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.Build() -> System.Collections.Generic.IDictionary<string!, object!>!
+Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.Build() -> System.Collections.Generic.IDictionary<string!, object?>!
 Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.InfoBuilder() -> void
-Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.WithInfo(string! key, object! value) -> Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder!
-Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.WithInfo(System.Collections.Generic.IDictionary<string!, object!>! details) -> Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder!
+Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.WithInfo(string! key, object? value) -> Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder!
+Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.WithInfo(System.Collections.Generic.IDictionary<string!, object?>! details) -> Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder!
 Steeltoe.Management.Endpoint.Actuators.Info.InfoEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Info.InfoEndpointOptions.InfoEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Loggers.EndpointServiceCollectionExtensions

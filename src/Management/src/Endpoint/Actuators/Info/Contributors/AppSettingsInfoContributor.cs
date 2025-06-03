@@ -6,10 +6,15 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Info.Contributors;
 
-internal sealed class AppSettingsInfoContributor(IConfiguration? configuration)
-    : ConfigurationContributor(configuration), IInfoContributor
+internal sealed class AppSettingsInfoContributor : ConfigurationContributor, IInfoContributor
 {
     private const string AppSettingsPrefix = "info";
+
+    public AppSettingsInfoContributor(IConfiguration configuration)
+        : base(configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+    }
 
     public Task ContributeAsync(InfoBuilder builder, CancellationToken cancellationToken)
     {

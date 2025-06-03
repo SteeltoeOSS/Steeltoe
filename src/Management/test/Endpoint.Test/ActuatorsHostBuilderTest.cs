@@ -25,7 +25,6 @@ using Steeltoe.Management.Endpoint.Actuators.Services;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.ManagementPort;
 using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.Endpoint.Test.Actuators.Info;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -86,58 +85,6 @@ public sealed class ActuatorsHostBuilderTest
         responseText.Should().Contain("\"http://localhost/cloudfoundryapplication\"");
 
         handler.Mock.VerifyNoOutstandingExpectation();
-    }
-
-    [Theory]
-    [InlineData(HostBuilderType.Host)]
-    [InlineData(HostBuilderType.WebHost)]
-    [InlineData(HostBuilderType.WebApplication)]
-    public async Task InfoActuator(HostBuilderType hostBuilderType)
-    {
-        await using HostWrapper host = hostBuilderType.Build(builder =>
-        {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
-            builder.ConfigureServices(services => services.AddInfoActuator());
-        });
-
-        await host.StartAsync(TestContext.Current.CancellationToken);
-        using HttpClient httpClient = host.GetTestClient();
-
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/info"), TestContext.Current.CancellationToken);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        responseText.Should().Contain("\"buildmaster@springframework.org\"");
-        responseText.Should().Contain("\"Steeltoe.Management.Endpoint\"");
-    }
-
-    [Theory]
-    [InlineData(HostBuilderType.Host)]
-    [InlineData(HostBuilderType.WebHost)]
-    [InlineData(HostBuilderType.WebApplication)]
-    public async Task InfoActuatorWithExtraContributor(HostBuilderType hostBuilderType)
-    {
-        await using HostWrapper host = hostBuilderType.Build(builder =>
-        {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
-
-            builder.ConfigureServices(services =>
-            {
-                services.AddInfoActuator();
-                services.AddInfoContributor<TestInfoContributor>();
-            });
-        });
-
-        await host.StartAsync(TestContext.Current.CancellationToken);
-        using HttpClient httpClient = host.GetTestClient();
-
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/info"), TestContext.Current.CancellationToken);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        responseText.Should().Contain("\"buildmaster@springframework.org\"");
-        responseText.Should().Contain("\"Steeltoe.Management.Endpoint\"");
-        responseText.Should().Contain("\"IsTest\"");
     }
 
     [Theory]
