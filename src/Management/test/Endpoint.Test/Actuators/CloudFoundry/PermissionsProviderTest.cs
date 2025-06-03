@@ -35,7 +35,7 @@ public sealed class PermissionsProviderTest : BaseTest
     [InlineData(false, true, EndpointPermissions.Restricted)]
     [InlineData(true, true, EndpointPermissions.Full)]
     [Theory]
-    public async Task ParsePermissionsAsyncReturnsExpected(bool readSensitive, bool readBasic, EndpointPermissions expectedPermissions)
+    public async Task ParsePermissionsResponseAsyncReturnsExpected(bool readSensitive, bool readBasic, EndpointPermissions expectedPermissions)
     {
         PermissionsProvider permissionsProvider = GetPermissionsProvider();
         var response = new HttpResponseMessage(HttpStatusCode.OK);
