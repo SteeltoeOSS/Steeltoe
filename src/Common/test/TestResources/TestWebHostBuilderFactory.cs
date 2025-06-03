@@ -2,10 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Steeltoe.Common.TestResources;
 
@@ -29,12 +31,12 @@ public static class TestWebHostBuilderFactory
     public static WebHostBuilder Create(bool useTestServer)
     {
         var builder = new WebHostBuilder();
-        ConfigureBuilder(builder, useTestServer);
+        ConfigureBuilder(builder, useTestServer, true);
 
         return builder;
     }
 
-    private static void ConfigureBuilder(IWebHostBuilder builder, bool useTestServer)
+    private static void ConfigureBuilder(WebHostBuilder builder, bool useTestServer, bool deactivateDiagnostics)
     {
         builder.UseDefaultServiceProvider(ConfigureServiceProvider);
         builder.Configure(EmptyAction);
@@ -42,6 +44,11 @@ public static class TestWebHostBuilderFactory
         if (useTestServer)
         {
             builder.UseTestServer();
+        }
+
+        if (deactivateDiagnostics)
+        {
+            builder.ConfigureServices(services => services.Replace(ServiceDescriptor.Singleton<DiagnosticListener, InactiveDiagnosticListener>()));
         }
     }
 }
