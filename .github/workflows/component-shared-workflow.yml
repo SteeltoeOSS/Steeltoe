@@ -90,7 +90,7 @@ jobs:
       - name: Test (net9.0)
         run: dotnet test ${{ env.SolutionFile }} --framework net9.0 ${{ env.SkipFilterWithoutMemoryDumps }} ${{ env.CommonTestArgs }}
 
-      - name: dotnet test net9.0 (memory dumps)
+      - name: Test (net9.0) (memory dumps)
         if: ${{ inputs.component == 'Management' }}
         run: dotnet test ${{ env.SolutionFile }} --framework net9.0 ${{ env.SkipFilterWithMemoryDumps }} ${{ env.CommonTestArgs }}
 
