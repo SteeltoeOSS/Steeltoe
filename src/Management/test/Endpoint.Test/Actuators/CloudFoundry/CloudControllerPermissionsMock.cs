@@ -26,7 +26,7 @@ internal static class CloudControllerPermissionsMock
         httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/forbidden/permissions")
             .Respond(HttpStatusCode.Forbidden, "application/json", "{}");
 
-        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/timeout/permissions").Throw(new TaskCanceledException());
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/timeout/permissions").Throw(new TimeoutException());
         httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/exception/permissions").Throw(new HttpRequestException());
 
         httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/no_sensitive_data/permissions").Respond(HttpStatusCode.OK,

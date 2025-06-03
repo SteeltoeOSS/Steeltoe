@@ -38,15 +38,17 @@ public sealed class PermissionsProviderTest : BaseTest
     public async Task ParsePermissionsResponseAsyncReturnsExpected(bool readSensitive, bool readBasic, EndpointPermissions expectedPermissions)
     {
         PermissionsProvider permissionsProvider = GetPermissionsProvider();
-        var response = new HttpResponseMessage(HttpStatusCode.OK);
 
-        response.Content = JsonContent.Create(new Dictionary<string, bool>
+        var cloudControllerResponse = new HttpResponseMessage(HttpStatusCode.OK)
         {
-            ["read_sensitive_data"] = readSensitive,
-            ["read_basic_data"] = readBasic
-        });
+            Content = JsonContent.Create(new Dictionary<string, bool>
+            {
+                ["read_sensitive_data"] = readSensitive,
+                ["read_basic_data"] = readBasic
+            })
+        };
 
-        EndpointPermissions result = await permissionsProvider.ParsePermissionsResponseAsync(response, TestContext.Current.CancellationToken);
+        EndpointPermissions result = await permissionsProvider.ParsePermissionsResponseAsync(cloudControllerResponse, TestContext.Current.CancellationToken);
         result.Should().Be(expectedPermissions);
     }
 
@@ -54,7 +56,7 @@ public sealed class PermissionsProviderTest : BaseTest
     [InlineData("not-found", HttpStatusCode.Unauthorized, PermissionsProvider.Messages.InvalidToken)]
     [InlineData("unauthorized", HttpStatusCode.Unauthorized, PermissionsProvider.Messages.InvalidToken)]
     [InlineData("forbidden", HttpStatusCode.Forbidden, PermissionsProvider.Messages.AccessDenied)]
-    [InlineData("timeout", HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.CloudfoundryNotReachable)]
+    [InlineData("timeout", HttpStatusCode.InternalServerError, "The operation has timed out.")]
     [InlineData("exception", HttpStatusCode.InternalServerError, "Exception of type 'System.Net.Http.HttpRequestException' was thrown.")]
     [InlineData("no_sensitive_data", HttpStatusCode.OK, "")]
     [InlineData("success", HttpStatusCode.OK, "")]
@@ -79,28 +81,21 @@ public sealed class PermissionsProviderTest : BaseTest
 
         var permissionsProvider = new PermissionsProvider(optionsMonitor, httpClientFactory, NullLogger<PermissionsProvider>.Instance);
 
-        if (scenario == "timeout")
-        {
-            await Assert.ThrowsAsync<TaskCanceledException>(() => permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken));
-        }
-        else
-        {
-            SecurityResult result = await permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken);
-            result.Code.Should().Be(steeltoeStatusCode);
-            result.Message.Should().Be(expectedMessage);
+        SecurityResult result = await permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken);
+        result.Code.Should().Be(steeltoeStatusCode);
+        result.Message.Should().Be(expectedMessage);
 
-            switch (scenario)
-            {
-                case "success":
-                    result.Permissions.Should().Be(EndpointPermissions.Full);
-                    break;
-                case "no_sensitive_data":
-                    result.Permissions.Should().Be(EndpointPermissions.Restricted);
-                    break;
-                default:
-                    result.Permissions.Should().Be(EndpointPermissions.None);
-                    break;
-            }
+        switch (scenario)
+        {
+            case "success":
+                result.Permissions.Should().Be(EndpointPermissions.Full);
+                break;
+            case "no_sensitive_data":
+                result.Permissions.Should().Be(EndpointPermissions.Restricted);
+                break;
+            default:
+                result.Permissions.Should().Be(EndpointPermissions.None);
+                break;
         }
     }
 

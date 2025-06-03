@@ -21,6 +21,8 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
+using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
+using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
@@ -34,7 +36,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         "FAIL Steeltoe.Management.Endpoint.Actuators.CloudFoundry.PermissionsProvider: Cloud Foundry returned exception while obtaining permissions from: https://example.api.com/v2/apps/exception/permissions";
 
     private const string CFTimeoutLog =
-        "TRCE Steeltoe.Management.Endpoint.Actuators.CloudFoundry.PermissionsProvider: Task cancelled or timed out while obtaining permissions from: https://example.api.com/v2/apps/timeout/permissions";
+        "FAIL Steeltoe.Management.Endpoint.Actuators.CloudFoundry.PermissionsProvider: Cloud Foundry returned exception while obtaining permissions from: https://example.api.com/v2/apps/timeout/permissions";
 
     private const string MiddlewareForbiddenLog =
         "FAIL Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundrySecurityMiddleware: Actuator Security Error: Forbidden - Access denied";
@@ -363,14 +365,14 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     [InlineData("unauthorized", HttpStatusCode.Unauthorized, PermissionsProvider.Messages.InvalidToken, MiddlewareUnauthorizedLog, false)]
     [InlineData("forbidden", HttpStatusCode.Forbidden, PermissionsProvider.Messages.AccessDenied, CFForbiddenLog, true)]
     [InlineData("forbidden", HttpStatusCode.Forbidden, PermissionsProvider.Messages.AccessDenied, CFForbiddenLog, false)]
-    [InlineData("timeout", null, null, CFTimeoutLog, true)]
-    [InlineData("timeout", null, null, CFTimeoutLog, false)]
+    [InlineData("timeout", HttpStatusCode.InternalServerError, "The operation has timed out.", CFTimeoutLog, true)]
+    [InlineData("timeout", HttpStatusCode.OK, "The operation has timed out.", CFTimeoutLog, false)]
     [InlineData("exception", HttpStatusCode.InternalServerError, CFExceptionMessage, CFExceptionLog, true)]
     [InlineData("exception", HttpStatusCode.OK, CFExceptionMessage, CFExceptionLog, false)]
     [InlineData("no_sensitive_data", HttpStatusCode.OK, null, MiddlewareForbiddenLog, true)]
     [InlineData("success", HttpStatusCode.OK, null, null, true)]
     [Theory]
-    public async Task InvokeAsyncReturnsExpected(string scenario, HttpStatusCode? steeltoeStatusCode, string? errorMessage, string? expectedLogs,
+    public async Task IntegrationTestReturnsExpected(string scenario, HttpStatusCode? steeltoeStatusCode, string? errorMessage, string? expectedLogs,
         bool useStatusCodeFromResponse)
     {
         var appSettings = new Dictionary<string, string?>
@@ -382,61 +384,55 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         };
 
         using var loggerProvider = new CapturingLoggerProvider();
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<StartupWithSecurity>();
-        builder.ConfigureLogging(loggingBuilder => loggingBuilder.ClearProviders().AddProvider(loggerProvider).SetMinimumLevel(LogLevel.Trace));
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
+        builder.Services.AddCloudFoundryActuator();
+        builder.Services.AddHypermediaActuator();
+        builder.Services.AddInfoActuator();
+        builder.Logging.ClearProviders().AddProvider(loggerProvider).SetMinimumLevel(LogLevel.Trace);
+        builder.Configuration.AddInMemoryCollection(appSettings);
 
-        using IWebHost host = builder.Build();
+        await using WebApplication host = builder.Build();
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
-        using HttpClient client = host.GetTestClient();
-        var testAuthenticationRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
+        using var client = new HttpClient();
+        var testAuthenticationRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost:5000/cloudfoundryapplication"));
         testAuthenticationRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken);
-        var testAuthorizationRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication/info"));
+        var testAuthorizationRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost:5000/cloudfoundryapplication/info"));
         testAuthorizationRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken);
 
-        if (scenario == "timeout")
+        HttpResponseMessage response = await client.SendAsync(testAuthenticationRequestMessage, TestContext.Current.CancellationToken);
+        response.StatusCode.Should().Be(steeltoeStatusCode);
+
+        if (errorMessage != null)
         {
-            await Assert.ThrowsAsync<TaskCanceledException>(() => client.SendAsync(testAuthenticationRequestMessage, TestContext.Current.CancellationToken));
-            await Assert.ThrowsAsync<TaskCanceledException>(() => client.SendAsync(testAuthorizationRequestMessage, TestContext.Current.CancellationToken));
+            string jsonErrorValue = JsonValue.Create(errorMessage).ToJsonString();
+            string errorText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            errorText.Should().Be($$"""{"security_error":{{jsonErrorValue}}}""");
         }
         else
         {
-            HttpResponseMessage response = await client.SendAsync(testAuthenticationRequestMessage, TestContext.Current.CancellationToken);
-            response.StatusCode.Should().Be(steeltoeStatusCode);
+            string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
-            if (errorMessage != null)
-            {
-                string jsonErrorValue = JsonValue.Create(errorMessage).ToJsonString();
-                string errorText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-                errorText.Should().Be($$"""{"security_error":{{jsonErrorValue}}}""");
-            }
-            else
-            {
-                string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-
-                responseBody.Should().BeJson("""
-                    {
-                        "type":"steeltoe",
-                        "_links":{
-                            "info":{
-                                "href":"http://localhost/cloudfoundryapplication/info",
-                                "templated":false
-                            },
-                            "self":{
-                                "href":"http://localhost/cloudfoundryapplication",
-                                "templated":false
-                            }
+            responseBody.Should().BeJson("""
+                {
+                    "type":"steeltoe",
+                    "_links":{
+                        "info":{
+                            "href":"http://localhost:5000/cloudfoundryapplication/info",
+                            "templated":false
+                        },
+                        "self":{
+                            "href":"http://localhost:5000/cloudfoundryapplication",
+                            "templated":false
                         }
                     }
-                    """);
-            }
-
-            HttpResponseMessage fullPermissionResponse = await client.SendAsync(testAuthorizationRequestMessage, TestContext.Current.CancellationToken);
-            fullPermissionResponse.StatusCode.Should().Be(scenario == "no_sensitive_data" ? HttpStatusCode.Forbidden : steeltoeStatusCode);
+                }
+                """);
         }
+
+        HttpResponseMessage fullPermissionResponse = await client.SendAsync(testAuthorizationRequestMessage, TestContext.Current.CancellationToken);
+        fullPermissionResponse.StatusCode.Should().Be(scenario == "no_sensitive_data" ? HttpStatusCode.Forbidden : steeltoeStatusCode);
 
         if (!string.IsNullOrEmpty(expectedLogs))
         {
