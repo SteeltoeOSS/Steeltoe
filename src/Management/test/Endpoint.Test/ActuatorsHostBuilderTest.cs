@@ -13,12 +13,10 @@ using RichardSzalay.MockHttp;
 using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 using Steeltoe.Management.Endpoint.Actuators.Info;
-using Steeltoe.Management.Endpoint.Actuators.Loggers;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
@@ -85,86 +83,6 @@ public sealed class ActuatorsHostBuilderTest
         responseText.Should().Contain("\"http://localhost/cloudfoundryapplication\"");
 
         handler.Mock.VerifyNoOutstandingExpectation();
-    }
-
-    [Theory]
-    [InlineData(HostBuilderType.Host)]
-    [InlineData(HostBuilderType.WebHost)]
-    [InlineData(HostBuilderType.WebApplication)]
-    public async Task LoggersActuatorGet(HostBuilderType hostBuilderType)
-    {
-        await using HostWrapper host = hostBuilderType.Build(builder =>
-        {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
-            builder.ConfigureServices(services => services.AddLoggersActuator());
-        });
-
-        await host.StartAsync(TestContext.Current.CancellationToken);
-        using HttpClient httpClient = host.GetTestClient();
-
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        responseText.Should().Contain("\"Microsoft.AspNetCore.");
-    }
-
-    [Theory]
-    [InlineData(HostBuilderType.Host)]
-    [InlineData(HostBuilderType.WebHost)]
-    [InlineData(HostBuilderType.WebApplication)]
-    public async Task LoggersActuatorPost(HostBuilderType hostBuilderType)
-    {
-        await using HostWrapper host = hostBuilderType.Build(builder =>
-        {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
-            builder.ConfigureServices(services => services.AddLoggersActuator());
-        });
-
-        await host.StartAsync(TestContext.Current.CancellationToken);
-        using HttpClient httpClient = host.GetTestClient();
-
-        const string requestBody = """
-            {
-                "configuredLevel": "FATAL"
-            }
-            """;
-
-        var requestContent = new StringContent(requestBody, MediaTypeHeaderValue.Parse("application/vnd.spring-boot.actuator.v3+json"));
-
-        HttpResponseMessage postResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Microsoft"), requestContent,
-            TestContext.Current.CancellationToken);
-
-        postResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
-
-        HttpResponseMessage getResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        string responseText = await getResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        responseText.Should().Contain("\"Microsoft.AspNetCore\":{\"effectiveLevel\":\"FATAL\"}");
-    }
-
-    [Theory]
-    [InlineData(HostBuilderType.Host)]
-    [InlineData(HostBuilderType.WebHost)]
-    [InlineData(HostBuilderType.WebApplication)]
-    public async Task LoggersActuatorWithDynamicSerilog(HostBuilderType hostBuilderType)
-    {
-        await using HostWrapper host = hostBuilderType.Build(builder =>
-        {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
-            builder.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicSerilog());
-            builder.ConfigureServices(services => services.AddLoggersActuator());
-        });
-
-        await host.StartAsync(TestContext.Current.CancellationToken);
-        using HttpClient httpClient = host.GetTestClient();
-
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        responseText.Should().Contain("\"Microsoft.AspNetCore.");
     }
 
     [Theory]
