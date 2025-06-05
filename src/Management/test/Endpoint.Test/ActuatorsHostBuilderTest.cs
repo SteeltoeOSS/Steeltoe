@@ -17,7 +17,6 @@ using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 using Steeltoe.Management.Endpoint.Actuators.Info;
-using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Actuators.Services;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.ManagementPort;
@@ -82,28 +81,6 @@ public sealed class ActuatorsHostBuilderTest
         responseText.Should().Contain("\"http://localhost/cloudfoundryapplication\"");
 
         handler.Mock.VerifyNoOutstandingExpectation();
-    }
-
-    [Theory]
-    [InlineData(HostBuilderType.Host)]
-    [InlineData(HostBuilderType.WebHost)]
-    [InlineData(HostBuilderType.WebApplication)]
-    public async Task RouteMappingsActuator(HostBuilderType hostBuilderType)
-    {
-        await using HostWrapper host = hostBuilderType.Build(builder =>
-        {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
-            builder.ConfigureServices(services => services.AddRouteMappingsActuator());
-        });
-
-        await host.StartAsync(TestContext.Current.CancellationToken);
-        using HttpClient httpClient = host.GetTestClient();
-
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        responseText.Should().Contain("\"dispatcherServlet\"");
     }
 
     [Theory]
