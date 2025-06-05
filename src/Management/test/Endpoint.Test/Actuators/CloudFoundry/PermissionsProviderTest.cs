@@ -52,16 +52,16 @@ public sealed class PermissionsProviderTest : BaseTest
         result.Should().Be(expectedPermissions);
     }
 
-    [InlineData("unavailable", HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.CloudfoundryNotReachable)]
+    [InlineData("unavailable", HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.CloudFoundryNotReachable)]
     [InlineData("not-found", HttpStatusCode.Unauthorized, PermissionsProvider.Messages.InvalidToken)]
     [InlineData("unauthorized", HttpStatusCode.Unauthorized, PermissionsProvider.Messages.InvalidToken)]
     [InlineData("forbidden", HttpStatusCode.Forbidden, PermissionsProvider.Messages.AccessDenied)]
-    [InlineData("timeout", HttpStatusCode.InternalServerError, "The operation has timed out.")]
-    [InlineData("exception", HttpStatusCode.InternalServerError, "Exception of type 'System.Net.Http.HttpRequestException' was thrown.")]
+    [InlineData("timeout", HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.CloudFoundryTimeout)]
+    [InlineData("exception", null, "Exception of type 'System.Net.Http.HttpRequestException' was thrown.")]
     [InlineData("no_sensitive_data", HttpStatusCode.OK, "")]
     [InlineData("success", HttpStatusCode.OK, "")]
     [Theory]
-    public async Task GetPermissionsAsyncReturnsExpected(string scenario, HttpStatusCode steeltoeStatusCode, string expectedMessage)
+    public async Task GetPermissionsAsyncReturnsExpected(string scenario, HttpStatusCode? steeltoeStatusCode, string expectedMessage)
     {
         var appSettings = new Dictionary<string, string>
         {
@@ -81,21 +81,32 @@ public sealed class PermissionsProviderTest : BaseTest
 
         var permissionsProvider = new PermissionsProvider(optionsMonitor, httpClientFactory, NullLogger<PermissionsProvider>.Instance);
 
-        SecurityResult result = await permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken);
-        result.Code.Should().Be(steeltoeStatusCode);
-        result.Message.Should().Be(expectedMessage);
-
-        switch (scenario)
+        if (scenario == "exception")
         {
-            case "success":
-                result.Permissions.Should().Be(EndpointPermissions.Full);
-                break;
-            case "no_sensitive_data":
-                result.Permissions.Should().Be(EndpointPermissions.Restricted);
-                break;
-            default:
-                result.Permissions.Should().Be(EndpointPermissions.None);
-                break;
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(() =>
+                permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken));
+
+            exception.StatusCode.Should().Be(steeltoeStatusCode);
+            exception.Message.Should().Be(expectedMessage);
+        }
+        else
+        {
+            SecurityResult result = await permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken);
+            result.Code.Should().Be(steeltoeStatusCode);
+            result.Message.Should().Be(expectedMessage);
+
+            switch (scenario)
+            {
+                case "success":
+                    result.Permissions.Should().Be(EndpointPermissions.Full);
+                    break;
+                case "no_sensitive_data":
+                    result.Permissions.Should().Be(EndpointPermissions.Restricted);
+                    break;
+                default:
+                    result.Permissions.Should().Be(EndpointPermissions.None);
+                    break;
+            }
         }
     }
 

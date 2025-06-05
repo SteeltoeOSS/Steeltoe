@@ -75,17 +75,17 @@ internal sealed class PermissionsProvider
 
                 return (int)response.StatusCode is > 399 and < 500
                     ? new SecurityResult(HttpStatusCode.Unauthorized, Messages.InvalidToken)
-                    : new SecurityResult(HttpStatusCode.ServiceUnavailable, Messages.CloudfoundryNotReachable);
+                    : new SecurityResult(HttpStatusCode.ServiceUnavailable, Messages.CloudFoundryNotReachable);
             }
 
             EndpointPermissions permissions = await ParsePermissionsResponseAsync(response, cancellationToken);
             return new SecurityResult(permissions);
         }
-        catch (Exception exception) when (!exception.IsCancellation())
+        catch (Exception exception) when (exception.IsTimeout())
         {
-            _logger.LogError(exception, "Cloud Foundry returned exception while obtaining permissions from: {PermissionsUri}", checkPermissionsUri);
+            _logger.LogError(exception, "Cloud Foundry request timed out while obtaining permissions from: {PermissionsUri}", checkPermissionsUri);
 
-            return new SecurityResult(HttpStatusCode.InternalServerError, exception.Message);
+            return new SecurityResult(HttpStatusCode.ServiceUnavailable, Messages.CloudFoundryTimeout);
         }
     }
 
@@ -131,8 +131,9 @@ internal sealed class PermissionsProvider
         public const string AccessDenied = "Access denied";
         public const string ApplicationIdMissing = "Application ID is not available";
         public const string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
-        public const string CloudfoundryApiMissing = "Cloud controller URL is not available";
-        public const string CloudfoundryNotReachable = "Cloud controller not reachable";
+        public const string CloudFoundryApiMissing = "Cloud controller URL is not available";
+        public const string CloudFoundryNotReachable = "Cloud controller not reachable";
+        public const string CloudFoundryTimeout = "Cloud controller request timed out";
         public const string InvalidToken = "Invalid token";
     }
 }
