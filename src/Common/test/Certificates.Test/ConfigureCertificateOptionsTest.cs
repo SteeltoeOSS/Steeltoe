@@ -171,22 +171,30 @@ public sealed class ConfigureCertificateOptionsTest
         optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);
 
         IOptionsChangeTokenSource<CertificateOptions>[] tokenSources = [.. serviceProvider.GetServices<IOptionsChangeTokenSource<CertificateOptions>>()];
+
         tokenSources.OfType<FilePathInOptionsChangeTokenSource<CertificateOptions>>().Should().HaveCount(2);
         IChangeToken changeToken = tokenSources.OfType<ConfigurationChangeTokenSource<CertificateOptions>>().Single().GetChangeToken();
 
         bool changeCalled = false;
-        _ = changeToken.RegisterChangeCallback(_ => changeCalled = true, "state");
-        configurationRoot[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:CertificateFilePath"] = certificate2FilePath;
-        configurationRoot[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:PrivateKeyFilePath"] = privateKey2FilePath;
-        configurationRoot.Reload();
-        optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(secondX509);
-        changeCalled.Should().BeTrue("file path information changed");
 
-        _ = changeToken.RegisterChangeCallback(_ => changeCalled = true, "state");
-        await File.WriteAllTextAsync(certificate2FilePath, instance1Certificate, TestContext.Current.CancellationToken);
-        await File.WriteAllTextAsync(privateKey2FilePath, instance1PrivateKey, TestContext.Current.CancellationToken);
-        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
-        optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);
-        changeCalled.Should().BeTrue("file contents changed");
+        using (changeToken.RegisterChangeCallback(_ => changeCalled = true, "changed-path"))
+        {
+            configurationRoot[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:CertificateFilePath"] = certificate2FilePath;
+            configurationRoot[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:PrivateKeyFilePath"] = privateKey2FilePath;
+            configurationRoot.Reload();
+            optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(secondX509);
+            changeCalled.Should().BeTrue("file path information changed");
+        }
+
+        changeCalled = false;
+
+        using (changeToken.RegisterChangeCallback(_ => changeCalled = true, "original-content-in-new-path"))
+        {
+            await File.WriteAllTextAsync(certificate2FilePath, instance1Certificate, TestContext.Current.CancellationToken);
+            await File.WriteAllTextAsync(privateKey2FilePath, instance1PrivateKey, TestContext.Current.CancellationToken);
+            await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+            optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);
+            changeCalled.Should().BeTrue("file contents changed");
+        }
     }
 }
