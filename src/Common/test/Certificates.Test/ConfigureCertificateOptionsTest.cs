@@ -136,7 +136,7 @@ public sealed class ConfigureCertificateOptionsTest
 
         if (TestContext.Current.IsRunningOnBuildServer())
         {
-            await Task.Delay(1.Seconds(), TestContext.Current.CancellationToken);
+            await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
         }
 
         var configurationBuilder = new ConfigurationBuilder();
@@ -181,7 +181,7 @@ public sealed class ConfigureCertificateOptionsTest
 
         if (TestContext.Current.IsRunningOnBuildServer())
         {
-            await Task.Delay(1.Seconds(), TestContext.Current.CancellationToken);
+            await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
         }
 
         var configurationBuilder = new ConfigurationBuilder();
