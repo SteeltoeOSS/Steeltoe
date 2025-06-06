@@ -28,6 +28,18 @@ public sealed class ServicesActuatorTest
     };
 
     [Fact]
+    public async Task Registers_dependent_services()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddServicesActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        Func<ServicesEndpointMiddleware> action = serviceProvider.GetRequiredService<ServicesEndpointMiddleware>;
+        action.Should().NotThrow();
+    }
+
+    [Fact]
     public async Task Configures_default_settings()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();

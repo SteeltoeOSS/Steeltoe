@@ -24,6 +24,18 @@ public sealed class RefreshActuatorTest
     };
 
     [Fact]
+    public async Task Registers_dependent_services()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddRefreshActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        Func<RefreshEndpointMiddleware> action = serviceProvider.GetRequiredService<RefreshEndpointMiddleware>;
+        action.Should().NotThrow();
+    }
+
+    [Fact]
     public async Task Configures_default_settings()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();

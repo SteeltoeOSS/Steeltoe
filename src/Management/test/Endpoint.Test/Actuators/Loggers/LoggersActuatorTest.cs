@@ -26,6 +26,18 @@ public sealed class LoggersActuatorTest
     };
 
     [Fact]
+    public async Task Registers_dependent_services()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddLoggersActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        Func<LoggersEndpointMiddleware> action = serviceProvider.GetRequiredService<LoggersEndpointMiddleware>;
+        action.Should().NotThrow();
+    }
+
+    [Fact]
     public async Task Configures_default_settings()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();

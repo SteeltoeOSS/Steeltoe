@@ -23,6 +23,18 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Hypermedia;
 public sealed class HypermediaActuatorTest
 {
     [Fact]
+    public async Task Registers_dependent_services()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddHypermediaActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        Func<HypermediaEndpointMiddleware> action = serviceProvider.GetRequiredService<HypermediaEndpointMiddleware>;
+        action.Should().NotThrow();
+    }
+
+    [Fact]
     public async Task Configures_default_settings()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();

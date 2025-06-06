@@ -26,15 +26,15 @@ public sealed class HttpExchangesActuatorTest
     };
 
     [Fact]
-    public async Task Registers_required_services()
+    public async Task Registers_dependent_services()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddHttpExchangesActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddHttpExchangesActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var recorder = host.Services.GetService<IHttpExchangeRecorder>();
-
-        recorder.Should().BeOfType<DiagnosticObserverHttpExchangeRecorder>();
+        Func<HttpExchangesEndpointMiddleware> action = serviceProvider.GetRequiredService<HttpExchangesEndpointMiddleware>;
+        action.Should().NotThrow();
     }
 
     [Fact]

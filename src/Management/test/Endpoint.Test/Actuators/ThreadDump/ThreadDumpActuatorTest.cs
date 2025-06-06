@@ -21,15 +21,15 @@ public sealed class ThreadDumpActuatorTest
     };
 
     [Fact]
-    public async Task Registers_required_services()
+    public async Task Registers_dependent_services()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddThreadDumpActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddThreadDumpActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var threadDumper = host.Services.GetService<IThreadDumper>();
-
-        threadDumper.Should().BeOfType<EventPipeThreadDumper>();
+        Func<ThreadDumpEndpointMiddleware> action = serviceProvider.GetRequiredService<ThreadDumpEndpointMiddleware>;
+        action.Should().NotThrow();
     }
 
     [Fact]

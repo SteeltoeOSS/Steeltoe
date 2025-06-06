@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
@@ -28,6 +29,19 @@ public sealed partial class RouteMappingsActuatorTest
     {
         ["Management:Endpoints:Actuator:Exposure:Include:0"] = "*"
     };
+
+    [Fact]
+    public async Task Registers_dependent_services()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IHostEnvironment, FakeWebHostEnvironment>();
+        services.AddRouteMappingsActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        Func<RouteMappingsEndpointMiddleware> action = serviceProvider.GetRequiredService<RouteMappingsEndpointMiddleware>;
+        action.Should().NotThrow();
+    }
 
     [Fact]
     public async Task Configures_default_settings()

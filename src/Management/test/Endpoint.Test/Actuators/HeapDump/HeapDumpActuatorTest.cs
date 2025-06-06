@@ -23,15 +23,15 @@ public sealed class HeapDumpActuatorTest
     };
 
     [Fact]
-    public async Task Registers_required_services()
+    public async Task Registers_dependent_services()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddHeapDumpActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddHeapDumpActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var heapDumper = host.Services.GetService<IHeapDumper>();
-
-        heapDumper.Should().BeOfType<HeapDumper>();
+        Func<HeapDumpEndpointMiddleware> action = serviceProvider.GetRequiredService<HeapDumpEndpointMiddleware>;
+        action.Should().NotThrow();
     }
 
     [Fact]

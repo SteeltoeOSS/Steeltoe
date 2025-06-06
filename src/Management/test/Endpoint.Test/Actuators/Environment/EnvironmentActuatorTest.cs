@@ -4,6 +4,7 @@
 
 using System.Net;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,19 @@ public sealed class EnvironmentActuatorTest
     {
         ["Management:Endpoints:Actuator:Exposure:Include:0"] = "env"
     };
+
+    [Fact]
+    public async Task Registers_dependent_services()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IWebHostEnvironment, FakeWebHostEnvironment>();
+        services.AddEnvironmentActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        Func<EnvironmentEndpointMiddleware> action = serviceProvider.GetRequiredService<EnvironmentEndpointMiddleware>;
+        action.Should().NotThrow();
+    }
 
     [Fact]
     public async Task Configures_default_settings()

@@ -23,15 +23,15 @@ public sealed class DbMigrationsActuatorTest
     };
 
     [Fact]
-    public async Task Registers_required_services()
+    public async Task Registers_dependent_services()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddDbMigrationsActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddDbMigrationsActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var scanner = host.Services.GetService<IDatabaseMigrationScanner>();
-
-        scanner.Should().BeOfType<DatabaseMigrationScanner>();
+        Func<DbMigrationsEndpointMiddleware> action = serviceProvider.GetRequiredService<DbMigrationsEndpointMiddleware>;
+        action.Should().NotThrow();
     }
 
     [Fact]

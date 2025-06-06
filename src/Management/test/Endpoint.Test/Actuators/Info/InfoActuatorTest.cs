@@ -35,6 +35,18 @@ public sealed class InfoActuatorTest
     private static readonly string SteeltoeProductVersion = SteeltoeAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
 
     [Fact]
+    public async Task Registers_dependent_services()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddInfoActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        Func<InfoEndpointMiddleware> action = serviceProvider.GetRequiredService<InfoEndpointMiddleware>;
+        action.Should().NotThrow();
+    }
+
+    [Fact]
     public async Task Configures_default_settings()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
