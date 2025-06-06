@@ -25,8 +25,6 @@ internal sealed class CloudFoundrySecurityMiddlewareTestScenarios : TheoryData<s
     private readonly string _permissionsCheckNotFoundLog =
         $"INFO {typeof(PermissionsProvider)}: Cloud Foundry returned status: NotFound while obtaining permissions from: https://example.api.com/v2/apps/not-found/permissions";
 
-    private readonly string _permissionsCheckTimeoutLog =
-        $"WARN {typeof(PermissionsProvider)}: Cloud Foundry request timed out while obtaining permissions from: https://example.api.com/v2/apps/timeout/permissions";
     private readonly string _middlewareForbiddenLog =
         $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator Security Error: Forbidden - {Messages.AccessDenied}";
 
@@ -75,15 +73,9 @@ internal sealed class CloudFoundrySecurityMiddlewareTestScenarios : TheoryData<s
 
         Add("success", HttpStatusCode.OK, null, [SuccessLog], true);
 
-        Add("timeout", HttpStatusCode.ServiceUnavailable, Messages.CloudFoundryTimeout, [
-            _permissionsCheckTimeoutLog,
-            _middlewareTimeoutLog
-        ], true);
+        Add("timeout", HttpStatusCode.ServiceUnavailable, Messages.CloudFoundryTimeout, [_middlewareTimeoutLog], true);
 
-        Add("timeout", HttpStatusCode.OK, Messages.CloudFoundryTimeout, [
-            _permissionsCheckTimeoutLog,
-            _middlewareTimeoutLog
-        ], false);
+        Add("timeout", HttpStatusCode.OK, Messages.CloudFoundryTimeout, [_middlewareTimeoutLog], false);
 
         Add("unauthorized", HttpStatusCode.Unauthorized, Messages.InvalidToken, [
             _permissionsCheckUnauthorizedLog,
