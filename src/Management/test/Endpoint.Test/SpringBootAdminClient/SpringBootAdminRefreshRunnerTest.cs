@@ -27,6 +27,31 @@ public sealed class SpringBootAdminRefreshRunnerTest
     private static readonly string CurrentAppName = Assembly.GetEntryAssembly()!.GetName().Name!;
 
     [Fact]
+    public async Task Configures_default_settings()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSpringBootAdminClient();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        SpringBootAdminClientOptions options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>().Value;
+
+        options.Url.Should().BeNull();
+        options.ApplicationName.Should().BeNull();
+        options.BaseUrl.Should().BeNull();
+        options.BaseScheme.Should().BeNull();
+        options.BaseHost.Should().BeNull();
+        options.BasePort.Should().BeNull();
+        options.BasePath.Should().BeNull();
+        options.UseNetworkInterfaces.Should().BeFalse();
+        options.PreferIPAddress.Should().BeFalse();
+        options.ValidateCertificates.Should().BeTrue();
+        options.ConnectionTimeout.Should().Be(5.Seconds());
+        options.RefreshInterval.Should().Be(15.Seconds());
+        options.Metadata.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task BindsConfiguration()
     {
         var appSettings = new Dictionary<string, string?>
