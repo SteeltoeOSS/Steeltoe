@@ -17,97 +17,111 @@ public sealed class ConfigureCertificateOptionsTest
 {
     private const string CertificateName = "test";
 
-    [Fact]
-    public void ConfigureCertificateOptions_NoPath_NoCertificate()
+    [InlineData("")]
+    [InlineData(CertificateName)]
+    [Theory]
+    public void ConfigureCertificateOptions_NoPath_NoCertificate(string certificateName)
     {
         var configureOptions = new ConfigureCertificateOptions(new ConfigurationBuilder().Build());
         var options = new CertificateOptions();
 
-        configureOptions.Configure(CertificateName, options);
+        configureOptions.Configure(certificateName, options);
 
         options.Certificate.Should().BeNull();
     }
 
-    [Fact]
-    public void ConfigureCertificateOptions_BadPath_NoCertificate()
+    [InlineData("")]
+    [InlineData(CertificateName)]
+    [Theory]
+    public void ConfigureCertificateOptions_BadPath_NoCertificate(string certificateName)
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
-            [$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath"] = "does-not-exist.crt"
+            [$"{GetConfigurationKey(certificateName, "CertificateFilePath")}"] = "does-not-exist.crt"
         }).Build();
 
         var configureOptions = new ConfigureCertificateOptions(configurationRoot);
 
         var options = new CertificateOptions();
 
-        configureOptions.Configure(CertificateName, options);
+        configureOptions.Configure(certificateName, options);
 
         options.Certificate.Should().BeNull();
     }
 
-    [Fact]
-    public void ConfigureCertificateOptions_EmptyFile_Crashes()
+    [InlineData("")]
+    [InlineData(CertificateName)]
+    [Theory]
+    public void ConfigureCertificateOptions_EmptyFile_Crashes(string certificateName)
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
-            [$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath"] = "empty.crt"
+            [$"{GetConfigurationKey(certificateName, "CertificateFilePath")}"] = "empty.crt"
         }).Build();
 
         var configureOptions = new ConfigureCertificateOptions(configurationRoot);
         var options = new CertificateOptions();
 
-        Action action = () => configureOptions.Configure(CertificateName, options);
+        Action action = () => configureOptions.Configure(certificateName, options);
         action.Should().Throw<CryptographicException>();
 
         options.Certificate.Should().BeNull();
     }
 
-    [Fact]
-    public void ConfigureCertificateOptions_ThrowsOnInvalidKey()
+    [InlineData("")]
+    [InlineData(CertificateName)]
+    [Theory]
+    public void ConfigureCertificateOptions_ThrowsOnInvalidKey(string certificateName)
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
-            [$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath"] = "instance.crt",
-            [$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:privateKeyFilePath"] = "invalid.key"
+            [$"{GetConfigurationKey(certificateName, "CertificateFilePath")}"] = "instance.crt",
+            [$"{GetConfigurationKey(certificateName, "PrivateKeyFilePath")}"] = "invalid.key"
         }).Build();
 
         var configureOptions = new ConfigureCertificateOptions(configurationRoot);
         var options = new CertificateOptions();
 
-        Assert.Throws<CryptographicException>(() => configureOptions.Configure(CertificateName, options));
+        Assert.Throws<CryptographicException>(() => configureOptions.Configure(certificateName, options));
 
         options.Certificate.Should().BeNull();
     }
 
-    [Fact]
-    public void ConfigureCertificateOptions_ReadsP12File_CreatesCertificate()
+    [InlineData("")]
+    [InlineData(CertificateName)]
+    [Theory]
+    public void ConfigureCertificateOptions_ReadsP12File_CreatesCertificate(string certificateName)
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificate(CertificateName, "instance.p12").Build();
-        configurationRoot[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath"].Should().NotBeNull();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificate(certificateName, "instance.p12").Build();
+        configurationRoot[$"{GetConfigurationKey(certificateName, "CertificateFilePath")}"].Should().NotBeNull();
         var configureOptions = new ConfigureCertificateOptions(configurationRoot);
         var options = new CertificateOptions();
 
-        configureOptions.Configure(CertificateName, options);
+        configureOptions.Configure(certificateName, options);
 
         options.Certificate.Should().NotBeNull();
         options.Certificate.HasPrivateKey.Should().BeTrue();
     }
 
-    [Fact]
-    public void ConfigureCertificateOptions_ReadsPemFiles_CreatesCertificate()
+    [InlineData("")]
+    [InlineData(CertificateName)]
+    [Theory]
+    public void ConfigureCertificateOptions_ReadsPemFiles_CreatesCertificate(string certificateName)
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificate(CertificateName, "instance.crt", "instance.key").Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificate(certificateName, "instance.crt", "instance.key").Build();
         var configureOptions = new ConfigureCertificateOptions(configurationRoot);
         var options = new CertificateOptions();
 
-        configureOptions.Configure(CertificateName, options);
+        configureOptions.Configure(certificateName, options);
 
         options.Certificate.Should().NotBeNull();
         options.Certificate.HasPrivateKey.Should().BeTrue();
     }
 
-    [Fact]
-    public async Task CertificateOptionsUpdateOnFileContentChange()
+    [InlineData("")]
+    [InlineData(CertificateName)]
+    [Theory]
+    public async Task CertificateOptionsUpdateOnFileContentChange(string certificateName)
     {
         using var sandbox = new Sandbox();
         string firstCertificateContent = await File.ReadAllTextAsync("instance.crt", TestContext.Current.CancellationToken);
@@ -115,34 +129,37 @@ public sealed class ConfigureCertificateOptionsTest
         var firstX509 = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
         string secondCertificateContent = await File.ReadAllTextAsync("instance2.crt", TestContext.Current.CancellationToken);
         string secondPrivateKeyContent = await File.ReadAllTextAsync("instance2.key", TestContext.Current.CancellationToken);
-        var secondX509 = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
+        var secondX509 = X509Certificate2.CreateFromPemFile("instance2.crt", "instance2.key");
         string certificateFilePath = sandbox.CreateFile("cert", firstCertificateContent);
         string privateKeyFilePath = sandbox.CreateFile("key", firstPrivateKeyContent);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddCertificate(CertificateName, certificateFilePath, privateKeyFilePath);
+        configurationBuilder.AddCertificate(certificateName, certificateFilePath, privateKeyFilePath);
         IConfiguration configuration = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton(configuration);
-        services.ConfigureCertificateOptions(Options.DefaultName);
+        services.ConfigureCertificateOptions(certificateName);
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
 
-        optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);
+        optionsMonitor.Get(certificateName).Certificate.Should().BeEquivalentTo(firstX509);
 
         await File.WriteAllTextAsync(certificateFilePath, secondCertificateContent, TestContext.Current.CancellationToken);
         await File.WriteAllTextAsync(privateKeyFilePath, secondPrivateKeyContent, TestContext.Current.CancellationToken);
-        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-        optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(secondX509);
+        SpinWait.SpinUntil(() => optionsMonitor.Get(certificateName).Certificate!.Equals(secondX509), TimeSpan.FromSeconds(10));
+
+        optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
     }
 
-    [Fact]
-    public async Task CertificateOptionsUpdateOnFileLocationChange()
+    [InlineData("")]
+    [InlineData(CertificateName)]
+    [Theory]
+    public async Task CertificateOptionsUpdateOnFileLocationChange(string certificateName)
     {
         using var sandbox = new Sandbox();
         string instance1Certificate = await File.ReadAllTextAsync("instance.crt", TestContext.Current.CancellationToken);
@@ -150,25 +167,25 @@ public sealed class ConfigureCertificateOptionsTest
         var firstX509 = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
         string instance2Certificate = await File.ReadAllTextAsync("instance2.crt", TestContext.Current.CancellationToken);
         string instance2PrivateKey = await File.ReadAllTextAsync("instance2.key", TestContext.Current.CancellationToken);
-        var secondX509 = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
+        var secondX509 = X509Certificate2.CreateFromPemFile("instance2.crt", "instance2.key");
         string certificate1FilePath = sandbox.CreateFile("cert", instance1Certificate);
         string privateKey1FilePath = sandbox.CreateFile("key", instance1PrivateKey);
         string certificate2FilePath = sandbox.CreateFile("cert2", instance2Certificate);
         string privateKey2FilePath = sandbox.CreateFile("key2", instance2PrivateKey);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddCertificate(CertificateName, certificate1FilePath, privateKey1FilePath);
+        configurationBuilder.AddCertificate(certificateName, certificate1FilePath, privateKey1FilePath);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton<IConfiguration>(configurationRoot);
-        services.ConfigureCertificateOptions(CertificateName);
+        services.ConfigureCertificateOptions(certificateName);
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
-        optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);
+        optionsMonitor.Get(certificateName).Certificate.Should().BeEquivalentTo(firstX509);
 
         IOptionsChangeTokenSource<CertificateOptions>[] tokenSources = [.. serviceProvider.GetServices<IOptionsChangeTokenSource<CertificateOptions>>()];
 
@@ -179,22 +196,32 @@ public sealed class ConfigureCertificateOptionsTest
 
         using (changeToken.RegisterChangeCallback(_ => changeCalled = true, "changed-path"))
         {
-            configurationRoot[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:CertificateFilePath"] = certificate2FilePath;
-            configurationRoot[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:PrivateKeyFilePath"] = privateKey2FilePath;
+            changeCalled.Should().BeFalse("nothing has changed yet");
+            configurationRoot[$"{GetConfigurationKey(certificateName, "CertificateFilePath")}"] = certificate2FilePath;
+            configurationRoot[$"{GetConfigurationKey(certificateName, "PrivateKeyFilePath")}"] = privateKey2FilePath;
             configurationRoot.Reload();
-            optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(secondX509);
             changeCalled.Should().BeTrue("file path information changed");
+            optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
         }
 
         changeCalled = false;
+        changeToken = tokenSources.OfType<FilePathInOptionsChangeTokenSource<CertificateOptions>>().First().GetChangeToken();
 
         using (changeToken.RegisterChangeCallback(_ => changeCalled = true, "original-content-in-new-path"))
         {
+            changeCalled.Should().BeFalse("nothing has changed yet");
             await File.WriteAllTextAsync(certificate2FilePath, instance1Certificate, TestContext.Current.CancellationToken);
             await File.WriteAllTextAsync(privateKey2FilePath, instance1PrivateKey, TestContext.Current.CancellationToken);
-            await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
-            optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);
+            SpinWait.SpinUntil(() => optionsMonitor.Get(certificateName).Certificate!.Equals(firstX509), TimeSpan.FromSeconds(10));
             changeCalled.Should().BeTrue("file contents changed");
+            optionsMonitor.Get(certificateName).Certificate.Should().Be(firstX509);
         }
+    }
+
+    private static string GetConfigurationKey(string? optionName, string propertyName)
+    {
+        return string.IsNullOrEmpty(optionName)
+            ? string.Join(ConfigurationPath.KeyDelimiter, CertificateOptions.ConfigurationKeyPrefix, propertyName)
+            : string.Join(ConfigurationPath.KeyDelimiter, CertificateOptions.ConfigurationKeyPrefix, optionName, propertyName);
     }
 }

@@ -32,9 +32,9 @@ public static class CertificateServiceCollectionExtensions
             ? CertificateOptions.ConfigurationKeyPrefix
             : ConfigurationPath.Combine(CertificateOptions.ConfigurationKeyPrefix, certificateName);
 
-        services.AddOptions<CertificateOptions>().BindConfiguration(configurationKey);
-        services.WatchFilePathInOptions<CertificateOptions>(configurationKey, certificateName, "CertificateFileName");
-        services.WatchFilePathInOptions<CertificateOptions>(configurationKey, certificateName, "PrivateKeyFileName");
+        services.AddOptions<CertificateOptions>(certificateName).BindConfiguration(configurationKey);
+        services.WatchFilePathInOptions<CertificateOptions>(CertificateOptions.ConfigurationKeyPrefix, certificateName, "CertificateFilePath");
+        services.WatchFilePathInOptions<CertificateOptions>(CertificateOptions.ConfigurationKeyPrefix, certificateName, "PrivateKeyFilePath");
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<CertificateOptions>, ConfigureCertificateOptions>());
         return services;
