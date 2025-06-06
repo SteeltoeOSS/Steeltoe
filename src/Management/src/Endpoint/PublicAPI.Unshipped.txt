@@ -438,7 +438,7 @@ Steeltoe.Management.Endpoint.Configuration.IConfigureOptionsWithKey<T>
 Steeltoe.Management.Endpoint.Configuration.IConfigureOptionsWithKey<T>.ConfigurationKey.get -> string!
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.CustomJsonConverters.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Enabled.get -> bool?
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Enabled.get -> bool
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Enabled.set -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.ManagementOptions() -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Path.get -> string?

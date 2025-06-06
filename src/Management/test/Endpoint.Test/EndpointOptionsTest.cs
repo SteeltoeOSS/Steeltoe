@@ -12,11 +12,13 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.Environment;
 using Steeltoe.Management.Endpoint.Actuators.Info;
+using Steeltoe.Management.Endpoint.Actuators.Loggers;
+using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public sealed class ConfigureOptionsTest
+public sealed class EndpointOptionsTest
 {
     [Fact]
     public async Task Does_not_register_options_configurer_multiple_times()
@@ -226,6 +228,97 @@ public sealed class ConfigureOptionsTest
 
         HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Theory]
+    [InlineData(null, null, "/")]
+    [InlineData(null, "", "/")]
+    [InlineData(null, "/", "/")]
+    [InlineData(null, "/ping", "/ping")]
+    [InlineData(null, "/ping/", "/ping")]
+    [InlineData(null, "ping", "/ping")]
+    [InlineData(null, "ping/", "/ping")]
+    [InlineData("", null, "/")]
+    [InlineData("", "", "/")]
+    [InlineData("", "/", "/")]
+    [InlineData("", "/ping", "/ping")]
+    [InlineData("", "/ping/", "/ping")]
+    [InlineData("", "ping", "/ping")]
+    [InlineData("", "ping/", "/ping")]
+    [InlineData("/", null, "/")]
+    [InlineData("/", "", "/")]
+    [InlineData("/", "/", "/")]
+    [InlineData("/", "/ping", "/ping")]
+    [InlineData("/", "/ping/", "/ping")]
+    [InlineData("/", "ping", "/ping")]
+    [InlineData("/", "ping/", "/ping")]
+    [InlineData("/actuator", null, "/actuator")]
+    [InlineData("/actuator", "", "/actuator")]
+    [InlineData("/actuator", "/", "/actuator")]
+    [InlineData("/actuator", "/ping", "/actuator/ping")]
+    [InlineData("/actuator", "/ping/", "/actuator/ping")]
+    [InlineData("/actuator", "ping", "/actuator/ping")]
+    [InlineData("/actuator", "ping/", "/actuator/ping")]
+    [InlineData("/actuator/", null, "/actuator")]
+    [InlineData("/actuator/", "", "/actuator")]
+    [InlineData("/actuator/", "/", "/actuator")]
+    [InlineData("/actuator/", "/ping", "/actuator/ping")]
+    [InlineData("/actuator/", "/ping/", "/actuator/ping")]
+    [InlineData("/actuator/", "ping", "/actuator/ping")]
+    [InlineData("/actuator/", "ping/", "/actuator/ping")]
+    [InlineData("actuator", null, "/actuator")]
+    [InlineData("actuator", "", "/actuator")]
+    [InlineData("actuator", "/", "/actuator")]
+    [InlineData("actuator", "/ping", "/actuator/ping")]
+    [InlineData("actuator", "/ping/", "/actuator/ping")]
+    [InlineData("actuator", "ping", "/actuator/ping")]
+    [InlineData("actuator", "ping/", "/actuator/ping")]
+    [InlineData("actuator/", null, "/actuator")]
+    [InlineData("actuator/", "", "/actuator")]
+    [InlineData("actuator/", "/", "/actuator")]
+    [InlineData("actuator/", "/ping", "/actuator/ping")]
+    [InlineData("actuator/", "/ping/", "/actuator/ping")]
+    [InlineData("actuator/", "ping", "/actuator/ping")]
+    [InlineData("actuator/", "ping/", "/actuator/ping")]
+    public void GetEndpointPath_combines_segments(string? managementPath, string? endpointPath, string expected)
+    {
+        var endpointOptions = new RouteMappingsEndpointOptions
+        {
+            Path = endpointPath
+        };
+
+        string result = endpointOptions.GetEndpointPath(managementPath);
+
+        result.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(false, false, false, false)]
+    [InlineData(false, false, true, false)]
+    [InlineData(false, true, false, false)]
+    [InlineData(false, true, true, true)]
+    [InlineData(true, false, false, false)]
+    [InlineData(true, false, true, true)]
+    [InlineData(true, true, false, false)]
+    [InlineData(true, true, true, true)]
+    public async Task CanInvoke_ignores_exposure_when_running_on_CloudFoundry(bool isCloudFoundryEndpoint, bool isExposed, bool isEnabled, bool canInvoke)
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Management:Endpoints:Actuator:Exposure:Include:0"] = isExposed ? "loggers" : "beans",
+            ["Management:Endpoints:Loggers:Enabled"] = isEnabled ? "true" : "false"
+        };
+
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddLoggersActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        ManagementOptions managementOptions = serviceProvider.GetRequiredService<IOptions<ManagementOptions>>().Value;
+        LoggersEndpointOptions endpointOptions = serviceProvider.GetRequiredService<IOptions<LoggersEndpointOptions>>().Value;
+        string requestPath = isCloudFoundryEndpoint ? "/cloudfoundryapplication/loggers" : "/actuators/loggers";
+
+        endpointOptions.CanInvoke(requestPath, managementOptions).Should().Be(canInvoke);
     }
 
     private sealed class CustomManagementOptionsConfigurer : IConfigureOptions<ManagementOptions>

@@ -77,7 +77,7 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
         private const string Prefix = "management:endpoints:actuator:exposure";
         private const string SpringKeyPrefix = "management:endpoints:web:exposure";
 
-        private static readonly List<string> DefaultIncludes =
+        private static readonly HashSet<string> DefaultIncludes =
         [
             "health",
             "info"
@@ -96,50 +96,54 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
         {
             ArgumentNullException.ThrowIfNull(options);
 
+            HashSet<string> includes = [];
+            HashSet<string> excludes = [];
+
             IConfigurationSection springSection = _configuration.GetSection(SpringKeyPrefix);
 
             if (springSection.Exists())
             {
-                List<string> springIncludes = GetListFromConfigurationCsvString(springSection, "include") ?? [];
-                ReplaceCollection(options.Include, springIncludes);
-
-                List<string> springExcludes = GetListFromConfigurationCsvString(springSection, "exclude") ?? [];
-                ReplaceCollection(options.Exclude, springExcludes);
+                includes = GetSetFromConfigurationCsvString(springSection, "include") ?? [];
+                excludes = GetSetFromConfigurationCsvString(springSection, "exclude") ?? [];
             }
 
             _configuration.GetSection(Prefix).Bind(options);
 
-            if (options.Include.Count == 0 && options.Exclude.Count == 0)
+            if (options.Include.Count == 0 && options.Exclude.Count == 0 && !springSection.Exists())
             {
-                ReplaceCollection(options.Include, DefaultIncludes);
+                includes = DefaultIncludes;
             }
             else
             {
                 if (options.Include is [""])
                 {
-                    ReplaceCollection(options.Include, Array.Empty<string>());
+                    includes.Clear();
+                }
+                else
+                {
+                    options.Include.ToList().ForEach(include => includes.Add(include));
                 }
 
                 if (options.Exclude is [""])
                 {
-                    ReplaceCollection(options.Exclude, Array.Empty<string>());
+                    excludes.Clear();
+                }
+                else
+                {
+                    options.Exclude.ToList().ForEach(exclude => excludes.Add(exclude));
                 }
             }
+
+            options.Include.Clear();
+            includes.ToList().ForEach(options.Include.Add);
+
+            options.Exclude.Clear();
+            excludes.ToList().ForEach(options.Exclude.Add);
         }
 
-        private static List<string>? GetListFromConfigurationCsvString(IConfigurationSection section, string key)
+        private static HashSet<string>? GetSetFromConfigurationCsvString(IConfigurationSection section, string key)
         {
-            return section.GetValue<string?>(key)?.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
-        }
-
-        private static void ReplaceCollection(ICollection<string> source, IEnumerable<string> itemsToAdd)
-        {
-            source.Clear();
-
-            foreach (string item in itemsToAdd)
-            {
-                source.Add(item);
-            }
+            return section.GetValue<string?>(key)?.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToHashSet();
         }
     }
 }

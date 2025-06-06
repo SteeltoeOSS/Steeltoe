@@ -15,12 +15,7 @@ internal static class EndpointOptionsExtensions
         ArgumentNullException.ThrowIfNull(endpointOptions);
         ArgumentNullException.ThrowIfNull(managementOptions);
 
-        if (endpointOptions.Enabled != null)
-        {
-            return endpointOptions.Enabled.Value;
-        }
-
-        return managementOptions.Enabled ?? true;
+        return endpointOptions.Enabled ?? managementOptions.Enabled;
     }
 
     public static bool IsExposed(this EndpointOptions endpointOptions, ManagementOptions managementOptions)
