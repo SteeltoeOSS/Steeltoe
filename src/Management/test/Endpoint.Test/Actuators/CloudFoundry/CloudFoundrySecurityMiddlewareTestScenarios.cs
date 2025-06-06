@@ -10,9 +10,6 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
 
 internal sealed class CloudFoundrySecurityMiddlewareTestScenarios : TheoryData<string, HttpStatusCode?, string?, string[], bool>
 {
-    private const string ExceptionLogStart = "FAIL Microsoft.AspNetCore.Server.Kestrel: Connection id";
-    private const string ExceptionLogEnd = ": An unhandled exception was thrown by the application.";
-
     private const string SuccessLog =
         "INFO System.Net.Http.HttpClient.CloudFoundrySecurity.ClientHandler: Sending HTTP request GET https://example.api.com/v2/apps/success/permissions";
 
@@ -28,6 +25,9 @@ internal sealed class CloudFoundrySecurityMiddlewareTestScenarios : TheoryData<s
     private readonly string _middlewareForbiddenLog =
         $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator Security Error: Forbidden - {Messages.AccessDenied}";
 
+    private readonly string _middlewareExceptionLog =
+        $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator Security Error: ServiceUnavailable - Exception of type 'System.Net.Http.HttpRequestException' with error 'Unknown' was thrown";
+
     private readonly string _middlewareTimeoutLog =
         $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator Security Error: ServiceUnavailable - {Messages.CloudFoundryTimeout}";
 
@@ -39,15 +39,11 @@ internal sealed class CloudFoundrySecurityMiddlewareTestScenarios : TheoryData<s
 
     public CloudFoundrySecurityMiddlewareTestScenarios()
     {
-        Add("exception", HttpStatusCode.InternalServerError, string.Empty, [
-            ExceptionLogStart,
-            ExceptionLogEnd
-        ], true);
+        Add("exception", HttpStatusCode.ServiceUnavailable, "Exception of type 'System.Net.Http.HttpRequestException' with error 'Unknown' was thrown",
+            [_middlewareExceptionLog], true);
 
-        Add("exception", HttpStatusCode.InternalServerError, string.Empty, [
-            ExceptionLogStart,
-            ExceptionLogEnd
-        ], false);
+        Add("exception", HttpStatusCode.OK, "Exception of type 'System.Net.Http.HttpRequestException' with error 'Unknown' was thrown",
+            [_middlewareExceptionLog], false);
 
         Add("forbidden", HttpStatusCode.Forbidden, Messages.AccessDenied, [
             _permissionsCheckForbiddenLog,
