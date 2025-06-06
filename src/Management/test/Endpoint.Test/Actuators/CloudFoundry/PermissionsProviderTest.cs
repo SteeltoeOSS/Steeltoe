@@ -61,7 +61,7 @@ public sealed class PermissionsProviderTest : BaseTest
     [InlineData("no_sensitive_data", HttpStatusCode.OK, "")]
     [InlineData("success", HttpStatusCode.OK, "")]
     [Theory]
-    public async Task GetPermissionsAsyncReturnsExpected(string scenario, HttpStatusCode? steeltoeStatusCode, string expectedMessage)
+    public async Task Returns_expected_response_on_permission_check(string scenario, HttpStatusCode? steeltoeStatusCode, string errorMessage)
     {
         var appSettings = new Dictionary<string, string>
         {
@@ -87,13 +87,13 @@ public sealed class PermissionsProviderTest : BaseTest
                 permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken));
 
             exception.StatusCode.Should().Be(steeltoeStatusCode);
-            exception.Message.Should().Be(expectedMessage);
+            exception.Message.Should().Be(errorMessage);
         }
         else
         {
             SecurityResult result = await permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken);
             result.Code.Should().Be(steeltoeStatusCode);
-            result.Message.Should().Be(expectedMessage);
+            result.Message.Should().Be(errorMessage);
 
             switch (scenario)
             {

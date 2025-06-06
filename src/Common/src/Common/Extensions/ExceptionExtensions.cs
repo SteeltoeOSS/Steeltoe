@@ -66,7 +66,7 @@ internal static class ExceptionExtensions
     /// <param name="exception">
     /// The caught exception to inspect.
     /// </param>
-    public static bool IsTimeout(this Exception? exception)
+    public static bool IsHttpClientTimeout(this Exception? exception)
     {
         // See note in remarks at https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.sendasync.
         if (exception is OperationCanceledException && exception.InnerException?.GetType() == typeof(TimeoutException))

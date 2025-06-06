@@ -340,7 +340,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
 
     [ClassData(typeof(CloudFoundrySecurityMiddlewareTestScenarios))]
     [Theory]
-    public async Task IntegrationTestReturnsExpected(string scenario, HttpStatusCode? steeltoeStatusCode, string? errorMessage, string[] expectedLogs,
+    public async Task Returns_expected_response_on_permission_check(string scenario, HttpStatusCode? steeltoeStatusCode, string? errorMessage, string[] expectedLogs,
         bool useStatusCodeFromResponse)
     {
         var appSettings = new Dictionary<string, string?>

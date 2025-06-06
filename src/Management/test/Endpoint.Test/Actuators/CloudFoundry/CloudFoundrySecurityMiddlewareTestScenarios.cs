@@ -3,100 +3,100 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Messages = Steeltoe.Management.Endpoint.Actuators.CloudFoundry.PermissionsProvider.Messages;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
 
 internal sealed class CloudFoundrySecurityMiddlewareTestScenarios : TheoryData<string, HttpStatusCode?, string?, string[], bool>
 {
-    private const string CFForbiddenLog =
-        "INFO Steeltoe.Management.Endpoint.Actuators.CloudFoundry.PermissionsProvider: Cloud Foundry returned status: Forbidden while obtaining permissions from: https://example.api.com/v2/apps/forbidden/permissions";
-
-    private const string CFExceptionLogStart = "FAIL Microsoft.AspNetCore.Server.Kestrel: Connection id";
-    private const string CFExceptionLogEnd = ": An unhandled exception was thrown by the application.";
-
-    private const string CFUnauthorizedLog =
-        "INFO Steeltoe.Management.Endpoint.Actuators.CloudFoundry.PermissionsProvider: Cloud Foundry returned status: Unauthorized while obtaining permissions from: https://example.api.com/v2/apps/unauthorized/permissions";
-
-    private const string CFNotFoundLog =
-        "INFO Steeltoe.Management.Endpoint.Actuators.CloudFoundry.PermissionsProvider: Cloud Foundry returned status: NotFound while obtaining permissions from: https://example.api.com/v2/apps/not-found/permissions";
-
-    private const string CFTimeoutLog =
-        "FAIL Steeltoe.Management.Endpoint.Actuators.CloudFoundry.PermissionsProvider: Cloud Foundry request timed out while obtaining permissions from: https://example.api.com/v2/apps/timeout/permissions";
-
-    private const string MiddlewareForbiddenLog =
-        $"FAIL Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundrySecurityMiddleware: Actuator Security Error: Forbidden - {Messages.AccessDenied}";
-
-    private const string MiddlewareTimeoutLog =
-        $"FAIL Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundrySecurityMiddleware: Actuator Security Error: ServiceUnavailable - {Messages.CloudFoundryTimeout}";
-
-    private const string MiddlewareUnauthorizedLog =
-        $"FAIL Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundrySecurityMiddleware: Actuator Security Error: Unauthorized - {Messages.InvalidToken}";
-
-    private const string MiddlewareUnavailableLog =
-        $"FAIL Steeltoe.Management.Endpoint.Actuators.CloudFoundry.CloudFoundrySecurityMiddleware: Actuator Security Error: ServiceUnavailable - {Messages.CloudFoundryNotReachable}";
+    private const string ExceptionLogStart = "FAIL Microsoft.AspNetCore.Server.Kestrel: Connection id";
+    private const string ExceptionLogEnd = ": An unhandled exception was thrown by the application.";
 
     private const string SuccessLog =
         "INFO System.Net.Http.HttpClient.CloudFoundrySecurity.ClientHandler: Sending HTTP request GET https://example.api.com/v2/apps/success/permissions";
 
+    private readonly string _permissionsCheckForbiddenLog =
+        $"INFO {typeof(PermissionsProvider)}: Cloud Foundry returned status: Forbidden while obtaining permissions from: https://example.api.com/v2/apps/forbidden/permissions";
+
+    private readonly string _permissionsCheckUnauthorizedLog =
+        $"INFO {typeof(PermissionsProvider)}: Cloud Foundry returned status: Unauthorized while obtaining permissions from: https://example.api.com/v2/apps/unauthorized/permissions";
+
+    private readonly string _permissionsCheckNotFoundLog =
+        $"INFO {typeof(PermissionsProvider)}: Cloud Foundry returned status: NotFound while obtaining permissions from: https://example.api.com/v2/apps/not-found/permissions";
+
+    private readonly string _permissionsCheckTimeoutLog =
+        $"WARN {typeof(PermissionsProvider)}: Cloud Foundry request timed out while obtaining permissions from: https://example.api.com/v2/apps/timeout/permissions";
+    private readonly string _middlewareForbiddenLog =
+        $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator Security Error: Forbidden - {Messages.AccessDenied}";
+
+    private readonly string _middlewareTimeoutLog =
+        $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator Security Error: ServiceUnavailable - {Messages.CloudFoundryTimeout}";
+
+    private readonly string _middlewareUnauthorizedLog =
+        $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator Security Error: Unauthorized - {Messages.InvalidToken}";
+
+    private readonly string _middlewareUnavailableLog =
+        $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator Security Error: ServiceUnavailable - {Messages.CloudFoundryNotReachable}";
+
     public CloudFoundrySecurityMiddlewareTestScenarios()
     {
         Add("exception", HttpStatusCode.InternalServerError, string.Empty, [
-            CFExceptionLogStart,
-            CFExceptionLogEnd
+            ExceptionLogStart,
+            ExceptionLogEnd
         ], true);
 
         Add("exception", HttpStatusCode.InternalServerError, string.Empty, [
-            CFExceptionLogStart,
-            CFExceptionLogEnd
+            ExceptionLogStart,
+            ExceptionLogEnd
         ], false);
 
         Add("forbidden", HttpStatusCode.Forbidden, Messages.AccessDenied, [
-            CFForbiddenLog,
-            MiddlewareForbiddenLog
+            _permissionsCheckForbiddenLog,
+            _middlewareForbiddenLog
         ], true);
 
         Add("forbidden", HttpStatusCode.Forbidden, Messages.AccessDenied, [
-            CFForbiddenLog,
-            MiddlewareForbiddenLog
+            _permissionsCheckForbiddenLog,
+            _middlewareForbiddenLog
         ], false);
 
-        Add("no_sensitive_data", HttpStatusCode.OK, null, [MiddlewareForbiddenLog], true);
+        Add("no_sensitive_data", HttpStatusCode.OK, null, [_middlewareForbiddenLog], true);
 
         Add("not-found", HttpStatusCode.Unauthorized, Messages.InvalidToken, [
-            CFNotFoundLog,
-            MiddlewareUnauthorizedLog
+            _permissionsCheckNotFoundLog,
+            _middlewareUnauthorizedLog
         ], true);
 
         Add("not-found", HttpStatusCode.Unauthorized, Messages.InvalidToken, [
-            CFNotFoundLog,
-            MiddlewareUnauthorizedLog
+            _permissionsCheckNotFoundLog,
+            _middlewareUnauthorizedLog
         ], false);
 
         Add("success", HttpStatusCode.OK, null, [SuccessLog], true);
 
         Add("timeout", HttpStatusCode.ServiceUnavailable, Messages.CloudFoundryTimeout, [
-            CFTimeoutLog,
-            MiddlewareTimeoutLog
+            _permissionsCheckTimeoutLog,
+            _middlewareTimeoutLog
         ], true);
 
         Add("timeout", HttpStatusCode.OK, Messages.CloudFoundryTimeout, [
-            CFTimeoutLog,
-            MiddlewareTimeoutLog
+            _permissionsCheckTimeoutLog,
+            _middlewareTimeoutLog
         ], false);
 
         Add("unauthorized", HttpStatusCode.Unauthorized, Messages.InvalidToken, [
-            CFUnauthorizedLog,
-            MiddlewareUnauthorizedLog
+            _permissionsCheckUnauthorizedLog,
+            _middlewareUnauthorizedLog
         ], true);
 
         Add("unauthorized", HttpStatusCode.Unauthorized, Messages.InvalidToken, [
-            CFUnauthorizedLog,
-            MiddlewareUnauthorizedLog
+            _permissionsCheckUnauthorizedLog,
+            _middlewareUnauthorizedLog
         ], false);
 
-        Add("unavailable", HttpStatusCode.ServiceUnavailable, Messages.CloudFoundryNotReachable, [MiddlewareUnavailableLog], true);
+        Add("unavailable", HttpStatusCode.ServiceUnavailable, Messages.CloudFoundryNotReachable, [_middlewareUnavailableLog], true);
 
-        Add("unavailable", HttpStatusCode.OK, Messages.CloudFoundryNotReachable, [MiddlewareUnavailableLog], false);
+        Add("unavailable", HttpStatusCode.OK, Messages.CloudFoundryNotReachable, [_middlewareUnavailableLog], false);
     }
 }

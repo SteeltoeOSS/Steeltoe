@@ -81,9 +81,9 @@ internal sealed class PermissionsProvider
             EndpointPermissions permissions = await ParsePermissionsResponseAsync(response, cancellationToken);
             return new SecurityResult(permissions);
         }
-        catch (Exception exception) when (exception.IsTimeout())
+        catch (Exception exception) when (exception.IsHttpClientTimeout())
         {
-            _logger.LogError(exception, "Cloud Foundry request timed out while obtaining permissions from: {PermissionsUri}", checkPermissionsUri);
+            _logger.LogWarning(exception, "Cloud Foundry request timed out while obtaining permissions from: {PermissionsUri}", checkPermissionsUri);
 
             return new SecurityResult(HttpStatusCode.ServiceUnavailable, Messages.CloudFoundryTimeout);
         }

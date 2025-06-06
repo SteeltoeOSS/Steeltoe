@@ -164,7 +164,9 @@ internal sealed class CloudFoundrySecurityMiddleware
         _logger.LogError("Actuator Security Error: {Code} - {Message}", error.Code, error.Message);
         context.Response.Headers.Append("Content-Type", "application/json;charset=UTF-8");
 
-        // allowing override of 400-level errors is more likely to cause confusion than to be useful
+        // UseStatusCodeFromResponse was added to prevent IIS/HWC from blocking the response body on 500-level errors.
+        // Blocking 400-level error responses would be more likely to cause confusion than to be useful.
+        // See https://github.com/SteeltoeOSS/Steeltoe/issues/418 for more information.
         if (_managementOptionsMonitor.CurrentValue.UseStatusCodeFromResponse || (int)error.Code < 500)
         {
             context.Response.StatusCode = (int)error.Code;
