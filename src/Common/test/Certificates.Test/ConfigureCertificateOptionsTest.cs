@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Common.Certificates.Test;
@@ -133,6 +134,11 @@ public sealed class ConfigureCertificateOptionsTest
         string certificateFilePath = sandbox.CreateFile("cert", firstCertificateContent);
         string privateKeyFilePath = sandbox.CreateFile("key", firstPrivateKeyContent);
 
+        if (TestContext.Current.IsRunningOnBuildServer())
+        {
+            await Task.Delay(1.Seconds(), TestContext.Current.CancellationToken);
+        }
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddCertificate(certificateName, certificateFilePath, privateKeyFilePath);
         IConfiguration configuration = configurationBuilder.Build();
@@ -151,7 +157,7 @@ public sealed class ConfigureCertificateOptionsTest
         await File.WriteAllTextAsync(certificateFilePath, secondCertificateContent, TestContext.Current.CancellationToken);
         await File.WriteAllTextAsync(privateKeyFilePath, secondPrivateKeyContent, TestContext.Current.CancellationToken);
 
-        SpinWait.SpinUntil(() => optionsMonitor.Get(certificateName).Certificate!.Equals(secondX509), TimeSpan.FromSeconds(10));
+        SpinWait.SpinUntil(() => optionsMonitor.Get(certificateName).Certificate!.Equals(secondX509), 4.Seconds());
 
         optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
     }
@@ -172,6 +178,11 @@ public sealed class ConfigureCertificateOptionsTest
         string privateKey1FilePath = sandbox.CreateFile("key", instance1PrivateKey);
         string certificate2FilePath = sandbox.CreateFile("cert2", instance2Certificate);
         string privateKey2FilePath = sandbox.CreateFile("key2", instance2PrivateKey);
+
+        if (TestContext.Current.IsRunningOnBuildServer())
+        {
+            await Task.Delay(1.Seconds(), TestContext.Current.CancellationToken);
+        }
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddCertificate(certificateName, certificate1FilePath, privateKey1FilePath);
@@ -212,7 +223,7 @@ public sealed class ConfigureCertificateOptionsTest
             changeCalled.Should().BeFalse("nothing has changed yet");
             await File.WriteAllTextAsync(certificate2FilePath, instance1Certificate, TestContext.Current.CancellationToken);
             await File.WriteAllTextAsync(privateKey2FilePath, instance1PrivateKey, TestContext.Current.CancellationToken);
-            SpinWait.SpinUntil(() => optionsMonitor.Get(certificateName).Certificate!.Equals(firstX509), TimeSpan.FromSeconds(10));
+            SpinWait.SpinUntil(() => optionsMonitor.Get(certificateName).Certificate!.Equals(firstX509), 4.Seconds());
             changeCalled.Should().BeTrue("file contents changed");
             optionsMonitor.Get(certificateName).Certificate.Should().Be(firstX509);
         }
