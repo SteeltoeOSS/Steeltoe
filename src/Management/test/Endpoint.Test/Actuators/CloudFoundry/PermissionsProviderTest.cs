@@ -57,7 +57,7 @@ public sealed class PermissionsProviderTest : BaseTest
     [InlineData("unauthorized", HttpStatusCode.Unauthorized, PermissionsProvider.Messages.InvalidToken)]
     [InlineData("forbidden", HttpStatusCode.Forbidden, PermissionsProvider.Messages.AccessDenied)]
     [InlineData("timeout", HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.CloudFoundryTimeout)]
-    [InlineData("exception", null, "Exception of type 'System.Net.Http.HttpRequestException' was thrown.")]
+    [InlineData("exception", HttpStatusCode.ServiceUnavailable, "Exception of type 'System.Net.Http.HttpRequestException' with error 'Unknown' was thrown")]
     [InlineData("no_sensitive_data", HttpStatusCode.OK, "")]
     [InlineData("success", HttpStatusCode.OK, "")]
     [Theory]
@@ -81,32 +81,21 @@ public sealed class PermissionsProviderTest : BaseTest
 
         var permissionsProvider = new PermissionsProvider(optionsMonitor, httpClientFactory, NullLogger<PermissionsProvider>.Instance);
 
-        if (scenario == "exception")
-        {
-            var exception = await Assert.ThrowsAsync<HttpRequestException>(() =>
-                permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken));
+        SecurityResult result = await permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken);
+        result.Code.Should().Be(steeltoeStatusCode);
+        result.Message.Should().Be(errorMessage);
 
-            exception.StatusCode.Should().Be(steeltoeStatusCode);
-            exception.Message.Should().Be(errorMessage);
-        }
-        else
+        switch (scenario)
         {
-            SecurityResult result = await permissionsProvider.GetPermissionsAsync("testToken", TestContext.Current.CancellationToken);
-            result.Code.Should().Be(steeltoeStatusCode);
-            result.Message.Should().Be(errorMessage);
-
-            switch (scenario)
-            {
-                case "success":
-                    result.Permissions.Should().Be(EndpointPermissions.Full);
-                    break;
-                case "no_sensitive_data":
-                    result.Permissions.Should().Be(EndpointPermissions.Restricted);
-                    break;
-                default:
-                    result.Permissions.Should().Be(EndpointPermissions.None);
-                    break;
-            }
+            case "success":
+                result.Permissions.Should().Be(EndpointPermissions.Full);
+                break;
+            case "no_sensitive_data":
+                result.Permissions.Should().Be(EndpointPermissions.Restricted);
+                break;
+            default:
+                result.Permissions.Should().Be(EndpointPermissions.None);
+                break;
         }
     }
 

@@ -81,6 +81,11 @@ internal sealed class PermissionsProvider
             EndpointPermissions permissions = await ParsePermissionsResponseAsync(response, cancellationToken);
             return new SecurityResult(permissions);
         }
+        catch (HttpRequestException exception)
+        {
+            return new SecurityResult(HttpStatusCode.ServiceUnavailable,
+                $"Exception of type '{typeof(HttpRequestException)}' with error '{exception.HttpRequestError}' was thrown");
+        }
         catch (Exception exception) when (exception.IsHttpClientTimeout())
         {
             return new SecurityResult(HttpStatusCode.ServiceUnavailable, Messages.CloudFoundryTimeout);
