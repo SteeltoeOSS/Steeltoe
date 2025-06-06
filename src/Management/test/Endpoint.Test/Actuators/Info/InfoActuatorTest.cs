@@ -49,11 +49,12 @@ public sealed class InfoActuatorTest
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddInfoActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        InfoEndpointOptions options = host.Services.GetRequiredService<IOptions<InfoEndpointOptions>>().Value;
+        InfoEndpointOptions options = serviceProvider.GetRequiredService<IOptions<InfoEndpointOptions>>().Value;
 
         options.Enabled.Should().BeNull();
         options.Id.Should().Be("info");
@@ -77,12 +78,12 @@ public sealed class InfoActuatorTest
             ["Management:Endpoints:Info:AllowedVerbs:0"] = "post"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddInfoActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        InfoEndpointOptions options = host.Services.GetRequiredService<IOptions<InfoEndpointOptions>>().Value;
+        InfoEndpointOptions options = serviceProvider.GetRequiredService<IOptions<InfoEndpointOptions>>().Value;
 
         options.Enabled.Should().BeTrue();
         options.Id.Should().Be("test-actuator-id");

@@ -46,11 +46,12 @@ public sealed partial class RouteMappingsActuatorTest
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddRouteMappingsActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddRouteMappingsActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        RouteMappingsEndpointOptions options = host.Services.GetRequiredService<IOptions<RouteMappingsEndpointOptions>>().Value;
+        RouteMappingsEndpointOptions options = serviceProvider.GetRequiredService<IOptions<RouteMappingsEndpointOptions>>().Value;
 
         options.IncludeActuators.Should().BeTrue();
         options.Enabled.Should().BeNull();
@@ -76,12 +77,12 @@ public sealed partial class RouteMappingsActuatorTest
             ["Management:Endpoints:Mappings:AllowedVerbs:0"] = "post"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddRouteMappingsActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddRouteMappingsActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        RouteMappingsEndpointOptions options = host.Services.GetRequiredService<IOptions<RouteMappingsEndpointOptions>>().Value;
+        RouteMappingsEndpointOptions options = serviceProvider.GetRequiredService<IOptions<RouteMappingsEndpointOptions>>().Value;
 
         options.IncludeActuators.Should().BeFalse();
         options.Enabled.Should().BeTrue();

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -35,11 +34,12 @@ public sealed class ThreadDumpActuatorTest
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddThreadDumpActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddThreadDumpActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        ThreadDumpEndpointOptions options = host.Services.GetRequiredService<IOptions<ThreadDumpEndpointOptions>>().Value;
+        ThreadDumpEndpointOptions options = serviceProvider.GetRequiredService<IOptions<ThreadDumpEndpointOptions>>().Value;
 
         options.Duration.Should().Be(10);
         options.Enabled.Should().BeNull();
@@ -65,12 +65,12 @@ public sealed class ThreadDumpActuatorTest
             ["Management:Endpoints:ThreadDump:AllowedVerbs:0"] = "post"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddThreadDumpActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddThreadDumpActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        ThreadDumpEndpointOptions options = host.Services.GetRequiredService<IOptions<ThreadDumpEndpointOptions>>().Value;
+        ThreadDumpEndpointOptions options = serviceProvider.GetRequiredService<IOptions<ThreadDumpEndpointOptions>>().Value;
 
         options.Duration.Should().Be(20);
         options.Enabled.Should().BeTrue();

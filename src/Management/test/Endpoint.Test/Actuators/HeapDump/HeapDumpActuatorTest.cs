@@ -4,7 +4,6 @@
 
 using System.IO.Compression;
 using System.Net;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -37,11 +36,12 @@ public sealed class HeapDumpActuatorTest
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddHeapDumpActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddHeapDumpActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        HeapDumpEndpointOptions options = host.Services.GetRequiredService<IOptions<HeapDumpEndpointOptions>>().Value;
+        HeapDumpEndpointOptions options = serviceProvider.GetRequiredService<IOptions<HeapDumpEndpointOptions>>().Value;
 
         options.HeapDumpType.Should().Be(Platform.IsOSX ? HeapDumpType.GCDump : HeapDumpType.Full);
         options.GCDumpTimeoutInSeconds.Should().Be(30);
@@ -69,12 +69,12 @@ public sealed class HeapDumpActuatorTest
             ["Management:Endpoints:HeapDump:AllowedVerbs:0"] = "post"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddHeapDumpActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddHeapDumpActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        HeapDumpEndpointOptions options = host.Services.GetRequiredService<IOptions<HeapDumpEndpointOptions>>().Value;
+        HeapDumpEndpointOptions options = serviceProvider.GetRequiredService<IOptions<HeapDumpEndpointOptions>>().Value;
 
         options.HeapDumpType.Should().Be(HeapDumpType.Mini);
         options.GCDumpTimeoutInSeconds.Should().Be(int.MaxValue);

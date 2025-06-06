@@ -30,11 +30,12 @@ public sealed class ReadinessStateHealthContributorTest
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddHealthActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        ReadinessStateContributorOptions options = host.Services.GetRequiredService<IOptions<ReadinessStateContributorOptions>>().Value;
+        ReadinessStateContributorOptions options = serviceProvider.GetRequiredService<IOptions<ReadinessStateContributorOptions>>().Value;
 
         options.Enabled.Should().BeFalse();
     }
@@ -47,12 +48,12 @@ public sealed class ReadinessStateHealthContributorTest
             ["Management:Endpoints:Health:Readiness:Enabled"] = "true"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddHealthActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        ReadinessStateContributorOptions options = host.Services.GetRequiredService<IOptions<ReadinessStateContributorOptions>>().Value;
+        ReadinessStateContributorOptions options = serviceProvider.GetRequiredService<IOptions<ReadinessStateContributorOptions>>().Value;
 
         options.Enabled.Should().BeTrue();
     }

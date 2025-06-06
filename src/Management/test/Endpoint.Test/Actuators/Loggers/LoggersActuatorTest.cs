@@ -40,11 +40,12 @@ public sealed class LoggersActuatorTest
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddLoggersActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddLoggersActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        LoggersEndpointOptions options = host.Services.GetRequiredService<IOptions<LoggersEndpointOptions>>().Value;
+        LoggersEndpointOptions options = serviceProvider.GetRequiredService<IOptions<LoggersEndpointOptions>>().Value;
 
         options.Enabled.Should().BeNull();
         options.Id.Should().Be("loggers");
@@ -68,12 +69,12 @@ public sealed class LoggersActuatorTest
             ["Management:Endpoints:Loggers:AllowedVerbs:0"] = "post"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddLoggersActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddLoggersActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        LoggersEndpointOptions options = host.Services.GetRequiredService<IOptions<LoggersEndpointOptions>>().Value;
+        LoggersEndpointOptions options = serviceProvider.GetRequiredService<IOptions<LoggersEndpointOptions>>().Value;
 
         options.Enabled.Should().BeTrue();
         options.Id.Should().Be("test-actuator-id");

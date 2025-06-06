@@ -37,11 +37,12 @@ public sealed class DbMigrationsActuatorTest
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddDbMigrationsActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddDbMigrationsActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        DbMigrationsEndpointOptions options = host.Services.GetRequiredService<IOptions<DbMigrationsEndpointOptions>>().Value;
+        DbMigrationsEndpointOptions options = serviceProvider.GetRequiredService<IOptions<DbMigrationsEndpointOptions>>().Value;
 
         options.Enabled.Should().BeNull();
         options.Id.Should().Be("dbmigrations");
@@ -65,12 +66,12 @@ public sealed class DbMigrationsActuatorTest
             ["Management:Endpoints:DbMigrations:AllowedVerbs:0"] = "post"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddDbMigrationsActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddDbMigrationsActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        DbMigrationsEndpointOptions options = host.Services.GetRequiredService<IOptions<DbMigrationsEndpointOptions>>().Value;
+        DbMigrationsEndpointOptions options = serviceProvider.GetRequiredService<IOptions<DbMigrationsEndpointOptions>>().Value;
 
         options.Enabled.Should().BeTrue();
         options.Id.Should().Be("test-actuator-id");

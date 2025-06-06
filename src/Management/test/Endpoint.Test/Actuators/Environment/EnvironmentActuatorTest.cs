@@ -39,11 +39,12 @@ public sealed class EnvironmentActuatorTest
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddEnvironmentActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddEnvironmentActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        EnvironmentEndpointOptions options = host.Services.GetRequiredService<IOptions<EnvironmentEndpointOptions>>().Value;
+        EnvironmentEndpointOptions options = serviceProvider.GetRequiredService<IOptions<EnvironmentEndpointOptions>>().Value;
 
         options.KeysToSanitize.Should().BeEquivalentTo("password", "secret", "key", "token", ".*credentials.*", "vcap_services");
         options.Enabled.Should().BeNull();
@@ -70,12 +71,12 @@ public sealed class EnvironmentActuatorTest
             ["Management:Endpoints:Env:AllowedVerbs:0"] = "post"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddEnvironmentActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddEnvironmentActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        EnvironmentEndpointOptions options = host.Services.GetRequiredService<IOptions<EnvironmentEndpointOptions>>().Value;
+        EnvironmentEndpointOptions options = serviceProvider.GetRequiredService<IOptions<EnvironmentEndpointOptions>>().Value;
 
         options.KeysToSanitize.Should().BeEquivalentTo("accessToken", "secureKey");
         options.Enabled.Should().BeTrue();
@@ -96,12 +97,12 @@ public sealed class EnvironmentActuatorTest
             ["Management:Endpoints:Env:KeysToSanitize:0"] = string.Empty
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddEnvironmentActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddEnvironmentActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        EnvironmentEndpointOptions options = host.Services.GetRequiredService<IOptions<EnvironmentEndpointOptions>>().Value;
+        EnvironmentEndpointOptions options = serviceProvider.GetRequiredService<IOptions<EnvironmentEndpointOptions>>().Value;
 
         options.KeysToSanitize.Should().BeEmpty();
     }

@@ -42,11 +42,12 @@ public sealed class ServicesActuatorTest
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddServicesActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddServicesActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        ServicesEndpointOptions options = host.Services.GetRequiredService<IOptions<ServicesEndpointOptions>>().Value;
+        ServicesEndpointOptions options = serviceProvider.GetRequiredService<IOptions<ServicesEndpointOptions>>().Value;
 
         options.Enabled.Should().BeNull();
         options.Id.Should().Be("beans");
@@ -70,12 +71,12 @@ public sealed class ServicesActuatorTest
             ["Management:Endpoints:Services:AllowedVerbs:0"] = "post"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddServicesActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddServicesActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        ServicesEndpointOptions options = host.Services.GetRequiredService<IOptions<ServicesEndpointOptions>>().Value;
+        ServicesEndpointOptions options = serviceProvider.GetRequiredService<IOptions<ServicesEndpointOptions>>().Value;
 
         options.Enabled.Should().BeTrue();
         options.Id.Should().Be("test-actuator-id");

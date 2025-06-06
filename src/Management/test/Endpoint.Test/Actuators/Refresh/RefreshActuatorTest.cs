@@ -38,11 +38,12 @@ public sealed class RefreshActuatorTest
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddRefreshActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddRefreshActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        RefreshEndpointOptions options = host.Services.GetRequiredService<IOptions<RefreshEndpointOptions>>().Value;
+        RefreshEndpointOptions options = serviceProvider.GetRequiredService<IOptions<RefreshEndpointOptions>>().Value;
 
         options.ReturnConfiguration.Should().BeTrue();
         options.Enabled.Should().BeNull();
@@ -68,12 +69,12 @@ public sealed class RefreshActuatorTest
             ["Management:Endpoints:Refresh:AllowedVerbs:0"] = "put"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddRefreshActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddRefreshActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        RefreshEndpointOptions options = host.Services.GetRequiredService<IOptions<RefreshEndpointOptions>>().Value;
+        RefreshEndpointOptions options = serviceProvider.GetRequiredService<IOptions<RefreshEndpointOptions>>().Value;
 
         options.ReturnConfiguration.Should().BeFalse();
         options.Enabled.Should().BeTrue();

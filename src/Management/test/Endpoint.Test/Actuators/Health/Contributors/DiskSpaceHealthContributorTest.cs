@@ -40,11 +40,12 @@ public sealed class DiskSpaceHealthContributorTest
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddHealthActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        DiskSpaceContributorOptions options = host.Services.GetRequiredService<IOptions<DiskSpaceContributorOptions>>().Value;
+        DiskSpaceContributorOptions options = serviceProvider.GetRequiredService<IOptions<DiskSpaceContributorOptions>>().Value;
 
         options.Threshold.Should().Be(10 * OneMegabyte);
         options.Path.Should().Be(".");
@@ -61,12 +62,12 @@ public sealed class DiskSpaceHealthContributorTest
             ["Management:Endpoints:Health:DiskSpace:Enabled"] = "false"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddHealthActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        DiskSpaceContributorOptions options = host.Services.GetRequiredService<IOptions<DiskSpaceContributorOptions>>().Value;
+        DiskSpaceContributorOptions options = serviceProvider.GetRequiredService<IOptions<DiskSpaceContributorOptions>>().Value;
 
         options.Threshold.Should().Be(25 * OneMegabyte);
         options.Path.Should().Be("/mnt/shared/data");

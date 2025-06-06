@@ -47,11 +47,12 @@ public sealed class HealthActuatorTest
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddHealthActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        HealthEndpointOptions options = host.Services.GetRequiredService<IOptions<HealthEndpointOptions>>().Value;
+        HealthEndpointOptions options = serviceProvider.GetRequiredService<IOptions<HealthEndpointOptions>>().Value;
 
         options.ShowComponents.Should().Be(ShowValues.Never);
         options.ShowDetails.Should().Be(ShowValues.Never);
@@ -89,12 +90,12 @@ public sealed class HealthActuatorTest
             ["Management:Endpoints:Health:AllowedVerbs:0"] = "post"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddHealthActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        HealthEndpointOptions options = host.Services.GetRequiredService<IOptions<HealthEndpointOptions>>().Value;
+        HealthEndpointOptions options = serviceProvider.GetRequiredService<IOptions<HealthEndpointOptions>>().Value;
 
         options.ShowComponents.Should().Be(ShowValues.Always);
         options.ShowDetails.Should().Be(ShowValues.WhenAuthorized);
@@ -132,12 +133,12 @@ public sealed class HealthActuatorTest
             ["Management:Endpoints:Health:Role"] = "test-role"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddHealthActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        HealthEndpointOptions options = host.Services.GetRequiredService<IOptions<HealthEndpointOptions>>().Value;
+        HealthEndpointOptions options = serviceProvider.GetRequiredService<IOptions<HealthEndpointOptions>>().Value;
 
         options.Claim.Should().NotBeNull();
         options.Claim.Type.Should().Be("http://schemas.microsoft.com/ws/2008/06/identity/claims/role");

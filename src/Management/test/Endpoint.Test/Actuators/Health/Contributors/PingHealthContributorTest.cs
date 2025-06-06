@@ -28,11 +28,12 @@ public sealed class PingHealthContributorTest
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddHealthActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        PingContributorOptions options = host.Services.GetRequiredService<IOptions<PingContributorOptions>>().Value;
+        PingContributorOptions options = serviceProvider.GetRequiredService<IOptions<PingContributorOptions>>().Value;
 
         options.Enabled.Should().BeTrue();
     }
@@ -45,12 +46,12 @@ public sealed class PingHealthContributorTest
             ["Management:Endpoints:Health:Ping:Enabled"] = "false"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddHealthActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        PingContributorOptions options = host.Services.GetRequiredService<IOptions<PingContributorOptions>>().Value;
+        PingContributorOptions options = serviceProvider.GetRequiredService<IOptions<PingContributorOptions>>().Value;
 
         options.Enabled.Should().BeFalse();
     }

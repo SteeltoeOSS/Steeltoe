@@ -37,11 +37,12 @@ public sealed class HypermediaActuatorTest
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddHypermediaActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddHypermediaActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        HypermediaEndpointOptions options = host.Services.GetRequiredService<IOptions<HypermediaEndpointOptions>>().Value;
+        HypermediaEndpointOptions options = serviceProvider.GetRequiredService<IOptions<HypermediaEndpointOptions>>().Value;
 
         options.Enabled.Should().BeNull();
         options.Id.Should().BeEmpty();
@@ -65,12 +66,12 @@ public sealed class HypermediaActuatorTest
             ["Management:Endpoints:Actuator:AllowedVerbs:0"] = "post"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddHypermediaActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddHypermediaActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        HypermediaEndpointOptions options = host.Services.GetRequiredService<IOptions<HypermediaEndpointOptions>>().Value;
+        HypermediaEndpointOptions options = serviceProvider.GetRequiredService<IOptions<HypermediaEndpointOptions>>().Value;
 
         options.Enabled.Should().BeTrue();
         options.Id.Should().Be("test-actuator-id");

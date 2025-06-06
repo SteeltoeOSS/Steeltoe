@@ -40,11 +40,12 @@ public sealed class HttpExchangesActuatorTest
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddHttpExchangesActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddHttpExchangesActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        HttpExchangesEndpointOptions options = host.Services.GetRequiredService<IOptions<HttpExchangesEndpointOptions>>().Value;
+        HttpExchangesEndpointOptions options = serviceProvider.GetRequiredService<IOptions<HttpExchangesEndpointOptions>>().Value;
 
         options.Capacity.Should().Be(100);
         options.IncludeRequestHeaders.Should().BeTrue();
@@ -99,12 +100,12 @@ public sealed class HttpExchangesActuatorTest
             ["Management:Endpoints:HttpExchanges:AllowedVerbs:0"] = "post"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddHttpExchangesActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddHttpExchangesActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        HttpExchangesEndpointOptions options = host.Services.GetRequiredService<IOptions<HttpExchangesEndpointOptions>>().Value;
+        HttpExchangesEndpointOptions options = serviceProvider.GetRequiredService<IOptions<HttpExchangesEndpointOptions>>().Value;
 
         options.Capacity.Should().Be(250);
         options.IncludeRequestHeaders.Should().BeFalse();
