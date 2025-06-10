@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +13,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Configuration;
@@ -24,7 +27,7 @@ using Steeltoe.Management.Endpoint.Test.Actuators.ThreadDump;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public sealed class ActuatorRouteBuilderExtensionsTest
+public sealed class EndpointAuthorizationTest
 {
     public static TheoryData<RegistrationMode, Type> EndpointTestData
     {
@@ -168,5 +171,21 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         Services,
         UseEndpoints,
         MapEndpoints
+    }
+
+    private sealed class TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> optionsMonitor, ILoggerFactory loggerFactory, UrlEncoder encoder)
+        : AuthenticationHandler<AuthenticationSchemeOptions>(optionsMonitor, loggerFactory, encoder)
+    {
+        public const string AuthenticationScheme = "TestScheme";
+
+        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+        {
+            var claim = new Claim("scope", "actuators.read");
+            var identity = new ClaimsIdentity([claim]);
+            var principal = new ClaimsPrincipal(identity);
+            var ticket = new AuthenticationTicket(principal, AuthenticationScheme);
+
+            return Task.FromResult(AuthenticateResult.Success(ticket));
+        }
     }
 }
