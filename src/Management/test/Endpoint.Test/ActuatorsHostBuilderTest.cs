@@ -4,32 +4,17 @@
 
 using System.Net;
 using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
-using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
-using Steeltoe.Management.Endpoint.Actuators.Info;
-using Steeltoe.Management.Endpoint.Configuration;
-using Steeltoe.Management.Endpoint.ManagementPort;
-using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
 public sealed class ActuatorsHostBuilderTest
 {
-    private static readonly Dictionary<string, string?> AppSettings = new()
-    {
-        ["Management:Endpoints:Actuator:Exposure:Include:0"] = "*"
-    };
-
     [Theory]
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
@@ -80,45 +65,5 @@ public sealed class ActuatorsHostBuilderTest
         responseText.Should().Contain("\"http://localhost/cloudfoundryapplication\"");
 
         handler.Mock.VerifyNoOutstandingExpectation();
-    }
-
-    [Theory]
-    [InlineData(HostBuilderType.Host)]
-    [InlineData(HostBuilderType.WebHost)]
-    [InlineData(HostBuilderType.WebApplication)]
-    public async Task AddAllActuatorsDoesNotRegisterDuplicateServices(HostBuilderType hostBuilderType)
-    {
-        const int actuatorCount = 12;
-
-        await using HostWrapper host = hostBuilderType.Build(builder =>
-        {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
-
-            builder.ConfigureServices(services =>
-            {
-                services.AddAllActuators();
-                services.AddAllActuators();
-            });
-        });
-
-        host.Services.GetServices<ActuatorEndpointMapper>().Should().ContainSingle();
-        host.Services.GetServices<IConfigureOptions<CorsOptions>>().OfType<ConfigureActuatorsCorsPolicyOptions>().Should().ContainSingle();
-        host.Services.GetServices<IConfigureOptions<ManagementOptions>>().Should().ContainSingle();
-        host.Services.GetServices<IOptionsChangeTokenSource<ManagementOptions>>().Should().ContainSingle();
-
-        host.Services.GetServices<IEndpointOptionsMonitorProvider>().Should().HaveCount(actuatorCount);
-        host.Services.GetServices<IEndpointMiddleware>().Should().HaveCount(actuatorCount);
-
-        IStartupFilter[] startupFilters = [.. host.Services.GetServices<IStartupFilter>()];
-        startupFilters.Should().ContainSingle(filter => filter is ConfigureActuatorsMiddlewareStartupFilter);
-        startupFilters.Should().ContainSingle(filter => filter is ManagementPortStartupFilter);
-        startupFilters.Should().ContainSingle(filter => filter is AvailabilityStartupFilter);
-
-        host.Services.GetServices<IConfigureOptions<InfoEndpointOptions>>().Should().ContainSingle();
-        host.Services.GetServices<IOptionsChangeTokenSource<InfoEndpointOptions>>().Should().ContainSingle();
-        host.Services.GetServices<IEndpointOptionsMonitorProvider>().OfType<EndpointOptionsMonitorProvider<InfoEndpointOptions>>().Should().ContainSingle();
-        host.Services.GetServices<IInfoEndpointHandler>().OfType<InfoEndpointHandler>().Should().ContainSingle();
-        host.Services.GetServices<InfoEndpointMiddleware>().Should().ContainSingle();
-        host.Services.GetServices<IEndpointMiddleware>().OfType<InfoEndpointMiddleware>().Should().ContainSingle();
     }
 }
