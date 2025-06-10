@@ -8,7 +8,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.Info.Contributors;
 
 internal sealed class AppSettingsInfoContributor : ConfigurationContributor, IInfoContributor
 {
-    private const string AppSettingsPrefix = "info";
+    private const string ConfigurationKey = "Info";
 
     public AppSettingsInfoContributor(IConfiguration configuration)
         : base(configuration)
@@ -18,7 +18,7 @@ internal sealed class AppSettingsInfoContributor : ConfigurationContributor, IIn
 
     public Task ContributeAsync(InfoBuilder builder, CancellationToken cancellationToken)
     {
-        Contribute(builder, AppSettingsPrefix, false);
+        Contribute(builder, ConfigurationKey, false);
         return Task.CompletedTask;
     }
 }

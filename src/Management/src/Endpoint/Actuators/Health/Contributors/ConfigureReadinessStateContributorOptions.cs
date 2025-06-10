@@ -11,7 +11,7 @@ internal sealed class ConfigureReadinessStateContributorOptions : IConfigureOpti
 {
     private readonly IConfiguration _configuration;
 
-    public string ConfigurationKey => "management:endpoints:health:readiness";
+    public string ConfigurationKey => "Management:Endpoints:Health:Readiness";
 
     public ConfigureReadinessStateContributorOptions(IConfiguration configuration)
     {

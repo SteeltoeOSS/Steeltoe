@@ -8,10 +8,8 @@ using Steeltoe.Management.Endpoint.Configuration;
 namespace Steeltoe.Management.Endpoint.Actuators.Environment;
 
 internal sealed class ConfigureEnvironmentEndpointOptions(IConfiguration configuration)
-    : ConfigureEndpointOptions<EnvironmentEndpointOptions>(configuration, ManagementInfoPrefix, "env")
+    : ConfigureEndpointOptions<EnvironmentEndpointOptions>(configuration, "Management:Endpoints:Env", "env")
 {
-    private const string ManagementInfoPrefix = "management:endpoints:env";
-
     private static readonly string[] DefaultKeysToSanitize =
     [
         "password",

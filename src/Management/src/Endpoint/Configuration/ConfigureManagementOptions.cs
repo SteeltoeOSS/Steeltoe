@@ -11,14 +11,13 @@ namespace Steeltoe.Management.Endpoint.Configuration;
 
 internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<ManagementOptions>
 {
-    private const string ManagementInfoPrefix = "management:endpoints";
-    private const string CloudFoundryEnabledPrefix = "management:cloudfoundry:enabled";
+    private const string CloudFoundryEnabledConfigurationKey = "Management:CloudFoundry:Enabled";
     private const string DefaultPath = "/actuator";
     internal const string DefaultCloudFoundryPath = "/cloudfoundryapplication";
 
     private readonly IConfiguration _configuration;
 
-    public string ConfigurationKey => ManagementInfoPrefix;
+    public string ConfigurationKey => "Management:Endpoints";
 
     public ConfigureManagementOptions(IConfiguration configuration)
     {
@@ -31,11 +30,11 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        _configuration.GetSection(ManagementInfoPrefix).Bind(options);
+        _configuration.GetSection(ConfigurationKey).Bind(options);
 
         options.IsCloudFoundryEnabled = true;
 
-        if (bool.TryParse(_configuration[CloudFoundryEnabledPrefix], out bool isEnabled))
+        if (bool.TryParse(_configuration[CloudFoundryEnabledConfigurationKey], out bool isEnabled))
         {
             options.IsCloudFoundryEnabled = isEnabled;
         }
@@ -74,8 +73,8 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
 
     private sealed class ConfigureExposure
     {
-        private const string Prefix = "management:endpoints:actuator:exposure";
-        private const string SpringKeyPrefix = "management:endpoints:web:exposure";
+        private const string ConfigurationKey = "Management:Endpoints:Actuator:Exposure";
+        private const string SpringConfigurationKey = "Management:Endpoints:Web:Exposure";
 
         private static readonly HashSet<string> DefaultIncludes =
         [
@@ -99,15 +98,15 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
             HashSet<string> includes = [];
             HashSet<string> excludes = [];
 
-            IConfigurationSection springSection = _configuration.GetSection(SpringKeyPrefix);
+            IConfigurationSection springSection = _configuration.GetSection(SpringConfigurationKey);
 
             if (springSection.Exists())
             {
-                includes = GetSetFromConfigurationCsvString(springSection, "include") ?? [];
-                excludes = GetSetFromConfigurationCsvString(springSection, "exclude") ?? [];
+                includes = GetSetFromConfigurationCsvString(springSection, "Include") ?? [];
+                excludes = GetSetFromConfigurationCsvString(springSection, "Exclude") ?? [];
             }
 
-            _configuration.GetSection(Prefix).Bind(options);
+            _configuration.GetSection(ConfigurationKey).Bind(options);
 
             if (options.Include.Count == 0 && options.Exclude.Count == 0 && !springSection.Exists())
             {

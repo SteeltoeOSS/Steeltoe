@@ -9,10 +9,8 @@ using Steeltoe.Management.Endpoint.Configuration;
 namespace Steeltoe.Management.Endpoint.Actuators.Health;
 
 internal sealed class ConfigureHealthEndpointOptions(IConfiguration configuration)
-    : ConfigureEndpointOptions<HealthEndpointOptions>(configuration, HealthOptionsPrefix, "health")
+    : ConfigureEndpointOptions<HealthEndpointOptions>(configuration, "Management:Endpoints:Health", "health")
 {
-    private const string HealthOptionsPrefix = "management:endpoints:health";
-
     public override void Configure(HealthEndpointOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);

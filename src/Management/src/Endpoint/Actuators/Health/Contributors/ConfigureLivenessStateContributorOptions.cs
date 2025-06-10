@@ -11,7 +11,7 @@ internal sealed class ConfigureLivenessStateContributorOptions : IConfigureOptio
 {
     private readonly IConfiguration _configuration;
 
-    public string ConfigurationKey => "management:endpoints:health:liveness";
+    public string ConfigurationKey => "Management:Endpoints:Health:Liveness";
 
     public ConfigureLivenessStateContributorOptions(IConfiguration configuration)
     {

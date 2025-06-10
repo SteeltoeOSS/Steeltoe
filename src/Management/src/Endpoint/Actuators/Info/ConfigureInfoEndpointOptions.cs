@@ -8,7 +8,4 @@ using Steeltoe.Management.Endpoint.Configuration;
 namespace Steeltoe.Management.Endpoint.Actuators.Info;
 
 internal sealed class ConfigureInfoEndpointOptions(IConfiguration configuration)
-    : ConfigureEndpointOptions<InfoEndpointOptions>(configuration, ManagementInfoPrefix, "info")
-{
-    private const string ManagementInfoPrefix = "management:endpoints:info";
-}
+    : ConfigureEndpointOptions<InfoEndpointOptions>(configuration, "Management:Endpoints:Info", "info");
