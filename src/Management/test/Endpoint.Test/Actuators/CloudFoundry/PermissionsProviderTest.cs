@@ -57,7 +57,8 @@ public sealed class PermissionsProviderTest : BaseTest
     [InlineData("unauthorized", HttpStatusCode.Unauthorized, PermissionsProvider.Messages.InvalidToken)]
     [InlineData("forbidden", HttpStatusCode.Forbidden, PermissionsProvider.Messages.AccessDenied)]
     [InlineData("timeout", HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.CloudFoundryTimeout)]
-    [InlineData("exception", HttpStatusCode.ServiceUnavailable, "Exception of type 'System.Net.Http.HttpRequestException' with error 'NameResolutionError' was thrown")]
+    [InlineData("exception", HttpStatusCode.ServiceUnavailable,
+        "Exception of type 'System.Net.Http.HttpRequestException' with error 'NameResolutionError' was thrown")]
     [InlineData("no_sensitive_data", HttpStatusCode.OK, "")]
     [InlineData("success", HttpStatusCode.OK, "")]
     [Theory]
