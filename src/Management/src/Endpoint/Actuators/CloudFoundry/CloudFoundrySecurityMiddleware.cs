@@ -62,7 +62,7 @@ internal sealed class CloudFoundrySecurityMiddleware
         {
             if (string.IsNullOrEmpty(endpointOptions.ApplicationId))
             {
-                _logger.LogCritical(
+                _logger.LogError(
                     "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
 
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.ApplicationIdMissing));

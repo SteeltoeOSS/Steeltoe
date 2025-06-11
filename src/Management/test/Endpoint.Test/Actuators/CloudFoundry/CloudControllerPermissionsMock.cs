@@ -29,7 +29,8 @@ internal static class CloudControllerPermissionsMock
         httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/timeout/permissions")
             .Throw(new OperationCanceledException(null, new TimeoutException()));
 
-        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/exception/permissions").Throw(new HttpRequestException());
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/exception/permissions")
+            .Throw(new HttpRequestException(HttpRequestError.NameResolutionError));
 
         httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/no_sensitive_data/permissions").Respond(HttpStatusCode.OK,
             "application/json", """{"read_sensitive_data": false, "read_basic_data": true}""");

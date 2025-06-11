@@ -26,7 +26,7 @@ internal sealed class CloudFoundrySecurityMiddlewareTestScenarios : TheoryData<s
         $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator Security Error: Forbidden - {Messages.AccessDenied}";
 
     private readonly string _middlewareExceptionLog =
-        $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator Security Error: ServiceUnavailable - Exception of type 'System.Net.Http.HttpRequestException' with error 'Unknown' was thrown";
+        $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator Security Error: ServiceUnavailable - Exception of type 'System.Net.Http.HttpRequestException' with error 'NameResolutionError' was thrown";
 
     private readonly string _middlewareTimeoutLog =
         $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator Security Error: ServiceUnavailable - {Messages.CloudFoundryTimeout}";
@@ -39,10 +39,10 @@ internal sealed class CloudFoundrySecurityMiddlewareTestScenarios : TheoryData<s
 
     public CloudFoundrySecurityMiddlewareTestScenarios()
     {
-        Add("exception", HttpStatusCode.ServiceUnavailable, "Exception of type 'System.Net.Http.HttpRequestException' with error 'Unknown' was thrown",
-            [_middlewareExceptionLog], true);
+        Add("exception", HttpStatusCode.ServiceUnavailable,
+            "Exception of type 'System.Net.Http.HttpRequestException' with error 'NameResolutionError' was thrown", [_middlewareExceptionLog], true);
 
-        Add("exception", HttpStatusCode.OK, "Exception of type 'System.Net.Http.HttpRequestException' with error 'Unknown' was thrown",
+        Add("exception", HttpStatusCode.OK, "Exception of type 'System.Net.Http.HttpRequestException' with error 'NameResolutionError' was thrown",
             [_middlewareExceptionLog], false);
 
         Add("forbidden", HttpStatusCode.Forbidden, Messages.AccessDenied, [
