@@ -203,31 +203,6 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     }
 
     [Fact]
-    public void Processes_CosmosDb_configuration()
-    {
-        var postProcessor = new CosmosDbCloudFoundryPostProcessor();
-
-        Tuple<string, string>[] secrets =
-        [
-            Tuple.Create("credentials:cosmosdb_host_endpoint", "test-endpoint"),
-            Tuple.Create("credentials:cosmosdb_master_key", "test-key"),
-            Tuple.Create("credentials:cosmosdb_database_id", "test-database")
-        ];
-
-        Dictionary<string, string?> configurationData =
-            GetConfigurationData(TestProviderName, TestBindingName, [CosmosDbCloudFoundryPostProcessor.BindingType], null, secrets);
-
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
-
-        postProcessor.PostProcessConfiguration(provider, configurationData);
-
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CosmosDbCloudFoundryPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:accountEndpoint"].Should().Be("test-endpoint");
-        configurationData[$"{keyPrefix}:accountKey"].Should().Be("test-key");
-        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
-    }
-
-    [Fact]
     public void Processes_Eureka_configuration()
     {
         var postProcessor = new EurekaCloudFoundryPostProcessor(NullLogger<EurekaCloudFoundryPostProcessor>.Instance);

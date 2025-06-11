@@ -98,7 +98,6 @@ public static class ConfigurationBuilderExtensions
         ILogger<EurekaCloudFoundryPostProcessor> eurekaLogger = loggerFactory.CreateLogger<EurekaCloudFoundryPostProcessor>();
         ILogger<IdentityCloudFoundryPostProcessor> identityLogger = loggerFactory.CreateLogger<IdentityCloudFoundryPostProcessor>();
 
-        source.RegisterPostProcessor(new CosmosDbCloudFoundryPostProcessor());
         source.RegisterPostProcessor(new EurekaCloudFoundryPostProcessor(eurekaLogger));
         source.RegisterPostProcessor(new IdentityCloudFoundryPostProcessor(identityLogger));
         source.RegisterPostProcessor(new MongoDbCloudFoundryPostProcessor());

@@ -16,7 +16,8 @@ internal sealed class SqlServerCloudFoundryPostProcessor : CloudFoundryPostProce
 
             // Mapping from CloudFoundry service binding credentials to driver-specific connection string parameters.
             // The available credentials are documented at:
-            // - Azure Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-Azure/1.4/csb-azure/GUID-reference-azure-mssql.html#binding-credentials-4
+            // - Azure Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform-services/tanzu-cloud-service-broker-for-microsoft-azure/1-13/csb-azure/reference-azure-mssql-db.html#binding-creds
+            // - AWS Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform-services/tanzu-cloud-service-broker-for-aws/1-14/csb-aws/reference-aws-mssql.html#binding-creds
 
             mapper.MapFromTo("credentials:hostname", "Data Source");
             mapper.MapFromAppendTo("credentials:port", "Data Source", ",");
