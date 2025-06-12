@@ -59,4 +59,21 @@ internal static class ExceptionExtensions
 
         return false;
     }
+
+    /// <summary>
+    /// Determines whether the thrown exception results from an HTTP request timeout.
+    /// </summary>
+    /// <param name="exception">
+    /// The caught exception to inspect.
+    /// </param>
+    public static bool IsHttpClientTimeout(this Exception? exception)
+    {
+        // See note in remarks at https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.sendasync.
+        if (exception is OperationCanceledException && exception.InnerException?.GetType() == typeof(TimeoutException))
+        {
+            return true;
+        }
+
+        return false;
+    }
 }

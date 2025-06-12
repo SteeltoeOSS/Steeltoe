@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 using Steeltoe.Common;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
@@ -19,6 +20,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
 internal sealed class CloudFoundrySecurityMiddleware
 {
+    private const string BearerTokenPrefix = "Bearer ";
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _endpointOptionsMonitor;
     private readonly IEndpointOptionsMonitorProvider[] _endpointOptionsMonitorProviderArray;
@@ -60,16 +62,16 @@ internal sealed class CloudFoundrySecurityMiddleware
         {
             if (string.IsNullOrEmpty(endpointOptions.ApplicationId))
             {
-                _logger.LogCritical(
+                _logger.LogError(
                     "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
 
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.ApplicationIdMissingMessage));
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.ApplicationIdMissing));
                 return;
             }
 
             if (string.IsNullOrEmpty(endpointOptions.Api))
             {
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.CloudfoundryApiMissingMessage));
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.CloudFoundryApiMissing));
                 return;
             }
 
@@ -87,7 +89,7 @@ internal sealed class CloudFoundrySecurityMiddleware
 
                 if (targetEndpointOptions.RequiredPermissions > givenPermissions.Permissions)
                 {
-                    await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, PermissionsProvider.AccessDeniedMessage));
+                    await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, PermissionsProvider.Messages.AccessDenied));
                     return;
                 }
             }
@@ -101,13 +103,13 @@ internal sealed class CloudFoundrySecurityMiddleware
 
     internal string GetAccessToken(HttpRequest request)
     {
-        if (request.Headers.TryGetValue(PermissionsProvider.AuthorizationHeaderName, out StringValues headerValue))
+        if (request.Headers.TryGetValue(HeaderNames.Authorization, out StringValues authorizationHeaderValue))
         {
-            string header = headerValue.ToString();
+            string authorizationValue = authorizationHeaderValue.ToString();
 
-            if (header.StartsWith(PermissionsProvider.BearerHeaderNamePrefix, StringComparison.OrdinalIgnoreCase))
+            if (authorizationValue.StartsWith(BearerTokenPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                return header[PermissionsProvider.BearerHeaderNamePrefix.Length..];
+                return authorizationValue[BearerTokenPrefix.Length..];
             }
         }
 
@@ -162,7 +164,9 @@ internal sealed class CloudFoundrySecurityMiddleware
         _logger.LogError("Actuator Security Error: {Code} - {Message}", error.Code, error.Message);
         context.Response.Headers.Append("Content-Type", "application/json;charset=UTF-8");
 
-        // allowing override of 400-level errors is more likely to cause confusion than to be useful
+        // UseStatusCodeFromResponse was added to prevent IIS/HWC from blocking the response body on 500-level errors.
+        // Blocking 400-level error responses would be more likely to cause confusion than to be useful.
+        // See https://github.com/SteeltoeOSS/Steeltoe/issues/418 for more information.
         if (_managementOptionsMonitor.CurrentValue.UseStatusCodeFromResponse || (int)error.Code < 500)
         {
             context.Response.StatusCode = (int)error.Code;

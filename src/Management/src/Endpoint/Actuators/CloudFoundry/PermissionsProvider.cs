@@ -19,16 +19,9 @@ namespace Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
 internal sealed class PermissionsProvider
 {
-    private const string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
-    private const string CloudfoundryNotReachableMessage = "Cloud controller not reachable";
     private const string ReadSensitiveDataJsonPropertyName = "read_sensitive_data";
     public const string HttpClientName = "CloudFoundrySecurity";
-    public const string ApplicationIdMissingMessage = "Application ID is not available";
-    public const string CloudfoundryApiMissingMessage = "Cloud controller URL is not available";
-    public const string AccessDeniedMessage = "Access denied";
-    public const string AuthorizationHeaderName = "Authorization";
-    public const string BearerHeaderNamePrefix = "Bearer ";
-    private static readonly TimeSpan GetPermissionsTimeout = TimeSpan.FromMilliseconds(5000);
+    private static readonly TimeSpan GetPermissionsTimeout = TimeSpan.FromMilliseconds(5_000);
 
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _optionsMonitor;
     private readonly IHttpClientFactory _httpClientFactory;
@@ -55,7 +48,7 @@ internal sealed class PermissionsProvider
     {
         if (string.IsNullOrEmpty(accessToken))
         {
-            return new SecurityResult(HttpStatusCode.Unauthorized, AuthorizationHeaderInvalid);
+            return new SecurityResult(HttpStatusCode.Unauthorized, Messages.AuthorizationHeaderInvalid);
         }
 
         CloudFoundryEndpointOptions options = _optionsMonitor.CurrentValue;
@@ -75,23 +68,31 @@ internal sealed class PermissionsProvider
                 _logger.LogInformation("Cloud Foundry returned status: {HttpStatus} while obtaining permissions from: {PermissionsUri}", response.StatusCode,
                     checkPermissionsUri);
 
-                return response.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized
-                    ? new SecurityResult(HttpStatusCode.Forbidden, AccessDeniedMessage)
-                    : new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
+                if (response.StatusCode is HttpStatusCode.Forbidden)
+                {
+                    return new SecurityResult(HttpStatusCode.Forbidden, Messages.AccessDenied);
+                }
+
+                return (int)response.StatusCode is > 399 and < 500
+                    ? new SecurityResult(HttpStatusCode.Unauthorized, Messages.InvalidToken)
+                    : new SecurityResult(HttpStatusCode.ServiceUnavailable, Messages.CloudFoundryNotReachable);
             }
 
-            EndpointPermissions permissions = await GetPermissionsAsync(response, cancellationToken);
+            EndpointPermissions permissions = await ParsePermissionsResponseAsync(response, cancellationToken);
             return new SecurityResult(permissions);
         }
-        catch (Exception exception) when (!exception.IsCancellation())
+        catch (HttpRequestException exception)
         {
-            _logger.LogError(exception, "Cloud Foundry returned exception while obtaining permissions from: {PermissionsUri}", checkPermissionsUri);
-
-            return new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
+            return new SecurityResult(HttpStatusCode.ServiceUnavailable,
+                $"Exception of type '{typeof(HttpRequestException)}' with error '{exception.HttpRequestError}' was thrown");
+        }
+        catch (Exception exception) when (exception.IsHttpClientTimeout())
+        {
+            return new SecurityResult(HttpStatusCode.ServiceUnavailable, Messages.CloudFoundryTimeout);
         }
     }
 
-    public async Task<EndpointPermissions> GetPermissionsAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+    public async Task<EndpointPermissions> ParsePermissionsResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(response);
 
@@ -126,5 +127,16 @@ internal sealed class PermissionsProvider
         HttpClient httpClient = _httpClientFactory.CreateClient(HttpClientName);
         httpClient.ConfigureForSteeltoe(GetPermissionsTimeout);
         return httpClient;
+    }
+
+    internal static class Messages
+    {
+        public const string AccessDenied = "Access denied";
+        public const string ApplicationIdMissing = "Application ID is not available";
+        public const string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
+        public const string CloudFoundryApiMissing = "Cloud controller URL is not available";
+        public const string CloudFoundryNotReachable = "Cloud controller not reachable";
+        public const string CloudFoundryTimeout = "Cloud controller request timed out";
+        public const string InvalidToken = "Invalid token";
     }
 }
