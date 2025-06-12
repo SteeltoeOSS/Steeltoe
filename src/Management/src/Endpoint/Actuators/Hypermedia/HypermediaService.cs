@@ -68,7 +68,7 @@ internal sealed class HypermediaService
         bool skipExposureCheck = PermissionsProvider.IsCloudFoundryRequest(baseUrl.PathAndQuery);
         string? basePath = managementOptions.GetBasePath(baseUrl.AbsolutePath);
 
-        foreach (EndpointOptions endpointOptions in _endpointOptionsMonitorProviders.Select(provider => provider.Get()))
+        foreach (EndpointOptions endpointOptions in _endpointOptionsMonitorProviders.Select(provider => provider.Get()).OrderBy(options => options.Id))
         {
             if (endpointOptions.Id == null || !endpointOptions.IsEnabled(managementOptions))
             {

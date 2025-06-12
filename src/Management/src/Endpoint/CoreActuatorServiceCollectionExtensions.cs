@@ -95,6 +95,8 @@ public static class CoreActuatorServiceCollectionExtensions
         }
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, ManagementPortStartupFilter>());
+
+        services.TryAddSingleton<HasCloudFoundrySecurityMiddlewareMarker>();
     }
 
     internal static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)

@@ -107,13 +107,13 @@ public sealed class HypermediaActuatorTest
             {
               "type": "steeltoe",
               "_links": {
-                "info": {
-                  "href": "http://localhost/actuator/info",
-                  "templated": false
-                },
                 "health": {
                   "href": "http://localhost/actuator/health",
                   "templated": true
+                },
+                "info": {
+                  "href": "http://localhost/actuator/info",
+                  "templated": false
                 },
                 "self": {
                   "href": "http://localhost/actuator",
@@ -125,7 +125,7 @@ public sealed class HypermediaActuatorTest
     }
 
     [Fact]
-    public async Task Endpoint_returns_expected_data_without_other_actuators_registered()
+    public async Task Returns_only_self_when_no_other_actuators_registered()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddHypermediaActuator();
@@ -154,7 +154,7 @@ public sealed class HypermediaActuatorTest
     }
 
     [Fact]
-    public async Task Endpoint_returns_expected_data_when_using_alternate_IDs_and_paths()
+    public async Task Can_use_alternate_IDs_and_paths()
     {
         var appSettings = new Dictionary<string, string?>
         {

@@ -16,14 +16,17 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
     internal const string DefaultCloudFoundryPath = "/cloudfoundryapplication";
 
     private readonly IConfiguration _configuration;
+    private readonly HasCloudFoundrySecurityMiddlewareMarker _hasCloudFoundrySecurityMiddlewareMarker;
 
     public string ConfigurationKey => "Management:Endpoints";
 
-    public ConfigureManagementOptions(IConfiguration configuration)
+    public ConfigureManagementOptions(IConfiguration configuration, HasCloudFoundrySecurityMiddlewareMarker hasCloudFoundrySecurityMiddlewareMarker)
     {
         ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(hasCloudFoundrySecurityMiddlewareMarker);
 
         _configuration = configuration;
+        _hasCloudFoundrySecurityMiddlewareMarker = hasCloudFoundrySecurityMiddlewareMarker;
     }
 
     public void Configure(ManagementOptions options)
@@ -32,12 +35,12 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
 
         _configuration.GetSection(ConfigurationKey).Bind(options);
 
-        options.IsCloudFoundryEnabled = true;
-
         if (bool.TryParse(_configuration[CloudFoundryEnabledConfigurationKey], out bool isEnabled))
         {
             options.IsCloudFoundryEnabled = isEnabled;
         }
+
+        options.HasCloudFoundrySecurity = _hasCloudFoundrySecurityMiddlewareMarker.Value;
 
         ConfigureSerializerOptions(options);
 

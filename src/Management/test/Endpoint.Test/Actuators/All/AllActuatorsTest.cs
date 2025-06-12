@@ -114,6 +114,7 @@ public sealed class AllActuatorsTest
         host.Services.GetServices<IConfigureOptions<CorsOptions>>().OfType<ConfigureActuatorsCorsPolicyOptions>().Should().ContainSingle();
         host.Services.GetServices<IConfigureOptions<ManagementOptions>>().Should().ContainSingle();
         host.Services.GetServices<IOptionsChangeTokenSource<ManagementOptions>>().Should().ContainSingle();
+        host.Services.GetServices<HasCloudFoundrySecurityMiddlewareMarker>().Should().ContainSingle();
 
         host.Services.GetServices<IEndpointOptionsMonitorProvider>().Should().HaveCount(actuatorCount);
         host.Services.GetServices<IEndpointMiddleware>().Should().HaveCount(actuatorCount);

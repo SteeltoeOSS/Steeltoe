@@ -81,6 +81,7 @@ public static class PrometheusExtensions
         services.AddRouting();
         services.ConfigureEndpointOptions<PrometheusEndpointOptions, ConfigurePrometheusEndpointOptions>();
         services.ConfigureOptionsWithChangeTokenSource<ManagementOptions, ConfigureManagementOptions>();
+        services.TryAddSingleton<HasCloudFoundrySecurityMiddlewareMarker>();
 
         if (configureMiddleware)
         {

@@ -13,7 +13,16 @@ public sealed class ManagementOptions
 {
     internal const string UseStatusCodeFromResponseHeaderName = "X-Use-Status-Code-From-Response";
 
-    internal bool IsCloudFoundryEnabled { get; set; }
+    /// <summary>
+    /// Gets or sets a value indicating whether ANY endpoint starting with /cloudfoundryapplication is accessible. Not to be confused with the accessibility
+    /// of the /cloudfoundryapplication hypermedia endpoint.
+    /// </summary>
+    internal bool IsCloudFoundryEnabled { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the Cloud Foundry security middleware has been added to the pipeline.
+    /// </summary>
+    internal bool HasCloudFoundrySecurity { get; set; }
 
     /// <summary>
     /// Gets which management endpoints are included and/or excluded.

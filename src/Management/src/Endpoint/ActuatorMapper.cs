@@ -35,16 +35,23 @@ internal abstract class ActuatorMapper
 
     protected IEnumerable<(string RoutePattern, IEndpointMiddleware Middleware)> GetEndpointsToMap()
     {
-        string? basePath = _managementOptionsMonitor.CurrentValue.Path;
+        ManagementOptions managementOptions = _managementOptionsMonitor.CurrentValue;
 
         foreach (IEndpointMiddleware middleware in _middlewares.Where(middleware => middleware is not CloudFoundryEndpointMiddleware))
         {
-            string routePattern = middleware.EndpointOptions.GetPathMatchPattern(basePath);
+            string routePattern = middleware.EndpointOptions.GetPathMatchPattern(managementOptions.Path);
             yield return (routePattern, middleware);
         }
 
         if (Platform.IsCloudFoundry)
         {
+            if (managementOptions is { IsCloudFoundryEnabled: true, HasCloudFoundrySecurity: false })
+            {
+                _logger.LogWarning(
+                    $"Actuators at the {ConfigureManagementOptions.DefaultCloudFoundryPath} endpoint are disabled because the Cloud Foundry security middleware is not active. " +
+                    $"Call {nameof(EndpointApplicationBuilderExtensions.UseCloudFoundrySecurity)}() from your custom middleware pipeline to enable them.");
+            }
+
             foreach (IEndpointMiddleware middleware in _middlewares.Where(middleware => middleware is not HypermediaEndpointMiddleware))
             {
                 string routePattern = middleware.EndpointOptions.GetPathMatchPattern(ConfigureManagementOptions.DefaultCloudFoundryPath);
