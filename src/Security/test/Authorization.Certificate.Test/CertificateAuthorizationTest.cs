@@ -12,6 +12,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Certificates;
 using Steeltoe.Common.TestResources;
+using IPNetwork = Microsoft.AspNetCore.HttpOverrides.IPNetwork;
+using ServiceCollectionExtensions = Steeltoe.Common.Hosting.ServiceCollectionExtensions;
 
 namespace Steeltoe.Security.Authorization.Certificate.Test;
 
@@ -183,6 +185,31 @@ public sealed class CertificateAuthorizationTest
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CertificateAuth_AddsInstanceIPsAsKnownNetworks()
+    {
+        const string instanceIPAddress = "192.168.0.110";
+        const string instanceInternalIPAddress = "10.255.31.112";
+        using var instanceScope = new EnvironmentVariableScope("CF_INSTANCE_IP", instanceIPAddress);
+        using var internalScope = new EnvironmentVariableScope("CF_INSTANCE_INTERNAL_IP", instanceInternalIPAddress);
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
+        builder.Services.AddAuthentication().AddCertificate();
+        builder.Services.AddAuthorizationBuilder().AddOrgAndSpacePolicies();
+        await using WebApplication application = builder.Build();
+
+        ForwardedHeadersOptions options = application.Services.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
+
+        AssertKnownNetworksContains(options, instanceIPAddress);
+        AssertKnownNetworksContains(options, instanceInternalIPAddress);
+    }
+
+    private static void AssertKnownNetworksContains(ForwardedHeadersOptions options, string ipAddress)
+    {
+        IPNetwork network = ServiceCollectionExtensions.GetNetworkFromAddress(IPAddress.Parse(ipAddress), 24);
+        options.KnownNetworks.Should().ContainEquivalentOf(network);
     }
 
     private HostBuilder GetHostBuilder()
