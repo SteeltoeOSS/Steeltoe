@@ -13,3 +13,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Prometheus.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Security.Authorization.Certificate.Test")]
