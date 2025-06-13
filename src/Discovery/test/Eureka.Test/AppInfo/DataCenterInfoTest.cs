@@ -31,7 +31,7 @@ public sealed class DataCenterInfoTest
 
         JsonDataCenterInfo json = info.ToJson();
         Assert.NotNull(json);
-        Assert.Equal(DataCenterName.MyOwn.ToString(), json.Name);
+        Assert.Equal(nameof(DataCenterName.MyOwn), json.Name);
         Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", json.ClassName);
     }
 
