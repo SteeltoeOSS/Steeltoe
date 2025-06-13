@@ -11,9 +11,9 @@ namespace Steeltoe.Management.Endpoint.Actuators.Info;
 
 internal sealed class InfoEndpointMiddleware(
     IInfoEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
-    : EndpointMiddleware<object?, IDictionary<string, object>>(endpointHandler, managementOptionsMonitor, loggerFactory)
+    : EndpointMiddleware<object?, IDictionary<string, object?>>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    protected override async Task<IDictionary<string, object>> InvokeEndpointHandlerAsync(object? request, CancellationToken cancellationToken)
+    protected override async Task<IDictionary<string, object?>> InvokeEndpointHandlerAsync(object? request, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(request, cancellationToken);
     }

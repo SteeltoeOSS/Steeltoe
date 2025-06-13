@@ -4,7 +4,6 @@
 
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.Extensions;
 using MicrosoftHealthCheckResult = Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult;
 using MicrosoftHealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
@@ -112,20 +111,12 @@ internal sealed class HealthAggregator : IHealthAggregator
             IHealthCheck check = registration.Factory(serviceProvider);
             MicrosoftHealthCheckResult result = await check.CheckHealthAsync(context, cancellationToken);
 
-            SteeltoeHealthStatus status = ToHealthStatus(result.Status);
-            healthCheckResult.Status = status; // Only used for aggregate, doesn't get reported
+            healthCheckResult.Status = ToHealthStatus(result.Status);
             healthCheckResult.Description = result.Description;
 
             foreach ((string key, object value) in result.Data)
             {
                 healthCheckResult.Details[key] = value;
-            }
-
-            healthCheckResult.Details["status"] = status.ToSnakeCaseString(SnakeCaseStyle.AllCaps);
-
-            if (result.Description != null)
-            {
-                healthCheckResult.Details.Add("description", result.Description);
             }
 
             if (result.Exception != null && !string.IsNullOrEmpty(result.Exception.Message))
@@ -172,16 +163,61 @@ internal sealed class HealthAggregator : IHealthAggregator
 
     private static SteeltoeHealthCheckResult AddChecksSetStatus(SteeltoeHealthCheckResult result, IDictionary<string, SteeltoeHealthCheckResult> healthChecks)
     {
-        foreach (KeyValuePair<string, SteeltoeHealthCheckResult> healthCheck in healthChecks)
+        var orderedCheckResults = new SortedDictionary<CheckResultOrderingKey, SteeltoeHealthCheckResult>(CheckResultOrderingKeyComparer.Instance);
+
+        foreach ((string name, SteeltoeHealthCheckResult checkResult) in healthChecks)
         {
-            if (healthCheck.Value.Status > result.Status)
+            if (checkResult.Status > result.Status)
             {
-                result.Status = healthCheck.Value.Status;
+                result.Status = checkResult.Status;
             }
 
-            result.Details.Add(healthCheck.Key, healthCheck.Value);
+            var orderingKey = new CheckResultOrderingKey(checkResult.Status, name);
+            orderedCheckResults.Add(orderingKey, checkResult);
+        }
+
+        foreach ((CheckResultOrderingKey orderingKey, SteeltoeHealthCheckResult checkResult) in orderedCheckResults)
+        {
+            result.Details.Add(orderingKey.Name, checkResult);
         }
 
         return result;
+    }
+
+    private sealed record CheckResultOrderingKey(SteeltoeHealthStatus Status, string Name);
+
+    private sealed class CheckResultOrderingKeyComparer : IComparer<CheckResultOrderingKey>
+    {
+        private static readonly List<SteeltoeHealthStatus> HealthStatusOrder =
+        [
+            SteeltoeHealthStatus.Down,
+            SteeltoeHealthStatus.OutOfService,
+            SteeltoeHealthStatus.Warning,
+            SteeltoeHealthStatus.Unknown,
+            SteeltoeHealthStatus.Up
+        ];
+
+        public static CheckResultOrderingKeyComparer Instance { get; } = new();
+
+        private CheckResultOrderingKeyComparer()
+        {
+        }
+
+        public int Compare(CheckResultOrderingKey? x, CheckResultOrderingKey? y)
+        {
+            if (x == null || y == null)
+            {
+                return Comparer<CheckResultOrderingKey>.Default.Compare(x, y);
+            }
+
+            int result = HealthStatusOrder.IndexOf(x.Status).CompareTo(HealthStatusOrder.IndexOf(y.Status));
+
+            if (result == 0)
+            {
+                result = string.Compare(x.Name, y.Name, StringComparison.Ordinal);
+            }
+
+            return result;
+        }
     }
 }

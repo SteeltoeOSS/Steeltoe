@@ -66,11 +66,6 @@ internal static class ConfigurationProviderEnumerationExtensions
     {
         foreach (IConfigurationProvider provider in providers)
         {
-            if (predicate(provider))
-            {
-                yield return provider;
-            }
-
             if (provider is ChainedConfigurationProvider chainedConfigurationProvider)
             {
                 foreach (IConfigurationProvider match in EnumerateProviders(chainedConfigurationProvider.Configuration, predicate))
@@ -85,6 +80,11 @@ internal static class ConfigurationProviderEnumerationExtensions
                 {
                     yield return match;
                 }
+            }
+
+            if (predicate(provider))
+            {
+                yield return provider;
             }
         }
     }

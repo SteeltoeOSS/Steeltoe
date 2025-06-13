@@ -6,15 +6,15 @@ using Steeltoe.Management.Endpoint.Actuators.Info;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Info;
 
-public sealed class InfoBuilderTest : BaseTest
+public sealed class InfoBuilderTest
 {
     [Fact]
     public void ReturnsEmptyDictionary()
     {
         var builder = new InfoBuilder();
-        IDictionary<string, object> built = builder.Build();
-        Assert.NotNull(built);
-        Assert.Empty(built);
+        IDictionary<string, object?> built = builder.Build();
+
+        built.Should().BeEmpty();
     }
 
     [Fact]
@@ -22,10 +22,10 @@ public sealed class InfoBuilderTest : BaseTest
     {
         var builder = new InfoBuilder();
         builder.WithInfo("foo", "bar");
-        IDictionary<string, object> built = builder.Build();
-        Assert.NotNull(built);
-        Assert.Single(built);
-        Assert.Equal("bar", built["foo"]);
+        IDictionary<string, object?> built = builder.Build();
+
+        built.Should().ContainSingle();
+        built.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
     }
 
     [Fact]
@@ -33,17 +33,19 @@ public sealed class InfoBuilderTest : BaseTest
     {
         var builder = new InfoBuilder();
 
-        var items = new Dictionary<string, object>
+        var items = new Dictionary<string, object?>
         {
             ["foo"] = "bar",
-            ["bar"] = 100
+            ["bar"] = 100,
+            ["baz"] = null
         };
 
         builder.WithInfo(items);
-        IDictionary<string, object> built = builder.Build();
-        Assert.NotNull(built);
-        Assert.Equal(2, built.Count);
-        Assert.Equal("bar", built["foo"]);
-        Assert.Equal(100, built["bar"]);
+        IDictionary<string, object?> built = builder.Build();
+
+        built.Should().HaveCount(3);
+        built.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
+        built.Should().ContainKey("bar").WhoseValue.Should().Be(100);
+        built.Should().ContainKey("baz").WhoseValue.Should().BeNull();
     }
 }

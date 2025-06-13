@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Middleware;
 
@@ -68,7 +69,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 
     private static bool IsValidGroup(string groupName, HealthEndpointOptions endpointOptions)
     {
-        return string.IsNullOrEmpty(groupName) || endpointOptions.Groups.Any(pair => pair.Key == groupName);
+        return groupName.Length == 0 || endpointOptions.Groups.ContainsKey(groupName);
     }
 
     private static bool GetHasClaim(HttpContext context, HealthEndpointOptions endpointOptions)
@@ -92,21 +93,26 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 
     protected override async Task WriteResponseAsync(HealthEndpointResponse response, HttpContext httpContext, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(response);
+        ArgumentNullException.ThrowIfNull(httpContext);
+
         if (!response.Exists)
         {
             httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
             return;
         }
 
-        if (ManagementOptionsMonitor.CurrentValue.UseStatusCodeFromResponse || UseStatusCodeFromResponseInHeader(httpContext.Request.Headers))
+        bool? headerValue = UseStatusCodeFromResponseInHeader(httpContext.Request.Headers);
+
+        if (headerValue ?? ManagementOptionsMonitor.CurrentValue.UseStatusCodeFromResponse)
         {
-            httpContext.Response.StatusCode = ((HealthEndpointHandler)EndpointHandler).GetStatusCode(response);
+            httpContext.Response.StatusCode = GetStatusCode(response);
         }
 
         await base.WriteResponseAsync(response, httpContext, cancellationToken);
     }
 
-    private static bool UseStatusCodeFromResponseInHeader(IHeaderDictionary requestHeaders)
+    private static bool? UseStatusCodeFromResponseInHeader(IHeaderDictionary requestHeaders)
     {
         if (requestHeaders.TryGetValue(ManagementOptions.UseStatusCodeFromResponseHeaderName, out StringValues headerValue) &&
             bool.TryParse(headerValue, out bool useStatusCode))
@@ -114,6 +120,11 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
             return useStatusCode;
         }
 
-        return false;
+        return null;
+    }
+
+    private static int GetStatusCode(HealthEndpointResponse response)
+    {
+        return response.Status is HealthStatus.Down or HealthStatus.OutOfService ? 503 : 200;
     }
 }

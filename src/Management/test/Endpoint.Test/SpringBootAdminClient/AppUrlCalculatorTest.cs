@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Net;
-using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
 namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
@@ -568,14 +569,11 @@ public sealed class AppUrlCalculatorTest
         var services = new ServiceCollection();
 
         services.AddSingleton(configuration);
-        services.AddOptions();
-        services.AddSingleton<IConfigureOptions<SpringBootAdminClientOptions>, ConfigureSpringBootAdminClientOptions>();
-        services.AddSingleton<IConfigureOptions<ManagementOptions>, ConfigureManagementOptions>();
-        services.AddLogging();
         services.AddSingleton<IServer, FakeServer>();
         services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         services.AddSingleton<InetUtils, FakeInetUtils>();
-        services.AddSingleton<AppUrlCalculator>();
+        services.AddSpringBootAdminClient();
+        services.RemoveAll<IHostedService>();
 
         return services.BuildServiceProvider(true);
     }

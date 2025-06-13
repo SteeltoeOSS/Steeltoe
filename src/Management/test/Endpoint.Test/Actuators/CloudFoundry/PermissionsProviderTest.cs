@@ -14,7 +14,7 @@ using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
 
-public sealed class PermissionsProviderTest : BaseTest
+public sealed class PermissionsProviderTest
 {
     [Fact]
     public void IsCloudFoundryRequestReturnsExpected()
@@ -64,20 +64,19 @@ public sealed class PermissionsProviderTest : BaseTest
     [Theory]
     public async Task Returns_expected_response_on_permission_check(string scenario, HttpStatusCode? steeltoeStatusCode, string errorMessage)
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["vcap:application:cf_api"] = "https://example.api.com",
             ["vcap:application:application_id"] = scenario
         };
 
-        IOptionsMonitor<CloudFoundryEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>(appSettings!);
-
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddCloudFoundryActuator();
-
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
         serviceProvider.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
         var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
 
         var permissionsProvider = new PermissionsProvider(optionsMonitor, httpClientFactory, NullLogger<PermissionsProvider>.Instance);
@@ -102,12 +101,13 @@ public sealed class PermissionsProviderTest : BaseTest
 
     private static PermissionsProvider GetPermissionsProvider()
     {
-        IOptionsMonitor<CloudFoundryEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
-
         var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
         var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
 
         return new PermissionsProvider(optionsMonitor, httpClientFactory, NullLogger<PermissionsProvider>.Instance);
     }

@@ -8,7 +8,4 @@ using Steeltoe.Management.Endpoint.Configuration;
 namespace Steeltoe.Management.Endpoint.Actuators.Refresh;
 
 internal sealed class ConfigureRefreshEndpointOptions(IConfiguration configuration)
-    : ConfigureEndpointOptions<RefreshEndpointOptions>(configuration, ManagementInfoPrefix, "refresh")
-{
-    private const string ManagementInfoPrefix = "management:endpoints:refresh";
-}
+    : ConfigureEndpointOptions<RefreshEndpointOptions>(configuration, "Management:Endpoints:Refresh", "refresh");

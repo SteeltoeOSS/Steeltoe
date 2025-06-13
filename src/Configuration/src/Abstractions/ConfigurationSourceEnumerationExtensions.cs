@@ -57,17 +57,17 @@ internal static class ConfigurationSourceEnumerationExtensions
     {
         foreach (IConfigurationSource source in sources)
         {
-            if (predicate(source))
-            {
-                yield return source;
-            }
-
             if (source is ICompositeConfigurationSource compositeConfigurationSource)
             {
                 foreach (IConfigurationSource match in FilterSources(compositeConfigurationSource.Sources, predicate))
                 {
                     yield return match;
                 }
+            }
+
+            if (predicate(source))
+            {
+                yield return source;
             }
         }
     }

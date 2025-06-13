@@ -46,7 +46,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:port"] = AspNetDefaultPort
+            ["Management:Endpoints:Port"] = AspNetDefaultPort
         };
 
         await using WebApplication app = await CreateAppAsync(appSettings);
@@ -75,7 +75,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:port"] = managementPort
+            ["Management:Endpoints:Port"] = managementPort
         };
 
         await using WebApplication app = await CreateAppAsync(appSettings);
@@ -125,7 +125,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         {
             // The test listens on the proxy ports in lieu of Cloud Foundry's proxy infrastructure
             ["urls"] = $"http://*:{externalTlsProxyPort};http://*:{internalTlsProxyPort}",
-            ["management:endpoints:port"] = managementPort
+            ["Management:Endpoints:Port"] = managementPort
         };
 
         await using WebApplication app = await CreateAppAsync(appSettings);
@@ -152,8 +152,8 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:port"] = managementPort,
-            ["management:endpoints:sslEnabled"] = "true"
+            ["Management:Endpoints:Port"] = managementPort,
+            ["Management:Endpoints:SslEnabled"] = "true"
         };
 
         await using WebApplication app = await CreateAppAsync(appSettings);
@@ -230,7 +230,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         var appSettings = new Dictionary<string, string?>
         {
             ["urls"] = $"http://localhost:{appHttpPort};https://*:{appHttpsPort}",
-            ["management:endpoints:port"] = appHttpPort
+            ["Management:Endpoints:Port"] = appHttpPort
         };
 
         await using WebApplication app = await CreateAppAsync(appSettings);
@@ -270,7 +270,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         var appSettings = new Dictionary<string, string?>
         {
             ["urls"] = $"http://localhost:{appHttpPort};https://*:{appHttpsPort}",
-            ["management:endpoints:port"] = managementPort
+            ["Management:Endpoints:Port"] = managementPort
         };
 
         await using WebApplication app = await CreateAppAsync(appSettings);
@@ -317,8 +317,8 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         var appSettings = new Dictionary<string, string?>
         {
             ["urls"] = $"http://localhost:{appHttpPort};https://*:{appHttpsPort}",
-            ["management:endpoints:port"] = managementPort,
-            ["management:endpoints:sslEnabled"] = "true"
+            ["Management:Endpoints:Port"] = managementPort,
+            ["Management:Endpoints:SslEnabled"] = "true"
         };
 
         await using WebApplication app = await CreateAppAsync(appSettings);
@@ -402,7 +402,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:port"] = appHttpPort
+            ["Management:Endpoints:Port"] = appHttpPort
         };
 
         await using WebApplication app = await CreateAppAsync(appSettings);
@@ -444,7 +444,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:port"] = managementPort
+            ["Management:Endpoints:Port"] = managementPort
         };
 
         await using WebApplication app = await CreateAppAsync(appSettings);
@@ -493,8 +493,8 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:port"] = managementPort,
-            ["management:endpoints:sslEnabled"] = "true"
+            ["Management:Endpoints:Port"] = managementPort,
+            ["Management:Endpoints:SslEnabled"] = "true"
         };
 
         await using WebApplication app = await CreateAppAsync(appSettings);
@@ -576,7 +576,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:port"] = appHttpPort
+            ["Management:Endpoints:Port"] = appHttpPort
         };
 
         await using WebApplication app = await CreateAppAsync(appSettings, app =>
@@ -619,7 +619,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:port"] = managementPort
+            ["Management:Endpoints:Port"] = managementPort
         };
 
         await using WebApplication app = await CreateAppAsync(appSettings, app =>
@@ -669,8 +669,8 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:port"] = managementPort,
-            ["management:endpoints:sslEnabled"] = "true"
+            ["Management:Endpoints:Port"] = managementPort,
+            ["Management:Endpoints:SslEnabled"] = "true"
         };
 
         await using WebApplication app = await CreateAppAsync(appSettings, app =>
@@ -758,7 +758,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         var appSettings = new Dictionary<string, string?>
         {
             ["urls"] = "http://127.0.0.1:0;https://*:0",
-            ["management:endpoints:port"] = managementPort
+            ["Management:Endpoints:Port"] = managementPort
         };
 
         await using WebApplication app = await CreateAppAsync(appSettings);
@@ -807,8 +807,8 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         var appSettings = new Dictionary<string, string?>
         {
             ["urls"] = "http://127.0.0.1:0;https://*:0",
-            ["management:endpoints:port"] = managementPort,
-            ["management:endpoints:sslEnabled"] = "true"
+            ["Management:Endpoints:Port"] = managementPort,
+            ["Management:Endpoints:SslEnabled"] = "true"
         };
 
         await using WebApplication app = await CreateAppAsync(appSettings);

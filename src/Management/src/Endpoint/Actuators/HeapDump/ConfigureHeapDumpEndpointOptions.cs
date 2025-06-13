@@ -9,10 +9,8 @@ using Steeltoe.Management.Endpoint.Configuration;
 namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
 internal sealed class ConfigureHeapDumpEndpointOptions(IConfiguration configuration)
-    : ConfigureEndpointOptions<HeapDumpEndpointOptions>(configuration, ManagementInfoPrefix, "heapdump")
+    : ConfigureEndpointOptions<HeapDumpEndpointOptions>(configuration, "Management:Endpoints:Heapdump", "heapdump")
 {
-    private const string ManagementInfoPrefix = "management:endpoints:heapdump";
-
     public override void Configure(HeapDumpEndpointOptions options)
     {
         base.Configure(options);

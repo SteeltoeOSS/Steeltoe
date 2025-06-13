@@ -32,6 +32,7 @@ public static class ServiceCollectionExtensions
         services.ConfigureOptionsWithChangeTokenSource<ManagementOptions, ConfigureManagementOptions>();
         services.ConfigureOptionsWithChangeTokenSource<SpringBootAdminClientOptions, ConfigureSpringBootAdminClientOptions>();
         services.ConfigureEndpointOptions<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
+        services.TryAddSingleton<HasCloudFoundrySecurityMiddlewareMarker>();
 
         ConfigureHttpClient(services);
 
