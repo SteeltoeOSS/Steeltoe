@@ -17,12 +17,12 @@ partial class RedisDataProtectionBuilderExtensionsTest
         databaseMock.Setup(database => database.HashGet(It.IsAny<RedisKey>(), It.IsAny<RedisValue[]>(), It.IsAny<CommandFlags>()))
             .Returns((RedisKey key, RedisValue[] _, CommandFlags _) => GetRedisValues(key));
 
-        databaseMock.Setup(database => database.HashGetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue[]>(), It.IsAny<CommandFlags>())).Returns(
-            (RedisKey key, RedisValue[] _, CommandFlags _) => Task.FromResult(GetRedisValues(key)));
+        databaseMock.Setup(database => database.HashGetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue[]>(), It.IsAny<CommandFlags>()))
+            .Returns((RedisKey key, RedisValue[] _, CommandFlags _) => Task.FromResult(GetRedisValues(key)));
 
         databaseMock.Setup(database =>
-            database.ScriptEvaluateAsync(It.IsAny<string>(), It.IsAny<RedisKey[]?>(), It.IsAny<RedisValue[]?>(), It.IsAny<CommandFlags>())).Returns(
-            (string _, RedisKey[]? keys, RedisValue[]? values, CommandFlags _) =>
+                database.ScriptEvaluateAsync(It.IsAny<string>(), It.IsAny<RedisKey[]?>(), It.IsAny<RedisValue[]?>(), It.IsAny<CommandFlags>()))
+            .Returns((string _, RedisKey[]? keys, RedisValue[]? values, CommandFlags _) =>
             {
                 innerStore[keys![0]!] = values![3]!;
                 return Task.FromResult(RedisResult.Create(keys[0]));
