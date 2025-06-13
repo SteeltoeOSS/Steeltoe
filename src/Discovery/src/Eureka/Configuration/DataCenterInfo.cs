@@ -18,7 +18,7 @@ public sealed class DataCenterInfo
             return null;
         }
 
-        if (jsonDataCenterInfo.Name == DataCenterName.MyOwn.ToString())
+        if (jsonDataCenterInfo.Name == nameof(DataCenterName.MyOwn))
         {
             return new DataCenterInfo
             {
@@ -26,7 +26,7 @@ public sealed class DataCenterInfo
             };
         }
 
-        if (jsonDataCenterInfo.Name == DataCenterName.Amazon.ToString())
+        if (jsonDataCenterInfo.Name == nameof(DataCenterName.Amazon))
         {
             return new DataCenterInfo
             {

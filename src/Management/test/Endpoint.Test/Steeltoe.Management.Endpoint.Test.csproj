@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.System" Version="$(AspNetCoreHealthChecksVersion)" />
-    <PackageReference Include="FluentAssertions.Json" Version="$(FluentAssertionsJsonVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(MatchTargetFrameworkVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(EntityFrameworkCoreTestVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EntityFrameworkCoreTestVersion)" />
