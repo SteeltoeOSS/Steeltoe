@@ -17,7 +17,7 @@ public abstract class BasePostProcessorsTest
         string typeKey = MakeTypeKey(bindingName);
         dictionary.Add(typeKey, bindingType);
 
-        foreach ((string name, string? value) in secrets)
+        foreach ((string name, string value) in secrets)
         {
             string secretKey = MakeSecretKey(bindingName, name);
             dictionary.Add(secretKey, value);
