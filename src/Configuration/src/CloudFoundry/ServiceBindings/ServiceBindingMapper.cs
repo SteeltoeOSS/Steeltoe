@@ -39,7 +39,7 @@ internal sealed class ServiceBindingMapper : ConfigurationDictionaryMapper
     {
         if (overrideToPrefix != null)
         {
-            return overrideToPrefix.Split(ConfigurationPath.KeyDelimiter).ToArray();
+            return overrideToPrefix.Split(ConfigurationPath.KeyDelimiter);
         }
 
         List<string> toPrefix = CloudFoundryServiceBindingConfigurationProvider.ToKeyPrefix.Split(ConfigurationPath.KeyDelimiter).ToList();
