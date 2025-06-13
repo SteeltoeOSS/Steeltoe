@@ -200,6 +200,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         _registryFetchAsyncLock.Dispose();
     }
 
+    // ReSharper disable once AsyncVoidMethod
     private async void AppInfoManagerOnInstanceChanged(object? sender, InstanceChangedEventArgs args)
     {
         if (!IsAlive)
@@ -463,6 +464,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         }
     }
 
+    // ReSharper disable once AsyncVoidMethod
     private async void HeartbeatAsyncTask()
     {
         if (!IsAlive)
@@ -483,6 +485,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         }
     }
 
+    // ReSharper disable once AsyncVoidMethod
     private async void CacheRefreshAsyncTask()
     {
         if (!IsAlive)
