@@ -194,10 +194,9 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
     [Fact]
     public void AppliesChangedConfiguration()
     {
-        const string fileName = "appsettings.json";
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(fileName, """
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "Serilog": {
             "MinimumLevel": {
@@ -212,8 +211,8 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
         }
         """);
 
-        using IDynamicLoggerProvider provider =
-            CreateLoggerProvider(configurationBuilder => configurationBuilder.AddJsonFile(fileProvider, fileName, false, true));
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder =>
+            configurationBuilder.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true));
 
         DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
 
@@ -228,7 +227,7 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
         testContext.Self.AssertMinLevel(LogLevel.Error, LogLevel.Warning);
         testContext.Child.AssertMinLevel(LogLevel.Error);
 
-        fileProvider.ReplaceFile(fileName, """
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "Serilog": {
             "MinimumLevel": {

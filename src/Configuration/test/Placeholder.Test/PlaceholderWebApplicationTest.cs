@@ -34,9 +34,8 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
             }
             """;
 
-        const string fileName = "appsettings.json";
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(fileName, appSettings);
+        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
 
         var memorySettings = new Dictionary<string, string?>
         {
@@ -47,7 +46,7 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
         builder.Services.AddSingleton<ILoggerFactory>(_loggerFactory);
         builder.Configuration.SetBasePath(sandbox.FullPath);
         builder.Configuration.AddInMemoryCollection(memorySettings);
-        builder.Configuration.AddJsonFile(fileName, false, true);
+        builder.Configuration.AddJsonFile(MemoryFileProvider.DefaultAppSettingsFileName, false, true);
         builder.Configuration.AddPlaceholderResolver(_loggerFactory);
         builder.Services.Configure<TestOptions>(builder.Configuration.GetSection("TestRoot"));
         builder.Services.AddSingleton<IConfigureOptions<TestOptions>, ConfigureTestOptions>();

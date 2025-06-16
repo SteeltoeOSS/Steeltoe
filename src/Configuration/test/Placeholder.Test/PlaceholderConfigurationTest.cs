@@ -331,10 +331,9 @@ public sealed class PlaceholderConfigurationTest : IDisposable
     [InlineData(3)]
     public void Reloads_options_on_change(int placeholderCount)
     {
-        const string fileName = "appsettings.json";
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(fileName, """
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "TestRoot": {
             "Value": "valueA"
@@ -343,7 +342,7 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         """);
 
         var builder = new ConfigurationBuilder();
-        builder.AddJsonFile(fileProvider, fileName, false, true);
+        builder.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
 
 #pragma warning disable SA1312 // Variable names should begin with lower-case letter
         foreach (int _ in Enumerable.Repeat(0, placeholderCount))
@@ -373,7 +372,7 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         _ = optionsMonitor.CurrentValue;
         configurer.ConfigureCount.Should().Be(1);
 
-        fileProvider.ReplaceFile(fileName, """
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "TestRoot": {
             "Value": "valueB"

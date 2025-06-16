@@ -370,9 +370,8 @@ public sealed partial class RouteMappingsActuatorTest
     public async Task Can_change_configuration_at_runtime()
     {
         var fileProvider = new MemoryFileProvider();
-        const string appSettingsJsonFileName = "appsettings.json";
 
-        fileProvider.IncludeFile(appSettingsJsonFileName, """
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "Management": {
             "Endpoints": {
@@ -386,7 +385,7 @@ public sealed partial class RouteMappingsActuatorTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
-        builder.Configuration.AddJsonFile(fileProvider, appSettingsJsonFileName, false, true);
+        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
         builder.Services.AddAllActuators();
         await using WebApplication host = builder.Build();
 
@@ -399,7 +398,7 @@ public sealed partial class RouteMappingsActuatorTest
         responseNode1["contexts"]?["application"]?["mappings"]?["dispatcherServlets"]?["dispatcherServlet"].Should().BeOfType<JsonArray>().Subject.Should()
             .BeEmpty();
 
-        fileProvider.ReplaceFile(appSettingsJsonFileName, """
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
         }
         """);

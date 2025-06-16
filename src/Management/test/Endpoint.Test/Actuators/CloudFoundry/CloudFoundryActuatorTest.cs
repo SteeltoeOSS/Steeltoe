@@ -468,9 +468,8 @@ public sealed class CloudFoundryActuatorTest
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", VcapApplicationForMock);
 
         var fileProvider = new MemoryFileProvider();
-        const string appSettingsJsonFileName = "appsettings.json";
 
-        fileProvider.IncludeFile(appSettingsJsonFileName, """
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "Management": {
             "Endpoints": {
@@ -484,7 +483,7 @@ public sealed class CloudFoundryActuatorTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundry();
-        builder.Configuration.AddJsonFile(fileProvider, appSettingsJsonFileName, false, true);
+        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
         builder.Services.AddCloudFoundryActuator();
         builder.Services.AddInfoActuator();
         builder.Services.AddHealthActuator();
@@ -516,7 +515,7 @@ public sealed class CloudFoundryActuatorTest
             }
             """);
 
-        fileProvider.ReplaceFile(appSettingsJsonFileName, """
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "Management": {
             "Endpoints": {

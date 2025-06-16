@@ -419,9 +419,8 @@ public sealed class HttpExchangesActuatorTest
     public async Task Can_change_configuration_at_runtime()
     {
         var fileProvider = new MemoryFileProvider();
-        const string appSettingsJsonFileName = "appsettings.json";
 
-        fileProvider.IncludeFile(appSettingsJsonFileName, """
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "Management": {
             "Endpoints": {
@@ -445,7 +444,7 @@ public sealed class HttpExchangesActuatorTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
-        builder.Configuration.AddJsonFile(fileProvider, appSettingsJsonFileName, false, true);
+        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
         builder.Services.AddSingleton<IHttpExchangeRecorder>(new FakeHttpExchangeRecorder(httpExchanges));
         builder.Services.AddHttpExchangesActuator();
         await using WebApplication host = builder.Build();
@@ -486,7 +485,7 @@ public sealed class HttpExchangesActuatorTest
             }
             """);
 
-        fileProvider.ReplaceFile(appSettingsJsonFileName, """
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "Management": {
             "Endpoints": {

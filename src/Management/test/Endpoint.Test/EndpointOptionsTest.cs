@@ -87,17 +87,16 @@ public sealed class EndpointOptionsTest
     [Fact]
     public async Task CanTurnOffEndpointAtRuntimeFromExposureConfiguration()
     {
-        const string fileName = "appsettings.json";
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(fileName, """
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
             "Management:Endpoints:Actuator:Exposure:Include:0": "env"
         }
         """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
+        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
@@ -107,7 +106,7 @@ public sealed class EndpointOptionsTest
         HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        fileProvider.ReplaceFile(fileName, """
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
             "Management:Endpoints:Actuator:Exposure:Include:0": "env",
             "Management:Endpoints:Actuator:Exposure:Exclude:0": "*"
@@ -123,10 +122,9 @@ public sealed class EndpointOptionsTest
     [Fact]
     public async Task CanTurnOnEndpointAtRuntimeFromExposureConfiguration()
     {
-        const string fileName = "appsettings.json";
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(fileName, """
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
             "Management:Endpoints:Actuator:Exposure:Include:0": "env",
             "Management:Endpoints:Actuator:Exposure:Exclude:0": "*"
@@ -134,7 +132,7 @@ public sealed class EndpointOptionsTest
         """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
+        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
@@ -144,7 +142,7 @@ public sealed class EndpointOptionsTest
         HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        fileProvider.ReplaceFile(fileName, """
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
             "Management:Endpoints:Actuator:Exposure:Include:0": "env"
         }
@@ -159,10 +157,9 @@ public sealed class EndpointOptionsTest
     [Fact]
     public async Task CanTurnOffEndpointAtRuntimeFromEndpointConfiguration()
     {
-        const string fileName = "appsettings.json";
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(fileName, """
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
             "Management:Endpoints:Actuator:Exposure:Include:0": "env",
             "Management:Endpoints:Env:Enabled": "true"
@@ -170,7 +167,7 @@ public sealed class EndpointOptionsTest
         """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
+        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
@@ -180,7 +177,7 @@ public sealed class EndpointOptionsTest
         HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        fileProvider.ReplaceFile(fileName, """
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
             "Management:Endpoints:Actuator:Exposure:Include:0": "env",
             "Management:Endpoints:Env:Enabled": "false"
@@ -196,10 +193,9 @@ public sealed class EndpointOptionsTest
     [Fact]
     public async Task CanTurnOnEndpointAtRuntimeFromEndpointConfiguration()
     {
-        const string fileName = "appsettings.json";
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(fileName, """
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
             "Management:Endpoints:Actuator:Exposure:Include:0": "env",
             "Management:Endpoints:Env:Enabled": "false"
@@ -207,7 +203,7 @@ public sealed class EndpointOptionsTest
         """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
+        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
@@ -217,7 +213,7 @@ public sealed class EndpointOptionsTest
         HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        fileProvider.ReplaceFile(fileName, """
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
             "Management:Endpoints:Actuator:Exposure:Include:0": "env",
             "Management:Endpoints:Env:Enabled": "true"

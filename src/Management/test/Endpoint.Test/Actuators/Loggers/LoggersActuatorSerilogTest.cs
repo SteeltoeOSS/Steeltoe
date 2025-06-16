@@ -274,9 +274,8 @@ public sealed class LoggersActuatorSerilogTest
     public async Task Can_change_serilog_configuration_at_runtime()
     {
         var fileProvider = new MemoryFileProvider();
-        const string appSettingsJsonFileName = "appsettings.json";
 
-        fileProvider.IncludeFile(appSettingsJsonFileName, """
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "Serilog": {
             "MinimumLevel": {
@@ -292,7 +291,7 @@ public sealed class LoggersActuatorSerilogTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
-        builder.Configuration.AddJsonFile(fileProvider, appSettingsJsonFileName, false, true);
+        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
         builder.Services.AddSingleton<ILoggerFactory, OnlyTrackFakeCategoryLoggerFactory>();
         builder.Logging.AddDynamicSerilog();
         builder.Services.AddLoggersActuator();
@@ -346,7 +345,7 @@ public sealed class LoggersActuatorSerilogTest
             }
             """);
 
-        fileProvider.ReplaceFile(appSettingsJsonFileName, """
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "Serilog": {
             "MinimumLevel": {

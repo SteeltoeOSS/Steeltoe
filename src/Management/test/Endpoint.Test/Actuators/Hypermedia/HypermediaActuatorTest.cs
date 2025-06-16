@@ -412,9 +412,8 @@ public sealed class HypermediaActuatorTest
     public async Task Can_change_configuration_at_runtime()
     {
         var fileProvider = new MemoryFileProvider();
-        const string appSettingsJsonFileName = "appsettings.json";
 
-        fileProvider.IncludeFile(appSettingsJsonFileName, """
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "Management": {
             "Endpoints": {
@@ -427,7 +426,7 @@ public sealed class HypermediaActuatorTest
         """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddJsonFile(fileProvider, appSettingsJsonFileName, false, true);
+        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
         builder.Services.AddHypermediaActuator();
         builder.Services.AddInfoActuator();
         builder.Services.AddHealthActuator();
@@ -458,7 +457,7 @@ public sealed class HypermediaActuatorTest
             }
             """);
 
-        fileProvider.ReplaceFile(appSettingsJsonFileName, """
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "Management": {
             "Endpoints": {

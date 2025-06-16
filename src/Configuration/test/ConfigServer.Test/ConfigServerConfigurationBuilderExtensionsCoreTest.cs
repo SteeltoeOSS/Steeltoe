@@ -83,7 +83,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appSettings);
+        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
@@ -137,7 +137,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appSettings);
+        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
@@ -171,7 +171,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appSettings);
+        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
@@ -349,7 +349,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appSettings);
+        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
 
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
@@ -444,7 +444,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string appSettingsPath = sandbox.CreateFile("appsettings.json", appSettings);
+        string appSettingsPath = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
         string appSettingsFileName = Path.GetFileName(appSettingsPath);
 
         string vcapAppPath = sandbox.CreateFile("vcapapp.json", vcapApplication);
@@ -552,7 +552,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             """;
 
         using var sandbox = new Sandbox();
-        string appSettingsPath = sandbox.CreateFile("appsettings.json", appSettings);
+        string appSettingsPath = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
         string appSettingsFileName = Path.GetFileName(appSettingsPath);
 
         string vcapAppPath = sandbox.CreateFile("vcapapp.json", vcapApplication);
