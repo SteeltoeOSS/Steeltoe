@@ -17,7 +17,7 @@ internal abstract class CloudFoundryPostProcessor : IConfigurationPostProcessor
 
     public abstract void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData);
 
-    protected IEnumerable<string> FilterKeys(IDictionary<string, string?> configurationData, string valueToFind, KeyFilterSources sources)
+    protected ICollection<string> FilterKeys(IDictionary<string, string?> configurationData, string valueToFind, KeyFilterSources sources)
     {
         List<string> keys = [];
 
