@@ -41,7 +41,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 
         if (dbContextType is null)
         {
-            _logger.LogCritical("DbMigrations endpoint was invoked but no DbContext was found.");
+            _logger.LogError("The Microsoft.EntityFrameworkCore.DbContext type is unavailable. Are you missing a package reference?");
         }
         else
         {
@@ -83,7 +83,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
                 }
                 catch (DbException exception) when (exception.Message.Contains("exist", StringComparison.Ordinal))
                 {
-                    _logger.LogWarning(exception, "Encountered exception loading migrations: {Exception}", exception.Message);
+                    _logger.LogWarning(exception, "Failed to load pending/applied migrations, returning all migrations.");
                     AddRange(descriptor.PendingMigrations, _scanner.GetMigrations(dbContext));
                 }
             }

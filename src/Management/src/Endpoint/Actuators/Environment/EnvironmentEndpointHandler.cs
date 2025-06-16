@@ -36,16 +36,16 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
     public Task<EnvironmentResponse> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
+        _logger.LogTrace("Fetching property sources.");
+
         List<string> activeProfiles = [_environment.EnvironmentName];
-
-        _logger.LogTrace("Fetching property sources");
         IList<PropertySourceDescriptor> propertySources = GetPropertySources();
-        var response = new EnvironmentResponse(activeProfiles, propertySources);
 
+        var response = new EnvironmentResponse(activeProfiles, propertySources);
         return Task.FromResult(response);
     }
 
-    internal IList<PropertySourceDescriptor> GetPropertySources()
+    private List<PropertySourceDescriptor> GetPropertySources()
     {
         List<PropertySourceDescriptor> results = [];
 
@@ -58,7 +58,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         return results;
     }
 
-    public PropertySourceDescriptor GetPropertySourceDescriptor(IConfigurationProvider provider)
+    private PropertySourceDescriptor GetPropertySourceDescriptor(IConfigurationProvider provider)
     {
         ArgumentNullException.ThrowIfNull(provider);
 
@@ -70,39 +70,40 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         {
             if (provider.TryGet(key, out string? value))
             {
-                if (provider is CompositeConfigurationProvider)
+                if (provider is CompositeConfigurationProvider { ConfigurationRoot: not null } compositeProvider)
                 {
-                    // Wraps other providers, but has no key/value storage of its own.
-                    continue;
+                    string? innerValue = compositeProvider.ConfigurationRoot[key];
+
+                    if (innerValue == value)
+                    {
+                        // Only show values that the composite actually changed.
+                        continue;
+                    }
                 }
 
                 sanitizer ??= _optionsMonitor.CurrentValue.GetSanitizer();
                 string? sanitizedValue = sanitizer.Sanitize(key, value);
-                properties.Add(key, new PropertyValueDescriptor(sanitizedValue));
+
+                var descriptor = new PropertyValueDescriptor(sanitizedValue, null);
+                properties.Add(key, descriptor);
             }
         }
 
         return new PropertySourceDescriptor(sourceName, properties);
     }
 
-    public string GetPropertySourceName(IConfigurationProvider provider)
+    private static string GetPropertySourceName(IConfigurationProvider provider)
     {
         ArgumentNullException.ThrowIfNull(provider);
 
         return provider is FileConfigurationProvider fileProvider ? $"{provider.GetType().Name}: [{fileProvider.Source.Path}]" : provider.GetType().Name;
     }
 
-    private HashSet<string> GetFullKeyNames(IConfigurationProvider provider, string? rootKey, HashSet<string> initialKeys)
+    private static HashSet<string> GetFullKeyNames(IConfigurationProvider provider, string? rootKey, HashSet<string> initialKeys)
     {
         foreach (string key in provider.GetChildKeys([], rootKey).Distinct(StringComparer.OrdinalIgnoreCase))
         {
-            string surrogateKey = key;
-
-            if (rootKey != null)
-            {
-                surrogateKey = $"{rootKey}:{key}";
-            }
-
+            string surrogateKey = rootKey != null ? $"{rootKey}:{key}" : key;
             GetFullKeyNames(provider, surrogateKey, initialKeys);
 
             if (!initialKeys.Any(value => value.StartsWith(surrogateKey, StringComparison.Ordinal)))

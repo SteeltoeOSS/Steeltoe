@@ -32,7 +32,7 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
         _logger = loggerFactory.CreateLogger<InfoEndpointHandler>();
     }
 
-    public async Task<IDictionary<string, object>> InvokeAsync(object? argument, CancellationToken cancellationToken)
+    public async Task<IDictionary<string, object?>> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
         var builder = new InfoBuilder();
 
@@ -44,7 +44,8 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
             }
             catch (Exception exception) when (!exception.IsCancellation())
             {
-                _logger.LogError(exception, "Operation failed.");
+                _logger.LogWarning(exception, "Exception thrown by contributor '{ContributorTypeName}' while contributing to info endpoint.",
+                    contributor.GetType());
             }
         }
 

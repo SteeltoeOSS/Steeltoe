@@ -10,9 +10,18 @@ internal interface IDatabaseMigrationScanner
 {
     Assembly AssemblyToScan { get; }
 
+    /// <summary>
+    /// Gets all migrations that are defined in the assembly but haven't been applied to the target database.
+    /// </summary>
     IEnumerable<string> GetPendingMigrations(object context);
 
+    /// <summary>
+    /// Gets all migrations that have been applied to the target database.
+    /// </summary>
     IEnumerable<string> GetAppliedMigrations(object context);
 
+    /// <summary>
+    /// Gets all the migrations that are defined in the configured migrations assembly.
+    /// </summary>
     IEnumerable<string> GetMigrations(object context);
 }

@@ -20,8 +20,6 @@ public sealed class ConfigurationChangeDetectionTest
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
-        const string fileName = "appsettings.json";
-
         string fileContents = """
             {
               "Steeltoe": {
@@ -37,9 +35,9 @@ public sealed class ConfigurationChangeDetectionTest
             """;
 
         var fileProvider = new MemoryFileProvider();
-        fileProvider.IncludeFile(fileName, fileContents);
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, fileContents);
 
-        builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
+        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
         builder.AddPostgreSql(configureOptions => configureOptions.DetectConfigurationChanges = true, null);
 
         await using WebApplication app = builder.Build();
@@ -66,7 +64,7 @@ public sealed class ConfigurationChangeDetectionTest
         }
         """;
 
-        fileProvider.ReplaceFile(fileName, fileContents);
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
@@ -86,7 +84,7 @@ public sealed class ConfigurationChangeDetectionTest
         }
         """;
 
-        fileProvider.ReplaceFile(fileName, fileContents);
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
@@ -97,8 +95,6 @@ public sealed class ConfigurationChangeDetectionTest
     public void Applies_local_configuration_changes_using_WebHostBuilder()
     {
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-
-        const string fileName = "appsettings.json";
 
         string fileContents = """
             {
@@ -115,11 +111,11 @@ public sealed class ConfigurationChangeDetectionTest
             """;
 
         var fileProvider = new MemoryFileProvider();
-        fileProvider.IncludeFile(fileName, fileContents);
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, fileContents);
 
         builder.ConfigureAppConfiguration(configurationBuilder =>
         {
-            configurationBuilder.AddJsonFile(fileProvider, fileName, false, true);
+            configurationBuilder.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
             configurationBuilder.ConfigurePostgreSql(options => options.DetectConfigurationChanges = true);
         });
 
@@ -148,7 +144,7 @@ public sealed class ConfigurationChangeDetectionTest
         }
         """;
 
-        fileProvider.ReplaceFile(fileName, fileContents);
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
@@ -168,7 +164,7 @@ public sealed class ConfigurationChangeDetectionTest
         }
         """;
 
-        fileProvider.ReplaceFile(fileName, fileContents);
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
@@ -179,8 +175,6 @@ public sealed class ConfigurationChangeDetectionTest
     public void Applies_local_configuration_changes_using_HostBuilder()
     {
         HostBuilder builder = TestHostBuilderFactory.Create();
-
-        const string fileName = "appsettings.json";
 
         string fileContents = """
             {
@@ -197,11 +191,11 @@ public sealed class ConfigurationChangeDetectionTest
             """;
 
         var fileProvider = new MemoryFileProvider();
-        fileProvider.IncludeFile(fileName, fileContents);
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, fileContents);
 
         builder.ConfigureAppConfiguration(configurationBuilder =>
         {
-            configurationBuilder.AddJsonFile(fileProvider, fileName, false, true);
+            configurationBuilder.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
             configurationBuilder.ConfigurePostgreSql(options => options.DetectConfigurationChanges = true);
         });
 
@@ -230,7 +224,7 @@ public sealed class ConfigurationChangeDetectionTest
         }
         """;
 
-        fileProvider.ReplaceFile(fileName, fileContents);
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
@@ -250,7 +244,7 @@ public sealed class ConfigurationChangeDetectionTest
         }
         """;
 
-        fileProvider.ReplaceFile(fileName, fileContents);
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;

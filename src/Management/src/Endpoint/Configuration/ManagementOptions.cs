@@ -13,14 +13,23 @@ public sealed class ManagementOptions
 {
     internal const string UseStatusCodeFromResponseHeaderName = "X-Use-Status-Code-From-Response";
 
-    internal bool IsCloudFoundryEnabled { get; set; }
+    /// <summary>
+    /// Gets or sets a value indicating whether ANY endpoint starting with /cloudfoundryapplication is accessible. Not to be confused with the accessibility
+    /// of the /cloudfoundryapplication hypermedia endpoint.
+    /// </summary>
+    internal bool IsCloudFoundryEnabled { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the Cloud Foundry security middleware has been added to the pipeline.
+    /// </summary>
+    internal bool HasCloudFoundrySecurity { get; set; }
 
     /// <summary>
     /// Gets which management endpoints are included and/or excluded.
     /// </summary>
     /// <remarks>
-    /// The property value is obtained from configuration keys management:endpoints:web:exposure (a comma-separated list), falling back to
-    /// management:endpoints:actuator:exposure. So it does NOT bind from management:endpoints:exposure. This property is provided here internally to easily
+    /// The property value is obtained from configuration keys Management:Endpoints:Web:Exposure (a comma-separated list), falling back to
+    /// Management:Endpoints:Actuator:Exposure. So it does NOT bind from Management:Endpoints:Exposure. This property is provided here internally to easily
     /// read the settings.
     /// </remarks>
     internal Exposure Exposure { get; } = new();
@@ -28,7 +37,7 @@ public sealed class ManagementOptions
     /// <summary>
     /// Gets or sets a value indicating whether management endpoints are enabled. Default value: true.
     /// </summary>
-    public bool? Enabled { get; set; }
+    public bool Enabled { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the HTTP request path at which management endpoints are exposed. Default value: /actuator.

@@ -54,12 +54,12 @@ internal sealed class CloudFoundrySecurityMiddleware
         ArgumentNullException.ThrowIfNull(context);
 
         _logger.LogDebug("InvokeAsync({RequestPath})", context.Request.Path.Value);
-        CloudFoundryEndpointOptions endpointOptions = _endpointOptionsMonitor.CurrentValue;
         ManagementOptions managementOptions = _managementOptionsMonitor.CurrentValue;
 
-        if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(managementOptions) && managementOptions.IsCloudFoundryEnabled &&
-            PermissionsProvider.IsCloudFoundryRequest(context.Request.Path))
+        if (Platform.IsCloudFoundry && managementOptions.IsCloudFoundryEnabled && PermissionsProvider.IsCloudFoundryRequest(context.Request.Path))
         {
+            CloudFoundryEndpointOptions endpointOptions = _endpointOptionsMonitor.CurrentValue;
+
             if (string.IsNullOrEmpty(endpointOptions.ApplicationId))
             {
                 _logger.LogError(

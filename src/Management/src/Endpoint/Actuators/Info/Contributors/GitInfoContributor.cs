@@ -13,7 +13,7 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
     private const string GitSettingsPrefix = "git";
     private const string GitPropertiesFileName = "git.properties";
 
-    private static readonly List<string> DatetimeInputKeys = ["time"];
+    private static readonly List<string> DateTimeInputKeys = ["time"];
 
     private readonly string _propertiesPath;
     private readonly ILogger _logger;
@@ -41,7 +41,7 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
         Contribute(builder, GitSettingsPrefix, true);
     }
 
-    public async Task<IConfiguration?> ReadGitPropertiesAsync(CancellationToken cancellationToken)
+    private async Task<IConfiguration?> ReadGitPropertiesAsync(CancellationToken cancellationToken)
     {
         if (File.Exists(_propertiesPath))
         {
@@ -58,7 +58,7 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
                         continue;
                     }
 
-                    string[] keyValuePair = line.Split('=');
+                    string[] keyValuePair = line.Split('=', 2);
 
                     if (keyValuePair.Length != 2)
                     {
@@ -78,23 +78,23 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
         }
         else
         {
-            _logger.LogWarning("Unable to locate GitInfo at {GitInfoLocation}", _propertiesPath);
+            _logger.LogWarning("File '{Path}' does not exist.", _propertiesPath);
         }
 
         return null;
     }
 
-    protected override void AddKeyValue(IDictionary<string, object> dictionary, string key, string value)
+    protected override void AddKeyValue(IDictionary<string, object?> dictionary, string key, object? value)
     {
         ArgumentNullException.ThrowIfNull(dictionary);
         ArgumentException.ThrowIfNullOrEmpty(key);
 
-        object valueToInsert = value;
+        object? valueToInsert = value;
 
-        if (DatetimeInputKeys.Contains(key))
+        if (DateTimeInputKeys.Contains(key) && value is string stringValue)
         {
             // Normalize datetime values to ISO8601 format
-            valueToInsert = DateTime.Parse(value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+            valueToInsert = DateTime.Parse(stringValue, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
         }
 
         dictionary[key] = valueToInsert;

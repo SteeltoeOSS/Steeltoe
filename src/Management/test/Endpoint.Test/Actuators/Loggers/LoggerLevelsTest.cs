@@ -7,10 +7,10 @@ using Steeltoe.Management.Endpoint.Actuators.Loggers;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Loggers;
 
-public sealed class LoggerLevelsTest : BaseTest
+public sealed class LoggerLevelsTest
 {
     [Fact]
-    public void MapLogLevel_ToString_ReturnsExpected()
+    public void Can_map_from_log_level_to_string()
     {
         LoggerLevels.LogLevelToString(LogLevel.None).Should().Be("OFF");
         LoggerLevels.LogLevelToString(LogLevel.Critical).Should().Be("FATAL");
@@ -22,7 +22,7 @@ public sealed class LoggerLevelsTest : BaseTest
     }
 
     [Fact]
-    public void MapLogLevel_FromString_ReturnsExpected()
+    public void Can_map_from_string_to_log_level()
     {
         LoggerLevels.StringToLogLevel("OFF").Should().Be(LogLevel.None);
         LoggerLevels.StringToLogLevel("FATAL").Should().Be(LogLevel.Critical);
@@ -35,7 +35,7 @@ public sealed class LoggerLevelsTest : BaseTest
     }
 
     [Fact]
-    public void Constructor_SetsProperties()
+    public void Constructor_sets_properties()
     {
         var effectiveOnly = new LoggerLevels(null, LogLevel.Warning);
         effectiveOnly.ConfiguredLevel.Should().BeNull();

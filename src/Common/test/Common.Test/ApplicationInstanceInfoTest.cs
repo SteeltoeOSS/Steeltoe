@@ -6,6 +6,7 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Extensions;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Common.Test;
@@ -34,7 +35,7 @@ public sealed class ApplicationInstanceInfoTest
             """;
 
         using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", configJson);
+        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, configJson);
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var builder = new ConfigurationBuilder();

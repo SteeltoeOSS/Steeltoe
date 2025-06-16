@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -15,14 +14,32 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.ThreadDump;
 
 public sealed class ThreadDumpActuatorTest
 {
+    private static readonly Dictionary<string, string?> AppSettings = new()
+    {
+        ["Management:Endpoints:Actuator:Exposure:Include:0"] = "threaddump"
+    };
+
+    [Fact]
+    public async Task Registers_dependent_services()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddThreadDumpActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        Func<ThreadDumpEndpointMiddleware> action = serviceProvider.GetRequiredService<ThreadDumpEndpointMiddleware>;
+        action.Should().NotThrow();
+    }
+
     [Fact]
     public async Task Configures_default_settings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddThreadDumpActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddThreadDumpActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        ThreadDumpEndpointOptions options = host.Services.GetRequiredService<IOptions<ThreadDumpEndpointOptions>>().Value;
+        ThreadDumpEndpointOptions options = serviceProvider.GetRequiredService<IOptions<ThreadDumpEndpointOptions>>().Value;
 
         options.Duration.Should().Be(10);
         options.Enabled.Should().BeNull();
@@ -48,12 +65,12 @@ public sealed class ThreadDumpActuatorTest
             ["Management:Endpoints:ThreadDump:AllowedVerbs:0"] = "post"
         };
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddThreadDumpActuator();
-        await using WebApplication host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddThreadDumpActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        ThreadDumpEndpointOptions options = host.Services.GetRequiredService<IOptions<ThreadDumpEndpointOptions>>().Value;
+        ThreadDumpEndpointOptions options = serviceProvider.GetRequiredService<IOptions<ThreadDumpEndpointOptions>>().Value;
 
         options.Duration.Should().Be(20);
         options.Enabled.Should().BeTrue();
@@ -72,14 +89,9 @@ public sealed class ThreadDumpActuatorTest
     [InlineData(HostBuilderType.WebApplication)]
     public async Task Endpoint_returns_expected_data(HostBuilderType hostBuilderType)
     {
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["Management:Endpoints:Actuator:Exposure:Include:0"] = "threaddump"
-        };
-
         await using HostWrapper host = hostBuilderType.Build(builder =>
         {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
 
             builder.ConfigureServices(services =>
             {

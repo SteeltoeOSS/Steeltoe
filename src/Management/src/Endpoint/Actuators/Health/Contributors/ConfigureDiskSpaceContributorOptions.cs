@@ -9,10 +9,9 @@ namespace Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 
 internal sealed class ConfigureDiskSpaceContributorOptions : IConfigureOptionsWithKey<DiskSpaceContributorOptions>
 {
-    private const string ManagementInfoPrefix = "management:endpoints:health:diskspace";
     private readonly IConfiguration _configuration;
 
-    public string ConfigurationKey => ManagementInfoPrefix;
+    public string ConfigurationKey => "Management:Endpoints:Health:DiskSpace";
 
     public ConfigureDiskSpaceContributorOptions(IConfiguration configuration)
     {
@@ -25,6 +24,6 @@ internal sealed class ConfigureDiskSpaceContributorOptions : IConfigureOptionsWi
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        _configuration.GetSection(ManagementInfoPrefix).Bind(options);
+        _configuration.GetSection(ConfigurationKey).Bind(options);
     }
 }

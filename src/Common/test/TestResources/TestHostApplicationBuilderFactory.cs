@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Common.TestResources;
@@ -21,7 +23,7 @@ public static class TestHostApplicationBuilderFactory
     public static HostApplicationBuilder Create()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(new HostApplicationBuilderSettings());
-        ConfigureBuilder(builder);
+        ConfigureBuilder(builder, true);
 
         return builder;
     }
@@ -39,13 +41,18 @@ public static class TestHostApplicationBuilderFactory
             Args = args
         });
 
-        ConfigureBuilder(builder);
+        ConfigureBuilder(builder, true);
 
         return builder;
     }
 
-    private static void ConfigureBuilder(HostApplicationBuilder builder)
+    private static void ConfigureBuilder(HostApplicationBuilder builder, bool deactivateDiagnostics)
     {
         builder.ConfigureContainer(new DefaultServiceProviderFactory(ValidatingServiceProviderOptions));
+
+        if (deactivateDiagnostics)
+        {
+            builder.Services.Replace(ServiceDescriptor.Singleton<DiagnosticListener, InactiveDiagnosticListener>());
+        }
     }
 }

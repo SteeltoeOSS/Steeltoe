@@ -32,21 +32,23 @@ internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
     {
         _logger.LogInformation("Refreshing Configuration");
 
-        if (_configuration is IConfigurationRoot root)
+        if (_configuration is not IConfigurationRoot root)
         {
-            root.Reload();
+            throw new InvalidOperationException("The configuration is not a root configuration and cannot be reloaded.");
         }
 
-        List<string> keys = [];
+        root.Reload();
+
+        SortedSet<string> keys = new(StringComparer.OrdinalIgnoreCase);
 
         if (_optionsMonitor.CurrentValue.ReturnConfiguration)
         {
-            foreach (KeyValuePair<string, string?> kvp in _configuration.AsEnumerable())
+            foreach ((string key, _) in _configuration.AsEnumerable())
             {
-                keys.Add(kvp.Key);
+                keys.Add(key);
             }
         }
 
-        return Task.FromResult<IList<string>>(keys);
+        return Task.FromResult<IList<string>>(keys.ToList());
     }
 }

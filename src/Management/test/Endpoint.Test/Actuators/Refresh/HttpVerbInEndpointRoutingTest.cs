@@ -184,10 +184,9 @@ public sealed class HttpVerbInEndpointRoutingTest
     [Fact]
     public async Task Can_change_allowed_verbs_at_runtime()
     {
-        const string fileName = "appsettings.json";
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(fileName, """
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "Management": {
             "Endpoints": {
@@ -202,7 +201,7 @@ public sealed class HttpVerbInEndpointRoutingTest
         """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
+        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
         builder.Services.AddControllersWithViews();
         builder.Services.AddRefreshActuator();
 
@@ -219,7 +218,7 @@ public sealed class HttpVerbInEndpointRoutingTest
         HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null, TestContext.Current.CancellationToken);
         postResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        fileProvider.ReplaceFile(fileName, """
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "Management": {
             "Endpoints": {

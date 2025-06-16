@@ -95,8 +95,7 @@ Steeltoe.Management.Endpoint.Actuators.Environment.PropertySourceDescriptor.Prop
 Steeltoe.Management.Endpoint.Actuators.Environment.PropertySourceDescriptor.PropertySourceDescriptor(string! name, System.Collections.Generic.IDictionary<string!, Steeltoe.Management.Endpoint.Actuators.Environment.PropertyValueDescriptor!>! properties) -> void
 Steeltoe.Management.Endpoint.Actuators.Environment.PropertyValueDescriptor
 Steeltoe.Management.Endpoint.Actuators.Environment.PropertyValueDescriptor.Origin.get -> string?
-Steeltoe.Management.Endpoint.Actuators.Environment.PropertyValueDescriptor.PropertyValueDescriptor(object? value) -> void
-Steeltoe.Management.Endpoint.Actuators.Environment.PropertyValueDescriptor.PropertyValueDescriptor(object? value, string! origin) -> void
+Steeltoe.Management.Endpoint.Actuators.Environment.PropertyValueDescriptor.PropertyValueDescriptor(object? value, string? origin) -> void
 Steeltoe.Management.Endpoint.Actuators.Environment.PropertyValueDescriptor.Value.get -> object?
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.ApplicationAvailability(Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability!>! logger) -> void
@@ -112,15 +111,7 @@ Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityEventArgs
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityState
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityState.AvailabilityState(string! value) -> void
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessStateContributorOptions
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessStateContributorOptions.Enabled.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessStateContributorOptions.Enabled.set -> void
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessStateContributorOptions.LivenessStateContributorOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessState
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessStateContributorOptions
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessStateContributorOptions.Enabled.get -> bool
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessStateContributorOptions.Enabled.set -> void
-Steeltoe.Management.Endpoint.Actuators.Health.Availability.ReadinessStateContributorOptions.ReadinessStateContributorOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorOptions
 Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorOptions.DiskSpaceContributorOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorOptions.Enabled.get -> bool
@@ -129,6 +120,14 @@ Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorO
 Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorOptions.Path.set -> void
 Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorOptions.Threshold.get -> long
 Steeltoe.Management.Endpoint.Actuators.Health.Contributors.DiskSpaceContributorOptions.Threshold.set -> void
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.LivenessStateContributorOptions
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.LivenessStateContributorOptions.Enabled.get -> bool
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.LivenessStateContributorOptions.Enabled.set -> void
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.LivenessStateContributorOptions.LivenessStateContributorOptions() -> void
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.ReadinessStateContributorOptions
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.ReadinessStateContributorOptions.Enabled.get -> bool
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.ReadinessStateContributorOptions.Enabled.set -> void
+Steeltoe.Management.Endpoint.Actuators.Health.Contributors.ReadinessStateContributorOptions.ReadinessStateContributorOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.EndpointClaim
 Steeltoe.Management.Endpoint.Actuators.Health.EndpointClaim.EndpointClaim() -> void
 Steeltoe.Management.Endpoint.Actuators.Health.EndpointClaim.Type.get -> string?
@@ -191,14 +190,14 @@ Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpType.Triage = 3 -> Steel
 Steeltoe.Management.Endpoint.Actuators.HeapDump.IHeapDumpEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange
-Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.HttpExchange(Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest! request, Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeResponse! response, System.DateTime timestamp, Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal? principal, Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeSession? session, System.TimeSpan timeTaken) -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.HttpExchange(Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest! request, Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeResponse! response, System.DateTime timestamp, Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal? principal, Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeSession? session, System.TimeSpan? timeTaken) -> void
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Principal.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal?
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Request.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest!
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Response.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeResponse!
-Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.SerializedTimeTaken.get -> string!
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.SerializedTimeTaken.get -> string?
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Session.get -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeSession?
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.Timestamp.get -> System.DateTime
-Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.TimeTaken.get -> System.TimeSpan
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange.TimeTaken.get -> System.TimeSpan?
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal.HttpExchangePrincipal(string! name) -> void
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal.Name.get -> string!
@@ -243,8 +242,6 @@ Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesResult
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesResult.Exchanges.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange!>!
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesResult.HttpExchangesResult(System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchange!>! exchanges) -> void
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.IHttpExchangesEndpointHandler
-Steeltoe.Management.Endpoint.Actuators.HttpExchanges.IHttpExchangesRepository
-Steeltoe.Management.Endpoint.Actuators.HttpExchanges.IHttpExchangesRepository.GetHttpExchanges() -> Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesResult!
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.HypermediaEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.HypermediaEndpointOptions.HypermediaEndpointOptions() -> void
@@ -252,8 +249,8 @@ Steeltoe.Management.Endpoint.Actuators.Hypermedia.IHypermediaEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Href.get -> string!
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Href.set -> void
-Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Link(string! href) -> void
-Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Templated.get -> bool
+Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.IsTemplated.get -> bool
+Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link.Link(string! href, bool isTemplated) -> void
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Links
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Links.Entries.get -> System.Collections.Generic.IDictionary<string!, Steeltoe.Management.Endpoint.Actuators.Hypermedia.Link!>!
 Steeltoe.Management.Endpoint.Actuators.Hypermedia.Links.Links() -> void
@@ -266,10 +263,10 @@ Steeltoe.Management.Endpoint.Actuators.Info.IInfoContributor
 Steeltoe.Management.Endpoint.Actuators.Info.IInfoContributor.ContributeAsync(Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder! builder, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 Steeltoe.Management.Endpoint.Actuators.Info.IInfoEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder
-Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.Build() -> System.Collections.Generic.IDictionary<string!, object!>!
+Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.Build() -> System.Collections.Generic.IDictionary<string!, object?>!
 Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.InfoBuilder() -> void
-Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.WithInfo(string! key, object! value) -> Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder!
-Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.WithInfo(System.Collections.Generic.IDictionary<string!, object!>! details) -> Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder!
+Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.WithInfo(string! key, object? value) -> Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder!
+Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder.WithInfo(System.Collections.Generic.IDictionary<string!, object?>! details) -> Steeltoe.Management.Endpoint.Actuators.Info.InfoBuilder!
 Steeltoe.Management.Endpoint.Actuators.Info.InfoEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.Info.InfoEndpointOptions.InfoEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Actuators.Loggers.EndpointServiceCollectionExtensions
@@ -441,7 +438,7 @@ Steeltoe.Management.Endpoint.Configuration.IConfigureOptionsWithKey<T>
 Steeltoe.Management.Endpoint.Configuration.IConfigureOptionsWithKey<T>.ConfigurationKey.get -> string!
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.CustomJsonConverters.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Enabled.get -> bool?
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Enabled.get -> bool
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Enabled.set -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.ManagementOptions() -> void
 Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Path.get -> string?

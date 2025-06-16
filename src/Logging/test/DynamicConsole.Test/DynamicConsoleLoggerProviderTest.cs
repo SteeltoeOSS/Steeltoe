@@ -396,10 +396,9 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
     [Fact]
     public async Task AppliesChangedConfiguration()
     {
-        const string fileName = "appsettings.json";
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(fileName, """
+        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "Logging": {
             "LogLevel": {
@@ -409,8 +408,8 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
         }
         """);
 
-        using IDynamicLoggerProvider provider =
-            CreateLoggerProvider(configurationBuilder => configurationBuilder.AddJsonFile(fileProvider, fileName, false, true));
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder =>
+            configurationBuilder.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true));
 
         DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
 
@@ -425,7 +424,7 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
         await testContext.Self.AssertMinLevelAsync(LogLevel.Error, LogLevel.Warning);
         await testContext.Child.AssertMinLevelAsync(LogLevel.Error);
 
-        fileProvider.ReplaceFile(fileName, """
+        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
         {
           "Logging": {
             "LogLevel": {

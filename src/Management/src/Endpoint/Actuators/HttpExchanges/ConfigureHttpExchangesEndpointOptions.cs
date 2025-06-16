@@ -9,9 +9,8 @@ using Steeltoe.Management.Endpoint.Configuration;
 namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
 internal sealed class ConfigureHttpExchangesEndpointOptions(IConfiguration configuration)
-    : ConfigureEndpointOptions<HttpExchangesEndpointOptions>(configuration, ManagementInfoPrefix, "httpexchanges")
+    : ConfigureEndpointOptions<HttpExchangesEndpointOptions>(configuration, "Management:Endpoints:HttpExchanges", "httpexchanges")
 {
-    private const string ManagementInfoPrefix = "management:endpoints:httpexchanges";
     private const int DefaultCapacity = 100;
 
     private static readonly string[] DefaultAllowedRequestHeaders =

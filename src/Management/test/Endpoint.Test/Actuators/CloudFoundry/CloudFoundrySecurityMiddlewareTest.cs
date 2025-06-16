@@ -7,7 +7,6 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -21,13 +20,12 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
-using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
 
-public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
+public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
 {
     private static readonly string MockAccessToken =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0b3B0YWwuY29tIiwiZXhwIjoxNDI2NDIwODAwLCJhd2Vzb21lIjp0cnVlfQ." +
@@ -38,13 +36,14 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     [Fact]
     public async Task MissingApplicationIdReturnsServiceUnavailable()
     {
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<StartupWithSecurity>();
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Services.AddCloudFoundryActuator();
+        builder.Services.AddInfoActuator();
+        await using WebApplication host = builder.Build();
 
-        using IWebHost host = builder.Build();
         await host.StartAsync(TestContext.Current.CancellationToken);
-
         using HttpClient client = host.GetTestClient();
+
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
 
@@ -63,14 +62,15 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:application_id"] = "foobar"
         };
 
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<StartupWithSecurity>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddCloudFoundryActuator();
+        builder.Services.AddInfoActuator();
+        await using WebApplication host = builder.Build();
 
-        using IWebHost host = builder.Build();
         await host.StartAsync(TestContext.Current.CancellationToken);
-
         using HttpClient client = host.GetTestClient();
+
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
 
@@ -90,13 +90,13 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<StartupWithSecurity>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddCloudFoundryActuator();
+        builder.Services.AddInfoActuator();
+        await using WebApplication host = builder.Build();
 
-        using IWebHost host = builder.Build();
         await host.StartAsync(TestContext.Current.CancellationToken);
-
         using HttpClient client = host.GetTestClient();
 
         HttpResponseMessage response =
@@ -116,14 +116,15 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<StartupWithSecurity>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddCloudFoundryActuator();
+        builder.Services.AddInfoActuator();
+        await using WebApplication host = builder.Build();
 
-        using IWebHost host = builder.Build();
         await host.StartAsync(TestContext.Current.CancellationToken);
-
         using HttpClient client = host.GetTestClient();
+
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
 
@@ -142,14 +143,15 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["management:endpoints:UseStatusCodeFromResponse"] = "false"
         };
 
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<StartupWithSecurity>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddCloudFoundryActuator();
+        builder.Services.AddInfoActuator();
+        await using WebApplication host = builder.Build();
 
-        using IWebHost host = builder.Build();
         await host.StartAsync(TestContext.Current.CancellationToken);
-
         using HttpClient client = host.GetTestClient();
+
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -170,14 +172,15 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<StartupWithSecurity>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddCloudFoundryActuator();
+        builder.Services.AddInfoActuator();
+        await using WebApplication host = builder.Build();
 
-        using IWebHost host = builder.Build();
         await host.StartAsync(TestContext.Current.CancellationToken);
-
         using HttpClient client = host.GetTestClient();
+
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
 
@@ -196,13 +199,15 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["Management:CloudFoundry:Enabled"] = "false"
         };
 
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<StartupWithSecurity>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
-        using IWebHost host = builder.Build();
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddCloudFoundryActuator();
+        builder.Services.AddInfoActuator();
+        await using WebApplication host = builder.Build();
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
+
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -211,57 +216,37 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task SkipsSecurityCheckIfCloudFoundryActuatorDisabled()
+    public async Task DoesNotSkipSecurityCheckIfCloudFoundryActuatorDisabled()
     {
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:cloudfoundry:enabled"] = "false"
         };
 
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<StartupWithSecurity>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddCloudFoundryActuator();
+        builder.Services.AddInfoActuator();
+        await using WebApplication host = builder.Build();
 
-        using IWebHost host = builder.Build();
         await host.StartAsync(TestContext.Current.CancellationToken);
-
         using HttpClient client = host.GetTestClient();
+
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.NotNull(response.Content.Headers.ContentType);
-        Assert.NotEqual("application/json", response.Content.Headers.ContentType.MediaType);
-    }
-
-    [Fact]
-    public async Task SkipsSecurityCheckIfCloudFoundryActuatorDisabledViaEnvironmentVariable()
-    {
-        using var scope = new EnvironmentVariableScope("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", "False");
-
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.UseStartup<StartupWithSecurity>();
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddEnvironmentVariables());
-
-        using IWebHost host = builder.Build();
-        await host.StartAsync(TestContext.Current.CancellationToken);
-
-        using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.NotNull(response.Content.Headers.ContentType);
-        Assert.NotEqual("application/json", response.Content.Headers.ContentType.MediaType);
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
     }
 
     [Fact]
     public async Task GetAccessTokenReturnsExpected()
     {
-        IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
-        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
-
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
         var permissionsProvider = serviceProvider.GetRequiredService<PermissionsProvider>();
+        var endpointOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
+        var managementOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ManagementOptions>>();
 
         var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, [], permissionsProvider,
             NullLogger<CloudFoundrySecurityMiddleware>.Instance, null);
@@ -279,14 +264,14 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     [Fact]
     public async Task GetPermissionsReturnsExpected()
     {
-        IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
-        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
-
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
         var permissionsProvider = serviceProvider.GetRequiredService<PermissionsProvider>();
+        var endpointOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
+        var managementOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ManagementOptions>>();
 
         var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, [], permissionsProvider,
             NullLogger<CloudFoundrySecurityMiddleware>.Instance, null);
@@ -304,7 +289,9 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         await using WebApplication app = builder.Build();
 
+        // ReSharper disable once AccessToDisposedClosure
         Action action = () => app.UseCloudFoundrySecurity();
+
         action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Please call IServiceCollection.AddCloudFoundryActuator first.");
     }
 
@@ -325,10 +312,11 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         builder.Services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
         builder.Services.AddCloudFoundryActuator();
         await using WebApplication app = builder.Build();
+
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await app.StartAsync(TestContext.Current.CancellationToken);
-
         using HttpClient httpClient = app.GetTestClient();
+
         var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
         requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken);
 
@@ -355,7 +343,6 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Logging.ClearProviders().AddProvider(loggerProvider);
         builder.Services.AddCloudFoundryActuator();
-        builder.Services.AddHypermediaActuator();
         builder.Services.AddInfoActuator();
         builder.Configuration.AddInMemoryCollection(appSettings);
 
@@ -407,14 +394,9 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         logLines.Should().ContainAll(expectedLogs);
     }
 
-    protected override void Dispose(bool disposing)
+    public void Dispose()
     {
-        if (disposing)
-        {
-            _scope.Dispose();
-        }
-
-        base.Dispose(disposing);
+        _scope.Dispose();
     }
 
     private static HttpContext CreateRequest(string method, string path)
