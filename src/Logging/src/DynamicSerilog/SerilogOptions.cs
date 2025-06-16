@@ -79,7 +79,7 @@ public sealed class SerilogOptions
             Default = shim.MinimumLevel
         };
 
-        foreach ((string? name, LogEventLevel level) in overrideLevels)
+        foreach ((string name, LogEventLevel level) in overrideLevels)
         {
             MinimumLevel.Override.Add(name, level);
         }
