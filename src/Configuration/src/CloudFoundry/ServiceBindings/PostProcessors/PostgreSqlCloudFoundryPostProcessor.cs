@@ -35,7 +35,7 @@ internal sealed class PostgreSqlCloudFoundryPostProcessor : CloudFoundryPostProc
                 {
                     // We can't know whether the connection is used for reading or writing, so always pick the primary node.
                     // https://www.npgsql.org/doc/failover-and-load-balancing.html
-                    // See also: https://github.gwd.broadcom.net/TNZ/postgres-tile/issues/235.
+                    // See also (Broadcom-internal-only): https://github.gwd.broadcom.net/TNZ/postgres-tile/issues/235.
                     mapper.SetToValue("Target Session Attributes", "primary");
                 }
             }
