@@ -52,11 +52,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         foreach (IConfigurationProvider provider in _configuration.EnumerateProviders())
         {
             PropertySourceDescriptor descriptor = GetPropertySourceDescriptor(provider);
-
-            if (descriptor.Properties.Count > 0)
-            {
-                results.Add(descriptor);
-            }
+            results.Add(descriptor);
         }
 
         return results;

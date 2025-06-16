@@ -187,7 +187,6 @@ public sealed class EnvironmentActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.Sources.Clear();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Configuration.AddInMemoryCollection([]);
         builder.Configuration.AddPlaceholderResolver();
         builder.Services.AddEnvironmentActuator();
         await using WebApplication host = builder.Build();
@@ -235,7 +234,7 @@ public sealed class EnvironmentActuatorTest
     }
 
     [Fact]
-    public async Task Hides_sources_without_any_keys()
+    public async Task Includes_sources_without_any_keys()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(new WebApplicationOptions
         {
@@ -266,11 +265,19 @@ public sealed class EnvironmentActuatorTest
               "propertySources": [
                 {
                   "name": "MemoryConfigurationProvider",
+                  "properties": {}
+                },
+                {
+                  "name": "MemoryConfigurationProvider",
                   "properties": {
                     "Management:Endpoints:Actuator:Exposure:Include:0": {
                       "value": "env"
                     }
                   }
+                },
+                {
+                  "name": "MemoryConfigurationProvider",
+                  "properties": {}
                 }
               ]
             }
