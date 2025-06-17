@@ -53,6 +53,7 @@ jobs:
 
         Write-Output "Running code cleanup on commit range $baseCommitHash..$headCommitHash in pull request."
         dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --max-runs=5 --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --properties:RunAnalyzers=false --jb --properties:NuGetAudit=false --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash --fail-on-diff --print-diff
+
     - name: CleanupCode (on branch)
       if: github.event_name == 'push' || github.event_name == 'release'
       shell: pwsh
