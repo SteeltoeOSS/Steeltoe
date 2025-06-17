@@ -12,7 +12,7 @@ internal sealed class MySqlKubernetesPostProcessor : IConfigurationPostProcessor
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
     {
-        foreach (string bindingKey in configurationData.Filter(KubernetesServiceBindingConfigurationProvider.FromKeyPrefix,
+        foreach (string bindingKey in configurationData.FilterKeys(KubernetesServiceBindingConfigurationProvider.FromKeyPrefix,
             KubernetesServiceBindingConfigurationProvider.TypeKey, BindingType))
         {
             var mapper = new ServiceBindingMapper(configurationData, bindingKey, KubernetesServiceBindingConfigurationProvider.ToKeyPrefix, BindingType,

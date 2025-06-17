@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration;
@@ -29,6 +30,43 @@ internal abstract class ConfigurationDictionaryMapper
         SetToValue(toKey, value);
 
         return value;
+    }
+
+    public string? MapArrayFromTo(string fromArrayKey, string toKey, string separator)
+    {
+        int arrayIndex = 0;
+        var toValueBuilder = new StringBuilder();
+
+        while (true)
+        {
+            string arrayElementKey = $"{BindingKey}{fromArrayKey}:{arrayIndex}";
+
+            if (!ConfigurationData.TryGetValue(arrayElementKey, out string? arrayElementValue))
+            {
+                break;
+            }
+
+            if (!string.IsNullOrEmpty(arrayElementValue))
+            {
+                if (toValueBuilder.Length > 0)
+                {
+                    toValueBuilder.Append(separator);
+                }
+
+                toValueBuilder.Append(arrayElementValue);
+            }
+
+            arrayIndex++;
+        }
+
+        if (toValueBuilder.Length > 0)
+        {
+            string toValue = toValueBuilder.ToString();
+            SetToValue(toKey, toValue);
+            return toValue;
+        }
+
+        return null;
     }
 
     public string? MapFromAppendTo(string fromKey, string appendToKey, string separator)

@@ -6,28 +6,65 @@ namespace Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
 
 internal sealed class PostgreSqlCloudFoundryPostProcessor : CloudFoundryPostProcessor
 {
+    private const string HostsSeparator = ",";
+
     internal const string BindingType = "postgresql";
+    internal const string TanzuBindingType = "postgres";
 
     public override void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
     {
-        foreach (string key in FilterKeys(configurationData, BindingType, KeyFilterSources.Tag))
+        ICollection<string> keys = FilterKeys(configurationData, BindingType, KeyFilterSources.Tag);
+        ICollection<string> tanzuKeys = FilterKeys(configurationData, TanzuBindingType, KeyFilterSources.Tag);
+
+        foreach (string key in keys.Concat(tanzuKeys))
         {
             var mapper = ServiceBindingMapper.Create(configurationData, key, BindingType);
 
             // Mapping from CloudFoundry service binding credentials to driver-specific connection string parameters.
             // The available credentials are documented at:
-            // - Azure Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-Azure/1.4/csb-azure/GUID-reference-azure-postgresql.html#binding-credentials-5
-            // - GCP Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-GCP/1.2/csb-gcp/GUID-reference-gcp-postgresql.html#binding-credentials-6
-            // - AWS Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-AWS/1.5/csb-aws/GUID-reference-aws-postgres.html#binding-credentials-3
+            // - Tanzu Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/data-solutions/tanzu-for-postgres-on-cloud-foundry/10-1/postgres/app-setup-single-instance-service-guide.html
+            // - GCP Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform-services/tanzu-cloud-service-broker-for-gcp/1-9/csb-gcp/reference-gcp-postgresql.html#binding-creds
+            // - AWS Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform-services/tanzu-cloud-service-broker-for-aws/1-14/csb-aws/reference-aws-postgres.html#binding-creds
 
-            mapper.MapFromTo("credentials:hostname", "host");
+            string? hosts = mapper.MapArrayFromTo("credentials:hosts", "host", HostsSeparator);
+
+            if (hosts != null)
+            {
+                // Tanzu Broker.
+                if (hosts.Contains(HostsSeparator, StringComparison.Ordinal))
+                {
+                    // We can't know whether the connection is used for reading or writing, so always pick the primary node.
+                    // https://www.npgsql.org/doc/failover-and-load-balancing.html
+                    // See also (Broadcom-internal-only): https://github.gwd.broadcom.net/TNZ/postgres-tile/issues/235.
+                    mapper.SetToValue("Target Session Attributes", "primary");
+                }
+            }
+            else
+            {
+                // Cloud Service Broker.
+                mapper.MapFromTo("credentials:hostname", "host");
+            }
+
             mapper.MapFromTo("credentials:port", "port");
-            mapper.MapFromTo("credentials:name", "database");
-            mapper.MapFromTo("credentials:username", "username");
+
+            // Tanzu Broker.
+            if (mapper.MapFromTo("credentials:db", "database") == null)
+            {
+                // Cloud Service Broker.
+                mapper.MapFromTo("credentials:name", "database");
+            }
+
+            // Tanzu Broker.
+            if (mapper.MapFromTo("credentials:user", "username") == null)
+            {
+                // Cloud Service Broker.
+                mapper.MapFromTo("credentials:username", "username");
+            }
+
             mapper.MapFromTo("credentials:password", "password");
-            mapper.MapFromToFile("credentials:sslCert", "SSL Certificate");
-            mapper.MapFromToFile("credentials:sslKey", "SSL Key");
-            mapper.MapFromToFile("credentials:sslRootCert", "Root Certificate");
+            mapper.MapFromToFile("credentials:sslcert", "SSL Certificate");
+            mapper.MapFromToFile("credentials:sslkey", "SSL Key");
+            mapper.MapFromToFile("credentials:sslrootcert", "Root Certificate");
         }
     }
 }

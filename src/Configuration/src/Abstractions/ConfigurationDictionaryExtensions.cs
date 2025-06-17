@@ -8,7 +8,7 @@ namespace Steeltoe.Configuration;
 
 internal static class ConfigurationDictionaryExtensions
 {
-    public static IEnumerable<string> Filter(this IDictionary<string, string?> configurationData, string keyPrefix, string keySuffix, string keyValue)
+    public static ICollection<string> FilterKeys(this IDictionary<string, string?> configurationData, string keyPrefix, string keySuffix, string keyValue)
     {
         List<string> results = [];
 
