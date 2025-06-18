@@ -73,7 +73,10 @@ public static class CloudFoundryServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
+#pragma warning disable S4792 // Configuring loggers is security-sensitive
         services.AddLogging();
+#pragma warning restore S4792 // Configuring loggers is security-sensitive
+
         services.AddOptions<ForwardedHeadersSettings>().BindConfiguration(ForwardedHeadersSettings.ConfigurationKey);
         services.AddOptions<ForwardedHeadersOptions>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ForwardedHeadersOptions>, ConfigureForwardedHeadersOptions>());
