@@ -9,11 +9,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Certificates;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Configuration.CloudFoundry;
 using IPNetwork = Microsoft.AspNetCore.HttpOverrides.IPNetwork;
-using ServiceCollectionExtensions = Steeltoe.Common.Hosting.ServiceCollectionExtensions;
 
 namespace Steeltoe.Security.Authorization.Certificate.Test;
 
@@ -188,13 +189,27 @@ public sealed class CertificateAuthorizationTest
     }
 
     [Fact]
-    public async Task CertificateAuth_AddsInstanceIPsAsKnownNetworks()
+    public async Task CertificateAuth_AllowsAnyNetwork_on_CloudFoundry()
     {
-        const string instanceIPAddress = "192.168.0.110";
-        const string instanceInternalIPAddress = "10.255.31.112";
-        using var instanceScope = new EnvironmentVariableScope("CF_INSTANCE_IP", instanceIPAddress);
-        using var internalScope = new EnvironmentVariableScope("CF_INSTANCE_INTERNAL_IP", instanceInternalIPAddress);
+        using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
+        using var loggerProvider = new CapturingLoggerProvider();
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
+        builder.Logging.ClearProviders().AddProvider(loggerProvider);
+        builder.Services.AddAuthentication().AddCertificate();
+        builder.Services.AddAuthorizationBuilder().AddOrgAndSpacePolicies();
+        await using WebApplication application = builder.Build();
 
+        ForwardedHeadersOptions options = application.Services.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
+        options.KnownNetworks.Should().HaveCount(1).And.ContainEquivalentOf(IPNetwork.Parse("0.0.0.0/0"));
+
+        loggerProvider.GetAll().Should().HaveCount(1).And
+            .Contain(
+                $"INFO {typeof(ConfigureForwardedHeadersOptions)}: 'TrustAllNetworks' has been set, forwarded headers will be allowed from any source. This should only be used behind a trusted ingress.");
+    }
+
+    [Fact]
+    public async Task CertificateAuth_DefaultKnownNetworks_off_CloudFoundry()
+    {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
         builder.Services.AddAuthentication().AddCertificate();
         builder.Services.AddAuthorizationBuilder().AddOrgAndSpacePolicies();
@@ -202,14 +217,7 @@ public sealed class CertificateAuthorizationTest
 
         ForwardedHeadersOptions options = application.Services.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
 
-        AssertKnownNetworksContains(options, instanceIPAddress);
-        AssertKnownNetworksContains(options, instanceInternalIPAddress);
-    }
-
-    private static void AssertKnownNetworksContains(ForwardedHeadersOptions options, string ipAddress)
-    {
-        IPNetwork network = ServiceCollectionExtensions.GetNetworkFromAddress(IPAddress.Parse(ipAddress), 24);
-        options.KnownNetworks.Should().ContainEquivalentOf(network);
+        options.KnownNetworks.Should().HaveCount(1).And.ContainEquivalentOf(IPNetwork.Parse("127.0.0.1/8"));
     }
 
     private HostBuilder GetHostBuilder()

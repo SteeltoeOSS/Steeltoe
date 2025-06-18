@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Certificates;
-using Steeltoe.Common.Hosting;
+using Steeltoe.Configuration.CloudFoundry;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 

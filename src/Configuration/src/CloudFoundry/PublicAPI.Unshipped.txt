@@ -11,6 +11,7 @@ static Steeltoe.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.Add
 static Steeltoe.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundryConfiguration(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundryConfiguration(this Microsoft.Extensions.Hosting.IHostBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Configuration.CloudFoundry.CloudFoundryServiceCollectionExtensions.AddCloudFoundryOptions(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Configuration.CloudFoundry.CloudFoundryServiceCollectionExtensions.ConfigureForwardedHeadersOptionsForCloudFoundry(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Configuration.CloudFoundry.ServiceBindings.ConfigurationBuilderExtensions.AddCloudFoundryServiceBindings(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
 static Steeltoe.Configuration.CloudFoundry.ServiceBindings.ConfigurationBuilderExtensions.AddCloudFoundryServiceBindings(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Steeltoe.Configuration.CloudFoundry.ServiceBindings.IServiceBindingsReader! serviceBindingsReader) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
 static Steeltoe.Configuration.CloudFoundry.ServiceBindings.ConfigurationBuilderExtensions.AddCloudFoundryServiceBindings(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, System.Predicate<string!>! ignoreKeyPredicate, Steeltoe.Configuration.CloudFoundry.ServiceBindings.IServiceBindingsReader! serviceBindingsReader, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
@@ -81,6 +82,12 @@ Steeltoe.Configuration.CloudFoundry.CloudFoundryServicesOptions.CloudFoundryServ
 Steeltoe.Configuration.CloudFoundry.CloudFoundryServicesOptions.GetAllServices() -> System.Collections.Generic.IList<Steeltoe.Configuration.CloudFoundry.CloudFoundryService!>!
 Steeltoe.Configuration.CloudFoundry.CloudFoundryServicesOptions.GetServicesOfType(string! serviceType) -> System.Collections.Generic.IList<Steeltoe.Configuration.CloudFoundry.CloudFoundryService!>!
 Steeltoe.Configuration.CloudFoundry.CloudFoundryServicesOptions.Services.get -> System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<Steeltoe.Configuration.CloudFoundry.CloudFoundryService!>!>!
+Steeltoe.Configuration.CloudFoundry.ForwardedHeadersSettings
+Steeltoe.Configuration.CloudFoundry.ForwardedHeadersSettings.ForwardedHeadersSettings() -> void
+Steeltoe.Configuration.CloudFoundry.ForwardedHeadersSettings.KnownNetworks.get -> string?
+Steeltoe.Configuration.CloudFoundry.ForwardedHeadersSettings.KnownNetworks.set -> void
+Steeltoe.Configuration.CloudFoundry.ForwardedHeadersSettings.TrustAllNetworks.get -> bool
+Steeltoe.Configuration.CloudFoundry.ForwardedHeadersSettings.TrustAllNetworks.set -> void
 Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader
 Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader.ApplicationJson.get -> string?
 Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstanceId.get -> string?
