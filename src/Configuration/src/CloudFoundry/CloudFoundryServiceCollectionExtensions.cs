@@ -46,7 +46,16 @@ public static class CloudFoundryServiceCollectionExtensions
 
     /// <summary>
     /// Configures <see cref="ForwardedHeadersOptions" /> to use forwarded headers as they are provided in Cloud Foundry. Includes
-    /// <see cref="ForwardedHeaders.XForwardedHost" /> and <see cref="ForwardedHeaders.XForwardedProto" />, and allows any network.
+    /// <see cref="ForwardedHeaders.XForwardedHost" /> and <see cref="ForwardedHeaders.XForwardedProto" />, and allows headers from proxy servers on any
+    /// network unless KnownNetworks is configured in
+    /// <c>
+    /// Steeltoe:ForwardedHeaders:KnownNetworks
+    /// </c>
+    /// or on <see cref="ForwardedHeadersOptions" />, or
+    /// <c>
+    /// Steeltoe:ForwardedHeaders:TrustAllNetworks
+    /// </c>
+    /// is set to <c>false</c>.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to configure.

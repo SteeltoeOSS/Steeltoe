@@ -34,17 +34,17 @@ internal sealed class ConfigureForwardedHeadersOptions(IOptions<ForwardedHeaders
             return;
         }
 
-        if (headerSettings.Value.TrustAllNetworks)
+        if (headerSettings.Value.KnownNetworks?.Length > 0)
+        {
+            AddKnownNetworksFromConfiguration(options);
+        }
+        else if (headerSettings.Value.TrustAllNetworks)
         {
             logger.LogInformation(
                 "'TrustAllNetworks' has been set, forwarded headers will be allowed from any source. This should only be used behind a trusted ingress.");
 
             options.KnownNetworks.Clear();
             options.KnownNetworks.Add(new IPNetwork(IPAddress.Parse("0.0.0.0"), 0));
-        }
-        else
-        {
-            AddKnownNetworksFromConfiguration(options);
         }
     }
 
@@ -78,25 +78,30 @@ internal sealed class ConfigureForwardedHeadersOptions(IOptions<ForwardedHeaders
             }
             else
             {
-                logger.LogWarning("Invalid CIDR format in {KnownNetworksKey}: '{CIDR}'", $"{ForwardedHeadersSettings.ConfigurationKey}:KnownNetworks", cidr);
+                logger.LogWarning("Invalid CIDR format in {KnownNetworksKey}: '{CIDR}'.", $"{ForwardedHeadersSettings.ConfigurationKey}:KnownNetworks", cidr);
             }
         }
     }
 
-    private static bool TryParseCidr(string cidr, out IPNetwork network)
+    internal static bool TryParseCidr(string cidr, out IPNetwork network)
     {
         network = null!;
         string[] parts = cidr.Split('/');
 
-        if (parts.Length != 2)
+        if (parts.Length != 2 || !IPAddress.TryParse(parts[0], out IPAddress? address) ||
+            !int.TryParse(parts[1], CultureInfo.InvariantCulture, out int prefixLength))
         {
             return false;
         }
 
-        if (IPAddress.TryParse(parts[0], out IPAddress? address) && int.TryParse(parts[1], CultureInfo.InvariantCulture, out int prefixLength))
+        try
         {
             network = new IPNetwork(address, prefixLength);
             return true;
+        }
+        catch
+        {
+            // If the IPNetwork constructor throws, the CIDR is invalid.
         }
 
         return false;

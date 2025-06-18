@@ -67,7 +67,7 @@ public sealed class CloudFoundryServiceCollectionExtensionsTest
 
         options.ForwardedHeaders.Should().HaveFlag(ForwardedHeaders.XForwardedHost);
         options.ForwardedHeaders.Should().HaveFlag(ForwardedHeaders.XForwardedProto);
-        AssertDefaultKnownNetworks(options);
+        AssertKnownNetworksContains(options, IPAddress.Parse("0.0.0.0"), 0);
         AssertDefaultKnownProxies(options);
     }
 
@@ -100,14 +100,9 @@ public sealed class CloudFoundryServiceCollectionExtensionsTest
     {
         using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
 
-        var appSettings = new Dictionary<string, string?>
-        {
-            [$"{ForwardedHeadersSettings.ConfigurationKey}:TrustAllNetworks"] = "true"
-        };
-
         using var loggerProvider = new CapturingLoggerProvider();
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace).AddProvider(loggerProvider));
         services.Configure<ForwardedHeadersOptions>(options => options.KnownNetworks.Add(IPNetwork.Parse("192.168.0.0/16")));
         services.ConfigureForwardedHeadersOptionsForCloudFoundry();
@@ -127,15 +122,9 @@ public sealed class CloudFoundryServiceCollectionExtensionsTest
     public void ConfigureForwardedHeaders_exits_early_when_proxies_preconfigured()
     {
         using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
-
-        var appSettings = new Dictionary<string, string?>
-        {
-            [$"{ForwardedHeadersSettings.ConfigurationKey}:TrustAllNetworks"] = "true"
-        };
-
         using var loggerProvider = new CapturingLoggerProvider();
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace).AddProvider(loggerProvider));
         services.Configure<ForwardedHeadersOptions>(options => options.KnownProxies.Add(IPAddress.Parse("192.168.1.2")));
         services.ConfigureForwardedHeadersOptionsForCloudFoundry();
@@ -199,6 +188,61 @@ public sealed class CloudFoundryServiceCollectionExtensionsTest
             .Contain($"DBUG {typeof(ConfigureForwardedHeadersOptions)}: Adding known network 192.168.0.0/16 from configuration.");
     }
 
+    [Theory]
+    [InlineData("invalid,10.0.0.0/8", 1, new[]
+    {
+        "10.0.0.0/8"
+    })]
+    [InlineData("10.0.0.0/8,invalid", 1, new[]
+    {
+        "10.0.0.0/8"
+    })]
+    [InlineData("10.0.0.0/8,invalid,192.168.0.0/16", 2, new[]
+    {
+        "10.0.0.0/8",
+        "192.168.0.0/16"
+    })]
+    public void ConfigureForwardedHeaders_adds_valid_KnownNetworks_from_mix(string networks, int validNetworks, string[] validCidrList)
+    {
+        using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
+
+        var appSettings = new Dictionary<string, string?>
+        {
+            [$"{ForwardedHeadersSettings.ConfigurationKey}:KnownNetworks"] = networks
+        };
+
+        using var loggerProvider = new CapturingLoggerProvider();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace).AddProvider(loggerProvider));
+
+        services.ConfigureForwardedHeadersOptionsForCloudFoundry();
+        using ServiceProvider provider = services.BuildServiceProvider(true);
+        ForwardedHeadersOptions options = provider.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
+
+        AssertDefaultKnownNetworks(options, false);
+
+        foreach (string cidr in validCidrList)
+        {
+            _ = ConfigureForwardedHeadersOptions.TryParseCidr(cidr, out IPNetwork network);
+            AssertKnownNetworksContains(options, network.Prefix, network.PrefixLength);
+        }
+
+        AssertDefaultKnownProxies(options);
+
+        IList<string> logLines = loggerProvider.GetAll();
+        logLines.Should().HaveCount(validNetworks + 1);
+
+        foreach (string validAddress in validCidrList)
+        {
+            logLines.Should().Contain($"DBUG {typeof(ConfigureForwardedHeadersOptions)}: Adding known network {validAddress} from configuration.");
+        }
+
+        logLines.Should()
+            .Contain(
+                $"WARN {typeof(ConfigureForwardedHeadersOptions)}: Invalid CIDR format in {ForwardedHeadersSettings.ConfigurationKey}:KnownNetworks: 'invalid'.");
+    }
+
     [Fact]
     public void ConfigureForwardedHeaders_does_not_add_duplicate_KnownNetworks()
     {
@@ -227,14 +271,18 @@ public sealed class CloudFoundryServiceCollectionExtensionsTest
         logLines.Should().HaveCount(2).And.Contain($"DBUG {typeof(ConfigureForwardedHeadersOptions)}: Adding known network 10.0.0.0/8 from configuration.");
     }
 
-    [Fact]
-    public void ConfigureForwardedHeaders_does_not_add_invalid_networks()
+    [Theory]
+    [InlineData("invalid")]
+    [InlineData("1.1.1.1")]
+    [InlineData("1.1.1.1/33")]
+    [InlineData("1.1.1.1/NaN")]
+    public void ConfigureForwardedHeaders_does_not_add_when_all_invalid_KnownNetworks(string networks)
     {
         using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
 
         var appSettings = new Dictionary<string, string?>
         {
-            [$"{ForwardedHeadersSettings.ConfigurationKey}:KnownNetworks"] = "invalid"
+            [$"{ForwardedHeadersSettings.ConfigurationKey}:KnownNetworks"] = networks
         };
 
         using var loggerProvider = new CapturingLoggerProvider();
@@ -251,7 +299,7 @@ public sealed class CloudFoundryServiceCollectionExtensionsTest
 
         loggerProvider.GetAll().Should().HaveCount(1).And
             .Contain(
-                $"WARN {typeof(ConfigureForwardedHeadersOptions)}: Invalid CIDR format in {ForwardedHeadersSettings.ConfigurationKey}:KnownNetworks: 'invalid'");
+                $"WARN {typeof(ConfigureForwardedHeadersOptions)}: Invalid CIDR format in {ForwardedHeadersSettings.ConfigurationKey}:KnownNetworks: '{networks}'.");
     }
 
     [Fact]
