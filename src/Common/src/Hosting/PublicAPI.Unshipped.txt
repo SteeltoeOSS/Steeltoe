@@ -1,3 +1,0 @@
-#nullable enable
-static Steeltoe.Common.Hosting.ServiceCollectionExtensions.ConfigureForwardedHeadersOptionsForCloudFoundry(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-Steeltoe.Common.Hosting.ServiceCollectionExtensions
