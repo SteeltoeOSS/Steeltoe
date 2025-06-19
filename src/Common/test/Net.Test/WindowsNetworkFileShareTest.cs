@@ -14,12 +14,12 @@ public sealed class WindowsNetworkFileShareTest
     {
         Action action = () => WindowsNetworkFileShare.ThrowForNonZeroResult(5, "execute");
 
-        action.Should().ThrowExactly<IOException>().WithInnerException<Win32Exception>()
+        action.Should().ThrowExactly<IOException>().WithInnerExceptionExactly<Win32Exception>()
             .WithMessage(Platform.IsWindows ? "Access is Denied*" : "Input/output error");
 
         action = () => WindowsNetworkFileShare.ThrowForNonZeroResult(1222, "execute");
 
-        action.Should().ThrowExactly<IOException>().WithInnerException<Win32Exception>()
+        action.Should().ThrowExactly<IOException>().WithInnerExceptionExactly<Win32Exception>()
             .WithMessage(Platform.IsWindows ? "The network is not present or not started." : "Unknown error 1222");
     }
 
@@ -28,7 +28,7 @@ public sealed class WindowsNetworkFileShareTest
     {
         Action action = () => WindowsNetworkFileShare.ThrowForNonZeroResult(9999, "execute");
 
-        action.Should().ThrowExactly<IOException>().WithInnerException<Win32Exception>()
+        action.Should().ThrowExactly<IOException>().WithInnerExceptionExactly<Win32Exception>()
             .WithMessage(Platform.IsWindows ? "Unknown error (0x270f)" : "Unknown error 9999");
     }
 

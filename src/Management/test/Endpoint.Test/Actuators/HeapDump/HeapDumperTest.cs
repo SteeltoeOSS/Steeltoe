@@ -80,7 +80,7 @@ public sealed class HeapDumperTest
 
         action.Should().ThrowExactly<InvalidOperationException>()
             .WithMessage($"Failed to create a gcdump. Captured log:{System.Environment.NewLine}Failed to perform this operation.")
-            .WithInnerException<ArgumentException>().WithMessage("Simulated failure.");
+            .WithInnerExceptionExactly<ArgumentException>().WithMessage("Simulated failure.");
     }
 
     [Fact]

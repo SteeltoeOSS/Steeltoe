@@ -32,9 +32,9 @@ public sealed class PermissionsProviderTest
         unauthorized.Message.Should().Be(PermissionsProvider.Messages.AuthorizationHeaderInvalid);
     }
 
+    [Theory]
     [InlineData(false, true, EndpointPermissions.Restricted)]
     [InlineData(true, true, EndpointPermissions.Full)]
-    [Theory]
     public async Task ParsePermissionsResponseAsyncReturnsExpected(bool readSensitive, bool readBasic, EndpointPermissions expectedPermissions)
     {
         PermissionsProvider permissionsProvider = GetPermissionsProvider();
@@ -52,6 +52,7 @@ public sealed class PermissionsProviderTest
         result.Should().Be(expectedPermissions);
     }
 
+    [Theory]
     [InlineData("unavailable", HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.CloudFoundryNotReachable)]
     [InlineData("not-found", HttpStatusCode.Unauthorized, PermissionsProvider.Messages.InvalidToken)]
     [InlineData("unauthorized", HttpStatusCode.Unauthorized, PermissionsProvider.Messages.InvalidToken)]
@@ -61,7 +62,6 @@ public sealed class PermissionsProviderTest
         "Exception of type 'System.Net.Http.HttpRequestException' with error 'NameResolutionError' was thrown")]
     [InlineData("no_sensitive_data", HttpStatusCode.OK, "")]
     [InlineData("success", HttpStatusCode.OK, "")]
-    [Theory]
     public async Task Returns_expected_response_on_permission_check(string scenario, HttpStatusCode? steeltoeStatusCode, string errorMessage)
     {
         var appSettings = new Dictionary<string, string?>

@@ -326,8 +326,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         logMessages.Should().Contain("Authorization: *");
     }
 
-    [ClassData(typeof(CloudFoundrySecurityMiddlewareTestScenarios))]
     [Theory]
+    [ClassData(typeof(CloudFoundrySecurityMiddlewareTestScenarios))]
     public async Task Returns_expected_response_on_permission_check(string scenario, HttpStatusCode? steeltoeStatusCode, string? errorMessage,
         string[] expectedLogs, bool useStatusCodeFromResponse)
     {

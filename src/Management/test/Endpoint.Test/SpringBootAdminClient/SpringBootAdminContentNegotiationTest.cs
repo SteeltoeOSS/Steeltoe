@@ -30,6 +30,7 @@ public sealed class SpringBootAdminContentNegotiationTest
     };
 
     // AcceptHeader values captured from Spring Boot Admin 3.4.1
+    [Theory]
     [InlineData("", $"{ActuatorV3},{SpringBootStandardAccept}", ActuatorV3)]
     [InlineData("beans", SpringBootStandardAccept, ActuatorV3)]
     [InlineData("env", SpringBootStandardAccept, ActuatorV3)]
@@ -42,7 +43,6 @@ public sealed class SpringBootAdminContentNegotiationTest
     [InlineData("loggers", SpringBootStandardAccept, ActuatorV3)]
     [InlineData("mappings", SpringBootStandardAccept, ActuatorV3)]
     [InlineData("threaddump", SpringBootStandardAccept, ActuatorV3)]
-    [Theory]
     public async Task Responses_for_SpringBootAdmin_match_expectations(string endpoint, string acceptHeader, string responseContentType)
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
