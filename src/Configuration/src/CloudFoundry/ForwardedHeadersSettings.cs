@@ -9,7 +9,7 @@ public sealed class ForwardedHeadersSettings
     internal const string ConfigurationKey = "Steeltoe:ForwardedHeaders";
 
     /// <summary>
-    /// Gets or sets a value indicating whether to trust all networks (adds 0.0.0.0/0). WARNING: Use only behind a trusted ingress.
+    /// Gets or sets a value indicating whether to trust all networks (adds 0.0.0.0/0). WARNING: Use only behind a trusted ingress. Default value: true.
     /// </summary>
     public bool TrustAllNetworks { get; set; } = true;
 
