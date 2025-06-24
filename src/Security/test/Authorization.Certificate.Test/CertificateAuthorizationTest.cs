@@ -9,12 +9,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Certificates;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Configuration.CloudFoundry;
-using IPNetwork = Microsoft.AspNetCore.HttpOverrides.IPNetwork;
 
 namespace Steeltoe.Security.Authorization.Certificate.Test;
 
@@ -186,38 +183,6 @@ public sealed class CertificateAuthorizationTest
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task CertificateAuth_AllowsAnyNetwork_on_CloudFoundry()
-    {
-        using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
-        using var loggerProvider = new CapturingLoggerProvider();
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
-        builder.Logging.ClearProviders().AddProvider(loggerProvider);
-        builder.Services.AddAuthentication().AddCertificate();
-        builder.Services.AddAuthorizationBuilder().AddOrgAndSpacePolicies();
-        await using WebApplication application = builder.Build();
-
-        ForwardedHeadersOptions options = application.Services.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
-        options.KnownNetworks.Should().HaveCount(1).And.ContainEquivalentOf(IPNetwork.Parse("0.0.0.0/0"));
-
-        loggerProvider.GetAll().Should().HaveCount(1).And
-            .Contain(
-                $"INFO {typeof(ConfigureForwardedHeadersOptions)}: 'TrustAllNetworks' has been set, forwarded headers will be allowed from any source. This should only be used behind a trusted ingress.");
-    }
-
-    [Fact]
-    public async Task CertificateAuth_DefaultKnownNetworks_off_CloudFoundry()
-    {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
-        builder.Services.AddAuthentication().AddCertificate();
-        builder.Services.AddAuthorizationBuilder().AddOrgAndSpacePolicies();
-        await using WebApplication application = builder.Build();
-
-        ForwardedHeadersOptions options = application.Services.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
-
-        options.KnownNetworks.Should().HaveCount(1).And.ContainEquivalentOf(IPNetwork.Parse("127.0.0.1/8"));
     }
 
     private HostBuilder GetHostBuilder()

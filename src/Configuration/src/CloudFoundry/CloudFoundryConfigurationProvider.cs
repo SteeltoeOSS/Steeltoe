@@ -73,6 +73,10 @@ internal sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
 
             LoadData("vcap:application", applicationData.GetChildren(), data);
             AddDiegoVariables(data);
+
+            // Enable evaluation of X-Forwarded headers so that ASP.NET Core works automatically behind Gorouter.
+            // Equivalent to setting ASPNETCORE_FORWARDEDHEADERS_ENABLED to true.
+            data["FORWARDEDHEADERS_ENABLED"] = "true";
         }
 
         string? servicesJson = _settingsReader.ServicesJson;

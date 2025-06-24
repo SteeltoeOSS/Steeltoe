@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -40,46 +38,6 @@ public static class CloudFoundryServiceCollectionExtensions
             var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryApplicationOptions>>();
             return optionsMonitor.CurrentValue;
         }));
-
-        return services;
-    }
-
-    /// <summary>
-    /// Configures <see cref="ForwardedHeadersOptions" /> to use forwarded headers as they are provided in Cloud Foundry. Includes
-    /// <see cref="ForwardedHeaders.XForwardedHost" /> and <see cref="ForwardedHeaders.XForwardedProto" />, and allows headers from proxy servers on any
-    /// network unless KnownNetworks is configured in
-    /// <c>
-    /// Steeltoe:ForwardedHeaders:KnownNetworks
-    /// </c>
-    /// or on <see cref="ForwardedHeadersOptions" />, or
-    /// <c>
-    /// Steeltoe:ForwardedHeaders:TrustAllNetworks
-    /// </c>
-    /// is set to <c>false</c>.
-    /// </summary>
-    /// <param name="services">
-    /// The <see cref="IServiceCollection" /> to configure.
-    /// </param>
-    /// <returns>
-    /// The same <see cref="IServiceCollection" /> instance, for chaining.
-    /// </returns>
-    /// <remarks>
-    /// IMPORTANT: <see cref="ForwardedHeadersExtensions.UseForwardedHeaders(IApplicationBuilder)" /> must be called separately to activate these options.
-    /// </remarks>
-    /// <exception cref="ArgumentNullException">
-    /// Thrown if <paramref name="services" /> is <c>null</c>.
-    /// </exception>
-    public static IServiceCollection ConfigureForwardedHeadersOptionsForCloudFoundry(this IServiceCollection services)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-
-#pragma warning disable S4792 // Configuring loggers is security-sensitive
-        services.AddLogging();
-#pragma warning restore S4792 // Configuring loggers is security-sensitive
-
-        services.AddOptions<ForwardedHeadersSettings>().BindConfiguration(ForwardedHeadersSettings.ConfigurationKey);
-        services.AddOptions<ForwardedHeadersOptions>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ForwardedHeadersOptions>, ConfigureForwardedHeadersOptions>());
 
         return services;
     }

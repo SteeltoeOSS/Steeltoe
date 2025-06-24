@@ -14,6 +14,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Certificates\Steeltoe.Common.Certificates.csproj" />
-    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Configuration.CloudFoundry.csproj" />
   </ItemGroup>
 </Project>

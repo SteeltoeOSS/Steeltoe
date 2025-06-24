@@ -11,4 +11,3 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.HttpClients.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Security.Authorization.Certificate.Test")]

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Certificates;
-using Steeltoe.Configuration.CloudFoundry;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
@@ -67,7 +66,6 @@ public static class CertificateAuthorizationBuilderExtensions
             }
         });
 
-        builder.Services.ConfigureForwardedHeadersOptionsForCloudFoundry();
         builder.Services.AddSingleton<IPostConfigureOptions<CertificateAuthenticationOptions>, PostConfigureCertificateAuthenticationOptions>();
         builder.Services.AddSingleton<IAuthorizationHandler, CertificateAuthorizationHandler>();
 

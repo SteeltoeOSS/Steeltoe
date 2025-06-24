@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
@@ -22,8 +21,12 @@ public static class CertificateApplicationBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        var headerOptions = (IOptions<ForwardedHeadersOptions>?)builder.ApplicationServices.GetService(typeof(IOptions<ForwardedHeadersOptions>));
-        return UseCertificateAuthorization(builder, headerOptions?.Value ?? new ForwardedHeadersOptions());
+        builder.UseForwardedHeaders();
+        builder.UseCertificateForwarding();
+        builder.UseAuthentication();
+        builder.UseAuthorization();
+
+        return builder;
     }
 
     /// <summary>
