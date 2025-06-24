@@ -1,10 +1,13 @@
-name: Verify code style
+name: Cleanup Code
 
 on:
-  push:
-    branches: [ 'main', 'release/*' ]
-  pull_request:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+      - '[0-9]+.x'
+      - 'release/*'
+  pull_request:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,10 +19,13 @@ permissions:
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_NOLOGO: true
+  SOLUTION_FILE: 'src/Steeltoe.All.sln'
 
 jobs:
-  verify-code-style:
+  verify:
+    name: Verify Code Style
     runs-on: ubuntu-latest
+
     steps:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -28,7 +34,7 @@ jobs:
           8.0.*
           9.0.*
 
-    - name: Checkout repo
+    - name: Git checkout
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
@@ -37,13 +43,13 @@ jobs:
       run: dotnet tool restore --verbosity minimal
 
     - name: Restore packages
-      run: dotnet restore src --verbosity minimal
+      run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal
 
     - name: Set package version
       run: nbgv cloud
 
     - name: CleanupCode (on PR diff)
-      if: github.event_name == 'pull_request'
+      if: ${{ github.event_name == 'pull_request' }}
       shell: pwsh
       run: |
         # Not using the environment variables for SHAs, because they may be outdated. This may happen on force-push after the build is queued, but before it starts.
@@ -52,11 +58,11 @@ jobs:
         $baseCommitHash = git rev-parse HEAD~1
 
         Write-Output "Running code cleanup on commit range $baseCommitHash..$headCommitHash in pull request."
-        dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --max-runs=5 --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --properties:RunAnalyzers=false --jb --properties:NuGetAudit=false --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash --fail-on-diff --print-diff
+        dotnet regitlint -s ${{ env.SOLUTION_FILE }} --print-command --skip-tool-check --max-runs=5 --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --properties:RunAnalyzers=false --jb --properties:NuGetAudit=false --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash --fail-on-diff --print-diff
 
     - name: CleanupCode (on branch)
-      if: github.event_name == 'push' || github.event_name == 'release'
+      if: ${{ github.event_name == 'push' || github.event_name == 'release' }}
       shell: pwsh
       run: |
         Write-Output "Running code cleanup on all files."
-        dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --properties:RunAnalyzers=false --jb --properties:NuGetAudit=false --jb --verbosity=WARN --fail-on-diff --print-diff
+        dotnet regitlint -s ${{ env.SOLUTION_FILE }} --print-command --skip-tool-check --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --properties:RunAnalyzers=false --jb --properties:NuGetAudit=false --jb --verbosity=WARN --fail-on-diff --print-diff
