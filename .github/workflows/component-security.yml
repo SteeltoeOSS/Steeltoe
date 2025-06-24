@@ -1,7 +1,7 @@
 name: Steeltoe.Security
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
   pull_request:
     paths:
     - .editorconfig
