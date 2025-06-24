@@ -73,5 +73,9 @@ Steeltoe.Common.Net.InetOptions.SkipReverseDnsLookup.set -> void
 Steeltoe.Common.Net.InetOptions.UseOnlySiteLocalInterfaces.get -> bool
 Steeltoe.Common.Net.InetOptions.UseOnlySiteLocalInterfaces.set -> void
 Steeltoe.Common.Platform
+Steeltoe.Common.Sample
+Steeltoe.Common.Sample.Covered(bool condition) -> string!
+Steeltoe.Common.Sample.NotCovered(bool condition) -> string!
+Steeltoe.Common.Sample.Sample() -> void
 virtual Steeltoe.Common.ApplicationInstanceInfo.ApplicationName.get -> string?
 virtual Steeltoe.Common.ApplicationInstanceInfo.ApplicationName.set -> void
