@@ -1,0 +1,926 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Management": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Management.Endpoint": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "Management": {
+      "type": "object",
+      "properties": {
+        "CloudFoundry": {
+          "type": "object",
+          "properties": {
+            "Enabled": {
+              "type": "boolean"
+            }
+          }
+        },
+        "Endpoints": {
+          "type": "object",
+          "properties": {
+            "Actuator": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
+                },
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
+                },
+                "Exposure": {
+                  "type": "object",
+                  "properties": {
+                    "Exclude": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Gets the IDs of the actuators to exclude. Takes precedence over included entries."
+                    },
+                    "Include": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Gets the IDs of the actuators to include. Excluded entries take precedence."
+                    }
+                  },
+                  "description": "Indicates which actuators are exposed."
+                },
+                "Id": {
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
+                },
+                "Path": {
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                }
+              }
+            },
+            "CloudFoundry": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
+                },
+                "ApplicationId": {
+                  "type": "string",
+                  "description": "Gets or sets the GUID identifying the app, used in permission checks."
+                },
+                "CloudFoundryApi": {
+                  "type": "string",
+                  "description": "Gets or sets the location of the Cloud Controller API for the Cloud Foundry deployment where the app runs."
+                },
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
+                },
+                "Id": {
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
+                },
+                "Path": {
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                },
+                "ValidateCertificates": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to validate certificates. Default value: true."
+                }
+              }
+            },
+            "CustomJsonConverters": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Gets a list of assembly-qualified custom JSON converters."
+            },
+            "DbMigrations": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
+                },
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
+                },
+                "Id": {
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
+                },
+                "Path": {
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                }
+              }
+            },
+            "Enabled": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether management endpoints are enabled. Default value: true."
+            },
+            "Env": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
+                },
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
+                },
+                "Id": {
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
+                },
+                "KeysToSanitize": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets the list of keys to sanitize. A key can be a simple string that the property must end with, or a regular expression. A case-insensitive match is always performed. Use a single-element empty string to disable sanitization. Default value: [ \"password\", \"secret\", \"key\", \"token\", \".*credentials.*\", \"vcap_services\" ]"
+                },
+                "Path": {
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                }
+              }
+            },
+            "Health": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
+                },
+                "Claim": {
+                  "type": "object",
+                  "properties": {
+                    "Type": {
+                      "type": "string"
+                    },
+                    "Value": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Gets or sets the claim requirements for retrieving components and/or details."
+                },
+                "DiskSpace": {
+                  "type": "object",
+                  "properties": {
+                    "Enabled": {
+                      "type": "boolean",
+                      "description": "Gets or sets a value indicating whether to enable the disk space contributor. Default value: true."
+                    },
+                    "Path": {
+                      "type": "string",
+                      "description": "Gets or sets the path to check for available disk space. Default value: \".\"."
+                    },
+                    "Threshold": {
+                      "type": "integer",
+                      "description": "Gets or sets the disk space, in bytes, that is considered low. Default value: 10 MB."
+                    }
+                  }
+                },
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
+                },
+                "Groups": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "Include": {
+                        "type": "string",
+                        "description": "Gets or sets a comma-separated list of health contributor IDs and/or health check registration names to include in this group."
+                      },
+                      "ShowComponents": {
+                        "enum": [
+                          "Never",
+                          "WhenAuthorized",
+                          "Always"
+                        ],
+                        "description": "Gets or sets when to show components in this group, overriding the endpoint-level setting."
+                      },
+                      "ShowDetails": {
+                        "enum": [
+                          "Never",
+                          "WhenAuthorized",
+                          "Always"
+                        ],
+                        "description": "Gets or sets when to show details of components in this group, overriding the endpoint-level setting."
+                      }
+                    }
+                  },
+                  "description": "Gets the configured health groups."
+                },
+                "Id": {
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
+                },
+                "Liveness": {
+                  "type": "object",
+                  "properties": {
+                    "Enabled": {
+                      "type": "boolean",
+                      "description": "Gets or sets a value indicating whether to enable the liveness contributor. Default value: false."
+                    }
+                  }
+                },
+                "Path": {
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "Ping": {
+                  "type": "object",
+                  "properties": {
+                    "Enabled": {
+                      "type": "boolean",
+                      "description": "Gets or sets a value indicating whether to enable the ping contributor. Default value: true."
+                    }
+                  }
+                },
+                "Readiness": {
+                  "type": "object",
+                  "properties": {
+                    "Enabled": {
+                      "type": "boolean",
+                      "description": "Gets or sets a value indicating whether to enable the readiness contributor. Default value: false."
+                    }
+                  }
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                },
+                "Role": {
+                  "type": "string",
+                  "description": "Gets or sets the role required to retrieve components and/or details."
+                },
+                "ShowComponents": {
+                  "enum": [
+                    "Never",
+                    "WhenAuthorized",
+                    "Always"
+                  ],
+                  "description": "Gets or sets when to show components in responses."
+                },
+                "ShowDetails": {
+                  "enum": [
+                    "Never",
+                    "WhenAuthorized",
+                    "Always"
+                  ],
+                  "description": "Gets or sets when to show details of components in responses."
+                }
+              }
+            },
+            "HeapDump": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
+                },
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
+                },
+                "GCDumpTimeoutInSeconds": {
+                  "type": "integer",
+                  "description": "Gets or sets the time (in seconds) after which to give up on collecting a gcdump. Default value: 30."
+                },
+                "HeapDumpType": {
+                  "enum": [
+                    "Full",
+                    "Heap",
+                    "Mini",
+                    "Triage",
+                    "GCDump"
+                  ],
+                  "description": "Gets or sets the type of dump to create. Default value: Full (on macOS: GCDump)."
+                },
+                "Id": {
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
+                },
+                "Path": {
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                }
+              }
+            },
+            "HttpExchanges": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
+                },
+                "Capacity": {
+                  "type": "integer",
+                  "description": "Gets or sets a value indicating how many HTTP exchanges should be stored. Default value: 100."
+                },
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
+                },
+                "Id": {
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
+                },
+                "IncludePathInfo": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether the path from the HTTP request URL should be returned. Default value: true."
+                },
+                "IncludeQueryString": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether the query string parameters from the request URL should be returned. Default value: true."
+                },
+                "IncludeRemoteAddress": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether the IP address of the request's sender should be returned. Default value: false."
+                },
+                "IncludeRequestHeaders": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether headers from the HTTP request should be returned. Default value: true.\n\nIf a request header is not present in the 'Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.RequestHeaders', the header name will be logged with a redacted value. Request headers can contain authentication tokens, or private information which may have regulatory concerns under GDPR and other laws. Arbitrary request headers should not be logged unless logs are secure and access controlled and the privacy impact assessed."
+                },
+                "IncludeResponseHeaders": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether headers from the HTTP response should be returned. Default value: true.\n\nIf a response header is not present in the 'Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.ResponseHeaders', the header name will be logged with a redacted value."
+                },
+                "IncludeSessionId": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether the user's session ID should be returned. Default value: false."
+                },
+                "IncludeTimeTaken": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether the time taken to process the request should be returned. Default value: true."
+                },
+                "IncludeUserPrincipal": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether the username of the 'System.Security.Claims.ClaimsPrincipal' should be returned. Default value: false."
+                },
+                "Path": {
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "RequestHeaders": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets request header values that are allowed to be logged.\n\nIf a request header is not present in the 'Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.RequestHeaders', the header name will be logged with a redacted value. Request headers can contain authentication tokens, or private information which may have regulatory concerns under GDPR and other laws. Arbitrary request headers should not be logged unless logs are secure and access controlled and the privacy impact assessed."
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                },
+                "ResponseHeaders": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets response header values that are allowed to be logged.\n\nIf a response header is not present in the 'Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangesEndpointOptions.ResponseHeaders', the header name will be logged with a redacted value."
+                },
+                "Reverse": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to return HTTP exchanges in reverse order (newest exchanges first). Default value: true."
+                }
+              }
+            },
+            "Info": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
+                },
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
+                },
+                "Id": {
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
+                },
+                "Path": {
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                }
+              }
+            },
+            "Loggers": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
+                },
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
+                },
+                "Id": {
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
+                },
+                "Path": {
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                }
+              }
+            },
+            "Mappings": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
+                },
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
+                },
+                "Id": {
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
+                },
+                "IncludeActuators": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to include actuator endpoints in the route mappings response. Default value: true."
+                },
+                "Path": {
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                }
+              }
+            },
+            "Path": {
+              "type": "string",
+              "description": "Gets or sets the HTTP request path at which management endpoints are exposed. Default value: /actuator."
+            },
+            "Port": {
+              "type": "integer",
+              "description": "Gets or sets the alternate HTTP port at which management endpoints are exposed."
+            },
+            "Refresh": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
+                },
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
+                },
+                "Id": {
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
+                },
+                "Path": {
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                },
+                "ReturnConfiguration": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to return the configuration after refreshing. Default value: true."
+                }
+              }
+            },
+            "SerializerOptions": {
+              "type": "object",
+              "properties": {
+                "AllowOutOfOrderMetadataProperties": {
+                  "type": "boolean",
+                  "description": "Allows JSON metadata properties to be specified after regular properties in a deserialized JSON object."
+                },
+                "AllowTrailingCommas": {
+                  "type": "boolean",
+                  "description": "Get or sets a value that indicates whether an extra comma at the end of a list of JSON values in an object or array is allowed (and ignored) within the JSON payload being deserialized."
+                },
+                "DefaultBufferSize": {
+                  "type": "integer",
+                  "description": "Gets or sets the default buffer size, in bytes, to use when creating temporary buffers."
+                },
+                "DefaultIgnoreCondition": {
+                  "enum": [
+                    "Never",
+                    "Always",
+                    "WhenWritingDefault",
+                    "WhenWritingNull"
+                  ],
+                  "description": "Gets or sets a value that determines when properties with default values are ignored during serialization or deserialization. The default value is 'System.Text.Json.Serialization.JsonIgnoreCondition.Never'."
+                },
+                "IgnoreReadOnlyFields": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value that indicates whether read-only fields are ignored during serialization. A field is read-only if it is marked with the readonly keyword. The default value is false."
+                },
+                "IgnoreReadOnlyProperties": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value that indicates whether read-only properties are ignored during serialization. The default value is false."
+                },
+                "IncludeFields": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value that indicates whether fields are handled during serialization and deserialization. The default value is false."
+                },
+                "IndentCharacter": {
+                  "type": "integer",
+                  "description": "Defines the indentation character being used when 'System.Text.Json.JsonSerializerOptions.WriteIndented' is enabled. Defaults to the space character."
+                },
+                "IndentSize": {
+                  "type": "integer",
+                  "description": "Defines the indentation size being used when 'System.Text.Json.JsonSerializerOptions.WriteIndented' is enabled. Defaults to two."
+                },
+                "MaxDepth": {
+                  "type": "integer",
+                  "description": "Gets or sets the maximum depth allowed when serializing or deserializing JSON, with the default value of 0 indicating a maximum depth of 64."
+                },
+                "NewLine": {
+                  "type": "string",
+                  "description": "Gets or sets the new line string to use when 'System.Text.Json.JsonSerializerOptions.WriteIndented' is true.\n\nThe default is the value of 'System.Environment.NewLine'."
+                },
+                "NumberHandling": {
+                  "enum": [
+                    "Strict",
+                    "AllowReadingFromString",
+                    "WriteAsString",
+                    "AllowNamedFloatingPointLiterals"
+                  ],
+                  "description": "Gets or sets an object that specifies how number types should be handled when serializing or deserializing."
+                },
+                "PreferredObjectCreationHandling": {
+                  "enum": [
+                    "Replace",
+                    "Populate"
+                  ],
+                  "description": "Gets or sets the preferred object creation handling for properties when deserializing JSON."
+                },
+                "PropertyNameCaseInsensitive": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value that indicates whether a property's name uses a case-insensitive comparison during deserialization. The default value is false."
+                },
+                "ReadCommentHandling": {
+                  "enum": [
+                    "Disallow",
+                    "Skip",
+                    "Allow"
+                  ],
+                  "description": "Gets or sets a value that defines how comments are handled during deserialization."
+                },
+                "RespectNullableAnnotations": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value that indicates whether nullability annotations should be respected during serialization and deserialization."
+                },
+                "RespectRequiredConstructorParameters": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value that indicates whether non-optional constructor parameters should be specified during deserialization."
+                },
+                "UnknownTypeHandling": {
+                  "enum": [
+                    "JsonElement",
+                    "JsonNode"
+                  ],
+                  "description": "Gets or sets an object that specifies how deserializing a type declared as an 'System.Object' is handled during deserialization."
+                },
+                "UnmappedMemberHandling": {
+                  "enum": [
+                    "Skip",
+                    "Disallow"
+                  ],
+                  "description": "Gets or sets an object that specifies how 'System.Text.Json.JsonSerializer' handles JSON properties that cannot be mapped to a specific .NET member when deserializing object types."
+                },
+                "WriteIndented": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value that indicates whether JSON should use pretty printing. By default, JSON is serialized without any extra white space."
+                }
+              },
+              "description": "Gets or sets the JSON serialization options."
+            },
+            "Services": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
+                },
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
+                },
+                "Id": {
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
+                },
+                "Path": {
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                }
+              }
+            },
+            "SslEnabled": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether 'Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Port' applies to HTTP or HTTPS requests. Default value: false."
+            },
+            "ThreadDump": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets the list of HTTP verbs that are allowed for this endpoint."
+                },
+                "Duration": {
+                  "type": "integer",
+                  "description": "Gets or sets the time (in milliseconds) to trace for, before automatically stopping the trace. Default value: 10."
+                },
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether this endpoint is enabled."
+                },
+                "Id": {
+                  "type": "string",
+                  "description": "Gets or sets the unique ID of this endpoint."
+                },
+                "Path": {
+                  "type": "string",
+                  "description": "Gets or sets the relative path at which this endpoint is exposed."
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ],
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                }
+              }
+            },
+            "UseStatusCodeFromResponse": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether the HTTP response status code is based on the health status. This setting can be overruled by sending an X-Use-Status-Code-From-Response HTTP header. Default value: true."
+            },
+            "Web": {
+              "type": "object",
+              "properties": {
+                "Exposure": {
+                  "type": "object",
+                  "properties": {
+                    "Exclude": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Gets the IDs of the actuators to exclude. Takes precedence over included entries."
+                    },
+                    "Include": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Gets the IDs of the actuators to include. Excluded entries take precedence."
+                    }
+                  },
+                  "description": "Indicates which actuators are exposed."
+                }
+              }
+            }
+          },
+          "description": "Provides configuration settings for management endpoints (actuators)."
+        }
+      }
+    },
+    "Spring": {
+      "type": "object",
+      "properties": {
+        "Application": {
+          "type": "object",
+          "properties": {
+            "Name": {
+              "type": "string",
+              "description": "Gets or sets the name of this application."
+            }
+          },
+          "description": "Fallback configuration settings that describe this application."
+        },
+        "Boot": {
+          "type": "object",
+          "properties": {
+            "Admin": {
+              "type": "object",
+              "properties": {
+                "Client": {
+                  "type": "object",
+                  "properties": {
+                    "ApplicationName": {
+                      "type": "string",
+                      "description": "Gets or sets the name this application registers under in Spring Boot Admin server."
+                    },
+                    "BaseHost": {
+                      "type": "string",
+                      "description": "Gets or sets the hostname or IP address to use in 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl'. This value should be set explicitly if Spring Boot Admin server is running in a container."
+                    },
+                    "BasePath": {
+                      "type": "string",
+                      "description": "Gets or sets the path to use in 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl'."
+                    },
+                    "BasePort": {
+                      "type": "integer",
+                      "description": "Gets or sets the port number to use in 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl'."
+                    },
+                    "BaseScheme": {
+                      "type": "string",
+                      "description": "Gets or sets the scheme (\"http\" or \"https\") to use in 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl'."
+                    },
+                    "BaseUrl": {
+                      "type": "string",
+                      "description": "Gets or sets the base URL of this application, which Spring Boot Admin server uses to interact with this application."
+                    },
+                    "ConnectionTimeoutMs": {
+                      "type": "integer",
+                      "description": "Gets or sets the connection timeout (in milliseconds) for interactions with Spring Boot Admin server. Default value: 5_000."
+                    },
+                    "Metadata": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object"
+                      },
+                      "description": "Gets metadata to use when registering with Spring Boot Admin server."
+                    },
+                    "PreferIPAddress": {
+                      "type": "boolean",
+                      "description": "Gets or sets a value indicating whether to prefer using the local IP address over hostname in 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl'. Default value: false."
+                    },
+                    "RefreshInterval": {
+                      "type": "string",
+                      "pattern": "^-?(\\d{1,7}|((\\d{1,7}[\\.:])?(([01]?\\d|2[0-3]):[0-5]?\\d|([01]?\\d|2[0-3]):[0-5]?\\d:[0-5]?\\d)(\\.\\d{1,7})?))$",
+                      "description": "Gets or sets the interval for refreshing the registration with Spring Boot Admin server. Set to 'System.TimeSpan.Zero' to register only once at app startup. Default value: 15 seconds."
+                    },
+                    "Url": {
+                      "type": "string",
+                      "description": "Gets or sets the URL of the Spring Boot Admin server."
+                    },
+                    "UseNetworkInterfaces": {
+                      "type": "boolean",
+                      "description": "Gets or sets a value indicating whether to use 'System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces' to determine the IP address or hostname for 'Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BaseUrl'. Default value: false."
+                    },
+                    "ValidateCertificates": {
+                      "type": "boolean",
+                      "description": "Gets or sets a value indicating whether to validate certificates from Spring Boot Admin server. Default value: true."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

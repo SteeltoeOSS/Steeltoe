@@ -1,0 +1,30 @@
+{
+  "solution": {
+    "path": "Steeltoe.All.sln",
+    "projects": [
+      "Common\\src\\Certificates\\Steeltoe.Common.Certificates.csproj",
+      "Common\\src\\Common\\Steeltoe.Common.csproj",
+      "Common\\src\\Hosting\\Steeltoe.Common.Hosting.csproj",
+      "Common\\src\\Http\\Steeltoe.Common.Http.csproj",
+      "Common\\test\\TestResources\\Steeltoe.Common.TestResources.csproj",
+      "Configuration\\src\\Abstractions\\Steeltoe.Configuration.Abstractions.csproj",
+      "Configuration\\src\\CloudFoundry\\Steeltoe.Configuration.CloudFoundry.csproj",
+      "Configuration\\src\\Encryption\\Steeltoe.Configuration.Encryption.csproj",
+      "Configuration\\src\\Placeholder\\Steeltoe.Configuration.Placeholder.csproj",
+      "Logging\\src\\Abstractions\\Steeltoe.Logging.Abstractions.csproj",
+      "Logging\\src\\DynamicConsole\\Steeltoe.Logging.DynamicConsole.csproj",
+      "Logging\\src\\DynamicSerilog\\Steeltoe.Logging.DynamicSerilog.csproj",
+      "Management\\src\\Abstractions\\Steeltoe.Management.Abstractions.csproj",
+      "Management\\src\\Endpoint\\Steeltoe.Management.Endpoint.csproj",
+      "Management\\src\\Prometheus\\Steeltoe.Management.Prometheus.csproj",
+      "Management\\src\\Tasks\\Steeltoe.Management.Tasks.csproj",
+      "Management\\src\\Tracing\\Steeltoe.Management.Tracing.csproj",
+      "Management\\test\\Endpoint.Test\\Steeltoe.Management.Endpoint.Test.csproj",
+      "Management\\test\\Prometheus.Test\\Steeltoe.Management.Prometheus.Test.csproj",
+      "Management\\test\\RazorPagesTestWebApp\\Steeltoe.Management.Endpoint.RazorPagesTestWebApp.csproj",
+      "Management\\test\\Tasks.Test\\Steeltoe.Management.Tasks.Test.csproj",
+      "Management\\test\\Tracing.Test\\Steeltoe.Management.Tracing.Test.csproj",
+      "Tools\\src\\ConfigurationSchemaGenerator\\ConfigurationSchemaGenerator.csproj"
+    ]
+  }
+}

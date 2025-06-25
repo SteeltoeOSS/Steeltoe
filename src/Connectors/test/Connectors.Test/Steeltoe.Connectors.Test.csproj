@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="$(MicrosoftAzureCosmosVersion)" />
+    <PackageReference Include="System.Data.SqlClient" Version="$(SystemSqlClientVersion)" />
+    <PackageReference Include="System.Text.Json" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="$(MicrosoftSqlClientVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MatchTargetFrameworkVersion)" />
+    <PackageReference Include="MongoDB.Driver" Version="$(MongoDbDriverVersion)" />
+    <PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />
+    <PackageReference Include="MySql.Data" Version="$(MySqlDataVersion)" />
+    <PackageReference Include="Npgsql" Version="$(EntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientTestVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Connectors\Steeltoe.Connectors.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <Description>Manage minimum logging levels at runtime using Serilog.</Description>
+    <PackageTags>logging;dynamic-logging;serilog;log-management;monitoring</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Serilog.Extensions.Logging" Version="$(SerilogVersion)" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="$(SerilogVersion)" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="$(SerilogSinksConsoleVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Abstractions\Steeltoe.Logging.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

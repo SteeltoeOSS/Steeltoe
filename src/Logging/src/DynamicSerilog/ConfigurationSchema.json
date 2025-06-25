@@ -1,0 +1,57 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Logging": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Logging.DynamicSerilog": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "Serilog": {
+      "type": "object",
+      "properties": {
+        "MinimumLevel": {
+          "type": "object",
+          "properties": {
+            "Default": {
+              "enum": [
+                "Verbose",
+                "Debug",
+                "Information",
+                "Warning",
+                "Error",
+                "Fatal"
+              ],
+              "description": "Specifies the meaning and relative importance of a log event."
+            },
+            "Override": {
+              "type": "object",
+              "additionalProperties": {
+                "enum": [
+                  "Verbose",
+                  "Debug",
+                  "Information",
+                  "Warning",
+                  "Error",
+                  "Fatal"
+                ],
+                "description": "Specifies the meaning and relative importance of a log event."
+              }
+            }
+          },
+          "description": "Gets or sets the minimum level for the root logger (and the \"Default\"). Limits the verbosity of all other overrides to this setting."
+        }
+      },
+      "description": "Contains the subset of Serilog options that 'Steeltoe.Logging.DynamicSerilog.DynamicSerilogLoggerProvider' needs."
+    }
+  }
+}

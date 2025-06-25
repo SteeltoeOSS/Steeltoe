@@ -1,0 +1,19 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.CloudFoundry")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.CloudFoundry.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.Encryption")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.Kubernetes.ServiceBindings")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.Kubernetes.ServiceBindings.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.Placeholder")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.RandomValue")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.SpringBoot")]
+[assembly: InternalsVisibleTo("Steeltoe.Connectors")]
+[assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]

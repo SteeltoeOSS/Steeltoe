@@ -1,0 +1,37 @@
+{
+  "solution": {
+    "path": "Steeltoe.All.sln",
+    "projects": [
+      "Common\\src\\Certificates\\Steeltoe.Common.Certificates.csproj",
+      "Common\\src\\Common\\Steeltoe.Common.csproj",
+      "Common\\src\\Hosting\\Steeltoe.Common.Hosting.csproj",
+      "Common\\src\\Http\\Steeltoe.Common.Http.csproj",
+      "Common\\test\\TestResources\\Steeltoe.Common.TestResources.csproj",
+      "Configuration\\src\\Abstractions\\Steeltoe.Configuration.Abstractions.csproj",
+      "Configuration\\src\\CloudFoundry\\Steeltoe.Configuration.CloudFoundry.csproj",
+      "Configuration\\src\\ConfigServer\\Steeltoe.Configuration.ConfigServer.csproj",
+      "Configuration\\src\\Encryption\\Steeltoe.Configuration.Encryption.csproj",
+      "Configuration\\src\\Kubernetes.ServiceBindings\\Steeltoe.Configuration.Kubernetes.ServiceBindings.csproj",
+      "Configuration\\src\\Placeholder\\Steeltoe.Configuration.Placeholder.csproj",
+      "Configuration\\src\\RandomValue\\Steeltoe.Configuration.RandomValue.csproj",
+      "Configuration\\src\\SpringBoot\\Steeltoe.Configuration.SpringBoot.csproj",
+      "Configuration\\test\\CloudFoundry.Test\\Steeltoe.Configuration.CloudFoundry.Test.csproj",
+      "Configuration\\test\\ConfigServer.Discovery.Test\\Steeltoe.Configuration.ConfigServer.Discovery.Test.csproj",
+      "Configuration\\test\\ConfigServer.Integration.Test\\Steeltoe.Configuration.ConfigServer.Integration.Test.csproj",
+      "Configuration\\test\\ConfigServer.Test\\Steeltoe.Configuration.ConfigServer.Test.csproj",
+      "Configuration\\test\\Encryption.Test\\Steeltoe.Configuration.Encryption.Test.csproj",
+      "Configuration\\test\\Kubernetes.ServiceBindings.Test\\Steeltoe.Configuration.Kubernetes.ServiceBindings.Test.csproj",
+      "Configuration\\test\\Placeholder.Test\\Steeltoe.Configuration.Placeholder.Test.csproj",
+      "Configuration\\test\\RandomValue.Test\\Steeltoe.Configuration.RandomValue.Test.csproj",
+      "Configuration\\test\\SpringBoot.Test\\Steeltoe.Configuration.SpringBoot.Test.csproj",
+      "Discovery\\src\\Configuration\\Steeltoe.Discovery.Configuration.csproj",
+      "Discovery\\src\\Consul\\Steeltoe.Discovery.Consul.csproj",
+      "Discovery\\src\\Eureka\\Steeltoe.Discovery.Eureka.csproj",
+      "Logging\\src\\Abstractions\\Steeltoe.Logging.Abstractions.csproj",
+      "Logging\\src\\DynamicConsole\\Steeltoe.Logging.DynamicConsole.csproj",
+      "Management\\src\\Abstractions\\Steeltoe.Management.Abstractions.csproj",
+      "Management\\src\\Endpoint\\Steeltoe.Management.Endpoint.csproj",
+      "Tools\\src\\ConfigurationSchemaGenerator\\ConfigurationSchemaGenerator.csproj"
+    ]
+  }
+}
