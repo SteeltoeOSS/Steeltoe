@@ -1,0 +1,167 @@
+name: Steeltoe.All
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - '[0-9]+.x'
+      - 'release/*'
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: true
+  SOLUTION_FILE: 'src/Steeltoe.All.sln'
+  COMMON_TEST_ARGS: >-
+    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/dumps
+    --settings coverlet.runsettings --blame-crash --blame-hang-timeout 3m
+
+jobs:
+  analyze:
+    name: Build and Test
+    timeout-minutes: 30
+    strategy:
+      matrix:
+#        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    continue-on-error: true
+
+# For Windows, use:
+#      docker run -d --name eurekaserver -p 8761:8761 steeltoe.azurecr.io/eureka-server
+#      sleep 10s
+#      docker run -d --name configserver -p 8888:8888 --add-host=host.docker.internal:host-gateway steeltoe.azurecr.io/config-server --eureka.client.enabled=true --eureka.instance.hostname=localhost --eureka.instance.instanceId="localhost:configserver:8888"
+#      sleep 10s
+# ...
+  # - script: |
+  #       echo "Fetching logs from Config Server container..."
+  #       docker logs $(docker ps --filter "name=configserver" --format "{{.ID}}")
+  #       echo "Fetching logs from Eureka Server container..."
+  #       docker logs $(docker ps --filter "name=eurekaserver" --format "{{.ID}}")
+  #   displayName: "Get Config Server Logs"
+#  - script: |
+#      docker kill configserver
+#      docker rm configserver
+#      docker kill eurekaserver
+#      docker rm eurekaserver
+
+    services:
+      eurekaServer:
+        image: ${{ matrix.os == 'ubuntu-latest' && 'steeltoe.azurecr.io/eureka-server' || null }}
+        ports:
+          - 8761:8761
+      configServer:
+        image: ${{ matrix.os == 'ubuntu-latest' && 'steeltoe.azurecr.io/config-server' || null }}
+        env:
+          eureka.client.enabled: true
+          eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
+          eureka.instance.hostname: localhost
+          eureka.instance.instanceId: localhost:configServer:8888
+        ports:
+          - 8888:8888
+
+    steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.*
+          9.0.*
+
+    - name: Git checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Restore packages
+      run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal
+
+    - name: Set package version
+      run: nbgv cloud
+
+    - name: Build solution
+      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
+
+#    - name: Test (net8.0)
+#      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" --framework net8.0 ${{ env.COMMON_TEST_ARGS }}
+
+#    - name: Test (net8.0) (memory dumps)
+#      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category=MemoryDumps" --framework net8.0 ${{ env.COMMON_TEST_ARGS }}
+
+    - name: Test (net9.0)
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" --framework net9.0  ${{ env.COMMON_TEST_ARGS }}
+
+#    - name: Test (net9.0) (memory dumps)
+#      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category=MemoryDumps" --framework net9.0  ${{ env.COMMON_TEST_ARGS }}
+
+    - name: Upload crash/hang dumps (on failure)
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: FailedTestOutput-${{ matrix.os }}
+        path: |
+          ${{ github.workspace }}/dumps/**/*.dmp
+          ${{ github.workspace }}/dumps/**/Sequence_*.xml
+        if-no-files-found: ignore
+
+    - name: Report test results
+      if: ${{ !cancelled() }}
+      uses: dorny/test-reporter@v2
+      with:
+        name: ${{ matrix.os }} test results
+        reporter: dotnet-trx
+        path: '**/*.trx'
+        fail-on-empty: 'true'
+        fail-on-error: 'false'
+
+    - name: Generate code coverage report
+      uses: danielpalme/ReportGenerator-GitHub-Action@v5
+      with:
+        reports: '**/coverage.opencover.xml'
+        targetdir: 'coveragereport'
+        reporttypes: 'MarkdownAssembliesSummary;MarkdownSummaryGithub' # The output formats and scope (separated by semicolon) Values: Badges, Clover, Cobertura, OpenCover, CsvSummary, Html, Html_Dark, Html_Light, Html_BlueRed, HtmlChart, HtmlInline, HtmlInline_AzurePipelines, HtmlInline_AzurePipelines_Dark, HtmlInline_AzurePipelines_Light, HtmlSummary, Html_BlueRed_Summary, JsonSummary, CodeClimate, Latex, LatexSummary, lcov, MarkdownSummary, MarkdownAssembliesSummary, MarkdownSummaryGithub, MarkdownDeltaSummary, MHtml, SvgChart, SonarQube, TeamCitySummary, TextSummary, TextDeltaSummary, Xml, XmlSummary
+        #sourcedirs: '' # Optional directories which contain the corresponding source code (separated by semicolon). The source directories are used if coverage report contains classes without path information.
+        #historydir: '' # Optional directory for storing persistent coverage information. Can be used in future reports to show coverage evolution.
+        #workingdir: '' # Optional working directory. If available, the targetdir, sourcedirs and historydir are interpreted relative to the working directory (only if not specified as absolute paths).
+        #plugins: '' # Optional plugin files for custom reports or custom history storage (separated by semicolon).
+        #assemblyfilters: '+*' # Optional list of assemblies that should be included or excluded in the report. Exclusion filters take precedence over inclusion filters. Wildcards are allowed.
+        #classfilters: '+*' # Optional list of classes that should be included or excluded in the report. Exclusion filters take precedence over inclusion filters. Wildcards are allowed.
+        filefilters: '-*.g.cs'
+        #riskhotspotassemblyfilters: '+*' # Optional list of assemblies that should be included or excluded in the risk hotspots. Exclusion filters take precedence over inclusion filters. Wildcards are allowed.
+        #riskhotspotclassfilters: '+*' # Optional list of classes that should be included or excluded in the risk hotspots. Exclusion filters take precedence over inclusion filters. Wildcards are allowed.
+        #verbosity: 'Info' # The verbosity level of the log messages. Values: Verbose, Info, Warning, Error, Off
+        title: 'All Code Coverage (${{ matrix.os }})'
+        tag: '${{ github.run_number }}_${{ github.run_id }}' # Optional tag or build version.
+        #license: '' # Optional license for PRO version. Get your license here: https://reportgenerator.io/pro
+        #customSettings: '' # Optional custom settings (separated by semicolon). See: https://github.com/danielpalme/ReportGenerator/wiki/Settings.
+        #toolpath: 'reportgeneratortool' # Default directory for installing the dotnet tool.
+
+#    - name: Upload coverage report artifact
+#      uses: actions/upload-artifact@v4
+#      with:
+#        name: CoverageReport # Artifact name        
+#        path: coveragereport # Directory containing files to upload
+
+    - name: List reports
+      shell: bash
+      run: ls -al coveragereport/*.md
+
+    - name: Add coverage to build summary
+      shell: bash
+      run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+
+    - name: Add coverage comment to PR
+      if: ${{ github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest' }}
+      run: gh pr comment $PR_NUMBER --edit-last --create-if-none --body-file coveragereport/Summary.md
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PR_NUMBER: ${{ github.event.number }}
