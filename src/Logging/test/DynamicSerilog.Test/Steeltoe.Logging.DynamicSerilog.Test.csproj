@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="$(SerilogEnrichersThreadVersion)" />
+    <PackageReference Include="Serilog.Exceptions" Version="$(SerilogExceptionsVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DynamicConsole\Steeltoe.Logging.DynamicConsole.csproj" />
+    <ProjectReference Include="..\..\src\DynamicSerilog\Steeltoe.Logging.DynamicSerilog.csproj" />
+  </ItemGroup>
+</Project>

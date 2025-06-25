@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <Description>Steeltoe library for commonly-used ASP.NET Core hosting-related functions.</Description>
+    <PackageTags>hosting;</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Steeltoe.Common.csproj" />
+  </ItemGroup>
+</Project>

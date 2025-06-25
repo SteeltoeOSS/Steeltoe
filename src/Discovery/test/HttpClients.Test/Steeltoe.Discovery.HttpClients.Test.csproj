@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <None Update="instance.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Configuration.CloudFoundry.csproj" />
+    <ProjectReference Include="..\..\src\Configuration\Steeltoe.Discovery.Configuration.csproj" />
+    <ProjectReference Include="..\..\src\Consul\Steeltoe.Discovery.Consul.csproj" />
+    <ProjectReference Include="..\..\src\Eureka\Steeltoe.Discovery.Eureka.csproj" />
+    <ProjectReference Include="..\..\src\HttpClients\Steeltoe.Discovery.HttpClients.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <Description>Configuration provider and IOptions support for reading Cloud Foundry environment variables.</Description>
+    <PackageTags>configuration;ConfigurationProvider;CloudFoundry;vcap;vcap_application;vcap_services;tanzu</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Hosting\Steeltoe.Common.Hosting.csproj" />
+    <ProjectReference Include="..\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

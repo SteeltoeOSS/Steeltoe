@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(EntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="$(EntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="$(EntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="System.Text.Json" Version="$(FoundationalVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Management\src\Tasks\Steeltoe.Management.Tasks.csproj" />
+    <ProjectReference Include="..\..\src\EntityFrameworkCore\Steeltoe.Connectors.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+</Project>

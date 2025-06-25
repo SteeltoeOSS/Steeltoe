@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <Description>Connectors for using service bindings in your application.</Description>
+    <PackageTags>connectors;service-bindings;vcap_services;cnb;tanzu</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Configuration.CloudFoundry.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\Kubernetes.ServiceBindings\Steeltoe.Configuration.Kubernetes.ServiceBindings.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
+  </ItemGroup>
+</Project>

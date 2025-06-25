@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <Description>Library for using OpenID Connect with UAA-based systems, including Cloud Foundry.</Description>
+    <PackageTags>CloudFoundry;uaa;security;sso;openid;oidc;tanzu;aspnetcore;</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(MatchTargetFrameworkVersion)" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="$(MicrosoftIdentityModelVersion)" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="$(MicrosoftIdentityModelVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
+  </ItemGroup>
+</Project>

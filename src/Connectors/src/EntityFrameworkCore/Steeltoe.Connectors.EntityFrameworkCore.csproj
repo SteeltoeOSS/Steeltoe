@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <Description>Extensions for using Steeltoe Connectors with Entity Framework Core.</Description>
+    <PackageTags>connectors;EFCore;EntityFrameworkCore;EF;Entity;Framework;Core;entity-framework-core;services;tanzu</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EntityFrameworkCoreVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Connectors\Steeltoe.Connectors.csproj" />
+  </ItemGroup>
+</Project>

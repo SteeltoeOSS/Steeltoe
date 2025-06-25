@@ -1,0 +1,27 @@
+# .NET Configuration Providers
+
+[Custom configuration providers](https://docs.asp.net/en/latest/fundamentals/configuration.html#custom-configuration-provider) for use with Microsoft's [application configuration](https://docs.asp.net/en/latest/fundamentals/configuration.html) for accessing configuration settings for an application.
+
+Steeltoe configuration providers can:
+
+- Interact with [Spring Cloud Config](https://spring.io/projects/spring-cloud-config)
+- Read [Cloud Foundry environment variables](https://docs.cloudfoundry.org/devguide/deploy-apps/environment-variable.html)
+- Replace property placeholders
+- Decrypt encrypted values
+- Provide random values
+
+For more information on how to use these components see the [Steeltoe documentation](https://steeltoe.io/).
+
+## Sample Applications
+
+See the `Configuration` directory inside the [Samples](https://github.com/SteeltoeOSS/Samples) repository for examples of how to use these packages.
+
+## Known limitations with Spring Cloud Config Server
+
+### Unstructured data files
+
+Unlike the Java version of the Config Server client, the Steeltoe client currently only supports property and yaml files; not plain text.
+
+### Server initiated reload
+
+Currently reloads must be initiated by the client, Steeltoe has not implemented handlers to listen for server change events.

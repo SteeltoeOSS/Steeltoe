@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <None Update="Cryptography\server.jks">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Encryption\Steeltoe.Configuration.Encryption.csproj" />
+    <ProjectReference Include="..\..\src\Placeholder\Steeltoe.Configuration.Placeholder.csproj" />
+  </ItemGroup>
+</Project>

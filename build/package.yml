@@ -1,0 +1,96 @@
+trigger:
+  branches:
+    include:
+    - main
+    - release/*
+  paths:
+    exclude:
+    - README.md
+    - roadmaps/*
+
+jobs:
+- job: Steeltoe_Package
+  pool:
+    vmImage: windows-latest
+  variables:
+    DOTNET_NOLOGO: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  steps:
+  - checkout: self
+    fetchDepth: 0
+  - task: UseDotNet@2
+    displayName: Install .NET 8
+    inputs:
+      version: 8.0.x
+  - task: UseDotNet@2
+    displayName: Install .NET 9
+    inputs:
+      version: 9.0.x
+  - task: PowerShell@2
+    displayName: Set package version
+    env:
+      PackageVersionOverride: $(PackageVersionOverride)
+    inputs:
+      targetType: 'inline'
+      script: |
+        if ($env:PackageVersionOverride) {
+            Write-Host "Overriding package version with: $env:PackageVersionOverride"
+            Write-Warning "Always provide a 4-segment version (such as 1.2.3.0 or 1.2.3.0-rc1), to prevent an increment in patch number."
+            Write-Warning "The commit hash may still be added to the version, depending on the source branch or PR being built."
+            nbgv set-version $env:PackageVersionOverride
+
+            Write-Host "Contents of version.json after update:"
+            get-content version.json
+
+            git config --global user.email "cibuild@steeltoe.io"
+            git config --global user.name "steeltoe-cibuild"
+            git commit --allow-empty -m "Activating version override by locally committing changes to version.json."
+        }
+
+        nbgv cloud
+  - task: DotNetCoreCLI@2
+    displayName: dotnet restore
+    inputs:
+      command: restore
+      verbosityRestore: Minimal
+      projects: src/Steeltoe.All.sln
+      feedsToUse: config
+      nugetConfigPath: nuget.config
+  - task: DotNetCoreCLI@2
+    displayName: dotnet build
+    inputs:
+      command: build
+      projects: src/Steeltoe.All.sln
+      arguments: --no-restore -c Release -v minimal
+  - task: DotNetCoreCLI@2
+    displayName: dotnet pack
+    inputs:
+      command: pack
+      verbosityPack: Minimal
+      packagesToPack: src/Steeltoe.All.sln
+      configuration: Release
+      packDirectory: $(Build.ArtifactStagingDirectory)/packages
+      nobuild: true
+  - task: DotNetCoreCLI@2
+    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
+    inputs:
+      command: custom
+      custom: tool
+      arguments: install --tool-path . sign --prerelease
+    displayName: Install code signing tool
+  - pwsh: |
+      .\sign code azure-key-vault "**/*.nupkg" `
+        --base-directory "$(Build.ArtifactStagingDirectory)/packages" `
+        --azure-key-vault-url "$(SignKeyVaultUrl)" `
+        --azure-key-vault-tenant-id "$(SignTenantId)" `
+        --azure-key-vault-client-id "$(SignClientId)" `
+        --azure-key-vault-client-secret "$(SignClientSecret)" `
+        --azure-key-vault-certificate "$(SignKeyVaultCertificate)" `
+        --description "Steeltoe" `
+        --description-url "https://github.com/SteeltoeOSS"
+    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
+    displayName: Sign packages
+  - publish: $(Build.ArtifactStagingDirectory)/packages
+    condition: succeeded()
+    displayName: Publish build artifacts
+    artifact: Packages

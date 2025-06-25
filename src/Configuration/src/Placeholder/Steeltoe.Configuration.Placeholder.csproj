@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <Description>Configuration provider for resolving property placeholders in configuration values.</Description>
+    <PackageTags>configuration;ConfigurationProvider;placeholders;Spring;Boot</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
+    <ProjectReference Include="..\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

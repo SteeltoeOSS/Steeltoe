@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <Description>Abstractions and code for bootstrap logging, before the IoC container is built. Bootstrap logging is replaced by the runtime logging (what the rest of your application is using) after the IoC container is built.</Description>
+    <PackageTags>bootstrap;logging;</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\Hosting\Steeltoe.Common.Hosting.csproj" />
+  </ItemGroup>
+</Project>
