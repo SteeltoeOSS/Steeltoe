@@ -6,11 +6,14 @@
 // Steeltoe: This file was copied from the .NET Aspire Configuration Schema generator
 // at https://github.com/dotnet/aspire/tree/cb7cc4d78f8dd2b4df1053a229493cdbf88f50df/src/Tools/ConfigurationSchemaGenerator.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Aspire;
 
 /// <summary>
 /// Attribute used to automatically generate a JSON schema for a component's configuration.
 /// </summary>
+[ExcludeFromCodeCoverage(Justification = "Used while compiling Steeltoe, does not ship with Steeltoe.")]
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
 internal sealed class ConfigurationSchemaAttribute : Attribute
 {
