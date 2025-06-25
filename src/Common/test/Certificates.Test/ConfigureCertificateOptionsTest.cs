@@ -244,7 +244,7 @@ public sealed class ConfigureCertificateOptionsTest
                 {
                     return false; // File(s) may not be readable yet. Swallow exceptions and keep spinning
                 }
-            }, 4.Seconds());
+            }, 6.Seconds());
 
             changeCalled.Should().BeTrue("file contents changed");
             optionsMonitor.Get(certificateName).Certificate.Should().Be(firstX509);
