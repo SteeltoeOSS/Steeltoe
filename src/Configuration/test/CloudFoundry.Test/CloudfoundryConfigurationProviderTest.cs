@@ -224,99 +224,94 @@ public sealed class CloudFoundryConfigurationProviderTest
         Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task ForwardedHeadersOptions_unrestricted_when_running_on_CloudFoundry(bool isRunningOnCloudFoundry)
+    {
+        using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", isRunningOnCloudFoundry ? "{}" : null);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
+        builder.AddCloudFoundryConfiguration();
+        await using WebApplication host = builder.Build();
+
+        ForwardedHeadersOptions options = host.Services.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
+
+        if (isRunningOnCloudFoundry)
+        {
+            options.ForwardedHeaders.Should().HaveFlag(ForwardedHeaders.XForwardedFor);
+            options.ForwardedHeaders.Should().HaveFlag(ForwardedHeaders.XForwardedProto);
+            options.KnownNetworks.Should().BeEmpty();
+            options.KnownProxies.Should().BeEmpty();
+        }
+        else
+        {
+            options.ForwardedHeaders.Should().Be(ForwardedHeaders.None);
+            options.KnownNetworks.Should().ContainSingle().Which.Should().BeEquivalentTo(IPNetwork.Parse("127.0.0.1/8"));
+            options.KnownProxies.Should().ContainSingle().Which.Should().Be(IPAddress.Parse("::1"));
+        }
+    }
+
     [Fact]
-    public async Task ForwardedHeaders_enabled_on_CloudFoundry()
+    public async Task ForwardedHeadersOptions_can_be_customized_when_running_on_CloudFoundry()
     {
         using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
         builder.AddCloudFoundryConfiguration();
+        builder.Services.Configure<ForwardedHeadersOptions>(options => options.KnownProxies.Add(IPAddress.Parse("192.168.1.20")));
         await using WebApplication host = builder.Build();
+        bool? forwardedHeadersWereEvaluated = null;
 
-        ForwardedHeadersOptions options = host.Services.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
+        host.Map("/", context =>
+        {
+            forwardedHeadersWereEvaluated = context.Request.IsHttps;
+            return Task.CompletedTask;
+        });
 
-        options.ForwardedHeaders.Should().HaveFlag(ForwardedHeaders.XForwardedFor);
-        options.ForwardedHeaders.Should().HaveFlag(ForwardedHeaders.XForwardedProto);
-        options.KnownNetworks.Should().BeEmpty();
-        options.KnownProxies.Should().BeEmpty();
-    }
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        TestServer server = host.GetTestServer();
 
-    [Fact]
-    public async Task ForwardedHeaders_not_enabled_off_CloudFoundry()
-    {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
-        builder.AddCloudFoundryConfiguration();
-        await using WebApplication host = builder.Build();
+        HttpContext responseContext = await server.SendAsync(requestContext =>
+        {
+            requestContext.Request.Headers["X-Forwarded-Proto"] = "https";
+            requestContext.Request.Headers["X-Forwarded-For"] = "192.168.1.19";
+            requestContext.Connection.RemoteIpAddress = IPAddress.Loopback;
+        }, TestContext.Current.CancellationToken);
 
-        ForwardedHeadersOptions options = host.Services.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
-
-        options.ForwardedHeaders.Should().Be(ForwardedHeaders.None);
-        options.KnownNetworks.Should().ContainSingle().Which.Should().BeEquivalentTo(IPNetwork.Parse("127.0.0.1/8"));
-        options.KnownProxies.Should().ContainSingle().Which.Should().Be(IPAddress.Parse("::1"));
+        responseContext.Response.StatusCode.Should().Be(200);
+        forwardedHeadersWereEvaluated.Should().BeFalse("X-Forwarded-Proto should not be evaluated for unknown proxies");
     }
 
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task ForwardedHeadersMiddleware_enabled_as_expected(bool onCloudFoundry)
+    public async Task ForwardedHeadersMiddleware_updates_connection_details_when_running_on_CloudFoundry(bool isRunningOnCloudFoundry)
     {
-        using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", onCloudFoundry ? "{}" : null);
-
+        using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", isRunningOnCloudFoundry ? "{}" : null);
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
         builder.AddCloudFoundryConfiguration();
         await using WebApplication host = builder.Build();
-        bool? isHttpRequest = null;
+        bool? forwardedHeadersWereEvaluated = null;
 
         host.Map("/", context =>
         {
-            isHttpRequest = context.Request.IsHttps;
+            forwardedHeadersWereEvaluated = context.Request.IsHttps;
             return Task.CompletedTask;
         });
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         TestServer server = host.GetTestServer();
 
-        HttpContext context = await server.SendAsync(c =>
+        HttpContext responseContext = await server.SendAsync(requestContext =>
         {
-            c.Request.Headers["X-Forwarded-Proto"] = "https";
-            c.Request.Headers["X-Forwarded-For"] = "1.2.3.4";
-            c.Connection.RemoteIpAddress = IPAddress.Loopback;
+            requestContext.Request.Headers["X-Forwarded-Proto"] = "https";
+            requestContext.Request.Headers["X-Forwarded-For"] = "1.2.3.4";
+            requestContext.Connection.RemoteIpAddress = IPAddress.Loopback;
         }, TestContext.Current.CancellationToken);
 
-        context.Response.StatusCode.Should().Be(200);
-        isHttpRequest.Should().Be(onCloudFoundry, $"X-Forwarded-Proto should {(onCloudFoundry ? string.Empty : "not ")}be evaluated");
-    }
+        responseContext.Response.StatusCode.Should().Be(200);
 
-    [Fact]
-    public async Task ForwardedHeaders_configuration_can_be_overridden()
-    {
-        using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
-
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
-        builder.AddCloudFoundryConfiguration();
-
-        builder.Services.Configure<ForwardedHeadersOptions>(options => options.KnownProxies.Add(IPAddress.Parse("192.168.1.2")));
-
-        await using WebApplication host = builder.Build();
-        bool? isHttpRequest = null;
-
-        host.Map("/", context =>
-        {
-            isHttpRequest = context.Request.IsHttps;
-            return Task.CompletedTask;
-        });
-
-        await host.StartAsync(TestContext.Current.CancellationToken);
-        TestServer server = host.GetTestServer();
-
-        HttpContext context = await server.SendAsync(c =>
-        {
-            c.Request.Headers["X-Forwarded-Proto"] = "https";
-            c.Request.Headers["X-Forwarded-For"] = "1.2.3.4";
-            c.Connection.RemoteIpAddress = IPAddress.Loopback;
-        }, TestContext.Current.CancellationToken);
-
-        context.Response.StatusCode.Should().Be(200);
-        isHttpRequest.Should().Be(false, "X-Forwarded-Proto should not be evaluated");
+        forwardedHeadersWereEvaluated.Should()
+            .Be(isRunningOnCloudFoundry, $"X-Forwarded-Proto should {(isRunningOnCloudFoundry ? string.Empty : "not ")}be evaluated");
     }
 
     private sealed class VcapApp

@@ -28,29 +28,4 @@ public static class CertificateApplicationBuilderExtensions
 
         return builder;
     }
-
-    /// <summary>
-    /// Enables certificate and header forwarding, along with ASP.NET Core authentication and authorization middlewares.
-    /// </summary>
-    /// <param name="builder">
-    /// The <see cref="IApplicationBuilder" /> to configure.
-    /// </param>
-    /// <param name="options">
-    /// Custom header forwarding policy.
-    /// </param>
-    /// <returns>
-    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
-    /// </returns>
-    public static IApplicationBuilder UseCertificateAuthorization(this IApplicationBuilder builder, ForwardedHeadersOptions options)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-        ArgumentNullException.ThrowIfNull(options);
-
-        builder.UseForwardedHeaders(options);
-        builder.UseCertificateForwarding();
-        builder.UseAuthentication();
-        builder.UseAuthorization();
-
-        return builder;
-    }
 }
