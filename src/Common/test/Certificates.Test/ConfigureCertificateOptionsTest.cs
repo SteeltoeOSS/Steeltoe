@@ -18,9 +18,9 @@ public sealed class ConfigureCertificateOptionsTest
 {
     private const string CertificateName = "test";
 
+    [Theory]
     [InlineData("")]
     [InlineData(CertificateName)]
-    [Theory]
     public void ConfigureCertificateOptions_NoPath_NoCertificate(string certificateName)
     {
         var configureOptions = new ConfigureCertificateOptions(new ConfigurationBuilder().Build());
@@ -31,9 +31,9 @@ public sealed class ConfigureCertificateOptionsTest
         options.Certificate.Should().BeNull();
     }
 
+    [Theory]
     [InlineData("")]
     [InlineData(CertificateName)]
-    [Theory]
     public void ConfigureCertificateOptions_BadPath_NoCertificate(string certificateName)
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
@@ -50,9 +50,9 @@ public sealed class ConfigureCertificateOptionsTest
         options.Certificate.Should().BeNull();
     }
 
+    [Theory]
     [InlineData("")]
     [InlineData(CertificateName)]
-    [Theory]
     public void ConfigureCertificateOptions_EmptyFile_Crashes(string certificateName)
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
@@ -69,9 +69,9 @@ public sealed class ConfigureCertificateOptionsTest
         options.Certificate.Should().BeNull();
     }
 
+    [Theory]
     [InlineData("")]
     [InlineData(CertificateName)]
-    [Theory]
     public void ConfigureCertificateOptions_ThrowsOnInvalidKey(string certificateName)
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
@@ -88,9 +88,9 @@ public sealed class ConfigureCertificateOptionsTest
         options.Certificate.Should().BeNull();
     }
 
+    [Theory]
     [InlineData("")]
     [InlineData(CertificateName)]
-    [Theory]
     public void ConfigureCertificateOptions_ReadsP12File_CreatesCertificate(string certificateName)
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificate(certificateName, "instance.p12").Build();
@@ -104,9 +104,9 @@ public sealed class ConfigureCertificateOptionsTest
         options.Certificate.HasPrivateKey.Should().BeTrue();
     }
 
+    [Theory]
     [InlineData("")]
     [InlineData(CertificateName)]
-    [Theory]
     public void ConfigureCertificateOptions_ReadsPemFiles_CreatesCertificate(string certificateName)
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificate(certificateName, "instance.crt", "instance.key").Build();
@@ -119,9 +119,9 @@ public sealed class ConfigureCertificateOptionsTest
         options.Certificate.HasPrivateKey.Should().BeTrue();
     }
 
+    [Theory]
     [InlineData("")]
     [InlineData(CertificateName)]
-    [Theory]
     public async Task CertificateOptionsUpdateOnFileContentChange(string certificateName)
     {
         using var sandbox = new Sandbox();
@@ -131,8 +131,8 @@ public sealed class ConfigureCertificateOptionsTest
         string secondCertificateContent = await File.ReadAllTextAsync("instance2.crt", TestContext.Current.CancellationToken);
         string secondPrivateKeyContent = await File.ReadAllTextAsync("instance2.key", TestContext.Current.CancellationToken);
         var secondX509 = X509Certificate2.CreateFromPemFile("instance2.crt", "instance2.key");
-        string certificateFilePath = sandbox.CreateFile("cert", firstCertificateContent);
-        string privateKeyFilePath = sandbox.CreateFile("key", firstPrivateKeyContent);
+        string certificateFilePath = sandbox.CreateFile(Guid.NewGuid() + ".crt", firstCertificateContent);
+        string privateKeyFilePath = sandbox.CreateFile(Guid.NewGuid() + ".key", firstPrivateKeyContent);
 
         if (TestContext.Current.IsRunningOnBuildServer())
         {
@@ -157,14 +157,24 @@ public sealed class ConfigureCertificateOptionsTest
         await File.WriteAllTextAsync(certificateFilePath, secondCertificateContent, TestContext.Current.CancellationToken);
         await File.WriteAllTextAsync(privateKeyFilePath, secondPrivateKeyContent, TestContext.Current.CancellationToken);
 
-        SpinWait.SpinUntil(() => optionsMonitor.Get(certificateName).Certificate!.Equals(secondX509), 4.Seconds());
+        SpinWait.SpinUntil(() =>
+        {
+            try
+            {
+                return optionsMonitor.Get(certificateName).Certificate!.Equals(secondX509);
+            }
+            catch
+            {
+                return false; // File(s) may not be readable yet. Swallow exceptions and keep spinning
+            }
+        }, 4.Seconds());
 
         optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
     }
 
+    [Theory]
     [InlineData("")]
     [InlineData(CertificateName)]
-    [Theory]
     public async Task CertificateOptionsUpdateOnFileLocationChange(string certificateName)
     {
         using var sandbox = new Sandbox();
@@ -174,10 +184,10 @@ public sealed class ConfigureCertificateOptionsTest
         string instance2Certificate = await File.ReadAllTextAsync("instance2.crt", TestContext.Current.CancellationToken);
         string instance2PrivateKey = await File.ReadAllTextAsync("instance2.key", TestContext.Current.CancellationToken);
         var secondX509 = X509Certificate2.CreateFromPemFile("instance2.crt", "instance2.key");
-        string certificate1FilePath = sandbox.CreateFile("cert", instance1Certificate);
-        string privateKey1FilePath = sandbox.CreateFile("key", instance1PrivateKey);
-        string certificate2FilePath = sandbox.CreateFile("cert2", instance2Certificate);
-        string privateKey2FilePath = sandbox.CreateFile("key2", instance2PrivateKey);
+        string certificate1FilePath = sandbox.CreateFile(Guid.NewGuid() + ".crt", instance1Certificate);
+        string privateKey1FilePath = sandbox.CreateFile(Guid.NewGuid() + ".key", instance1PrivateKey);
+        string certificate2FilePath = sandbox.CreateFile(Guid.NewGuid() + ".crt", instance2Certificate);
+        string privateKey2FilePath = sandbox.CreateFile(Guid.NewGuid() + ".key", instance2PrivateKey);
 
         if (TestContext.Current.IsRunningOnBuildServer())
         {
@@ -223,7 +233,19 @@ public sealed class ConfigureCertificateOptionsTest
             changeCalled.Should().BeFalse("nothing has changed yet");
             await File.WriteAllTextAsync(certificate2FilePath, instance1Certificate, TestContext.Current.CancellationToken);
             await File.WriteAllTextAsync(privateKey2FilePath, instance1PrivateKey, TestContext.Current.CancellationToken);
-            SpinWait.SpinUntil(() => optionsMonitor.Get(certificateName).Certificate!.Equals(firstX509), 4.Seconds());
+
+            SpinWait.SpinUntil(() =>
+            {
+                try
+                {
+                    return optionsMonitor.Get(certificateName).Certificate!.Equals(firstX509);
+                }
+                catch
+                {
+                    return false; // File(s) may not be readable yet. Swallow exceptions and keep spinning
+                }
+            }, 4.Seconds());
+
             changeCalled.Should().BeTrue("file contents changed");
             optionsMonitor.Get(certificateName).Certificate.Should().Be(firstX509);
         }
