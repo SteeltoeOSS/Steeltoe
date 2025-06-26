@@ -11,49 +11,6 @@ public static class CertificateConfigurationExtensions
     internal const string AppInstanceIdentityCertificateName = "AppInstanceIdentity";
 
     /// <summary>
-    /// Adds file path information for a certificate and (optional) private key to configuration, for use with <see cref="CertificateOptions" />.
-    /// </summary>
-    /// <param name="builder">
-    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
-    /// </param>
-    /// <param name="certificateName">
-    /// Name of the certificate, or <see cref="string.Empty" /> for an unnamed certificate.
-    /// </param>
-    /// <param name="certificateFilePath">
-    /// The path on disk to locate a valid certificate file.
-    /// </param>
-    /// <param name="privateKeyFilePath">
-    /// The path on disk to locate a valid PEM-encoded RSA key file.
-    /// </param>
-    /// <returns>
-    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
-    /// </returns>
-    internal static IConfigurationBuilder AddCertificate(this IConfigurationBuilder builder, string certificateName, string certificateFilePath,
-        string? privateKeyFilePath = null)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-        ArgumentNullException.ThrowIfNull(certificateName);
-        ArgumentException.ThrowIfNullOrEmpty(certificateFilePath);
-
-        string keyPrefix = certificateName.Length == 0
-            ? $"{CertificateOptions.ConfigurationKeyPrefix}{ConfigurationPath.KeyDelimiter}"
-            : $"{CertificateOptions.ConfigurationKeyPrefix}{ConfigurationPath.KeyDelimiter}{certificateName}{ConfigurationPath.KeyDelimiter}";
-
-        var keys = new Dictionary<string, string?>
-        {
-            [$"{keyPrefix}CertificateFilePath"] = certificateFilePath
-        };
-
-        if (!string.IsNullOrEmpty(privateKeyFilePath))
-        {
-            keys[$"{keyPrefix}PrivateKeyFilePath"] = privateKeyFilePath;
-        }
-
-        builder.AddInMemoryCollection(keys);
-        return builder;
-    }
-
-    /// <summary>
     /// Adds PEM certificate files representing application identity to the application configuration. When running outside of Cloud Foundry-based platforms,
     /// this method will create certificates resembling those found on the platform.
     /// </summary>
@@ -152,7 +109,15 @@ public static class CertificateConfigurationExtensions
 
         if (certificateFile != null && keyFile != null)
         {
-            builder.AddCertificate(AppInstanceIdentityCertificateName, certificateFile, keyFile);
+            const string keyPrefix = $"{CertificateOptions.ConfigurationKeyPrefix}:{AppInstanceIdentityCertificateName}:";
+
+            var keys = new Dictionary<string, string?>
+            {
+                [$"{keyPrefix}CertificateFilePath"] = certificateFile,
+                [$"{keyPrefix}PrivateKeyFilePath"] = keyFile
+            };
+
+            builder.AddInMemoryCollection(keys);
         }
 
         return builder;

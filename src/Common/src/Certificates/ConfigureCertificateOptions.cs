@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.Certificates;
@@ -16,12 +19,14 @@ internal sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certi
         TimeSpan.FromSeconds(1));
 
     private readonly IConfiguration _configuration;
+    private readonly ILogger<ConfigureCertificateOptions> _logger;
 
-    public ConfigureCertificateOptions(IConfiguration configuration)
+    public ConfigureCertificateOptions(IConfiguration configuration, ILogger<ConfigureCertificateOptions>? logger = null)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
         _configuration = configuration;
+        _logger = logger ?? NullLogger<ConfigureCertificateOptions>.Instance;
     }
 
     public void Configure(CertificateOptions options)
@@ -42,16 +47,29 @@ internal sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certi
 
         string? privateKeyFilePath = _configuration.GetValue<string>(GetConfigurationKey(name, "PrivateKeyFilePath"));
 
-        options.Certificate = privateKeyFilePath != null && File.Exists(privateKeyFilePath)
-            ? X509Certificate2.CreateFromPemFile(certificateFilePath, privateKeyFilePath)
-            : new X509Certificate2(certificateFilePath);
-
-        X509Certificate2[] certificateChain = CertificateRegex.Matches(File.ReadAllText(certificateFilePath))
-            .Select(x => new X509Certificate2(Encoding.ASCII.GetBytes(x.Value))).ToArray();
-
-        foreach (X509Certificate2 issuer in certificateChain.Skip(1))
+        try
         {
-            options.IssuerChain.Add(issuer);
+            options.Certificate = privateKeyFilePath != null && File.Exists(privateKeyFilePath)
+                ? X509Certificate2.CreateFromPemFile(certificateFilePath, privateKeyFilePath)
+                : new X509Certificate2(certificateFilePath);
+
+            X509Certificate2[] certificateChain = CertificateRegex.Matches(File.ReadAllText(certificateFilePath))
+                .Select(x => new X509Certificate2(Encoding.ASCII.GetBytes(x.Value))).ToArray();
+
+            foreach (X509Certificate2 issuer in certificateChain.Skip(1))
+            {
+                options.IssuerChain.Add(issuer);
+            }
+        }
+        catch (IOException ex)
+        {
+            _logger.LogDebug(ex, "IOException while loading certificate for '{CertificateName}' from '{Path}'. Will retry on next reload.", name,
+                certificateFilePath);
+        }
+        catch (CryptographicException ex)
+        {
+            _logger.LogDebug(ex, "CryptographicException while parsing certificate for '{CertificateName}' from '{Path}'. Will retry on next reload.", name,
+                certificateFilePath);
         }
     }
 
