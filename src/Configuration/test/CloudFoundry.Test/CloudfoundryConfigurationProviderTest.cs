@@ -252,38 +252,6 @@ public sealed class CloudFoundryConfigurationProviderTest
         }
     }
 
-    [Fact]
-    public async Task ForwardedHeadersMiddleware_uses_customized_options_when_running_on_CloudFoundry()
-    {
-        using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseKestrel().UseUrls("http://127.0.0.1:0");
-        builder.AddCloudFoundryConfiguration();
-        builder.Services.Configure<ForwardedHeadersOptions>(options => options.KnownProxies.Add(IPAddress.Parse("192.168.1.20")));
-        await using WebApplication host = builder.Build();
-        bool? forwardedHeadersWereEvaluated = null;
-
-        host.Map("/", context =>
-        {
-            forwardedHeadersWereEvaluated = context.Request.IsHttps;
-            return Task.CompletedTask;
-        });
-
-        await host.StartAsync(TestContext.Current.CancellationToken);
-        string address = host.Urls.First(url => url.StartsWith("http://", StringComparison.OrdinalIgnoreCase));
-
-        var client = new HttpClient();
-        client.DefaultRequestHeaders.Add("X-Forwarded-Proto", "https");
-        client.DefaultRequestHeaders.Add("X-Forwarded-For", "1.2.3.4");
-
-        HttpResponseMessage response = await client.GetAsync(new Uri(address), TestContext.Current.CancellationToken);
-
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        forwardedHeadersWereEvaluated.Should().BeFalse("X-Forwarded-Proto should not be evaluated for unknown proxies");
-
-        await host.StopAsync(TestContext.Current.CancellationToken);
-    }
-
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -315,6 +283,38 @@ public sealed class CloudFoundryConfigurationProviderTest
 
         forwardedHeadersWereEvaluated.Should()
             .Be(isRunningOnCloudFoundry, $"X-Forwarded-Proto should {(isRunningOnCloudFoundry ? string.Empty : "not ")}be evaluated");
+
+        await host.StopAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task ForwardedHeadersMiddleware_uses_customized_options_when_running_on_CloudFoundry()
+    {
+        using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseKestrel().UseUrls("http://127.0.0.1:0");
+        builder.AddCloudFoundryConfiguration();
+        builder.Services.Configure<ForwardedHeadersOptions>(options => options.KnownProxies.Add(IPAddress.Parse("192.168.1.20")));
+        await using WebApplication host = builder.Build();
+        bool? forwardedHeadersWereEvaluated = null;
+
+        host.Map("/", context =>
+        {
+            forwardedHeadersWereEvaluated = context.Request.IsHttps;
+            return Task.CompletedTask;
+        });
+
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        string address = host.Urls.First(url => url.StartsWith("http://", StringComparison.OrdinalIgnoreCase));
+
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("X-Forwarded-Proto", "https");
+        client.DefaultRequestHeaders.Add("X-Forwarded-For", "1.2.3.4");
+
+        HttpResponseMessage response = await client.GetAsync(new Uri(address), TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        forwardedHeadersWereEvaluated.Should().BeFalse("X-Forwarded-Proto should not be evaluated for unknown proxies");
 
         await host.StopAsync(TestContext.Current.CancellationToken);
     }
