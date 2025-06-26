@@ -5,9 +5,8 @@
 using System.Net;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -254,10 +253,11 @@ public sealed class CloudFoundryConfigurationProviderTest
     }
 
     [Fact]
-    public async Task ForwardedHeadersOptions_can_be_customized_when_running_on_CloudFoundry()
+    public async Task ForwardedHeadersMiddleware_uses_customized_options_when_running_on_CloudFoundry()
     {
         using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseKestrel().UseUrls("http://127.0.0.1:0");
         builder.AddCloudFoundryConfiguration();
         builder.Services.Configure<ForwardedHeadersOptions>(options => options.KnownProxies.Add(IPAddress.Parse("192.168.1.20")));
         await using WebApplication host = builder.Build();
@@ -270,17 +270,18 @@ public sealed class CloudFoundryConfigurationProviderTest
         });
 
         await host.StartAsync(TestContext.Current.CancellationToken);
-        TestServer server = host.GetTestServer();
+        string address = host.Urls.First(url => url.StartsWith("http://", StringComparison.OrdinalIgnoreCase));
 
-        HttpContext httpContext = await server.SendAsync(httpContext =>
-        {
-            httpContext.Request.Headers["X-Forwarded-Proto"] = "https";
-            httpContext.Request.Headers["X-Forwarded-For"] = "192.168.1.19";
-            httpContext.Connection.RemoteIpAddress = IPAddress.Loopback;
-        }, TestContext.Current.CancellationToken);
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("X-Forwarded-Proto", "https");
+        client.DefaultRequestHeaders.Add("X-Forwarded-For", "1.2.3.4");
 
-        httpContext.Response.StatusCode.Should().Be(200);
+        HttpResponseMessage response = await client.GetAsync(new Uri(address), TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         forwardedHeadersWereEvaluated.Should().BeFalse("X-Forwarded-Proto should not be evaluated for unknown proxies");
+
+        await host.StopAsync(TestContext.Current.CancellationToken);
     }
 
     [Theory]
@@ -290,7 +291,8 @@ public sealed class CloudFoundryConfigurationProviderTest
     {
         using IDisposable? scope = isRunningOnCloudFoundry ? new EnvironmentVariableScope("VCAP_APPLICATION", "{}") : null;
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseKestrel().UseUrls("http://127.0.0.1:0");
         builder.AddCloudFoundryConfiguration();
         await using WebApplication host = builder.Build();
         bool? forwardedHeadersWereEvaluated = null;
@@ -302,19 +304,19 @@ public sealed class CloudFoundryConfigurationProviderTest
         });
 
         await host.StartAsync(TestContext.Current.CancellationToken);
-        TestServer server = host.GetTestServer();
+        string address = host.Urls.First(url => url.StartsWith("http://", StringComparison.OrdinalIgnoreCase));
 
-        HttpContext httpContext = await server.SendAsync(httpContext =>
-        {
-            httpContext.Request.Headers["X-Forwarded-Proto"] = "https";
-            httpContext.Request.Headers["X-Forwarded-For"] = "1.2.3.4";
-            httpContext.Connection.RemoteIpAddress = IPAddress.Loopback;
-        }, TestContext.Current.CancellationToken);
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("X-Forwarded-Proto", "https");
+        client.DefaultRequestHeaders.Add("X-Forwarded-For", "1.2.3.4");
 
-        httpContext.Response.StatusCode.Should().Be(200);
+        HttpResponseMessage response = await client.GetAsync(new Uri(address), TestContext.Current.CancellationToken);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         forwardedHeadersWereEvaluated.Should()
             .Be(isRunningOnCloudFoundry, $"X-Forwarded-Proto should {(isRunningOnCloudFoundry ? string.Empty : "not ")}be evaluated");
+
+        await host.StopAsync(TestContext.Current.CancellationToken);
     }
 
     private sealed class VcapApp
