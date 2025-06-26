@@ -149,10 +149,10 @@ public sealed class ConfigureCertificateOptionsTest
         using var sandbox = new Sandbox();
         string firstCertificateContent = await File.ReadAllTextAsync("instance.crt", TestContext.Current.CancellationToken);
         string firstPrivateKeyContent = await File.ReadAllTextAsync("instance.key", TestContext.Current.CancellationToken);
-        var firstX509 = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
+        using var firstX509 = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
         string secondCertificateContent = await File.ReadAllTextAsync("secondInstance.crt", TestContext.Current.CancellationToken);
         string secondPrivateKeyContent = await File.ReadAllTextAsync("secondInstance.key", TestContext.Current.CancellationToken);
-        var secondX509 = X509Certificate2.CreateFromPemFile("secondInstance.crt", "secondInstance.key");
+        using var secondX509 = X509Certificate2.CreateFromPemFile("secondInstance.crt", "secondInstance.key");
         string certificateFilePath = sandbox.CreateFile(Guid.NewGuid() + ".crt", firstCertificateContent);
         string privateKeyFilePath = sandbox.CreateFile(Guid.NewGuid() + ".key", firstPrivateKeyContent);
 
@@ -190,12 +190,12 @@ public sealed class ConfigureCertificateOptionsTest
         using var sandbox = new Sandbox();
         string firstInstanceCertificate = await File.ReadAllTextAsync("instance.crt", TestContext.Current.CancellationToken);
         string firstInstancePrivateKey = await File.ReadAllTextAsync("instance.key", TestContext.Current.CancellationToken);
-        var firstX509 = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
+        using var firstX509 = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
         string firstCertificateFilePath = sandbox.CreateFile(Guid.NewGuid() + ".crt", firstInstanceCertificate);
         string firstPrivateKeyFilePath = sandbox.CreateFile(Guid.NewGuid() + ".key", firstInstancePrivateKey);
         string secondInstanceCertificate = await File.ReadAllTextAsync("secondInstance.crt", TestContext.Current.CancellationToken);
         string secondInstancePrivateKey = await File.ReadAllTextAsync("secondInstance.key", TestContext.Current.CancellationToken);
-        var secondX509 = X509Certificate2.CreateFromPemFile("secondInstance.crt", "secondInstance.key");
+        using var secondX509 = X509Certificate2.CreateFromPemFile("secondInstance.crt", "secondInstance.key");
         string secondCertificateFilePath = sandbox.CreateFile(Guid.NewGuid() + ".crt", secondInstanceCertificate);
         string secondPrivateKeyFilePath = sandbox.CreateFile(Guid.NewGuid() + ".key", secondInstancePrivateKey);
 
