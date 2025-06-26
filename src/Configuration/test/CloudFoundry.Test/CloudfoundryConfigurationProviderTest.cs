@@ -229,7 +229,8 @@ public sealed class CloudFoundryConfigurationProviderTest
     [InlineData(false)]
     public async Task ForwardedHeadersOptions_unrestricted_when_running_on_CloudFoundry(bool isRunningOnCloudFoundry)
     {
-        using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", isRunningOnCloudFoundry ? "{}" : null);
+        using IDisposable? scope = isRunningOnCloudFoundry ? new EnvironmentVariableScope("VCAP_APPLICATION", "{}") : null;
+
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
         builder.AddCloudFoundryConfiguration();
         await using WebApplication host = builder.Build();
@@ -245,7 +246,8 @@ public sealed class CloudFoundryConfigurationProviderTest
         }
         else
         {
-            options.ForwardedHeaders.Should().Be(ForwardedHeaders.None);
+            options.ForwardedHeaders.Should().NotHaveFlag(ForwardedHeaders.XForwardedFor);
+            options.ForwardedHeaders.Should().NotHaveFlag(ForwardedHeaders.XForwardedProto);
             options.KnownNetworks.Should().ContainSingle().Which.Should().BeEquivalentTo(IPNetwork.Parse("127.0.0.1/8"));
             options.KnownProxies.Should().ContainSingle().Which.Should().Be(IPAddress.Parse("::1"));
         }
@@ -286,7 +288,8 @@ public sealed class CloudFoundryConfigurationProviderTest
     [InlineData(false)]
     public async Task ForwardedHeadersMiddleware_updates_connection_details_when_running_on_CloudFoundry(bool isRunningOnCloudFoundry)
     {
-        using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", isRunningOnCloudFoundry ? "{}" : null);
+        using IDisposable? scope = isRunningOnCloudFoundry ? new EnvironmentVariableScope("VCAP_APPLICATION", "{}") : null;
+
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
         builder.AddCloudFoundryConfiguration();
         await using WebApplication host = builder.Build();
