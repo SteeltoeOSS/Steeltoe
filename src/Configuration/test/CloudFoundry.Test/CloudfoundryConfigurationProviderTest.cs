@@ -272,14 +272,14 @@ public sealed class CloudFoundryConfigurationProviderTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         TestServer server = host.GetTestServer();
 
-        HttpContext responseContext = await server.SendAsync(requestContext =>
+        HttpContext httpContext = await server.SendAsync(httpContext =>
         {
-            requestContext.Request.Headers["X-Forwarded-Proto"] = "https";
-            requestContext.Request.Headers["X-Forwarded-For"] = "192.168.1.19";
-            requestContext.Connection.RemoteIpAddress = IPAddress.Loopback;
+            httpContext.Request.Headers["X-Forwarded-Proto"] = "https";
+            httpContext.Request.Headers["X-Forwarded-For"] = "192.168.1.19";
+            httpContext.Connection.RemoteIpAddress = IPAddress.Loopback;
         }, TestContext.Current.CancellationToken);
 
-        responseContext.Response.StatusCode.Should().Be(200);
+        httpContext.Response.StatusCode.Should().Be(200);
         forwardedHeadersWereEvaluated.Should().BeFalse("X-Forwarded-Proto should not be evaluated for unknown proxies");
     }
 
@@ -304,14 +304,14 @@ public sealed class CloudFoundryConfigurationProviderTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         TestServer server = host.GetTestServer();
 
-        HttpContext responseContext = await server.SendAsync(requestContext =>
+        HttpContext httpContext = await server.SendAsync(httpContext =>
         {
-            requestContext.Request.Headers["X-Forwarded-Proto"] = "https";
-            requestContext.Request.Headers["X-Forwarded-For"] = "1.2.3.4";
-            requestContext.Connection.RemoteIpAddress = IPAddress.Loopback;
+            httpContext.Request.Headers["X-Forwarded-Proto"] = "https";
+            httpContext.Request.Headers["X-Forwarded-For"] = "1.2.3.4";
+            httpContext.Connection.RemoteIpAddress = IPAddress.Loopback;
         }, TestContext.Current.CancellationToken);
 
-        responseContext.Response.StatusCode.Should().Be(200);
+        httpContext.Response.StatusCode.Should().Be(200);
 
         forwardedHeadersWereEvaluated.Should()
             .Be(isRunningOnCloudFoundry, $"X-Forwarded-Proto should {(isRunningOnCloudFoundry ? string.Empty : "not ")}be evaluated");
