@@ -76,17 +76,6 @@ jobs:
       projects: src/Steeltoe.All.sln
       feedsToUse: config
       nugetConfigPath: nuget.config
-  - task: SonarCloudPrepare@3
-    condition: eq(variables['sonarAnalyze'], 'true')
-    displayName: Prepare analysis on SonarCloud
-    inputs:
-      SonarCloud: SonarCloud
-      organization: steeltoeoss
-      projectKey: SteeltoeOSS_steeltoe
-      extraProperties: |
-          sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/*opencover.xml
-          sonar.cs.vstest.reportsPaths=$(Build.SourcesDirectory)/*.trx
-          sonar.coverage.exclusions=**/test/**/*
   - task: DotNetCoreCLI@2
     displayName: dotnet build
     inputs:
@@ -168,12 +157,6 @@ jobs:
     condition: and(succeeded(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
     displayName: Publish code coverage artifacts
     artifact: coverageResults-$(Agent.JobName)
-  - task: SonarCloudAnalyze@3
-    condition: and(succeededOrFailed(), eq(variables['sonarAnalyze'], 'true'))
-    displayName: Run code analysis
-  - task: SonarCloudPublish@3
-    condition: and(succeededOrFailed(), eq(variables['sonarAnalyze'], 'true'))
-    displayName: Publish quality gate result
 - job: Wrap_up
   dependsOn:
   - Steeltoe_CI
