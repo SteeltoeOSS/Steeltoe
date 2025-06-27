@@ -21,12 +21,12 @@ internal sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certi
     private readonly IConfiguration _configuration;
     private readonly ILogger<ConfigureCertificateOptions> _logger;
 
-    public ConfigureCertificateOptions(IConfiguration configuration, ILogger<ConfigureCertificateOptions>? logger = null)
+    public ConfigureCertificateOptions(IConfiguration configuration, ILogger<ConfigureCertificateOptions> logger)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
         _configuration = configuration;
-        _logger = logger ?? NullLogger<ConfigureCertificateOptions>.Instance;
+        _logger = logger;
     }
 
     public void Configure(CertificateOptions options)
@@ -63,12 +63,12 @@ internal sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certi
         }
         catch (IOException ex)
         {
-            _logger.LogDebug(ex, "IOException while loading certificate for '{CertificateName}' from '{Path}'. Will retry on next reload.", name,
+            _logger.LogDebug(ex, "Failed to load certificate for '{CertificateName}' from '{Path}'. Will retry on next reload.", name,
                 certificateFilePath);
         }
         catch (CryptographicException ex)
         {
-            _logger.LogDebug(ex, "CryptographicException while parsing certificate for '{CertificateName}' from '{Path}'. Will retry on next reload.", name,
+            _logger.LogWarning(ex, "Failed to parse file contents for '{CertificateName}' from '{Path}'. Will retry on next reload.", name,
                 certificateFilePath);
         }
     }

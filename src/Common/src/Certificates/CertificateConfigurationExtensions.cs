@@ -113,8 +113,8 @@ public static class CertificateConfigurationExtensions
 
             var keys = new Dictionary<string, string?>
             {
-                [$"{keyPrefix}CertificateFilePath"] = certificateFile,
-                [$"{keyPrefix}PrivateKeyFilePath"] = keyFile
+                [$"{keyPrefix}{nameof(CertificateSettings.CertificateFilePath)}"] = certificateFile,
+                [$"{keyPrefix}{nameof(CertificateSettings.PrivateKeyFilePath)}"] = keyFile
             };
 
             builder.AddInMemoryCollection(keys);
