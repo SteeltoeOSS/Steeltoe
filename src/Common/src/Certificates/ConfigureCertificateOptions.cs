@@ -8,7 +8,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.Certificates;
@@ -63,8 +62,7 @@ internal sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certi
         }
         catch (IOException ex)
         {
-            _logger.LogDebug(ex, "Failed to load certificate for '{CertificateName}' from '{Path}'. Will retry on next reload.", name,
-                certificateFilePath);
+            _logger.LogDebug(ex, "Failed to load certificate for '{CertificateName}' from '{Path}'. Will retry on next reload.", name, certificateFilePath);
         }
         catch (CryptographicException ex)
         {

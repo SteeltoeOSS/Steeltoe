@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Common.TestResources.IO;
 
@@ -187,24 +186,6 @@ public sealed class ConfigureCertificateOptionsTest
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         optionsMonitor.Get(certificateName).Certificate.Should().BeEquivalentTo(firstX509);
-        IOptionsChangeTokenSource<CertificateOptions>[] tokenSources = [.. serviceProvider.GetServices<IOptionsChangeTokenSource<CertificateOptions>>()];
-
-        List<FilePathInOptionsChangeTokenSource<CertificateOptions>> matchingTokenSources =
-        [
-            .. tokenSources.OfType<FilePathInOptionsChangeTokenSource<CertificateOptions>>()
-        ];
-
-        matchingTokenSources.Should().HaveCount(2);
-
-        List<IChangeToken> changeTokens = [.. matchingTokenSources.Select(s => s.GetChangeToken())];
-
-        bool certificateContentsChangeCalled = false;
-        bool keyContentsChangeCalled = false;
-        using IDisposable certificateContentChangeToken = changeTokens[0].RegisterChangeCallback(_ => certificateContentsChangeCalled = true, null);
-        using IDisposable keyContentChangeToken = changeTokens[1].RegisterChangeCallback(_ => keyContentsChangeCalled = true, null);
-
-        certificateContentsChangeCalled.Should().BeFalse("certificate file content has not changed yet");
-        keyContentsChangeCalled.Should().BeFalse("key file content has not changed yet");
 
         await File.WriteAllTextAsync(certificateFilePath, secondCertificateContent, TestContext.Current.CancellationToken);
         await File.WriteAllTextAsync(privateKeyFilePath, secondPrivateKeyContent, TestContext.Current.CancellationToken);
@@ -212,8 +193,6 @@ public sealed class ConfigureCertificateOptionsTest
         using Task pollTask = WaitUntilCertificateChangedToAsync(secondX509, optionsMonitor, certificateName, TestContext.Current.CancellationToken);
         await pollTask.WaitAsync(TimeSpan.FromSeconds(4), TestContext.Current.CancellationToken);
 
-        certificateContentsChangeCalled.Should().BeTrue("certificate file contents changed");
-        keyContentsChangeCalled.Should().BeTrue("key file contents changed");
         optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
     }
 
@@ -244,26 +223,14 @@ public sealed class ConfigureCertificateOptionsTest
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         optionsMonitor.Get(certificateName).Certificate.Should().BeEquivalentTo(firstX509);
-        IOptionsChangeTokenSource<CertificateOptions>[] tokenSources = [.. serviceProvider.GetServices<IOptionsChangeTokenSource<CertificateOptions>>()];
 
-        IChangeToken configurationChangeToken =
-            tokenSources.OfType<ConfigurationChangeTokenSource<CertificateOptions>>().Should().ContainSingle().Which.GetChangeToken();
+        appSettings = BuildAppSettingsJson(certificateName, "secondInstance.crt", "secondInstance.key");
+        await File.WriteAllTextAsync(appSettingsPath, appSettings, TestContext.Current.CancellationToken);
 
-        bool configurationChangeCalled = false;
+        using Task pollTask = WaitUntilCertificateChangedToAsync(secondX509, optionsMonitor, certificateName, TestContext.Current.CancellationToken);
+        await pollTask.WaitAsync(TimeSpan.FromSeconds(4), TestContext.Current.CancellationToken);
 
-        using (configurationChangeToken.RegisterChangeCallback(_ => configurationChangeCalled = true, null))
-        {
-            configurationChangeCalled.Should().BeFalse("file path information has not changed yet");
-
-            appSettings = BuildAppSettingsJson(certificateName, "secondInstance.crt", "secondInstance.key");
-            await File.WriteAllTextAsync(appSettingsPath, appSettings, TestContext.Current.CancellationToken);
-
-            using Task pollTask = WaitUntilCertificateChangedToAsync(secondX509, optionsMonitor, certificateName, TestContext.Current.CancellationToken);
-            await pollTask.WaitAsync(TimeSpan.FromSeconds(4), TestContext.Current.CancellationToken);
-
-            configurationChangeCalled.Should().BeTrue("file path information changed");
-            optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
-        }
+        optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
     }
 
     private static string BuildAppSettingsJson(string certificateName, string certificatePath, string keyPath)

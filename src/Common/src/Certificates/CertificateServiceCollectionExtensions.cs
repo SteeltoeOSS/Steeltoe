@@ -33,8 +33,12 @@ public static class CertificateServiceCollectionExtensions
             : ConfigurationPath.Combine(CertificateOptions.ConfigurationKeyPrefix, certificateName);
 
         services.AddOptions<CertificateOptions>(certificateName).BindConfiguration(configurationKey);
-        services.WatchFilePathInOptions<CertificateOptions>(CertificateOptions.ConfigurationKeyPrefix, certificateName, nameof(CertificateSettings.CertificateFilePath));
-        services.WatchFilePathInOptions<CertificateOptions>(CertificateOptions.ConfigurationKeyPrefix, certificateName, nameof(CertificateSettings.PrivateKeyFilePath));
+
+        services.WatchFilePathInOptions<CertificateOptions>(CertificateOptions.ConfigurationKeyPrefix, certificateName,
+            nameof(CertificateSettings.CertificateFilePath));
+
+        services.WatchFilePathInOptions<CertificateOptions>(CertificateOptions.ConfigurationKeyPrefix, certificateName,
+            nameof(CertificateSettings.PrivateKeyFilePath));
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<CertificateOptions>, ConfigureCertificateOptions>());
         return services;
