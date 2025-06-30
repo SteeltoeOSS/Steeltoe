@@ -7,8 +7,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Common.TestResources.IO;
@@ -24,7 +22,8 @@ public sealed class ConfigureCertificateOptionsTest
     [InlineData(CertificateName)]
     public void ConfigureCertificateOptions_NoPath_NoCertificate(string certificateName)
     {
-        var configureOptions = new ConfigureCertificateOptions(new ConfigurationBuilder().Build(), NullLogger<ConfigureCertificateOptions>.Instance);
+        IConfiguration configuration = new ConfigurationBuilder().Build();
+        var configureOptions = new ConfigureCertificateOptions(configuration);
         var options = new CertificateOptions();
 
         configureOptions.Configure(certificateName, options);
@@ -43,7 +42,7 @@ public sealed class ConfigureCertificateOptionsTest
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var configureOptions = new ConfigureCertificateOptions(configuration, NullLogger<ConfigureCertificateOptions>.Instance);
+        var configureOptions = new ConfigureCertificateOptions(configuration);
         var options = new CertificateOptions();
 
         configureOptions.Configure(certificateName, options);
@@ -54,33 +53,22 @@ public sealed class ConfigureCertificateOptionsTest
     [Theory]
     [InlineData("")]
     [InlineData(CertificateName)]
-    public void ConfigureCertificateOptions_EmptyFile_Crash_logged(string certificateName)
+    public void ConfigureCertificateOptions_ThrowsOnEmptyFile(string certificateName)
     {
-        CapturingLoggerProvider loggerProvider = new()
-        {
-            IncludeStackTraces = true
-        };
-
-        using var loggerFactory = new LoggerFactory([loggerProvider]);
-        ILogger<ConfigureCertificateOptions> logger = loggerFactory.CreateLogger<ConfigureCertificateOptions>();
-
         var appSettings = new Dictionary<string, string?>
         {
             [$"{GetConfigurationKey(certificateName, "CertificateFilePath")}"] = "empty.crt"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var configureOptions = new ConfigureCertificateOptions(configuration, logger);
+
+        var configureOptions = new ConfigureCertificateOptions(configuration);
         var options = new CertificateOptions();
 
-        configureOptions.Configure(certificateName, options);
+        Action configureAction = () => configureOptions.Configure(certificateName, options);
+        configureAction.Should().Throw<CryptographicException>();
 
         options.Certificate.Should().BeNull();
-
-        loggerProvider.GetAll().Should().ContainSingle(message =>
-            message.Contains(typeof(CryptographicException).FullName!, StringComparison.OrdinalIgnoreCase) && message.StartsWith(
-                $"WARN {typeof(ConfigureCertificateOptions).FullName}: Failed to parse file contents for '{certificateName}' from 'empty.crt'. Will retry on next reload.",
-                StringComparison.OrdinalIgnoreCase));
     }
 
     [Theory]
@@ -88,14 +76,6 @@ public sealed class ConfigureCertificateOptionsTest
     [InlineData(CertificateName)]
     public void ConfigureCertificateOptions_ThrowsOnInvalidKey(string certificateName)
     {
-        CapturingLoggerProvider loggerProvider = new()
-        {
-            IncludeStackTraces = true
-        };
-
-        using var loggerFactory = new LoggerFactory([loggerProvider]);
-        ILogger<ConfigureCertificateOptions> logger = loggerFactory.CreateLogger<ConfigureCertificateOptions>();
-
         var appSettings = new Dictionary<string, string?>
         {
             [$"{GetConfigurationKey(certificateName, "CertificateFilePath")}"] = "instance.crt",
@@ -103,16 +83,13 @@ public sealed class ConfigureCertificateOptionsTest
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var configureOptions = new ConfigureCertificateOptions(configuration, logger);
+        var configureOptions = new ConfigureCertificateOptions(configuration);
         var options = new CertificateOptions();
 
-        configureOptions.Configure(certificateName, options);
-        options.Certificate.Should().BeNull();
+        Action configureAction = () => configureOptions.Configure(certificateName, options);
+        configureAction.Should().Throw<CryptographicException>();
 
-        loggerProvider.GetAll().Should().ContainSingle(message =>
-            message.Contains(typeof(CryptographicException).FullName!, StringComparison.OrdinalIgnoreCase) && message.StartsWith(
-                $"WARN {typeof(ConfigureCertificateOptions).FullName}: Failed to parse file contents for '{certificateName}' from 'instance.crt'. Will retry on next reload.",
-                StringComparison.OrdinalIgnoreCase));
+        options.Certificate.Should().BeNull();
     }
 
     [Theory]
@@ -127,7 +104,7 @@ public sealed class ConfigureCertificateOptionsTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         configuration[$"{GetConfigurationKey(certificateName, "CertificateFilePath")}"].Should().NotBeNull();
-        var configureOptions = new ConfigureCertificateOptions(configuration, NullLogger<ConfigureCertificateOptions>.Instance);
+        var configureOptions = new ConfigureCertificateOptions(configuration);
         var options = new CertificateOptions();
 
         configureOptions.Configure(certificateName, options);
@@ -148,7 +125,7 @@ public sealed class ConfigureCertificateOptionsTest
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var configureOptions = new ConfigureCertificateOptions(configuration, NullLogger<ConfigureCertificateOptions>.Instance);
+        var configureOptions = new ConfigureCertificateOptions(configuration);
         var options = new CertificateOptions();
 
         configureOptions.Configure(certificateName, options);
@@ -191,7 +168,7 @@ public sealed class ConfigureCertificateOptionsTest
         await File.WriteAllTextAsync(privateKeyFilePath, secondPrivateKeyContent, TestContext.Current.CancellationToken);
 
         using Task pollTask = WaitUntilCertificateChangedToAsync(secondX509, optionsMonitor, certificateName, TestContext.Current.CancellationToken);
-        await pollTask.WaitAsync(TimeSpan.FromSeconds(4), TestContext.Current.CancellationToken);
+        await pollTask.WaitAsync(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
 
         optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
     }
@@ -228,7 +205,7 @@ public sealed class ConfigureCertificateOptionsTest
         await File.WriteAllTextAsync(appSettingsPath, appSettings, TestContext.Current.CancellationToken);
 
         using Task pollTask = WaitUntilCertificateChangedToAsync(secondX509, optionsMonitor, certificateName, TestContext.Current.CancellationToken);
-        await pollTask.WaitAsync(TimeSpan.FromSeconds(4), TestContext.Current.CancellationToken);
+        await pollTask.WaitAsync(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
 
         optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
     }
