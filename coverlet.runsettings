@@ -5,12 +5,10 @@
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
           <Format>opencover</Format>
-          <Exclude>[*.Test*]*,[*]Microsoft.Diagnostics*</Exclude>
-          <Include>[Steeltoe.*]*</Include>
-          <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
+          <Exclude>[ConfigurationSchemaGenerator]*</Exclude>
+          <ExcludeByFile>**/test/**/*.*</ExcludeByFile>
+          <ExcludeByAttribute>ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
           <UseSourceLink>true</UseSourceLink>
-          <IncludeTestAssembly>false</IncludeTestAssembly>
-          <SkipAutoProps>false</SkipAutoProps>
         </Configuration>
       </DataCollector>
     </DataCollectors>
