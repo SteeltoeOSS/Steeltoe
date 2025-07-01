@@ -32,9 +32,6 @@ internal sealed class FilePathInOptionsChangeTokenSource<T> : IOptionsChangeToke
         {
             _filePath = filePath;
 
-            // Wait until the file is fully written to disk.
-            Thread.Sleep(500);
-
             ConfigurationReloadToken previousToken = Interlocked.Exchange(ref _changeFilePathToken, new ConfigurationReloadToken());
             previousToken.OnReload();
         }
@@ -44,8 +41,12 @@ internal sealed class FilePathInOptionsChangeTokenSource<T> : IOptionsChangeToke
     {
         IChangeToken watcherChangeToken = _fileWatcher.GetChangeToken(_filePath);
 
+        // Wrap the watcher token to delay signaling to the options monitor
+        // -- avoids IOException when certificate and key change around the same time.
+        IChangeToken debouncedToken = new DebouncedChangeToken(watcherChangeToken, TimeSpan.FromMilliseconds(200));
+
         return new CompositeChangeToken([
-            watcherChangeToken,
+            debouncedToken,
             _changeFilePathToken
         ]);
     }
@@ -124,6 +125,32 @@ internal sealed class FilePathInOptionsChangeTokenSource<T> : IOptionsChangeToke
         private static string EnsureTrailingSlash(string path)
         {
             return path.Length > 0 && path[^1] != Path.DirectorySeparatorChar ? $"{path}{Path.DirectorySeparatorChar}" : path;
+        }
+    }
+
+    private sealed class DebouncedChangeToken(IChangeToken inner, TimeSpan delay) : IChangeToken
+    {
+        private readonly IChangeToken _inner = inner;
+        private readonly TimeSpan _delay = delay;
+
+        public bool HasChanged => _inner.HasChanged;
+
+        public bool ActiveChangeCallbacks => _inner.ActiveChangeCallbacks;
+
+        public IDisposable RegisterChangeCallback(Action<object?> callback, object? state)
+        {
+            return _inner.RegisterChangeCallback(async void (_) =>
+            {
+                try
+                {
+                    await Task.Delay(_delay).ConfigureAwait(false);
+                    callback(state);
+                }
+                catch
+                {
+                    // Swallow exceptions to avoid crashing the options infrastructure
+                }
+            }, state);
         }
     }
 }
