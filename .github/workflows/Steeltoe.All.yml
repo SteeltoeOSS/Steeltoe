@@ -113,11 +113,6 @@ jobs:
     - name: Test (net9.0) (memory dumps)
       run: dotnet test ${{ env.SOLUTION_FILE }} --framework net9.0 --filter "${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
 
-    - name: TEMP: List directory with recorded dumps (on failure)
-      if: ${{ failure() }}
-      shell: bash
-      run: find ${{ github.workspace }}/dumps -type f
-
     - name: Upload crash/hang dumps (on failure)
       if: ${{ failure() }}
       uses: actions/upload-artifact@v4
