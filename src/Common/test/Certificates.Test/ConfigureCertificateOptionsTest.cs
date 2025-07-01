@@ -103,7 +103,6 @@ public sealed class ConfigureCertificateOptionsTest
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        configuration[$"{GetConfigurationKey(certificateName, "CertificateFilePath")}"].Should().NotBeNull();
         var configureOptions = new ConfigureCertificateOptions(configuration);
         var options = new CertificateOptions();
 
