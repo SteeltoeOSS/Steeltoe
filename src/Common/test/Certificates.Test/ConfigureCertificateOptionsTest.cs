@@ -53,6 +53,7 @@ public sealed class ConfigureCertificateOptionsTest
     [Theory]
     [InlineData("")]
     [InlineData(CertificateName)]
+    [Trait("Category", "SkipOnMacOS")]
     public void ConfigureCertificateOptions_ThrowsOnEmptyFile(string certificateName)
     {
         var appSettings = new Dictionary<string, string?>

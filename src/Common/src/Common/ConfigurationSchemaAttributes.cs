@@ -44,6 +44,7 @@ internal sealed class ConfigurationSchemaAttribute : Attribute
 /// Provides information to describe the logging categories produced by a component.
 /// </summary>
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false)]
+[ExcludeFromCodeCoverage(Justification = "Used while compiling Steeltoe, does not ship with Steeltoe.")]
 internal sealed class LoggingCategoriesAttribute : Attribute
 {
     public LoggingCategoriesAttribute(params string[] categories)

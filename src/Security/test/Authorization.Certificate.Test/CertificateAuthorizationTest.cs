@@ -82,6 +82,7 @@ public sealed class CertificateAuthorizationTest
     }
 
     [Fact]
+    [Trait("Category", "SkipOnMacOS")]
     public async Task CertificateAuth_AcceptsSameSpace_DiegoCert()
     {
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
@@ -98,6 +99,7 @@ public sealed class CertificateAuthorizationTest
     }
 
     [Fact]
+    [Trait("Category", "SkipOnMacOS")]
     public async Task CertificateAuth_AcceptsSameOrg_DiegoCert()
     {
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrg}");

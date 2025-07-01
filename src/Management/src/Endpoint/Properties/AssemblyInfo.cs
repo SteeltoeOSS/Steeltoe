@@ -47,7 +47,6 @@ using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 [assembly: ConfigurationSchema("Management:Endpoints:Web:Exposure", typeof(Exposure))]
 [assembly: LoggingCategories("Steeltoe", "Steeltoe.Management", "Steeltoe.Management.Endpoint")]
 
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka")]
