@@ -34,7 +34,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         include:
         - os: ubuntu-latest
-          run_docker_containers: true
+          runDockerContainers: true
         - os: windows-latest
           skipFilter: Category!=Integration
         - os: macos-latest
@@ -44,11 +44,11 @@ jobs:
 
     services:
       eurekaServer:
-        image: ${{ matrix.run_docker_containers && 'steeltoe.azurecr.io/eureka-server' || null }}
+        image: ${{ matrix.runDockerContainers && 'steeltoe.azurecr.io/eureka-server' || null }}
         ports:
         - 8761:8761
       configServer:
-        image: ${{ matrix.run_docker_containers && 'steeltoe.azurecr.io/config-server' || null }}
+        image: ${{ matrix.runDockerContainers && 'steeltoe.azurecr.io/config-server' || null }}
         env:
           eureka.client.enabled: true
           eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
@@ -71,9 +71,9 @@ jobs:
       # Without setting this, the following message appears in the logs:
       #   The application is trying to access the ASP.NET Core developer certificate key. A prompt might appear to ask for permission to access the key.
       #   When that happens, select 'Always Allow' to grant 'dotnet' access to the certificate key in the future.
-      # and the testrun fails, but without indicating which test caused it. By setting this, the causing test fails with the next message:
+      # and the test run fails, but without indicating which test caused it. By setting this, the causing test fails with the next message:
       #   Unable to configure HTTPS endpoint. No server certificate was specified, and the default developer certificate could not be found or is out of date.
-      # To prevent the causing test from failing the testrun, disable it on macOS by adding [Trait("Category", "SkipOnMacOS")].
+      # To prevent the causing test from failing the test run, disable it on macOS by adding [Trait("Category", "SkipOnMacOS")].
       shell: bash
       run: echo "DOTNET_GENERATE_ASPNET_CERTIFICATE=false" >> $GITHUB_ENV
 
