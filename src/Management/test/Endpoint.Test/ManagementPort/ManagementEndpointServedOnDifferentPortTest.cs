@@ -145,6 +145,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
     }
 
     [Fact]
+    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
     public async Task AspNetDefaultPort_AlternateManagementPortAndSchemeConfigured_AccessibleOnSeparatePortsAndSchemes()
     {
         const string managementPort = "8000";
