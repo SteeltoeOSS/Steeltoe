@@ -13,11 +13,179 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+#  pull-requests: write
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: true
+  SOLUTION_FILE: 'src/Steeltoe.All.sln'
+
 jobs:
-  empty:
-    name: Empty job
+  build:
+    name: Build
+    timeout-minutes: 15
     runs-on: ubuntu-latest
 
     steps:
-    - name: Empty step
-      run: echo "Packaging using GitHub Actions is not yet implemented."
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.*
+          9.0.*
+
+    - name: Git checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Restore packages
+      run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal
+
+    - name: Set package version
+      run: nbgv cloud
+
+    - name: Build solution
+      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
+
+    - name: Collect packages
+      run: dotnet pack ${{ env.SOLUTION_FILE }} --no-build --configuration Release --output ${{ github.workspace }}/packages
+
+    - name: Upload packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: packages
+        path: ${{ github.workspace }}/packages/**/*.nupkg
+
+
+  sign:
+    needs: build
+    runs-on: windows-latest
+#    if: ${{ github.ref == 'refs/heads/main' }} # Only run this job on pushes to the main branch
+#    if: ${{ github.event_name != 'pull_request' }}
+    permissions:
+      id-token: write
+
+    steps:
+    - name: Download packages
+      uses: actions/download-artifact@v4
+      with:
+        name: packages
+        path: packages
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.*
+          9.0.*
+
+    - name: Install code signing tool
+      run: dotnet tool install --global sign --prerelease
+
+# From documentation workflow
+    - name: Log into Azure CLI with service principal
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        allow-no-subscriptions: true
+
+#    - name: Azure login
+#      uses: azure/login@v2
+#      with:
+#        allow-no-subscriptions: true
+#        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+#        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+#        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+#        sign code azure-key-vault "**/*.nupkg"
+#        --base-directory "${{ github.workspace }}/packages"
+#        --azure-key-vault-url "${{ secrets.AZURE_KEY_VAULT_URL }}"
+#        --azure-key-vault-tenant-id "${{ secrets.AZURE_KEY_VAULT_TENANT_ID }}"
+#        --azure-key-vault-client-id "${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }}"
+#        --azure-key-vault-client-secret "${{ secrets.AZURE_KEY_VAULT_CLIENT_SECRET }}"
+#        --azure-key-vault-certificate "${{ secrets.AZURE_KEY_VAULT_CERTIFICATE }}"
+#        --publisher-name "Steeltoe"
+#        --description "Steeltoe"
+#        --description-url "https://github.com/SteeltoeOSS"
+
+#    - name: Sign packages
+#      shell: pwsh
+#      run: >-
+#        sign code azure-key-vault "**/*.nupkg"
+#        --base-directory "${{ github.workspace }}/packages"
+#        --azure-key-vault-url "${{ secrets.AZURE_KEY_VAULT_URL }}"
+#        --azure-key-vault-tenant-id "${{ secrets.AZURE_KEY_VAULT_TENANT_ID }}"
+#        --azure-key-vault-client-id "${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }}"
+#        --azure-key-vault-client-secret "${{ secrets.AZURE_KEY_VAULT_CLIENT_SECRET }}"
+#        --azure-key-vault-certificate "${{ secrets.AZURE_KEY_VAULT_CERTIFICATE_ID }}"
+#        --description "SteeltoeSC"
+ #       --description-url "https://github.com/SteeltoeOSS"
+
+    - name: Sign packages
+      shell: pwsh
+      run: >-
+        sign code azure-key-vault
+        **/*.nupkg
+        --base-directory "${{ github.workspace }}/packages"
+        --publisher-name "Steeltoe"
+        --description "Steeltoe"
+        --description-url "https://github.com/SteeltoeOSS"
+        --azure-key-vault-managed-identity true
+        --azure-key-vault-url "${{ secrets.AZURE_KEY_VAULT_URL }}"
+        --azure-key-vault-certificate "${{ secrets.AZURE_KEY_VAULT_CERTIFICATE_ID }}"
+
+    - name: "TEMP: Upload signed packages"
+      uses: actions/upload-artifact@v4
+      with:
+        name: signed-packages
+        path: ${{ github.workspace }}/packages/**/*.nupkg
+
+
+
+
+#  - task: PowerShell@2
+#    displayName: Set package version
+#    env:
+#      PackageVersionOverride: $(PackageVersionOverride)
+#    inputs:
+#      targetType: 'inline'
+#      script: |
+#        if ($env:PackageVersionOverride) {
+#            Write-Host "Overriding package version with: $env:PackageVersionOverride"
+#            Write-Warning "Always provide a 4-segment version (such as 1.2.3.0 or 1.2.3.0-rc1), to prevent an increment in patch number."
+#            Write-Warning "The commit hash may still be added to the version, depending on the source branch or PR being built."
+#            nbgv set-version $env:PackageVersionOverride
+#
+#            Write-Host "Contents of version.json after update:"
+#            get-content version.json
+#
+#            git config --global user.email "cibuild@steeltoe.io"
+#            git config --global user.name "steeltoe-cibuild"
+#            git commit --allow-empty -m "Activating version override by locally committing changes to version.json."
+#        }
+#
+#        nbgv cloud
+
+
+# TODO: Rename secrets
+#source: https://dev.azure.com/SteeltoeOSS/Steeltoe/_library?itemType=VariableGroups&view=VariableGroupView&variableGroupId=1&path=PackageSigningSecrets
+#SignClientId
+#SignClientSecret
+#SignClientUser
+#SignKeyVaultCertificate
+#SignKeyVaultUrl
+#SignTenantId
+
+
+
+#  - publish: $(Build.ArtifactStagingDirectory)/packages
+#    condition: succeeded()
+#    displayName: Publish build artifacts
+#    artifact: Packages
+
+# TODO: Delete old yaml file.
+
+# https://github.com/dotnet/sign/blob/main/docs/gh-build-and-sign.yml
