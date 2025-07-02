@@ -29,6 +29,11 @@ jobs:
       id-token: write
 
     steps:
+    - name: Git checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
     - name: Rename file
       shell: cmd
       run: ren ${{ github.workspace }}\Steeltoe.Common.4.0.633-beta-ge14e7a3419.nupkg1 Steeltoe.Common.4.0.633-beta-ge14e7a3419.nupkg
