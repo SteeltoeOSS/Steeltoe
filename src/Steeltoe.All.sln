@@ -156,26 +156,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Bootstrap.AutoConf
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_build", "_build", "{656A7881-FE4F-4EE0-81C8-DA1DE6CDF29E}"
 	ProjectSection(SolutionItems) = preProject
-		..\azure-pipelines.yml = ..\azure-pipelines.yml
-		..\build\common.yml = ..\build\common.yml
-		..\build\configuration.yml = ..\build\configuration.yml
-		..\build\connectors.yml = ..\build\connectors.yml
 		..\coverlet.runsettings = ..\coverlet.runsettings
-		..\build\discovery.yml = ..\build\discovery.yml
-		..\build\integration.yml = ..\build\integration.yml
-		..\build\logging.yml = ..\build\logging.yml
-		..\build\management.yml = ..\build\management.yml
 		..\build\package.yml = ..\build\package.yml
 		..\build\pr-code-cleanup.yml = ..\build\pr-code-cleanup.yml
-		..\build\security.yml = ..\build\security.yml
-		..\build\sonar-analyze.yml = ..\build\sonar-analyze.yml
-		..\build\verify-code-style.yml = ..\build\verify-code-style.yml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{FC49CC5C-EFB6-4B08-AE63-05364EB27021}"
-	ProjectSection(SolutionItems) = preProject
-		..\build\templates\component-build.yaml = ..\build\templates\component-build.yaml
-		..\build\templates\consolidate-coverage.yaml = ..\build\templates\consolidate-coverage.yaml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.Kubernetes.ServiceBindings", "Configuration\src\Kubernetes.ServiceBindings\Steeltoe.Configuration.Kubernetes.ServiceBindings.csproj", "{6A064B5A-21F7-452A-AAFF-3C0A68286FDF}"
@@ -565,7 +548,6 @@ Global
 		{BA38127A-DA5A-437F-9C84-5997FBE0B6A0} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 		{38EFC635-0C56-442D-8CA3-20AEC1930D7B} = {EA9C3A73-3F31-4DC9-982C-963CE613E119}
 		{6499285A-88CF-426A-909D-307382B91AA3} = {EA9C3A73-3F31-4DC9-982C-963CE613E119}
-		{FC49CC5C-EFB6-4B08-AE63-05364EB27021} = {656A7881-FE4F-4EE0-81C8-DA1DE6CDF29E}
 		{6A064B5A-21F7-452A-AAFF-3C0A68286FDF} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 		{0D68FC03-7FD4-4280-852B-0E620872CE22} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 		{BCC3F7DC-080D-4A7E-8060-40ED65073EB3} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}

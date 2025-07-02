@@ -19,8 +19,18 @@ public sealed class WindowsNetworkFileShareTest
 
         action = () => WindowsNetworkFileShare.ThrowForNonZeroResult(1222, "execute");
 
-        action.Should().ThrowExactly<IOException>().WithInnerExceptionExactly<Win32Exception>()
-            .WithMessage(Platform.IsWindows ? "The network is not present or not started." : "Unknown error 1222");
+        string message = "The network is not present or not started.";
+
+        if (Platform.IsOSX)
+        {
+            message = "Unknown error: 1222";
+        }
+        else if (Platform.IsLinux)
+        {
+            message = "Unknown error 1222";
+        }
+
+        action.Should().ThrowExactly<IOException>().WithInnerExceptionExactly<Win32Exception>().WithMessage(message);
     }
 
     [Fact]
@@ -28,8 +38,18 @@ public sealed class WindowsNetworkFileShareTest
     {
         Action action = () => WindowsNetworkFileShare.ThrowForNonZeroResult(9999, "execute");
 
-        action.Should().ThrowExactly<IOException>().WithInnerExceptionExactly<Win32Exception>()
-            .WithMessage(Platform.IsWindows ? "Unknown error (0x270f)" : "Unknown error 9999");
+        string message = "Unknown error (0x270f)";
+
+        if (Platform.IsOSX)
+        {
+            message = "Unknown error: 9999";
+        }
+        else if (Platform.IsLinux)
+        {
+            message = "Unknown error 9999";
+        }
+
+        action.Should().ThrowExactly<IOException>().WithInnerExceptionExactly<Win32Exception>().WithMessage(message);
     }
 
     [Fact]
@@ -39,9 +59,9 @@ public sealed class WindowsNetworkFileShareTest
 
         _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), router);
 
-        Assert.Equal("user", router.Username);
-        Assert.Equal("password", router.Password);
-        Assert.Equal(@"\\server\path", router.NetworkPath);
+        router.Username.Should().Be("user");
+        router.Password.Should().Be("password");
+        router.NetworkPath.Should().Be(@"\\server\path");
     }
 
     [Fact]
@@ -51,9 +71,9 @@ public sealed class WindowsNetworkFileShareTest
 
         _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password", "domain"), router);
 
-        Assert.Equal(@"domain\user", router.Username);
-        Assert.Equal("password", router.Password);
-        Assert.Equal(@"\\server\path", router.NetworkPath);
+        router.Username.Should().Be(@"domain\user");
+        router.Password.Should().Be("password");
+        router.NetworkPath.Should().Be(@"\\server\path");
     }
 
     [Fact]
@@ -61,9 +81,22 @@ public sealed class WindowsNetworkFileShareTest
     {
         var router = new FakeMultipleProviderRouter(false);
 
-        var exception = Assert.Throws<IOException>(() => new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), router));
-        Assert.NotNull(exception.InnerException);
+        Action action = () => _ = new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), router);
 
-        Assert.Equal(Platform.IsWindows ? "The specified device name is invalid." : "Unknown error 1200", exception.InnerException.Message);
+        IOException exception = action.Should().ThrowExactly<IOException>().Which;
+        exception.InnerException.Should().NotBeNull();
+
+        string message = "The specified device name is invalid.";
+
+        if (Platform.IsOSX)
+        {
+            message = "Unknown error: 1200";
+        }
+        else if (Platform.IsLinux)
+        {
+            message = "Unknown error 1200";
+        }
+
+        exception.InnerException.Message.Should().Be(message);
     }
 }

@@ -80,6 +80,7 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
 #pragma warning disable S1215 // "GC.Collect" should not be called
                 long totalMemory = GC.GetTotalMemory(true);
 #pragma warning restore S1215 // "GC.Collect" should not be called
+
                 _logger.LogDebug("Total memory: {Memory}.", totalMemory);
             }
         }, cancellationToken);

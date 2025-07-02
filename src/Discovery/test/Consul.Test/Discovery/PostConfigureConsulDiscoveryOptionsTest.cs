@@ -105,6 +105,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
     }
 
     [Fact]
+    [Trait("Category", "SkipOnMacOS")]
     public async Task CanUseNetworkInterfacesWithoutReverseDnsOnIP()
     {
         var appSettings = new Dictionary<string, string?>

@@ -9,7 +9,6 @@ using Steeltoe.Management.Tasks;
 [assembly: ConfigurationSchema("", typeof(TaskSettings))]
 [assembly: LoggingCategories("Steeltoe", "Steeltoe.Management", "Steeltoe.Management.Tasks")]
 
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.Test")]
