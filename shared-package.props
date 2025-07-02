@@ -13,8 +13,7 @@
 
   <PropertyGroup>
     <Authors>Broadcom</Authors>
-    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
-    <PackageIcon>icon.png</PackageIcon>
+    <PackageIcon>PackageIcon.png</PackageIcon>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -42,7 +41,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)\build\icon.png" Pack="true" PackagePath="\" Visible="false" />
+    <None Include="$(MSBuildThisFileDirectory)\PackageIcon.png" Pack="true" PackagePath="\" Visible="false" />
     <!-- Add a PackageReadme.md file in the project directory to override the default one. -->
     <None Condition="Exists('$(MSBuildProjectDirectory)\PackageReadme.md')" Include="$(MSBuildProjectDirectory)\PackageReadme.md" Visible="false" Pack="True"
       PackagePath="" />

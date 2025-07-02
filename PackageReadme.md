@@ -10,4 +10,4 @@ Key features include:
 - Connectivity to databases (such as [SQL Server](https://www.microsoft.com/sql-server)/[Azure SQL](https://azure.microsoft.com/products/azure-sql), [Cosmos DB](https://azure.microsoft.com/products/cosmos-db/), [MongoDB](https://www.mongodb.com/), [Redis](https://redis.io/), [RabbitMQ](https://www.rabbitmq.com/), [PostgreSQL](https://www.postgresql.org/), and [MySQL](https://www.mysql.com/)), including support for [Entity Framework Core](https://learn.microsoft.com/ef/core/)
 - Single sign-on, JWT and Certificate auth with [Cloud Foundry](https://www.cloudfoundry.org/)
 
-For more information and to get started, please visit [Steeltoe on GitHub](https://github.com/SteeltoeOSS/Steeltoe) or the [documentation](https://docs.steeltoe.io).
+For more information and to get started, please visit [Steeltoe on GitHub](https://github.com/SteeltoeOSS/Steeltoe) or the [documentation](https://steeltoe.io/docs).
