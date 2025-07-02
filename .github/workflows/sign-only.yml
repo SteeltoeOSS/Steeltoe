@@ -29,6 +29,10 @@ jobs:
       id-token: write
 
     steps:
+    - name: Rename file
+      shell: cmd
+      run: ren ${{ github.workspace }}\Steeltoe.Common.4.0.633-beta-ge14e7a3419.nupkg1 Steeltoe.Common.4.0.633-beta-ge14e7a3419.nupkg
+
     - name: List packages
       shell: pwsh
       run: ls ${{ github.workspace }} -Recurse -Filter *.nupkg
