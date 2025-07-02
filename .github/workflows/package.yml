@@ -23,8 +23,8 @@ env:
   SOLUTION_FILE: 'src/Steeltoe.All.sln'
 
 jobs:
-  package:
-    name: Build and Package
+  build:
+    name: Build
     timeout-minutes: 15
     runs-on: ubuntu-latest
 
@@ -36,9 +36,6 @@ jobs:
           8.0.*
           9.0.*
 
-    - name: Install code signing tool
-      run: dotnet tool install --global sign --prerelease
-
     - name: Git checkout
       uses: actions/checkout@v4
       with:
@@ -47,7 +44,87 @@ jobs:
     - name: Restore packages
       run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal
 
+    - name: Set package version
+      run: nbgv cloud
 
+    - name: Build solution
+      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
+
+    - name: Collect packages
+      run: dotnet pack ${{ env.SOLUTION_FILE }} --no-build --configuration Release --output ${{ github.workspace }}/packages
+
+    - name: Upload packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: packages
+        path: ${{ github.workspace }}/packages/**/*.nupkg
+
+
+  sign:
+    needs: build
+    runs-on: windows-latest
+#    if: ${{ github.ref == 'refs/heads/main' }} # Only run this job on pushes to the main branch
+#    if: ${{ github.event_name != 'pull_request' }}
+    permissions:
+      id-token: write
+
+    steps:
+    - name: Download packages
+      uses: actions/download-artifact@v4
+      with:
+        name: packages
+        path: packages
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.*
+          9.0.*
+
+    - name: Install code signing tool
+      run: dotnet tool install --global sign --prerelease
+
+    - name: Azure login
+      uses: azure/login@v2
+      with:
+        allow-no-subscriptions: true
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Sign packages
+      shell: pwsh
+      
+      run: >-
+#        sign code azure-key-vault "**/*.nupkg"
+#        --base-directory "${{ github.workspace }}/packages"
+#        --azure-key-vault-url "${{ secrets.AZURE_KEY_VAULT_URL }}"
+#        --azure-key-vault-tenant-id "${{ secrets.AZURE_KEY_VAULT_TENANT_ID }}"
+#        --azure-key-vault-client-id "${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }}"
+#        --azure-key-vault-client-secret "${{ secrets.AZURE_KEY_VAULT_CLIENT_SECRET }}"
+#        --azure-key-vault-certificate "${{ secrets.AZURE_KEY_VAULT_CERTIFICATE }}"
+#        --publisher-name "Steeltoe"
+#        --description "Steeltoe"
+#        --description-url "https://github.com/SteeltoeOSS"
+        sign code azure-key-vault "**/*.nupkg"
+        --base-directory "${{ github.workspace }}/packages"
+        --publisher-name "Steeltoe"
+        --description "Steeltoe"
+        --description-url "https://github.com/SteeltoeOSS"
+        --azure-key-vault-managed-identity true
+        --azure-key-vault-url "${{ secrets.AZURE_KEY_VAULT_URL }}"
+        --azure-key-vault-certificate "${{ secrets.AZURE_KEY_VAULT_CERTIFICATE }}"
+
+    - name: "TEMP: Upload signed packages"
+      uses: actions/upload-artifact@v4
+      with:
+        name: signed-packages
+        path: ${{ github.workspace }}/packages/**/*.nupkg
+
+
+    
+  
 #  - task: PowerShell@2
 #    displayName: Set package version
 #    env:
@@ -70,27 +147,7 @@ jobs:
 #        }
 #
 #        nbgv cloud
-    - name: Set package version
-      run: nbgv cloud
 
-    - name: Build solution
-      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
-
-    - name: Collect NuGet packages
-      run: dotnet pack ${{ env.SOLUTION_FILE }} --no-build --configuration Release --output ${{ github.workspace }}/packages
-
-    - name: Sign NuGet packages
-#      if: ${{ github.event_name != 'pull_request' }}
-      run: >-
-        sign code azure-key-vault "**/*.nupkg"
-        --base-directory "${{ github.workspace }}/packages"
-        --azure-key-vault-url "${{ secrets.AZURE_KEY_VAULT_URL }}"
-        --azure-key-vault-tenant-id "${{ secrets.AZURE_KEY_VAULT_TENANT_ID }}"
-        --azure-key-vault-client-id "${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }}"
-        --azure-key-vault-client-secret "${{ secrets.AZURE_KEY_VAULT_CLIENT_SECRET }}"
-        --azure-key-vault-certificate "${{ secrets.AZURE_KEY_VAULT_CERTIFICATE }}"
-        --description "Steeltoe"
-        --description-url "https://github.com/SteeltoeOSS"
 
 # TODO: Rename secrets
 #source: https://dev.azure.com/SteeltoeOSS/Steeltoe/_library?itemType=VariableGroups&view=VariableGroupView&variableGroupId=1&path=PackageSigningSecrets
@@ -101,12 +158,6 @@ jobs:
 #SignKeyVaultUrl
 #SignTenantId
 
-    - name: "TEMP: Upload packages to artifacts"
-      uses: actions/upload-artifact@v4
-      with:
-        name: packages
-        path: artifacts/packages
-
 
 
 #  - publish: $(Build.ArtifactStagingDirectory)/packages
@@ -115,3 +166,5 @@ jobs:
 #    artifact: Packages
 
 # TODO: Delete old yaml file.
+
+# https://github.com/dotnet/sign/blob/main/docs/gh-build-and-sign.yml
