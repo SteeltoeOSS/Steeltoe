@@ -31,7 +31,7 @@ jobs:
     steps:
     - name: List packages
       shell: pwsh
-      run: dir /s ${{ github.workspace }}/*.nupkg
+      run: ls ${{ github.workspace }} -Recurse -Filter *.nupkg
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
