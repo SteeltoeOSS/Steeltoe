@@ -1,4 +1,4 @@
-name: Package
+name: Sign-only
 
 on:
   workflow_dispatch:
