@@ -105,7 +105,7 @@ jobs:
 #        --description-url "https://github.com/SteeltoeOSS"
     - name: Sign packages
       shell: pwsh
-      run: >-
+      run: >
         sign code azure-key-vault "**/*.nupkg"
         --base-directory "${{ github.workspace }}/packages"
         --azure-key-vault-url "${{ secrets.AZURE_KEY_VAULT_URL }}"
