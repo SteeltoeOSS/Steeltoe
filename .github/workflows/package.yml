@@ -77,13 +77,13 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
 
     - name: Collect NuGet packages
-      run: dotnet pack ${{ env.SOLUTION_FILE }} --no-build --configuration Release --output ${{ env.GITHUB_WORKSPACE }}/packages
+      run: dotnet pack ${{ env.SOLUTION_FILE }} --no-build --configuration Release --output ${{ github.workspace }}/packages
 
     - name: Sign NuGet packages
 #      if: ${{ github.event_name != 'pull_request' }}
       run: >-
         sign code azure-key-vault "**/*.nupkg"
-        --base-directory "${{ env.GITHUB_WORKSPACE }}/packages"
+        --base-directory "${{ github.workspace }}/packages"
         --azure-key-vault-url "${{ secrets.AZURE_KEY_VAULT_URL }}"
         --azure-key-vault-tenant-id "${{ secrets.AZURE_KEY_VAULT_TENANT_ID }}"
         --azure-key-vault-client-id "${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }}"
