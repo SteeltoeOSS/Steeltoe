@@ -77,7 +77,7 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
 
     - name: Collect NuGet packages
-      run: dotnet pack --no-build --configuration Release --output ${{ env.GITHUB_WORKSPACE }}/packages
+      run: dotnet pack ${{ env.SOLUTION_FILE }} --no-build --configuration Release --output ${{ env.GITHUB_WORKSPACE }}/packages
 
     - name: Sign NuGet packages
 #      if: ${{ github.event_name != 'pull_request' }}
