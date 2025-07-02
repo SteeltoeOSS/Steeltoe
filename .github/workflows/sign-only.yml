@@ -56,7 +56,7 @@ jobs:
       shell: pwsh
       run: >-
         sign code azure-key-vault "**/*.nupkg"
-        --base-directory "${{ github.workspace }}/packages"
+        --base-directory "${{ github.workspace }}"
         --azure-key-vault-url "${{ secrets.AZURE_KEY_VAULT_URL }}"
         --azure-key-vault-tenant-id "${{ secrets.AZURE_KEY_VAULT_TENANT_ID }}"
         --azure-key-vault-client-id "${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }}"
