@@ -52,7 +52,6 @@ jobs:
     - name: Install code signing tool
       run: dotnet tool install --global sign --prerelease
 
-# From documentation workflow
     - name: Log into Azure CLI with service principal
       uses: azure/login@v2
       with:
