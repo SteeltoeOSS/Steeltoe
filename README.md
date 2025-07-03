@@ -21,7 +21,7 @@ Key features include:
 
 ## Getting Started
 
-In addition to the [feature documentation](https://docs.steeltoe.io/api), we have built several tools to help you get started:
+In addition to the [feature documentation](https://steeltoe.io/api), we have built several tools to help you get started:
 
 - [Steeltoe Initializr](https://start.steeltoe.io) - Pick and choose what type of application you would like to build and let us generate the initial project for you
   - Initializr uses [.NET templates](https://github.com/SteeltoeOSS/NetCoreToolTemplates) that can also be used from the `dotnet` CLI and inside of Visual Studio
