@@ -1,0 +1,59 @@
+name: Try-GHA-PKG-Sign
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+    - '[0-9]+.x'
+    - 'release/*'
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: true
+
+jobs:
+  sign:
+    runs-on: windows-latest
+    permissions:
+      id-token: write
+
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.*
+          9.0.*
+
+    - name: Install code signing tool
+      run: dotnet tool install --global sign --prerelease
+
+    - name: Sign packages
+      shell: pwsh
+      run: >-
+        sign code azure-key-vault "**/*.nupkg"
+        --base-directory "${{ github.workspace }}"
+        --azure-key-vault-url "${{ secrets.AZURE_KEY_VAULT_URL }}"
+        --azure-key-vault-tenant-id "${{ secrets.AZURE_KEY_VAULT_TENANT_ID }}"
+        --azure-key-vault-client-id "${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }}"
+        --azure-key-vault-client-secret "${{ secrets.AZURE_KEY_VAULT_CLIENT_SECRET }}"
+        --azure-key-vault-certificate "${{ secrets.AZURE_KEY_VAULT_CERTIFICATE_ID }}"
+        --description "Steeltoe"
+
+    - name: "TEMP: Upload signed packages"
+      uses: actions/upload-artifact@v4
+      with:
+        name: signed-packages
+        path: ${{ github.workspace }}/**/*.nupkg
