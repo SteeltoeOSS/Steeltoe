@@ -29,7 +29,7 @@ jobs:
     steps:
     - name: Git checkout
       uses: actions/checkout@v4
-    
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -40,15 +40,21 @@ jobs:
     - name: Install code signing tool
       run: dotnet tool install --global sign --prerelease
 
+    - name: 'Az CLI login'
+      uses: azure/login@v1
+      with:
+        allow-no-subscriptions: true
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
     - name: Sign packages
       shell: pwsh
       run: >-
         sign code azure-key-vault "**/*.nupkg"
         --base-directory "${{ github.workspace }}"
+        --azure-key-vault-managed-identity true
         --azure-key-vault-url "${{ secrets.AZURE_KEY_VAULT_URL }}"
-        --azure-key-vault-tenant-id "${{ secrets.AZURE_KEY_VAULT_TENANT_ID }}"
-        --azure-key-vault-client-id "${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }}"
-        --azure-key-vault-client-secret "${{ secrets.AZURE_KEY_VAULT_CLIENT_SECRET }}"
         --azure-key-vault-certificate "${{ secrets.AZURE_KEY_VAULT_CERTIFICATE_ID }}"
         --description "Steeltoe"
 
