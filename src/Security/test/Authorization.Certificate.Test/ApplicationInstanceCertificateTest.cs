@@ -15,11 +15,11 @@ public sealed class ApplicationInstanceCertificateTest
         "CN=69ed1418-8434-4b14-9ad9-636d71ba782a, OU=app:e268b8bf-cdad-4014-a18f-1131c73d9450 + OU=space:122b942a-d7b9-4839-b26e-836654b9785f + OU=organization:a8fef16f-94c0-49e3-aa0b-ced7c3da6229",
         true, "a8fef16f-94c0-49e3-aa0b-ced7c3da6229", "122b942a-d7b9-4839-b26e-836654b9785f")]
     [InlineData("CN=\"69ed1418\", OU=app:e268b8bf + OU=space:\"122b942a\" + OU=organization:a8fef16f", true, "a8fef16f", "122b942a")]
-    public void SubjectParsingProducesExpectedResults(string subject, bool shouldParse, string? expectedOrgId, string? expectedSpaceId)
+    public void SubjectParsingProducesExpectedResults(string subject, bool expectValid, string? expectedOrgId, string? expectedSpaceId)
     {
-        ApplicationInstanceCertificate.TryParse(subject, out ApplicationInstanceCertificate? instanceCertificate).Should().Be(shouldParse);
+        ApplicationInstanceCertificate.TryParse(subject, out ApplicationInstanceCertificate? instanceCertificate).Should().Be(expectValid);
 
-        if (shouldParse)
+        if (expectValid)
         {
             instanceCertificate.Should().NotBeNull();
             instanceCertificate.OrgId.Should().Be(expectedOrgId);

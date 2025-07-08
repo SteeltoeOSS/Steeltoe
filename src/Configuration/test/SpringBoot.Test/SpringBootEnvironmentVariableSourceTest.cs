@@ -13,6 +13,6 @@ public sealed class SpringBootEnvironmentVariableSourceTest
     {
         var source = new SpringBootEnvironmentVariableSource();
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
-        Assert.IsType<SpringBootEnvironmentVariableProvider>(provider);
+        provider.Should().BeOfType<SpringBootEnvironmentVariableProvider>();
     }
 }

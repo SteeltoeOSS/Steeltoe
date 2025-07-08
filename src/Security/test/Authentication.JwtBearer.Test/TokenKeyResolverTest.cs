@@ -37,8 +37,7 @@ public sealed class TokenKeyResolverTest
 
         SecurityKey[] result = resolver.ResolveSigningKey("legacy-token-key");
 
-        result.Should().NotBeEmpty();
-        result[0].Should().Be(webKey);
+        result.Should().ContainSingle().Which.Should().Be(webKey);
     }
 
     [Fact]

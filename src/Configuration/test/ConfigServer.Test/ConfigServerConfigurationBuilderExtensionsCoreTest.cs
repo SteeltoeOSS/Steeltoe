@@ -27,7 +27,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
-        Assert.NotNull(configServerProvider);
+        configServerProvider.Should().NotBeNull();
     }
 
     [Fact]
@@ -94,30 +94,30 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
-        Assert.NotNull(configServerProvider);
+        configServerProvider.Should().NotBeNull();
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
-        Assert.False(options.Enabled);
-        Assert.False(options.FailFast);
-        Assert.Equal("https://user:password@foo.com:9999", options.Uri);
-        Assert.Equal("Production", options.Environment);
-        Assert.Equal("myName", options.Name);
-        Assert.Equal("myLabel", options.Label);
-        Assert.Equal("myUsername", options.Username);
-        Assert.Equal("myPassword", options.Password);
-        Assert.False(options.Retry.Enabled);
-        Assert.Equal(55555, options.Retry.MaxAttempts);
-        Assert.Equal(55555, options.Retry.InitialInterval);
-        Assert.Equal(55555, options.Retry.MaxInterval);
-        Assert.Equal(5.5, options.Retry.Multiplier);
-        Assert.Equal(10_000, options.Timeout);
-        Assert.Equal("vault-token", options.Token);
-        Assert.Null(options.AccessTokenUri);
-        Assert.Null(options.ClientId);
-        Assert.Null(options.ClientSecret);
-        Assert.Equal(50_000, options.TokenRenewRate);
-        Assert.True(options.DisableTokenRenewal);
-        Assert.Equal(50_000, options.TokenTtl);
+        options.Enabled.Should().BeFalse();
+        options.FailFast.Should().BeFalse();
+        options.Uri.Should().Be("https://user:password@foo.com:9999");
+        options.Environment.Should().Be("Production");
+        options.Name.Should().Be("myName");
+        options.Label.Should().Be("myLabel");
+        options.Username.Should().Be("myUsername");
+        options.Password.Should().Be("myPassword");
+        options.Retry.Enabled.Should().BeFalse();
+        options.Retry.MaxAttempts.Should().Be(55555);
+        options.Retry.InitialInterval.Should().Be(55555);
+        options.Retry.MaxInterval.Should().Be(55555);
+        options.Retry.Multiplier.Should().Be(5.5);
+        options.Timeout.Should().Be(10_000);
+        options.Token.Should().Be("vault-token");
+        options.AccessTokenUri.Should().BeNull();
+        options.ClientId.Should().BeNull();
+        options.ClientSecret.Should().BeNull();
+        options.TokenRenewRate.Should().Be(50_000);
+        options.DisableTokenRenewal.Should().BeTrue();
+        options.TokenTtl.Should().Be(50_000);
     }
 
     [Fact]
@@ -148,10 +148,10 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
-        Assert.NotNull(configServerProvider);
+        configServerProvider.Should().NotBeNull();
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
-        Assert.False(options.ValidateCertificates);
+        options.ValidateCertificates.Should().BeFalse();
     }
 
     [Fact]
@@ -182,10 +182,10 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
-        Assert.NotNull(configServerProvider);
+        configServerProvider.Should().NotBeNull();
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
-        Assert.False(options.ValidateCertificates);
+        options.ValidateCertificates.Should().BeFalse();
     }
 
     [Fact]
@@ -221,20 +221,20 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
-        Assert.NotNull(configServerProvider);
+        configServerProvider.Should().NotBeNull();
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
-        Assert.False(options.Enabled);
-        Assert.False(options.FailFast);
-        Assert.Equal("https://foo.com:9999", options.Uri);
-        Assert.Equal("Production", options.Environment);
-        Assert.Equal("myName", options.Name);
-        Assert.Equal("myLabel", options.Label);
-        Assert.Equal("myUsername", options.Username);
-        Assert.Equal("myPassword", options.Password);
-        Assert.Null(options.AccessTokenUri);
-        Assert.Null(options.ClientId);
-        Assert.Null(options.ClientSecret);
+        options.Enabled.Should().BeFalse();
+        options.FailFast.Should().BeFalse();
+        options.Uri.Should().Be("https://foo.com:9999");
+        options.Environment.Should().Be("Production");
+        options.Name.Should().Be("myName");
+        options.Label.Should().Be("myLabel");
+        options.Username.Should().Be("myUsername");
+        options.Password.Should().Be("myPassword");
+        options.AccessTokenUri.Should().BeNull();
+        options.ClientId.Should().BeNull();
+        options.ClientSecret.Should().BeNull();
     }
 
     [Fact]
@@ -263,20 +263,20 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
-        Assert.NotNull(configServerProvider);
+        configServerProvider.Should().NotBeNull();
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
-        Assert.False(options.Enabled);
-        Assert.False(options.FailFast);
-        Assert.Equal("https://foo.com:9999", options.Uri);
-        Assert.Equal("Production", options.Environment);
-        Assert.Equal("myName", options.Name);
-        Assert.Equal("myLabel", options.Label);
-        Assert.Equal("myUsername", options.Username);
-        Assert.Equal("myPassword", options.Password);
-        Assert.Null(options.AccessTokenUri);
-        Assert.Null(options.ClientId);
-        Assert.Null(options.ClientSecret);
+        options.Enabled.Should().BeFalse();
+        options.FailFast.Should().BeFalse();
+        options.Uri.Should().Be("https://foo.com:9999");
+        options.Environment.Should().Be("Production");
+        options.Name.Should().Be("myName");
+        options.Label.Should().Be("myLabel");
+        options.Username.Should().Be("myUsername");
+        options.Password.Should().Be("myPassword");
+        options.AccessTokenUri.Should().BeNull();
+        options.ClientId.Should().BeNull();
+        options.ClientSecret.Should().BeNull();
     }
 
     [Fact]
@@ -303,20 +303,20 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
-        Assert.NotNull(configServerProvider);
+        configServerProvider.Should().NotBeNull();
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
-        Assert.False(options.Enabled);
-        Assert.False(options.FailFast);
-        Assert.Equal("https://foo.com:9999", options.Uri);
-        Assert.Equal("Production", options.Environment);
-        Assert.Equal("myName", options.Name);
-        Assert.Equal("myLabel", options.Label);
-        Assert.Equal("myUsername", options.Username);
-        Assert.Equal("myPassword", options.Password);
-        Assert.Null(options.AccessTokenUri);
-        Assert.Null(options.ClientId);
-        Assert.Null(options.ClientSecret);
+        options.Enabled.Should().BeFalse();
+        options.FailFast.Should().BeFalse();
+        options.Uri.Should().Be("https://foo.com:9999");
+        options.Environment.Should().Be("Production");
+        options.Name.Should().Be("myName");
+        options.Label.Should().Be("myLabel");
+        options.Username.Should().Be("myUsername");
+        options.Password.Should().Be("myPassword");
+        options.AccessTokenUri.Should().BeNull();
+        options.ClientId.Should().BeNull();
+        options.ClientSecret.Should().BeNull();
     }
 
     [Fact]
@@ -362,17 +362,17 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
-        Assert.NotNull(configServerProvider);
+        configServerProvider.Should().NotBeNull();
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
-        Assert.False(options.Enabled);
-        Assert.False(options.FailFast);
-        Assert.Equal("https://user:password@foo.com:9999", options.Uri);
-        Assert.Equal("Production", options.Environment);
-        Assert.Equal("testName", options.Name);
-        Assert.Equal("myLabel", options.Label);
-        Assert.Equal("myUsername", options.Username);
-        Assert.Equal("myPassword", options.Password);
+        options.Enabled.Should().BeFalse();
+        options.FailFast.Should().BeFalse();
+        options.Uri.Should().Be("https://user:password@foo.com:9999");
+        options.Environment.Should().Be("Production");
+        options.Name.Should().Be("testName");
+        options.Label.Should().Be("myLabel");
+        options.Username.Should().Be("myUsername");
+        options.Password.Should().Be("myPassword");
     }
 
     [Fact]
@@ -462,20 +462,20 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
-        Assert.NotNull(configServerProvider);
+        configServerProvider.Should().NotBeNull();
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
-        Assert.True(options.Enabled);
-        Assert.False(options.FailFast);
-        Assert.Equal("https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com", options.Uri);
-        Assert.Equal("https://p-spring-cloud-services.uaa.wise.com/oauth/token", options.AccessTokenUri);
-        Assert.Equal("p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef", options.ClientId);
-        Assert.Equal("e8KF1hXvAnGd", options.ClientSecret);
-        Assert.Equal("Production", options.Environment);
-        Assert.Equal("my-app", options.Name);
-        Assert.Null(options.Label);
-        Assert.Null(options.Username);
-        Assert.Null(options.Password);
+        options.Enabled.Should().BeTrue();
+        options.FailFast.Should().BeFalse();
+        options.Uri.Should().Be("https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com");
+        options.AccessTokenUri.Should().Be("https://p-spring-cloud-services.uaa.wise.com/oauth/token");
+        options.ClientId.Should().Be("p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef");
+        options.ClientSecret.Should().Be("e8KF1hXvAnGd");
+        options.Environment.Should().Be("Production");
+        options.Name.Should().Be("my-app");
+        options.Label.Should().BeNull();
+        options.Username.Should().BeNull();
+        options.Password.Should().BeNull();
     }
 
     [Fact]
@@ -570,19 +570,19 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
-        Assert.NotNull(configServerProvider);
+        configServerProvider.Should().NotBeNull();
 
         ConfigServerClientOptions options = configServerProvider.ClientOptions;
-        Assert.True(options.Enabled);
-        Assert.False(options.FailFast);
-        Assert.Equal("https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com", options.Uri);
-        Assert.Equal("https://p-spring-cloud-services.uaa.wise.com/oauth/token", options.AccessTokenUri);
-        Assert.Equal("config-client-ea5e13c2-def2-4a3b-b80c-38e690ec284f", options.ClientId);
-        Assert.Equal("e8KF1hXvAnGd", options.ClientSecret);
-        Assert.Equal("Production", options.Environment);
-        Assert.Equal("my-app", options.Name);
-        Assert.Null(options.Label);
-        Assert.Null(options.Username);
-        Assert.Null(options.Password);
+        options.Enabled.Should().BeTrue();
+        options.FailFast.Should().BeFalse();
+        options.Uri.Should().Be("https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com");
+        options.AccessTokenUri.Should().Be("https://p-spring-cloud-services.uaa.wise.com/oauth/token");
+        options.ClientId.Should().Be("config-client-ea5e13c2-def2-4a3b-b80c-38e690ec284f");
+        options.ClientSecret.Should().Be("e8KF1hXvAnGd");
+        options.Environment.Should().Be("Production");
+        options.Name.Should().Be("my-app");
+        options.Label.Should().BeNull();
+        options.Username.Should().BeNull();
+        options.Password.Should().BeNull();
     }
 }

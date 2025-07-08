@@ -36,17 +36,16 @@ public sealed class ConsulRegistrationTest
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var registration = new ConsulRegistration(source, optionsMonitor);
 
-        Assert.Equal("id", registration.InstanceId);
-        Assert.Equal("name", registration.ServiceId);
-        Assert.Equal("address", registration.Host);
-        Assert.Equal(1234, registration.Port);
-        Assert.Contains("tag1", registration.Tags);
-        Assert.Contains("tag2", registration.Tags);
-        Assert.Single(registration.Metadata);
-        Assert.Contains("foo", registration.Metadata.Keys);
-        Assert.Contains("bar", registration.Metadata.Values);
-        Assert.False(registration.IsSecure);
-        Assert.Equal(new Uri("http://address:1234"), registration.Uri);
+        registration.InstanceId.Should().Be("id");
+        registration.ServiceId.Should().Be("name");
+        registration.Host.Should().Be("address");
+        registration.Port.Should().Be(1234);
+        registration.Tags.Should().Contain("tag1");
+        registration.Tags.Should().Contain("tag2");
+        registration.Metadata.Should().ContainSingle();
+        registration.Metadata.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
+        registration.IsSecure.Should().BeFalse();
+        registration.Uri.Should().Be(new Uri("http://address:1234"));
     }
 
     [Fact]
@@ -61,9 +60,9 @@ public sealed class ConsulRegistrationTest
 
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
 
-        Assert.Equal(2, registration.Tags.Count);
-        Assert.Contains("foo", registration.Tags);
-        Assert.Contains("bar", registration.Tags);
+        registration.Tags.Should().HaveCount(2);
+        registration.Tags.Should().Contain("foo");
+        registration.Tags.Should().Contain("bar");
     }
 
     [Fact]
@@ -82,22 +81,12 @@ public sealed class ConsulRegistrationTest
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
         IReadOnlyDictionary<string, string?> metadata = registration.Metadata;
 
-        Assert.Equal(5, metadata.Keys.Count());
-
-        Assert.Contains(metadata, x => x.Key == "foo");
-        Assert.Equal("bar", metadata["foo"]);
-
-        Assert.Contains(metadata, x => x.Key == "baz");
-        Assert.Equal("qux", metadata["baz"]);
-
-        Assert.Contains(metadata, x => x.Key == "zone");
-        Assert.Equal("instanceZone", metadata["zone"]);
-
-        Assert.Contains(metadata, x => x.Key == "group");
-        Assert.Equal("instanceGroup", metadata["group"]);
-
-        Assert.Contains(metadata, x => x.Key == "secure");
-        Assert.Equal("true", metadata["secure"]);
+        metadata.Should().HaveCount(5);
+        metadata.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
+        metadata.Should().ContainKey("baz").WhoseValue.Should().Be("qux");
+        metadata.Should().ContainKey("zone").WhoseValue.Should().Be("instanceZone");
+        metadata.Should().ContainKey("group").WhoseValue.Should().Be("instanceGroup");
+        metadata.Should().ContainKey("secure").WhoseValue.Should().Be("true");
     }
 
     [Fact]
@@ -107,17 +96,20 @@ public sealed class ConsulRegistrationTest
 
         // default value is assembly name
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
-        Assert.Equal(Assembly.GetEntryAssembly()!.GetName().Name!.Replace('.', '-'), registration.ServiceId);
+
+        registration.ServiceId.Should().Be(Assembly.GetEntryAssembly()!.GetName().Name!.Replace('.', '-'));
 
         // followed by spring:application:name
         appSettings.Add("spring:application:name", "SpringApplicationName");
         registration = TestRegistrationFactory.Create(appSettings);
-        Assert.Equal("SpringApplicationName", registration.ServiceId);
+
+        registration.ServiceId.Should().Be("SpringApplicationName");
 
         // Consul-discovery is the highest priority
         appSettings.Add("consul:discovery:serviceName", "ConsulDiscoveryServiceName");
         registration = TestRegistrationFactory.Create(appSettings);
-        Assert.Equal("ConsulDiscoveryServiceName", registration.ServiceId);
+
+        registration.ServiceId.Should().Be("ConsulDiscoveryServiceName");
     }
 
     [Fact]
@@ -129,7 +121,8 @@ public sealed class ConsulRegistrationTest
         };
 
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
-        Assert.StartsWith("serviceName-", registration.InstanceId, StringComparison.Ordinal);
+
+        registration.InstanceId.Should().StartWith("serviceName-");
     }
 
     [Fact]
@@ -142,11 +135,13 @@ public sealed class ConsulRegistrationTest
         };
 
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
-        Assert.Equal("instanceId", registration.InstanceId);
+
+        registration.InstanceId.Should().Be("instanceId");
 
         appSettings.Remove("consul:discovery:instanceId");
         registration = TestRegistrationFactory.Create(appSettings);
-        Assert.StartsWith("foobar-", registration.InstanceId, StringComparison.Ordinal);
+
+        registration.InstanceId.Should().StartWith("foobar-");
     }
 
     [Fact]
@@ -158,19 +153,21 @@ public sealed class ConsulRegistrationTest
         };
 
         AgentServiceCheck result = ConsulRegistration.CreateCheck(1234, options);
-        Assert.NotNull(result);
-        Assert.Equal(DateTimeConversions.ToTimeSpan(options.Heartbeat!.TimeToLive), result.TTL);
-        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout!), result.DeregisterCriticalServiceAfter);
+
+        result.Should().NotBeNull();
+        result.TTL.Should().Be(DateTimeConversions.ToTimeSpan(options.Heartbeat!.TimeToLive));
+        result.DeregisterCriticalServiceAfter.Should().Be(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout!));
 
         options.Heartbeat = null;
         const int port = 1234;
         result = ConsulRegistration.CreateCheck(port, options);
         var uri = new Uri($"{options.Scheme}://{options.HostName}:{port}{options.HealthCheckPath}");
-        Assert.Equal(uri.ToString(), result.HTTP);
-        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckInterval!), result.Interval);
-        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckTimeout!), result.Timeout);
-        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout!), result.DeregisterCriticalServiceAfter);
-        Assert.Equal(options.HealthCheckTlsSkipVerify, result.TLSSkipVerify);
+
+        result.HTTP.Should().Be(uri.ToString());
+        result.Interval.Should().Be(DateTimeConversions.ToTimeSpan(options.HealthCheckInterval!));
+        result.Timeout.Should().Be(DateTimeConversions.ToTimeSpan(options.HealthCheckTimeout!));
+        result.DeregisterCriticalServiceAfter.Should().Be(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout!));
+        result.TLSSkipVerify.Should().Be(options.HealthCheckTlsSkipVerify);
     }
 
     [Fact]
@@ -185,20 +182,20 @@ public sealed class ConsulRegistrationTest
 
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
 
-        Assert.StartsWith("foobar-", registration.InstanceId, StringComparison.Ordinal);
-        Assert.False(registration.IsSecure);
-        Assert.Equal("foobar", registration.ServiceId);
-        Assert.Equal("some-host", registration.Host);
-        Assert.Equal(1100, registration.Port);
-        Assert.Equal(new Uri("http://some-host:1100"), registration.Uri);
+        registration.InstanceId.Should().StartWith("foobar-");
+        registration.IsSecure.Should().BeFalse();
+        registration.ServiceId.Should().Be("foobar");
+        registration.Host.Should().Be("some-host");
+        registration.Port.Should().Be(1100);
+        registration.Uri.Should().Be(new Uri("http://some-host:1100"));
 
-        Assert.NotNull(registration.InnerRegistration);
-        Assert.Equal("some-host", registration.InnerRegistration.Address);
-        Assert.StartsWith("foobar-", registration.InnerRegistration.ID, StringComparison.Ordinal);
-        Assert.Equal("foobar", registration.InnerRegistration.Name);
-        Assert.Equal(1100, registration.InnerRegistration.Port);
-        Assert.NotNull(registration.InnerRegistration.Check);
-        Assert.NotNull(registration.InnerRegistration.Tags);
+        registration.InnerRegistration.Should().NotBeNull();
+        registration.InnerRegistration.Address.Should().Be("some-host");
+        registration.InnerRegistration.ID.Should().StartWith("foobar-");
+        registration.InnerRegistration.Name.Should().Be("foobar");
+        registration.InnerRegistration.Port.Should().Be(1100);
+        registration.InnerRegistration.Check.Should().NotBeNull();
+        registration.InnerRegistration.Tags.Should().NotBeNull();
     }
 
     [Fact]
@@ -218,7 +215,7 @@ public sealed class ConsulRegistrationTest
 
         AgentServiceCheck check = ConsulRegistration.CreateCheck(1234, options);
 
-        Assert.Contains(path, check.HTTP, StringComparison.InvariantCulture);
+        check.HTTP.Should().Contain(path);
     }
 
     [Fact]
@@ -237,6 +234,6 @@ public sealed class ConsulRegistrationTest
 
         AgentServiceCheck check = ConsulRegistration.CreateCheck(1234, options);
 
-        Assert.Null(check.HTTP);
+        check.HTTP.Should().BeNull();
     }
 }

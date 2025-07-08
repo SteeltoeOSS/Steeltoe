@@ -32,8 +32,8 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         builder.Add(testSourceB);
         builder.AddPlaceholderResolver(_loggerFactory);
 
-        builder.Sources.Should().ContainSingle();
-        PlaceholderConfigurationSource placeholderSource = builder.Sources[0].Should().BeOfType<PlaceholderConfigurationSource>().Subject;
+        PlaceholderConfigurationSource placeholderSource =
+            builder.Sources.Should().ContainSingle().Which.Should().BeOfType<PlaceholderConfigurationSource>().Subject;
 
         placeholderSource.Sources.Should().HaveCount(2);
         placeholderSource.Sources.Should().Contain(testSourceA);
@@ -58,8 +58,8 @@ public sealed class PlaceholderConfigurationTest : IDisposable
 
         IConfigurationRoot configurationRoot = builder.Build();
 
-        testSourceA.LastProvider.Should().NotBeNull().And.BeOfType<TestConfigurationProvider>();
-        testSourceB.LastProvider.Should().NotBeNull().And.BeOfType<TestConfigurationProvider>();
+        testSourceA.LastProvider.Should().NotBeNull();
+        testSourceB.LastProvider.Should().NotBeNull();
 
         testSourceA.LastProvider.LoadCount.Should().Be(1);
         testSourceB.LastProvider.LoadCount.Should().Be(1);
@@ -218,7 +218,7 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         configuration["key2"].Should().Be("value1");
         configuration["key3"].Should().Be("not-found");
         configuration["key4"].Should().Be("${no-key}");
-        configuration["key5"].Should().Be(string.Empty);
+        configuration["key5"].Should().BeEmpty();
 
         configuration["no-key"] = "new-key-value";
 

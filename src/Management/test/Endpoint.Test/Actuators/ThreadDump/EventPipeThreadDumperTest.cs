@@ -40,8 +40,8 @@ public sealed class EventPipeThreadDumperTest
         backgroundThreadFrame.ModuleName.Should().Be(GetType().Assembly.GetName().Name);
         backgroundThreadFrame.ClassName.Should().Be(typeof(NestedType).FullName);
         backgroundThreadFrame.FileName.Should().EndWith($"{nameof(EventPipeThreadDumperTest)}.cs");
-        backgroundThreadFrame.LineNumber.Should().BeGreaterThan(0);
-        backgroundThreadFrame.ColumnNumber.Should().BeGreaterThan(0);
+        backgroundThreadFrame.LineNumber.Should().BePositive();
+        backgroundThreadFrame.ColumnNumber.Should().BePositive();
 
         await backgroundCancellationSource.CancelAsync();
         backgroundThread.Join();
@@ -72,9 +72,9 @@ public sealed class EventPipeThreadDumperTest
             throw new ArgumentException("Simulated failure.");
         }, TestContext.Current.CancellationToken);
 
-        InvalidOperationException exception = (await action.Should().ThrowExactlyAsync<InvalidOperationException>()).Which;
-        exception.Message.Should().StartWith($"Failed to create a thread dump. Captured log:{System.Environment.NewLine}Failed to perform this operation.");
-        exception.InnerException.Should().BeOfType<ArgumentException>().Which.Message.Should().Be("Simulated failure.");
+        await action.Should().ThrowExactlyAsync<InvalidOperationException>()
+            .WithMessage($"Failed to create a thread dump. Captured log:{System.Environment.NewLine}Failed to perform this operation.")
+            .WithInnerExceptionExactly<InvalidOperationException, ArgumentException>().WithMessage("Simulated failure.");
     }
 
     private static class NestedType

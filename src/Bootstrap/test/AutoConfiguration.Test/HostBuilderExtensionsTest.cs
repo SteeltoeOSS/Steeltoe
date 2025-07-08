@@ -339,9 +339,9 @@ public sealed class HostBuilderExtensionsTest
         IDiscoveryClient[] discoveryClients = [.. hostWrapper.Services.GetServices<IDiscoveryClient>()];
 
         discoveryClients.Should().HaveCount(3);
-        discoveryClients.Should().ContainSingle(discoveryClient => discoveryClient is ConfigurationDiscoveryClient);
-        discoveryClients.Should().ContainSingle(discoveryClient => discoveryClient is ConsulDiscoveryClient);
-        discoveryClients.Should().ContainSingle(discoveryClient => discoveryClient is EurekaDiscoveryClient);
+        discoveryClients.OfType<ConfigurationDiscoveryClient>().Should().ContainSingle();
+        discoveryClients.OfType<ConsulDiscoveryClient>().Should().ContainSingle();
+        discoveryClients.OfType<EurekaDiscoveryClient>().Should().ContainSingle();
     }
 
     private static void AssertPrometheusIsAutowired(HostWrapper hostWrapper)

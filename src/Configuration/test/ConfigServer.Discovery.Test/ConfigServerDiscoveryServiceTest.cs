@@ -22,10 +22,10 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         var service = new ConfigServerDiscoveryService(configuration, options, NullLoggerFactory.Instance);
 
-        Assert.Equal(3, service.DiscoveryClients.Count);
-        Assert.Contains(service.DiscoveryClients, discoveryClient => discoveryClient is ConfigurationDiscoveryClient);
-        Assert.Contains(service.DiscoveryClients, discoveryClient => discoveryClient is ConsulDiscoveryClient);
-        Assert.Contains(service.DiscoveryClients, discoveryClient => discoveryClient is EurekaDiscoveryClient);
+        service.DiscoveryClients.Should().HaveCount(3);
+        service.DiscoveryClients.OfType<ConfigurationDiscoveryClient>().Should().ContainSingle();
+        service.DiscoveryClients.OfType<ConsulDiscoveryClient>().Should().ContainSingle();
+        service.DiscoveryClients.OfType<EurekaDiscoveryClient>().Should().ContainSingle();
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         var service = new ConfigServerDiscoveryService(configurationRoot, options, NullLoggerFactory.Instance);
         IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(TestContext.Current.CancellationToken);
-        Assert.Empty(result);
+        result.Should().BeEmpty();
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         var service = new ConfigServerDiscoveryService(configurationRoot, options, NullLoggerFactory.Instance);
         IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(TestContext.Current.CancellationToken);
-        Assert.Empty(result);
+        result.Should().BeEmpty();
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         var service = new ConfigServerDiscoveryService(configurationRoot, options, NullLoggerFactory.Instance);
         IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(TestContext.Current.CancellationToken);
-        Assert.Empty(result);
+        result.Should().BeEmpty();
     }
 
     [Fact]
@@ -107,8 +107,7 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         await service.ProvideRuntimeReplacementsAsync([testDiscoveryClient], TestContext.Current.CancellationToken);
 
-        service.DiscoveryClients.Should().ContainSingle();
-        service.DiscoveryClients.First().Should().Be(testDiscoveryClient);
+        service.DiscoveryClients.Should().ContainSingle().Which.Should().Be(testDiscoveryClient);
     }
 
     private sealed class TestDiscoveryClient : IDiscoveryClient

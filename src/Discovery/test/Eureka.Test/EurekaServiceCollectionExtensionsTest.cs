@@ -29,8 +29,8 @@ public sealed class EurekaServiceCollectionExtensionsTest
         await using ServiceProvider provider = services.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
-        Assert.Equal("/health", options.Value.HealthCheckUrlPath);
-        Assert.Equal("/info", options.Value.StatusPageUrlPath);
+        options.Value.HealthCheckUrlPath.Should().Be("/health");
+        options.Value.StatusPageUrlPath.Should().Be("/info");
     }
 
     [Fact]
@@ -51,8 +51,8 @@ public sealed class EurekaServiceCollectionExtensionsTest
         await using ServiceProvider provider = services.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
-        Assert.Equal("/actuator/non-default", options.Value.HealthCheckUrlPath);
-        Assert.Equal("/actuator/info", options.Value.StatusPageUrlPath);
+        options.Value.HealthCheckUrlPath.Should().Be("/actuator/non-default");
+        options.Value.StatusPageUrlPath.Should().Be("/actuator/info");
     }
 
     [Fact]
@@ -76,11 +76,10 @@ public sealed class EurekaServiceCollectionExtensionsTest
         var timer = new Stopwatch();
         timer.Start();
 
-        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
-        Assert.Single(discoveryClients);
+        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<EurekaDiscoveryClient>();
 
         timer.Stop();
-        Assert.InRange(timer.ElapsedMilliseconds, 0, 3500);
+        timer.ElapsedMilliseconds.Should().BeInRange(0, 3500);
     }
 
     [Fact]
@@ -153,8 +152,8 @@ public sealed class EurekaServiceCollectionExtensionsTest
         await using ServiceProvider provider = services.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
-        Assert.Equal("/actuator/non-default", options.Value.HealthCheckUrlPath);
-        Assert.Equal("/actuator/info", options.Value.StatusPageUrlPath);
+        options.Value.HealthCheckUrlPath.Should().Be("/actuator/non-default");
+        options.Value.StatusPageUrlPath.Should().Be("/actuator/info");
     }
 
     [Fact]
@@ -176,8 +175,8 @@ public sealed class EurekaServiceCollectionExtensionsTest
         await using ServiceProvider provider = services.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
-        Assert.Equal("/customHealth", options.Value.HealthCheckUrlPath);
-        Assert.Equal("/customStatus", options.Value.StatusPageUrlPath);
+        options.Value.HealthCheckUrlPath.Should().Be("/customHealth");
+        options.Value.StatusPageUrlPath.Should().Be("/customStatus");
     }
 
     [Fact]
@@ -219,7 +218,6 @@ public sealed class EurekaServiceCollectionExtensionsTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IHostedService[] hostedServices = [.. serviceProvider.GetServices<IHostedService>()];
-        hostedServices.OfType<DiscoveryClientHostedService>().Should().ContainSingle();
+        serviceProvider.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 }

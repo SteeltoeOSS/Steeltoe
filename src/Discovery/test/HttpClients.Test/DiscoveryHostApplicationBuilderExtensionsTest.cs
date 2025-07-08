@@ -38,12 +38,8 @@ public sealed class DiscoveryHostApplicationBuilderExtensionsTest
 
         using IHost host = hostBuilder.Build();
 
-        IDiscoveryClient[] discoveryClients = [.. host.Services.GetServices<IDiscoveryClient>()];
-        Assert.Single(discoveryClients);
-        Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
-
-        DiscoveryClientHostedService? hostedService = host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().SingleOrDefault();
-        Assert.NotNull(hostedService);
+        host.Services.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<EurekaDiscoveryClient>();
+        host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 
     [Fact]
@@ -55,7 +51,9 @@ public sealed class DiscoveryHostApplicationBuilderExtensionsTest
 
         using IHost host = hostBuilder.Build();
 
+        // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await host.StartAsync(TestContext.Current.CancellationToken);
+
         await action.Should().NotThrowAsync();
     }
 
@@ -68,11 +66,7 @@ public sealed class DiscoveryHostApplicationBuilderExtensionsTest
 
         using IHost host = hostBuilder.Build();
 
-        IDiscoveryClient[] discoveryClients = [.. host.Services.GetServices<IDiscoveryClient>()];
-        Assert.Single(discoveryClients);
-        Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
-
-        DiscoveryClientHostedService? hostedService = host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().SingleOrDefault();
-        Assert.NotNull(hostedService);
+        host.Services.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<ConsulDiscoveryClient>();
+        host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 }

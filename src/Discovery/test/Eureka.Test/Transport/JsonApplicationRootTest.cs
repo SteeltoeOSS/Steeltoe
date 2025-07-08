@@ -63,10 +63,10 @@ public sealed class JsonApplicationRootTest
             """;
 
         var result = JsonSerializer.Deserialize<JsonApplicationRoot>(json);
-        Assert.NotNull(result);
-        Assert.NotNull(result.Application);
-        Assert.Equal("FOO", result.Application.Name);
-        Assert.NotNull(result.Application.Instances);
-        Assert.Single(result.Application.Instances);
+
+        result.Should().NotBeNull();
+        result.Application.Should().NotBeNull();
+        result.Application.Name.Should().Be("FOO");
+        result.Application.Instances.Should().ContainSingle();
     }
 }

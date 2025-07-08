@@ -40,11 +40,8 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.Build();
 
-        IDiscoveryClient[] discoveryClients = [.. host.Services.GetServices<IDiscoveryClient>()];
-        Assert.Single(discoveryClients);
-        Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
-
-        Assert.Single(host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>());
+        host.Services.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<EurekaDiscoveryClient>();
+        host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 
     [Fact]
@@ -57,10 +54,7 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.Build();
 
-        IDiscoveryClient[] discoveryClients = [.. host.Services.GetServices<IDiscoveryClient>()];
-        Assert.Single(discoveryClients);
-        Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
-
-        Assert.Single(host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>());
+        host.Services.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<ConsulDiscoveryClient>();
+        host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 }

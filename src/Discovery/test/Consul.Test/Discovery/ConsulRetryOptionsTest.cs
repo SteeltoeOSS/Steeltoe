@@ -13,10 +13,10 @@ public sealed class ConsulRetryOptionsTest
     {
         var options = new ConsulRetryOptions();
 
-        Assert.False(options.Enabled);
-        Assert.Equal(6, options.MaxAttempts);
-        Assert.Equal(1000, options.InitialInterval);
-        Assert.Equal(1.1, options.Multiplier);
-        Assert.Equal(2000, options.MaxInterval);
+        options.Enabled.Should().BeFalse();
+        options.MaxAttempts.Should().Be(6);
+        options.InitialInterval.Should().Be(1000);
+        options.Multiplier.Should().Be(1.1);
+        options.MaxInterval.Should().Be(2000);
     }
 }

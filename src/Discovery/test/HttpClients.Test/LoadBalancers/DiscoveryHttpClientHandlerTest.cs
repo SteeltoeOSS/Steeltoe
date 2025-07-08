@@ -17,7 +17,8 @@ public sealed class DiscoveryHttpClientHandlerTest
         var handler = new DiscoveryHttpClientHandler(loadBalancer, TimeProvider.System);
         using var invoker = new HttpMessageInvoker(handler);
 
-        Func<Task<HttpResponseMessage>> action = async () => _ = await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => _ = await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<DataException>();
         loadBalancer.Statistics.Should().BeEmpty();
@@ -32,7 +33,8 @@ public sealed class DiscoveryHttpClientHandlerTest
         var handler = new DiscoveryHttpClientHandler(loadBalancer, TimeProvider.System);
         using var invoker = new HttpMessageInvoker(handler);
 
-        Func<Task<HttpResponseMessage>> action = async () => _ = await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => _ = await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<HttpRequestException>();
         loadBalancer.Statistics.Should().ContainSingle();

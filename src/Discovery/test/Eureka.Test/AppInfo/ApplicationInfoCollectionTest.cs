@@ -26,9 +26,9 @@ public sealed class ApplicationInfoCollectionTest
             app2
         ]);
 
-        Assert.NotNull(apps.ApplicationMap);
-        Assert.True(apps.ApplicationMap.ContainsKey("app1".ToUpperInvariant()));
-        Assert.True(apps.ApplicationMap.ContainsKey("app2".ToUpperInvariant()));
+        apps.ApplicationMap.Should().HaveCount(2);
+        apps.ApplicationMap.Should().ContainKey("app1".ToUpperInvariant());
+        apps.ApplicationMap.Should().ContainKey("app2".ToUpperInvariant());
     }
 
     [Fact]
@@ -48,10 +48,9 @@ public sealed class ApplicationInfoCollectionTest
             app2
         ];
 
-        Assert.NotNull(apps.ApplicationMap);
-        Assert.Equal(2, apps.ApplicationMap.Count);
-        Assert.True(apps.ApplicationMap.ContainsKey("app1".ToUpperInvariant()));
-        Assert.True(apps.ApplicationMap.ContainsKey("app2".ToUpperInvariant()));
+        apps.ApplicationMap.Should().HaveCount(2);
+        apps.ApplicationMap.Should().ContainKey("app1".ToUpperInvariant());
+        apps.ApplicationMap.Should().ContainKey("app2".ToUpperInvariant());
     }
 
     [Fact]
@@ -63,10 +62,10 @@ public sealed class ApplicationInfoCollectionTest
 
         var apps = new ApplicationInfoCollection([app1]);
 
-        Assert.Single(apps.GetInstancesByVipAddress("vip1a"));
-        Assert.Single(apps.GetInstancesByVipAddress("vip1b"));
-        Assert.Single(apps.GetInstancesBySecureVipAddress("svip2a"));
-        Assert.Single(apps.GetInstancesBySecureVipAddress("svip2b"));
+        apps.GetInstancesByVipAddress("vip1a").Should().ContainSingle();
+        apps.GetInstancesByVipAddress("vip1b").Should().ContainSingle();
+        apps.GetInstancesBySecureVipAddress("svip2a").Should().ContainSingle();
+        apps.GetInstancesBySecureVipAddress("svip2b").Should().ContainSingle();
     }
 
     [Fact]
@@ -91,19 +90,12 @@ public sealed class ApplicationInfoCollectionTest
 
         apps.Add(app1Updated);
 
-        Assert.NotNull(apps.ApplicationMap);
-        Assert.Equal(2, apps.ApplicationMap.Count);
-        Assert.True(apps.ApplicationMap.ContainsKey("app1".ToUpperInvariant()));
-        Assert.True(apps.ApplicationMap.ContainsKey("app2".ToUpperInvariant()));
-        ApplicationInfo app = apps.ApplicationMap["app1".ToUpperInvariant()];
-        Assert.NotNull(app);
-        IReadOnlyList<InstanceInfo> instances = app.Instances;
-        Assert.NotNull(instances);
+        apps.ApplicationMap.Should().HaveCount(2);
+        ApplicationInfo? app = apps.ApplicationMap.Should().ContainKey("app1".ToUpperInvariant()).WhoseValue;
+        app.Instances.Should().ContainSingle(info => info.InstanceId == "id3");
+        app.Instances.Should().ContainSingle(info => info.InstanceId == "id4");
 
-        foreach (InstanceInfo instance in instances)
-        {
-            Assert.True(instance.InstanceId is "id3" or "id4");
-        }
+        apps.ApplicationMap.Should().ContainKey("app2".ToUpperInvariant());
     }
 
     [Fact]
@@ -123,19 +115,13 @@ public sealed class ApplicationInfoCollectionTest
             app2
         ];
 
-        Assert.NotNull(apps.VipInstanceMap);
-        Assert.Equal(2, apps.VipInstanceMap.Count);
-        Assert.True(apps.VipInstanceMap.ContainsKey("vapp1".ToUpperInvariant()));
-        Assert.True(apps.VipInstanceMap.ContainsKey("vapp2".ToUpperInvariant()));
-        Assert.Equal(2, apps.VipInstanceMap["vapp1".ToUpperInvariant()].Count);
-        Assert.Equal(2, apps.VipInstanceMap["vapp2".ToUpperInvariant()].Count);
+        apps.VipInstanceMap.Should().HaveCount(2);
+        apps.VipInstanceMap.Should().ContainKey("vapp1".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
+        apps.VipInstanceMap.Should().ContainKey("vapp2".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
 
-        Assert.NotNull(apps.SecureVipInstanceMap);
-        Assert.Equal(2, apps.SecureVipInstanceMap.Count);
-        Assert.True(apps.SecureVipInstanceMap.ContainsKey("svapp1".ToUpperInvariant()));
-        Assert.True(apps.SecureVipInstanceMap.ContainsKey("svapp2".ToUpperInvariant()));
-        Assert.Equal(2, apps.SecureVipInstanceMap["svapp1".ToUpperInvariant()].Count);
-        Assert.Equal(2, apps.SecureVipInstanceMap["svapp2".ToUpperInvariant()].Count);
+        apps.SecureVipInstanceMap.Should().HaveCount(2);
+        apps.SecureVipInstanceMap.Should().ContainKey("svapp1".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
+        apps.SecureVipInstanceMap.Should().ContainKey("svapp2".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
     }
 
     [Fact]
@@ -152,9 +138,9 @@ public sealed class ApplicationInfoCollectionTest
             ])
         ]);
 
-        Assert.Equal(2, apps.Count);
-        Assert.True(apps.ElementAt(0).Name is "app1" or "app2");
-        Assert.True(apps.ElementAt(0).Name is "app1" or "app2");
+        apps.Should().HaveCount(2);
+        apps.Should().ContainSingle(app => app.Name == "app1");
+        apps.Should().ContainSingle(app => app.Name == "app2");
     }
 
     [Fact]
@@ -171,36 +157,26 @@ public sealed class ApplicationInfoCollectionTest
             ])
         ]);
 
-        Assert.NotNull(apps.VipInstanceMap);
-        Assert.Equal(2, apps.VipInstanceMap.Count);
-        Assert.True(apps.VipInstanceMap.ContainsKey("vapp1".ToUpperInvariant()));
-        Assert.True(apps.VipInstanceMap.ContainsKey("vapp2".ToUpperInvariant()));
-        Assert.Equal(2, apps.VipInstanceMap["vapp1".ToUpperInvariant()].Count);
-        Assert.Equal(2, apps.VipInstanceMap["vapp2".ToUpperInvariant()].Count);
+        apps.VipInstanceMap.Should().HaveCount(2);
+        apps.VipInstanceMap.Should().ContainKey("vapp1".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
+        apps.VipInstanceMap.Should().ContainKey("vapp2".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
 
-        Assert.NotNull(apps.SecureVipInstanceMap);
-        Assert.Equal(2, apps.SecureVipInstanceMap.Count);
-        Assert.True(apps.SecureVipInstanceMap.ContainsKey("svapp1".ToUpperInvariant()));
-        Assert.True(apps.SecureVipInstanceMap.ContainsKey("svapp2".ToUpperInvariant()));
-        Assert.Equal(2, apps.SecureVipInstanceMap["svapp1".ToUpperInvariant()].Count);
-        Assert.Equal(2, apps.SecureVipInstanceMap["svapp2".ToUpperInvariant()].Count);
+        apps.SecureVipInstanceMap.Should().HaveCount(2);
+        apps.SecureVipInstanceMap.Should().ContainKey("svapp1".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
+        apps.SecureVipInstanceMap.Should().ContainKey("svapp2".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
 
         apps.RemoveInstanceFromVip(new InstanceInfoBuilder().WithId("id2").WithVipAddress("vapp1").WithSecureVipAddress("svapp1").Build());
         apps.RemoveInstanceFromVip(new InstanceInfoBuilder().WithId("id1").WithVipAddress("vapp1").WithSecureVipAddress("svapp1").Build());
 
-        Assert.NotNull(apps.VipInstanceMap);
-        Assert.Single(apps.VipInstanceMap);
-        Assert.False(apps.VipInstanceMap.ContainsKey("vapp1".ToUpperInvariant()));
-        Assert.True(apps.VipInstanceMap.ContainsKey("vapp2".ToUpperInvariant()));
-        Assert.False(apps.VipInstanceMap.TryGetValue("vapp1".ToUpperInvariant(), out _));
-        Assert.Equal(2, apps.VipInstanceMap["vapp2".ToUpperInvariant()].Count);
+        apps.VipInstanceMap.Should().ContainSingle();
+        apps.VipInstanceMap.Should().NotContainKey("vapp1".ToUpperInvariant());
+        apps.VipInstanceMap.TryGetValue("vapp1".ToUpperInvariant(), out _).Should().BeFalse();
+        apps.VipInstanceMap.Should().ContainKey("vapp2".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
 
-        Assert.NotNull(apps.SecureVipInstanceMap);
-        Assert.Single(apps.SecureVipInstanceMap);
-        Assert.False(apps.SecureVipInstanceMap.ContainsKey("svapp1".ToUpperInvariant()));
-        Assert.True(apps.SecureVipInstanceMap.ContainsKey("svapp2".ToUpperInvariant()));
-        Assert.False(apps.SecureVipInstanceMap.TryGetValue("svapp1".ToUpperInvariant(), out _));
-        Assert.Equal(2, apps.SecureVipInstanceMap["svapp2".ToUpperInvariant()].Count);
+        apps.SecureVipInstanceMap.Should().ContainSingle();
+        apps.SecureVipInstanceMap.Should().NotContainKey("svapp1".ToUpperInvariant());
+        apps.SecureVipInstanceMap.TryGetValue("svapp1".ToUpperInvariant(), out _).Should().BeFalse();
+        apps.SecureVipInstanceMap.Should().ContainKey("svapp2".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
     }
 
     [Fact]
@@ -218,11 +194,13 @@ public sealed class ApplicationInfoCollectionTest
         ]);
 
         ApplicationInfo? registered = apps.GetRegisteredApplication("app1");
-        Assert.NotNull(registered);
-        Assert.Equal("app1", registered.Name);
+
+        registered.Should().NotBeNull();
+        registered.Name.Should().Be("app1");
 
         registered = apps.GetRegisteredApplication("foobar");
-        Assert.Null(registered);
+
+        registered.Should().BeNull();
     }
 
     [Fact]
@@ -245,20 +223,19 @@ public sealed class ApplicationInfoCollectionTest
 
         List<InstanceInfo> result = apps.GetInstancesBySecureVipAddress("svapp1");
 
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.Contains(app1.GetInstance("id1"), result);
-        Assert.Contains(app1.GetInstance("id2"), result);
+        result.Should().HaveCount(2);
+        result.Should().Contain(app1.GetInstance("id1")!);
+        result.Should().Contain(app1.GetInstance("id2")!);
 
         result = apps.GetInstancesBySecureVipAddress("svapp2");
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.Contains(app2.GetInstance("id1"), result);
-        Assert.Contains(app2.GetInstance("id2"), result);
+
+        result.Should().HaveCount(2);
+        result.Should().Contain(app2.GetInstance("id1")!);
+        result.Should().Contain(app2.GetInstance("id2")!);
 
         result = apps.GetInstancesBySecureVipAddress("foobar");
-        Assert.NotNull(result);
-        Assert.Empty(result);
+
+        result.Should().BeEmpty();
     }
 
     [Fact]
@@ -281,20 +258,19 @@ public sealed class ApplicationInfoCollectionTest
 
         List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.Contains(app1.GetInstance("id1"), result);
-        Assert.Contains(app1.GetInstance("id2"), result);
+        result.Should().HaveCount(2);
+        result.Should().Contain(app1.GetInstance("id1")!);
+        result.Should().Contain(app1.GetInstance("id2")!);
 
         result = apps.GetInstancesByVipAddress("vapp2");
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.Contains(app2.GetInstance("id1"), result);
-        Assert.Contains(app2.GetInstance("id2"), result);
+
+        result.Should().HaveCount(2);
+        result.Should().Contain(app2.GetInstance("id1")!);
+        result.Should().Contain(app2.GetInstance("id2")!);
 
         result = apps.GetInstancesByVipAddress("foobar");
-        Assert.NotNull(result);
-        Assert.Empty(result);
+
+        result.Should().BeEmpty();
     }
 
     [Fact]
@@ -321,33 +297,32 @@ public sealed class ApplicationInfoCollectionTest
         apps.UpdateFromDelta(delta);
 
         ApplicationInfo? registered = apps.GetRegisteredApplication("app1");
-        Assert.NotNull(registered);
-        Assert.Equal("app1", registered.Name);
-        Assert.NotNull(registered.Instances);
-        Assert.Equal(2, registered.Instances.Count);
+
+        registered.Should().NotBeNull();
+        registered.Name.Should().Be("app1");
+        registered.Instances.Should().HaveCount(2);
 
         registered = apps.GetRegisteredApplication("app2");
-        Assert.NotNull(registered);
-        Assert.Equal("app2", registered.Name);
-        Assert.NotNull(registered.Instances);
-        Assert.Equal(2, registered.Instances.Count);
+
+        registered.Should().NotBeNull();
+        registered.Name.Should().Be("app2");
+        registered.Instances.Should().HaveCount(2);
 
         List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.Contains(app1.GetInstance("id1"), result);
-        Assert.Contains(app1.GetInstance("id2"), result);
+        result.Should().HaveCount(2);
+        result.Should().Contain(app1.GetInstance("id1")!);
+        result.Should().Contain(app1.GetInstance("id2")!);
 
         result = apps.GetInstancesByVipAddress("vapp2");
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.Contains(app2.GetInstance("id1"), result);
-        Assert.Contains(app2.GetInstance("id2"), result);
+
+        result.Should().HaveCount(2);
+        result.Should().Contain(app2.GetInstance("id1")!);
+        result.Should().Contain(app2.GetInstance("id2")!);
 
         result = apps.GetInstancesByVipAddress("foobar");
-        Assert.NotNull(result);
-        Assert.Empty(result);
+
+        result.Should().BeEmpty();
     }
 
     [Fact]
@@ -381,44 +356,43 @@ public sealed class ApplicationInfoCollectionTest
         apps.UpdateFromDelta(delta);
 
         ApplicationInfo? registered = apps.GetRegisteredApplication("app1");
-        Assert.NotNull(registered);
-        Assert.Equal("app1", registered.Name);
-        Assert.NotNull(registered.Instances);
-        Assert.Equal(2, registered.Instances.Count);
+
+        registered.Should().NotBeNull();
+        registered.Name.Should().Be("app1");
+        registered.Instances.Should().HaveCount(2);
 
         registered = apps.GetRegisteredApplication("app2");
-        Assert.NotNull(registered);
-        Assert.Equal("app2", registered.Name);
-        Assert.NotNull(registered.Instances);
-        Assert.Equal(2, registered.Instances.Count);
+
+        registered.Should().NotBeNull();
+        registered.Name.Should().Be("app2");
+        registered.Instances.Should().HaveCount(2);
 
         registered = apps.GetRegisteredApplication("app3");
-        Assert.NotNull(registered);
-        Assert.Equal("app3", registered.Name);
-        Assert.NotNull(registered.Instances);
-        Assert.Single(registered.Instances);
+
+        registered.Should().NotBeNull();
+        registered.Name.Should().Be("app3");
+        registered.Instances.Should().ContainSingle();
 
         List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.Contains(app1.GetInstance("id1"), result);
-        Assert.Contains(app1.GetInstance("id2"), result);
+        result.Should().HaveCount(2);
+        result.Should().Contain(app1.GetInstance("id1")!);
+        result.Should().Contain(app1.GetInstance("id2")!);
 
         result = apps.GetInstancesByVipAddress("vapp2");
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.Contains(app2.GetInstance("id1"), result);
-        Assert.Contains(app2.GetInstance("id2"), result);
+
+        result.Should().HaveCount(2);
+        result.Should().Contain(app2.GetInstance("id1")!);
+        result.Should().Contain(app2.GetInstance("id2")!);
 
         result = apps.GetInstancesByVipAddress("vapp3");
-        Assert.NotNull(result);
-        Assert.Single(result);
-        Assert.Contains(app3.GetInstance("id1"), result);
+
+        result.Should().ContainSingle();
+        result.Should().Contain(app3.GetInstance("id1")!);
 
         result = apps.GetInstancesByVipAddress("foobar");
-        Assert.NotNull(result);
-        Assert.Empty(result);
+
+        result.Should().BeEmpty();
     }
 
     [Fact]
@@ -452,34 +426,33 @@ public sealed class ApplicationInfoCollectionTest
         apps.UpdateFromDelta(delta);
 
         ApplicationInfo? registered = apps.GetRegisteredApplication("app1");
-        Assert.NotNull(registered);
-        Assert.Equal("app1", registered.Name);
-        Assert.NotNull(registered.Instances);
-        Assert.Equal(2, registered.Instances.Count);
+
+        registered.Should().NotBeNull();
+        registered.Name.Should().Be("app1");
+        registered.Instances.Should().HaveCount(2);
 
         registered = apps.GetRegisteredApplication("app2");
-        Assert.NotNull(registered);
-        Assert.Equal("app2", registered.Name);
-        Assert.NotNull(registered.Instances);
-        Assert.Equal(3, registered.Instances.Count);
+
+        registered.Should().NotBeNull();
+        registered.Name.Should().Be("app2");
+        registered.Instances.Should().HaveCount(3);
 
         List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.Contains(app1.GetInstance("id1"), result);
-        Assert.Contains(app1.GetInstance("id2"), result);
+        result.Should().HaveCount(2);
+        result.Should().Contain(app1.GetInstance("id1")!);
+        result.Should().Contain(app1.GetInstance("id2")!);
 
         result = apps.GetInstancesByVipAddress("vapp2");
-        Assert.NotNull(result);
-        Assert.Equal(3, result.Count);
-        Assert.Contains(app2.GetInstance("id1"), result);
-        Assert.Contains(app2.GetInstance("id2"), result);
-        Assert.Contains(app2.GetInstance("id3"), result);
+
+        result.Should().HaveCount(3);
+        result.Should().Contain(app2.GetInstance("id1")!);
+        result.Should().Contain(app2.GetInstance("id2")!);
+        result.Should().Contain(app2.GetInstance("id3")!);
 
         result = apps.GetInstancesByVipAddress("foobar");
-        Assert.NotNull(result);
-        Assert.Empty(result);
+
+        result.Should().BeEmpty();
     }
 
     [Fact]
@@ -515,38 +488,33 @@ public sealed class ApplicationInfoCollectionTest
         apps.UpdateFromDelta(delta);
 
         ApplicationInfo? registered = apps.GetRegisteredApplication("app1");
-        Assert.NotNull(registered);
-        Assert.Equal("app1", registered.Name);
-        Assert.NotNull(registered.Instances);
-        Assert.Equal(2, registered.Instances.Count);
+
+        registered.Should().NotBeNull();
+        registered.Name.Should().Be("app1");
+        registered.Instances.Should().HaveCount(2);
 
         registered = apps.GetRegisteredApplication("app2");
-        Assert.NotNull(registered);
-        Assert.Equal("app2", registered.Name);
-        Assert.NotNull(registered.Instances);
-        Assert.Equal(2, registered.Instances.Count);
 
-        foreach (InstanceInfo instance in registered.Instances)
-        {
-            Assert.Equal(InstanceStatus.Up, instance.Status);
-        }
+        registered.Should().NotBeNull();
+        registered.Name.Should().Be("app2");
+        registered.Instances.Should().HaveCount(2);
+        registered.Instances.Should().AllSatisfy(instance => instance.Status.Should().Be(InstanceStatus.Up));
 
         List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.Contains(app1.GetInstance("id1"), result);
-        Assert.Contains(app1.GetInstance("id2"), result);
+        result.Should().HaveCount(2);
+        result.Should().Contain(app1.GetInstance("id1")!);
+        result.Should().Contain(app1.GetInstance("id2")!);
 
         result = apps.GetInstancesByVipAddress("vapp2");
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.Contains(app2.GetInstance("id1"), result);
-        Assert.Contains(app2.GetInstance("id2"), result);
+
+        result.Should().HaveCount(2);
+        result.Should().Contain(app2.GetInstance("id1")!);
+        result.Should().Contain(app2.GetInstance("id2")!);
 
         result = apps.GetInstancesByVipAddress("foobar");
-        Assert.NotNull(result);
-        Assert.Empty(result);
+
+        result.Should().BeEmpty();
     }
 
     [Fact]
@@ -582,38 +550,32 @@ public sealed class ApplicationInfoCollectionTest
         apps.UpdateFromDelta(delta);
 
         ApplicationInfo? registered = apps.GetRegisteredApplication("app1");
-        Assert.NotNull(registered);
-        Assert.Equal("app1", registered.Name);
-        Assert.NotNull(registered.Instances);
-        Assert.Equal(2, registered.Instances.Count);
+
+        registered.Should().NotBeNull();
+        registered.Name.Should().Be("app1");
+        registered.Instances.Should().HaveCount(2);
 
         registered = apps.GetRegisteredApplication("app2");
-        Assert.NotNull(registered);
-        Assert.Equal("app2", registered.Name);
-        Assert.NotNull(registered.Instances);
-        Assert.Single(registered.Instances);
 
-        foreach (InstanceInfo instance in registered.Instances)
-        {
-            Assert.Equal(InstanceStatus.Up, instance.Status);
-        }
+        registered.Should().NotBeNull();
+        registered.Name.Should().Be("app2");
+        registered.Instances.Should().ContainSingle().Which.Status.Should().Be(InstanceStatus.Up);
 
         List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.Contains(app1.GetInstance("id1"), result);
-        Assert.Contains(app1.GetInstance("id2"), result);
+        result.Should().HaveCount(2);
+        result.Should().Contain(app1.GetInstance("id1")!);
+        result.Should().Contain(app1.GetInstance("id2")!);
 
         result = apps.GetInstancesByVipAddress("vapp2");
-        Assert.NotNull(result);
-        Assert.Single(result);
-        Assert.Contains(app2.GetInstance("id1"), result);
-        Assert.DoesNotContain(app2.GetInstance("id2"), result);
+
+        result.Should().ContainSingle();
+        result.Should().Contain(app2.GetInstance("id1")!);
+        result.Should().NotContain(app2.GetInstance("id2")!);
 
         result = apps.GetInstancesByVipAddress("foobar");
-        Assert.NotNull(result);
-        Assert.Empty(result);
+
+        result.Should().BeEmpty();
     }
 
     [Fact]
@@ -651,7 +613,7 @@ public sealed class ApplicationInfoCollectionTest
         apps.UpdateFromDelta(delta);
 
         string hashcode = apps.ComputeHashCode();
-        Assert.Equal("DOWN_2_OUT_OF_SERVICE_1_STARTING_1_UP_1_", hashcode);
+        hashcode.Should().Be("DOWN_2_OUT_OF_SERVICE_1_STARTING_1_UP_1_");
     }
 
     [Fact]
@@ -725,63 +687,60 @@ public sealed class ApplicationInfoCollectionTest
 
         ApplicationInfoCollection apps = ApplicationInfoCollection.FromJson(applications, TimeProvider.System);
 
-        Assert.Equal("AppsHashCode", apps.AppsHashCode);
-        Assert.Equal(1, apps.Version);
-        Assert.NotNull(apps.ApplicationMap);
-        Assert.Single(apps.ApplicationMap);
+        apps.AppsHashCode.Should().Be("AppsHashCode");
+        apps.Version.Should().Be(1);
+        apps.ApplicationMap.Should().ContainSingle();
 
         ApplicationInfo? app = apps.GetRegisteredApplication("myApp");
 
-        Assert.NotNull(app);
-        Assert.Equal("myApp", app.Name);
-        Assert.NotNull(app.Instances);
-        Assert.Single(app.Instances);
-        Assert.NotNull(app.GetInstance("InstanceId"));
+        app.Should().NotBeNull();
+        app.Name.Should().Be("myApp");
+        app.Instances.Should().ContainSingle();
+
         InstanceInfo? instance = app.GetInstance("InstanceId");
 
-        Assert.NotNull(instance);
-        Assert.Equal("InstanceId", instance.InstanceId);
-        Assert.Equal("myApp", instance.AppName);
-        Assert.Equal("AppGroupName", instance.AppGroupName);
-        Assert.Equal("IPAddress", instance.IPAddress);
-        Assert.Equal("Sid", instance.Sid);
-        Assert.Equal(100, instance.NonSecurePort);
-        Assert.True(instance.IsNonSecurePortEnabled);
-        Assert.Equal(100, instance.SecurePort);
-        Assert.False(instance.IsSecurePortEnabled);
-        Assert.Equal("HomePageUrl", instance.HomePageUrl);
-        Assert.Equal("StatusPageUrl", instance.StatusPageUrl);
-        Assert.Equal("HealthCheckUrl", instance.HealthCheckUrl);
-        Assert.Equal("SecureHealthCheckUrl", instance.SecureHealthCheckUrl);
-        Assert.Equal("VipAddress", instance.VipAddress);
-        Assert.Equal("SecureVipAddress", instance.SecureVipAddress);
-        Assert.Equal(1, instance.CountryId);
-        Assert.Equal("MyOwn", instance.DataCenterInfo.Name.ToString());
-        Assert.Equal("HostName", instance.HostName);
-        Assert.Equal(InstanceStatus.Down, instance.Status);
-        Assert.Equal(InstanceStatus.OutOfService, instance.OverriddenStatus);
-        Assert.NotNull(instance.LeaseInfo);
-        Assert.NotNull(instance.LeaseInfo.RenewalInterval);
-        Assert.Equal(1, instance.LeaseInfo.RenewalInterval.Value.TotalSeconds);
-        Assert.NotNull(instance.LeaseInfo.Duration);
-        Assert.Equal(2, instance.LeaseInfo.Duration.Value.TotalSeconds);
-        Assert.NotNull(instance.LeaseInfo.RegistrationTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.RegistrationTimeUtc.Value.Ticks);
-        Assert.NotNull(instance.LeaseInfo.LastRenewalTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.LastRenewalTimeUtc.Value.Ticks);
-        Assert.NotNull(instance.LeaseInfo.EvictionTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.EvictionTimeUtc.Value.Ticks);
-        Assert.NotNull(instance.LeaseInfo.ServiceUpTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.ServiceUpTimeUtc.Value.Ticks);
-        Assert.False(instance.IsCoordinatingDiscoveryServer);
-        Assert.NotNull(instance.Metadata);
-        Assert.Empty(instance.Metadata);
-        Assert.NotNull(instance.LastUpdatedTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LastUpdatedTimeUtc.Value.Ticks);
-        Assert.NotNull(instance.LastDirtyTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LastDirtyTimeUtc.Value.Ticks);
-        Assert.Equal(ActionType.Added, instance.ActionType);
-        Assert.Equal("AsgName", instance.AutoScalingGroupName);
+        instance.Should().NotBeNull();
+        instance.InstanceId.Should().Be("InstanceId");
+        instance.AppName.Should().Be("myApp");
+        instance.AppGroupName.Should().Be("AppGroupName");
+        instance.IPAddress.Should().Be("IPAddress");
+        instance.Sid.Should().Be("Sid");
+        instance.NonSecurePort.Should().Be(100);
+        instance.IsNonSecurePortEnabled.Should().BeTrue();
+        instance.SecurePort.Should().Be(100);
+        instance.IsSecurePortEnabled.Should().BeFalse();
+        instance.HomePageUrl.Should().Be("HomePageUrl");
+        instance.StatusPageUrl.Should().Be("StatusPageUrl");
+        instance.HealthCheckUrl.Should().Be("HealthCheckUrl");
+        instance.SecureHealthCheckUrl.Should().Be("SecureHealthCheckUrl");
+        instance.VipAddress.Should().Be("VipAddress");
+        instance.SecureVipAddress.Should().Be("SecureVipAddress");
+        instance.CountryId.Should().Be(1);
+        instance.DataCenterInfo.Name.ToString().Should().Be("MyOwn");
+        instance.HostName.Should().Be("HostName");
+        instance.Status.Should().Be(InstanceStatus.Down);
+        instance.OverriddenStatus.Should().Be(InstanceStatus.OutOfService);
+        instance.LeaseInfo.Should().NotBeNull();
+        instance.LeaseInfo.RenewalInterval.Should().NotBeNull();
+        instance.LeaseInfo.RenewalInterval.Value.TotalSeconds.Should().Be(1);
+        instance.LeaseInfo.Duration.Should().NotBeNull();
+        instance.LeaseInfo.Duration.Value.TotalSeconds.Should().Be(2);
+        instance.LeaseInfo.RegistrationTimeUtc.Should().NotBeNull();
+        instance.LeaseInfo.RegistrationTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.LeaseInfo.LastRenewalTimeUtc.Should().NotBeNull();
+        instance.LeaseInfo.LastRenewalTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.LeaseInfo.EvictionTimeUtc.Should().NotBeNull();
+        instance.LeaseInfo.EvictionTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.LeaseInfo.ServiceUpTimeUtc.Should().NotBeNull();
+        instance.LeaseInfo.ServiceUpTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.IsCoordinatingDiscoveryServer.Should().BeFalse();
+        instance.Metadata.Should().BeEmpty();
+        instance.LastUpdatedTimeUtc.Should().NotBeNull();
+        instance.LastUpdatedTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.LastDirtyTimeUtc.Should().NotBeNull();
+        instance.LastDirtyTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.ActionType.Should().Be(ActionType.Added);
+        instance.AutoScalingGroupName.Should().Be("AsgName");
     }
 
     [Fact]
@@ -855,16 +814,14 @@ public sealed class ApplicationInfoCollectionTest
 
         ApplicationInfoCollection apps = ApplicationInfoCollection.FromJson(applications, TimeProvider.System);
 
-        Assert.Equal("AppsHashCode", apps.AppsHashCode);
-        Assert.Equal(1, apps.Version);
-        Assert.NotNull(apps.ApplicationMap);
-        Assert.Single(apps.ApplicationMap);
+        apps.AppsHashCode.Should().Be("AppsHashCode");
+        apps.Version.Should().Be(1);
+        apps.ApplicationMap.Should().ContainSingle();
 
         ApplicationInfo? app = apps.GetRegisteredApplication("myApp");
 
-        Assert.NotNull(app);
-        Assert.Equal("myApp", app.Name);
-        Assert.NotNull(app.Instances);
-        Assert.Empty(app.Instances);
+        app.Should().NotBeNull();
+        app.Name.Should().Be("myApp");
+        app.Instances.Should().BeEmpty();
     }
 }

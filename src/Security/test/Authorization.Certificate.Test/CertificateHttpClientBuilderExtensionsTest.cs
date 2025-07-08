@@ -23,7 +23,6 @@ public sealed class CertificateHttpClientBuilderExtensionsTest
         var factory = host.Services.GetRequiredService<IHttpClientFactory>();
         using HttpClient client = factory.CreateClient("test");
 
-        client.Should().NotBeNull();
         client.DefaultRequestHeaders.Contains("X-Client-Cert").Should().BeTrue();
         string certificateHeader = client.DefaultRequestHeaders.GetValues("X-Client-Cert").First();
         certificateHeader.Should().Be(Convert.ToBase64String(certificateBytes));
@@ -41,7 +40,6 @@ public sealed class CertificateHttpClientBuilderExtensionsTest
         var factory = host.Services.GetRequiredService<IHttpClientFactory>();
         using HttpClient client = factory.CreateClient("test");
 
-        client.Should().NotBeNull();
         client.DefaultRequestHeaders.Contains(customCertificateHeader).Should().BeTrue();
         string certificateHeader = client.DefaultRequestHeaders.GetValues(customCertificateHeader).First();
         certificateHeader.Should().Be(Convert.ToBase64String(certificateBytes));

@@ -105,8 +105,7 @@ public sealed class ManagementOptionsTest
             }
         });
 
-        options.CustomJsonConverters.Should().ContainSingle();
-        options.CustomJsonConverters[0].Should().Be("Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConverter");
+        options.CustomJsonConverters.Should().ContainSingle().Which.Should().Be("Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConverter");
 
         options.GetBasePath("/cloudfoundryapplication/info").Should().Be("/cloudfoundryapplication");
         options.GetBasePath("/some/info").Should().Be("/management");
@@ -129,10 +128,11 @@ public sealed class ManagementOptionsTest
         ManagementOptions options = serviceProvider.GetRequiredService<IOptions<ManagementOptions>>().Value;
 
         options.Exposure.Include.Should().ContainSingle();
-        options.Exposure.Include[0].Should().Be("*");
+        options.Exposure.Include.Should().HaveElementAt(0, "*");
+
         options.Exposure.Exclude.Should().HaveCount(2);
-        options.Exposure.Exclude[0].Should().Be("loggers");
-        options.Exposure.Exclude[1].Should().Be("mappings");
+        options.Exposure.Exclude.Should().HaveElementAt(0, "loggers");
+        options.Exposure.Exclude.Should().HaveElementAt(1, "mappings");
     }
 
     [Fact]
@@ -156,13 +156,14 @@ public sealed class ManagementOptionsTest
         ManagementOptions options = serviceProvider.GetRequiredService<IOptions<ManagementOptions>>().Value;
 
         options.Exposure.Include.Should().HaveCount(3);
-        options.Exposure.Include[0].Should().Be("httpexchanges");
-        options.Exposure.Include[1].Should().Be("heapdump");
-        options.Exposure.Include[2].Should().Be("env");
+        options.Exposure.Include.Should().HaveElementAt(0, "httpexchanges");
+        options.Exposure.Include.Should().HaveElementAt(1, "heapdump");
+        options.Exposure.Include.Should().HaveElementAt(2, "env");
+
         options.Exposure.Exclude.Should().HaveCount(3);
-        options.Exposure.Exclude[0].Should().Be("loggers");
-        options.Exposure.Exclude[1].Should().Be("mappings");
-        options.Exposure.Exclude[2].Should().Be("beans");
+        options.Exposure.Exclude.Should().HaveElementAt(0, "loggers");
+        options.Exposure.Exclude.Should().HaveElementAt(1, "mappings");
+        options.Exposure.Exclude.Should().HaveElementAt(2, "beans");
     }
 
     [Fact]

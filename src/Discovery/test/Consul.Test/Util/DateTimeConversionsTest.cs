@@ -10,19 +10,47 @@ namespace Steeltoe.Discovery.Consul.Test.Util;
 public sealed class DateTimeConversionsTest
 {
     [Fact]
+    public void ToTimeSpan_Null_Throws()
+    {
+        Action action = () => DateTimeConversions.ToTimeSpan(null!);
+
+        action.Should().ThrowExactly<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void ToTimeSpan_Empty_Throws()
+    {
+        Action action = () => DateTimeConversions.ToTimeSpan(string.Empty);
+
+        action.Should().ThrowExactly<ArgumentException>();
+    }
+
+    [Fact]
+    public void ToTimeSpan_Space_Throws()
+    {
+        Action action = () => DateTimeConversions.ToTimeSpan(" ");
+
+        action.Should().ThrowExactly<ArgumentException>();
+    }
+
+    [Fact]
+    public void ToTimeSpan_Invalid_Throws()
+    {
+        Action action = () => DateTimeConversions.ToTimeSpan("foobar");
+
+        action.Should().ThrowExactly<FormatException>();
+    }
+
+    [Fact]
     public void ToTimeSpan_ReturnsExpected()
     {
-        Assert.Throws<ArgumentNullException>(() => DateTimeConversions.ToTimeSpan(null!));
-        Assert.Throws<ArgumentException>(() => DateTimeConversions.ToTimeSpan(string.Empty));
-        Assert.Throws<ArgumentException>(() => DateTimeConversions.ToTimeSpan(" "));
-        Assert.Throws<FormatException>(() => DateTimeConversions.ToTimeSpan("foobar"));
-        Assert.Equal(1.Seconds(), DateTimeConversions.ToTimeSpan("1000ms"));
-        Assert.Equal(1000.Seconds(), DateTimeConversions.ToTimeSpan("1000s"));
-        Assert.Equal(1.Hours(), DateTimeConversions.ToTimeSpan("1h"));
-        Assert.Equal(1.Minutes(), DateTimeConversions.ToTimeSpan("1m"));
-        Assert.Equal(1.Seconds(), DateTimeConversions.ToTimeSpan("1000Ms"));
-        Assert.Equal(1000.Seconds(), DateTimeConversions.ToTimeSpan("1000S"));
-        Assert.Equal(1.Hours(), DateTimeConversions.ToTimeSpan("1H"));
-        Assert.Equal(1.Minutes(), DateTimeConversions.ToTimeSpan("1M"));
+        DateTimeConversions.ToTimeSpan("1000ms").Should().Be(1.Seconds());
+        DateTimeConversions.ToTimeSpan("1000s").Should().Be(1000.Seconds());
+        DateTimeConversions.ToTimeSpan("1h").Should().Be(1.Hours());
+        DateTimeConversions.ToTimeSpan("1m").Should().Be(1.Minutes());
+        DateTimeConversions.ToTimeSpan("1000Ms").Should().Be(1.Seconds());
+        DateTimeConversions.ToTimeSpan("1000S").Should().Be(1000.Seconds());
+        DateTimeConversions.ToTimeSpan("1H").Should().Be(1.Hours());
+        DateTimeConversions.ToTimeSpan("1M").Should().Be(1.Minutes());
     }
 }

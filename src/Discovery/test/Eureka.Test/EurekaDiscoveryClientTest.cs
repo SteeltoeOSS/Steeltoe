@@ -151,28 +151,23 @@ public sealed class EurekaDiscoveryClientTest
 
         EurekaDiscoveryClient discoveryClient = webApplication.Services.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>().Single();
 
-        Assert.NotNull(discoveryClient.Description);
+        discoveryClient.Description.Should().NotBeNull();
 
         ISet<string> serviceIds = await discoveryClient.GetServiceIdsAsync(TestContext.Current.CancellationToken);
-        Assert.Empty(serviceIds);
+        serviceIds.Should().BeEmpty();
 
         IServiceInstance thisService = discoveryClient.GetLocalServiceInstance();
-        Assert.NotNull(thisService);
+        thisService.Should().NotBeNull();
 
         var instanceOptionsMonitor = webApplication.Services.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
         EurekaInstanceOptions instanceOptions = instanceOptionsMonitor.CurrentValue;
 
-        Assert.Equal(instanceOptions.HostName, thisService.Host);
-        Assert.Equal(instanceOptions.IsSecurePortEnabled, thisService.IsSecure);
-        Assert.NotNull(thisService.Metadata);
-        Assert.Equal(5000, thisService.Port);
-        Assert.Equal("DEMO", thisService.ServiceId);
-        Assert.NotNull(thisService.Uri);
-
-        string scheme = instanceOptions.IsSecurePortEnabled ? "https" : "http";
-        var uri = new Uri($"{scheme}://{instanceOptions.HostName}:{instanceOptions.NonSecurePort}");
-
-        Assert.Equal(uri, thisService.Uri);
+        thisService.Host.Should().Be(instanceOptions.HostName);
+        thisService.IsSecure.Should().BeFalse();
+        thisService.Metadata.Should().BeEmpty();
+        thisService.Port.Should().Be(5000);
+        thisService.ServiceId.Should().Be("DEMO");
+        thisService.Uri.Should().Be(new Uri($"http://{instanceOptions.HostName}:5000"));
     }
 
     [Fact]
@@ -190,11 +185,10 @@ public sealed class EurekaDiscoveryClientTest
 
         await using WebApplication webApplication = builder.Build();
 
-        EurekaDiscoveryClient[] discoveryClients = [.. webApplication.Services.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>()];
-        Assert.Single(discoveryClients);
+        EurekaDiscoveryClient client = webApplication.Services.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>().Should().ContainSingle().Subject;
 
-        Assert.False(discoveryClients[0].IsCacheRefreshTimerStarted);
-        Assert.False(discoveryClients[0].IsHeartbeatTimerStarted);
+        client.IsCacheRefreshTimerStarted.Should().BeFalse();
+        client.IsHeartbeatTimerStarted.Should().BeFalse();
     }
 
     [Fact]
@@ -222,11 +216,9 @@ public sealed class EurekaDiscoveryClientTest
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
-        Assert.NotNull(apps);
-        Assert.Equal(1, apps.Version);
-        Assert.Equal("UP_1_", apps.AppsHashCode);
-        Assert.Single(apps);
-        Assert.Equal("FOO", apps.ElementAt(0).Name);
+        apps.Version.Should().Be(1);
+        apps.AppsHashCode.Should().Be("UP_1_");
+        apps.Should().ContainSingle().Which.Name.Should().Be("FOO");
     }
 
     [Fact]
@@ -264,12 +256,12 @@ public sealed class EurekaDiscoveryClientTest
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
-        Assert.NotNull(result);
-        Assert.Equal(3, result.Version);
-        Assert.Equal("UP_1_", result.AppsHashCode);
-        Assert.Single(result);
-        Assert.Equal("FOO", result.ElementAt(0).Name);
-        Assert.Single(result.ElementAt(0).Instances);
+        result.Version.Should().Be(3);
+        result.AppsHashCode.Should().Be("UP_1_");
+
+        ApplicationInfo applicationInfo = result.Should().ContainSingle().Subject;
+        applicationInfo.Name.Should().Be("FOO");
+        applicationInfo.Instances.Should().ContainSingle();
     }
 
     [Fact]
@@ -471,21 +463,18 @@ public sealed class EurekaDiscoveryClientTest
 
         IReadOnlyList<InstanceInfo> result = discoveryClient.GetInstancesByVipAddress("vapp1", false);
 
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.True(result[0].InstanceId is "id1" or "id2");
-        Assert.True(result[1].InstanceId is "id1" or "id2");
+        result.Should().HaveCount(2);
+        result.Should().ContainSingle(info => info.InstanceId == "id1");
+        result.Should().ContainSingle(info => info.InstanceId == "id2");
 
         result = discoveryClient.GetInstancesByVipAddress("boohoo", false);
 
-        Assert.NotNull(result);
-        Assert.Empty(result);
+        result.Should().BeEmpty();
 
         discoveryClient.Applications.ReturnUpInstancesOnly = true;
         result = discoveryClient.GetInstancesByVipAddress("vapp1", false);
 
-        Assert.NotNull(result);
-        Assert.Empty(result);
+        result.Should().BeEmpty();
     }
 
     [Fact]
@@ -538,11 +527,12 @@ public sealed class EurekaDiscoveryClientTest
 
         ApplicationInfo? result = discoveryClient.GetApplication("app1");
 
-        Assert.NotNull(result);
-        Assert.Equal("app1", result.Name);
+        result.Should().NotBeNull();
+        result.Name.Should().Be("app1");
 
         result = discoveryClient.GetApplication("boohoo");
-        Assert.Null(result);
+
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -569,8 +559,8 @@ public sealed class EurekaDiscoveryClientTest
 
         await discoveryClient.RunHealthChecksAsync(TestContext.Current.CancellationToken);
 
-        Assert.True(myHandler.Awaited);
-        Assert.Equal(InstanceStatus.Down, appInfoManager.Instance.Status);
+        myHandler.Awaited.Should().BeTrue();
+        appInfoManager.Instance.Status.Should().Be(InstanceStatus.Down);
     }
 
     [Fact]
@@ -598,8 +588,8 @@ public sealed class EurekaDiscoveryClientTest
 
         await discoveryClient.RunHealthChecksAsync(TestContext.Current.CancellationToken);
 
-        Assert.False(myHandler.Awaited);
-        Assert.Equal(InstanceStatus.Starting, appInfoManager.Instance.Status);
+        myHandler.Awaited.Should().BeFalse();
+        appInfoManager.Instance.Status.Should().Be(InstanceStatus.Starting);
     }
 
     [Fact]

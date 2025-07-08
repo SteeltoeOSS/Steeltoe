@@ -183,7 +183,7 @@ public sealed class DiagnosticObserverHttpExchangeRecorderTest
 
         listener.StopActivity(activity, context);
 
-        HttpExchange httpExchange = recorded.Should().ContainSingle().Which;
+        HttpExchange httpExchange = recorded.Should().ContainSingle().Subject;
         httpExchange.TimeTaken.Should().BeGreaterThan(900.Milliseconds()).And.BeLessThan(1300.Milliseconds());
     }
 
@@ -201,7 +201,7 @@ public sealed class DiagnosticObserverHttpExchangeRecorderTest
         activity.Start();
         recorder.ProcessEvent(RequestStopOperationName, context);
 
-        HttpExchange httpExchange = recorded.Should().ContainSingle().Which;
+        HttpExchange httpExchange = recorded.Should().ContainSingle().Subject;
         httpExchange.SerializedTimeTaken.Should().Be("PT0S");
     }
 

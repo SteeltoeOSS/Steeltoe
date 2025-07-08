@@ -12,39 +12,29 @@ public sealed class ConsulServerUtilsTest
     [Fact]
     public void FindHost_ReturnsExpected()
     {
-        var hs = new ServiceEntry
+        var serviceEntry = new ServiceEntry
         {
             Service = new AgentService(),
             Node = new Node()
         };
 
-        hs.Service.Address = "fc00:ec:cd::242:ac11:c";
+        serviceEntry.Service.Address = "fc00:ec:cd::242:ac11:c";
 
-        string s1 = ConsulServerUtils.FindHost(hs);
-        Assert.Equal("[fc00:ec:cd:0:0:242:ac11:c]", s1);
+        ConsulServerUtils.FindHost(serviceEntry).Should().Be("[fc00:ec:cd:0:0:242:ac11:c]");
 
-        hs.Service.Address = null;
-        hs.Node.Address = "fc00:ec:cd::242:ac11:c";
-        string s2 = ConsulServerUtils.FindHost(hs);
-        Assert.Equal("[fc00:ec:cd:0:0:242:ac11:c]", s2);
+        serviceEntry.Service.Address = null;
+        serviceEntry.Node.Address = "fc00:ec:cd::242:ac11:c";
+
+        ConsulServerUtils.FindHost(serviceEntry).Should().Be("[fc00:ec:cd:0:0:242:ac11:c]");
     }
 
     [Fact]
     public void FixIPv6Address_Fixes()
     {
-        string s1 = ConsulServerUtils.FixIPv6Address("fc00:ec:cd::242:ac11:c");
-        Assert.Equal("[fc00:ec:cd:0:0:242:ac11:c]", s1);
-
-        string s2 = ConsulServerUtils.FixIPv6Address("[fc00:ec:cd::242:ac11:c]");
-        Assert.Equal("[fc00:ec:cd:0:0:242:ac11:c]", s2);
-
-        string s3 = ConsulServerUtils.FixIPv6Address("192.168.0.1");
-        Assert.Equal("192.168.0.1", s3);
-
-        string s4 = ConsulServerUtils.FixIPv6Address("projects.spring.io");
-        Assert.Equal("projects.spring.io", s4);
-
-        string s5 = ConsulServerUtils.FixIPv6Address("veryLongHostName");
-        Assert.Equal("veryLongHostName", s5);
+        ConsulServerUtils.FixIPv6Address("fc00:ec:cd::242:ac11:c").Should().Be("[fc00:ec:cd:0:0:242:ac11:c]");
+        ConsulServerUtils.FixIPv6Address("[fc00:ec:cd::242:ac11:c]").Should().Be("[fc00:ec:cd:0:0:242:ac11:c]");
+        ConsulServerUtils.FixIPv6Address("192.168.0.1").Should().Be("192.168.0.1");
+        ConsulServerUtils.FixIPv6Address("projects.spring.io").Should().Be("projects.spring.io");
+        ConsulServerUtils.FixIPv6Address("veryLongHostName").Should().Be("veryLongHostName");
     }
 }

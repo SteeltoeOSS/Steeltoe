@@ -19,13 +19,13 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
     [Fact]
     public async Task Registers_connection_string_for_default_service_binding()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MySql:Default:ConnectionString"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;connect timeout=15"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddMySql(MySqlPackageResolver.OracleOnly);
         builder.Services.Configure<MySqlOptions>(options => options.ConnectionString += ";Use Compression=false");
 
@@ -44,13 +44,13 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
     [Fact]
     public async Task Registers_connection_string_for_named_service_binding()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MySql:myMySqlService:ConnectionString"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;connect timeout=15"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddMySql(MySqlPackageResolver.OracleOnly);
         builder.Services.Configure<MySqlOptions>("myMySqlService", options => options.ConnectionString += ";Use Compression=false");
 
