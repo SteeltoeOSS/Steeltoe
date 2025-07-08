@@ -26,6 +26,23 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    - name: Validate required secrets
+      shell: pwsh
+      run: |
+        $missing = @()
+        if (-not "${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }}") { $missing += 'AZURE_KEY_VAULT_CLIENT_ID' }
+        if (-not "${{ secrets.AZURE_KEY_VAULT_TENANT_ID }}") { $missing += 'AZURE_KEY_VAULT_TENANT_ID' }
+        if (-not "${{ secrets.AZURE_SUBSCRIPTION_ID }}") { $missing += 'AZURE_SUBSCRIPTION_ID' }
+        if (-not "${{ secrets.AZURE_KEY_VAULT_URL }}") { $missing += 'AZURE_KEY_VAULT_URL' }
+        if (-not "${{ secrets.AZURE_KEY_VAULT_CERTIFICATE_ID }}") { $missing += 'AZURE_KEY_VAULT_CERTIFICATE_ID' }
+
+        if ($missing.Count -gt 0) {
+          Write-Host "❌ Missing required secrets: $($missing -join ', ')"
+          exit 1
+        } else {
+          Write-Host "✅ All required secrets are present."
+        }
+
     - name: 'Az CLI login'
       uses: azure/login@v2
       with:
