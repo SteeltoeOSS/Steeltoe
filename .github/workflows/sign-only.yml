@@ -55,6 +55,7 @@ jobs:
         sign code azure-key-vault "**/*.nupkg"
         --base-directory "${{ github.workspace }}"
         --azure-key-vault-managed-identity true
+        --azure-credential-type "azure-cli"
         --azure-key-vault-url "${{ secrets.AZURE_KEY_VAULT_URL }}"
         --azure-key-vault-certificate "${{ secrets.AZURE_KEY_VAULT_CERTIFICATE_ID }}"
         --description "Steeltoe"
