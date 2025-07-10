@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Globalization;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -20,8 +19,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var options = new ConfigServerClientOptions();
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<UriFormatException>(async () =>
-            await provider.RemoteLoadAsync([@"foobar\foobar\"], null, TestContext.Current.CancellationToken));
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await provider.RemoteLoadAsync([@"foobar\foobar\"], null, TestContext.Current.CancellationToken);
+
+        await action.Should().ThrowExactlyAsync<UriFormatException>();
     }
 
     [Fact]
@@ -58,8 +59,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<HttpRequestException>(async () =>
-            await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken));
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken);
+
+        await action.Should().ThrowExactlyAsync<HttpRequestException>();
 
         startup.LastRequest.Should().NotBeNull();
         startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
@@ -331,21 +334,20 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigEnvironment? env = await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken);
 
-        Assert.NotNull(startup.LastRequest);
-        Assert.Equal($"/{options.Name}/{options.Environment}", startup.LastRequest.Path.Value);
-        Assert.NotNull(env);
-        Assert.Equal("test-name", env.Name);
-        Assert.NotNull(env.Profiles);
-        Assert.Single(env.Profiles);
-        Assert.Equal("test-label", env.Label);
-        Assert.Equal("test-version", env.Version);
-        Assert.NotNull(env.PropertySources);
-        Assert.Single(env.PropertySources);
-        Assert.Equal("source", env.PropertySources[0].Name);
-        Assert.NotNull(env.PropertySources[0].Source);
-        Assert.Equal(2, env.PropertySources[0].Source.Count);
-        Assert.Equal("value1", env.PropertySources[0].Source["key1"].ToString());
-        Assert.Equal(10L, long.Parse(env.PropertySources[0].Source["key2"].ToString()!, CultureInfo.InvariantCulture));
+        startup.LastRequest.Should().NotBeNull();
+        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
+
+        env.Should().NotBeNull();
+        env.Name.Should().Be("test-name");
+        env.Profiles.Should().ContainSingle();
+        env.Label.Should().Be("test-label");
+        env.Version.Should().Be("test-version");
+
+        PropertySource source = env.PropertySources.Should().ContainSingle().Subject;
+        source.Name.Should().Be("source");
+        source.Source.Should().HaveCount(2);
+        source.Source.Should().ContainKey("key1").WhoseValue.ToString().Should().Be("value1");
+        source.Source.Should().ContainKey("key2").WhoseValue.ToString().Should().Be("10");
     }
 
     [Fact]
@@ -438,7 +440,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         startup.LastRequest.Should().NotBeNull();
         startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
-        provider.Properties.Count.Should().Be(27);
+        provider.Properties.Should().HaveCount(27);
     }
 
     [Fact]
@@ -460,7 +462,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+
+        await action.Should().ThrowExactlyAsync<ConfigServerException>();
     }
 
     [Fact]
@@ -490,7 +495,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
             200
         ];
 
-        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+
+        await action.Should().ThrowExactlyAsync<ConfigServerException>();
         startup.RequestCount.Should().Be(1);
 
         await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
@@ -517,7 +525,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+
+        await action.Should().ThrowExactlyAsync<ConfigServerException>();
     }
 
     [Fact]
@@ -546,7 +557,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+
+        await action.Should().ThrowExactlyAsync<ConfigServerException>();
         startup.RequestCount.Should().Be(1);
 
         await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
@@ -584,7 +598,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
             using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
             using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, tracer.LoggerFactory);
 
-            await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
+            // ReSharper disable once AccessToDisposedClosure
+            Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+
+            await action.Should().ThrowExactlyAsync<ConfigServerException>();
 
             await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
@@ -630,13 +647,14 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
-        Assert.NotNull(startup.LastRequest);
-        Assert.Equal($"/{options.Name}/{options.Environment}", startup.LastRequest.Path.Value);
 
-        Assert.True(provider.TryGet("key1", out string? value));
-        Assert.Equal("value1", value);
-        Assert.True(provider.TryGet("key2", out value));
-        Assert.Equal("10", value);
+        startup.LastRequest.Should().NotBeNull();
+        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
+
+        provider.TryGet("key1", out string? value).Should().BeTrue();
+        value.Should().Be("value1");
+        provider.TryGet("key2", out value).Should().BeTrue();
+        value.Should().Be("10");
     }
 
     [Fact]
@@ -680,15 +698,15 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         provider.Load();
 
-        Assert.NotNull(startup.LastRequest);
-        Assert.True(provider.TryGet("featureToggles:ShowModule:0", out string? value));
-        Assert.Equal("FT1", value);
-        Assert.True(provider.TryGet("featureToggles:ShowModule:1", out value));
-        Assert.Equal("FT2", value);
-        Assert.True(provider.TryGet("featureToggles:ShowModule:2", out value));
-        Assert.Equal("FT3", value);
-        Assert.True(provider.TryGet("enableSettings", out value));
-        Assert.Equal("true", value);
+        startup.LastRequest.Should().NotBeNull();
+        provider.TryGet("featureToggles:ShowModule:0", out string? value).Should().BeTrue();
+        value.Should().Be("FT1");
+        provider.TryGet("featureToggles:ShowModule:1", out value).Should().BeTrue();
+        value.Should().Be("FT2");
+        provider.TryGet("featureToggles:ShowModule:2", out value).Should().BeTrue();
+        value.Should().Be("FT3");
+        provider.TryGet("enableSettings", out value).Should().BeTrue();
+        value.Should().Be("true");
 
         startup.Reset();
 
@@ -713,11 +731,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         provider.Load();
 
-        Assert.True(provider.TryGet("featureToggles:ShowModule:0", out value));
-        Assert.Equal("none", value);
-        Assert.False(provider.TryGet("featureToggles:ShowModule:1", out _));
-        Assert.False(provider.TryGet("featureToggles:ShowModule:2", out _));
-        Assert.False(provider.TryGet("enableSettings", out _));
+        provider.TryGet("featureToggles:ShowModule:0", out value).Should().BeTrue();
+        value.Should().Be("none");
+        provider.TryGet("featureToggles:ShowModule:1", out _).Should().BeFalse();
+        provider.TryGet("featureToggles:ShowModule:2", out _).Should().BeFalse();
+        provider.TryGet("enableSettings", out _).Should().BeFalse();
     }
 
     [Fact]

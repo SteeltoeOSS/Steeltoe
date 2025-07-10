@@ -66,12 +66,13 @@ public sealed class JsonInstanceInfoRootTest
             """;
 
         var result = JsonSerializer.Deserialize<JsonInstanceInfoRoot>(json);
-        Assert.NotNull(result);
-        Assert.NotNull(result.Instance);
+
+        result.Should().NotBeNull();
+        result.Instance.Should().NotBeNull();
 
         // Random check some values
-        Assert.Equal(ActionType.Added, result.Instance.ActionType);
-        Assert.Equal("http://DESKTOP-GNQ5SUT:80/health-check", result.Instance.HealthCheckUrl);
-        Assert.Equal("FOOBAR", result.Instance.AppName);
+        result.Instance.ActionType.Should().Be(ActionType.Added);
+        result.Instance.HealthCheckUrl.Should().Be("http://DESKTOP-GNQ5SUT:80/health-check");
+        result.Instance.AppName.Should().Be("FOOBAR");
     }
 }

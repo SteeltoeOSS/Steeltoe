@@ -67,11 +67,11 @@ public sealed class JsonApplicationsTest
             """;
 
         var result = JsonSerializer.Deserialize<JsonApplications>(json);
-        Assert.NotNull(result);
-        Assert.Equal("UP_1_", result.AppsHashCode);
-        Assert.Equal(1, result.VersionDelta);
-        Assert.NotNull(result.Applications);
-        Assert.Single(result.Applications);
+
+        result.Should().NotBeNull();
+        result.AppsHashCode.Should().Be("UP_1_");
+        result.VersionDelta.Should().Be(1);
+        result.Applications.Should().ContainSingle();
 
         // Rest is validated by JsonApplicationTest
     }

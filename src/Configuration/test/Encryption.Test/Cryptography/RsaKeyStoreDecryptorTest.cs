@@ -15,7 +15,9 @@ public sealed class RsaKeyStoreDecryptorTest
     {
         var rsaKeyStoreDecryptor = new RsaKeyStoreDecryptor(_keyProvider, "nonexistingKey");
 
-        Assert.Throws<DecryptionException>(() => rsaKeyStoreDecryptor.Decrypt("dGhpcyBpcyBjb21wbGV0ZSBnYXJiYWdl"));
+        Action action = () => rsaKeyStoreDecryptor.Decrypt("dGhpcyBpcyBjb21wbGV0ZSBnYXJiYWdl");
+
+        action.Should().ThrowExactly<DecryptionException>();
     }
 
     [Fact]
@@ -25,13 +27,18 @@ public sealed class RsaKeyStoreDecryptorTest
             "AQAbWqohCeQ+TTqyJ3ZlNvAtx5cC2I3PmJetuSR82yRRyX+wWd7mTkUXuN/wANJ+nr1ySdzPudjml1lHaxZn42I9szkIKSkNT+6Yg+zNaREMetcE5SXA1awtSbEaFY2NcualSzPVWs8ulsUkKlYyyh6XP9gT/kODbmX0mS6DCtxalJgjei7WujLaJaPjc3jk+EhV9M1TovexqI7XoLlsgrGf6/1gQE+SSOamTFJopWpYEeSpSEwY2dXZfct5KCFWGJVA7eDPRJk0dT6EWIvqd6J4YoMWonxgVy4nG/Gq0NTisXv9XpJHAPYBg0c8B0WrWi2PG/Q00wvFRqGmYQ1hQIVmbJm8z+f0WoCxKwnCZvvdLlgrx2qeK1S21dPdgtmLXlj5bRUrektFrNhlevlENW7wgg==";
 
         var rsaKeyStoreDecryptor = new RsaKeyStoreDecryptor(_keyProvider, "mytestkey");
-        Assert.Throws<DecryptionException>(() => rsaKeyStoreDecryptor.Decrypt(cipher));
+
+        Action action = () => rsaKeyStoreDecryptor.Decrypt(cipher);
+
+        action.Should().ThrowExactly<DecryptionException>();
     }
 
     [Fact]
     public void Constructor_WithUnsupportedAlgorithmThrows()
     {
-        Assert.Throws<ArgumentException>(() => new RsaKeyStoreDecryptor(_keyProvider, "mytestkey", "deadbeef", false, " Exception"));
+        Action action = () => _ = new RsaKeyStoreDecryptor(_keyProvider, "mytestkey", "deadbeef", false, " Exception");
+
+        action.Should().ThrowExactly<ArgumentException>();
     }
 
     [Theory]
@@ -41,7 +48,7 @@ public sealed class RsaKeyStoreDecryptorTest
         var decryptor = new RsaKeyStoreDecryptor(_keyProvider, "mytestkey", salt, bool.Parse(strong), algorithm);
         string decrypted = decryptor.Decrypt(cipher);
 
-        Assert.Equal(plainText, decrypted);
+        decrypted.Should().Be(plainText);
     }
 
     [Theory]
@@ -51,7 +58,7 @@ public sealed class RsaKeyStoreDecryptorTest
         var decryptor = new RsaKeyStoreDecryptor(_keyProvider, "someKey", salt, bool.Parse(strong), algorithm);
         string decrypted = decryptor.Decrypt(cipher, "mytestkey");
 
-        Assert.Equal(plainText, decrypted);
+        decrypted.Should().Be(plainText);
     }
 
     public static TheoryData<string, string, string, string, string> GetTestVector()

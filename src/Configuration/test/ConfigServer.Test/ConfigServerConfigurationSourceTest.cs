@@ -23,21 +23,20 @@ public sealed class ConfigServerConfigurationSourceTest
             ["foo"] = "bar"
         }, NullLoggerFactory.Instance);
 
-        Assert.Equal(options, source.DefaultOptions);
-        Assert.Null(source.Configuration);
-        Assert.NotSame(sources, source.Sources);
-        Assert.Single(source.Sources);
-        Assert.Equal(memSource, source.Sources[0]);
-        Assert.Single(source.Properties);
-        Assert.Equal("bar", source.Properties["foo"]);
+        source.DefaultOptions.Should().Be(options);
+        source.Configuration.Should().BeNull();
+        source.Sources.Should().NotBeSameAs(sources);
+        source.Sources.Should().ContainSingle().Which.Should().Be(memSource);
+        source.Properties.Should().ContainSingle();
+        source.Properties.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection().Build();
         source = new ConfigServerConfigurationSource(options, configurationRoot, NullLoggerFactory.Instance);
-        Assert.Equal(options, source.DefaultOptions);
-        Assert.NotNull(source.Configuration);
-        var root = source.Configuration as IConfigurationRoot;
-        Assert.NotNull(root);
-        Assert.Same(configurationRoot, root);
+        source.DefaultOptions.Should().Be(options);
+
+        ConfigurationRoot? root = source.Configuration.Should().BeOfType<ConfigurationRoot>().Subject;
+
+        root.Should().BeSameAs(configurationRoot);
     }
 
     [Fact]
@@ -45,11 +44,11 @@ public sealed class ConfigServerConfigurationSourceTest
     {
         var options = new ConfigServerClientOptions();
         var memSource = new MemoryConfigurationSource();
-
         List<IConfigurationSource> sources = [memSource];
 
         var source = new ConfigServerConfigurationSource(options, sources, null, NullLoggerFactory.Instance);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
-        Assert.IsType<ConfigServerConfigurationProvider>(provider);
+
+        provider.Should().BeOfType<ConfigServerConfigurationProvider>();
     }
 }

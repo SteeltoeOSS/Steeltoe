@@ -80,17 +80,17 @@ public sealed class CloudFoundryConfigurationBuilderExtensionsTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundry(reader).Build();
 
-        Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", configuration["vcap:application:application_id"]);
-        Assert.Equal("1024", configuration["vcap:application:limits:disk"]);
-        Assert.Equal("my-app.10.244.0.34.xip.io", configuration["vcap:application:uris:0"]);
-        Assert.Equal("my-app2.10.244.0.34.xip.io", configuration["vcap:application:uris:1"]);
-        Assert.Equal("elephantsql-c6c60", configuration["vcap:services:elephantsql:0:name"]);
-        Assert.Equal("mysendgrid", configuration["vcap:services:sendgrid:0:name"]);
+        configuration["vcap:application:application_id"].Should().Be("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3");
+        configuration["vcap:application:limits:disk"].Should().Be("1024");
+        configuration["vcap:application:uris:0"].Should().Be("my-app.10.244.0.34.xip.io");
+        configuration["vcap:application:uris:1"].Should().Be("my-app2.10.244.0.34.xip.io");
+        configuration["vcap:services:elephantsql:0:name"].Should().Be("elephantsql-c6c60");
+        configuration["vcap:services:sendgrid:0:name"].Should().Be("mysendgrid");
 
-        Assert.Equal("7c19d892-21c2-496b-a42a-946bbaa0775e", configuration["vcap:application:instance_id"]);
-        Assert.Equal("0", configuration["vcap:application:instance_index"]);
-        Assert.Equal("127.0.0.1", configuration["vcap:application:internal_ip"]);
-        Assert.Equal("10.41.1.1", configuration["vcap:application:instance_ip"]);
-        Assert.Equal("8888", configuration["vcap:application:port"]);
+        configuration["vcap:application:instance_id"].Should().Be("7c19d892-21c2-496b-a42a-946bbaa0775e");
+        configuration["vcap:application:instance_index"].Should().Be("0");
+        configuration["vcap:application:internal_ip"].Should().Be("127.0.0.1");
+        configuration["vcap:application:instance_ip"].Should().Be("10.41.1.1");
+        configuration["vcap:application:port"].Should().Be("8888");
     }
 }

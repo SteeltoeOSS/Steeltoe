@@ -28,8 +28,6 @@ public sealed class KubernetesServiceBindingConfigurationSourceTest
 
         var source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader());
 
-        source.FileProvider.Should().NotBeNull();
-
         PhysicalFileProvider fileProvider = source.FileProvider.Should().BeOfType<PhysicalFileProvider>().Subject;
         fileProvider.Root.Should().Contain(Path.Combine("resources", "k8s"));
         fileProvider.GetDirectoryContents("/").Exists.Should().BeTrue();
@@ -38,20 +36,21 @@ public sealed class KubernetesServiceBindingConfigurationSourceTest
     [Fact]
     public void Build_CapturesParentConfiguration()
     {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["some:value:in:configuration:path"] = "true"
+        };
+
         string rootDirectory = GetK8SResourcesDirectory(string.Empty);
         var source = new KubernetesServiceBindingConfigurationSource(new DirectoryServiceBindingsReader(rootDirectory));
 
         var builder = new ConfigurationBuilder();
         builder.Add(source);
-
-        builder.AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            ["some:value:in:configuration:path"] = "true"
-        });
-
+        builder.AddInMemoryCollection(appSettings);
         builder.Build();
 
         IConfigurationRoot parentConfiguration = source.GetParentConfiguration();
+
         parentConfiguration.Should().NotBeNull();
         parentConfiguration.GetValue<bool>("some:value:in:configuration:path").Should().BeTrue();
     }

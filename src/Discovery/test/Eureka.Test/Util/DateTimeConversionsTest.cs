@@ -11,30 +11,34 @@ public sealed class DateTimeConversionsTest
     [Fact]
     public void ToJavaMillis_Throws_IfNotUTC()
     {
-        DateTime dt = new DateTime(2016, 3, 14, 16, 42, 21, DateTimeKind.Local).AddMilliseconds(708);
-        var ex = Assert.Throws<ArgumentException>(() => DateTimeConversions.ToJavaMilliseconds(dt));
-        Assert.Contains("DateTime kind must be UTC.", ex.Message, StringComparison.Ordinal);
+        DateTime dateTime = new DateTime(2016, 3, 14, 16, 42, 21, DateTimeKind.Local).AddMilliseconds(708);
+
+        Action action = () => DateTimeConversions.ToJavaMilliseconds(dateTime);
+
+        action.Should().ThrowExactly<ArgumentException>().WithMessage("DateTime kind must be UTC.*");
     }
 
     [Fact]
     public void ToJavaMillis()
     {
-        DateTime dt = new DateTime(2016, 3, 14, 16, 42, 21, DateTimeKind.Utc).AddMilliseconds(708);
-        long millis = DateTimeConversions.ToJavaMilliseconds(dt);
-        Assert.Equal(1_457_973_741_708, millis);
+        DateTime dateTime = new DateTime(2016, 3, 14, 16, 42, 21, DateTimeKind.Utc).AddMilliseconds(708);
+        long millis = DateTimeConversions.ToJavaMilliseconds(dateTime);
+
+        millis.Should().Be(1_457_973_741_708);
     }
 
     [Fact]
     public void FromJavaMillis()
     {
         const long millis = 1_457_973_741_708;
-        DateTime dt = DateTimeConversions.FromJavaMilliseconds(millis);
-        Assert.Equal(3, dt.Month);
-        Assert.Equal(14, dt.Day);
-        Assert.Equal(2016, dt.Year);
-        Assert.Equal(16, dt.Hour);
-        Assert.Equal(42, dt.Minute);
-        Assert.Equal(21, dt.Second);
-        Assert.Equal(708, dt.Millisecond);
+        DateTime dateTime = DateTimeConversions.FromJavaMilliseconds(millis);
+
+        dateTime.Month.Should().Be(3);
+        dateTime.Day.Should().Be(14);
+        dateTime.Year.Should().Be(2016);
+        dateTime.Hour.Should().Be(16);
+        dateTime.Minute.Should().Be(42);
+        dateTime.Second.Should().Be(21);
+        dateTime.Millisecond.Should().Be(708);
     }
 }

@@ -42,7 +42,9 @@ public sealed class InfoActuatorTest
         services.AddInfoActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        Func<InfoEndpointMiddleware> action = serviceProvider.GetRequiredService<InfoEndpointMiddleware>;
+        // ReSharper disable once AccessToDisposedClosure
+        Action action = () => serviceProvider.GetRequiredService<InfoEndpointMiddleware>();
+
         action.Should().NotThrow();
     }
 
@@ -298,9 +300,8 @@ public sealed class InfoActuatorTest
             """);
 
         IList<string> logMessages = loggerProvider.GetAll();
-        logMessages.Should().ContainSingle();
 
-        logMessages[0].Should().Be(
+        logMessages.Should().ContainSingle().Which.Should().Be(
             $"WARN {typeof(InfoEndpointHandler)}: Exception thrown by contributor '{typeof(ThrowingContributor)}' while contributing to info endpoint.");
     }
 
@@ -312,8 +313,6 @@ public sealed class InfoActuatorTest
         builder.Services.AddInfoContributor<FakeContributor>();
         await using WebApplication host = builder.Build();
 
-        IInfoContributor[] contributors = [.. host.Services.GetServices<IInfoContributor>()];
-
-        contributors.Should().ContainSingle();
+        host.Services.GetServices<IInfoContributor>().Should().ContainSingle();
     }
 }

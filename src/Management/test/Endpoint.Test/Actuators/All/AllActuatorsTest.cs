@@ -63,7 +63,8 @@ public sealed class AllActuatorsTest
         foreach (Type middlewareType in middlewareTypes)
         {
             // ReSharper disable once AccessToDisposedClosure
-            Func<object> action = () => serviceProvider.GetRequiredService(middlewareType);
+            Action action = () => serviceProvider.GetRequiredService(middlewareType);
+
             action.Should().NotThrow();
         }
 
@@ -120,9 +121,9 @@ public sealed class AllActuatorsTest
         host.Services.GetServices<IEndpointMiddleware>().Should().HaveCount(actuatorCount);
 
         IStartupFilter[] startupFilters = [.. host.Services.GetServices<IStartupFilter>()];
-        startupFilters.Should().ContainSingle(filter => filter is ConfigureActuatorsMiddlewareStartupFilter);
-        startupFilters.Should().ContainSingle(filter => filter is ManagementPortStartupFilter);
-        startupFilters.Should().ContainSingle(filter => filter is AvailabilityStartupFilter);
+        startupFilters.OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
+        startupFilters.OfType<ManagementPortStartupFilter>().Should().ContainSingle();
+        startupFilters.OfType<AvailabilityStartupFilter>().Should().ContainSingle();
 
         host.Services.GetServices<IConfigureOptions<InfoEndpointOptions>>().Should().ContainSingle();
         host.Services.GetServices<IOptionsChangeTokenSource<InfoEndpointOptions>>().Should().ContainSingle();

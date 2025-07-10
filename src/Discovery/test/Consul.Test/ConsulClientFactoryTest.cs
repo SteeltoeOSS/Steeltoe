@@ -26,13 +26,13 @@ public sealed class ConsulClientFactoryTest
 
         var client = ConsulClientFactory.CreateClient(options) as ConsulClient;
 
-        Assert.NotNull(client);
-        Assert.NotNull(client.Config);
-        Assert.Equal(options.Datacenter, client.Config.Datacenter);
-        Assert.Equal(options.Token, client.Config.Token);
-        Assert.Equal(options.Host, client.Config.Address.Host);
-        Assert.Equal(options.Port, client.Config.Address.Port);
-        Assert.Equal(options.Scheme, client.Config.Address.Scheme);
-        Assert.Equal(new TimeSpan(0, 0, 5), client.Config.WaitTime);
+        client.Should().NotBeNull();
+        client.Config.Should().NotBeNull();
+        client.Config.Datacenter.Should().Be(options.Datacenter);
+        client.Config.Token.Should().Be(options.Token);
+        client.Config.Address.Host.Should().Be(options.Host);
+        client.Config.Address.Port.Should().Be(options.Port);
+        client.Config.Address.Scheme.Should().Be(options.Scheme);
+        client.Config.WaitTime.Should().Be(new TimeSpan(0, 0, 5));
     }
 }

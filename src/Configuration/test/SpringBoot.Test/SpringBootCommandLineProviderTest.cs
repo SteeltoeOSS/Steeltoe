@@ -13,7 +13,6 @@ public sealed class SpringBootCommandLineProviderTest
         provider.Load();
         provider.TryGet("spring:cloud:stream:bindings:input", out string? value);
 
-        Assert.NotNull(value);
-        Assert.Equal("test", value);
+        value.Should().Be("test");
     }
 }

@@ -37,11 +37,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
-
-        Assert.Single(discoveryClients);
-        Assert.NotNull(discoveryClients[0]);
-        Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
+        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<ConsulDiscoveryClient>();
     }
 
     [Fact]
@@ -56,7 +52,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
         await using ServiceProvider provider = services.BuildServiceProvider(true);
         var clientOptions = provider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
 
-        Assert.True(clientOptions.Value.Enabled);
+        clientOptions.Value.Enabled.Should().BeTrue();
     }
 
     [Fact]
@@ -76,7 +72,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
         await using ServiceProvider provider = services.BuildServiceProvider(true);
         var clientOptions = provider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
 
-        Assert.False(clientOptions.Value.Enabled);
+        clientOptions.Value.Enabled.Should().BeFalse();
     }
 
     [Fact]
@@ -98,7 +94,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
         await using ServiceProvider provider = services.BuildServiceProvider(true);
         var clientOptions = provider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
 
-        Assert.True(clientOptions.Value.Enabled);
+        clientOptions.Value.Enabled.Should().BeTrue();
     }
 
     [Fact]
@@ -142,8 +138,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IHostedService[] hostedServices = [.. serviceProvider.GetServices<IHostedService>()];
-        hostedServices.OfType<DiscoveryClientHostedService>().Should().ContainSingle();
+        serviceProvider.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 
     [Fact]

@@ -29,7 +29,9 @@ public sealed class HeapDumpActuatorTest
         services.AddHeapDumpActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        Func<HeapDumpEndpointMiddleware> action = serviceProvider.GetRequiredService<HeapDumpEndpointMiddleware>;
+        // ReSharper disable once AccessToDisposedClosure
+        Action action = () => serviceProvider.GetRequiredService<HeapDumpEndpointMiddleware>();
+
         action.Should().NotThrow();
     }
 

@@ -11,8 +11,10 @@ public sealed class SpringBootCommandLineSourceTest
     [Fact]
     public void Build__ReturnsProvider()
     {
+        var builder = new ConfigurationBuilder();
         var source = new SpringBootCommandLineSource([]);
-        IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
-        Assert.IsType<SpringBootCommandLineProvider>(provider);
+        IConfigurationProvider provider = source.Build(builder);
+
+        provider.Should().BeOfType<SpringBootCommandLineProvider>();
     }
 }

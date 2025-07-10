@@ -14,17 +14,20 @@ namespace Steeltoe.Discovery.Consul.Test.Discovery;
 public sealed class TtlSchedulerTest
 {
     [Fact]
-    public void Add_Throws_Invalid_InstanceId()
+    public async Task Add_Throws_Invalid_InstanceId()
     {
         var clientMoq = new Mock<IConsulClient>();
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
 
-        Assert.Throws<ArgumentException>(() => scheduler.Add(string.Empty));
+        // ReSharper disable once AccessToDisposedClosure
+        Action action = () => scheduler.Add(string.Empty);
+
+        action.Should().ThrowExactly<ArgumentException>();
     }
 
     [Fact]
-    public void Add_DoesNothing_NoHeartbeatOptionsConfigured()
+    public async Task Add_DoesNothing_NoHeartbeatOptionsConfigured()
     {
         var clientMoq = new Mock<IConsulClient>();
 
@@ -33,10 +36,10 @@ public sealed class TtlSchedulerTest
             Heartbeat = null
         });
 
-        var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
         scheduler.Add("foobar");
 
-        Assert.Empty(scheduler.ServiceHeartbeats);
+        scheduler.ServiceHeartbeats.Should().BeEmpty();
     }
 
     [Fact]
@@ -48,13 +51,12 @@ public sealed class TtlSchedulerTest
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
 
-        var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
         scheduler.Add("foobar");
 
-        Assert.NotEmpty(scheduler.ServiceHeartbeats);
-        Assert.True(scheduler.ServiceHeartbeats.TryRemove("foobar", out PeriodicHeartbeat? heartbeat));
-        Assert.NotNull(heartbeat);
-        await heartbeat.DisposeAsync();
+        scheduler.ServiceHeartbeats.Should().NotBeEmpty();
+        scheduler.ServiceHeartbeats.TryRemove("foobar", out PeriodicHeartbeat? heartbeat).Should().BeTrue();
+        heartbeat.Should().NotBeNull();
     }
 
     [Fact]
@@ -78,15 +80,14 @@ public sealed class TtlSchedulerTest
         await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
         scheduler.Add(options.InstanceId);
 
-        Assert.Contains(options.InstanceId, scheduler.ServiceHeartbeats);
-        PeriodicHeartbeat heartbeat = scheduler.ServiceHeartbeats[options.InstanceId];
+        PeriodicHeartbeat heartbeat = scheduler.ServiceHeartbeats.Should().ContainKey(options.InstanceId).WhoseValue;
         TimeSpan beforeInterval = heartbeat.Interval;
 
         options.Heartbeat.TtlValue = 10;
         optionsMonitor.Change(options);
 
         TimeSpan afterInterval = heartbeat.Interval;
-        Assert.NotEqual(beforeInterval, afterInterval);
+        afterInterval.Should().NotBe(beforeInterval);
     }
 
     [Fact]
@@ -94,9 +95,12 @@ public sealed class TtlSchedulerTest
     {
         var clientMoq = new Mock<IConsulClient>();
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<ArgumentException>(async () => await scheduler.RemoveAsync(string.Empty));
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await scheduler.RemoveAsync(string.Empty);
+
+        await action.Should().ThrowExactlyAsync<ArgumentException>();
     }
 
     [Fact]
@@ -107,15 +111,15 @@ public sealed class TtlSchedulerTest
         clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
         scheduler.Add("foobar");
 
-        Assert.NotEmpty(scheduler.ServiceHeartbeats);
-        Assert.True(scheduler.ServiceHeartbeats.TryGetValue("foobar", out PeriodicHeartbeat? heartbeat));
-        Assert.NotNull(heartbeat);
+        scheduler.ServiceHeartbeats.Should().NotBeEmpty();
+        scheduler.ServiceHeartbeats.TryGetValue("foobar", out PeriodicHeartbeat? heartbeat).Should().BeTrue();
+        heartbeat.Should().NotBeNull();
 
         await scheduler.RemoveAsync("foobar");
-        Assert.False(scheduler.ServiceHeartbeats.TryGetValue("foobar", out _));
+        scheduler.ServiceHeartbeats.TryGetValue("foobar", out _).Should().BeFalse();
     }
 
     [Fact]
@@ -133,7 +137,7 @@ public sealed class TtlSchedulerTest
             }
         });
 
-        var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
         scheduler.Add("foobar");
 
         await Task.Delay(2500.Milliseconds(), TestContext.Current.CancellationToken);

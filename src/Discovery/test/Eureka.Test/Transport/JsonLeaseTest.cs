@@ -24,12 +24,13 @@ public sealed class JsonLeaseTest
             """;
 
         var leaseInfo = JsonSerializer.Deserialize<JsonLeaseInfo>(json);
-        Assert.NotNull(leaseInfo);
-        Assert.Equal(30, leaseInfo.RenewalIntervalInSeconds);
-        Assert.Equal(90, leaseInfo.DurationInSeconds);
-        Assert.Equal(1_457_714_988_223, leaseInfo.RegistrationTimestamp);
-        Assert.Equal(1_457_716_158_319, leaseInfo.LastRenewalTimestamp);
-        Assert.Equal(0, leaseInfo.EvictionTimestamp);
-        Assert.Equal(1_457_714_988_223, leaseInfo.ServiceUpTimestamp);
+
+        leaseInfo.Should().NotBeNull();
+        leaseInfo.RenewalIntervalInSeconds.Should().Be(30);
+        leaseInfo.DurationInSeconds.Should().Be(90);
+        leaseInfo.RegistrationTimestamp.Should().Be(1_457_714_988_223);
+        leaseInfo.LastRenewalTimestamp.Should().Be(1_457_716_158_319);
+        leaseInfo.EvictionTimestamp.Should().Be(0);
+        leaseInfo.ServiceUpTimestamp.Should().Be(1_457_714_988_223);
     }
 }

@@ -69,8 +69,9 @@ public sealed class JsonApplicationsRootTest
             """;
 
         var result = JsonSerializer.Deserialize<JsonApplicationsRoot>(json);
-        Assert.NotNull(result);
-        Assert.NotNull(result.Applications);
+
+        result.Should().NotBeNull();
+        result.Applications.Should().NotBeNull();
 
         // Rest is validated by JsonApplicationsTest
     }

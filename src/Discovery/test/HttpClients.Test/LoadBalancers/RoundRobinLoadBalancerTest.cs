@@ -85,7 +85,7 @@ public sealed class RoundRobinLoadBalancerTest
         var uri = new Uri("https://foo:8080/test");
 
         Uri result = await loadBalancer.ResolveServiceInstanceAsync(uri, TestContext.Current.CancellationToken);
-        Assert.Equal(uri, result);
+        result.Should().Be(uri);
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public sealed class RoundRobinLoadBalancerTest
         var uri = new Uri("https://foo/test");
 
         Uri result = await handler.ResolveServiceInstanceAsync(uri, TestContext.Current.CancellationToken);
-        Assert.Equal(uri, result);
+        result.Should().Be(uri);
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public sealed class RoundRobinLoadBalancerTest
         var uri = new Uri("https://foo/test/bar/foo?test=1&test2=2");
 
         Uri result = await handler.ResolveServiceInstanceAsync(uri, TestContext.Current.CancellationToken);
-        Assert.Equal(new Uri("https://foundit:5555/test/bar/foo?test=1&test2=2"), result);
+        result.Should().Be(new Uri("https://foundit:5555/test/bar/foo?test=1&test2=2"));
     }
 
     [Fact]

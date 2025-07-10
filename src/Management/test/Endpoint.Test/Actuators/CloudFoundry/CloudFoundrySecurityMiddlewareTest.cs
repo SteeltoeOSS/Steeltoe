@@ -45,13 +45,18 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         using HttpClient client = host.GetTestClient();
 
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
 
-        Assert.Equal("""{"security_error":"Application ID is not available"}""",
-            await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
+        response.Content.Headers.ContentType.Should().NotBeNull();
+        response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
 
-        Assert.NotNull(response.Content.Headers.ContentType);
-        Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
+        string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        responseBody.Should().BeJson("""
+            {
+              "security_error": "Application ID is not available"
+            }
+            """);
     }
 
     [Fact]
@@ -72,13 +77,18 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         using HttpClient client = host.GetTestClient();
 
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
 
-        Assert.Equal("""{"security_error":"Cloud controller URL is not available"}""",
-            await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
+        response.Content.Headers.ContentType.Should().NotBeNull();
+        response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
 
-        Assert.NotNull(response.Content.Headers.ContentType);
-        Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
+        string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        responseBody.Should().BeJson("""
+            {
+              "security_error": "Cloud controller URL is not available"
+            }
+            """);
     }
 
     [Fact]
@@ -102,9 +112,11 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         HttpResponseMessage response =
             await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/does-not-exist"), TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        Assert.Equal(string.Empty, await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
-        Assert.Null(response.Content.Headers.ContentType);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.Content.Headers.ContentType.Should().BeNull();
+
+        string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        responseBody.Should().BeEmpty();
     }
 
     [Fact]
@@ -126,13 +138,18 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         using HttpClient client = host.GetTestClient();
 
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
 
-        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""",
-            await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.Content.Headers.ContentType.Should().NotBeNull();
+        response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
 
-        Assert.NotNull(response.Content.Headers.ContentType);
-        Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
+        string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        responseBody.Should().BeJson("""
+            {
+              "security_error": "Authorization header is missing or invalid"
+            }
+            """);
     }
 
     [Fact]
@@ -153,13 +170,18 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         using HttpClient client = host.GetTestClient();
 
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        Assert.Equal("""{"security_error":"Application ID is not available"}""",
-            await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Content.Headers.ContentType.Should().NotBeNull();
+        response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
 
-        Assert.NotNull(response.Content.Headers.ContentType);
-        Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
+        string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        responseBody.Should().BeJson("""
+            {
+              "security_error": "Application ID is not available"
+            }
+            """);
     }
 
     [Fact]
@@ -182,13 +204,18 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         using HttpClient client = host.GetTestClient();
 
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
 
-        Assert.Equal("""{"security_error":"Authorization header is missing or invalid"}""",
-            await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.Content.Headers.ContentType.Should().NotBeNull();
+        response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
 
-        Assert.NotNull(response.Content.Headers.ContentType);
-        Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
+        string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        responseBody.Should().BeJson("""
+            {
+              "security_error": "Authorization header is missing or invalid"
+            }
+            """);
     }
 
     [Fact]
@@ -233,7 +260,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         using HttpClient client = host.GetTestClient();
 
         HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
     }
 
     [Fact]
@@ -253,12 +280,12 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
 
         HttpContext context1 = CreateRequest("GET", "/");
         string token = middleware.GetAccessToken(context1.Request);
-        Assert.Empty(token);
+        token.Should().BeEmpty();
 
         HttpContext context2 = CreateRequest("GET", "/");
         context2.Request.Headers.Append("Authorization", new StringValues("Bearer foobar"));
         string token2 = middleware.GetAccessToken(context2.Request);
-        Assert.Equal("foobar", token2);
+        token2.Should().Be("foobar");
     }
 
     [Fact]
@@ -278,9 +305,9 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
 
         HttpContext context = CreateRequest("GET", "/");
         SecurityResult result = await middleware.GetPermissionsAsync(context);
-        Assert.NotNull(result);
-        Assert.Equal(EndpointPermissions.None, result.Permissions);
-        Assert.Equal(HttpStatusCode.Unauthorized, result.Code);
+
+        result.Permissions.Should().Be(EndpointPermissions.None);
+        result.Code.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]

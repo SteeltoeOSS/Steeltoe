@@ -31,11 +31,11 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlCloudFoundryPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
-        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData.Should().ContainKey($"{keyPrefix}:host").WhoseValue.Should().Be("test-host");
+        configurationData.Should().ContainKey($"{keyPrefix}:port").WhoseValue.Should().Be("test-port");
+        configurationData.Should().ContainKey($"{keyPrefix}:database").WhoseValue.Should().Be("test-database");
+        configurationData.Should().ContainKey($"{keyPrefix}:username").WhoseValue.Should().Be("test-username");
+        configurationData.Should().ContainKey($"{keyPrefix}:password").WhoseValue.Should().Be("test-password");
     }
 
     [Fact]
@@ -63,11 +63,11 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlCloudFoundryPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
-        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData.Should().ContainKey($"{keyPrefix}:host").WhoseValue.Should().Be("test-host");
+        configurationData.Should().ContainKey($"{keyPrefix}:port").WhoseValue.Should().Be("test-port");
+        configurationData.Should().ContainKey($"{keyPrefix}:database").WhoseValue.Should().Be("test-database");
+        configurationData.Should().ContainKey($"{keyPrefix}:username").WhoseValue.Should().Be("test-username");
+        configurationData.Should().ContainKey($"{keyPrefix}:password").WhoseValue.Should().Be("test-password");
         GetFileContentAtKey(configurationData, $"{keyPrefix}:SSL Certificate").Should().Be("test-ssl-cert");
         GetFileContentAtKey(configurationData, $"{keyPrefix}:SSL Key").Should().Be("test-ssl-key");
         GetFileContentAtKey(configurationData, $"{keyPrefix}:Root Certificate").Should().Be("test-ssl-root-cert");
@@ -96,12 +96,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlCloudFoundryPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:host"].Should().Be("test-host1,test-host2");
-        configurationData[$"{keyPrefix}:Target Session Attributes"].Should().Be("primary");
-        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
-        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData.Should().ContainKey($"{keyPrefix}:host").WhoseValue.Should().Be("test-host1,test-host2");
+        configurationData.Should().ContainKey($"{keyPrefix}:Target Session Attributes").WhoseValue.Should().Be("primary");
+        configurationData.Should().ContainKey($"{keyPrefix}:port").WhoseValue.Should().Be("test-port");
+        configurationData.Should().ContainKey($"{keyPrefix}:database").WhoseValue.Should().Be("test-database");
+        configurationData.Should().ContainKey($"{keyPrefix}:username").WhoseValue.Should().Be("test-username");
+        configurationData.Should().ContainKey($"{keyPrefix}:password").WhoseValue.Should().Be("test-password");
     }
 
     [Fact]
@@ -127,12 +127,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, RabbitMQCloudFoundryPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:useTls"].Should().Be("false");
-        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
-        configurationData[$"{keyPrefix}:virtualHost"].Should().Be("test-vhost");
+        configurationData.Should().ContainKey($"{keyPrefix}:useTls").WhoseValue.Should().Be("false");
+        configurationData.Should().ContainKey($"{keyPrefix}:host").WhoseValue.Should().Be("test-host");
+        configurationData.Should().ContainKey($"{keyPrefix}:port").WhoseValue.Should().Be("test-port");
+        configurationData.Should().ContainKey($"{keyPrefix}:username").WhoseValue.Should().Be("test-username");
+        configurationData.Should().ContainKey($"{keyPrefix}:password").WhoseValue.Should().Be("test-password");
+        configurationData.Should().ContainKey($"{keyPrefix}:virtualHost").WhoseValue.Should().Be("test-vhost");
     }
 
     [Fact]
@@ -155,9 +155,9 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisCloudFoundryPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData.Should().ContainKey($"{keyPrefix}:host").WhoseValue.Should().Be("test-host");
+        configurationData.Should().ContainKey($"{keyPrefix}:port").WhoseValue.Should().Be("test-port");
+        configurationData.Should().ContainKey($"{keyPrefix}:password").WhoseValue.Should().Be("test-password");
     }
 
     [Fact]
@@ -180,10 +180,10 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisCloudFoundryPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:ssl"].Should().Be("true");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData.Should().ContainKey($"{keyPrefix}:host").WhoseValue.Should().Be("test-host");
+        configurationData.Should().ContainKey($"{keyPrefix}:port").WhoseValue.Should().Be("test-port");
+        configurationData.Should().ContainKey($"{keyPrefix}:ssl").WhoseValue.Should().Be("true");
+        configurationData.Should().ContainKey($"{keyPrefix}:password").WhoseValue.Should().Be("test-password");
     }
 
     [Fact]
@@ -208,10 +208,10 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, SqlServerCloudFoundryPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:Data Source"].Should().Be("test-host,test-port");
-        configurationData[$"{keyPrefix}:Initial Catalog"].Should().Be("test-database");
-        configurationData[$"{keyPrefix}:User ID"].Should().Be("test-username");
-        configurationData[$"{keyPrefix}:Password"].Should().Be("test-password");
+        configurationData.Should().ContainKey($"{keyPrefix}:Data Source").WhoseValue.Should().Be("test-host,test-port");
+        configurationData.Should().ContainKey($"{keyPrefix}:Initial Catalog").WhoseValue.Should().Be("test-database");
+        configurationData.Should().ContainKey($"{keyPrefix}:User ID").WhoseValue.Should().Be("test-username");
+        configurationData.Should().ContainKey($"{keyPrefix}:Password").WhoseValue.Should().Be("test-password");
     }
 
     [Fact]
@@ -229,8 +229,8 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbCloudFoundryPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:url"].Should().Be("mongodb://localhost:27017/auth-db?appname=sample");
-        configurationData[$"{keyPrefix}:database"].Should().Be("auth-db");
+        configurationData.Should().ContainKey($"{keyPrefix}:url").WhoseValue.Should().Be("mongodb://localhost:27017/auth-db?appname=sample");
+        configurationData.Should().ContainKey($"{keyPrefix}:database").WhoseValue.Should().Be("auth-db");
     }
 
     [Fact]
@@ -254,11 +254,11 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         const string keyPrefix = EurekaCloudFoundryPostProcessor.EurekaConfigurationKeyPrefix;
-        configurationData[$"{keyPrefix}:ServiceUrl"].Should().Be("test-uri/eureka/");
-        configurationData[$"{keyPrefix}:ClientId"].Should().Be("test-client-id");
-        configurationData[$"{keyPrefix}:ClientSecret"].Should().Be("test-client-secret");
-        configurationData[$"{keyPrefix}:AccessTokenUri"].Should().Be("test-access-token-uri");
-        configurationData[$"{keyPrefix}:Enabled"].Should().Be("true");
+        configurationData.Should().ContainKey($"{keyPrefix}:ServiceUrl").WhoseValue.Should().Be("test-uri/eureka/");
+        configurationData.Should().ContainKey($"{keyPrefix}:ClientId").WhoseValue.Should().Be("test-client-id");
+        configurationData.Should().ContainKey($"{keyPrefix}:ClientSecret").WhoseValue.Should().Be("test-client-secret");
+        configurationData.Should().ContainKey($"{keyPrefix}:AccessTokenUri").WhoseValue.Should().Be("test-access-token-uri");
+        configurationData.Should().ContainKey($"{keyPrefix}:Enabled").WhoseValue.Should().Be("true");
     }
 
     [Fact]
@@ -283,9 +283,9 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         foreach (string scheme in IdentityCloudFoundryPostProcessor.AuthenticationSchemes)
         {
             string keyPrefix = $"{IdentityCloudFoundryPostProcessor.AuthenticationConfigurationKeyPrefix}:{scheme}";
-            configurationData[$"{keyPrefix}:Authority"].Should().Be("test-domain");
-            configurationData[$"{keyPrefix}:ClientId"].Should().Be("test-id");
-            configurationData[$"{keyPrefix}:ClientSecret"].Should().Be("test-secret");
+            configurationData.Should().ContainKey($"{keyPrefix}:Authority").WhoseValue.Should().Be("test-domain");
+            configurationData.Should().ContainKey($"{keyPrefix}:ClientId").WhoseValue.Should().Be("test-id");
+            configurationData.Should().ContainKey($"{keyPrefix}:ClientSecret").WhoseValue.Should().Be("test-secret");
         }
     }
 }

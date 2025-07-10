@@ -40,11 +40,9 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         builder.Services.AddEurekaDiscoveryClient();
 
         await using WebApplication host = builder.Build();
-        IDiscoveryClient[] discoveryClients = [.. host.Services.GetServices<IDiscoveryClient>()];
 
-        Assert.Single(discoveryClients);
-        Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
-        Assert.Single(host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>());
+        host.Services.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<EurekaDiscoveryClient>();
+        host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 
     [Fact]
@@ -56,10 +54,8 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
 
         await using WebApplication host = builder.Build();
 
-        IDiscoveryClient[] discoveryClients = [.. host.Services.GetServices<IDiscoveryClient>()];
-        Assert.Single(discoveryClients);
-        Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
-        Assert.Single(host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>());
+        host.Services.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<ConsulDiscoveryClient>();
+        host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 
     [Fact]
@@ -74,7 +70,9 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
 
         await using WebApplication host = builder.Build();
 
+        // ReSharper disable once AccessToDisposedClosure
         Task<EurekaDiscoveryClient> resolveTask = Task.Run(() => _ = host.Services.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>().Single());
+
         Func<Task> action = async () => await resolveTask.WaitAsync(5.Seconds(), TestContext.Current.CancellationToken);
 
         await action.Should().NotThrowAsync();

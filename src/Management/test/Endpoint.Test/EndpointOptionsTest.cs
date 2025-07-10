@@ -33,11 +33,8 @@ public sealed class EndpointOptionsTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IConfigureOptions<ManagementOptions>[] configurers = [.. serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>()];
-        configurers.Should().ContainSingle();
-
-        IOptionsChangeTokenSource<ManagementOptions>[] tokenSources = [.. serviceProvider.GetServices<IOptionsChangeTokenSource<ManagementOptions>>()];
-        tokenSources.Should().ContainSingle();
+        serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>().Should().ContainSingle();
+        serviceProvider.GetServices<IOptionsChangeTokenSource<ManagementOptions>>().Should().ContainSingle();
     }
 
     [Fact]

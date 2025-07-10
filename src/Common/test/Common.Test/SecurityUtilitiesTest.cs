@@ -9,20 +9,20 @@ public sealed class SecurityUtilitiesTest
     [Fact]
     public void SanitizeInput_ReturnsNullAndEmptyUnchanged()
     {
-        Assert.Null(SecurityUtilities.SanitizeInput(null));
-        Assert.Equal(string.Empty, SecurityUtilities.SanitizeInput(string.Empty));
+        SecurityUtilities.SanitizeInput(null).Should().BeNull();
+        SecurityUtilities.SanitizeInput(string.Empty).Should().BeEmpty();
     }
 
     [Fact]
     public void SanitizeInput_EncodesHtml()
     {
-        Assert.Equal("&gt;some string&lt;", SecurityUtilities.SanitizeInput(">some string<"));
+        SecurityUtilities.SanitizeInput(">some string<").Should().Be("&gt;some string&lt;");
     }
 
     [Fact]
     public void SanitizeInput_RemovesCrlf()
     {
-        Assert.DoesNotContain("\r", SecurityUtilities.SanitizeInput("some\rparagraph\rwith\rcarriage\rreturns"), StringComparison.Ordinal);
-        Assert.DoesNotContain("\n", SecurityUtilities.SanitizeInput("some\nparagraph\nwith\nline\nendings"), StringComparison.Ordinal);
+        SecurityUtilities.SanitizeInput("some\rparagraph\rwith\rcarriage\rreturns").Should().NotContain("\r");
+        SecurityUtilities.SanitizeInput("some\nparagraph\nwith\nline\nendings").Should().NotContain("\n");
     }
 }

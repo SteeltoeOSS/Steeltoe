@@ -36,18 +36,16 @@ public sealed class EurekaApplicationsHealthContributorTest
 
         IList<string>? apps = contributor.GetApplicationsFromConfiguration();
 
-        Assert.Null(apps);
+        apps.Should().BeNull();
 
         clientOptions.Health.MonitoredApps = "foo,bar, boo ";
 
         apps = contributor.GetApplicationsFromConfiguration();
 
-        Assert.NotNull(apps);
-        Assert.NotEmpty(apps);
-        Assert.Equal(3, apps.Count);
-        Assert.Contains("foo", apps);
-        Assert.Contains("bar", apps);
-        Assert.Contains("boo", apps);
+        apps.Should().HaveCount(3);
+        apps.Should().Contain("foo");
+        apps.Should().Contain("bar");
+        apps.Should().Contain("boo");
     }
 
     [Fact]
@@ -68,8 +66,8 @@ public sealed class EurekaApplicationsHealthContributorTest
         var result = new HealthCheckResult();
         contributor.AddApplicationHealthStatus("foobar", app1, result);
 
-        Assert.Equal(HealthStatus.Down, result.Status);
-        Assert.Equal("No instances found", result.Details["foobar"]);
+        result.Status.Should().Be(HealthStatus.Down);
+        result.Details.Should().ContainKey("foobar").WhoseValue.Should().Be("No instances found");
 
         result = new HealthCheckResult
         {
@@ -78,8 +76,8 @@ public sealed class EurekaApplicationsHealthContributorTest
 
         contributor.AddApplicationHealthStatus("app1", app1, result);
 
-        Assert.Equal(HealthStatus.Up, result.Status);
-        Assert.Equal("2 instances with UP status", result.Details["app1"]);
+        result.Status.Should().Be(HealthStatus.Up);
+        result.Details.Should().ContainKey("app1").WhoseValue.Should().Be("2 instances with UP status");
 
         result = new HealthCheckResult
         {
@@ -88,8 +86,8 @@ public sealed class EurekaApplicationsHealthContributorTest
 
         contributor.AddApplicationHealthStatus("app2", app2, result);
 
-        Assert.Equal(HealthStatus.Down, result.Status);
-        Assert.Equal("0 instances with UP status", result.Details["app2"]);
+        result.Status.Should().Be(HealthStatus.Down);
+        result.Details.Should().ContainKey("app2").WhoseValue.Should().Be("0 instances with UP status");
     }
 
     private static (EurekaApplicationsHealthContributor Contributor, EurekaClientOptions ClientOptions) CreateHealthContributor(

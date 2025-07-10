@@ -18,7 +18,7 @@ public sealed class ServiceBindingMapperTest
         string? newValue = mapper.MapFromTo("test-source-key", "test-destination-key");
 
         newValue.Should().Be("test-source-value");
-        source["test-destination-key"].Should().Be("test-source-value");
+        source.Should().ContainKey("test-destination-key").WhoseValue.Should().Be("test-source-value");
     }
 
     [Fact]
@@ -29,7 +29,7 @@ public sealed class ServiceBindingMapperTest
         string? newValue = mapper.MapFromTo("test-source-key", "test-destination-key");
 
         newValue.Should().BeNull();
-        source["test-destination-key"].Should().BeNull();
+        source.Should().ContainKey("test-destination-key").WhoseValue.Should().BeNull();
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public sealed class ServiceBindingMapperTest
         mapper.MapFromTo("test-source-key-2", "test-destination-key");
         mapper.MapFromTo("test-source-key-3", "test-destination-key");
 
-        source["test-destination-key"].Should().Be("test-source-value-3");
+        source.Should().ContainKey("test-destination-key").WhoseValue.Should().Be("test-source-value-3");
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public sealed class ServiceBindingMapperTest
         string? newValue = mapper.MapFromAppendTo("test-source-key", "test-destination-key", " AND ");
 
         newValue.Should().Be("test-source-value-1 AND test-source-value-2");
-        source["test-destination-key"].Should().Be("test-source-value-1 AND test-source-value-2");
+        source.Should().ContainKey("test-destination-key").WhoseValue.Should().Be("test-source-value-1 AND test-source-value-2");
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public sealed class ServiceBindingMapperTest
         string? newValue = mapper.MapFromAppendTo("test-source-key", "test-destination-key", " AND ");
 
         newValue.Should().BeNull();
-        source["test-destination-key"].Should().Be("test-source-value");
+        source.Should().ContainKey("test-destination-key").WhoseValue.Should().Be("test-source-value");
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public sealed class ServiceBindingMapperTest
         string? tempPath = mapper.MapFromToFile("test-source-key", "test-destination-key");
 
         tempPath.Should().NotBeNull();
-        source["test-destination-key"].Should().Be(tempPath);
+        source.Should().ContainKey("test-destination-key").WhoseValue.Should().Be(tempPath);
         File.ReadAllText(tempPath).Should().Be("test-source-value");
 
         File.Delete(tempPath);
@@ -122,6 +122,6 @@ public sealed class ServiceBindingMapperTest
         string? tempPath = mapper.MapFromToFile("test-source-key", "test-destination-key");
 
         tempPath.Should().BeNull();
-        source["test-destination-key"].Should().BeNull();
+        source.Should().ContainKey("test-destination-key").WhoseValue.Should().BeNull();
     }
 }

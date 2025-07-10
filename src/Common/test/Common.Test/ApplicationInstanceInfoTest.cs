@@ -18,7 +18,7 @@ public sealed class ApplicationInstanceInfoTest
     {
         var options = new ApplicationInstanceInfo();
 
-        Assert.Null(options.ApplicationName);
+        options.ApplicationName.Should().BeNull();
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public sealed class ApplicationInstanceInfoTest
 
         var options = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
 
-        Assert.Equal("my-app", options.ApplicationName);
+        options.ApplicationName.Should().Be("my-app");
     }
 
     [Fact]

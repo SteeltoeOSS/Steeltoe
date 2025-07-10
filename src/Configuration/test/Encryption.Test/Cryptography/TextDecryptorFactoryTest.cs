@@ -12,7 +12,8 @@ public sealed class TextDecryptorFactoryTest
     public void Create_WhenDisabled_CreateNoneDecryptor()
     {
         var settings = new ConfigServerDecryptionSettings();
-        Assert.IsType<NoneDecryptor>(TextDecryptorFactory.CreateDecryptor(settings));
+
+        TextDecryptorFactory.CreateDecryptor(settings).Should().BeOfType<NoneDecryptor>();
     }
 
     [Fact]
@@ -24,7 +25,7 @@ public sealed class TextDecryptorFactoryTest
             Key = "something"
         };
 
-        Assert.IsType<AesTextDecryptor>(TextDecryptorFactory.CreateDecryptor(settings));
+        TextDecryptorFactory.CreateDecryptor(settings).Should().BeOfType<AesTextDecryptor>();
     }
 
     [Fact]
@@ -41,7 +42,7 @@ public sealed class TextDecryptorFactoryTest
             }
         };
 
-        Assert.IsType<RsaKeyStoreDecryptor>(TextDecryptorFactory.CreateDecryptor(settings));
+        TextDecryptorFactory.CreateDecryptor(settings).Should().BeOfType<RsaKeyStoreDecryptor>();
     }
 
     [Fact]
@@ -57,7 +58,9 @@ public sealed class TextDecryptorFactoryTest
             }
         };
 
-        Assert.Throws<DecryptionException>(() => TextDecryptorFactory.CreateDecryptor(settings));
+        Action action = () => TextDecryptorFactory.CreateDecryptor(settings);
+
+        action.Should().ThrowExactly<DecryptionException>();
     }
 
     [Fact]
@@ -73,7 +76,9 @@ public sealed class TextDecryptorFactoryTest
             }
         };
 
-        Assert.Throws<DecryptionException>(() => TextDecryptorFactory.CreateDecryptor(settings));
+        Action action = () => TextDecryptorFactory.CreateDecryptor(settings);
+
+        action.Should().ThrowExactly<DecryptionException>();
     }
 
     [Fact]
@@ -89,7 +94,9 @@ public sealed class TextDecryptorFactoryTest
             }
         };
 
-        Assert.Throws<DecryptionException>(() => TextDecryptorFactory.CreateDecryptor(settings));
+        Action action = () => TextDecryptorFactory.CreateDecryptor(settings);
+
+        action.Should().ThrowExactly<DecryptionException>();
     }
 
     [Fact]
@@ -107,7 +114,9 @@ public sealed class TextDecryptorFactoryTest
             }
         };
 
-        Assert.Throws<DecryptionException>(() => TextDecryptorFactory.CreateDecryptor(settings));
+        Action action = () => TextDecryptorFactory.CreateDecryptor(settings);
+
+        action.Should().ThrowExactly<DecryptionException>();
     }
 
     [Fact]
@@ -118,6 +127,8 @@ public sealed class TextDecryptorFactoryTest
             Enabled = true
         };
 
-        Assert.Throws<DecryptionException>(() => TextDecryptorFactory.CreateDecryptor(settings));
+        Action action = () => TextDecryptorFactory.CreateDecryptor(settings);
+
+        action.Should().ThrowExactly<DecryptionException>();
     }
 }

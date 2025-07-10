@@ -107,18 +107,18 @@ public sealed class MySqlConnectorTest
     [Fact]
     public async Task Binds_options_without_service_bindings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MySql:myMySqlServiceOne:ConnectionString"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:MySql:myMySqlServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddMySql(MySqlPackageResolver.OracleOnly);
         builder.Services.Configure<MySqlOptions>("myMySqlServiceOne", options => options.ConnectionString += ";Use Compression=false");
-
         await using WebApplication app = builder.Build();
+
         await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
         var optionsSnapshot = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<MySqlOptions>>();
 
@@ -147,17 +147,17 @@ public sealed class MySqlConnectorTest
     [Fact]
     public async Task Binds_options_with_CloudFoundry_service_bindings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MySql:myMySqlServiceOne:ConnectionString"] = "Connection Timeout=15;host=localhost"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddMySql(MySqlPackageResolver.OracleOnly);
-
         await using WebApplication app = builder.Build();
+
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<MySqlOptions>>();
 
         MySqlOptions optionsOne = optionsMonitor.Get("myMySqlServiceOne");
@@ -187,8 +187,6 @@ public sealed class MySqlConnectorTest
     [Fact]
     public async Task Binds_options_with_Kubernetes_service_bindings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeDirectory("db");
         fileProvider.IncludeFile("db/provider", "bitnami");
@@ -198,18 +196,19 @@ public sealed class MySqlConnectorTest
         fileProvider.IncludeFile("db/username", "mysql");
         fileProvider.IncludeFile("db/password", "12TsdezjbRuskoH12v4KcrBkWlVjoxtU");
         fileProvider.IncludeFile("db/database", "my-mysql-service-4q5nt");
-
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
-        builder.Configuration.AddKubernetesServiceBindings(reader);
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MySql:db:ConnectionString"] = "Connection Timeout=15;host=localhost"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddKubernetesServiceBindings(reader);
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddMySql();
-
         await using WebApplication app = builder.Build();
+
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<MySqlOptions>>();
 
         MySqlOptions dbOptions = optionsMonitor.Get("db");
@@ -228,16 +227,15 @@ public sealed class MySqlConnectorTest
     [Fact]
     public async Task Registers_ConnectorFactory()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MySql:myMySqlServiceOne:ConnectionString"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:MySql:myMySqlServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddMySql(MySqlPackageResolver.OracleOnly);
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>();
@@ -256,21 +254,21 @@ public sealed class MySqlConnectorTest
     [Fact]
     public async Task Registers_HealthContributors()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MySql:myMySqlServiceOne:ConnectionString"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:MySql:myMySqlServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddMySql(MySqlPackageResolver.OracleOnly);
-
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
-        RelationalDatabaseHealthContributor[] contributors = [.. healthContributors.Should().AllBeOfType<RelationalDatabaseHealthContributor>().Subject];
-        contributors.Should().HaveCount(2);
+        RelationalDatabaseHealthContributor[] contributors =
+        [
+            .. app.Services.GetServices<IHealthContributor>().Should().HaveCount(2).And.AllBeOfType<RelationalDatabaseHealthContributor>().Subject
+        ];
 
         contributors[0].Id.Should().Be("MySQL");
         contributors[0].ServiceName.Should().Be("myMySqlServiceOne");
@@ -286,9 +284,7 @@ public sealed class MySqlConnectorTest
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
-
         builder.AddMySql(MySqlPackageResolver.OracleOnly);
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>();
@@ -309,21 +305,19 @@ public sealed class MySqlConnectorTest
     [Fact]
     public async Task Registers_default_connection_string_when_only_default_client_binding_found()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MySql:Default:ConnectionString"] = "SERVER=localhost;Database=myDb;UID=myUser;PWD=myPass"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddMySql(MySqlPackageResolver.OracleOnly);
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>();
 
-        connectorFactory.ServiceBindingNames.Should().ContainSingle();
-        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().ContainSingle().Which.Should().BeEmpty();
 
         string? defaultConnectionString = connectorFactory.Get().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNullOrEmpty();

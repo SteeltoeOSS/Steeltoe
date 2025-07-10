@@ -118,8 +118,8 @@ public sealed class CloudFoundryApplicationOptionsTest
         options.ApplicationId.Should().Be("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3");
         options.ApplicationName.Should().Be("my-app");
         options.Uris.Should().HaveCount(2);
-        options.Uris[0].Should().Be("my-app.10.244.0.34.xip.io");
-        options.Uris[1].Should().Be("my-app2.10.244.0.34.xip.io");
+        options.Uris.Should().HaveElementAt(0, "my-app.10.244.0.34.xip.io");
+        options.Uris.Should().HaveElementAt(1, "my-app2.10.244.0.34.xip.io");
         options.ApplicationVersion.Should().Be("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca");
         options.Api.Should().Be("https://api.system.test-cloud.com");
         options.Limits.Should().NotBeNull();

@@ -49,9 +49,7 @@ public sealed class HostBuilderTest : IDisposable
         builder.Logging.AddDynamicSerilog();
         await using WebApplication host = builder.Build();
 
-        ILoggerProvider[] loggerProviders = [.. host.Services.GetServices<ILoggerProvider>()];
-        loggerProviders.OfType<DynamicSerilogLoggerProvider>().Should().ContainSingle();
-
+        host.Services.GetServices<ILoggerProvider>().OfType<DynamicSerilogLoggerProvider>().Should().ContainSingle();
         host.Services.GetService<IDynamicLoggerProvider>().Should().BeOfType<DynamicSerilogLoggerProvider>();
     }
 
@@ -226,7 +224,7 @@ public sealed class HostBuilderTest : IDisposable
         minimumLevel.Should().NotBeNull();
         minimumLevel.Default.Should().Be(LogEventLevel.Information);
         minimumLevel.Override.Should().ContainSingle();
-        minimumLevel.Override.Should().Contain("Steeltoe", LogEventLevel.Error);
+        minimumLevel.Override.Should().ContainKey("Steeltoe").WhoseValue.Should().Be(LogEventLevel.Error);
 
         var logger = host.Services.GetRequiredService<ILogger<HostBuilderTest>>();
         logger.LogTrace("TestTrace");
@@ -301,7 +299,7 @@ public sealed class HostBuilderTest : IDisposable
         minimumLevel.Should().NotBeNull();
         minimumLevel.Default.Should().Be(LogEventLevel.Information);
         minimumLevel.Override.Should().ContainSingle();
-        minimumLevel.Override.Should().Contain("Steeltoe", LogEventLevel.Error);
+        minimumLevel.Override.Should().ContainKey("Steeltoe").WhoseValue.Should().Be(LogEventLevel.Error);
 
         var logger = host.Services.GetRequiredService<ILogger<HostBuilderTest>>();
         logger.LogTrace("TestTrace");

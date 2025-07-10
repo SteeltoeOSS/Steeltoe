@@ -21,10 +21,13 @@ public sealed class BootstrapLoggerFactory : ILoggerFactory
         loggingBuilder.AddConsole(options => options.MaxQueueLength = 1);
 #pragma warning restore S4792 // Configuring loggers is security-sensitive
 
-        loggingBuilder.AddConfiguration(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["LogLevel:Default"] = "Information"
-        }).Build());
+        };
+
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        loggingBuilder.AddConfiguration(configuration);
     };
 
     private readonly object _lock = new();

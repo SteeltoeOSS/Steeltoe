@@ -8,31 +8,31 @@ internal static class TestHelper
 {
     public static void VerifyDefaults(ConfigServerClientOptions options, string? expectedAppName)
     {
-        Assert.True(options.Enabled);
-        Assert.False(options.FailFast);
-        Assert.Equal("http://localhost:8888", options.Uri);
-        Assert.Equal("Production", options.Environment);
-        Assert.Null(options.AccessTokenUri);
-        Assert.Null(options.ClientId);
-        Assert.Null(options.ClientSecret);
-        Assert.True(options.ValidateCertificates);
-        Assert.Equal(1000, options.Retry.InitialInterval);
-        Assert.Equal(6, options.Retry.MaxAttempts);
-        Assert.False(options.Retry.Enabled);
-        Assert.Equal(1.1, options.Retry.Multiplier);
-        Assert.Equal(2000, options.Retry.MaxInterval);
-        Assert.Equal(60_000, options.Timeout);
-        Assert.Equal(60_000, options.TokenRenewRate);
-        Assert.Equal(300_000, options.TokenTtl);
-        Assert.False(options.Discovery.Enabled);
-        Assert.Equal("configserver", options.Discovery.ServiceId);
-        Assert.True(options.Health.Enabled);
-        Assert.Equal(300_000, options.Health.TimeToLive);
-        Assert.Equal(expectedAppName, options.Name);
-        Assert.Null(options.Label);
-        Assert.Null(options.Username);
-        Assert.Null(options.Password);
-        Assert.Null(options.Token);
-        Assert.Empty(options.Headers);
+        options.Enabled.Should().BeTrue();
+        options.FailFast.Should().BeFalse();
+        options.Uri.Should().Be("http://localhost:8888");
+        options.Environment.Should().Be("Production");
+        options.AccessTokenUri.Should().BeNull();
+        options.ClientId.Should().BeNull();
+        options.ClientSecret.Should().BeNull();
+        options.ValidateCertificates.Should().BeTrue();
+        options.Retry.InitialInterval.Should().Be(1000);
+        options.Retry.MaxAttempts.Should().Be(6);
+        options.Retry.Enabled.Should().BeFalse();
+        options.Retry.Multiplier.Should().Be(1.1);
+        options.Retry.MaxInterval.Should().Be(2000);
+        options.Timeout.Should().Be(60_000);
+        options.TokenRenewRate.Should().Be(60_000);
+        options.TokenTtl.Should().Be(300_000);
+        options.Discovery.Enabled.Should().BeFalse();
+        options.Discovery.ServiceId.Should().Be("configserver");
+        options.Health.Enabled.Should().BeTrue();
+        options.Health.TimeToLive.Should().Be(300_000);
+        options.Name.Should().Be(expectedAppName);
+        options.Label.Should().BeNull();
+        options.Username.Should().BeNull();
+        options.Password.Should().BeNull();
+        options.Token.Should().BeNull();
+        options.Headers.Should().BeEmpty();
     }
 }

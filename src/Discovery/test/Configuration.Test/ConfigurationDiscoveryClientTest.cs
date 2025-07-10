@@ -65,13 +65,13 @@ public sealed class ConfigurationDiscoveryClientTest
         var client = new ConfigurationDiscoveryClient(optionsMonitor);
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
-        Assert.Equal(3, fruitInstances.Count);
+        fruitInstances.Should().HaveCount(3);
 
         IList<IServiceInstance> vegetableInstances = await client.GetInstancesAsync("vegetableService", TestContext.Current.CancellationToken);
-        Assert.Equal(3, vegetableInstances.Count);
+        vegetableInstances.Should().HaveCount(3);
 
         ISet<string> servicesIds = await client.GetServiceIdsAsync(TestContext.Current.CancellationToken);
-        Assert.Equal(2, servicesIds.Count);
+        servicesIds.Should().HaveCount(2);
     }
 
     [Fact]
@@ -96,12 +96,11 @@ public sealed class ConfigurationDiscoveryClientTest
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
 
-        Assert.Single(fruitInstances);
-        Assert.Equal("fruit-ball", fruitInstances[0].Host);
+        fruitInstances.Should().ContainSingle().Which.Host.Should().Be("fruit-ball");
 
         options.Services[0].Host = "updatedValue";
 
-        Assert.Equal("updatedValue", fruitInstances[0].Host);
+        fruitInstances.Should().ContainSingle().Which.Host.Should().Be("updatedValue");
     }
 
     [Fact]
@@ -136,19 +135,17 @@ public sealed class ConfigurationDiscoveryClientTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         // by getting the client, we're confirming that the options are also available in the container
-        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
+        ConfigurationDiscoveryClient client = serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should()
+            .BeOfType<ConfigurationDiscoveryClient>().Subject;
 
-        Assert.Single(discoveryClients);
-        Assert.IsType<ConfigurationDiscoveryClient>(discoveryClients[0]);
+        ISet<string> servicesIds = await client.GetServiceIdsAsync(TestContext.Current.CancellationToken);
+        servicesIds.Should().HaveCount(2);
 
-        ISet<string> servicesIds = await discoveryClients[0].GetServiceIdsAsync(TestContext.Current.CancellationToken);
-        Assert.Equal(2, servicesIds.Count);
+        IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
+        fruitInstances.Should().HaveCount(2);
 
-        IList<IServiceInstance> fruitInstances = await discoveryClients[0].GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
-        Assert.Equal(2, fruitInstances.Count);
-
-        IList<IServiceInstance> vegetableInstances = await discoveryClients[0].GetInstancesAsync("vegetableService", TestContext.Current.CancellationToken);
-        Assert.Equal(2, vegetableInstances.Count);
+        IList<IServiceInstance> vegetableInstances = await client.GetInstancesAsync("vegetableService", TestContext.Current.CancellationToken);
+        vegetableInstances.Should().HaveCount(2);
     }
 
     [Fact]
@@ -164,11 +161,8 @@ public sealed class ConfigurationDiscoveryClientTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
-        discoveryClients.OfType<ConfigurationDiscoveryClient>().Should().ContainSingle();
-
-        ConfigurationDiscoveryClient[] configurationDiscoveryClients = [.. serviceProvider.GetServices<ConfigurationDiscoveryClient>()];
-        configurationDiscoveryClients.Should().BeEmpty();
+        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<ConfigurationDiscoveryClient>();
+        serviceProvider.GetServices<ConfigurationDiscoveryClient>().Should().BeEmpty();
     }
 
     [Fact]
@@ -183,7 +177,6 @@ public sealed class ConfigurationDiscoveryClientTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IHostedService[] hostedServices = [.. serviceProvider.GetServices<IHostedService>()];
-        hostedServices.OfType<DiscoveryClientHostedService>().Should().ContainSingle();
+        serviceProvider.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 }

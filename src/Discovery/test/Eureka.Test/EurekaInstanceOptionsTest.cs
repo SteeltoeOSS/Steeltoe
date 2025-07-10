@@ -17,33 +17,33 @@ public sealed class EurekaInstanceOptionsTest
     {
         var instanceOptions = new EurekaInstanceOptions();
 
-        Assert.Null(instanceOptions.InstanceId);
-        Assert.Null(instanceOptions.AppName);
-        Assert.Null(instanceOptions.AppGroupName);
-        Assert.Empty(instanceOptions.MetadataMap);
-        Assert.Null(instanceOptions.HostName);
-        Assert.Null(instanceOptions.IPAddress);
-        Assert.False(instanceOptions.PreferIPAddress);
-        Assert.Null(instanceOptions.VipAddress);
-        Assert.Null(instanceOptions.SecureVipAddress);
-        Assert.Null(instanceOptions.NonSecurePort);
-        Assert.False(instanceOptions.IsNonSecurePortEnabled);
-        Assert.Null(instanceOptions.SecurePort);
-        Assert.False(instanceOptions.IsSecurePortEnabled);
-        Assert.Null(instanceOptions.RegistrationMethod);
-        Assert.True(instanceOptions.IsInstanceEnabledOnInit);
-        Assert.Equal(30, instanceOptions.LeaseRenewalIntervalInSeconds);
-        Assert.Equal(90, instanceOptions.LeaseExpirationDurationInSeconds);
-        Assert.Equal("/info", instanceOptions.StatusPageUrlPath);
-        Assert.Null(instanceOptions.StatusPageUrl);
-        Assert.Equal("/", instanceOptions.HomePageUrlPath);
-        Assert.Null(instanceOptions.HomePageUrl);
-        Assert.Equal("/health", instanceOptions.HealthCheckUrlPath);
-        Assert.Null(instanceOptions.HealthCheckUrl);
-        Assert.Null(instanceOptions.SecureHealthCheckUrl);
-        Assert.Null(instanceOptions.AutoScalingGroupName);
-        Assert.Equal(DataCenterName.MyOwn, instanceOptions.DataCenterInfo.Name);
-        Assert.False(instanceOptions.UseNetworkInterfaces);
+        instanceOptions.InstanceId.Should().BeNull();
+        instanceOptions.AppName.Should().BeNull();
+        instanceOptions.AppGroupName.Should().BeNull();
+        instanceOptions.MetadataMap.Should().BeEmpty();
+        instanceOptions.HostName.Should().BeNull();
+        instanceOptions.IPAddress.Should().BeNull();
+        instanceOptions.PreferIPAddress.Should().BeFalse();
+        instanceOptions.VipAddress.Should().BeNull();
+        instanceOptions.SecureVipAddress.Should().BeNull();
+        instanceOptions.NonSecurePort.Should().BeNull();
+        instanceOptions.IsNonSecurePortEnabled.Should().BeFalse();
+        instanceOptions.SecurePort.Should().BeNull();
+        instanceOptions.IsSecurePortEnabled.Should().BeFalse();
+        instanceOptions.RegistrationMethod.Should().BeNull();
+        instanceOptions.IsInstanceEnabledOnInit.Should().BeTrue();
+        instanceOptions.LeaseRenewalIntervalInSeconds.Should().Be(30);
+        instanceOptions.LeaseExpirationDurationInSeconds.Should().Be(90);
+        instanceOptions.StatusPageUrlPath.Should().Be("/info");
+        instanceOptions.StatusPageUrl.Should().BeNull();
+        instanceOptions.HomePageUrlPath.Should().Be("/");
+        instanceOptions.HomePageUrl.Should().BeNull();
+        instanceOptions.HealthCheckUrlPath.Should().Be("/health");
+        instanceOptions.HealthCheckUrl.Should().BeNull();
+        instanceOptions.SecureHealthCheckUrl.Should().BeNull();
+        instanceOptions.AutoScalingGroupName.Should().BeNull();
+        instanceOptions.DataCenterInfo.Name.Should().Be(DataCenterName.MyOwn);
+        instanceOptions.UseNetworkInterfaces.Should().BeFalse();
     }
 
     [Fact]
@@ -117,32 +117,32 @@ public sealed class EurekaInstanceOptionsTest
         var instanceOptions = new EurekaInstanceOptions();
         instanceSection.Bind(instanceOptions);
 
-        Assert.Equal("instanceId", instanceOptions.InstanceId);
-        Assert.Equal("appName", instanceOptions.AppName);
-        Assert.Equal("appGroup", instanceOptions.AppGroupName);
-        Assert.True(instanceOptions.IsInstanceEnabledOnInit);
-        Assert.Equal(100, instanceOptions.NonSecurePort);
-        Assert.Equal(100, instanceOptions.SecurePort);
-        Assert.True(instanceOptions.IsNonSecurePortEnabled);
-        Assert.True(instanceOptions.IsSecurePortEnabled);
-        Assert.Equal(100, instanceOptions.LeaseExpirationDurationInSeconds);
-        Assert.Equal(100, instanceOptions.LeaseRenewalIntervalInSeconds);
-        Assert.Equal("secureVipAddress", instanceOptions.SecureVipAddress);
-        Assert.Equal("vipAddress", instanceOptions.VipAddress);
-        Assert.Equal("asgName", instanceOptions.AutoScalingGroupName);
+        instanceOptions.InstanceId.Should().Be("instanceId");
+        instanceOptions.AppName.Should().Be("appName");
+        instanceOptions.AppGroupName.Should().Be("appGroup");
+        instanceOptions.IsInstanceEnabledOnInit.Should().BeTrue();
+        instanceOptions.NonSecurePort.Should().Be(100);
+        instanceOptions.SecurePort.Should().Be(100);
+        instanceOptions.IsNonSecurePortEnabled.Should().BeTrue();
+        instanceOptions.IsSecurePortEnabled.Should().BeTrue();
+        instanceOptions.LeaseExpirationDurationInSeconds.Should().Be(100);
+        instanceOptions.LeaseRenewalIntervalInSeconds.Should().Be(100);
+        instanceOptions.SecureVipAddress.Should().Be("secureVipAddress");
+        instanceOptions.VipAddress.Should().Be("vipAddress");
+        instanceOptions.AutoScalingGroupName.Should().Be("asgName");
 
-        Assert.Equal("statusPageUrlPath", instanceOptions.StatusPageUrlPath);
-        Assert.Equal("statusPageUrl", instanceOptions.StatusPageUrl);
-        Assert.Equal("homePageUrlPath", instanceOptions.HomePageUrlPath);
-        Assert.Equal("homePageUrl", instanceOptions.HomePageUrl);
-        Assert.Equal("healthCheckUrlPath", instanceOptions.HealthCheckUrlPath);
-        Assert.Equal("healthCheckUrl", instanceOptions.HealthCheckUrl);
-        Assert.Equal("secureHealthCheckUrl", instanceOptions.SecureHealthCheckUrl);
-        Assert.Equal("myHostName", instanceOptions.HostName);
-        Assert.Equal("foobar", instanceOptions.RegistrationMethod);
+        instanceOptions.StatusPageUrlPath.Should().Be("statusPageUrlPath");
+        instanceOptions.StatusPageUrl.Should().Be("statusPageUrl");
+        instanceOptions.HomePageUrlPath.Should().Be("homePageUrlPath");
+        instanceOptions.HomePageUrl.Should().Be("homePageUrl");
+        instanceOptions.HealthCheckUrlPath.Should().Be("healthCheckUrlPath");
+        instanceOptions.HealthCheckUrl.Should().Be("healthCheckUrl");
+        instanceOptions.SecureHealthCheckUrl.Should().Be("secureHealthCheckUrl");
+        instanceOptions.HostName.Should().Be("myHostName");
+        instanceOptions.RegistrationMethod.Should().Be("foobar");
 
-        Assert.Equal(2, instanceOptions.MetadataMap.Count);
-        Assert.Equal("bar", instanceOptions.MetadataMap["foo"]);
-        Assert.Equal("foo", instanceOptions.MetadataMap["bar"]);
+        instanceOptions.MetadataMap.Should().HaveCount(2);
+        instanceOptions.MetadataMap.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
+        instanceOptions.MetadataMap.Should().ContainKey("bar").WhoseValue.Should().Be("foo");
     }
 }

@@ -30,13 +30,12 @@ public sealed class ThisServiceInstanceTest
         var consulRegistration = new ConsulRegistration(serviceRegistration, optionsMonitor);
         var instance = new ThisServiceInstance(consulRegistration);
 
-        Assert.Equal("test.foo.bar", instance.Host);
-        Assert.Equal("foobar", instance.ServiceId);
-        Assert.False(instance.IsSecure);
-        Assert.Equal(1234, instance.Port);
-        Assert.Single(instance.Metadata);
-        Assert.Contains("foo", instance.Metadata.Keys);
-        Assert.Contains("bar", instance.Metadata.Values);
-        Assert.Equal(new Uri("http://test.foo.bar:1234"), instance.Uri);
+        instance.Host.Should().Be("test.foo.bar");
+        instance.ServiceId.Should().Be("foobar");
+        instance.IsSecure.Should().BeFalse();
+        instance.Port.Should().Be(1234);
+        instance.Metadata.Should().ContainSingle();
+        instance.Metadata.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
+        instance.Uri.Should().Be(new Uri("http://test.foo.bar:1234"));
     }
 }

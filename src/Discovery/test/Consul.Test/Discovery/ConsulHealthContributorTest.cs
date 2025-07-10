@@ -26,7 +26,7 @@ public sealed class ConsulHealthContributorTest
         var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
         string result = await healthContributor.GetLeaderStatusAsync(TestContext.Current.CancellationToken);
 
-        Assert.Equal("the-status", result);
+        result.Should().Be("the-status");
     }
 
     [Fact]
@@ -59,9 +59,9 @@ public sealed class ConsulHealthContributorTest
         var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
         Dictionary<string, string[]> result = await healthContributor.GetCatalogServicesAsync(TestContext.Current.CancellationToken);
 
-        Assert.Equal(2, result.Count);
-        Assert.Contains("foo", result.Keys);
-        Assert.Contains("bar", result.Keys);
+        result.Should().HaveCount(2);
+        result.Should().ContainKey("foo");
+        result.Should().ContainKey("bar");
     }
 
     [Fact]
@@ -99,11 +99,11 @@ public sealed class ConsulHealthContributorTest
         var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
         HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
-        Assert.NotNull(result);
-        Assert.Equal(HealthStatus.Up, result.Status);
-        Assert.Equal(2, result.Details.Count);
-        Assert.Contains("leader", result.Details.Keys);
-        Assert.Contains("services", result.Details.Keys);
+        result.Should().NotBeNull();
+        result.Status.Should().Be(HealthStatus.Up);
+        result.Details.Should().HaveCount(2);
+        result.Details.Should().ContainKey("leader");
+        result.Details.Should().ContainKey("services");
     }
 
     [Fact]
@@ -121,6 +121,6 @@ public sealed class ConsulHealthContributorTest
         var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
         HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
-        Assert.Null(result);
+        result.Should().BeNull();
     }
 }

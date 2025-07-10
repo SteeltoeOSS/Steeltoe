@@ -265,12 +265,10 @@ public sealed class CloudFoundryServicesOptionsTest
         allServices.Should().ContainSingle(service => service.Label == "p-config-server");
 
         IList<CloudFoundryService> typedServices1 = options.GetServicesOfType("p-mysql");
-        typedServices1.Should().ContainSingle();
-        typedServices1.Should().ContainSingle(service => service.Label == "p-mysql");
+        typedServices1.Should().ContainSingle().Which.Label.Should().Be("p-mysql");
 
         IList<CloudFoundryService> typedServices2 = options.GetServicesOfType("p-config-server");
-        typedServices2.Should().ContainSingle();
-        typedServices2.Should().ContainSingle(service => service.Label == "p-config-server");
+        typedServices2.Should().ContainSingle().Which.Label.Should().Be("p-config-server");
     }
 
     [Fact]

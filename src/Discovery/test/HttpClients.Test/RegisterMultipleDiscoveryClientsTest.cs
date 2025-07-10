@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using Consul;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -72,10 +73,8 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
 
-        Assert.Single(discoveryClients);
-        Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
+        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<EurekaDiscoveryClient>();
     }
 
     [Fact]
@@ -100,14 +99,13 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
 
-        Assert.Single(discoveryClients);
-        Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
+        EurekaDiscoveryClient eurekaClient = serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should()
+            .BeOfType<EurekaDiscoveryClient>().Subject;
 
-        IServiceInstance? serviceInstance = discoveryClients[0].GetLocalServiceInstance();
-        Assert.NotNull(serviceInstance);
-        Assert.Equal("from-test", serviceInstance.Host);
+        IServiceInstance serviceInstance = eurekaClient.GetLocalServiceInstance();
+
+        serviceInstance.Host.Should().Be("from-test");
     }
 
     [Fact]
@@ -137,8 +135,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
         _ = await discoveryClient.FetchFullRegistryAsync(TestContext.Current.CancellationToken);
 
-        Assert.NotNull(handler.ClientCertificates);
-        Assert.NotEmpty(handler.ClientCertificates);
+        handler.ClientCertificates.Cast<X509Certificate>().Should().NotBeEmpty();
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -170,8 +167,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
         _ = await discoveryClient.FetchFullRegistryAsync(TestContext.Current.CancellationToken);
 
-        Assert.NotNull(handler.ClientCertificates);
-        Assert.NotEmpty(handler.ClientCertificates);
+        handler.ClientCertificates.Cast<X509Certificate>().Should().NotBeEmpty();
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -247,10 +243,8 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
 
-        Assert.Single(discoveryClients);
-        Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
+        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<EurekaDiscoveryClient>();
 
         var clientOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
         EurekaClientOptions clientOptions = clientOptionsMonitor.CurrentValue;
@@ -346,10 +340,8 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
 
-        Assert.Single(discoveryClients);
-        Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
+        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<EurekaDiscoveryClient>();
 
         var clientOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
         EurekaClientOptions clientOptions = clientOptionsMonitor.CurrentValue;
@@ -540,16 +532,16 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", vcapApplication);
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundry();
-        builder.Configuration.AddCloudFoundryServiceBindings();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
             ["Eureka:Client:ShouldFetchRegistry"] = "false"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddCloudFoundry();
+        builder.Configuration.AddCloudFoundryServiceBindings();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
         var handler = new DelegateToMockHttpClientHandler();
@@ -570,7 +562,6 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
-        Assert.NotNull(apps);
         apps.Should().ContainSingle();
     }
 
@@ -614,16 +605,16 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         string username = WebUtility.UrlEncode("u$er?N@me");
         string password = WebUtility.UrlEncode(":p@ssw0rd=");
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:AccessTokenUri"] = "https://api.auth-server.com/get-token",
             ["Eureka:Client:ServiceUrl"] = $"https://{username}:{password}@api.eureka-server.com/eureka"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
         var handler = new DelegateToMockHttpClientHandler();
@@ -640,7 +631,6 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
-        Assert.NotNull(apps);
         apps.Should().ContainSingle();
     }
 
@@ -683,10 +673,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
-
-        Assert.Single(discoveryClients);
-        Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
+        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<ConsulDiscoveryClient>();
 
         _ = serviceProvider.GetRequiredService<IConsulClient>();
         _ = serviceProvider.GetRequiredService<TtlScheduler>();
@@ -718,17 +705,15 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
 
-        Assert.Single(discoveryClients);
-        Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
+        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<ConsulDiscoveryClient>();
 
         _ = serviceProvider.GetRequiredService<IConsulClient>();
         _ = serviceProvider.GetRequiredService<TtlScheduler>();
         _ = serviceProvider.GetRequiredService<ConsulServiceRegistry>();
 
         var registration = serviceProvider.GetRequiredService<ConsulRegistration>();
-        Assert.Equal("from-test", registration.Host);
+        registration.Host.Should().Be("from-test");
 
         _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
@@ -754,17 +739,15 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
 
-        Assert.Single(discoveryClients);
-        Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
+        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<ConsulDiscoveryClient>();
 
         _ = serviceProvider.GetRequiredService<IConsulClient>();
         _ = serviceProvider.GetRequiredService<TtlScheduler>();
         _ = serviceProvider.GetRequiredService<ConsulServiceRegistry>();
 
         var registration = serviceProvider.GetRequiredService<ConsulRegistration>();
-        Assert.Equal(1234, registration.Port);
+        registration.Port.Should().Be(1234);
 
         _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
@@ -793,8 +776,8 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var registration = serviceProvider.GetRequiredService<ConsulRegistration>();
 
-        Assert.NotEqual("myapp", registration.Host);
-        Assert.Equal(0, registration.Port);
+        registration.Host.Should().NotBe("myapp");
+        registration.Port.Should().Be(0);
 
         _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
@@ -823,8 +806,8 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var registration = serviceProvider.GetRequiredService<ConsulRegistration>();
 
-        Assert.NotEqual("myapp", registration.Host);
-        Assert.Equal(8080, registration.Port);
+        registration.Host.Should().NotBe("myapp");
+        registration.Port.Should().Be(8080);
 
         _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
@@ -857,19 +840,19 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddConfigurationDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
 
-        Assert.Single(discoveryClients);
-        Assert.IsType<ConfigurationDiscoveryClient>(discoveryClients[0]);
+        ConfigurationDiscoveryClient configurationClient = serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should()
+            .BeOfType<ConfigurationDiscoveryClient>().Subject;
 
-        Assert.Contains("fruitService", await discoveryClients[0].GetServiceIdsAsync(TestContext.Current.CancellationToken));
-        Assert.Contains("vegetableService", await discoveryClients[0].GetServiceIdsAsync(TestContext.Current.CancellationToken));
+        ISet<string> serviceIds = await configurationClient.GetServiceIdsAsync(TestContext.Current.CancellationToken);
+        serviceIds.Should().Contain("fruitService");
+        serviceIds.Should().Contain("vegetableService");
 
-        IList<IServiceInstance> fruitInstances = await discoveryClients[0].GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
-        Assert.Equal(2, fruitInstances.Count);
+        IList<IServiceInstance> fruitInstances = await configurationClient.GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
+        fruitInstances.Should().HaveCount(2);
 
-        IList<IServiceInstance> vegetableInstances = await discoveryClients[0].GetInstancesAsync("vegetableService", TestContext.Current.CancellationToken);
-        Assert.Equal(2, vegetableInstances.Count);
+        IList<IServiceInstance> vegetableInstances = await configurationClient.GetInstancesAsync("vegetableService", TestContext.Current.CancellationToken);
+        vegetableInstances.Should().HaveCount(2);
     }
 
     [Fact]
@@ -884,8 +867,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = [.. serviceProvider.GetServices<IDiscoveryClient>()];
-        discoveryClients.Should().HaveCount(3);
+        serviceProvider.GetServices<IDiscoveryClient>().Should().HaveCount(3);
 
         serviceProvider.GetServices<IHealthContributor>().OfType<ConsulHealthContributor>().Should().ContainSingle();
         serviceProvider.GetServices<IHealthContributor>().OfType<EurekaServerHealthContributor>().Should().ContainSingle();

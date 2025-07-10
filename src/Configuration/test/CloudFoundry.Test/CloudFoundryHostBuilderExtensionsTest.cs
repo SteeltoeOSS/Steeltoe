@@ -22,10 +22,10 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
         using IHost host = hostBuilder.Build();
 
         var instanceInfo = host.Services.GetRequiredService<IApplicationInstanceInfo>();
-        Assert.IsAssignableFrom<CloudFoundryApplicationOptions>(instanceInfo);
+        instanceInfo.Should().BeAssignableTo<CloudFoundryApplicationOptions>();
         var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.Single(configurationRoot.EnumerateProviders<CloudFoundryConfigurationProvider>());
+        configurationRoot.EnumerateProviders<CloudFoundryConfigurationProvider>().Should().ContainSingle();
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
 
         var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.Single(configurationRoot.EnumerateProviders<CloudFoundryConfigurationProvider>());
+        configurationRoot.EnumerateProviders<CloudFoundryConfigurationProvider>().Should().ContainSingle();
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
 
         var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.Single(configurationRoot.EnumerateProviders<CloudFoundryConfigurationProvider>());
+        configurationRoot.EnumerateProviders<CloudFoundryConfigurationProvider>().Should().ContainSingle();
     }
 
     [Fact]
@@ -61,6 +61,6 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
 
         var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.Single(configurationRoot.EnumerateProviders<CloudFoundryConfigurationProvider>());
+        configurationRoot.EnumerateProviders<CloudFoundryConfigurationProvider>().Should().ContainSingle();
     }
 }

@@ -18,7 +18,7 @@ public sealed class TracingLogProcessorTest
 
         string result = processor.Process("InputLogMessage");
 
-        Assert.Equal("InputLogMessage", result);
+        result.Should().Be("InputLogMessage");
     }
 
     [Fact]
@@ -34,25 +34,14 @@ public sealed class TracingLogProcessorTest
         Tracer tracer = TracerProvider.Default.GetTracer("tracer-name");
         TelemetrySpan span = tracer.StartActiveSpan("spanName");
 
-        string result = processor.Process("InputLogMessage");
+        string message1 = processor.Process("InputLogMessage1");
 
-        Assert.Contains("InputLogMessage", result, StringComparison.Ordinal);
-        Assert.Contains('[', result);
-        Assert.Contains(']', result);
-        Assert.Contains(span.Context.TraceId.ToHexString(), result, StringComparison.Ordinal);
-        Assert.Contains(span.Context.SpanId.ToHexString(), result, StringComparison.Ordinal);
-        Assert.Contains("foobar", result, StringComparison.Ordinal);
+        message1.Should().Be($" [foobar,{span.Context.TraceId},{span.Context.SpanId},0000000000000000,true] InputLogMessage1");
 
         TelemetrySpan childSpan = tracer.StartActiveSpan("spanName2", SpanKind.Internal, span);
 
-        result = processor.Process("InputLogMessage2");
+        string message2 = processor.Process("InputLogMessage2");
 
-        Assert.Contains("InputLogMessage2", result, StringComparison.Ordinal);
-        Assert.Contains('[', result);
-        Assert.Contains(']', result);
-        Assert.Contains(childSpan.Context.TraceId.ToHexString(), result, StringComparison.Ordinal);
-        Assert.Contains(childSpan.Context.SpanId.ToHexString(), result, StringComparison.Ordinal);
-
-        Assert.Contains("foobar", result, StringComparison.Ordinal);
+        message2.Should().Be($" [foobar,{childSpan.Context.TraceId},{childSpan.Context.SpanId},{span.Context.SpanId},true] InputLogMessage2");
     }
 }

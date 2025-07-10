@@ -101,17 +101,17 @@ public sealed class RedisConnectorTest
     [Fact]
     public async Task Binds_options_without_service_bindings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:Redis:myRedisServiceOne:ConnectionString"] = "server1:6380,keepAlive=30",
             ["Steeltoe:Client:Redis:myRedisServiceTwo:ConnectionString"] = "server2:6380,allowAdmin=true"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddRedis();
-
         await using WebApplication app = builder.Build();
+
         await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
         var optionsSnapshot = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<RedisOptions>>();
 
@@ -125,17 +125,17 @@ public sealed class RedisConnectorTest
     [Fact]
     public async Task Binds_options_with_CloudFoundry_service_bindings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:Redis:myRedisServiceOne:ConnectionString"] = "localhost:12345,keepAlive=30,user=admin"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddRedis();
-
         await using WebApplication app = builder.Build();
+
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<RedisOptions>>();
 
         RedisOptions optionsOne = optionsMonitor.Get("myRedisServiceOne");
@@ -148,8 +148,6 @@ public sealed class RedisConnectorTest
     [Fact]
     public async Task Binds_options_with_Kubernetes_service_bindings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeDirectory("db");
         fileProvider.IncludeFile("db/provider", "bitnami");
@@ -157,18 +155,19 @@ public sealed class RedisConnectorTest
         fileProvider.IncludeFile("db/host", "10.0.111.168");
         fileProvider.IncludeFile("db/port", "6379");
         fileProvider.IncludeFile("db/password", "v5gjxPDxq4lacijzEus9vGi0cJh0tsOE");
-
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
-        builder.Configuration.AddKubernetesServiceBindings(reader);
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:Redis:db:ConnectionString"] = "localhost:12345,keepAlive=30,user=admin"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddKubernetesServiceBindings(reader);
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddRedis();
-
         await using WebApplication app = builder.Build();
+
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<RedisOptions>>();
 
         RedisOptions dbOptions = optionsMonitor.Get("db");
@@ -179,13 +178,14 @@ public sealed class RedisConnectorTest
     [Fact]
     public async Task Registers_ConnectorFactory_for_IConnectionMultiplexer()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:Redis:myRedisServiceOne:ConnectionString"] = "server1:6380,keepAlive=30",
             ["Steeltoe:Client:Redis:myRedisServiceTwo:ConnectionString"] = "server2:6380,allowAdmin=true"
-        });
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
 
         builder.AddRedis(null, addOptions =>
         {
@@ -219,13 +219,14 @@ public sealed class RedisConnectorTest
     [Fact]
     public async Task Registers_ConnectorFactory_for_IDistributedCache()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:Redis:myRedisServiceOne:ConnectionString"] = "server1:6380,keepAlive=30",
             ["Steeltoe:Client:Redis:myRedisServiceTwo:ConnectionString"] = "server2:6380,allowAdmin=true"
-        });
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
 
         builder.AddRedis(null, addOptions =>
         {
@@ -267,13 +268,14 @@ public sealed class RedisConnectorTest
     [Fact]
     public async Task Registers_HealthContributors()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:Redis:myRedisServiceOne:ConnectionString"] = "server1:6380,keepAlive=30",
             ["Steeltoe:Client:Redis:myRedisServiceTwo:ConnectionString"] = "server2:6380,allowAdmin=true"
-        });
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
 
         builder.AddRedis(null, addOptions =>
         {
@@ -288,9 +290,10 @@ public sealed class RedisConnectorTest
 
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
-        RedisHealthContributor[] redisHealthContributors = [.. healthContributors.Should().AllBeOfType<RedisHealthContributor>().Subject];
-        redisHealthContributors.Should().HaveCount(2);
+        RedisHealthContributor[] redisHealthContributors =
+        [
+            .. app.Services.GetServices<IHealthContributor>().Should().HaveCount(2).And.AllBeOfType<RedisHealthContributor>().Subject
+        ];
 
         redisHealthContributors[0].Id.Should().Be("Redis");
         redisHealthContributors[0].ServiceName.Should().Be("myRedisServiceOne");
@@ -338,12 +341,13 @@ public sealed class RedisConnectorTest
     [Fact]
     public async Task Registers_default_connection_string_when_only_default_client_binding_found()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:Redis:Default:ConnectionString"] = "server1:6380,keepAlive=30"
-        });
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
 
         builder.AddRedis(null, addOptions =>
         {
@@ -360,8 +364,7 @@ public sealed class RedisConnectorTest
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RedisOptions, IConnectionMultiplexer>>();
 
-        connectorFactory.ServiceBindingNames.Should().ContainSingle();
-        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().ContainSingle().Which.Should().BeEmpty();
 
         RedisOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();

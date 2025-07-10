@@ -34,9 +34,8 @@ public sealed class ConsulServiceRegistryTest
 
         agentMoq.Verify(endpoint => endpoint.ServiceRegister(registration.InnerRegistration, It.IsAny<CancellationToken>()), Times.Once);
 
-        Assert.Single(scheduler.ServiceHeartbeats);
-        Assert.Contains(registration.InstanceId, scheduler.ServiceHeartbeats.Keys);
-        await scheduler.RemoveAsync(registration.InstanceId);
+        scheduler.ServiceHeartbeats.Should().ContainSingle();
+        scheduler.ServiceHeartbeats.Should().ContainKey(registration.InstanceId);
     }
 
     [Fact]
@@ -60,13 +59,13 @@ public sealed class ConsulServiceRegistryTest
 
         agentMoq.Verify(endpoint => endpoint.ServiceRegister(registration.InnerRegistration, It.IsAny<CancellationToken>()), Times.Once);
 
-        Assert.Single(scheduler.ServiceHeartbeats);
-        Assert.Contains(registration.InstanceId, scheduler.ServiceHeartbeats.Keys);
+        scheduler.ServiceHeartbeats.Should().ContainSingle();
+        scheduler.ServiceHeartbeats.Should().ContainKey(registration.InstanceId);
 
         await registry.DeregisterAsync(registration, TestContext.Current.CancellationToken);
 
         agentMoq.Verify(endpoint => endpoint.ServiceDeregister(registration.InnerRegistration.ID, It.IsAny<CancellationToken>()), Times.Once);
-        Assert.Empty(scheduler.ServiceHeartbeats);
+        scheduler.ServiceHeartbeats.Should().BeEmpty();
     }
 
     [Fact]
@@ -88,8 +87,10 @@ public sealed class ConsulServiceRegistryTest
 
         await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
-        await Assert.ThrowsAsync<ArgumentException>(async () =>
-            await registry.SetStatusAsync(registration, string.Empty, TestContext.Current.CancellationToken));
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await registry.SetStatusAsync(registration, string.Empty, TestContext.Current.CancellationToken);
+
+        await action.Should().ThrowExactlyAsync<ArgumentException>();
     }
 
     [Fact]
@@ -158,6 +159,6 @@ public sealed class ConsulServiceRegistryTest
         await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
         string status = await registry.GetStatusAsync(registration, TestContext.Current.CancellationToken);
-        Assert.Equal("OUT_OF_SERVICE", status);
+        status.Should().Be("OUT_OF_SERVICE");
     }
 }

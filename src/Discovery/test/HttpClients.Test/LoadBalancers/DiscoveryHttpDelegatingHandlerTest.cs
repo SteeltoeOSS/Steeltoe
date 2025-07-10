@@ -30,7 +30,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
 
         HttpResponseMessage result = await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
 
-        result.Headers.GetValues("requestUri").First().Should().Be("https://some-resolved-host:1234/api");
+        result.Headers.GetValues("requestUri").Should().ContainSingle().Which.Should().Be("https://some-resolved-host:1234/api");
         loadBalancer.Statistics.Should().ContainSingle();
     }
 
@@ -55,7 +55,8 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
 
         using var invoker = new HttpMessageInvoker(handler);
 
-        Func<Task<HttpResponseMessage>> action = async () => await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<OperationCanceledException>();
         loadBalancer.Statistics.Should().BeEmpty();
@@ -79,7 +80,8 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
 
         using var invoker = new HttpMessageInvoker(handler);
 
-        Func<Task<HttpResponseMessage>> action = async () => await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<DataException>();
         loadBalancer.Statistics.Should().BeEmpty();
@@ -107,7 +109,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
 
         loadBalancer.Statistics.Should().ContainSingle();
         result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-        result.Headers.GetValues("requestUri").First().Should().Be("https://some-resolved-host:1234/api");
+        result.Headers.GetValues("requestUri").Should().ContainSingle().Which.Should().Be("https://some-resolved-host:1234/api");
     }
 
     private sealed class TestInnerDelegatingHandler : DelegatingHandler

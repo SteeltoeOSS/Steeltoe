@@ -32,7 +32,9 @@ public sealed class EnvironmentActuatorTest
         services.AddEnvironmentActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        Func<EnvironmentEndpointMiddleware> action = serviceProvider.GetRequiredService<EnvironmentEndpointMiddleware>;
+        // ReSharper disable once AccessToDisposedClosure
+        Action action = () => serviceProvider.GetRequiredService<EnvironmentEndpointMiddleware>();
+
         action.Should().NotThrow();
     }
 

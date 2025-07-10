@@ -16,8 +16,8 @@ public sealed class SpringBootConfigurationBuilderExtensionsTest
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddSpringBootFromEnvironmentVariable();
         IConfigurationRoot configurationRoot = builder.Build();
-        string? value = configurationRoot["foo:bar"];
-        Assert.Equal("value", value);
+
+        configurationRoot["foo:bar"].Should().Be("value");
     }
 
     [Fact]
@@ -25,21 +25,16 @@ public sealed class SpringBootConfigurationBuilderExtensionsTest
     {
         string[] args =
         [
-            "spring.foo.bar=value",
+            "spring.foo.bar=value1",
             "spring.bar[0].foo=value2",
             "bar.foo=value3"
         ];
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddSpringBootFromCommandLine(args);
-
         IConfigurationRoot configuration = builder.Build();
-        string? value = configuration["spring:foo:bar"];
 
-        Assert.Equal("value", value);
-
-        value = configuration["spring:bar:0:foo"];
-        Assert.Equal("value2", value);
-
-        Assert.Null(configuration["bar:foo"]);
+        configuration["spring:foo:bar"].Should().Be("value1");
+        configuration["spring:bar:0:foo"].Should().Be("value2");
+        configuration["bar:foo"].Should().BeNull();
     }
 }

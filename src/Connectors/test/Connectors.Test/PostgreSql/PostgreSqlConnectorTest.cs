@@ -186,18 +186,18 @@ public sealed class PostgreSqlConnectorTest
     [Fact]
     public async Task Binds_options_without_service_bindings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddPostgreSql();
         builder.Services.Configure<PostgreSqlOptions>("myPostgreSqlServiceOne", options => options.ConnectionString += ";Include Error Detail=true");
-
         await using WebApplication app = builder.Build();
+
         await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
         var optionsSnapshot = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<PostgreSqlOptions>>();
 
@@ -226,17 +226,17 @@ public sealed class PostgreSqlConnectorTest
     [Fact]
     public async Task Binds_options_with_CloudFoundry_service_bindings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "Include Error Detail=true;Log Parameters=true;host=localhost"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddPostgreSql();
-
         await using WebApplication app = builder.Build();
+
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
 
         PostgreSqlOptions optionsAzureOne = optionsMonitor.Get("myPostgreSqlServiceAzureOne");
@@ -356,8 +356,6 @@ public sealed class PostgreSqlConnectorTest
     [Fact]
     public async Task Binds_options_with_Kubernetes_service_bindings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeDirectory("db");
         fileProvider.IncludeFile("db/provider", "bitnami");
@@ -367,18 +365,19 @@ public sealed class PostgreSqlConnectorTest
         fileProvider.IncludeFile("db/username", "postgres");
         fileProvider.IncludeFile("db/password", "WzQTWCW6MCPoGe11qqw7fKLesvg4rykr");
         fileProvider.IncludeFile("db/database", "my-postgresql-service-qf57l");
-
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
-        builder.Configuration.AddKubernetesServiceBindings(reader);
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:db:ConnectionString"] = "Host=ignored;Database=ignored;Include Error Detail=true;Log Parameters=true;host=localhost"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddKubernetesServiceBindings(reader);
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddPostgreSql();
-
         await using WebApplication app = builder.Build();
+
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
 
         PostgreSqlOptions dbOptions = optionsMonitor.Get("db");
@@ -398,16 +397,15 @@ public sealed class PostgreSqlConnectorTest
     [Fact]
     public async Task Registers_ConnectorFactory()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddPostgreSql();
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -426,21 +424,21 @@ public sealed class PostgreSqlConnectorTest
     [Fact]
     public async Task Registers_HealthContributors()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddPostgreSql();
-
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
-        RelationalDatabaseHealthContributor[] contributors = [.. healthContributors.Should().AllBeOfType<RelationalDatabaseHealthContributor>().Subject];
-        contributors.Should().HaveCount(2);
+        RelationalDatabaseHealthContributor[] contributors =
+        [
+            .. app.Services.GetServices<IHealthContributor>().Should().HaveCount(2).And.AllBeOfType<RelationalDatabaseHealthContributor>().Subject
+        ];
 
         contributors[0].Id.Should().Be("PostgreSQL");
         contributors[0].ServiceName.Should().Be("myPostgreSqlServiceOne");
@@ -454,59 +452,50 @@ public sealed class PostgreSqlConnectorTest
     [Fact]
     public async Task Skips_HealthContributors_when_AspNetCore_health_checks_are_registered()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddHealthChecks();
-
         builder.AddPostgreSql(null, null);
-
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
-        healthContributors.Should().BeEmpty();
+        app.Services.GetServices<IHealthContributor>().Should().BeEmpty();
     }
 
     [Fact]
     public async Task Skips_HealthContributors_when_disabled()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
-        });
+        };
 
-        builder.AddPostgreSql(null, addOptions =>
-        {
-            addOptions.EnableHealthChecks = false;
-        });
-
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.AddPostgreSql(null, addOptions => addOptions.EnableHealthChecks = false);
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
-        healthContributors.Should().BeEmpty();
+        app.Services.GetServices<IHealthContributor>().Should().BeEmpty();
     }
 
     [Fact]
     public async Task Registers_default_connection_string_when_single_server_binding_and_only_default_client_binding_found()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass;Log Parameters=True"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddPostgreSql();
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -538,9 +527,7 @@ public sealed class PostgreSqlConnectorTest
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
-
         builder.AddPostgreSql();
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -561,21 +548,19 @@ public sealed class PostgreSqlConnectorTest
     [Fact]
     public async Task Registers_default_connection_string_when_only_default_client_binding_found()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddPostgreSql();
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.ServiceBindingNames.Should().ContainSingle();
-        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().ContainSingle().Which.Should().BeEmpty();
 
         string? defaultConnectionString = connectorFactory.Get().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNullOrEmpty();
@@ -586,21 +571,19 @@ public sealed class PostgreSqlConnectorTest
     [Fact]
     public async Task Registers_no_default_connection_string_when_only_single_named_client_binding_found()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "host=localhost"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddPostgreSql();
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.ServiceBindingNames.Should().ContainSingle();
-        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
+        connectorFactory.ServiceBindingNames.Should().ContainSingle().Which.Should().Be("myPostgreSqlServiceAzureOne");
 
         string? namedConnectionString = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().NotBeNullOrEmpty();
@@ -611,22 +594,20 @@ public sealed class PostgreSqlConnectorTest
     [Fact]
     public async Task Registers_no_default_connection_string_when_multiple_client_bindings_found()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "host=localhost",
             ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "host=ignored"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddPostgreSql();
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.ServiceBindingNames.Should().ContainSingle();
-        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
+        connectorFactory.ServiceBindingNames.Should().ContainSingle().Which.Should().Be("myPostgreSqlServiceAzureOne");
 
         string? namedConnectionString = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().NotBeNullOrEmpty();
@@ -637,16 +618,15 @@ public sealed class PostgreSqlConnectorTest
     [Fact]
     public async Task Registers_no_default_connection_string_when_multiple_server_bindings_found()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "host=ignored"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddPostgreSql();
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -665,23 +645,21 @@ public sealed class PostgreSqlConnectorTest
     [Fact]
     public async Task Registers_no_default_connection_string_when_single_server_binding_and_multiple_client_bindings_found()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "host=localhost",
             ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "host=ignored"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddPostgreSql();
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.ServiceBindingNames.Should().ContainSingle();
-        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
+        connectorFactory.ServiceBindingNames.Should().ContainSingle().Which.Should().Be("myPostgreSqlServiceAzureOne");
 
         string? namedConnectionString = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().NotBeNullOrEmpty();
@@ -692,17 +670,16 @@ public sealed class PostgreSqlConnectorTest
     [Fact]
     public async Task Registers_no_default_connection_string_when_service_and_client_binding_found_with_different_names()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:alternatePostgreSqlService:ConnectionString"] = "host=localhost",
             ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "host=ignored"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddPostgreSql();
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -723,13 +700,13 @@ public sealed class PostgreSqlConnectorTest
     [Fact]
     public void Subsequent_registrations_are_ignored()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "Include Error Detail=true;Log Parameters=true;host=localhost"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddPostgreSql();
 
         Action action = () => builder.AddPostgreSql();

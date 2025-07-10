@@ -49,11 +49,11 @@ public sealed class EurekaServerHealthContributorTest
     {
         (EurekaServerHealthContributor contributor, _) = CreateHealthContributor();
 
-        Assert.Equal(HealthStatus.Down, contributor.MakeHealthStatus(InstanceStatus.Down));
-        Assert.Equal(HealthStatus.Up, contributor.MakeHealthStatus(InstanceStatus.Up));
-        Assert.Equal(HealthStatus.Unknown, contributor.MakeHealthStatus(InstanceStatus.Starting));
-        Assert.Equal(HealthStatus.Unknown, contributor.MakeHealthStatus(InstanceStatus.Unknown));
-        Assert.Equal(HealthStatus.OutOfService, contributor.MakeHealthStatus(InstanceStatus.OutOfService));
+        contributor.MakeHealthStatus(InstanceStatus.Down).Should().Be(HealthStatus.Down);
+        contributor.MakeHealthStatus(InstanceStatus.Up).Should().Be(HealthStatus.Up);
+        contributor.MakeHealthStatus(InstanceStatus.Starting).Should().Be(HealthStatus.Unknown);
+        contributor.MakeHealthStatus(InstanceStatus.Unknown).Should().Be(HealthStatus.Unknown);
+        contributor.MakeHealthStatus(InstanceStatus.OutOfService).Should().Be(HealthStatus.OutOfService);
     }
 
     [Fact]
@@ -75,16 +75,12 @@ public sealed class EurekaServerHealthContributorTest
         var result = new HealthCheckResult();
         contributor.AddApplications(apps, result);
 
-        IDictionary<string, object> details = result.Details;
-        Assert.Contains("applications", details.Keys);
-        var appsDict = (Dictionary<string, int>)details["applications"];
-        Assert.Contains("app1", appsDict.Keys);
-        Assert.Contains("app2", appsDict.Keys);
-        Assert.Equal(2, appsDict.Keys.Count);
-        int count1 = appsDict["app1"];
-        Assert.Equal(2, count1);
-        int count2 = appsDict["app2"];
-        Assert.Equal(2, count2);
+        Dictionary<string, int> appsDictionary =
+            result.Details.Should().ContainKey("applications").WhoseValue.Should().BeOfType<Dictionary<string, int>>().Subject;
+
+        appsDictionary.Should().HaveCount(2);
+        appsDictionary.Should().ContainKey("app1").WhoseValue.Should().Be(2);
+        appsDictionary.Should().ContainKey("app2").WhoseValue.Should().Be(2);
     }
 
     [Fact]
@@ -95,35 +91,25 @@ public sealed class EurekaServerHealthContributorTest
         var results = new HealthCheckResult();
         contributor.AddFetchStatus(results, null);
 
-        Assert.Contains("fetchStatus", results.Details.Keys);
-        Assert.Equal("Not fetching", results.Details["fetchStatus"]);
+        results.Details.Should().ContainKey("fetchStatus").WhoseValue.Should().Be("Not fetching");
 
         results = new HealthCheckResult();
-
         clientOptions.ShouldFetchRegistry = true;
-
         contributor.AddFetchStatus(results, null);
 
-        Assert.Contains("fetch", results.Details.Keys);
-        Assert.Contains("Not yet successfully connected", (string)results.Details["fetch"], StringComparison.Ordinal);
-        Assert.Contains("fetchTime", results.Details.Keys);
-        Assert.Contains("UNKNOWN", (string)results.Details["fetchTime"], StringComparison.Ordinal);
-        Assert.Contains("fetchStatus", results.Details.Keys);
-        Assert.Equal("UNKNOWN", results.Details["fetchStatus"]);
+        results.Details.Should().ContainKey("fetch").WhoseValue.Should().BeOfType<string>().Which.Should().Contain("Not yet successfully connected");
+        results.Details.Should().ContainKey("fetchTime").WhoseValue.Should().BeOfType<string>().Which.Should().Contain("UNKNOWN");
+        results.Details.Should().ContainKey("fetchStatus").WhoseValue.Should().Be("UNKNOWN");
 
         results = new HealthCheckResult();
         long ticks = DateTime.UtcNow.Ticks - TimeSpan.TicksPerSecond * clientOptions.RegistryFetchIntervalSeconds * 10;
         var dateTime = new DateTime(ticks, DateTimeKind.Utc);
         contributor.AddFetchStatus(results, dateTime);
 
-        Assert.Contains("fetch", results.Details.Keys);
-        Assert.Contains("Reporting failures", (string)results.Details["fetch"], StringComparison.Ordinal);
-        Assert.Contains("fetchTime", results.Details.Keys);
-        Assert.Equal(dateTime.ToString("s", CultureInfo.InvariantCulture), (string)results.Details["fetchTime"]);
-        Assert.Contains("fetchFailures", results.Details.Keys);
-        Assert.Equal(10, (long)results.Details["fetchFailures"]);
-        Assert.Contains("fetchStatus", results.Details.Keys);
-        Assert.Equal("DOWN", results.Details["fetchStatus"]);
+        results.Details.Should().ContainKey("fetch").WhoseValue.Should().BeOfType<string>().Which.Should().Contain("Reporting failures");
+        results.Details.Should().ContainKey("fetchTime").WhoseValue.Should().Be(dateTime.ToString("s", CultureInfo.InvariantCulture));
+        results.Details.Should().ContainKey("fetchFailures").WhoseValue.Should().BeOfType<long>().Which.Should().Be(10);
+        results.Details.Should().ContainKey("fetchStatus").WhoseValue.Should().Be("DOWN");
     }
 
     [Fact]
@@ -133,8 +119,7 @@ public sealed class EurekaServerHealthContributorTest
         var results = new HealthCheckResult();
         contributor.AddHeartbeatStatus(results, null);
 
-        Assert.Contains("heartbeatStatus", results.Details.Keys);
-        Assert.Equal("Not registering", results.Details["heartbeatStatus"]);
+        results.Details.Should().ContainKey("heartbeatStatus").WhoseValue.Should().Be("Not registering");
 
         results = new HealthCheckResult();
 
@@ -143,26 +128,19 @@ public sealed class EurekaServerHealthContributorTest
         var instanceOptions = new EurekaInstanceOptions();
         contributor.AddHeartbeatStatus(results, null);
 
-        Assert.Contains("heartbeat", results.Details.Keys);
-        Assert.Contains("Not yet successfully connected", (string)results.Details["heartbeat"], StringComparison.Ordinal);
-        Assert.Contains("heartbeatTime", results.Details.Keys);
-        Assert.Contains("UNKNOWN", (string)results.Details["heartbeatTime"], StringComparison.Ordinal);
-        Assert.Contains("heartbeatStatus", results.Details.Keys);
-        Assert.Equal("UNKNOWN", results.Details["heartbeatStatus"]);
+        results.Details.Should().ContainKey("heartbeat").WhoseValue.Should().BeOfType<string>().Which.Should().Contain("Not yet successfully connected");
+        results.Details.Should().ContainKey("heartbeatTime").WhoseValue.Should().BeOfType<string>().Which.Should().Contain("UNKNOWN");
+        results.Details.Should().ContainKey("heartbeatStatus").WhoseValue.Should().Be("UNKNOWN");
 
         results = new HealthCheckResult();
         long ticks = DateTime.UtcNow.Ticks - TimeSpan.TicksPerSecond * instanceOptions.LeaseRenewalIntervalInSeconds * 10;
         var dateTime = new DateTime(ticks, DateTimeKind.Utc);
         contributor.AddHeartbeatStatus(results, dateTime);
 
-        Assert.Contains("heartbeat", results.Details.Keys);
-        Assert.Contains("Reporting failures", (string)results.Details["heartbeat"], StringComparison.Ordinal);
-        Assert.Contains("heartbeatTime", results.Details.Keys);
-        Assert.Equal(dateTime.ToString("s", CultureInfo.InvariantCulture), (string)results.Details["heartbeatTime"]);
-        Assert.Contains("heartbeatFailures", results.Details.Keys);
-        Assert.Equal(10, (long)results.Details["heartbeatFailures"]);
-        Assert.Contains("heartbeatStatus", results.Details.Keys);
-        Assert.Equal("DOWN", results.Details["heartbeatStatus"]);
+        results.Details.Should().ContainKey("heartbeat").WhoseValue.Should().BeOfType<string>().Which.Should().Contain("Reporting failures");
+        results.Details.Should().ContainKey("heartbeatTime").WhoseValue.Should().Be(dateTime.ToString("s", CultureInfo.InvariantCulture));
+        results.Details.Should().ContainKey("heartbeatFailures").WhoseValue.Should().BeOfType<long>().Which.Should().Be(10);
+        results.Details.Should().ContainKey("heartbeatStatus").WhoseValue.Should().Be("DOWN");
     }
 
     private static (EurekaServerHealthContributor Contributor, EurekaClientOptions ClientOptions) CreateHealthContributor(

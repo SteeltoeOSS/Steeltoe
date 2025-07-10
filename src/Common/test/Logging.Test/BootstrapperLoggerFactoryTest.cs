@@ -69,12 +69,13 @@ public sealed class BootstrapperLoggerFactoryTest
     [Fact]
     public void Can_override_minimum_level()
     {
-        var bootstrapLoggerFactory = BootstrapLoggerFactory.CreateConsole(loggingBuilder => loggingBuilder.AddConfiguration(new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["LogLevel:TestLogger"] = "Warning"
-            }).Build()));
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["LogLevel:TestLogger"] = "Warning"
+        };
 
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var bootstrapLoggerFactory = BootstrapLoggerFactory.CreateConsole(loggingBuilder => loggingBuilder.AddConfiguration(configuration));
         ILogger logger = bootstrapLoggerFactory.CreateLogger("TestLogger");
 
         logger.IsEnabled(LogLevel.Trace).Should().BeFalse();

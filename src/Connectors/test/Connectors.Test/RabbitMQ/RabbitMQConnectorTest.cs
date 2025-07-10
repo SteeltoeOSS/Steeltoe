@@ -188,17 +188,17 @@ public sealed class RabbitMQConnectorTest
     [Fact]
     public async Task Binds_options_without_service_bindings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceOne:ConnectionString"] = "amqp://user1:pass1@host1:5672/virtual-host-1",
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceTwo:ConnectionString"] = "amqps://user2:pass2@host2:5672/virtual-host-2"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddRabbitMQ();
-
         await using WebApplication app = builder.Build();
+
         await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
         var optionsSnapshot = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<RabbitMQOptions>>();
 
@@ -212,17 +212,17 @@ public sealed class RabbitMQConnectorTest
     [Fact]
     public async Task Binds_options_with_CloudFoundry_service_bindings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceOne:ConnectionString"] = "amqps://user:pass@localhost:5672"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddRabbitMQ();
-
         await using WebApplication app = builder.Build();
+
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
 
         RabbitMQOptions optionsOne = optionsMonitor.Get("myRabbitMQServiceOne");
@@ -239,8 +239,6 @@ public sealed class RabbitMQConnectorTest
     [Fact]
     public async Task Binds_options_with_Kubernetes_service_bindings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeDirectory("db");
         fileProvider.IncludeFile("db/provider", "bitnami");
@@ -249,18 +247,19 @@ public sealed class RabbitMQConnectorTest
         fileProvider.IncludeFile("db/port", "5672");
         fileProvider.IncludeFile("db/username", "rabbitmq");
         fileProvider.IncludeFile("db/password", "PZ3kQK91dAYpRte0a9gGmCWYED3ijI0R");
-
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
-        builder.Configuration.AddKubernetesServiceBindings(reader);
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:RabbitMQ:db:ConnectionString"] = "amqps://user:pass@localhost:5672/extra-virtual-host"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddKubernetesServiceBindings(reader);
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddRabbitMQ();
-
         await using WebApplication app = builder.Build();
+
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
 
         RabbitMQOptions dbOptions = optionsMonitor.Get("db");
@@ -271,13 +270,14 @@ public sealed class RabbitMQConnectorTest
     [Fact]
     public async Task Registers_ConnectorFactory()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceOne:ConnectionString"] = "amqp://user1:pass1@host1:5672/virtual-host-1",
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceTwo:ConnectionString"] = "amqps://user2:pass2@host2:5672/virtual-host-2"
-        });
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
 
         builder.AddRabbitMQ(null, addOptions =>
         {
@@ -311,13 +311,14 @@ public sealed class RabbitMQConnectorTest
     [Fact]
     public async Task Registers_HealthContributors()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceOne:ConnectionString"] = "amqp://user1:pass1@host1:5672/virtual-host-1",
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceTwo:ConnectionString"] = "amqps://user2:pass2@host2:5672/virtual-host-2"
-        });
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
 
         builder.AddRabbitMQ(null, addOptions =>
         {
@@ -332,9 +333,10 @@ public sealed class RabbitMQConnectorTest
 
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
-        RabbitMQHealthContributor[] rabbitMQHealthContributors = [.. healthContributors.Should().AllBeOfType<RabbitMQHealthContributor>().Subject];
-        rabbitMQHealthContributors.Should().HaveCount(2);
+        RabbitMQHealthContributor[] rabbitMQHealthContributors =
+        [
+            .. app.Services.GetServices<IHealthContributor>().Should().HaveCount(2).And.AllBeOfType<RabbitMQHealthContributor>().Subject
+        ];
 
         rabbitMQHealthContributors[0].Id.Should().Be("RabbitMQ");
         rabbitMQHealthContributors[0].ServiceName.Should().Be("myRabbitMQServiceOne");
@@ -382,12 +384,13 @@ public sealed class RabbitMQConnectorTest
     [Fact]
     public async Task Registers_default_connection_string_when_only_default_client_binding_found()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:RabbitMQ:Default:ConnectionString"] = "amqp://localhost:5672/my-virtual-host"
-        });
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
 
         builder.AddRabbitMQ(null, addOptions =>
         {
@@ -404,8 +407,7 @@ public sealed class RabbitMQConnectorTest
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
-        connectorFactory.ServiceBindingNames.Should().ContainSingle();
-        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().ContainSingle().Which.Should().BeEmpty();
 
         RabbitMQOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();

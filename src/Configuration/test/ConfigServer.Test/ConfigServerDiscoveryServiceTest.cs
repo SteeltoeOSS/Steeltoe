@@ -18,6 +18,6 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         var service = new ConfigServerDiscoveryService(configuration, options, NullLoggerFactory.Instance);
 
-        Assert.Empty(service.DiscoveryClients);
+        service.DiscoveryClients.Should().BeEmpty();
     }
 }

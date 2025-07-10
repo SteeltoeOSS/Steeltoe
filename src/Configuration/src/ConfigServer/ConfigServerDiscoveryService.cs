@@ -45,13 +45,14 @@ internal sealed class ConfigServerDiscoveryService
         tempServices.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
         // force settings to make sure we don't register the app here
-        IConfiguration tempConfiguration = new ConfigurationBuilder().AddConfiguration(_configuration).AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
             ["Eureka:Client:ShouldFetchRegistry"] = "true",
             ["Consul:Discovery:Register"] = "false"
-        }).Build();
+        };
 
+        IConfiguration tempConfiguration = new ConfigurationBuilder().AddConfiguration(_configuration).AddInMemoryCollection(appSettings).Build();
         tempServices.AddSingleton(tempConfiguration);
 
         if (AssemblyLoader.IsAssemblyLoaded("Steeltoe.Discovery.Configuration"))

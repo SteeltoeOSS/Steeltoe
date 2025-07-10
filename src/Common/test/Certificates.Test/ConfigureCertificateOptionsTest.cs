@@ -67,7 +67,7 @@ public sealed class ConfigureCertificateOptionsTest
         var options = new CertificateOptions();
 
         Action configureAction = () => configureOptions.Configure(certificateName, options);
-        configureAction.Should().Throw<CryptographicException>();
+        configureAction.Should().ThrowExactly<CryptographicException>();
 
         options.Certificate.Should().BeNull();
     }
@@ -88,7 +88,7 @@ public sealed class ConfigureCertificateOptionsTest
         var options = new CertificateOptions();
 
         Action configureAction = () => configureOptions.Configure(certificateName, options);
-        configureAction.Should().Throw<CryptographicException>();
+        configureAction.Should().ThrowExactly<CryptographicException>();
 
         options.Certificate.Should().BeNull();
     }

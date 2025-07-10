@@ -78,8 +78,8 @@ public sealed class EurekaServiceUriStateManagerTest
         List<Uri> serviceUris = GetAllServiceUris(snapshot);
 
         serviceUris.Should().HaveCount(2);
-        serviceUris[0].Should().Be("https://one");
-        serviceUris[1].Should().Be("https://three");
+        serviceUris.Should().HaveElementAt(0, new Uri("https://one"));
+        serviceUris.Should().HaveElementAt(1, new Uri("https://three"));
     }
 
     [Fact]
@@ -100,8 +100,8 @@ public sealed class EurekaServiceUriStateManagerTest
         List<Uri> serviceUris = GetAllServiceUris(snapshot);
 
         serviceUris.Should().HaveCount(2);
-        serviceUris[0].Should().Be("https://one");
-        serviceUris[1].Should().Be("https://three");
+        serviceUris.Should().HaveElementAt(0, new Uri("https://one"));
+        serviceUris.Should().HaveElementAt(1, new Uri("https://three"));
     }
 
     [Fact]
@@ -121,8 +121,8 @@ public sealed class EurekaServiceUriStateManagerTest
         List<Uri> serviceUris = GetAllServiceUris(snapshot);
 
         serviceUris.Should().HaveCount(2);
-        serviceUris[0].Should().Be("https://one");
-        serviceUris[1].Should().Be("https://three");
+        serviceUris.Should().HaveElementAt(0, new Uri("https://one"));
+        serviceUris.Should().HaveElementAt(1, new Uri("https://three"));
     }
 
     [Fact]
@@ -141,9 +141,9 @@ public sealed class EurekaServiceUriStateManagerTest
         List<Uri> serviceUris = GetAllServiceUris(snapshot);
 
         serviceUris.Should().HaveCount(3);
-        serviceUris[0].Should().Be("https://two");
-        serviceUris[1].Should().Be("https://one");
-        serviceUris[2].Should().Be("https://three");
+        serviceUris.Should().HaveElementAt(0, new Uri("https://two"));
+        serviceUris.Should().HaveElementAt(1, new Uri("https://one"));
+        serviceUris.Should().HaveElementAt(2, new Uri("https://three"));
     }
 
     [Fact]
@@ -163,9 +163,9 @@ public sealed class EurekaServiceUriStateManagerTest
         List<Uri> serviceUris = GetAllServiceUris(snapshot);
 
         serviceUris.Should().HaveCount(3);
-        serviceUris[0].Should().Be("https://one");
-        serviceUris[1].Should().Be("https://two");
-        serviceUris[2].Should().Be("https://three");
+        serviceUris.Should().HaveElementAt(0, new Uri("https://one"));
+        serviceUris.Should().HaveElementAt(1, new Uri("https://two"));
+        serviceUris.Should().HaveElementAt(2, new Uri("https://three"));
     }
 
     [Fact]
@@ -185,9 +185,9 @@ public sealed class EurekaServiceUriStateManagerTest
         List<Uri> serviceUris = GetAllServiceUris(snapshot);
 
         serviceUris.Should().HaveCount(3);
-        serviceUris[0].Should().Be("https://one");
-        serviceUris[1].Should().Be("https://two");
-        serviceUris[2].Should().Be("https://three");
+        serviceUris.Should().HaveElementAt(0, new Uri("https://one"));
+        serviceUris.Should().HaveElementAt(1, new Uri("https://two"));
+        serviceUris.Should().HaveElementAt(2, new Uri("https://three"));
     }
 
     [Fact]
@@ -208,10 +208,10 @@ public sealed class EurekaServiceUriStateManagerTest
         List<Uri> serviceUris = GetAllServiceUris(snapshot);
 
         serviceUris.Should().HaveCount(4);
-        serviceUris[0].Should().Be("https://one");
-        serviceUris[1].Should().Be("https://two");
-        serviceUris[2].Should().Be("https://three");
-        serviceUris[3].Should().Be("https://four");
+        serviceUris.Should().HaveElementAt(0, new Uri("https://one"));
+        serviceUris.Should().HaveElementAt(1, new Uri("https://two"));
+        serviceUris.Should().HaveElementAt(2, new Uri("https://three"));
+        serviceUris.Should().HaveElementAt(3, new Uri("https://four"));
     }
 
     [Fact]

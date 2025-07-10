@@ -134,8 +134,8 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         _ = configurationBuilder.Build();
 
         ConfigServerConfigurationSource? source = configurationBuilder.EnumerateSources<ConfigServerConfigurationSource>().SingleOrDefault();
-        Assert.NotNull(source);
-        Assert.NotNull(source.DefaultOptions.ClientCertificate);
+        source.Should().NotBeNull();
+        source.DefaultOptions.ClientCertificate.Should().NotBeNull();
     }
 
     [Fact]
@@ -158,8 +158,8 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         _ = configurationBuilder.Build();
 
         ConfigServerConfigurationSource? source = configurationBuilder.EnumerateSources<ConfigServerConfigurationSource>().SingleOrDefault();
-        Assert.NotNull(source);
-        Assert.NotNull(source.DefaultOptions.ClientCertificate);
+        source.Should().NotBeNull();
+        source.DefaultOptions.ClientCertificate.Should().NotBeNull();
     }
 
     [Fact]
@@ -168,8 +168,8 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddConfigServer();
 
-        ConfigServerConfigurationSource? configServerSource = configurationBuilder.EnumerateSources<ConfigServerConfigurationSource>().SingleOrDefault();
-        Assert.NotNull(configServerSource);
+        ConfigServerConfigurationSource? source = configurationBuilder.EnumerateSources<ConfigServerConfigurationSource>().SingleOrDefault();
+        source.Should().NotBeNull();
     }
 
     [Fact]
@@ -215,10 +215,9 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         ConfigServerConfigurationProvider? provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().FirstOrDefault();
 
-        Assert.NotNull(provider);
-        Assert.IsType<ConfigServerConfigurationProvider>(provider);
-        Assert.NotEqual("https://uri-from-settings", provider.ClientOptions.Uri);
-        Assert.Equal("https://uri-from-vcap-services", provider.ClientOptions.Uri);
+        provider.Should().BeOfType<ConfigServerConfigurationProvider>();
+        provider.ClientOptions.Uri.Should().NotBe("https://uri-from-settings");
+        provider.ClientOptions.Uri.Should().Be("https://uri-from-vcap-services");
     }
 
     [Fact]
@@ -244,12 +243,12 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         ConfigServerConfigurationProvider? provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().FirstOrDefault();
 
-        Assert.NotNull(provider);
-        Assert.Equal("testConfigLabel", provider.ClientOptions.Label);
-        Assert.Equal("testConfigName", provider.ClientOptions.Name);
-        Assert.Equal("testEnv", provider.ClientOptions.Environment);
-        Assert.Equal("testUser", provider.ClientOptions.Username);
-        Assert.Equal("testPassword", provider.ClientOptions.Password);
+        provider.Should().NotBeNull();
+        provider.ClientOptions.Label.Should().Be("testConfigLabel");
+        provider.ClientOptions.Name.Should().Be("testConfigName");
+        provider.ClientOptions.Environment.Should().Be("testEnv");
+        provider.ClientOptions.Username.Should().Be("testUser");
+        provider.ClientOptions.Password.Should().Be("testPassword");
     }
 
     [Fact]

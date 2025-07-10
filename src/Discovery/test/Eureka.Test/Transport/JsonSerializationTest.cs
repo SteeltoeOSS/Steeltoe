@@ -12,6 +12,7 @@ public sealed class JsonSerializationTest
     [Fact]
     public void Deserialize_BadJson_Throws()
     {
+#pragma warning disable JSON001 // Invalid JSON pattern
         const string json = """
             {
                 'instanceId':'localhost:foo',
@@ -19,7 +20,10 @@ public sealed class JsonSerializationTest
                 'app':'FOO',
                 'ipAddr':'192.168.56.1',
             """;
+#pragma warning restore JSON001 // Invalid JSON pattern
 
-        Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<JsonInstanceInfo>(json));
+        Action action = () => JsonSerializer.Deserialize<JsonInstanceInfo>(json);
+
+        action.Should().ThrowExactly<JsonException>();
     }
 }

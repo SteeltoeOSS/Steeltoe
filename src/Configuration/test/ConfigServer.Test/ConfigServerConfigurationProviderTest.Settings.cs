@@ -36,18 +36,20 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public void SourceConstructor_WithTimeoutConfigured_InitializesHttpClientWithConfiguredTimeout()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:config:timeout"] = "30000"
-        }).Build();
+        };
+
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var options = new ConfigServerClientOptions();
         var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
         using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
         using HttpClient httpClient = provider.CreateHttpClient(options);
 
-        Assert.NotNull(httpClient);
-        Assert.Equal(30.Seconds(), httpClient.Timeout);
+        httpClient.Should().NotBeNull();
+        httpClient.Timeout.Should().Be(30.Seconds());
     }
 
     [Fact]
@@ -61,7 +63,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        Assert.Throws<ArgumentNullException>(() => provider.BuildConfigServerUri(null!, null));
+        // ReSharper disable once AccessToDisposedClosure
+        Action action = () => provider.BuildConfigServerUri(null!, null);
+
+        action.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Fact]
@@ -74,9 +79,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
-
         string path = provider.BuildConfigServerUri(options.Uri!, null).ToString();
-        Assert.Equal($"{options.Uri}/{options.Name}/{options.Environment}", path);
+
+        path.Should().Be($"{options.Uri}/{options.Name}/{options.Environment}");
     }
 
     [Fact]
@@ -90,9 +95,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
-
         string path = provider.BuildConfigServerUri(options.Uri!, options.Label).ToString();
-        Assert.Equal($"{options.Uri}/{options.Name}/{options.Environment}/{options.Label}", path);
+
+        path.Should().Be($"{options.Uri}/{options.Name}/{options.Environment}/{options.Label}");
     }
 
     [Fact]
@@ -106,9 +111,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
-
         string path = provider.BuildConfigServerUri(options.Uri!, options.Label).ToString();
-        Assert.Equal($"{options.Uri}/{options.Name}/{options.Environment}/myLabel(_)version", path);
+
+        path.Should().Be($"{options.Uri}/{options.Name}/{options.Environment}/myLabel(_)version");
     }
 
     [Fact]
@@ -122,9 +127,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
-
         string path = provider.BuildConfigServerUri(options.Uri, null).ToString();
-        Assert.Equal($"http://localhost:9999/myPath/path/{options.Name}/{options.Environment}", path);
+
+        path.Should().Be($"http://localhost:9999/myPath/path/{options.Name}/{options.Environment}");
     }
 
     [Fact]
@@ -138,9 +143,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
-
         string path = provider.BuildConfigServerUri(options.Uri, null).ToString();
-        Assert.Equal($"http://localhost:9999/myPath/path/{options.Name}/{options.Environment}", path);
+
+        path.Should().Be($"http://localhost:9999/myPath/path/{options.Name}/{options.Environment}");
     }
 
     [Fact]
@@ -154,9 +159,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
-
         string path = provider.BuildConfigServerUri(options.Uri, null).ToString();
-        Assert.Equal($"http://localhost:9999/{options.Name}/{options.Environment}", path);
+
+        path.Should().Be($"http://localhost:9999/{options.Name}/{options.Environment}");
     }
 
     [Fact]
@@ -170,8 +175,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
-
         string path = provider.BuildConfigServerUri(options.Uri, null).ToString();
-        Assert.Equal($"http://localhost:9999/{options.Name}/{options.Environment}", path);
+
+        path.Should().Be($"http://localhost:9999/{options.Name}/{options.Environment}");
     }
 }

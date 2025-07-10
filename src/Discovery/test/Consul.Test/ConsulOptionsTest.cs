@@ -13,13 +13,13 @@ public sealed class ConsulOptionsTest
     {
         var options = new ConsulOptions();
 
-        Assert.Null(options.Datacenter);
-        Assert.Null(options.Password);
-        Assert.Null(options.Username);
-        Assert.Null(options.WaitTime);
-        Assert.Null(options.Token);
-        Assert.Equal("localhost", options.Host);
-        Assert.Equal("http", options.Scheme);
-        Assert.Equal(8500, options.Port);
+        options.Datacenter.Should().BeNull();
+        options.Password.Should().BeNull();
+        options.Username.Should().BeNull();
+        options.WaitTime.Should().BeNull();
+        options.Token.Should().BeNull();
+        options.Host.Should().Be("localhost");
+        options.Scheme.Should().Be("http");
+        options.Port.Should().Be(8500);
     }
 }

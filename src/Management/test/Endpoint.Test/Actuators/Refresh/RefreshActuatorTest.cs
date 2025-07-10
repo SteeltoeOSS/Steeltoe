@@ -31,7 +31,9 @@ public sealed class RefreshActuatorTest
         services.AddRefreshActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        Func<RefreshEndpointMiddleware> action = serviceProvider.GetRequiredService<RefreshEndpointMiddleware>;
+        // ReSharper disable once AccessToDisposedClosure
+        Action action = () => serviceProvider.GetRequiredService<RefreshEndpointMiddleware>();
+
         action.Should().NotThrow();
     }
 

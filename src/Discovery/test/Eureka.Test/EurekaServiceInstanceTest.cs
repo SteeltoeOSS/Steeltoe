@@ -30,7 +30,7 @@ public sealed class EurekaServiceInstanceTest
         serviceInstance.Host.Should().Be(instance.HostName);
         serviceInstance.Port.Should().Be(instance.SecurePort);
         serviceInstance.IsSecure.Should().BeTrue();
-        serviceInstance.Metadata.Should().ContainSingle(pair => pair.Key == "foo" && pair.Value == "bar");
+        serviceInstance.Metadata.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
         serviceInstance.Uri.Should().Be("https://host:9999/");
     }
 

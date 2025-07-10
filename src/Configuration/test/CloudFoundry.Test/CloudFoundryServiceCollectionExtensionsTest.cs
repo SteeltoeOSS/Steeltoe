@@ -45,8 +45,10 @@ public sealed class CloudFoundryServiceCollectionExtensionsTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var appOptions = serviceProvider.GetRequiredService<IOptions<CloudFoundryApplicationOptions>>();
-        Assert.Equal("foo", appOptions.Value.ApplicationName);
-        Assert.Equal(16384, appOptions.Value.Limits?.FileDescriptor);
-        Assert.Equal("playground", appOptions.Value.SpaceName);
+
+        appOptions.Value.ApplicationName.Should().Be("foo");
+        appOptions.Value.Limits.Should().NotBeNull();
+        appOptions.Value.Limits.FileDescriptor.Should().Be(16384);
+        appOptions.Value.SpaceName.Should().Be("playground");
     }
 }

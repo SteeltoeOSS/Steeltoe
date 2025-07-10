@@ -33,7 +33,9 @@ public sealed class HttpExchangesActuatorTest
         services.AddHttpExchangesActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        Func<HttpExchangesEndpointMiddleware> action = serviceProvider.GetRequiredService<HttpExchangesEndpointMiddleware>;
+        // ReSharper disable once AccessToDisposedClosure
+        Action action = () => serviceProvider.GetRequiredService<HttpExchangesEndpointMiddleware>();
+
         action.Should().NotThrow();
     }
 

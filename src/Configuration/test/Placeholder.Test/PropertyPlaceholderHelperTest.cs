@@ -26,7 +26,8 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result = helper.ResolvePlaceholders(text, configuration);
-        Assert.Equal("foo=bar", result);
+
+        result.Should().Be("foo=bar");
     }
 
     [Fact]
@@ -46,7 +47,8 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result = helper.ResolvePlaceholders(text, configuration);
-        Assert.Equal("foo=bar", result);
+
+        result.Should().Be("foo=bar");
     }
 
     [Fact]
@@ -60,7 +62,8 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result = helper.ResolvePlaceholders(text, configuration);
-        Assert.Equal("foo=empty", result);
+
+        result.Should().Be("foo=empty");
     }
 
     [Fact]
@@ -80,7 +83,8 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result = helper.ResolvePlaceholders(text, configuration);
-        Assert.Equal("foo=empty", result);
+
+        result.Should().Be("foo=empty");
     }
 
     [Fact]
@@ -100,7 +104,8 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result = helper.ResolvePlaceholders(text, configuration);
-        Assert.Equal("foo=bar", result);
+
+        result.Should().Be("foo=bar");
     }
 
     [Fact]
@@ -120,7 +125,8 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result = helper.ResolvePlaceholders(text, configuration);
-        Assert.Equal("foo=bar", result);
+
+        result.Should().Be("foo=bar");
     }
 
     [Fact]
@@ -134,7 +140,8 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result = helper.ResolvePlaceholders(text, configuration);
-        Assert.Equal("foo=empty", result);
+
+        result.Should().Be("foo=empty");
     }
 
     [Fact]
@@ -155,7 +162,8 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result = helper.ResolvePlaceholders(text, configuration);
-        Assert.Equal("foo=bar,bar=baz", result);
+
+        result.Should().Be("foo=bar,bar=baz");
     }
 
     [Fact]
@@ -176,7 +184,8 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result = helper.ResolvePlaceholders(text, configuration);
-        Assert.Equal("foo=bar,bar=baz", result);
+
+        result.Should().Be("foo=bar,bar=baz");
     }
 
     [Fact]
@@ -197,7 +206,8 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result = helper.ResolvePlaceholders(text, configuration);
-        Assert.Equal("foo=bar", result);
+
+        result.Should().Be("foo=bar");
     }
 
     [Fact]
@@ -218,7 +228,8 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result = helper.ResolvePlaceholders(text, configuration);
-        Assert.Equal("foo=bar", result);
+
+        result.Should().Be("foo=bar");
     }
 
     [Fact]
@@ -253,10 +264,12 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result1 = helper.ResolvePlaceholders(text1, configuration1);
-        Assert.Equal("foo=bar", result1);
+
+        result1.Should().Be("foo=bar");
 
         string? result2 = helper.ResolvePlaceholders(text2, configuration2);
-        Assert.Equal("actualValue+actualValue", result2);
+
+        result2.Should().Be("actualValue+actualValue");
     }
 
     [Fact]
@@ -291,10 +304,12 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result1 = helper.ResolvePlaceholders(text1, configuration1);
-        Assert.Equal("foo=bar", result1);
+
+        result1.Should().Be("foo=bar");
 
         string? result2 = helper.ResolvePlaceholders(text2, configuration2);
-        Assert.Equal("actualValue+actualValue", result2);
+
+        result2.Should().Be("actualValue+actualValue");
     }
 
     [Fact]
@@ -314,7 +329,8 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result = helper.ResolvePlaceholders(text, configuration);
-        Assert.Equal("foo=bar,bar=${bar}", result);
+
+        result.Should().Be("foo=bar,bar=${bar}");
     }
 
     [Fact]
@@ -336,7 +352,8 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result = helper.ResolvePlaceholders(text, configuration);
-        Assert.Equal("line=two", result);
+
+        result.Should().Be("line=two");
     }
 
     [Fact]
@@ -358,7 +375,8 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result = helper.ResolvePlaceholders(text, configuration);
-        Assert.Equal("line=two", result);
+
+        result.Should().Be("line=two");
     }
 
     [Fact]
@@ -372,6 +390,7 @@ public sealed class PropertyPlaceholderHelperTest
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
         string? result = helper.ResolvePlaceholders(text, configuration);
-        Assert.Equal("line=empty", result);
+
+        result.Should().Be("line=empty");
     }
 }

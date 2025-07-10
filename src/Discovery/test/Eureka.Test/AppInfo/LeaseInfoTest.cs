@@ -25,19 +25,20 @@ public sealed class LeaseInfoTest
         };
 
         LeaseInfo? result = LeaseInfo.FromJson(leaseInfo);
-        Assert.NotNull(result);
-        Assert.NotNull(result.RenewalInterval);
-        Assert.Equal(100, result.RenewalInterval.Value.TotalSeconds);
-        Assert.NotNull(result.Duration);
-        Assert.Equal(200, result.Duration.Value.TotalSeconds);
-        Assert.NotNull(result.RegistrationTimeUtc);
-        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMilliseconds(result.RegistrationTimeUtc.Value));
-        Assert.NotNull(result.LastRenewalTimeUtc);
-        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMilliseconds(result.LastRenewalTimeUtc.Value));
-        Assert.NotNull(result.EvictionTimeUtc);
-        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMilliseconds(result.EvictionTimeUtc.Value));
-        Assert.NotNull(result.ServiceUpTimeUtc);
-        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMilliseconds(result.ServiceUpTimeUtc.Value));
+
+        result.Should().NotBeNull();
+        result.RenewalInterval.Should().NotBeNull();
+        result.RenewalInterval.Value.TotalSeconds.Should().Be(100);
+        result.Duration.Should().NotBeNull();
+        result.Duration.Value.TotalSeconds.Should().Be(200);
+        result.RegistrationTimeUtc.Should().NotBeNull();
+        DateTimeConversions.ToJavaMilliseconds(result.RegistrationTimeUtc.Value).Should().Be(1_457_973_741_708);
+        result.LastRenewalTimeUtc.Should().NotBeNull();
+        DateTimeConversions.ToJavaMilliseconds(result.LastRenewalTimeUtc.Value).Should().Be(1_457_973_741_708);
+        result.EvictionTimeUtc.Should().NotBeNull();
+        DateTimeConversions.ToJavaMilliseconds(result.EvictionTimeUtc.Value).Should().Be(1_457_973_741_708);
+        result.ServiceUpTimeUtc.Should().NotBeNull();
+        DateTimeConversions.ToJavaMilliseconds(result.ServiceUpTimeUtc.Value).Should().Be(1_457_973_741_708);
     }
 
     [Fact]
@@ -49,9 +50,10 @@ public sealed class LeaseInfoTest
         };
 
         LeaseInfo? result = LeaseInfo.FromJson(leaseInfo);
-        Assert.NotNull(result);
-        Assert.NotNull(result.LastRenewalTimeUtc);
-        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMilliseconds(result.LastRenewalTimeUtc.Value));
+
+        result.Should().NotBeNull();
+        result.LastRenewalTimeUtc.Should().NotBeNull();
+        DateTimeConversions.ToJavaMilliseconds(result.LastRenewalTimeUtc.Value).Should().Be(1_457_973_741_708);
     }
 
     [Fact]
@@ -59,9 +61,10 @@ public sealed class LeaseInfoTest
     {
         var instanceOptions = new EurekaInstanceOptions();
         LeaseInfo info = LeaseInfo.FromConfiguration(instanceOptions);
-        Assert.NotNull(info.RenewalInterval);
-        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, info.RenewalInterval.Value.TotalSeconds);
-        Assert.NotNull(info.Duration);
-        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, info.Duration.Value.TotalSeconds);
+
+        info.RenewalInterval.Should().NotBeNull();
+        info.RenewalInterval.Value.TotalSeconds.Should().Be(instanceOptions.LeaseRenewalIntervalInSeconds);
+        info.Duration.Should().NotBeNull();
+        info.Duration.Value.TotalSeconds.Should().Be(instanceOptions.LeaseExpirationDurationInSeconds);
     }
 }

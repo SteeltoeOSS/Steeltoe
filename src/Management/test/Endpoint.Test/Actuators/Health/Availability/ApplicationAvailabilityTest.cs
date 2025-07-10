@@ -24,9 +24,9 @@ public sealed class ApplicationAvailabilityTest
         availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, GetType().Name);
         availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, GetType().Name);
 
-        Assert.Equal(LivenessState.Broken, availability.GetAvailabilityState("Test"));
-        Assert.Equal(LivenessState.Correct, availability.GetLivenessState());
-        Assert.Equal(ReadinessState.AcceptingTraffic, availability.GetReadinessState());
+        availability.GetAvailabilityState("Test").Should().Be(LivenessState.Broken);
+        availability.GetLivenessState().Should().Be(LivenessState.Correct);
+        availability.GetReadinessState().Should().Be(ReadinessState.AcceptingTraffic);
     }
 
     [Fact]
@@ -37,8 +37,8 @@ public sealed class ApplicationAvailabilityTest
         AvailabilityState? liveness = availability.GetLivenessState();
         AvailabilityState? readiness = availability.GetReadinessState();
 
-        Assert.Null(liveness);
-        Assert.Null(readiness);
+        liveness.Should().BeNull();
+        readiness.Should().BeNull();
     }
 
     [Fact]
@@ -46,10 +46,13 @@ public sealed class ApplicationAvailabilityTest
     {
         var availability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
 
-        Assert.Throws<InvalidOperationException>(() =>
-            availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, ReadinessState.AcceptingTraffic, null));
+        Action action1 = () => availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, ReadinessState.AcceptingTraffic, null);
 
-        Assert.Throws<InvalidOperationException>(() => availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, LivenessState.Correct, null));
+        action1.Should().ThrowExactly<InvalidOperationException>();
+
+        Action action2 = () => availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, LivenessState.Correct, null);
+
+        action2.Should().ThrowExactly<InvalidOperationException>();
     }
 
     [Fact]
@@ -60,16 +63,16 @@ public sealed class ApplicationAvailabilityTest
         availability.ReadinessChanged += Availability_ReadinessChanged;
 
         availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Broken, null);
-        Assert.Equal(LivenessState.Broken, _lastLivenessState);
+        _lastLivenessState.Should().Be(LivenessState.Broken);
         availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.RefusingTraffic, null);
-        Assert.Equal(ReadinessState.RefusingTraffic, _lastReadinessState);
+        _lastReadinessState.Should().Be(ReadinessState.RefusingTraffic);
         availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, null);
         availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
-        Assert.Equal(2, _livenessChanges);
-        Assert.Equal(LivenessState.Correct, _lastLivenessState);
-        Assert.Equal(2, _readinessChanges);
-        Assert.Equal(ReadinessState.AcceptingTraffic, _lastReadinessState);
+        _livenessChanges.Should().Be(2);
+        _lastLivenessState.Should().Be(LivenessState.Correct);
+        _readinessChanges.Should().Be(2);
+        _lastReadinessState.Should().Be(ReadinessState.AcceptingTraffic);
     }
 
     private void Availability_ReadinessChanged(object? sender, AvailabilityEventArgs args)

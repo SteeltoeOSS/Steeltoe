@@ -53,11 +53,11 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         configurationBuilder.AddConfigServer();
         IConfigurationRoot root = configurationBuilder.Build();
 
-        Assert.Equal("spam", root["bar"]);
-        Assert.Equal("from foo development", root["foo"]);
-        Assert.Equal("Spring Cloud Samples", root["info:description"]);
-        Assert.Equal("https://github.com/spring-cloud-samples", root["info:url"]);
-        Assert.Equal("http://localhost:8761/eureka/", root["eureka:client:serviceUrl:defaultZone"]);
+        root["bar"].Should().Be("spam");
+        root["foo"].Should().Be("from foo development");
+        root["info:description"].Should().Be("Spring Cloud Samples");
+        root["info:url"].Should().Be("https://github.com/spring-cloud-samples");
+        root["eureka:client:serviceUrl:defaultZone"].Should().Be("http://localhost:8761/eureka/");
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         using HttpClient client = host.GetTestClient();
         string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"), TestContext.Current.CancellationToken);
 
-        Assert.Equal("spamfrom foo developmentSpring Cloud Sampleshttps://github.com/spring-cloud-samples", result);
+        result.Should().Be("spamfrom foo developmentSpring Cloud Sampleshttps://github.com/spring-cloud-samples");
     }
 
     [Fact]
@@ -199,7 +199,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         using HttpClient client = host.GetTestClient();
         string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"), TestContext.Current.CancellationToken);
 
-        Assert.Equal("spamfrom foo developmentSpring Cloud Sampleshttps://github.com/spring-cloud-samples", result);
+        result.Should().Be("spamfrom foo developmentSpring Cloud Sampleshttps://github.com/spring-cloud-samples");
     }
 
     [Fact]
@@ -243,11 +243,11 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         configurationBuilder.AddConfigServer();
         IConfigurationRoot root = configurationBuilder.Build();
 
-        Assert.Equal("spam", root["bar"]);
-        Assert.Equal("from foo development", root["foo"]);
-        Assert.Equal("Spring Cloud Samples", root["info:description"]);
-        Assert.Equal("https://github.com/spring-cloud-samples", root["info:url"]);
-        Assert.Equal("http://localhost:8761/eureka/", root["eureka:client:serviceUrl:defaultZone"]);
+        root["bar"].Should().Be("spam");
+        root["foo"].Should().Be("from foo development");
+        root["info:description"].Should().Be("Spring Cloud Samples");
+        root["info:url"].Should().Be("https://github.com/spring-cloud-samples");
+        root["eureka:client:serviceUrl:defaultZone"].Should().Be("http://localhost:8761/eureka/");
     }
 
     [Fact]
@@ -299,8 +299,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
 
         // after switching to newer config server image, the health response has changed to
         // https://github.com/spring-cloud-samples/config-repo/Config resource 'file [/tmp/config-repo-4389533880216684481/application.yml' via location '' (document #0)"
-        Assert.StartsWith(
-            "UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/Config",
-            result, StringComparison.Ordinal);
+        result.Should().StartWith(
+            "UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/Config");
     }
 }

@@ -11,39 +11,39 @@ public sealed class PlatformTest
     [Fact]
     public void IsCloudFoundry_ReturnsExpected()
     {
-        Assert.False(Platform.IsCloudFoundry);
+        Platform.IsCloudFoundry.Should().BeFalse();
 
         using (new EnvironmentVariableScope("VCAP_APPLICATION", "{}"))
         {
-            Assert.True(Platform.IsCloudFoundry);
+            Platform.IsCloudFoundry.Should().BeTrue();
         }
 
-        Assert.False(Platform.IsCloudFoundry);
+        Platform.IsCloudFoundry.Should().BeFalse();
     }
 
     [Fact]
     public void IsKubernetes_ReturnsExpected()
     {
-        Assert.False(Platform.IsKubernetes);
+        Platform.IsKubernetes.Should().BeFalse();
 
         using (new EnvironmentVariableScope("KUBERNETES_SERVICE_HOST", "some"))
         {
-            Assert.True(Platform.IsKubernetes);
+            Platform.IsKubernetes.Should().BeTrue();
         }
 
-        Assert.False(Platform.IsKubernetes);
+        Platform.IsKubernetes.Should().BeFalse();
     }
 
     [Fact]
     public void IsContainerized_ReturnsExpected()
     {
-        Assert.False(Platform.IsContainerized);
+        Platform.IsContainerized.Should().BeFalse();
 
         using (new EnvironmentVariableScope("DOTNET_RUNNING_IN_CONTAINER", "true"))
         {
-            Assert.True(Platform.IsContainerized);
+            Platform.IsContainerized.Should().BeTrue();
         }
 
-        Assert.False(Platform.IsContainerized);
+        Platform.IsContainerized.Should().BeFalse();
     }
 }

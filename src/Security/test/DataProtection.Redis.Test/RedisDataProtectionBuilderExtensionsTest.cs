@@ -25,12 +25,13 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
     {
         const string appName = "SHARED-APP-NAME";
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:Redis:Default:ConnectionString"] = $"localhost,keepAlive=30,name={appName}"
-        });
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
+        builder.Configuration.AddInMemoryCollection(appSettings);
 
         builder.AddRedis(null, addOptions =>
         {

@@ -61,10 +61,10 @@ public sealed class JsonApplicationTest
             """;
 
         var result = JsonSerializer.Deserialize<JsonApplication>(json);
-        Assert.NotNull(result);
-        Assert.Equal("FOO", result.Name);
-        Assert.NotNull(result.Instances);
-        Assert.Single(result.Instances);
+
+        result.Should().NotBeNull();
+        result.Name.Should().Be("FOO");
+        result.Instances.Should().ContainSingle();
 
         // Rest is validated by JsonInstanceInfoTest
     }

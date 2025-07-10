@@ -293,9 +293,7 @@ public sealed class HealthAggregationTest
         builder.Services.AddHealthContributor<UpContributor>();
         await using WebApplication host = builder.Build();
 
-        IHealthContributor[] contributors = [.. host.Services.GetServices<IHealthContributor>()];
-
-        contributors.Should().ContainSingle();
+        host.Services.GetServices<IHealthContributor>().Should().ContainSingle();
     }
 
     [Fact]
@@ -451,8 +449,9 @@ public sealed class HealthAggregationTest
         using var source = new CancellationTokenSource();
         source.CancelAfter(1.Seconds());
 
-        // ReSharper disable once AccessToDisposedClosure
+        // ReSharper disable AccessToDisposedClosure
         Func<Task> action = async () => await aggregator.AggregateAsync(contributors, [], emptyServiceProvider, source.Token);
+        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<TaskCanceledException>();
     }

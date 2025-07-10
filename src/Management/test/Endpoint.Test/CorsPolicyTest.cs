@@ -33,8 +33,7 @@ public sealed class CorsPolicyTest
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
         corsPolicy.Should().NotBeNull();
         corsPolicy.AllowAnyOrigin.Should().BeTrue();
-        corsPolicy.Methods.Should().ContainSingle();
-        corsPolicy.Methods.Should().Contain("GET");
+        corsPolicy.Methods.Should().ContainSingle().Which.Should().Be("GET");
 
         await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
@@ -59,8 +58,7 @@ public sealed class CorsPolicyTest
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
         corsPolicy.Should().NotBeNull();
         corsPolicy.AllowAnyOrigin.Should().BeTrue();
-        corsPolicy.Methods.Should().ContainSingle();
-        corsPolicy.Methods.Should().Contain("POST");
+        corsPolicy.Methods.Should().ContainSingle().Which.Should().Be("POST");
 
         await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
@@ -91,8 +89,7 @@ public sealed class CorsPolicyTest
         corsPolicy.AllowAnyOrigin.Should().BeFalse();
         corsPolicy.IsOriginAllowed("http://example.api.com").Should().BeTrue();
         corsPolicy.IsOriginAllowed("http://google.com").Should().BeFalse();
-        corsPolicy.Methods.Should().ContainSingle();
-        corsPolicy.Methods.Should().Contain("GET");
+        corsPolicy.Methods.Should().ContainSingle().Which.Should().Be("GET");
 
         await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
@@ -128,8 +125,7 @@ public sealed class CorsPolicyTest
         corsPolicy.Should().NotBeNull();
         corsPolicy.AllowAnyOrigin.Should().BeTrue();
         corsPolicy.PreflightMaxAge.Should().Be(TimeSpan.FromSeconds(preflightMaxAge));
-        corsPolicy.Methods.Should().ContainSingle();
-        corsPolicy.Methods.Should().Contain("POST");
+        corsPolicy.Methods.Should().ContainSingle().Which.Should().Be("POST");
 
         await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
@@ -140,12 +136,9 @@ public sealed class CorsPolicyTest
         HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        response.Headers.Should().ContainKey("Access-Control-Allow-Origin");
-        response.Headers.GetValues("Access-Control-Allow-Origin").Should().ContainSingle().And.Contain("*");
-        response.Headers.Should().ContainKey("Access-Control-Allow-Methods");
-        response.Headers.GetValues("Access-Control-Allow-Methods").Should().ContainSingle().And.Contain("POST");
-        response.Headers.Should().ContainKey("Access-Control-Max-Age");
-        response.Headers.GetValues("Access-Control-Max-Age").Should().ContainSingle().And.Contain($"{preflightMaxAge}");
+        response.Headers.Should().ContainKey("Access-Control-Allow-Origin").WhoseValue.Should().ContainSingle().And.Contain("*");
+        response.Headers.Should().ContainKey("Access-Control-Allow-Methods").WhoseValue.Should().ContainSingle().And.Contain("POST");
+        response.Headers.Should().ContainKey("Access-Control-Max-Age").WhoseValue.Should().ContainSingle().And.Contain($"{preflightMaxAge}");
     }
 
     [Fact]
@@ -201,8 +194,7 @@ public sealed class CorsPolicyTest
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
         corsPolicy.Should().NotBeNull();
         corsPolicy.AllowAnyOrigin.Should().BeTrue();
-        corsPolicy.Methods.Should().ContainSingle();
-        corsPolicy.Methods.Should().Contain("GET");
+        corsPolicy.Methods.Should().ContainSingle().Which.Should().Be("GET");
         corsPolicy.Headers.Should().BeEquivalentTo("Authorization", "X-Cf-App-Instance", "Content-Type", "Content-Disposition");
 
         await app.StartAsync(TestContext.Current.CancellationToken);

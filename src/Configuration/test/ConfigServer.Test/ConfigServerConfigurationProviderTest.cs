@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
@@ -48,20 +47,18 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var env = await content.ReadFromJsonAsync<ConfigEnvironment>(ConfigServerConfigurationProvider.SerializerOptions,
             TestContext.Current.CancellationToken);
 
-        Assert.NotNull(env);
-        Assert.Equal("test-name", env.Name);
-        Assert.NotNull(env.Profiles);
-        Assert.Single(env.Profiles);
-        Assert.Equal("test-label", env.Label);
-        Assert.Equal("test-version", env.Version);
-        Assert.Equal("test-state", env.State);
-        Assert.NotNull(env.PropertySources);
-        Assert.Single(env.PropertySources);
-        Assert.Equal("source", env.PropertySources[0].Name);
-        Assert.NotNull(env.PropertySources[0].Source);
-        Assert.Equal(2, env.PropertySources[0].Source.Count);
-        Assert.Equal("value1", env.PropertySources[0].Source["key1"].ToString());
-        Assert.Equal(10L, long.Parse(env.PropertySources[0].Source["key2"].ToString()!, CultureInfo.InvariantCulture));
+        env.Should().NotBeNull();
+        env.Name.Should().Be("test-name");
+        env.Profiles.Should().ContainSingle();
+        env.Label.Should().Be("test-label");
+        env.Version.Should().Be("test-version");
+        env.State.Should().Be("test-state");
+
+        PropertySource source = env.PropertySources.Should().ContainSingle().Subject;
+        source.Name.Should().Be("source");
+        source.Source.Should().HaveCount(2);
+        source.Source.Should().ContainKey("key1").WhoseValue.ToString().Should().Be("value1");
+        source.Source.Should().ContainKey("key2").WhoseValue.ToString().Should().Be("10");
     }
 
     [Fact]
@@ -71,9 +68,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
         string[] result = provider.GetLabels();
-        Assert.NotNull(result);
-        Assert.Single(result);
-        Assert.Equal(string.Empty, result[0]);
+        result.Should().ContainSingle().Which.Should().BeEmpty();
     }
 
     [Fact]
@@ -87,9 +82,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
         string[] result = provider.GetLabels();
-        Assert.NotNull(result);
-        Assert.Single(result);
-        Assert.Equal(string.Empty, result[0]);
+        result.Should().ContainSingle().Which.Should().BeEmpty();
     }
 
     [Fact]
@@ -103,9 +96,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
         string[] result = provider.GetLabels();
-        Assert.NotNull(result);
-        Assert.Single(result);
-        Assert.Equal("foobar", result[0]);
+        result.Should().ContainSingle().Which.Should().Be("foobar");
     }
 
     [Fact]
@@ -119,11 +110,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
         string[] result = provider.GetLabels();
-        Assert.NotNull(result);
-        Assert.Equal(3, result.Length);
-        Assert.Equal("1", result[0]);
-        Assert.Equal("2", result[1]);
-        Assert.Equal("3", result[2]);
+        result.Should().HaveCount(3);
+        result.Should().HaveElementAt(0, "1");
+        result.Should().HaveElementAt(1, "2");
+        result.Should().HaveElementAt(2, "3");
     }
 
     [Fact]
@@ -137,11 +127,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
         string[] result = provider.GetLabels();
-        Assert.NotNull(result);
-        Assert.Equal(3, result.Length);
-        Assert.Equal("1", result[0]);
-        Assert.Equal("2", result[1]);
-        Assert.Equal("3", result[2]);
+        result.Should().HaveCount(3);
+        result.Should().HaveElementAt(0, "1");
+        result.Should().HaveElementAt(1, "2");
+        result.Should().HaveElementAt(2, "3");
     }
 
     [Fact]
@@ -159,11 +148,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
         Uri requestUri = provider.BuildConfigServerUri(options.Uri, null);
         HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpMethod.Get, request.Method);
-        Assert.Equal(requestUri, request.RequestUri);
-        Assert.NotNull(request.Headers.Authorization);
-        Assert.Equal("Basic", request.Headers.Authorization.Scheme);
-        Assert.Equal(GetEncodedUserPassword("user", "password"), request.Headers.Authorization.Parameter);
+        request.Method.Should().Be(HttpMethod.Get);
+        request.RequestUri.Should().Be(requestUri);
+        request.Headers.Authorization.Should().NotBeNull();
+        request.Headers.Authorization.Scheme.Should().Be("Basic");
+        request.Headers.Authorization.Parameter.Should().Be(GetEncodedUserPassword("user", "password"));
     }
 
     [Fact]
@@ -183,11 +172,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
         Uri requestUri = provider.BuildConfigServerUri(options.Uri, null);
         HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpMethod.Get, request.Method);
-        Assert.Equal(requestUri, request.RequestUri);
-        Assert.NotNull(request.Headers.Authorization);
-        Assert.Equal("Basic", request.Headers.Authorization.Scheme);
-        Assert.Equal(GetEncodedUserPassword("user", "password"), request.Headers.Authorization.Parameter);
+        request.Method.Should().Be(HttpMethod.Get);
+        request.RequestUri.Should().Be(requestUri);
+        request.Headers.Authorization.Should().NotBeNull();
+        request.Headers.Authorization.Scheme.Should().Be("Basic");
+        request.Headers.Authorization.Parameter.Should().Be(GetEncodedUserPassword("user", "password"));
     }
 
     [Fact]
@@ -207,11 +196,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
         Uri requestUri = provider.BuildConfigServerUri(options.Uri, null);
         HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpMethod.Get, request.Method);
-        Assert.Equal(requestUri, request.RequestUri);
-        Assert.NotNull(request.Headers.Authorization);
-        Assert.Equal("Basic", request.Headers.Authorization.Scheme);
-        Assert.Equal(GetEncodedUserPassword("user", "password"), request.Headers.Authorization.Parameter);
+        request.Method.Should().Be(HttpMethod.Get);
+        request.RequestUri.Should().Be(requestUri);
+        request.Headers.Authorization.Should().NotBeNull();
+        request.Headers.Authorization.Scheme.Should().Be("Basic");
+        request.Headers.Authorization.Parameter.Should().Be(GetEncodedUserPassword("user", "password"));
     }
 
     [Fact]
@@ -229,11 +218,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
         Uri requestUri = provider.BuildConfigServerUri(options.Uri!, null);
         HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpMethod.Get, request.Method);
-        Assert.Equal(requestUri, request.RequestUri);
-        Assert.True(request.Headers.Contains(ConfigServerConfigurationProvider.TokenHeader));
+        request.Method.Should().Be(HttpMethod.Get);
+        request.RequestUri.Should().Be(requestUri);
+        request.Headers.Contains(ConfigServerConfigurationProvider.TokenHeader).Should().BeTrue();
         IEnumerable<string> headerValues = request.Headers.GetValues(ConfigServerConfigurationProvider.TokenHeader);
-        Assert.Contains("MyVaultToken", headerValues);
+        headerValues.Should().Contain("MyVaultToken");
     }
 
     [Fact]
@@ -301,9 +290,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
         using HttpClient httpClient = provider.CreateHttpClient(options);
 
-        Assert.NotNull(httpClient);
-        Assert.Equal("bar", httpClient.DefaultRequestHeaders.GetValues("foo").SingleOrDefault());
-        Assert.Equal("foo", httpClient.DefaultRequestHeaders.GetValues("bar").SingleOrDefault());
+        httpClient.Should().NotBeNull();
+        httpClient.DefaultRequestHeaders.GetValues("foo").SingleOrDefault().Should().Be("bar");
+        httpClient.DefaultRequestHeaders.GetValues("bar").SingleOrDefault().Should().Be("foo");
     }
 
     [Fact]
@@ -321,7 +310,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using (var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance))
         {
-            Assert.True(provider.IsDiscoveryFirstEnabled());
+            provider.IsDiscoveryFirstEnabled().Should().BeTrue();
         }
 
         var values = new Dictionary<string, string?>
@@ -341,7 +330,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using (var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance))
         {
-            Assert.True(provider.IsDiscoveryFirstEnabled());
+            provider.IsDiscoveryFirstEnabled().Should().BeTrue();
         }
     }
 
@@ -366,9 +355,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
         provider.UpdateSettingsFromDiscovery(new List<IServiceInstance>(), options);
-        Assert.Null(options.Username);
-        Assert.Null(options.Password);
-        Assert.Equal("http://localhost:8888/", options.Uri);
+        options.Username.Should().BeNull();
+        options.Password.Should().BeNull();
+        options.Uri.Should().Be("http://localhost:8888/");
 
         var metadata1 = new Dictionary<string, string?>
         {
@@ -389,9 +378,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         ];
 
         provider.UpdateSettingsFromDiscovery(instances, options);
-        Assert.Equal("secondUser", options.Username);
-        Assert.Equal("secondPassword", options.Password);
-        Assert.Equal("https://foo.bar:8888/,https://foo.bar.baz:9999/configPath", options.Uri);
+        options.Username.Should().Be("secondUser");
+        options.Password.Should().Be("secondPassword");
+        options.Uri.Should().Be("https://foo.bar:8888/,https://foo.bar.baz:9999/configPath");
     }
 
     [Fact]
@@ -416,10 +405,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
         using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
-        var exception = await Assert.ThrowsAsync<ConfigServerException>(async () =>
-            await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken));
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
 
-        Assert.StartsWith("Could not locate Config Server via discovery", exception.Message, StringComparison.Ordinal);
+        await action.Should().ThrowExactlyAsync<ConfigServerException>().WithMessage("Could not locate Config Server via discovery*");
     }
 
     private static string GetEncodedUserPassword(string user, string password)

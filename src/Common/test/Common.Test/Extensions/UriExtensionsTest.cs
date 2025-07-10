@@ -16,7 +16,7 @@ public sealed class UriExtensionsTest
 
         string masked = uri.ToMaskedString();
 
-        Assert.Equal(expected, masked);
+        masked.Should().Be(expected);
     }
 
     [Fact]
@@ -27,7 +27,7 @@ public sealed class UriExtensionsTest
 
         string masked = uri.ToMaskedString();
 
-        Assert.Equal(expected, masked);
+        masked.Should().Be(expected);
     }
 
     [Fact]
@@ -38,6 +38,6 @@ public sealed class UriExtensionsTest
 
         string masked = uri.ToMaskedString();
 
-        Assert.Equal(expected, masked);
+        masked.Should().Be(expected);
     }
 }

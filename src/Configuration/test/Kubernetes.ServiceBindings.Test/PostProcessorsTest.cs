@@ -29,11 +29,11 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlKubernetesPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
-        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData.Should().ContainKey($"{keyPrefix}:host").WhoseValue.Should().Be("test-host");
+        configurationData.Should().ContainKey($"{keyPrefix}:port").WhoseValue.Should().Be("test-port");
+        configurationData.Should().ContainKey($"{keyPrefix}:database").WhoseValue.Should().Be("test-database");
+        configurationData.Should().ContainKey($"{keyPrefix}:username").WhoseValue.Should().Be("test-username");
+        configurationData.Should().ContainKey($"{keyPrefix}:password").WhoseValue.Should().Be("test-password");
     }
 
     [Fact]
@@ -56,11 +56,11 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlKubernetesPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
-        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData.Should().ContainKey($"{keyPrefix}:host").WhoseValue.Should().Be("test-host");
+        configurationData.Should().ContainKey($"{keyPrefix}:port").WhoseValue.Should().Be("test-port");
+        configurationData.Should().ContainKey($"{keyPrefix}:database").WhoseValue.Should().Be("test-database");
+        configurationData.Should().ContainKey($"{keyPrefix}:username").WhoseValue.Should().Be("test-username");
+        configurationData.Should().ContainKey($"{keyPrefix}:password").WhoseValue.Should().Be("test-password");
     }
 
     [Fact]
@@ -83,12 +83,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbKubernetesPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:server"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
-        configurationData[$"{keyPrefix}:authenticationDatabase"].Should().Be("test-database");
-        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData.Should().ContainKey($"{keyPrefix}:server").WhoseValue.Should().Be("test-host");
+        configurationData.Should().ContainKey($"{keyPrefix}:port").WhoseValue.Should().Be("test-port");
+        configurationData.Should().ContainKey($"{keyPrefix}:database").WhoseValue.Should().Be("test-database");
+        configurationData.Should().ContainKey($"{keyPrefix}:authenticationDatabase").WhoseValue.Should().Be("test-database");
+        configurationData.Should().ContainKey($"{keyPrefix}:username").WhoseValue.Should().Be("test-username");
+        configurationData.Should().ContainKey($"{keyPrefix}:password").WhoseValue.Should().Be("test-password");
     }
 
     [Fact]
@@ -111,11 +111,11 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, RabbitMQKubernetesPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
-        configurationData[$"{keyPrefix}:virtualHost"].Should().Be("test-virtual-host");
+        configurationData.Should().ContainKey($"{keyPrefix}:host").WhoseValue.Should().Be("test-host");
+        configurationData.Should().ContainKey($"{keyPrefix}:port").WhoseValue.Should().Be("test-port");
+        configurationData.Should().ContainKey($"{keyPrefix}:username").WhoseValue.Should().Be("test-username");
+        configurationData.Should().ContainKey($"{keyPrefix}:password").WhoseValue.Should().Be("test-password");
+        configurationData.Should().ContainKey($"{keyPrefix}:virtualHost").WhoseValue.Should().Be("test-virtual-host");
     }
 
     [Fact]
@@ -139,12 +139,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisKubernetesPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:ssl"].Should().Be("test-ssl");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
-        configurationData[$"{keyPrefix}:defaultDatabase"].Should().Be("test-database");
-        configurationData[$"{keyPrefix}:name"].Should().Be("test-client-name");
+        configurationData.Should().ContainKey($"{keyPrefix}:host").WhoseValue.Should().Be("test-host");
+        configurationData.Should().ContainKey($"{keyPrefix}:port").WhoseValue.Should().Be("test-port");
+        configurationData.Should().ContainKey($"{keyPrefix}:ssl").WhoseValue.Should().Be("test-ssl");
+        configurationData.Should().ContainKey($"{keyPrefix}:password").WhoseValue.Should().Be("test-password");
+        configurationData.Should().ContainKey($"{keyPrefix}:defaultDatabase").WhoseValue.Should().Be("test-database");
+        configurationData.Should().ContainKey($"{keyPrefix}:name").WhoseValue.Should().Be("test-client-name");
     }
 
     [Fact]
@@ -169,11 +169,11 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        configurationData["random"].Should().Be("data");
-        configurationData["from"].Should().Be("some-source");
-        configurationData["secret"].Should().Be("password");
-        configurationData["secret:one"].Should().Be("password1");
-        configurationData["secret:two"].Should().Be("password2");
+        configurationData.Should().ContainKey("random").WhoseValue.Should().Be("data");
+        configurationData.Should().ContainKey("from").WhoseValue.Should().Be("some-source");
+        configurationData.Should().ContainKey("secret").WhoseValue.Should().Be("password");
+        configurationData.Should().ContainKey("secret:one").WhoseValue.Should().Be("password1");
+        configurationData.Should().ContainKey("secret:two").WhoseValue.Should().Be("password2");
         configurationData.Should().NotContainKey("type");
         configurationData.Should().NotContainKey("provider");
     }

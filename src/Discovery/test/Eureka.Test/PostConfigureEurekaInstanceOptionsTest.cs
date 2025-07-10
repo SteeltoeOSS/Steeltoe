@@ -104,7 +104,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         instanceOptions.AppName.Should().Be("test-app-name");
         instanceOptions.AppGroupName.Should().Be("test-app-group-name");
         instanceOptions.MetadataMap.Should().ContainSingle();
-        instanceOptions.MetadataMap.Should().ContainSingle(pair => pair.Key == "test-key" && pair.Value == "test-metadata-value");
+        instanceOptions.MetadataMap.Should().ContainKey("test-key").WhoseValue.Should().Be("test-metadata-value");
         instanceOptions.HostName.Should().Be("test-host-name");
         instanceOptions.IPAddress.Should().Be("test-ip-address");
         instanceOptions.PreferIPAddress.Should().BeFalse();

@@ -55,7 +55,7 @@ public sealed class HostBuilderTest
         requestApplication.Should().NotBeNull();
         requestApplication.ServiceUrl.Scheme.Should().Be("http");
         requestApplication.ServiceUrl.Port.Should().NotBe(5000);
-        requestApplication.ServiceUrl.Port.Should().BeGreaterThan(0);
+        requestApplication.ServiceUrl.Port.Should().BePositive();
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public sealed class HostBuilderTest
         requestApplication.Should().NotBeNull();
         requestApplication.ServiceUrl.Scheme.Should().Be("https");
         requestApplication.ServiceUrl.Port.Should().NotBe(5000);
-        requestApplication.ServiceUrl.Port.Should().BeGreaterThan(0);
+        requestApplication.ServiceUrl.Port.Should().BePositive();
     }
 
     [Fact]
