@@ -31,7 +31,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+  <PropertyGroup Condition="'$(CI)' != ''">
     <!--
       While deterministic builds are enabled by default in .NET SDK projects, there is an extra property, ContinuousIntegrationBuild,
       to set on the build server to normalize stored file paths. These should not be enabled during local dev or the debugger won't

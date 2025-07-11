@@ -12,6 +12,6 @@ public static class TestContextExtensions
     {
         ArgumentNullException.ThrowIfNull(testContext);
 
-        return Environment.GetEnvironmentVariable("CI") == "true" || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SYSTEM_TEAMPROJECT"));
+        return Environment.GetEnvironmentVariable("CI") == "true";
     }
 }
