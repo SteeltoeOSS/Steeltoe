@@ -12,6 +12,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <VersionPrefix>4.0.0</VersionPrefix>
+    <VersionSuffix>pre</VersionSuffix>
     <Authors>Broadcom</Authors>
     <PackageIcon>PackageIcon.png</PackageIcon>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>

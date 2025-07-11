@@ -16,7 +16,6 @@
     <MoqVersion>4.20.69</MoqVersion>
     <MySqlConnectorVersion>2.4.*</MySqlConnectorVersion>
     <MySqlDataVersion>9.3.*</MySqlDataVersion>
-    <NerdbankGitVersioningVersion>3.7.*</NerdbankGitVersioningVersion>
     <NewtonsoftJsonVersion>13.0.*</NewtonsoftJsonVersion>
     <PublicApiAnalyzersVersion>4.14.*</PublicApiAnalyzersVersion>
     <RabbitClientTestVersion>7.1.*</RabbitClientTestVersion>

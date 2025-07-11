@@ -74,20 +74,11 @@ jobs:
       shell: bash
       run: echo "DOTNET_GENERATE_ASPNET_CERTIFICATE=false" >> $GITHUB_ENV
 
-    - name: Install Nerdbank.GitVersioning (macOS only)
-      if: ${{ inputs.OS == 'macos' }}
-      run: dotnet tool install --global nbgv
-
     - name: Git checkout
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
 
     - name: Restore packages
       run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal
-
-    - name: Set package version
-      run: nbgv cloud
 
     - name: Build solution
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
