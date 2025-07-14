@@ -8,16 +8,300 @@ on:
     - '[0-9]+.x'
     - 'release/*'
   pull_request:
+  release:
+    types:
+    - published
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: true
+  SOLUTION_FILE: 'src/Steeltoe.All.sln'
+  VERSION_FILE: 'shared-package.props'
+  # TODO: Consider defining these inside the applicable jobs.
+  AZURE_ARTIFACTS_FEED_URL: https://pkgs.dev.azure.com/dotnet/Steeltoe/_packaging/dev/nuget/v3/index.json
+  VSS_NUGET_URI_PREFIXES: https://pkgs.dev.azure.com/dotnet/
+
 jobs:
-  empty:
-    name: Empty job
+  build:
+    name: Build
+    timeout-minutes: 15
     runs-on: ubuntu-latest
 
     steps:
-    - name: Empty step
-      run: echo "Packaging using GitHub Actions is not yet implemented."
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.*
+          9.0.*
+
+    - name: Git checkout
+      uses: actions/checkout@v4
+
+    - name: Restore packages
+      run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal
+
+    - name: Calculate package version (for release)
+      if: ${{ github.event_name == 'release' }}
+      env:
+        TAG_NAME: ${{ github.ref_name }}
+      shell: pwsh
+      run: |
+        # Get the version suffix from the git tag. For example: '1.2.3-preview1-final' => 'preview1-final'
+        $tagSegments = '${{ env.TAG_NAME }}' -split '-'
+        $versionPrefix = $tagSegments[0]
+        $versionSuffix = $tagSegments.Length -eq 1 ? '' : $tagSegments[1..$($tagSegments.Length - 1)] -join '-'
+
+        [xml]$xml = Get-Content $env:VERSION_FILE
+        $configuredVersionPrefix = $xml.Project.PropertyGroup.VersionPrefix | Select-Object -First 1
+
+        if ($configuredVersionPrefix -ne $versionPrefix) {
+            Write-Error "Version prefix from git release tag '$versionPrefix' does not match version prefix '$configuredVersionPrefix' stored in $env:VERSION_FILE."
+            # To recover from this:
+            # - Delete the GitHub release
+            # - Run: git push --delete origin the-invalid-tag-name
+            # - Adjust VersionPrefix in file, commit and push
+            # - Recreate the GitHub release
+        }
+
+        Write-Output "Using version suffix: $versionSuffix"
+        Write-Output "PACKAGE_VERSION_SUFFIX=$versionSuffix" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Calculate package version (for branch)
+      if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+      env:
+        BRANCH_NAME: ${{ github.ref_name }}
+      shell: pwsh
+      run: |
+        # Get the version suffix from the branch name and auto-incrementing build number. For example: 'main' and '123' => 'main-00123'
+        $revision = "{0:D5}" -f ${{ github.run_number }}
+        $branchName = '${{ env.BRANCH_NAME }}'
+        $safeBranchName = $branchName -Replace '[^a-zA-Z0-9-]', '-'
+        $versionSuffix = "$safeBranchName-$revision"
+
+        Write-Output "Using version suffix: $versionSuffix"
+        Write-Output "PACKAGE_VERSION_SUFFIX=$versionSuffix" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Calculate package version (for pr)
+      if: ${{ github.event_name == 'pull_request' }}
+      shell: pwsh
+      run: |
+        # Get the version suffix from the PR number and auto-incrementing build number. For example: '18' and '123' => 'pr18-00123'
+        $revision = "{0:D5}" -f ${{ github.run_number }}
+        $versionSuffix = "pr${{ github.event.number }}-$revision"
+
+        Write-Output "Using version suffix: $versionSuffix"
+        Write-Output "PACKAGE_VERSION_SUFFIX=$versionSuffix" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Verify package version
+      if: ${{ env.PACKAGE_VERSION_SUFFIX == '' && github.event_name != 'release' }}
+      run: |
+        echo "Package version suffix is empty. This should never happen."
+        exit 1
+
+    - name: Build solution
+      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal /p:VersionSuffix=${{ env.PACKAGE_VERSION_SUFFIX }}
+
+    - name: Collect packages
+      run: dotnet pack ${{ env.SOLUTION_FILE }} --no-build --configuration Release --output ${{ github.workspace }}/packages /p:VersionSuffix=${{ env.PACKAGE_VERSION_SUFFIX }}
+
+    - name: Upload unsigned packages
+      uses: actions/upload-artifact@v4
+      with:
+        if-no-files-found: error
+        name: unsigned-packages
+        path: ${{ github.workspace }}/packages/**/*.nupkg
+
+  sign:
+    name: Sign
+    if: ${{ github.event_name != 'pull_request' }}
+    timeout-minutes: 15
+    needs: build
+    runs-on: windows-latest
+    environment: signing
+    # TODO: Can we move the additional permissions into the step that needs it (assuming there's only one)?
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download unsigned packages
+        uses: actions/download-artifact@v4
+        with:
+          name: unsigned-packages
+          path: packages
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.*
+
+      - name: Install code signing tool
+        run: dotnet tool install --global sign --prerelease
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_KEY_VAULT_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sign packages
+        run: |
+          sign code azure-key-vault '**/*.nupkg'
+          --base-directory '${{ github.workspace }}/packages'
+          --azure-key-vault-managed-identity true
+          --azure-credential-type 'azure-cli'
+          --azure-key-vault-url '${{ secrets.AZURE_KEY_VAULT_URL }}'
+          --azure-key-vault-certificate '${{ secrets.AZURE_KEY_VAULT_CERTIFICATE_ID }}'
+          --publisher-name 'Steeltoe'
+          --description 'Steeltoe'
+          --description-url 'https://steeltoe.io/'
+
+      - name: Upload signed packages
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: signed-packages
+          path: ${{ github.workspace }}/packages/**/*.nupkg
+
+  # TODO: What happens when a package version exists in both feeds?
+  dev-feed-deploy:
+    name: Deploy packages to development feed
+    timeout-minutes: 15
+    needs: sign
+    if: ${{ github.event_name != 'pull_request' }}
+    environment: azdo
+    runs-on: ubuntu-latest
+    # TODO: Can we move the additional permissions into the step that needs it (assuming there's only one)?
+    permissions:
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+        # TODO: Why do we need a token here?
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          # TODO: Are we happy with the names of these secrets, or should we rename to distinguish between signing/keyvault/foundation/azdo? Because "Azure" is pretty vague.
+          # TODO: Verify we have no redundant variables and secrets in GitHub org/repo/environment settings.
+          client-id: ${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_KEY_VAULT_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Download signed packages
+        uses: actions/download-artifact@v4
+        with:
+          name: signed-packages
+          path: packages
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+          # TODO: Can this be replaced with: dotnet nuget add source ...
+          source-url: ${{ env.AZURE_ARTIFACTS_FEED_URL }}
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Install credential provider for Azure Artifacts
+        run: sh -c "$(curl -fsSL https://aka.ms/install-artifacts-credprovider.sh)"
+
+      - name: Extract access token
+        # TODO: What does this GUID mean? Should it be a repo or org-level secret, variable, or an inline constant to clarify its meaning?
+        run: |
+          accessToken=$(az account get-access-token --query accessToken --resource 499b84ac-1321-427f-aa17-267ca6975798 -o tsv)
+          echo "::add-mask::$accessToken"
+          echo "ACCESS_TOKEN=$accessToken" >> $GITHUB_ENV
+
+      - name: Configure authentication provider to use Azure DevOps token
+        run: echo "VSS_NUGET_ACCESSTOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
+
+      - name: Push packages to Azure Artifacts
+        # TODO: What's the meaning of azdo-placeholder?
+        run: dotnet nuget push '${{ github.workspace }}/packages/*.nupkg' --api-key 'azdo-placeholder' --source '${{ env.AZURE_ARTIFACTS_FEED_URL }}'
+
+  nuget-org-deploy:
+    name: Deploy packages to nuget.org
+    timeout-minutes: 15
+    needs: sign
+    if: ${{ github.event_name == 'release' }}
+    environment: nuget.org
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Download signed packages
+        uses: actions/download-artifact@v4
+        with:
+          name: signed-packages
+          path: packages
+
+      - name: Push packages to nuget.org
+        run: dotnet nuget push '${{ github.workspace }}/packages/*.nupkg' --api-key '${{ secrets.STEELTOE_NUGET_API_KEY }}' --source 'nuget.org'
+
+  open_pr:
+    name: Open pull request to bump Steeltoe version after release
+    needs: nuget-org-deploy
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    # TODO: Can we move the additional permissions into the step that needs it (assuming there's only one)?
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v4
+
+    - name: Calculate next package version
+      shell: pwsh
+      run: |
+        [xml]$xml = Get-Content $env:VERSION_FILE
+        $oldVersionPrefix = $xml.Project.PropertyGroup.VersionPrefix | Select-Object -First 1
+
+        $versionSegments = $oldVersionPrefix.split('.')
+        ([int]$versionSegments[-1])++
+        $newVersionPrefix = $versionSegments -join('.')
+
+        Write-Output "OLD_PACKAGE_VERSION_PREFIX=$oldVersionPrefix" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        Write-Output "NEW_PACKAGE_VERSION_PREFIX=$newVersionPrefix" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Open pull request
+      env:
+        GIT_USERNAME: ${{ github.actor }}
+        GH_TOKEN: ${{ github.token }}
+      shell: pwsh
+      run: |
+        $oldVersionPrefix = '${{ env.OLD_PACKAGE_VERSION_PREFIX }}'
+        $newVersionPrefix = '${{ env.NEW_PACKAGE_VERSION_PREFIX }}'
+        $prBranchName = "bump-version-to-$newVersionPrefix-${{ github.run_number }}"
+        $commitMessage = "Bump Steeltoe version from $oldVersionPrefix to $newVersionPrefix."
+
+        $pattern = '(?<left>^\s*\<VersionPrefix\>)[^>]+(?<right>\<\/VersionPrefix\>)\s*$'
+        $fileContent = Get-Content $env:VERSION_FILE
+        $fileContent = $fileContent -Replace $pattern,"`${left}$newVersionPrefix`${right}"
+        Set-Content $fileContent -Path $env:VERSION_FILE
+
+        Write-Output "Creating pull request for commit: $commitMessage"
+        git config --global user.name '${{ env.GIT_USERNAME }}'
+        git config --global user.email '${{ env.GIT_USERNAME }}@noreply.github.com'
+        git checkout -b $prBranchName
+        git add -A
+        git commit -m $commitMessage
+        git push --set-upstream origin $prBranchName
+
+        Write-Output "Opening pull request to merge $prBranchName."
+        gh pr create --head $prBranchName --title 'Bump Steeltoe version' --body $commitMessage
