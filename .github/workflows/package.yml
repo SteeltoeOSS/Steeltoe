@@ -133,12 +133,14 @@ jobs:
     - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
+        source-url: ${{ env.AZURE_ARTIFACTS_FEED_URL }}
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.DEV_FEED_PERSONAL_TOKEN }}
     - name: Download signed packages
       uses: actions/download-artifact@v4
       with:
         name: signed-packages
         path: packages
-
     # this approach won't work until a managed identity is authorized
     # - name: Azure CLI Login
     #   uses: azure/login@v2
@@ -159,4 +161,4 @@ jobs:
     #   run: echo "VSS_NUGET_ACCESSTOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
 
     - name: 'Publish the package to Azure Artifacts'
-      run: dotnet nuget push packages/*.nupkg --api-key ${{ secrets.DEV_FEED_PERSONAL_TOKEN }} --source ${{ env.AZURE_ARTIFACTS_FEED_URL }}
+      run: dotnet nuget push packages/*.nupkg --api-key azdo-placeholder --source ${{ env.AZURE_ARTIFACTS_FEED_URL }}
