@@ -20,7 +20,9 @@ on:
     - main
     - '[0-9]+.x'
     - 'release/*'
-  pull_request:
+    tags:
+      - v*
+  pull_request: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,7 +30,6 @@ concurrency:
 
 permissions:
   contents: read
-#  pull-requests: write
 
 env:
   AZURE_ARTIFACTS_FEED_URL: https://pkgs.dev.azure.com/dotnet/Steeltoe/_packaging/dev/nuget/v3/index.json
@@ -41,7 +42,10 @@ jobs:
     name: Build
     timeout-minutes: 15
     runs-on: ubuntu-latest
-
+    outputs:
+      sign_packages: ${{ steps.decisions.outputs.sign_packages }}
+      deploy_to_dev_feed: ${{ steps.decisions.outputs.deploy_to_dev_feed }}
+      deploy_to_nuget_org: ${{ steps.decisions.outputs.deploy_to_nuget_org }}
     steps:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -75,11 +79,35 @@ jobs:
         path: ${{ github.workspace }}/packages/**/*.nupkg
         retention-days: 7
 
+    - id: decisions
+      name: Make decisions based on workflow triggers
+      run: |
+        PUSH_TO_MAIN=$([[ "$GITHUB_EVENT_NAME" == "push" && "$GITHUB_REF" == "refs/heads/main" ]] && echo true || echo false)
+        PUSH_TAG=$([[ "$GITHUB_EVENT_NAME" == "push" && "$GITHUB_REF" == refs/tags/v* ]] && echo true || echo false)
+        DISPATCH_TO_DEV=$([[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && "${{ github.event.inputs.deployToDevFeed }}" == "true" ]] && echo true || echo false)
+        DISPATCH_TO_NUGET=$([[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && "${{ github.event.inputs.deployToNuGet }}" == "true" ]] && echo true || echo false)
+
+        if [[ "$PUSH_TO_MAIN" == true || "$PUSH_TAG" == true || "$DISPATCH_TO_NUGET" == true ]]; then
+          echo "sign_packages=true" >> $GITHUB_OUTPUT
+          echo "Packages will be signed"
+        else
+          echo "sign_packages=false" >> $GITHUB_OUTPUT
+          echo "Packages will NOT be signed"
+        fi
+
+        if [[ "$DISPATCH_TO_DEV" == true || "$DISPATCH_TO_NUGET" == true || "$PUSH_TO_MAIN" == true || "$PUSH_TAG" == true ]]; then
+          echo "deploy_to_dev_feed=$DEPLOY_TO_DEV" >> $GITHUB_OUTPUT
+          echo "Packages will be deployed to development feed"
+        fi
+        if [[ "$DISPATCH_TO_NUGET" == true || "$PUSH_TAG" == true ]]; then
+          echo "deploy_to_nuget=$DEPLOY_TO_PROD" >> $GITHUB_OUTPUT
+          echo "Packages will be deployed to nuget.org"
+        fi
+
   sign:
     needs: build
     runs-on: windows-latest
-    # if: ${{ github.ref == 'refs/heads/main' }} # Only run this job on pushes to the main branch
-    # if: ${{ github.event_name != 'pull_request' }}
+    if: needs.build.outputs.sign_packages == 'true'
     environment: Production
     permissions:
       id-token: write
@@ -101,7 +129,7 @@ jobs:
     - name: Install code signing tool
       run: dotnet tool install --global sign --prerelease
 
-    - name: 'Az CLI login'
+    - name: Az CLI login
       uses: azure/login@v2
       with:
         client-id: ${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }}
@@ -119,46 +147,75 @@ jobs:
         --azure-key-vault-certificate "${{ secrets.AZURE_KEY_VAULT_CERTIFICATE_ID }}"
         --description "Steeltoe"
 
-    - name: "Upload signed packages"
+    - name: Upload signed packages
       uses: actions/upload-artifact@v4
       with:
         name: signed-packages
         path: ${{ github.workspace }}/packages/**/*.nupkg
 
-  az-artifacts-build-and-deploy:
-    #if: ${{ github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.deployToDevFeed == 'true') }}
-    needs: sign
+  az-artifacts-deploy-unsigned:
+    name: Deploy unsigned packages to Dev Feed
+    needs: build
+    if: needs.build.outputs.sign_packages != true && needs.build.outputs.deploy_to_dev_feed
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/setup-dotnet@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
         source-url: ${{ env.AZURE_ARTIFACTS_FEED_URL }}
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.DEV_FEED_PERSONAL_TOKEN }}
+
+    - name: Download unsigned packages
+      uses: actions/download-artifact@v4
+      with:
+        name: unsigned-packages
+        path: packages
+
+    - name: Push unsigned packages to Azure Artifacts
+      run: dotnet nuget push packages/*.nupkg --api-key azdo-placeholder --source ${{ env.AZURE_ARTIFACTS_FEED_URL }}
+
+  az-artifacts-deploy-signed:
+    name: Deploy signed packages to Dev Feed
+    needs: [build, sign]
+    if: needs.build.outputs.sign_packages == true && needs.build.outputs.deploy_to_dev_feed
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+        source-url: ${{ env.AZURE_ARTIFACTS_FEED_URL }}
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.DEV_FEED_PERSONAL_TOKEN }}
+
     - name: Download signed packages
       uses: actions/download-artifact@v4
       with:
         name: signed-packages
         path: packages
-    # this approach won't work until a managed identity is authorized
-    # - name: Azure CLI Login
-    #   uses: azure/login@v2
-    #   with:
-    #     client-id: ${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }}
-    #     tenant-id: ${{ secrets.AZURE_KEY_VAULT_TENANT_ID }}
-    #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    # - name: Install credential provider for Azure Artifacts
-    #   run: sh -c "$(curl -fsSL https://aka.ms/install-artifacts-credprovider.sh)"
-    # - name: Extract access token
-    #   run: |
-    #       # no idea what the guid is for, came from this link:
-    #       # https://learn.microsoft.com/en-us/azure/devops/artifacts/quickstarts/github-actions?view=azure-devops&pivots=managed-identity#assign-permissions-to-your-managed-identity-in-azure-devops
-    #       accessToken=$(az account get-access-token --query accessToken --resource 499b84ac-1321-427f-aa17-267ca6975798 -o tsv)
-    #       echo "::add-mask::$accessToken"
-    #       echo "ACCESS_TOKEN=$accessToken" >> $GITHUB_ENV
-    # - name: Configure authentication provider to use Azure DevOps token
-    #   run: echo "VSS_NUGET_ACCESSTOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
 
-    - name: 'Publish the package to Azure Artifacts'
+    - name: Push signed packages to Azure Artifacts
       run: dotnet nuget push packages/*.nupkg --api-key azdo-placeholder --source ${{ env.AZURE_ARTIFACTS_FEED_URL }}
+
+  nuget-org-deploy:
+    name: Deploy to nuget.org
+    needs: [build, sign]
+    if: needs.build.outputs.deploy_to_nuget_org
+    environment: nuget.org
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Download signed packages
+      uses: actions/download-artifact@v4
+      with:
+        name: signed-packages
+        path: packages
+
+    - name: Push packages to nuget.org
+      run: dotnet nuget push packages/*.nupkg --api-key ${{ secrets.STEELTOE_NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
