@@ -17,17 +17,16 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
     [Fact]
     public async Task Registers_connection_string_for_default_service_binding()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass;Log Parameters=True"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddPostgreSql();
         builder.Services.Configure<PostgreSqlOptions>(options => options.ConnectionString += ";Include Error Detail=true");
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseNpgsql(serviceProvider));
-
         await using WebApplication app = builder.Build();
 
         await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
@@ -40,17 +39,16 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
     [Fact]
     public async Task Registers_connection_string_for_named_service_binding()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlService:ConnectionString"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass;Log Parameters=True"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddPostgreSql();
         builder.Services.Configure<PostgreSqlOptions>("myPostgreSqlService", options => options.ConnectionString += ";Include Error Detail=true");
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseNpgsql(serviceProvider, "myPostgreSqlService"));
-
         await using WebApplication app = builder.Build();
 
         await using AsyncServiceScope scope = app.Services.CreateAsyncScope();

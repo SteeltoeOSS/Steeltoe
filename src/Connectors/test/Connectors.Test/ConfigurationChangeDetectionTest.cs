@@ -44,8 +44,7 @@ public sealed class ConfigurationChangeDetectionTest
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.ServiceBindingNames.Should().ContainSingle();
-        connectorFactory.ServiceBindingNames.Should().Contain("examplePostgreSqlService");
+        connectorFactory.ServiceBindingNames.Should().ContainSingle().Which.Should().Be("examplePostgreSqlService");
 
         string? connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=one.com;Database=first");
@@ -124,8 +123,7 @@ public sealed class ConfigurationChangeDetectionTest
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.ServiceBindingNames.Should().ContainSingle();
-        connectorFactory.ServiceBindingNames.Should().Contain("examplePostgreSqlService");
+        connectorFactory.ServiceBindingNames.Should().ContainSingle().Which.Should().Be("examplePostgreSqlService");
 
         string? connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=one.com;Database=first");
@@ -204,8 +202,7 @@ public sealed class ConfigurationChangeDetectionTest
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.ServiceBindingNames.Should().ContainSingle();
-        connectorFactory.ServiceBindingNames.Should().Contain("examplePostgreSqlService");
+        connectorFactory.ServiceBindingNames.Should().ContainSingle().Which.Should().Be("examplePostgreSqlService");
 
         string? connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=one.com;Database=first");

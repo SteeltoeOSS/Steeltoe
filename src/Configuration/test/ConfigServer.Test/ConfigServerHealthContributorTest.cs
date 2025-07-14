@@ -31,7 +31,7 @@ public sealed class ConfigServerHealthContributorTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
-        Assert.NotNull(contributor.Provider);
+        contributor.Provider.Should().NotBeNull();
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public sealed class ConfigServerHealthContributorTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
-        Assert.NotNull(contributor.Provider);
+        contributor.Provider.Should().NotBeNull();
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public sealed class ConfigServerHealthContributorTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
-        Assert.Equal(100_000, contributor.GetTimeToLive());
+        contributor.GetTimeToLive().Should().Be(100_000);
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public sealed class ConfigServerHealthContributorTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
-        Assert.True(contributor.IsEnabled());
+        contributor.IsEnabled().Should().BeTrue();
     }
 
     [Fact]
@@ -119,11 +119,11 @@ public sealed class ConfigServerHealthContributorTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
-        Assert.True(contributor.IsCacheStale(0)); // No cache established yet
+        contributor.IsCacheStale(0).Should().BeTrue(); // No cache established yet
         contributor.Cached = new ConfigEnvironment();
         contributor.LastAccess = 9;
-        Assert.True(contributor.IsCacheStale(10));
-        Assert.False(contributor.IsCacheStale(8));
+        contributor.IsCacheStale(10).Should().BeTrue();
+        contributor.IsCacheStale(8).Should().BeFalse();
     }
 
     [Fact]
@@ -154,9 +154,9 @@ public sealed class ConfigServerHealthContributorTest
         long lastAccess = contributor.LastAccess = DateTimeOffset.Now.ToUnixTimeMilliseconds() - 100;
         IList<PropertySource>? sources = await contributor.GetPropertySourcesAsync(contributor.Provider!, TestContext.Current.CancellationToken);
 
-        Assert.NotEqual(lastAccess, contributor.LastAccess);
-        Assert.Null(sources);
-        Assert.Null(contributor.Cached);
+        contributor.LastAccess.Should().NotBe(lastAccess);
+        sources.Should().BeNull();
+        contributor.Cached.Should().BeNull();
     }
 
     [Fact]
@@ -177,11 +177,11 @@ public sealed class ConfigServerHealthContributorTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
-        Assert.Null(contributor.Provider);
+        contributor.Provider.Should().BeNull();
         HealthCheckResult? health = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
-        Assert.NotNull(health);
-        Assert.Equal(HealthStatus.Unknown, health.Status);
-        Assert.True(health.Details.ContainsKey("error"));
+        health.Should().NotBeNull();
+        health.Status.Should().Be(HealthStatus.Unknown);
+        health.Details.Should().ContainKey("error");
     }
 
     [Fact]
@@ -203,9 +203,9 @@ public sealed class ConfigServerHealthContributorTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
-        Assert.NotNull(contributor.Provider);
+        contributor.Provider.Should().NotBeNull();
         HealthCheckResult? health = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
-        Assert.Null(health);
+        health.Should().BeNull();
     }
 
     [Fact]
@@ -228,11 +228,11 @@ public sealed class ConfigServerHealthContributorTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
-        Assert.NotNull(contributor.Provider);
+        contributor.Provider.Should().NotBeNull();
         HealthCheckResult? health = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
-        Assert.NotNull(health);
-        Assert.Equal(HealthStatus.Unknown, health.Status);
-        Assert.True(health.Details.ContainsKey("error"));
+        health.Should().NotBeNull();
+        health.Status.Should().Be(HealthStatus.Unknown);
+        health.Details.Should().ContainKey("error");
     }
 
     [Fact]
@@ -270,11 +270,9 @@ public sealed class ConfigServerHealthContributorTest
 
         contributor.UpdateHealth(health, sources);
 
-        Assert.Equal(HealthStatus.Up, health.Status);
-        Assert.True(health.Details.ContainsKey("propertySources"));
-        var names = health.Details["propertySources"] as IList<string>;
-        Assert.NotNull(names);
-        Assert.Contains("foo", names);
-        Assert.Contains("bar", names);
+        health.Status.Should().Be(HealthStatus.Up);
+        List<string> names = health.Details.Should().ContainKey("propertySources").WhoseValue.Should().BeOfType<List<string>>().Subject;
+        names.Should().Contain("foo");
+        names.Should().Contain("bar");
     }
 }

@@ -139,18 +139,18 @@ public sealed class SqlServerConnectorTest
     [Fact]
     public async Task Binds_options_without_service_bindings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:SqlServer:mySqlServerServiceOne:ConnectionString"] = "Data Source=localhost;Initial Catalog=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo:ConnectionString"] = "Server=localhost;Database=db2;UID=user2;PWD=pass2"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
         builder.Services.Configure<SqlServerOptions>("mySqlServerServiceOne", options => options.ConnectionString += ";Encrypt=false");
-
         await using WebApplication app = builder.Build();
+
         await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
         var optionsSnapshot = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<SqlServerOptions>>();
 
@@ -179,17 +179,17 @@ public sealed class SqlServerConnectorTest
     [Fact]
     public async Task Binds_options_with_CloudFoundry_service_bindings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:SqlServer:mySqlServerServiceOne:ConnectionString"] = "Data Source=localhost;Max Pool Size=50"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
-
         await using WebApplication app = builder.Build();
+
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<SqlServerOptions>>();
 
         SqlServerOptions optionsOne = optionsMonitor.Get("mySqlServerServiceOne");
@@ -217,16 +217,15 @@ public sealed class SqlServerConnectorTest
     [Fact]
     public async Task Registers_ConnectorFactory()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:SqlServer:mySqlServerServiceOne:ConnectionString"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<SqlServerOptions, SqlConnection>>();
@@ -245,21 +244,21 @@ public sealed class SqlServerConnectorTest
     [Fact]
     public async Task Registers_HealthContributors()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:SqlServer:mySqlServerServiceOne:ConnectionString"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
-
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
-        RelationalDatabaseHealthContributor[] contributors = [.. healthContributors.Should().AllBeOfType<RelationalDatabaseHealthContributor>().Subject];
-        contributors.Should().HaveCount(2);
+        RelationalDatabaseHealthContributor[] contributors =
+        [
+            .. app.Services.GetServices<IHealthContributor>().Should().HaveCount(2).And.AllBeOfType<RelationalDatabaseHealthContributor>().Subject
+        ];
 
         contributors[0].Id.Should().Be("SQL Server");
         contributors[0].ServiceName.Should().Be("mySqlServerServiceOne");
@@ -275,9 +274,7 @@ public sealed class SqlServerConnectorTest
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
-
         builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<SqlServerOptions, SqlConnection>>();
@@ -298,21 +295,19 @@ public sealed class SqlServerConnectorTest
     [Fact]
     public async Task Registers_default_connection_string_when_only_default_client_binding_found()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:SqlServer:Default:ConnectionString"] = "SERVER=localhost;Database=myDb;UID=myUser;PWD=myPass"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<SqlServerOptions, SqlConnection>>();
 
-        connectorFactory.ServiceBindingNames.Should().ContainSingle();
-        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().ContainSingle().Which.Should().BeEmpty();
 
         string? defaultConnectionString = connectorFactory.Get().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNullOrEmpty();

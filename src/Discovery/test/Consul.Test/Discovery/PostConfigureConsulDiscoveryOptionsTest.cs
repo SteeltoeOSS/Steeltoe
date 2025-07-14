@@ -21,30 +21,31 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
     public void Constructor_InitializesDefaults()
     {
         var options = new ConsulDiscoveryOptions();
-        Assert.True(options.Register);
-        Assert.True(options.RegisterHealthCheck);
-        Assert.Null(options.DefaultQueryTag);
-        Assert.Equal("zone", options.DefaultZoneMetadataName);
-        Assert.True(options.Deregister);
-        Assert.True(options.Enabled);
-        Assert.True(options.FailFast);
-        Assert.Equal("30m", options.HealthCheckCriticalTimeout);
-        Assert.Equal("10s", options.HealthCheckInterval);
-        Assert.Equal("/actuator/health", options.HealthCheckPath);
-        Assert.Equal("10s", options.HealthCheckTimeout);
-        Assert.False(options.HealthCheckTlsSkipVerify);
-        Assert.Null(options.HealthCheckUrl);
-        Assert.NotNull(options.Heartbeat);
-        Assert.Null(options.HostName);
-        Assert.Null(options.InstanceGroup);
-        Assert.Null(options.InstanceZone);
-        Assert.False(options.PreferIPAddress);
-        Assert.True(options.QueryPassing);
-        Assert.Equal("http", options.Scheme);
-        Assert.Null(options.ServiceName);
-        Assert.Empty(options.Tags);
-        Assert.Empty(options.Metadata);
-        Assert.Null(options.IPAddress);
+
+        options.Register.Should().BeTrue();
+        options.RegisterHealthCheck.Should().BeTrue();
+        options.DefaultQueryTag.Should().BeNull();
+        options.DefaultZoneMetadataName.Should().Be("zone");
+        options.Deregister.Should().BeTrue();
+        options.Enabled.Should().BeTrue();
+        options.FailFast.Should().BeTrue();
+        options.HealthCheckCriticalTimeout.Should().Be("30m");
+        options.HealthCheckInterval.Should().Be("10s");
+        options.HealthCheckPath.Should().Be("/actuator/health");
+        options.HealthCheckTimeout.Should().Be("10s");
+        options.HealthCheckTlsSkipVerify.Should().BeFalse();
+        options.HealthCheckUrl.Should().BeNull();
+        options.Heartbeat.Should().NotBeNull();
+        options.HostName.Should().BeNull();
+        options.InstanceGroup.Should().BeNull();
+        options.InstanceZone.Should().BeNull();
+        options.PreferIPAddress.Should().BeFalse();
+        options.QueryPassing.Should().BeTrue();
+        options.Scheme.Should().Be("http");
+        options.ServiceName.Should().BeNull();
+        options.Tags.Should().BeEmpty();
+        options.Metadata.Should().BeEmpty();
+        options.IPAddress.Should().BeNull();
     }
 
     [Fact]
@@ -99,8 +100,9 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
 
         ConsulDiscoveryOptions options = optionsMonitor.CurrentValue;
 
-        Assert.Equal("FromMock", options.HostName);
-        Assert.Equal("254.254.254.254", options.IPAddress);
+        options.HostName.Should().Be("FromMock");
+        options.IPAddress.Should().Be("254.254.254.254");
+
         inetUtilsMock.Verify(n => n.FindFirstNonLoopbackHostInfo(), Times.Once);
     }
 
@@ -133,19 +135,39 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         ConsulDiscoveryOptions options = optionsMonitor.CurrentValue;
         noSlowReverseDnsQuery.Stop();
 
-        Assert.NotNull(options.HostName);
-        Assert.InRange(noSlowReverseDnsQuery.ElapsedMilliseconds, 0, 1500); // testing with an actual reverse dns query results in around 5000 ms
+        options.HostName.Should().NotBeNull();
+        noSlowReverseDnsQuery.ElapsedMilliseconds.Should().BeInRange(0, 1500); // testing with an actual reverse dns query results in around 5000 ms
+    }
+
+    [Fact]
+    public void NormalizeForConsul_Digit_Throws()
+    {
+        Action action = () => PostConfigureConsulDiscoveryOptions.NormalizeForConsul("9abc", "name");
+
+        action.Should().ThrowExactly<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void NormalizeForConsul_ColonAtStart_Throws()
+    {
+        Action action = () => PostConfigureConsulDiscoveryOptions.NormalizeForConsul(":abc", "name");
+
+        action.Should().ThrowExactly<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void NormalizeForConsul_ColonAtEnd_Throws()
+    {
+        Action action = () => PostConfigureConsulDiscoveryOptions.NormalizeForConsul("abc:", "name");
+
+        action.Should().ThrowExactly<InvalidOperationException>();
     }
 
     [Fact]
     public void NormalizeForConsul_ReturnsExpected()
     {
-        Assert.Equal("abc1", PostConfigureConsulDiscoveryOptions.NormalizeForConsul("abc1", "name"));
-        Assert.Equal("ab-c1", PostConfigureConsulDiscoveryOptions.NormalizeForConsul("ab:c1", "name"));
-        Assert.Equal("ab-c1", PostConfigureConsulDiscoveryOptions.NormalizeForConsul("ab::c1", "name"));
-
-        Assert.Throws<InvalidOperationException>(() => PostConfigureConsulDiscoveryOptions.NormalizeForConsul("9abc", "name"));
-        Assert.Throws<InvalidOperationException>(() => PostConfigureConsulDiscoveryOptions.NormalizeForConsul(":abc", "name"));
-        Assert.Throws<InvalidOperationException>(() => PostConfigureConsulDiscoveryOptions.NormalizeForConsul("abc:", "name"));
+        PostConfigureConsulDiscoveryOptions.NormalizeForConsul("abc1", "name").Should().Be("abc1");
+        PostConfigureConsulDiscoveryOptions.NormalizeForConsul("ab:c1", "name").Should().Be("ab-c1");
+        PostConfigureConsulDiscoveryOptions.NormalizeForConsul("ab::c1", "name").Should().Be("ab-c1");
     }
 }

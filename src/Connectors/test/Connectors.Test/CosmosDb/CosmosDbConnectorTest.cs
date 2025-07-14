@@ -18,9 +18,7 @@ public sealed class CosmosDbConnectorTest
     [Fact]
     public async Task Binds_options_without_service_bindings()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:CosmosDb:myCosmosDbServiceOne:ConnectionString"] =
                 "AccountEndpoint=https://host-1:8081;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
@@ -28,11 +26,13 @@ public sealed class CosmosDbConnectorTest
             ["Steeltoe:Client:CosmosDb:myCosmosDbServiceTwo:ConnectionString"] =
                 "AccountEndpoint=https://host-2:8081;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
             ["Steeltoe:Client:CosmosDb:myCosmosDbServiceTwo:Database"] = "db2"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddCosmosDb();
-
         await using WebApplication app = builder.Build();
+
         await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
         var optionsSnapshot = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<CosmosDbOptions>>();
 
@@ -54,15 +54,16 @@ public sealed class CosmosDbConnectorTest
     [Fact]
     public async Task Registers_ConnectorFactory()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:CosmosDb:myCosmosDbServiceOne:ConnectionString"] =
                 "AccountEndpoint=https://host-1:8081;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
             ["Steeltoe:Client:CosmosDb:myCosmosDbServiceTwo:ConnectionString"] =
                 "AccountEndpoint=https://host-2:8081;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
-        });
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
 
         builder.AddCosmosDb(null, addOptions =>
         {
@@ -104,23 +105,23 @@ public sealed class CosmosDbConnectorTest
     [Fact]
     public async Task Registers_HealthContributors()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:CosmosDb:myCosmosDbServiceOne:ConnectionString"] =
                 "AccountEndpoint=https://host-1:8081;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
             ["Steeltoe:Client:CosmosDb:myCosmosDbServiceTwo:ConnectionString"] =
                 "AccountEndpoint=https://host-2:8081;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddCosmosDb();
-
         await using WebApplication app = builder.Build();
 
-        IHealthContributor[] healthContributors = [.. app.Services.GetServices<IHealthContributor>()];
-        CosmosDbHealthContributor[] cosmosDbHealthContributors = [.. healthContributors.Should().AllBeOfType<CosmosDbHealthContributor>().Subject];
-        cosmosDbHealthContributors.Should().HaveCount(2);
+        CosmosDbHealthContributor[] cosmosDbHealthContributors =
+        [
+            .. app.Services.GetServices<IHealthContributor>().Should().HaveCount(2).And.AllBeOfType<CosmosDbHealthContributor>().Subject
+        ];
 
         cosmosDbHealthContributors[0].Id.Should().Be("CosmosDB");
         cosmosDbHealthContributors[0].ServiceName.Should().Be("myCosmosDbServiceOne");
@@ -134,23 +135,21 @@ public sealed class CosmosDbConnectorTest
     [Fact]
     public async Task Registers_default_connection_string_when_only_default_client_binding_found()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:CosmosDb:Default:ConnectionString"] =
                 "AccountEndpoint=https://localhost:8081;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
             ["Steeltoe:Client:CosmosDb:Default:Database"] = "db"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddCosmosDb();
-
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<CosmosDbOptions, CosmosClient>>();
 
-        connectorFactory.ServiceBindingNames.Should().ContainSingle();
-        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().ContainSingle().Which.Should().BeEmpty();
 
         CosmosDbOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();

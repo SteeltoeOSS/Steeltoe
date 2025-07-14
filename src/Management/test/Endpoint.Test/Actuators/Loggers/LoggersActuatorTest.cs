@@ -33,7 +33,9 @@ public sealed class LoggersActuatorTest
         services.AddLoggersActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        Func<LoggersEndpointMiddleware> action = serviceProvider.GetRequiredService<LoggersEndpointMiddleware>;
+        // ReSharper disable once AccessToDisposedClosure
+        Action action = () => serviceProvider.GetRequiredService<LoggersEndpointMiddleware>();
+
         action.Should().NotThrow();
     }
 

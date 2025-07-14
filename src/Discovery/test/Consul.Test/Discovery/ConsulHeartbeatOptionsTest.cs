@@ -12,11 +12,12 @@ public sealed class ConsulHeartbeatOptionsTest
     public void Constructor_InitializesDefaults()
     {
         var options = new ConsulHeartbeatOptions();
-        Assert.Equal(30, options.TtlValue);
-        Assert.True(options.Enabled);
-        Assert.Equal("s", options.TtlUnit);
-        Assert.Equal(2.0 / 3.0, options.IntervalRatio);
-        Assert.Equal("30s", options.TimeToLive);
+
+        options.TtlValue.Should().Be(30);
+        options.Enabled.Should().BeTrue();
+        options.TtlUnit.Should().Be("s");
+        options.IntervalRatio.Should().Be(2.0 / 3.0);
+        options.TimeToLive.Should().Be("30s");
     }
 
     [Theory]
@@ -37,6 +38,7 @@ public sealed class ConsulHeartbeatOptionsTest
         };
 
         TimeSpan period = options.ComputeHeartbeatInterval();
-        Assert.Equal(TimeSpan.FromMilliseconds(expected), period);
+
+        period.Should().Be(TimeSpan.FromMilliseconds(expected));
     }
 }

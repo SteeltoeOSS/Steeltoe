@@ -12,7 +12,8 @@ public sealed class NoneDecryptorTest
     public void TestNoneEncryptor_ReturnsInput()
     {
         var noneDecryptor = new NoneDecryptor();
-        Assert.Equal("something", noneDecryptor.Decrypt("something"));
-        Assert.Equal("something", noneDecryptor.Decrypt("something", "anything"));
+
+        noneDecryptor.Decrypt("something").Should().Be("something");
+        noneDecryptor.Decrypt("something", "anything").Should().Be("something");
     }
 }

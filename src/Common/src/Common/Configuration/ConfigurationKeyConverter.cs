@@ -37,7 +37,7 @@ internal static class ConfigurationKeyConverter
         return sb.ToString(0, sb.Length - 1);
     }
 
-    private static IEnumerable<string> UniversalHierarchySplit(string source)
+    private static List<string> UniversalHierarchySplit(string source)
     {
         List<string> result = [];
 
@@ -71,7 +71,7 @@ internal static class ConfigurationKeyConverter
             }
         }
 
-        return [.. result];
+        return result;
 
         static string UnEscapeString(string src)
         {

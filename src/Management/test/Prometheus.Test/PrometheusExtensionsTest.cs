@@ -42,8 +42,11 @@ public sealed class PrometheusExtensionsTest
     public void AddPrometheusActuator_ConfigurePipelineRequiresConfigureMiddleware()
     {
         var services = new ServiceCollection();
-        var exception = Assert.Throws<InvalidOperationException>(() => services.AddPrometheusActuator(false, builder => builder.UseAuthorization()));
-        exception.Message.Should().Be("The Prometheus pipeline cannot be configured here when configureMiddleware is false.");
+
+        Action action = () => services.AddPrometheusActuator(false, builder => builder.UseAuthorization());
+
+        action.Should().ThrowExactly<InvalidOperationException>().WithMessage(
+            "The Prometheus pipeline cannot be configured here when configureMiddleware is false.");
     }
 
     [Theory]

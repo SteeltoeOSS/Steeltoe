@@ -75,29 +75,25 @@ public sealed class ConsulDiscoveryClientTest
         await discoveryClient.AddInstancesToListAsync(serviceInstances, "ServiceId", QueryOptions.Default, optionsMonitor.CurrentValue,
             TestContext.Current.CancellationToken);
 
-        Assert.Equal(2, serviceInstances.Count);
+        serviceInstances.Should().HaveCount(2);
 
-        Assert.Equal("foo.bar.com", serviceInstances[0].Host);
-        Assert.Equal("ServiceId", serviceInstances[0].ServiceId);
-        Assert.True(serviceInstances[0].IsSecure);
-        Assert.Equal(1234, serviceInstances[0].Port);
-        Assert.Equal(2, serviceInstances[0].Metadata.Count);
-        Assert.Contains("foo", serviceInstances[0].Metadata.Keys);
-        Assert.Contains("secure", serviceInstances[0].Metadata.Keys);
-        Assert.Contains("bar", serviceInstances[0].Metadata.Values);
-        Assert.Contains("true", serviceInstances[0].Metadata.Values);
-        Assert.Equal(new Uri("https://foo.bar.com:1234"), serviceInstances[0].Uri);
+        serviceInstances[0].Host.Should().Be("foo.bar.com");
+        serviceInstances[0].ServiceId.Should().Be("ServiceId");
+        serviceInstances[0].IsSecure.Should().BeTrue();
+        serviceInstances[0].Port.Should().Be(1234);
+        serviceInstances[0].Metadata.Should().HaveCount(2);
+        serviceInstances[0].Metadata.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
+        serviceInstances[0].Metadata.Should().ContainKey("secure").WhoseValue.Should().Be("true");
+        serviceInstances[0].Uri.Should().Be(new Uri("https://foo.bar.com:1234"));
 
-        Assert.Equal("foo1.bar1.com", serviceInstances[1].Host);
-        Assert.Equal("ServiceId", serviceInstances[1].ServiceId);
-        Assert.False(serviceInstances[1].IsSecure);
-        Assert.Equal(5678, serviceInstances[1].Port);
-        Assert.Equal(2, serviceInstances[1].Metadata.Count);
-        Assert.Contains("bar", serviceInstances[1].Metadata.Keys);
-        Assert.Contains("secure", serviceInstances[1].Metadata.Keys);
-        Assert.Contains("foo", serviceInstances[1].Metadata.Values);
-        Assert.Contains("false", serviceInstances[1].Metadata.Values);
-        Assert.Equal(new Uri("http://foo1.bar1.com:5678"), serviceInstances[1].Uri);
+        serviceInstances[1].Host.Should().Be("foo1.bar1.com");
+        serviceInstances[1].ServiceId.Should().Be("ServiceId");
+        serviceInstances[1].IsSecure.Should().BeFalse();
+        serviceInstances[1].Port.Should().Be(5678);
+        serviceInstances[1].Metadata.Should().HaveCount(2);
+        serviceInstances[1].Metadata.Should().ContainKey("bar").WhoseValue.Should().Be("foo");
+        serviceInstances[1].Metadata.Should().ContainKey("secure").WhoseValue.Should().Be("false");
+        serviceInstances[1].Uri.Should().Be(new Uri("http://foo1.bar1.com:5678"));
     }
 
     [Fact]
@@ -137,9 +133,9 @@ public sealed class ConsulDiscoveryClientTest
         var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
         ISet<string> serviceIds = await discoveryClient.GetServiceIdsAsync(QueryOptions.Default, TestContext.Current.CancellationToken);
 
-        Assert.Equal(2, serviceIds.Count);
-        Assert.Contains("foo", serviceIds);
-        Assert.Contains("bar", serviceIds);
+        serviceIds.Should().HaveCount(2);
+        serviceIds.Should().Contain("foo");
+        serviceIds.Should().Contain("bar");
     }
 
     [Fact]
@@ -215,28 +211,24 @@ public sealed class ConsulDiscoveryClientTest
         var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
         IList<IServiceInstance> serviceInstances = await discoveryClient.GetAllInstancesAsync(QueryOptions.Default, TestContext.Current.CancellationToken);
 
-        Assert.Equal(2, serviceInstances.Count);
+        serviceInstances.Should().HaveCount(2);
 
-        Assert.Equal("foo.bar.com", serviceInstances[0].Host);
-        Assert.Equal("ServiceId", serviceInstances[0].ServiceId);
-        Assert.True(serviceInstances[0].IsSecure);
-        Assert.Equal(1234, serviceInstances[0].Port);
-        Assert.Equal(2, serviceInstances[0].Metadata.Count);
-        Assert.Contains("foo", serviceInstances[0].Metadata.Keys);
-        Assert.Contains("secure", serviceInstances[0].Metadata.Keys);
-        Assert.Contains("bar", serviceInstances[0].Metadata.Values);
-        Assert.Contains("true", serviceInstances[0].Metadata.Values);
-        Assert.Equal(new Uri("https://foo.bar.com:1234"), serviceInstances[0].Uri);
+        serviceInstances[0].Host.Should().Be("foo.bar.com");
+        serviceInstances[0].ServiceId.Should().Be("ServiceId");
+        serviceInstances[0].IsSecure.Should().BeTrue();
+        serviceInstances[0].Port.Should().Be(1234);
+        serviceInstances[0].Metadata.Should().HaveCount(2);
+        serviceInstances[0].Metadata.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
+        serviceInstances[0].Metadata.Should().ContainKey("secure").WhoseValue.Should().Be("true");
+        serviceInstances[0].Uri.Should().Be(new Uri("https://foo.bar.com:1234"));
 
-        Assert.Equal("foo1.bar1.com", serviceInstances[1].Host);
-        Assert.Equal("ServiceId", serviceInstances[1].ServiceId);
-        Assert.False(serviceInstances[1].IsSecure);
-        Assert.Equal(5678, serviceInstances[1].Port);
-        Assert.Equal(2, serviceInstances[1].Metadata.Count);
-        Assert.Contains("bar", serviceInstances[1].Metadata.Keys);
-        Assert.Contains("secure", serviceInstances[1].Metadata.Keys);
-        Assert.Contains("foo", serviceInstances[1].Metadata.Values);
-        Assert.Contains("false", serviceInstances[1].Metadata.Values);
-        Assert.Equal(new Uri("http://foo1.bar1.com:5678"), serviceInstances[1].Uri);
+        serviceInstances[1].Host.Should().Be("foo1.bar1.com");
+        serviceInstances[1].ServiceId.Should().Be("ServiceId");
+        serviceInstances[1].IsSecure.Should().BeFalse();
+        serviceInstances[1].Port.Should().Be(5678);
+        serviceInstances[1].Metadata.Should().HaveCount(2);
+        serviceInstances[1].Metadata.Should().ContainKey("bar").WhoseValue.Should().Be("foo");
+        serviceInstances[1].Metadata.Should().ContainKey("secure").WhoseValue.Should().Be("false");
+        serviceInstances[1].Uri.Should().Be(new Uri("http://foo1.bar1.com:5678"));
     }
 }

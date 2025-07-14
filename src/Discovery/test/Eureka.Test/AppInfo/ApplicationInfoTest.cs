@@ -13,10 +13,10 @@ public sealed class ApplicationInfoTest
     public void DefaultConstructor_InitializedWithDefaults()
     {
         var app = new ApplicationInfo("foobar");
-        Assert.Equal("foobar", app.Name);
-        Assert.NotNull(app.Instances);
-        Assert.Empty(app.Instances);
-        Assert.Null(app.GetInstance("bar"));
+
+        app.Name.Should().Be("foobar");
+        app.Instances.Should().BeEmpty();
+        app.GetInstance("bar").Should().BeNull();
     }
 
     [Fact]
@@ -31,11 +31,10 @@ public sealed class ApplicationInfoTest
 
         var app = new ApplicationInfo("foobar", infos);
 
-        Assert.Equal("foobar", app.Name);
-        Assert.NotNull(app.Instances);
-        Assert.Equal(2, app.Instances.Count);
-        Assert.NotNull(app.GetInstance("1"));
-        Assert.NotNull(app.GetInstance("2"));
+        app.Name.Should().Be("foobar");
+        app.Instances.Should().HaveCount(2);
+        app.GetInstance("1").Should().NotBeNull();
+        app.GetInstance("2").Should().NotBeNull();
     }
 
     [Fact]
@@ -46,29 +45,31 @@ public sealed class ApplicationInfoTest
 
         app.Add(instance);
 
-        Assert.NotNull(app.GetInstance("1"));
-        Assert.Equal(instance, app.GetInstance("1"));
-        Assert.NotNull(app.Instances);
-        Assert.Single(app.Instances);
+        app.GetInstance("1").Should().Be(instance);
+        app.Instances.Should().ContainSingle();
     }
 
     [Fact]
     public void Add_Add_Updates()
     {
         var app = new ApplicationInfo("foobar");
-        InstanceInfo instance = new InstanceInfoBuilder().WithId("1").WithStatus(InstanceStatus.Down).Build();
+        InstanceInfo info1 = new InstanceInfoBuilder().WithId("1").WithStatus(InstanceStatus.Down).Build();
+        app.Add(info1);
 
-        app.Add(instance);
+        InstanceInfo? instance1 = app.GetInstance("1");
 
-        Assert.NotNull(app.GetInstance("1"));
-        Assert.Equal(InstanceStatus.Down, app.GetInstance("1")?.Status);
+        instance1.Should().NotBeNull();
+        instance1.Status.Should().Be(InstanceStatus.Down);
 
         InstanceInfo info2 = new InstanceInfoBuilder().WithId("1").WithStatus(InstanceStatus.Up).Build();
         app.Add(info2);
 
-        Assert.Single(app.Instances);
-        Assert.NotNull(app.GetInstance("1"));
-        Assert.Equal(InstanceStatus.Up, app.GetInstance("1")?.Status);
+        app.Instances.Should().ContainSingle();
+
+        instance1 = app.GetInstance("1");
+
+        instance1.Should().NotBeNull();
+        instance1.Status.Should().Be(InstanceStatus.Up);
     }
 
     [Fact]
@@ -135,55 +136,53 @@ public sealed class ApplicationInfoTest
 
         ApplicationInfo? app = ApplicationInfo.FromJson(application, TimeProvider.System);
 
-        Assert.NotNull(app);
-        Assert.Equal("myApp", app.Name);
-        Assert.NotNull(app.Instances);
-        Assert.Single(app.Instances);
-        Assert.NotNull(app.GetInstance("InstanceId"));
+        app.Should().NotBeNull();
+        app.Name.Should().Be("myApp");
+        app.Instances.Should().ContainSingle();
+
         InstanceInfo? instance = app.GetInstance("InstanceId");
 
-        Assert.NotNull(instance);
-        Assert.Equal("InstanceId", instance.InstanceId);
-        Assert.Equal("myApp", instance.AppName);
-        Assert.Equal("AppGroupName", instance.AppGroupName);
-        Assert.Equal("IPAddress", instance.IPAddress);
-        Assert.Equal("Sid", instance.Sid);
-        Assert.Equal(100, instance.NonSecurePort);
-        Assert.True(instance.IsNonSecurePortEnabled);
-        Assert.Equal(100, instance.SecurePort);
-        Assert.False(instance.IsSecurePortEnabled);
-        Assert.Equal("HomePageUrl", instance.HomePageUrl);
-        Assert.Equal("StatusPageUrl", instance.StatusPageUrl);
-        Assert.Equal("HealthCheckUrl", instance.HealthCheckUrl);
-        Assert.Equal("SecureHealthCheckUrl", instance.SecureHealthCheckUrl);
-        Assert.Equal("VipAddress", instance.VipAddress);
-        Assert.Equal("SecureVipAddress", instance.SecureVipAddress);
-        Assert.Equal(1, instance.CountryId);
-        Assert.Equal("MyOwn", instance.DataCenterInfo.Name.ToString());
-        Assert.Equal("HostName", instance.HostName);
-        Assert.Equal(InstanceStatus.Down, instance.Status);
-        Assert.Equal(InstanceStatus.OutOfService, instance.OverriddenStatus);
-        Assert.NotNull(instance.LeaseInfo);
-        Assert.NotNull(instance.LeaseInfo.RenewalInterval);
-        Assert.Equal(1, instance.LeaseInfo.RenewalInterval.Value.TotalSeconds);
-        Assert.NotNull(instance.LeaseInfo.Duration);
-        Assert.Equal(2, instance.LeaseInfo.Duration.Value.TotalSeconds);
-        Assert.NotNull(instance.LeaseInfo.RegistrationTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.RegistrationTimeUtc.Value.Ticks);
-        Assert.NotNull(instance.LeaseInfo.LastRenewalTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.LastRenewalTimeUtc.Value.Ticks);
-        Assert.NotNull(instance.LeaseInfo.EvictionTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.EvictionTimeUtc.Value.Ticks);
-        Assert.NotNull(instance.LeaseInfo.ServiceUpTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.ServiceUpTimeUtc.Value.Ticks);
-        Assert.False(instance.IsCoordinatingDiscoveryServer);
-        Assert.NotNull(instance.Metadata);
-        Assert.Empty(instance.Metadata);
-        Assert.NotNull(instance.LastUpdatedTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LastUpdatedTimeUtc.Value.Ticks);
-        Assert.NotNull(instance.LastDirtyTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LastDirtyTimeUtc.Value.Ticks);
-        Assert.Equal(ActionType.Added, instance.ActionType);
-        Assert.Equal("AsgName", instance.AutoScalingGroupName);
+        instance.Should().NotBeNull();
+        instance.InstanceId.Should().Be("InstanceId");
+        instance.AppName.Should().Be("myApp");
+        instance.AppGroupName.Should().Be("AppGroupName");
+        instance.IPAddress.Should().Be("IPAddress");
+        instance.Sid.Should().Be("Sid");
+        instance.NonSecurePort.Should().Be(100);
+        instance.IsNonSecurePortEnabled.Should().BeTrue();
+        instance.SecurePort.Should().Be(100);
+        instance.IsSecurePortEnabled.Should().BeFalse();
+        instance.HomePageUrl.Should().Be("HomePageUrl");
+        instance.StatusPageUrl.Should().Be("StatusPageUrl");
+        instance.HealthCheckUrl.Should().Be("HealthCheckUrl");
+        instance.SecureHealthCheckUrl.Should().Be("SecureHealthCheckUrl");
+        instance.VipAddress.Should().Be("VipAddress");
+        instance.SecureVipAddress.Should().Be("SecureVipAddress");
+        instance.CountryId.Should().Be(1);
+        instance.DataCenterInfo.Name.ToString().Should().Be("MyOwn");
+        instance.HostName.Should().Be("HostName");
+        instance.Status.Should().Be(InstanceStatus.Down);
+        instance.OverriddenStatus.Should().Be(InstanceStatus.OutOfService);
+        instance.LeaseInfo.Should().NotBeNull();
+        instance.LeaseInfo.RenewalInterval.Should().NotBeNull();
+        instance.LeaseInfo.RenewalInterval.Value.TotalSeconds.Should().Be(1);
+        instance.LeaseInfo.Duration.Should().NotBeNull();
+        instance.LeaseInfo.Duration.Value.TotalSeconds.Should().Be(2);
+        instance.LeaseInfo.RegistrationTimeUtc.Should().NotBeNull();
+        instance.LeaseInfo.RegistrationTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.LeaseInfo.LastRenewalTimeUtc.Should().NotBeNull();
+        instance.LeaseInfo.LastRenewalTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.LeaseInfo.EvictionTimeUtc.Should().NotBeNull();
+        instance.LeaseInfo.EvictionTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.LeaseInfo.ServiceUpTimeUtc.Should().NotBeNull();
+        instance.LeaseInfo.ServiceUpTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.IsCoordinatingDiscoveryServer.Should().BeFalse();
+        instance.Metadata.Should().BeEmpty();
+        instance.LastUpdatedTimeUtc.Should().NotBeNull();
+        instance.LastUpdatedTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.LastDirtyTimeUtc.Should().NotBeNull();
+        instance.LastDirtyTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.ActionType.Should().Be(ActionType.Added);
+        instance.AutoScalingGroupName.Should().Be("AsgName");
     }
 }

@@ -26,7 +26,7 @@ public sealed class CertificateAuthorizationTest
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public sealed class CertificateAuthorizationTest
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public sealed class CertificateAuthorizationTest
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public sealed class CertificateAuthorizationTest
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public sealed class CertificateAuthorizationTest
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public sealed class CertificateAuthorizationTest
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public sealed class CertificateAuthorizationTest
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public sealed class CertificateAuthorizationTest
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -160,7 +160,7 @@ public sealed class CertificateAuthorizationTest
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -184,7 +184,7 @@ public sealed class CertificateAuthorizationTest
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     private HostBuilder GetHostBuilder()

@@ -40,9 +40,9 @@ public sealed class JsonStreamConfigurationSourceTest
         builder.Add(source);
         IConfigurationRoot root = builder.Build();
 
-        Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", root["application_id"]);
-        Assert.Equal("1024", root["limits:disk"]);
-        Assert.Equal("my-app.10.244.0.34.xip.io", root["uris:0"]);
-        Assert.Equal("my-app2.10.244.0.34.xip.io", root["uris:1"]);
+        root["application_id"].Should().Be("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3");
+        root["limits:disk"].Should().Be("1024");
+        root["uris:0"].Should().Be("my-app.10.244.0.34.xip.io");
+        root["uris:1"].Should().Be("my-app2.10.244.0.34.xip.io");
     }
 }

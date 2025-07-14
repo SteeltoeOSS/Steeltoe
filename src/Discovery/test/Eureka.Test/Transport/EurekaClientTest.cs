@@ -156,7 +156,7 @@ public sealed class EurekaClientTest
 
         Func<Task> asyncAction = async () => await client.RegisterAsync(instance, TestContext.Current.CancellationToken);
 
-        await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
+        await asyncAction.Should().ThrowExactlyAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
 
         IList<string> logMessages = capturingLoggerProvider.GetAll();
 
@@ -200,7 +200,7 @@ public sealed class EurekaClientTest
 
         Func<Task> asyncAction = async () => await client.RegisterAsync(instance, TestContext.Current.CancellationToken);
 
-        await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
+        await asyncAction.Should().ThrowExactlyAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
 
@@ -246,7 +246,7 @@ public sealed class EurekaClientTest
 
         Func<Task> asyncAction = async () => await client.RegisterAsync(instance, TestContext.Current.CancellationToken);
 
-        await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Retry limit reached; giving up on completing the HTTP request.");
+        await asyncAction.Should().ThrowExactlyAsync<EurekaTransportException>().WithMessage("Retry limit reached; giving up on completing the HTTP request.");
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
 
@@ -286,7 +286,7 @@ public sealed class EurekaClientTest
 
         Func<Task> asyncAction = async () => await client.RegisterAsync(instance, TestContext.Current.CancellationToken);
 
-        await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
+        await asyncAction.Should().ThrowExactlyAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
 
@@ -423,14 +423,14 @@ public sealed class EurekaClientTest
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/");
+        services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = "http://user:pass@foo:123/eureka/");
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
         services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
 
-        httpClientHandler.Mock.Expect(HttpMethod.Post, "http://boo:123/eureka/apps/FOOBAR").WithHeaders("Authorization", "Basic dXNlcjpwYXNz")
+        httpClientHandler.Mock.Expect(HttpMethod.Post, "http://foo:123/eureka/apps/FOOBAR").WithHeaders("Authorization", "Basic dXNlcjpwYXNz")
             .Respond(HttpStatusCode.NoContent);
 
         services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(_ => httpClientHandler);
@@ -450,14 +450,14 @@ public sealed class EurekaClientTest
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = "http://:pass@boo:123/eureka/");
+        services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = "http://:pass@foo:123/eureka/");
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
         services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
 
-        httpClientHandler.Mock.Expect(HttpMethod.Post, "http://boo:123/eureka/apps/FOOBAR").WithHeaders("Authorization", "Basic OnBhc3M=")
+        httpClientHandler.Mock.Expect(HttpMethod.Post, "http://foo:123/eureka/apps/FOOBAR").WithHeaders("Authorization", "Basic OnBhc3M=")
             .Respond(HttpStatusCode.NoContent);
 
         services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(_ => httpClientHandler);
@@ -586,7 +586,6 @@ public sealed class EurekaClientTest
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
 
-        apps.Should().NotBeNull();
         apps.ApplicationMap.Should().ContainSingle();
 
         ApplicationInfo? app = apps.GetRegisteredApplication("foo");
@@ -594,12 +593,12 @@ public sealed class EurekaClientTest
         app.Should().NotBeNull();
         app.Name.Should().Be("FOO");
 
-        app.Instances.Should().ContainSingle();
-        app.Instances[0].InstanceId.Should().Be("localhost:foo");
-        app.Instances[0].VipAddress.Should().Be("foo");
-        app.Instances[0].HostName.Should().Be("localhost");
-        app.Instances[0].IPAddress.Should().Be("192.168.56.1");
-        app.Instances[0].Status.Should().Be(InstanceStatus.Up);
+        InstanceInfo app1 = app.Instances.Should().ContainSingle().Subject;
+        app1.InstanceId.Should().Be("localhost:foo");
+        app1.VipAddress.Should().Be("foo");
+        app1.HostName.Should().Be("localhost");
+        app1.IPAddress.Should().Be("192.168.56.1");
+        app1.Status.Should().Be(InstanceStatus.Up);
     }
 
     [Fact]
@@ -625,7 +624,7 @@ public sealed class EurekaClientTest
 
         Func<Task> asyncAction = async () => _ = await client.GetApplicationsAsync(TestContext.Current.CancellationToken);
 
-        await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
+        await asyncAction.Should().ThrowExactlyAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
 
@@ -660,7 +659,6 @@ public sealed class EurekaClientTest
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
 
-        apps.Should().NotBeNull();
         apps.ApplicationMap.Should().ContainSingle();
 
         ApplicationInfo? app = apps.GetRegisteredApplication("foo");
@@ -668,12 +666,12 @@ public sealed class EurekaClientTest
         app.Should().NotBeNull();
         app.Name.Should().Be("FOO");
 
-        app.Instances.Should().ContainSingle();
-        app.Instances[0].InstanceId.Should().Be("localhost:foo");
-        app.Instances[0].VipAddress.Should().Be("foo");
-        app.Instances[0].HostName.Should().Be("localhost");
-        app.Instances[0].IPAddress.Should().Be("192.168.56.1");
-        app.Instances[0].Status.Should().Be(InstanceStatus.Up);
+        InstanceInfo app1 = app.Instances.Should().ContainSingle().Subject;
+        app1.InstanceId.Should().Be("localhost:foo");
+        app1.VipAddress.Should().Be("foo");
+        app1.HostName.Should().Be("localhost");
+        app1.IPAddress.Should().Be("192.168.56.1");
+        app1.Status.Should().Be(InstanceStatus.Up);
     }
 
     [Fact]
@@ -697,7 +695,6 @@ public sealed class EurekaClientTest
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
 
-        apps.Should().NotBeNull();
         apps.ApplicationMap.Should().ContainSingle();
 
         ApplicationInfo? app = apps.GetRegisteredApplication("foo");
@@ -705,12 +702,12 @@ public sealed class EurekaClientTest
         app.Should().NotBeNull();
         app.Name.Should().Be("FOO");
 
-        app.Instances.Should().ContainSingle();
-        app.Instances[0].InstanceId.Should().Be("localhost:foo");
-        app.Instances[0].VipAddress.Should().Be("foo");
-        app.Instances[0].HostName.Should().Be("localhost");
-        app.Instances[0].IPAddress.Should().Be("192.168.56.1");
-        app.Instances[0].Status.Should().Be(InstanceStatus.Up);
+        InstanceInfo app1 = app.Instances.Should().ContainSingle().Subject;
+        app1.InstanceId.Should().Be("localhost:foo");
+        app1.VipAddress.Should().Be("foo");
+        app1.HostName.Should().Be("localhost");
+        app1.IPAddress.Should().Be("192.168.56.1");
+        app1.Status.Should().Be(InstanceStatus.Up);
     }
 
     [Fact]

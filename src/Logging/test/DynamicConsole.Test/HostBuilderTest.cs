@@ -38,9 +38,7 @@ public sealed class HostBuilderTest
         builder.Logging.AddDynamicConsole();
         await using WebApplication host = builder.Build();
 
-        ILoggerProvider[] loggerProviders = [.. host.Services.GetServices<ILoggerProvider>()];
-        loggerProviders.OfType<DynamicConsoleLoggerProvider>().Should().ContainSingle();
-
+        host.Services.GetServices<ILoggerProvider>().OfType<DynamicConsoleLoggerProvider>().Should().ContainSingle();
         host.Services.GetService<IDynamicLoggerProvider>().Should().BeOfType<DynamicConsoleLoggerProvider>();
     }
 

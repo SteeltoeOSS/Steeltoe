@@ -19,16 +19,14 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddConfigurationDiscoveryClient();
-
         services.AddHttpClient("test").AddServiceDiscovery<RandomLoadBalancer>();
 
+        services.Should().ContainSingle(descriptor => descriptor.ServiceType == typeof(RandomLoadBalancer)).Which.Lifetime.Should()
+            .Be(ServiceLifetime.Singleton);
+
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        ServiceDescriptor? serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType == typeof(RandomLoadBalancer));
 
-        Assert.Single(serviceProvider.GetServices<RandomLoadBalancer>());
-
-        Assert.NotNull(serviceEntryInCollection);
-        Assert.Equal(ServiceLifetime.Singleton, serviceEntryInCollection.Lifetime);
+        serviceProvider.GetServices<RandomLoadBalancer>().Should().ContainSingle();
     }
 
     [Fact]
@@ -39,16 +37,14 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddConfigurationDiscoveryClient();
-
         services.AddHttpClient("test").AddServiceDiscovery<RoundRobinLoadBalancer>();
 
+        services.Should().ContainSingle(descriptor => descriptor.ServiceType == typeof(RoundRobinLoadBalancer)).Which.Lifetime.Should()
+            .Be(ServiceLifetime.Singleton);
+
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        ServiceDescriptor? serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType == typeof(RoundRobinLoadBalancer));
 
-        Assert.Single(serviceProvider.GetServices<RoundRobinLoadBalancer>());
-
-        Assert.NotNull(serviceEntryInCollection);
-        Assert.Equal(ServiceLifetime.Singleton, serviceEntryInCollection.Lifetime);
+        serviceProvider.GetServices<RoundRobinLoadBalancer>().Should().ContainSingle();
     }
 
     [Fact]
@@ -61,13 +57,12 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
         services.AddConfigurationDiscoveryClient();
         services.AddHttpClient("test").AddServiceDiscovery();
 
+        services.Should().ContainSingle(descriptor => descriptor.ServiceType == typeof(RandomLoadBalancer)).Which.Lifetime.Should()
+            .Be(ServiceLifetime.Singleton);
+
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        ServiceDescriptor? serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType == typeof(RandomLoadBalancer));
 
-        Assert.Single(serviceProvider.GetServices<RandomLoadBalancer>());
-
-        Assert.NotNull(serviceEntryInCollection);
-        Assert.Equal(ServiceLifetime.Singleton, serviceEntryInCollection.Lifetime);
+        serviceProvider.GetServices<RandomLoadBalancer>().Should().ContainSingle();
     }
 
     [Fact]
@@ -78,7 +73,7 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        Assert.Empty(serviceProvider.GetServices<FakeLoadBalancer>());
+        serviceProvider.GetServices<FakeLoadBalancer>().Should().BeEmpty();
     }
 
     [Fact]
@@ -92,7 +87,7 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
         var factory = serviceProvider.GetRequiredService<IHttpClientFactory>();
         using HttpClient client = factory.CreateClient("test");
 
-        Assert.NotNull(client);
+        client.Should().NotBeNull();
     }
 
     [Fact]
@@ -122,11 +117,11 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
         using HttpClient fakeLbClient = factory.CreateClient("testFake");
         using HttpClient fakeLbClient2 = factory.CreateClient("testFake2");
 
-        Assert.NotNull(randomLbClient);
-        Assert.NotNull(randomLbClient2);
-        Assert.NotNull(roundRobinLbClient);
-        Assert.NotNull(roundRobinLbClient2);
-        Assert.NotNull(fakeLbClient);
-        Assert.NotNull(fakeLbClient2);
+        randomLbClient.Should().NotBeNull();
+        randomLbClient2.Should().NotBeNull();
+        roundRobinLbClient.Should().NotBeNull();
+        roundRobinLbClient2.Should().NotBeNull();
+        fakeLbClient.Should().NotBeNull();
+        fakeLbClient2.Should().NotBeNull();
     }
 }

@@ -18,7 +18,7 @@ public sealed class DataCenterInfoTest
             Name = DataCenterName.MyOwn
         };
 
-        Assert.Equal(DataCenterName.MyOwn, info.Name);
+        info.Name.Should().Be(DataCenterName.MyOwn);
     }
 
     [Fact]
@@ -30,9 +30,10 @@ public sealed class DataCenterInfoTest
         };
 
         JsonDataCenterInfo json = info.ToJson();
-        Assert.NotNull(json);
-        Assert.Equal(nameof(DataCenterName.MyOwn), json.Name);
-        Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", json.ClassName);
+
+        json.Should().NotBeNull();
+        json.Name.Should().Be(nameof(DataCenterName.MyOwn));
+        json.ClassName.Should().Be("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo");
     }
 
     [Fact]
@@ -45,8 +46,9 @@ public sealed class DataCenterInfoTest
         };
 
         DataCenterInfo? result = DataCenterInfo.FromJson(jsonInfo);
-        Assert.NotNull(result);
-        Assert.Equal(DataCenterName.MyOwn, result.Name);
+
+        result.Should().NotBeNull();
+        result.Name.Should().Be(DataCenterName.MyOwn);
     }
 
     [Fact]
@@ -58,7 +60,8 @@ public sealed class DataCenterInfoTest
             Name = "FooBar"
         };
 
-        var ex = Assert.Throws<ArgumentException>(() => DataCenterInfo.FromJson(jsonInfo));
-        Assert.Contains("Unsupported datacenter name", ex.Message, StringComparison.Ordinal);
+        Action action = () => DataCenterInfo.FromJson(jsonInfo);
+
+        action.Should().ThrowExactly<ArgumentException>().WithMessage("Unsupported datacenter name*");
     }
 }

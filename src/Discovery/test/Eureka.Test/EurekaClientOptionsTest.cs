@@ -18,24 +18,24 @@ public sealed class EurekaClientOptionsTest
     {
         var clientOptions = new EurekaClientOptions();
 
-        Assert.True(clientOptions.Enabled);
-        Assert.Equal(30, clientOptions.RegistryFetchIntervalSeconds);
-        Assert.Null(clientOptions.EurekaServer.ProxyHost);
-        Assert.Equal(0, clientOptions.EurekaServer.ProxyPort);
-        Assert.Null(clientOptions.EurekaServer.ProxyUserName);
-        Assert.Null(clientOptions.EurekaServer.ProxyPassword);
-        Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
-        Assert.Equal(EurekaServerOptions.DefaultConnectTimeoutSeconds, clientOptions.EurekaServer.ConnectTimeoutSeconds);
-        Assert.True(clientOptions.ShouldRegisterWithEureka);
-        Assert.False(clientOptions.IsFetchDeltaDisabled);
-        Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
-        Assert.True(clientOptions.ShouldFetchRegistry);
-        Assert.Null(clientOptions.RegistryRefreshSingleVipAddress);
-        Assert.Equal("http://localhost:8761/eureka/", clientOptions.EurekaServerServiceUrls);
-        Assert.NotNull(clientOptions.Health);
-        Assert.True(clientOptions.Health.ContributorEnabled);
-        Assert.False(clientOptions.Health.CheckEnabled);
-        Assert.Null(clientOptions.Health.MonitoredApps);
+        clientOptions.Enabled.Should().BeTrue();
+        clientOptions.RegistryFetchIntervalSeconds.Should().Be(30);
+        clientOptions.EurekaServer.ProxyHost.Should().BeNull();
+        clientOptions.EurekaServer.ProxyPort.Should().Be(0);
+        clientOptions.EurekaServer.ProxyUserName.Should().BeNull();
+        clientOptions.EurekaServer.ProxyPassword.Should().BeNull();
+        clientOptions.EurekaServer.ShouldGZipContent.Should().BeTrue();
+        clientOptions.EurekaServer.ConnectTimeoutSeconds.Should().Be(EurekaServerOptions.DefaultConnectTimeoutSeconds);
+        clientOptions.ShouldRegisterWithEureka.Should().BeTrue();
+        clientOptions.IsFetchDeltaDisabled.Should().BeFalse();
+        clientOptions.ShouldFilterOnlyUpInstances.Should().BeTrue();
+        clientOptions.ShouldFetchRegistry.Should().BeTrue();
+        clientOptions.RegistryRefreshSingleVipAddress.Should().BeNull();
+        clientOptions.EurekaServerServiceUrls.Should().Be("http://localhost:8761/eureka/");
+        clientOptions.Health.Should().NotBeNull();
+        clientOptions.Health.ContributorEnabled.Should().BeTrue();
+        clientOptions.Health.CheckEnabled.Should().BeFalse();
+        clientOptions.Health.MonitoredApps.Should().BeNull();
     }
 
     [Fact]
@@ -112,23 +112,23 @@ public sealed class EurekaClientOptionsTest
         var clientOptions = new EurekaClientOptions();
         clientSection.Bind(clientOptions);
 
-        Assert.Equal("proxyHost", clientOptions.EurekaServer.ProxyHost);
-        Assert.Equal(100, clientOptions.EurekaServer.ProxyPort);
-        Assert.Equal("proxyPassword", clientOptions.EurekaServer.ProxyPassword);
-        Assert.Equal("proxyUserName", clientOptions.EurekaServer.ProxyUserName);
-        Assert.Equal(100, clientOptions.EurekaServer.ConnectTimeoutSeconds);
-        Assert.Equal("https://foo.bar:8761/eureka/", clientOptions.EurekaServerServiceUrls);
-        Assert.Equal(100, clientOptions.RegistryFetchIntervalSeconds);
-        Assert.Equal("registryRefreshSingleVipAddress", clientOptions.RegistryRefreshSingleVipAddress);
-        Assert.True(clientOptions.IsFetchDeltaDisabled);
-        Assert.True(clientOptions.ShouldFetchRegistry);
-        Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
-        Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
-        Assert.True(clientOptions.ShouldRegisterWithEureka);
-        Assert.NotNull(clientOptions.Health);
-        Assert.True(clientOptions.Health.ContributorEnabled);
-        Assert.True(clientOptions.Health.CheckEnabled);
-        Assert.Null(clientOptions.Health.MonitoredApps);
+        clientOptions.EurekaServer.ProxyHost.Should().Be("proxyHost");
+        clientOptions.EurekaServer.ProxyPort.Should().Be(100);
+        clientOptions.EurekaServer.ProxyPassword.Should().Be("proxyPassword");
+        clientOptions.EurekaServer.ProxyUserName.Should().Be("proxyUserName");
+        clientOptions.EurekaServer.ConnectTimeoutSeconds.Should().Be(100);
+        clientOptions.EurekaServerServiceUrls.Should().Be("https://foo.bar:8761/eureka/");
+        clientOptions.RegistryFetchIntervalSeconds.Should().Be(100);
+        clientOptions.RegistryRefreshSingleVipAddress.Should().Be("registryRefreshSingleVipAddress");
+        clientOptions.IsFetchDeltaDisabled.Should().BeTrue();
+        clientOptions.ShouldFetchRegistry.Should().BeTrue();
+        clientOptions.ShouldFilterOnlyUpInstances.Should().BeTrue();
+        clientOptions.EurekaServer.ShouldGZipContent.Should().BeTrue();
+        clientOptions.ShouldRegisterWithEureka.Should().BeTrue();
+        clientOptions.Health.Should().NotBeNull();
+        clientOptions.Health.ContributorEnabled.Should().BeTrue();
+        clientOptions.Health.CheckEnabled.Should().BeTrue();
+        clientOptions.Health.MonitoredApps.Should().BeNull();
     }
 
     [Fact]
@@ -147,7 +147,7 @@ public sealed class EurekaClientOptionsTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
-        Assert.True(clientOptions.Value.Enabled);
+        clientOptions.Value.Enabled.Should().BeTrue();
     }
 
     [Fact]
@@ -167,7 +167,7 @@ public sealed class EurekaClientOptionsTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
-        Assert.False(clientOptions.Value.Enabled);
+        clientOptions.Value.Enabled.Should().BeFalse();
     }
 
     [Fact]
@@ -229,7 +229,7 @@ public sealed class EurekaClientOptionsTest
 
         Action action = () => _ = clientOptions.Value;
 
-        OptionsValidationException? exception = action.Should().ThrowExactly<OptionsValidationException>().Which;
+        OptionsValidationException exception = action.Should().ThrowExactly<OptionsValidationException>().Which;
         exception.Failures.Should().ContainSingle(message => message == "Eureka URL '/not-fully-qualified' is invalid.");
         exception.Failures.Should().ContainSingle(message => message == "Eureka URL 'broken' is invalid.");
     }
@@ -271,6 +271,6 @@ public sealed class EurekaClientOptionsTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
-        Assert.True(clientOptions.Value.Enabled);
+        clientOptions.Value.Enabled.Should().BeTrue();
     }
 }

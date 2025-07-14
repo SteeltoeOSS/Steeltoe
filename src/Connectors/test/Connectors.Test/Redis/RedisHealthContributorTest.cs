@@ -74,7 +74,9 @@ public sealed class RedisHealthContributorTest
         using var source = new CancellationTokenSource();
         await source.CancelAsync();
 
+        // ReSharper disable AccessToDisposedClosure
         Func<Task> action = async () => await healthContributor.CheckHealthAsync(source.Token);
+        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<OperationCanceledException>();
     }

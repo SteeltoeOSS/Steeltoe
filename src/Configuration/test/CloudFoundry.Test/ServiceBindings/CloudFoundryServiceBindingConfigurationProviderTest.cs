@@ -131,21 +131,21 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
     [Fact]
     public void Build_CapturesParentConfiguration()
     {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["some:value:in:configuration:path"] = "true"
+        };
+
         var reader = new StringServiceBindingsReader(string.Empty);
         var source = new CloudFoundryServiceBindingConfigurationSource(reader);
 
         var builder = new ConfigurationBuilder();
         builder.Add(source);
-
-        builder.AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            ["some:value:in:configuration:path"] = "true"
-        });
-
+        builder.AddInMemoryCollection(appSettings);
         builder.Build();
 
         IConfigurationRoot parentConfiguration = source.GetParentConfiguration();
-        parentConfiguration.Should().NotBeNull();
+
         parentConfiguration.GetValue<bool>("some:value:in:configuration:path").Should().BeTrue();
     }
 

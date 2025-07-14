@@ -40,7 +40,9 @@ public sealed class HealthActuatorTest
         services.AddHealthActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        Func<HealthEndpointMiddleware> action = serviceProvider.GetRequiredService<HealthEndpointMiddleware>;
+        // ReSharper disable once AccessToDisposedClosure
+        Action action = () => serviceProvider.GetRequiredService<HealthEndpointMiddleware>();
+
         action.Should().NotThrow();
     }
 
@@ -547,7 +549,7 @@ public sealed class HealthActuatorTest
         var root = await response.Content.ReadFromJsonAsync<JsonObject>(TestContext.Current.CancellationToken);
 
         root.Should().NotBeNull();
-        root["status"].Should().NotBeNull().And.Subject.ToString().Should().Be("UP");
+        root.Should().ContainKey("status").WhoseValue.Should().NotBeNull().And.Subject.ToString().Should().Be("UP");
         root.Should().NotContainKey("groups");
 
         if (returnComponents)

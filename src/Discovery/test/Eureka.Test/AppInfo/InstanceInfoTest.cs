@@ -15,18 +15,18 @@ public sealed class InstanceInfoTest
     {
         var instance = new InstanceInfo("x", "x", "x", "x", new DataCenterInfo(), TimeProvider.System);
 
-        Assert.Null(instance.OverriddenStatus);
-        Assert.False(instance.IsSecurePortEnabled);
-        Assert.False(instance.IsNonSecurePortEnabled);
-        Assert.Null(instance.CountryId);
-        Assert.Equal(0, instance.NonSecurePort);
-        Assert.Equal(0, instance.SecurePort);
-        Assert.Null(instance.Sid);
-        Assert.Null(instance.IsCoordinatingDiscoveryServer);
-        Assert.Empty(instance.Metadata);
-        Assert.False(instance.IsDirty);
-        Assert.Equal(instance.LastDirtyTimeUtc, instance.LastUpdatedTimeUtc);
-        Assert.Null(instance.Status);
+        instance.OverriddenStatus.Should().BeNull();
+        instance.IsSecurePortEnabled.Should().BeFalse();
+        instance.IsNonSecurePortEnabled.Should().BeFalse();
+        instance.CountryId.Should().BeNull();
+        instance.NonSecurePort.Should().Be(0);
+        instance.SecurePort.Should().Be(0);
+        instance.Sid.Should().BeNull();
+        instance.IsCoordinatingDiscoveryServer.Should().BeNull();
+        instance.Metadata.Should().BeEmpty();
+        instance.IsDirty.Should().BeFalse();
+        instance.LastUpdatedTimeUtc.Should().Be(instance.LastDirtyTimeUtc);
+        instance.Status.Should().BeNull();
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public sealed class InstanceInfoTest
         };
 
         instance.Metadata.Should().ContainSingle();
-        instance.Metadata.Should().ContainSingle(pair => pair.Key == "key3" && pair.Value == "value");
+        instance.Metadata.Should().ContainKey("key3").WhoseValue.Should().Be("value");
     }
 
     [Fact]
@@ -104,49 +104,48 @@ public sealed class InstanceInfoTest
 
         InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance, TimeProvider.System);
 
-        Assert.NotNull(instance);
-        Assert.Equal("InstanceId", instance.InstanceId);
-        Assert.Equal("AppName", instance.AppName);
-        Assert.Equal("AppGroupName", instance.AppGroupName);
-        Assert.Equal("IPAddress", instance.IPAddress);
-        Assert.Equal("Sid", instance.Sid);
-        Assert.Equal(100, instance.NonSecurePort);
-        Assert.True(instance.IsNonSecurePortEnabled);
-        Assert.Equal(100, instance.SecurePort);
-        Assert.False(instance.IsSecurePortEnabled);
-        Assert.Equal("HomePageUrl", instance.HomePageUrl);
-        Assert.Equal("StatusPageUrl", instance.StatusPageUrl);
-        Assert.Equal("HealthCheckUrl", instance.HealthCheckUrl);
-        Assert.Equal("SecureHealthCheckUrl", instance.SecureHealthCheckUrl);
-        Assert.Equal("VipAddress", instance.VipAddress);
-        Assert.Equal("SecureVipAddress", instance.SecureVipAddress);
-        Assert.Equal(1, instance.CountryId);
-        Assert.Equal("MyOwn", instance.DataCenterInfo.Name.ToString());
-        Assert.Equal("HostName", instance.HostName);
-        Assert.Equal(InstanceStatus.Down, instance.Status);
-        Assert.Equal(InstanceStatus.OutOfService, instance.OverriddenStatus);
-        Assert.NotNull(instance.LeaseInfo);
-        Assert.NotNull(instance.LeaseInfo.RenewalInterval);
-        Assert.Equal(1, instance.LeaseInfo.RenewalInterval.Value.TotalSeconds);
-        Assert.NotNull(instance.LeaseInfo.Duration);
-        Assert.Equal(2, instance.LeaseInfo.Duration.Value.TotalSeconds);
-        Assert.NotNull(instance.LeaseInfo.RegistrationTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.RegistrationTimeUtc.Value.Ticks);
-        Assert.NotNull(instance.LeaseInfo.LastRenewalTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.LastRenewalTimeUtc.Value.Ticks);
-        Assert.NotNull(instance.LeaseInfo.EvictionTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.EvictionTimeUtc.Value.Ticks);
-        Assert.NotNull(instance.LeaseInfo.ServiceUpTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.ServiceUpTimeUtc.Value.Ticks);
-        Assert.False(instance.IsCoordinatingDiscoveryServer);
-        Assert.NotNull(instance.Metadata);
-        Assert.Empty(instance.Metadata);
-        Assert.NotNull(instance.LastUpdatedTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LastUpdatedTimeUtc.Value.Ticks);
-        Assert.NotNull(instance.LastDirtyTimeUtc);
-        Assert.Equal(635_935_705_417_080_000L, instance.LastDirtyTimeUtc.Value.Ticks);
-        Assert.Equal(ActionType.Added, instance.ActionType);
-        Assert.Equal("AsgName", instance.AutoScalingGroupName);
+        instance.Should().NotBeNull();
+        instance.InstanceId.Should().Be("InstanceId");
+        instance.AppName.Should().Be("AppName");
+        instance.AppGroupName.Should().Be("AppGroupName");
+        instance.IPAddress.Should().Be("IPAddress");
+        instance.Sid.Should().Be("Sid");
+        instance.NonSecurePort.Should().Be(100);
+        instance.IsNonSecurePortEnabled.Should().BeTrue();
+        instance.SecurePort.Should().Be(100);
+        instance.IsSecurePortEnabled.Should().BeFalse();
+        instance.HomePageUrl.Should().Be("HomePageUrl");
+        instance.StatusPageUrl.Should().Be("StatusPageUrl");
+        instance.HealthCheckUrl.Should().Be("HealthCheckUrl");
+        instance.SecureHealthCheckUrl.Should().Be("SecureHealthCheckUrl");
+        instance.VipAddress.Should().Be("VipAddress");
+        instance.SecureVipAddress.Should().Be("SecureVipAddress");
+        instance.CountryId.Should().Be(1);
+        instance.DataCenterInfo.Name.ToString().Should().Be("MyOwn");
+        instance.HostName.Should().Be("HostName");
+        instance.Status.Should().Be(InstanceStatus.Down);
+        instance.OverriddenStatus.Should().Be(InstanceStatus.OutOfService);
+        instance.LeaseInfo.Should().NotBeNull();
+        instance.LeaseInfo.RenewalInterval.Should().NotBeNull();
+        instance.LeaseInfo.RenewalInterval.Value.TotalSeconds.Should().Be(1);
+        instance.LeaseInfo.Duration.Should().NotBeNull();
+        instance.LeaseInfo.Duration.Value.TotalSeconds.Should().Be(2);
+        instance.LeaseInfo.RegistrationTimeUtc.Should().NotBeNull();
+        instance.LeaseInfo.RegistrationTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.LeaseInfo.LastRenewalTimeUtc.Should().NotBeNull();
+        instance.LeaseInfo.LastRenewalTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.LeaseInfo.EvictionTimeUtc.Should().NotBeNull();
+        instance.LeaseInfo.EvictionTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.LeaseInfo.ServiceUpTimeUtc.Should().NotBeNull();
+        instance.LeaseInfo.ServiceUpTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.IsCoordinatingDiscoveryServer.Should().BeFalse();
+        instance.Metadata.Should().BeEmpty();
+        instance.LastUpdatedTimeUtc.Should().NotBeNull();
+        instance.LastUpdatedTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.LastDirtyTimeUtc.Should().NotBeNull();
+        instance.LastDirtyTimeUtc.Value.Ticks.Should().Be(635_935_705_417_080_000L);
+        instance.ActionType.Should().Be(ActionType.Added);
+        instance.AutoScalingGroupName.Should().Be("AsgName");
     }
 
     [Fact]
@@ -207,8 +206,8 @@ public sealed class InstanceInfoTest
 
         InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance, TimeProvider.System);
 
-        Assert.NotNull(instance);
-        Assert.Equal(InstanceStatus.OutOfService, instance.OverriddenStatus);
+        instance.Should().NotBeNull();
+        instance.OverriddenStatus.Should().Be(InstanceStatus.OutOfService);
     }
 
     [Fact]
@@ -270,8 +269,8 @@ public sealed class InstanceInfoTest
 
         InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance, TimeProvider.System);
 
-        Assert.NotNull(instance);
-        Assert.Equal(InstanceStatus.OutOfService, instance.OverriddenStatus);
+        instance.Should().NotBeNull();
+        instance.OverriddenStatus.Should().Be(InstanceStatus.OutOfService);
     }
 
     [Fact]
@@ -289,42 +288,40 @@ public sealed class InstanceInfoTest
 
         InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions, TimeProvider.System);
 
-        Assert.NotNull(instance);
-        Assert.Equal(instanceOptions.HostName, instance.HostName);
-        Assert.Equal("foo", instance.InstanceId);
-        Assert.Equal("UNKNOWN", instance.AppName);
-        Assert.Null(instance.AppGroupName);
-        Assert.Equal(instanceOptions.IPAddress, instance.IPAddress);
-        Assert.Null(instance.Sid);
-        Assert.Equal(80, instance.NonSecurePort);
-        Assert.True(instance.IsNonSecurePortEnabled);
-        Assert.Equal(0, instance.SecurePort);
-        Assert.False(instance.IsSecurePortEnabled);
-        Assert.Equal($"http://{instanceOptions.HostName}:80/", instance.HomePageUrl);
-        Assert.Equal($"http://{instanceOptions.HostName}:80/info", instance.StatusPageUrl);
-        Assert.Equal($"http://{instanceOptions.HostName}:80/health", instance.HealthCheckUrl);
-        Assert.Null(instance.SecureHealthCheckUrl);
-        Assert.Null(instance.VipAddress);
-        Assert.Null(instance.SecureVipAddress);
-        Assert.Null(instance.CountryId);
-        Assert.Equal("MyOwn", instance.DataCenterInfo.Name.ToString());
-        Assert.Equal(InstanceStatus.Up, instance.Status);
-        Assert.Null(instance.OverriddenStatus);
-        Assert.NotNull(instance.LeaseInfo);
-        Assert.NotNull(instance.LeaseInfo.RenewalInterval);
-        Assert.Equal(30, instance.LeaseInfo.RenewalInterval.Value.TotalSeconds);
-        Assert.NotNull(instance.LeaseInfo.Duration);
-        Assert.Equal(90, instance.LeaseInfo.Duration.Value.TotalSeconds);
-        Assert.Null(instance.LeaseInfo.RegistrationTimeUtc);
-        Assert.Null(instance.LeaseInfo.LastRenewalTimeUtc);
-        Assert.Null(instance.LeaseInfo.EvictionTimeUtc);
-        Assert.Null(instance.LeaseInfo.ServiceUpTimeUtc);
-        Assert.Null(instance.IsCoordinatingDiscoveryServer);
-        Assert.NotNull(instance.Metadata);
-        Assert.Empty(instance.Metadata);
-        Assert.Equal(instance.LastDirtyTimeUtc, instance.LastUpdatedTimeUtc);
-        Assert.Null(instance.ActionType);
-        Assert.Null(instance.AutoScalingGroupName);
+        instance.HostName.Should().Be(instanceOptions.HostName);
+        instance.InstanceId.Should().Be("foo");
+        instance.AppName.Should().Be("UNKNOWN");
+        instance.AppGroupName.Should().BeNull();
+        instance.IPAddress.Should().Be(instanceOptions.IPAddress);
+        instance.Sid.Should().BeNull();
+        instance.NonSecurePort.Should().Be(80);
+        instance.IsNonSecurePortEnabled.Should().BeTrue();
+        instance.SecurePort.Should().Be(0);
+        instance.IsSecurePortEnabled.Should().BeFalse();
+        instance.HomePageUrl.Should().Be($"http://{instanceOptions.HostName}:80/");
+        instance.StatusPageUrl.Should().Be($"http://{instanceOptions.HostName}:80/info");
+        instance.HealthCheckUrl.Should().Be($"http://{instanceOptions.HostName}:80/health");
+        instance.SecureHealthCheckUrl.Should().BeNull();
+        instance.VipAddress.Should().BeNull();
+        instance.SecureVipAddress.Should().BeNull();
+        instance.CountryId.Should().BeNull();
+        instance.DataCenterInfo.Name.ToString().Should().Be("MyOwn");
+        instance.Status.Should().Be(InstanceStatus.Up);
+        instance.OverriddenStatus.Should().BeNull();
+        instance.LeaseInfo.Should().NotBeNull();
+        instance.LeaseInfo.RenewalInterval.Should().NotBeNull();
+        instance.LeaseInfo.RenewalInterval.Value.TotalSeconds.Should().Be(30);
+        instance.LeaseInfo.Duration.Should().NotBeNull();
+        instance.LeaseInfo.Duration.Value.TotalSeconds.Should().Be(90);
+        instance.LeaseInfo.RegistrationTimeUtc.Should().BeNull();
+        instance.LeaseInfo.LastRenewalTimeUtc.Should().BeNull();
+        instance.LeaseInfo.EvictionTimeUtc.Should().BeNull();
+        instance.LeaseInfo.ServiceUpTimeUtc.Should().BeNull();
+        instance.IsCoordinatingDiscoveryServer.Should().BeNull();
+        instance.Metadata.Should().BeEmpty();
+        instance.LastUpdatedTimeUtc.Should().Be(instance.LastDirtyTimeUtc);
+        instance.ActionType.Should().BeNull();
+        instance.AutoScalingGroupName.Should().BeNull();
     }
 
     [Fact]
@@ -343,14 +340,13 @@ public sealed class InstanceInfoTest
 
         InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions, TimeProvider.System);
 
-        Assert.NotNull(instance);
-        Assert.False(instance.IsNonSecurePortEnabled);
-        Assert.True(instance.IsSecurePortEnabled);
-        Assert.Equal(9090, instance.SecurePort);
-        Assert.Equal("https://test.domain.com:9090/", instance.HomePageUrl);
-        Assert.Equal("https://test.domain.com:9090/info", instance.StatusPageUrl);
-        Assert.Equal("https://test.domain.com:9090/health", instance.HealthCheckUrl);
-        Assert.Equal("https://test.domain.com:9090/health", instance.SecureHealthCheckUrl);
+        instance.IsNonSecurePortEnabled.Should().BeFalse();
+        instance.IsSecurePortEnabled.Should().BeTrue();
+        instance.SecurePort.Should().Be(9090);
+        instance.HomePageUrl.Should().Be("https://test.domain.com:9090/");
+        instance.StatusPageUrl.Should().Be("https://test.domain.com:9090/info");
+        instance.HealthCheckUrl.Should().Be("https://test.domain.com:9090/health");
+        instance.SecureHealthCheckUrl.Should().Be("https://test.domain.com:9090/health");
     }
 
     [Fact]
@@ -369,14 +365,13 @@ public sealed class InstanceInfoTest
 
         InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions, TimeProvider.System);
 
-        Assert.NotNull(instance);
-        Assert.True(instance.IsNonSecurePortEnabled);
-        Assert.Equal(8080, instance.NonSecurePort);
-        Assert.False(instance.IsSecurePortEnabled);
-        Assert.Equal("http://test.domain.com:8080/", instance.HomePageUrl);
-        Assert.Equal("http://test.domain.com:8080/info", instance.StatusPageUrl);
-        Assert.Equal("http://test.domain.com:8080/health", instance.HealthCheckUrl);
-        Assert.Null(instance.SecureHealthCheckUrl);
+        instance.IsNonSecurePortEnabled.Should().BeTrue();
+        instance.NonSecurePort.Should().Be(8080);
+        instance.IsSecurePortEnabled.Should().BeFalse();
+        instance.HomePageUrl.Should().Be("http://test.domain.com:8080/");
+        instance.StatusPageUrl.Should().Be("http://test.domain.com:8080/info");
+        instance.HealthCheckUrl.Should().Be("http://test.domain.com:8080/health");
+        instance.SecureHealthCheckUrl.Should().BeNull();
     }
 
     [Fact]
@@ -396,15 +391,14 @@ public sealed class InstanceInfoTest
 
         InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions, TimeProvider.System);
 
-        Assert.NotNull(instance);
-        Assert.True(instance.IsNonSecurePortEnabled);
-        Assert.Equal(8080, instance.NonSecurePort);
-        Assert.True(instance.IsSecurePortEnabled);
-        Assert.Equal(9090, instance.SecurePort);
-        Assert.Equal("https://test.domain.com:9090/", instance.HomePageUrl);
-        Assert.Equal("https://test.domain.com:9090/info", instance.StatusPageUrl);
-        Assert.Equal("https://test.domain.com:9090/health", instance.HealthCheckUrl);
-        Assert.Equal("https://test.domain.com:9090/health", instance.SecureHealthCheckUrl);
+        instance.IsNonSecurePortEnabled.Should().BeTrue();
+        instance.NonSecurePort.Should().Be(8080);
+        instance.IsSecurePortEnabled.Should().BeTrue();
+        instance.SecurePort.Should().Be(9090);
+        instance.HomePageUrl.Should().Be("https://test.domain.com:9090/");
+        instance.StatusPageUrl.Should().Be("https://test.domain.com:9090/info");
+        instance.HealthCheckUrl.Should().Be("https://test.domain.com:9090/health");
+        instance.SecureHealthCheckUrl.Should().Be("https://test.domain.com:9090/health");
     }
 
     [Fact]
@@ -422,13 +416,12 @@ public sealed class InstanceInfoTest
 
         InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions, TimeProvider.System);
 
-        Assert.NotNull(instance);
-        Assert.False(instance.IsNonSecurePortEnabled);
-        Assert.False(instance.IsSecurePortEnabled);
-        Assert.Null(instance.HomePageUrl);
-        Assert.Null(instance.StatusPageUrl);
-        Assert.Null(instance.HealthCheckUrl);
-        Assert.Null(instance.SecureHealthCheckUrl);
+        instance.IsNonSecurePortEnabled.Should().BeFalse();
+        instance.IsSecurePortEnabled.Should().BeFalse();
+        instance.HomePageUrl.Should().BeNull();
+        instance.StatusPageUrl.Should().BeNull();
+        instance.HealthCheckUrl.Should().BeNull();
+        instance.SecureHealthCheckUrl.Should().BeNull();
     }
 
     [Fact]
@@ -448,11 +441,10 @@ public sealed class InstanceInfoTest
 
         InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions, TimeProvider.System);
 
-        Assert.NotNull(instance);
-        Assert.Equal("http://www.example-host.com/home.html", instance.HomePageUrl);
-        Assert.Equal("http://www.example-host.com/status.html", instance.StatusPageUrl);
-        Assert.Equal("http://www.example-host.com/health.html", instance.HealthCheckUrl);
-        Assert.Equal("https://www.example-host.com/health.html", instance.SecureHealthCheckUrl);
+        instance.HomePageUrl.Should().Be("http://www.example-host.com/home.html");
+        instance.StatusPageUrl.Should().Be("http://www.example-host.com/status.html");
+        instance.HealthCheckUrl.Should().Be("http://www.example-host.com/health.html");
+        instance.SecureHealthCheckUrl.Should().Be("https://www.example-host.com/health.html");
     }
 
     [Fact]
@@ -469,47 +461,45 @@ public sealed class InstanceInfoTest
         InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions, TimeProvider.System);
         JsonInstanceInfo jsonInstance = instance.ToJson();
 
-        Assert.Equal(instanceOptions.HostName, jsonInstance.HostName);
-        Assert.Equal("demo", jsonInstance.InstanceId);
-        Assert.Equal("MY-APP", jsonInstance.AppName);
-        Assert.Null(jsonInstance.AppGroupName);
-        Assert.Equal(instanceOptions.IPAddress, jsonInstance.IPAddress);
-        Assert.Null(jsonInstance.Sid);
-        Assert.NotNull(jsonInstance.Port);
-        Assert.False(jsonInstance.Port.Enabled);
-        Assert.Equal(0, jsonInstance.Port.Port);
-        Assert.NotNull(jsonInstance.SecurePort);
-        Assert.False(jsonInstance.SecurePort.Enabled);
-        Assert.Equal(0, jsonInstance.SecurePort.Port);
-        Assert.Null(jsonInstance.HomePageUrl);
-        Assert.Null(jsonInstance.StatusPageUrl);
-        Assert.Null(jsonInstance.HealthCheckUrl);
-        Assert.Null(jsonInstance.SecureHealthCheckUrl);
-        Assert.Null(jsonInstance.VipAddress);
-        Assert.Null(jsonInstance.SecureVipAddress);
-        Assert.Null(jsonInstance.CountryId);
-        Assert.NotNull(jsonInstance.DataCenterInfo);
-        Assert.Equal("MyOwn", jsonInstance.DataCenterInfo.Name);
-        Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", jsonInstance.DataCenterInfo.ClassName);
-        Assert.Equal(InstanceStatus.Up, jsonInstance.Status);
-        Assert.Null(jsonInstance.OverriddenStatus);
-        Assert.Equal(InstanceStatus.Unknown, jsonInstance.OverriddenStatusLegacy);
-        Assert.NotNull(jsonInstance.LeaseInfo);
-        Assert.Equal(30, jsonInstance.LeaseInfo.RenewalIntervalInSeconds);
-        Assert.Equal(90, jsonInstance.LeaseInfo.DurationInSeconds);
-        Assert.Null(jsonInstance.LeaseInfo.RegistrationTimestamp);
-        Assert.Null(jsonInstance.LeaseInfo.LastRenewalTimestamp);
-        Assert.Null(jsonInstance.LeaseInfo.LastRenewalTimestampLegacy);
-        Assert.Null(jsonInstance.LeaseInfo.EvictionTimestamp);
-        Assert.Null(jsonInstance.LeaseInfo.ServiceUpTimestamp);
-        Assert.Null(jsonInstance.IsCoordinatingDiscoveryServer);
-        Assert.NotNull(jsonInstance.Metadata);
-        Assert.Single(jsonInstance.Metadata);
-        Assert.True(jsonInstance.Metadata.ContainsKey("@class"));
-        Assert.Equal("java.util.Collections$EmptyMap", jsonInstance.Metadata["@class"]);
-        Assert.Equal(jsonInstance.LastDirtyTimestamp, jsonInstance.LastUpdatedTimestamp);
-        Assert.Null(jsonInstance.ActionType);
-        Assert.Null(jsonInstance.AutoScalingGroupName);
+        jsonInstance.HostName.Should().Be(instanceOptions.HostName);
+        jsonInstance.InstanceId.Should().Be("demo");
+        jsonInstance.AppName.Should().Be("MY-APP");
+        jsonInstance.AppGroupName.Should().BeNull();
+        jsonInstance.IPAddress.Should().Be(instanceOptions.IPAddress);
+        jsonInstance.Sid.Should().BeNull();
+        jsonInstance.Port.Should().NotBeNull();
+        jsonInstance.Port.Enabled.Should().BeFalse();
+        jsonInstance.Port.Port.Should().Be(0);
+        jsonInstance.SecurePort.Should().NotBeNull();
+        jsonInstance.SecurePort.Enabled.Should().BeFalse();
+        jsonInstance.SecurePort.Port.Should().Be(0);
+        jsonInstance.HomePageUrl.Should().BeNull();
+        jsonInstance.StatusPageUrl.Should().BeNull();
+        jsonInstance.HealthCheckUrl.Should().BeNull();
+        jsonInstance.SecureHealthCheckUrl.Should().BeNull();
+        jsonInstance.VipAddress.Should().BeNull();
+        jsonInstance.SecureVipAddress.Should().BeNull();
+        jsonInstance.CountryId.Should().BeNull();
+        jsonInstance.DataCenterInfo.Should().NotBeNull();
+        jsonInstance.DataCenterInfo.Name.Should().Be("MyOwn");
+        jsonInstance.DataCenterInfo.ClassName.Should().Be("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo");
+        jsonInstance.Status.Should().Be(InstanceStatus.Up);
+        jsonInstance.OverriddenStatus.Should().BeNull();
+        jsonInstance.OverriddenStatusLegacy.Should().Be(InstanceStatus.Unknown);
+        jsonInstance.LeaseInfo.Should().NotBeNull();
+        jsonInstance.LeaseInfo.RenewalIntervalInSeconds.Should().Be(30);
+        jsonInstance.LeaseInfo.DurationInSeconds.Should().Be(90);
+        jsonInstance.LeaseInfo.RegistrationTimestamp.Should().BeNull();
+        jsonInstance.LeaseInfo.LastRenewalTimestamp.Should().BeNull();
+        jsonInstance.LeaseInfo.LastRenewalTimestampLegacy.Should().BeNull();
+        jsonInstance.LeaseInfo.EvictionTimestamp.Should().BeNull();
+        jsonInstance.LeaseInfo.ServiceUpTimestamp.Should().BeNull();
+        jsonInstance.IsCoordinatingDiscoveryServer.Should().BeNull();
+        jsonInstance.Metadata.Should().ContainSingle();
+        jsonInstance.Metadata.Should().ContainKey("@class").WhoseValue.Should().Be("java.util.Collections$EmptyMap");
+        jsonInstance.LastUpdatedTimestamp.Should().Be(jsonInstance.LastDirtyTimestamp);
+        jsonInstance.ActionType.Should().BeNull();
+        jsonInstance.AutoScalingGroupName.Should().BeNull();
     }
 
     [Fact]
@@ -518,7 +508,7 @@ public sealed class InstanceInfoTest
         var info1 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
         var info2 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
 
-        Assert.True(info1.Equals(info2));
+        info1.Equals(info2).Should().BeTrue();
     }
 
     [Fact]
@@ -527,7 +517,7 @@ public sealed class InstanceInfoTest
         var info1 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
         var info2 = new InstanceInfo("foobar2", "app", "host", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
 
-        Assert.False(info1.Equals(info2));
+        info1.Equals(info2).Should().BeFalse();
     }
 
     [Fact]
@@ -536,6 +526,6 @@ public sealed class InstanceInfoTest
         var info1 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
 
         // ReSharper disable once SuspiciousTypeConversion.Global
-        Assert.False(info1.Equals(this));
+        info1.Equals(this).Should().BeFalse();
     }
 }

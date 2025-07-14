@@ -86,6 +86,7 @@ public sealed class MongoDbHealthContributorTest
         using var source = new CancellationTokenSource();
         await source.CancelAsync();
 
+        // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await healthContributor.CheckHealthAsync(source.Token);
 
         await action.Should().ThrowExactlyAsync<OperationCanceledException>();

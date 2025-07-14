@@ -27,8 +27,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
 
-        addresses.Should().ContainSingle();
-        addresses.ElementAt(0).Should().Be($"http://localhost:{AspNetDefaultPort}");
+        addresses.Should().ContainSingle().Which.Should().Be($"http://localhost:{AspNetDefaultPort}");
 
         using HttpClient httpClient = CreateHttpClient();
 
@@ -54,8 +53,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
 
-        addresses.Should().ContainSingle();
-        addresses.ElementAt(0).Should().Be($"http://[::]:{AspNetDefaultPort}");
+        addresses.Should().ContainSingle().Which.Should().Be($"http://[::]:{AspNetDefaultPort}");
 
         using HttpClient httpClient = CreateHttpClient();
 

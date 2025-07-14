@@ -73,7 +73,7 @@ public sealed class EurekaApplicationInfoManagerTest
         });
 
         appManager.Instance.Metadata.Should().ContainSingle();
-        appManager.Instance.Metadata.Should().ContainSingle(pair => pair.Key == "key3" && pair.Value == "value");
+        appManager.Instance.Metadata.Should().ContainKey("key3").WhoseValue.Should().Be("value");
     }
 
     [Fact]

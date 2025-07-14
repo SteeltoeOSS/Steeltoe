@@ -29,11 +29,10 @@ public sealed class DecryptionConfigurationTest : IDisposable
         builder.AddInMemoryCollection();
         builder.AddDecryption(_loggerFactory);
 
-        builder.Sources.Should().ContainSingle();
-        DecryptionConfigurationSource decryptionSource = builder.Sources[0].Should().BeOfType<DecryptionConfigurationSource>().Subject;
+        DecryptionConfigurationSource source = builder.Sources.Should().ContainSingle().Which.Should().BeOfType<DecryptionConfigurationSource>().Subject;
 
-        decryptionSource.Sources.Should().HaveCount(2);
-        decryptionSource.Sources.Should().AllBeOfType<MemoryConfigurationSource>();
+        source.Sources.Should().HaveCount(2);
+        source.Sources.Should().AllBeOfType<MemoryConfigurationSource>();
     }
 
     [Fact]

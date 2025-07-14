@@ -19,8 +19,8 @@ public sealed class PermissionsProviderTest
     [Fact]
     public void IsCloudFoundryRequestReturnsExpected()
     {
-        Assert.True(PermissionsProvider.IsCloudFoundryRequest("/cloudfoundryapplication"));
-        Assert.True(PermissionsProvider.IsCloudFoundryRequest("/cloudfoundryapplication/badpath"));
+        PermissionsProvider.IsCloudFoundryRequest("/cloudfoundryapplication").Should().BeTrue();
+        PermissionsProvider.IsCloudFoundryRequest("/cloudfoundryapplication/badpath").Should().BeTrue();
     }
 
     [Fact]

@@ -13,12 +13,12 @@ public sealed class RandomValueSourceTest
     public void Constructors_InitializesDefaults()
     {
         var source = new RandomValueSource(NullLoggerFactory.Instance);
-        Assert.NotNull(source.Prefix);
-        Assert.Equal("random:", source.Prefix);
+
+        source.Prefix.Should().Be("random:");
 
         source = new RandomValueSource("foobar:", NullLoggerFactory.Instance);
-        Assert.NotNull(source.Prefix);
-        Assert.Equal("foobar:", source.Prefix);
+
+        source.Prefix.Should().Be("foobar:");
     }
 
     [Fact]
@@ -26,6 +26,7 @@ public sealed class RandomValueSourceTest
     {
         var source = new RandomValueSource(NullLoggerFactory.Instance);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
-        Assert.IsType<RandomValueProvider>(provider);
+
+        provider.Should().BeOfType<RandomValueProvider>();
     }
 }

@@ -17,7 +17,7 @@ public sealed class GatedActionTest
         var timedTask = new GatedAction(TimerFunc);
         await using var timer = new Timer(_ => timedTask.Run(), null, 10, 100);
         SpinWait.SpinUntil(() => false, 1.Seconds());
-        Assert.Equal(1, _timerFuncCount);
+        _timerFuncCount.Should().Be(1);
     }
 
     private void TimerFunc()

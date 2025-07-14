@@ -39,7 +39,9 @@ public sealed partial class RouteMappingsActuatorTest
         services.AddRouteMappingsActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        Func<RouteMappingsEndpointMiddleware> action = serviceProvider.GetRequiredService<RouteMappingsEndpointMiddleware>;
+        // ReSharper disable once AccessToDisposedClosure
+        Action action = () => serviceProvider.GetRequiredService<RouteMappingsEndpointMiddleware>();
+
         action.Should().NotThrow();
     }
 
@@ -395,7 +397,7 @@ public sealed partial class RouteMappingsActuatorTest
         var responseNode1 = await httpClient.GetFromJsonAsync<JsonNode>(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         responseNode1.Should().NotBeNull();
 
-        responseNode1["contexts"]?["application"]?["mappings"]?["dispatcherServlets"]?["dispatcherServlet"].Should().BeOfType<JsonArray>().Subject.Should()
+        responseNode1["contexts"]!["application"]!["mappings"]!["dispatcherServlets"]!["dispatcherServlet"].Should().BeOfType<JsonArray>().Subject.Should()
             .BeEmpty();
 
         fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
@@ -408,7 +410,7 @@ public sealed partial class RouteMappingsActuatorTest
         var responseNode2 = await httpClient.GetFromJsonAsync<JsonNode>(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         responseNode2.Should().NotBeNull();
 
-        responseNode2["contexts"]?["application"]?["mappings"]?["dispatcherServlets"]?["dispatcherServlet"].Should().BeOfType<JsonArray>().Subject.Should()
+        responseNode2["contexts"]!["application"]!["mappings"]!["dispatcherServlets"]!["dispatcherServlet"].Should().BeOfType<JsonArray>().Subject.Should()
             .NotBeEmpty();
     }
 

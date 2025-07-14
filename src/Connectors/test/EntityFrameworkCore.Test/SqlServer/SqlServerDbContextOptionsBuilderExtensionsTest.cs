@@ -18,18 +18,16 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
     [Fact]
     public async Task Registers_connection_string_for_default_service_binding()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:SqlServer:Default:ConnectionString"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;Max Pool Size=50"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
         builder.Services.Configure<SqlServerOptions>(options => options.ConnectionString += ";Encrypt=false");
-
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseSqlServer(serviceProvider));
-
         await using WebApplication app = builder.Build();
 
         await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
@@ -42,18 +40,16 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
     [Fact]
     public async Task Registers_connection_string_for_named_service_binding()
     {
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Steeltoe:Client:SqlServer:mySqlServerService:ConnectionString"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;Max Pool Size=50"
-        });
+        };
 
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
         builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
         builder.Services.Configure<SqlServerOptions>("mySqlServerService", options => options.ConnectionString += ";Encrypt=false");
-
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseSqlServer(serviceProvider, "mySqlServerService"));
-
         await using WebApplication app = builder.Build();
 
         await using AsyncServiceScope scope = app.Services.CreateAsyncScope();

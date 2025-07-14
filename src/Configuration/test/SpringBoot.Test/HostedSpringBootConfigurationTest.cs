@@ -25,8 +25,7 @@ public sealed class HostedSpringBootConfigurationTest
         using IWebHost app = hostBuilder.Build();
         var configuration = app.Services.GetRequiredService<IConfiguration>();
 
-        Assert.NotNull(configuration["foo:bar"]);
-        Assert.Equal("value", configuration["foo:bar"]);
+        configuration["foo:bar"].Should().Be("value");
     }
 
     [Fact]
@@ -44,11 +43,8 @@ public sealed class HostedSpringBootConfigurationTest
         using IWebHost app = hostBuilder.Build();
         var configuration = app.Services.GetRequiredService<IConfiguration>();
 
-        Assert.NotNull(configuration["spring:cloud:stream:bindings:input:destination"]);
-        Assert.Equal("testDestination", configuration["spring:cloud:stream:bindings:input:destination"]);
-
-        Assert.NotNull(configuration["spring:cloud:stream:bindings:input:group"]);
-        Assert.Equal("testGroup", configuration["spring:cloud:stream:bindings:input:group"]);
+        configuration["spring:cloud:stream:bindings:input:destination"].Should().Be("testDestination");
+        configuration["spring:cloud:stream:bindings:input:group"].Should().Be("testGroup");
     }
 
     [Fact]
@@ -62,8 +58,7 @@ public sealed class HostedSpringBootConfigurationTest
         using IHost host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.NotNull(configuration["foo:bar"]);
-        Assert.Equal("value", configuration["foo:bar"]);
+        configuration["foo:bar"].Should().Be("value");
     }
 
     [Fact]
@@ -82,8 +77,7 @@ public sealed class HostedSpringBootConfigurationTest
         using IHost host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.NotNull(configuration["foo:bar"]);
-        Assert.Equal("value", configuration["foo:bar"]);
+        configuration["foo:bar"].Should().Be("value");
     }
 
     [Fact]
@@ -101,11 +95,8 @@ public sealed class HostedSpringBootConfigurationTest
         using IHost host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.NotNull(configuration["spring:cloud:stream:bindings:input:destination"]);
-        Assert.Equal("testDestination", configuration["spring:cloud:stream:bindings:input:destination"]);
-
-        Assert.NotNull(configuration["spring:cloud:stream:bindings:input:group"]);
-        Assert.Equal("testGroup", configuration["spring:cloud:stream:bindings:input:group"]);
+        configuration["spring:cloud:stream:bindings:input:destination"].Should().Be("testDestination");
+        configuration["spring:cloud:stream:bindings:input:group"].Should().Be("testGroup");
     }
 
     [Fact]
@@ -119,8 +110,7 @@ public sealed class HostedSpringBootConfigurationTest
         await using WebApplication host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.NotNull(configuration["foo:bar"]);
-        Assert.Equal("value", configuration["foo:bar"]);
+        configuration["foo:bar"].Should().Be("value");
     }
 
     [Fact]
@@ -138,10 +128,7 @@ public sealed class HostedSpringBootConfigurationTest
         await using WebApplication host = hostBuilder.Build();
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.NotNull(configuration["spring:cloud:stream:bindings:input:destination"]);
-        Assert.Equal("testDestination", configuration["spring:cloud:stream:bindings:input:destination"]);
-
-        Assert.NotNull(configuration["spring:cloud:stream:bindings:input:group"]);
-        Assert.Equal("testGroup", configuration["spring:cloud:stream:bindings:input:group"]);
+        configuration["spring:cloud:stream:bindings:input:destination"].Should().Be("testDestination");
+        configuration["spring:cloud:stream:bindings:input:group"].Should().Be("testGroup");
     }
 }

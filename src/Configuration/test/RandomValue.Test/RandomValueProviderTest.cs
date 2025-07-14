@@ -14,7 +14,7 @@ public sealed class RandomValueProviderTest
     {
         var provider = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         provider.TryGet("foo:bar", out string? value);
-        Assert.Null(value);
+        value.Should().BeNull();
     }
 
     [Fact]
@@ -22,7 +22,7 @@ public sealed class RandomValueProviderTest
     {
         var provider = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         provider.TryGet("random:string", out string? value);
-        Assert.NotNull(value);
+        value.Should().NotBeNull();
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public sealed class RandomValueProviderTest
     {
         var provider = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         provider.TryGet("random:uuid", out string? value);
-        Assert.NotNull(value);
+        value.Should().NotBeNull();
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public sealed class RandomValueProviderTest
     {
         var provider = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         provider.TryGet("random:int", out string? value);
-        Assert.NotNull(value);
+        value.Should().NotBeNull();
     }
 
     [Fact]
@@ -46,9 +46,10 @@ public sealed class RandomValueProviderTest
     {
         var provider = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         provider.TryGet("random:int[4,10]", out string? value);
-        Assert.NotNull(value);
+        value.Should().NotBeNull();
+
         int number = int.Parse(value, CultureInfo.InvariantCulture);
-        Assert.InRange(number, 4, 10);
+        number.Should().BeInRange(4, 10);
     }
 
     [Fact]
@@ -56,9 +57,10 @@ public sealed class RandomValueProviderTest
     {
         var provider = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         provider.TryGet("random:int(10)", out string? value);
-        Assert.NotNull(value);
+        value.Should().NotBeNull();
+
         int number = int.Parse(value, CultureInfo.InvariantCulture);
-        Assert.InRange(number, 0, 10);
+        number.Should().BeInRange(0, 10);
     }
 
     [Fact]
@@ -66,7 +68,7 @@ public sealed class RandomValueProviderTest
     {
         var provider = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         provider.TryGet("random:long", out string? value);
-        Assert.NotNull(value);
+        value.Should().NotBeNull();
     }
 
     [Fact]
@@ -74,9 +76,10 @@ public sealed class RandomValueProviderTest
     {
         var provider = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         provider.TryGet("random:long[4,10]", out string? value);
-        Assert.NotNull(value);
+        value.Should().NotBeNull();
+
         int number = int.Parse(value, CultureInfo.InvariantCulture);
-        Assert.InRange(number, 4, 10);
+        number.Should().BeInRange(4, 10);
     }
 
     [Fact]
@@ -84,8 +87,9 @@ public sealed class RandomValueProviderTest
     {
         var provider = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         provider.TryGet("random:long(10)", out string? value);
-        Assert.NotNull(value);
+        value.Should().NotBeNull();
+
         int number = int.Parse(value, CultureInfo.InvariantCulture);
-        Assert.InRange(number, 0, 10);
+        number.Should().BeInRange(0, 10);
     }
 }

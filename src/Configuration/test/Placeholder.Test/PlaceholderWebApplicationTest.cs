@@ -107,7 +107,7 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
 
         builder.Configuration["placeholder"].Should().Be("B");
 
-        var configurationBuilder = (IConfigurationBuilder)builder.Configuration;
+        IConfigurationBuilder configurationBuilder = builder.Configuration;
 
         PlaceholderConfigurationSource placeholderSource = configurationBuilder.Sources.OfType<PlaceholderConfigurationSource>().Single();
         placeholderSource.Sources.RemoveAt(2);
