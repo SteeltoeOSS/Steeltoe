@@ -1,0 +1,23 @@
+name: Package
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+    - '[0-9]+.x'
+    - 'release/*'
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  empty:
+    name: Empty job
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Empty step
+      run: echo "Packaging using GitHub Actions is not yet implemented."
