@@ -72,30 +72,32 @@ public sealed class ApplicationInfoCollectionTest
     public void Add_UpdatesExisting_ApplicationMap()
     {
         var app1 = new ApplicationInfo("app1");
-        app1.Add(new InstanceInfoBuilder().WithId("id1").Build());
-        app1.Add(new InstanceInfoBuilder().WithId("id2").Build());
+        app1.Add(new InstanceInfoBuilder().WithId("app1_id1").Build());
+        app1.Add(new InstanceInfoBuilder().WithId("app1_id2").Build());
 
         var app2 = new ApplicationInfo("app2");
-        app2.Add(new InstanceInfoBuilder().WithId("id1").Build());
-        app2.Add(new InstanceInfoBuilder().WithId("id2").Build());
+        app2.Add(new InstanceInfoBuilder().WithId("app2_id1").Build());
+        app2.Add(new InstanceInfoBuilder().WithId("app2_id2").Build());
 
         var apps = new ApplicationInfoCollection([
             app1,
             app2
         ]);
 
-        var app1Updated = new ApplicationInfo("app1");
-        app1Updated.Add(new InstanceInfoBuilder().WithId("id3").Build());
-        app1Updated.Add(new InstanceInfoBuilder().WithId("id4").Build());
+        var replacedApp1 = new ApplicationInfo("app1");
+        replacedApp1.Add(new InstanceInfoBuilder().WithId("replaced1_id1").Build());
+        replacedApp1.Add(new InstanceInfoBuilder().WithId("replaced1_id2").Build());
 
-        apps.Add(app1Updated);
+        apps.Add(replacedApp1);
 
         apps.ApplicationMap.Should().HaveCount(2);
-        ApplicationInfo? app = apps.ApplicationMap.Should().ContainKey("app1".ToUpperInvariant()).WhoseValue;
-        app.Instances.Should().ContainSingle(info => info.InstanceId == "id3");
-        app.Instances.Should().ContainSingle(info => info.InstanceId == "id4");
+        ApplicationInfo? storedApp1 = apps.ApplicationMap.Should().ContainKey("app1".ToUpperInvariant()).WhoseValue;
+        storedApp1.Instances.Should().ContainSingle(info => info.InstanceId == "replaced1_id1");
+        storedApp1.Instances.Should().ContainSingle(info => info.InstanceId == "replaced1_id1");
 
-        apps.ApplicationMap.Should().ContainKey("app2".ToUpperInvariant());
+        ApplicationInfo? storedApp2 = apps.ApplicationMap.Should().ContainKey("app2".ToUpperInvariant()).WhoseValue;
+        storedApp2.Instances.Should().ContainSingle(info => info.InstanceId == "app2_id1");
+        storedApp2.Instances.Should().ContainSingle(info => info.InstanceId == "app2_id1");
     }
 
     [Fact]
@@ -387,8 +389,7 @@ public sealed class ApplicationInfoCollectionTest
 
         result = apps.GetInstancesByVipAddress("vapp3");
 
-        result.Should().ContainSingle();
-        result.Should().Contain(app3.GetInstance("id1")!);
+        result.Should().ContainSingle().Which.Should().Be(app3.GetInstance("id1")!);
 
         result = apps.GetInstancesByVipAddress("foobar");
 
@@ -569,9 +570,7 @@ public sealed class ApplicationInfoCollectionTest
 
         result = apps.GetInstancesByVipAddress("vapp2");
 
-        result.Should().ContainSingle();
-        result.Should().Contain(app2.GetInstance("id1")!);
-        result.Should().NotContain(app2.GetInstance("id2")!);
+        result.Should().ContainSingle().Which.Should().Be(app2.GetInstance("id1")!);
 
         result = apps.GetInstancesByVipAddress("foobar");
 

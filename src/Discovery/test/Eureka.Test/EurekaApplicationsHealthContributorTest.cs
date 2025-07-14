@@ -38,14 +38,14 @@ public sealed class EurekaApplicationsHealthContributorTest
 
         apps.Should().BeNull();
 
-        clientOptions.Health.MonitoredApps = "foo,bar, boo ";
+        clientOptions.Health.MonitoredApps = "foo,bar, baz ";
 
         apps = contributor.GetApplicationsFromConfiguration();
 
         apps.Should().HaveCount(3);
         apps.Should().Contain("foo");
         apps.Should().Contain("bar");
-        apps.Should().Contain("boo");
+        apps.Should().Contain("baz");
     }
 
     [Fact]

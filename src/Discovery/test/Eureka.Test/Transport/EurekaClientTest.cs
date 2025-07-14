@@ -423,14 +423,14 @@ public sealed class EurekaClientTest
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/");
+        services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = "http://user:pass@foo:123/eureka/");
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
         services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
 
-        httpClientHandler.Mock.Expect(HttpMethod.Post, "http://boo:123/eureka/apps/FOOBAR").WithHeaders("Authorization", "Basic dXNlcjpwYXNz")
+        httpClientHandler.Mock.Expect(HttpMethod.Post, "http://foo:123/eureka/apps/FOOBAR").WithHeaders("Authorization", "Basic dXNlcjpwYXNz")
             .Respond(HttpStatusCode.NoContent);
 
         services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(_ => httpClientHandler);
@@ -450,14 +450,14 @@ public sealed class EurekaClientTest
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = "http://:pass@boo:123/eureka/");
+        services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = "http://:pass@foo:123/eureka/");
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
         services.AddSingleton(TimeProvider.System);
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
 
-        httpClientHandler.Mock.Expect(HttpMethod.Post, "http://boo:123/eureka/apps/FOOBAR").WithHeaders("Authorization", "Basic OnBhc3M=")
+        httpClientHandler.Mock.Expect(HttpMethod.Post, "http://foo:123/eureka/apps/FOOBAR").WithHeaders("Authorization", "Basic OnBhc3M=")
             .Respond(HttpStatusCode.NoContent);
 
         services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(_ => httpClientHandler);
