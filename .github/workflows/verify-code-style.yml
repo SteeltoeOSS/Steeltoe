@@ -58,7 +58,7 @@ jobs:
         dotnet regitlint -s ${{ env.SOLUTION_FILE }} --print-command --skip-tool-check --max-runs=5 --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --properties:RunAnalyzers=false --jb --properties:NuGetAudit=false --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash --fail-on-diff --print-diff
 
     - name: CleanupCode (on branch)
-      if: ${{ github.event_name == 'push' || github.event_name == 'release' }}
+      if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'release' }}
       shell: pwsh
       run: |
         Write-Output "Running code cleanup on all files."

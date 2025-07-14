@@ -8,16 +8,163 @@ on:
     - '[0-9]+.x'
     - 'release/*'
   pull_request:
+  release:
+    types: [ published ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: true
+  SOLUTION_FILE: 'src/Steeltoe.All.sln'
+  VERSION_FILE: 'shared-package.props'
+
 jobs:
-  empty:
-    name: Empty job
+  build:
+    name: Build
+    timeout-minutes: 15
     runs-on: ubuntu-latest
 
     steps:
-    - name: Empty step
-      run: echo "Packaging using GitHub Actions is not yet implemented."
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.*
+          9.0.*
+
+    - name: Git checkout
+      uses: actions/checkout@v4
+
+    - name: Restore packages
+      run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal
+
+    - name: Calculate package version (for release)
+      if: ${{ github.event_name == 'release' }}
+      env:
+        TAG_NAME: ${{ github.ref_name }}
+      shell: pwsh
+      run: |
+        # Get the version suffix from the git tag. For example: '1.2.3-preview1-final' => '1.2.3' and 'preview1-final'
+        $tagSegments = '${{ env.TAG_NAME }}' -split '-'
+        $versionPrefix = $tagSegments[0]
+        $versionSuffix = $tagSegments.Length -eq 1 ? '' : $tagSegments[1..$($tagSegments.Length - 1)] -join '-'
+
+        [xml]$xml = Get-Content $env:VERSION_FILE
+        $configuredVersionPrefix = $xml.Project.PropertyGroup.VersionPrefix | Select-Object -First 1
+
+        if ($configuredVersionPrefix -ne $versionPrefix) {
+            Write-Error "Version prefix from git release tag '$versionPrefix' does not match version prefix '$configuredVersionPrefix' stored in $env:VERSION_FILE."
+            # To recover from this:
+            # - Delete the GitHub release
+            # - Run: git push --delete origin the-invalid-tag-name
+            # - Adjust VersionPrefix in file, commit and push
+            # - Recreate the GitHub release
+        }
+
+        Write-Output "Using version suffix: $versionSuffix"
+        Write-Output "PACKAGE_VERSION_SUFFIX=$versionSuffix" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Calculate package version (for branch)
+      if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+      env:
+        BRANCH_NAME: ${{ github.ref_name }}
+      shell: pwsh
+      run: |
+        # Get the version suffix from the branch name and auto-incrementing build number. For example: 'main' and '123' => 'main-00123'
+        $revision = "{0:D5}" -f ${{ github.run_number }}
+        $branchName = '${{ env.BRANCH_NAME }}'
+        $safeBranchName = $branchName -Replace '[^a-zA-Z0-9_]', '_'
+        $versionSuffix = "$safeBranchName-$revision"
+
+        Write-Output "Using version suffix: $versionSuffix"
+        Write-Output "PACKAGE_VERSION_SUFFIX=$versionSuffix" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Calculate package version (for pr)
+      if: ${{ github.event_name == 'pull_request' }}
+      shell: pwsh
+      run: |
+        # Get the version suffix from the PR number and auto-incrementing build number. For example: '18' and '123' => 'pr18-00123'
+        $revision = "{0:D5}" -f ${{ github.run_number }}
+        $versionSuffix = "pr${{ github.event.number }}-$revision"
+
+        Write-Output "Using version suffix: $versionSuffix"
+        Write-Output "PACKAGE_VERSION_SUFFIX=$versionSuffix" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Verify package version
+      if: ${{ env.PACKAGE_VERSION_SUFFIX == '' && github.event_name != 'release' }}
+      run: |
+        echo "Package version suffix is empty. This should never happen."
+        exit 1
+
+    - name: Build solution
+      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal /p:VersionSuffix=${{ env.PACKAGE_VERSION_SUFFIX }}
+
+    - name: Collect packages
+      run: dotnet pack ${{ env.SOLUTION_FILE }} --no-build --configuration Release --output ${{ github.workspace }}/packages /p:VersionSuffix=${{ env.PACKAGE_VERSION_SUFFIX }}
+
+    - name: Upload packages
+      uses: actions/upload-artifact@v4
+      with:
+        if-no-files-found: error
+        name: unsigned-packages
+        path: ${{ github.workspace }}/packages/**/*.nupkg
+
+  open_pr:
+    name: Open pull request to bump package version (after release)
+    if: ${{ github.event_name == 'release' }}
+    needs: build
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v4
+
+    - name: Calculate next package version
+      shell: pwsh
+      run: |
+        [xml]$xml = Get-Content $env:VERSION_FILE
+        $oldVersionPrefix = $xml.Project.PropertyGroup.VersionPrefix | Select-Object -First 1
+
+        $versionSegments = $oldVersionPrefix.split('.')
+        ([int]$versionSegments[-1])++
+        $newVersionPrefix = $versionSegments -join('.')
+
+        Write-Output "OLD_PACKAGE_VERSION_PREFIX=$oldVersionPrefix" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        Write-Output "NEW_PACKAGE_VERSION_PREFIX=$newVersionPrefix" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Open pull request
+      env:
+        GIT_USERNAME: ${{ github.actor }}
+        GH_TOKEN: ${{ github.token }}
+      shell: pwsh
+      run: |
+        $oldVersionPrefix = '${{ env.OLD_PACKAGE_VERSION_PREFIX }}'
+        $newVersionPrefix = '${{ env.NEW_PACKAGE_VERSION_PREFIX }}'
+        $prBranchName = "bump-version-to-$newVersionPrefix-${{ github.run_number }}"
+        $commitMessage = "Bump Steeltoe version from $oldVersionPrefix to $newVersionPrefix."
+
+        $pattern = '(?<left>^\s*\<VersionPrefix\>)[^>]+(?<right>\<\/VersionPrefix\>)\s*$'
+        $fileContent = Get-Content $env:VERSION_FILE
+        $fileContent = $fileContent -Replace $pattern,"`${left}$newVersionPrefix`${right}"
+        Set-Content $fileContent -Path $env:VERSION_FILE
+
+        Write-Output "Creating pull request for commit: $commitMessage"
+        git config --global user.name '${{ env.GIT_USERNAME }}'
+        git config --global user.email '${{ env.GIT_USERNAME }}@noreply.github.com'
+        git checkout -b $prBranchName
+        git add -A
+        git commit -m $commitMessage
+        git push --set-upstream origin $prBranchName
+
+        Write-Output "Opening pull request to merge $prBranchName."
+        gh pr create --head $prBranchName --title 'Bump Steeltoe version' --body $commitMessage
