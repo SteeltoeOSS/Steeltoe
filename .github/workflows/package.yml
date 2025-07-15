@@ -113,8 +113,11 @@ jobs:
   az-artifacts-deploy:
     name: Deploy packages to Dev Feed
     needs: [build, sign]
-    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    permissions:
+      id-token: write
+
     steps:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
