@@ -111,7 +111,7 @@ jobs:
         path: ${{ github.workspace }}/packages/**/*.nupkg
 
   az-artifacts-deploy:
-    name: Deploy signed packages to Dev Feed
+    name: Deploy packages to Dev Feed
     needs: [build, sign]
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
@@ -120,6 +120,9 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
+        source-url: ${{ env.AZURE_ARTIFACTS_FEED_URL }}
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.DEV_FEED_PERSONAL_TOKEN }}
 
     - name: Download signed packages
       uses: actions/download-artifact@v4
@@ -127,10 +130,8 @@ jobs:
         name: signed-packages
         path: packages
 
-    - name: Push signed packages to Azure Artifacts
-      run: |
-        dotnet nuget add source --name 'SteeltoeDevFeed' ${{ env.AZURE_ARTIFACTS_FEED_URL }}
-        dotnet nuget push packages/*.nupkg --api-key ${{ secrets.DEV_FEED_PERSONAL_TOKEN }} --source 'SteeltoeDevFeed'
+    - name: Push packages to Azure Artifacts
+      run: dotnet nuget push packages/*.nupkg --api-key azdo-placeholder --source ${{ env.AZURE_ARTIFACTS_FEED_URL }}
 
   nuget-org-deploy:
     name: Deploy to nuget.org
