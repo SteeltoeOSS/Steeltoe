@@ -65,7 +65,7 @@ jobs:
     needs: build
     runs-on: windows-latest
     if: github.event_name != 'pull_request'
-    environment: Production
+    environment: signing
     permissions:
       id-token: write
 
@@ -113,8 +113,9 @@ jobs:
   az-artifacts-deploy:
     name: Deploy packages to Dev Feed
     needs: [build, sign]
-    runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
+    environment: azdo
+    runs-on: ubuntu-latest
     permissions:
       id-token: write
 
