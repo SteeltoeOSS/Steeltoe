@@ -1,27 +1,14 @@
 name: Package
 
 on:
-  workflow_dispatch:
-    inputs:
-      deployToDevFeed:
-        description: 'Deploy to Dev Feed?'
-        required: false
-        default: 'false'
-        type: choice
-        options: [ 'false', 'true' ]
-      deployToNuGet:
-        description: 'Deploy to NuGet.org?'
-        required: false
-        default: 'false'
-        type: choice
-        options: [ 'false', 'true' ]
+  workflow_dispatch: {}
   push:
     branches:
     - main
     - '[0-9]+.x'
     - 'release/*'
-    tags:
-      - v*
+  release:
+    types: [ published ]
   pull_request: {}
 
 concurrency:
@@ -42,10 +29,6 @@ jobs:
     name: Build
     timeout-minutes: 15
     runs-on: ubuntu-latest
-    outputs:
-      sign_packages: ${{ steps.decisions.outputs.sign_packages }}
-      deploy_to_dev_feed: ${{ steps.decisions.outputs.deploy_to_dev_feed }}
-      deploy_to_nuget_org: ${{ steps.decisions.outputs.deploy_to_nuget_org }}
     steps:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -77,37 +60,11 @@ jobs:
         if-no-files-found: error
         name: unsigned-packages
         path: ${{ github.workspace }}/packages/**/*.nupkg
-        retention-days: 7
-
-    - id: decisions
-      name: Make decisions based on workflow triggers
-      run: |
-        PUSH_TO_MAIN=$([[ "$GITHUB_EVENT_NAME" == "push" && "$GITHUB_REF" == "refs/heads/main" ]] && echo true || echo false)
-        PUSH_TAG=$([[ "$GITHUB_EVENT_NAME" == "push" && "$GITHUB_REF" == refs/tags/v* ]] && echo true || echo false)
-        DISPATCH_TO_DEV=$([[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && "${{ github.event.inputs.deployToDevFeed }}" == "true" ]] && echo true || echo false)
-        DISPATCH_TO_NUGET=$([[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && "${{ github.event.inputs.deployToNuGet }}" == "true" ]] && echo true || echo false)
-
-        if [[ "$PUSH_TO_MAIN" == true || "$PUSH_TAG" == true || "$DISPATCH_TO_NUGET" == true ]]; then
-          echo "sign_packages=true" >> $GITHUB_OUTPUT
-          echo "Packages will be signed"
-        else
-          echo "sign_packages=false" >> $GITHUB_OUTPUT
-          echo "Packages will NOT be signed"
-        fi
-
-        if [[ "$DISPATCH_TO_DEV" == true || "$DISPATCH_TO_NUGET" == true || "$PUSH_TO_MAIN" == true || "$PUSH_TAG" == true ]]; then
-          echo "deploy_to_dev_feed=$DEPLOY_TO_DEV" >> $GITHUB_OUTPUT
-          echo "Packages will be deployed to development feed"
-        fi
-        if [[ "$DISPATCH_TO_NUGET" == true || "$PUSH_TAG" == true ]]; then
-          echo "deploy_to_nuget=$DEPLOY_TO_PROD" >> $GITHUB_OUTPUT
-          echo "Packages will be deployed to nuget.org"
-        fi
 
   sign:
     needs: build
     runs-on: windows-latest
-    if: needs.build.outputs.sign_packages == 'true'
+    if: github.event_name != 'pull_request'
     environment: Production
     permissions:
       id-token: write
@@ -153,42 +110,16 @@ jobs:
         name: signed-packages
         path: ${{ github.workspace }}/packages/**/*.nupkg
 
-  az-artifacts-deploy-unsigned:
-    name: Deploy unsigned packages to Dev Feed
-    needs: build
-    if: needs.build.outputs.sign_packages != true && needs.build.outputs.deploy_to_dev_feed
-    runs-on: ubuntu-latest
-    steps:
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x'
-        source-url: ${{ env.AZURE_ARTIFACTS_FEED_URL }}
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.DEV_FEED_PERSONAL_TOKEN }}
-
-    - name: Download unsigned packages
-      uses: actions/download-artifact@v4
-      with:
-        name: unsigned-packages
-        path: packages
-
-    - name: Push unsigned packages to Azure Artifacts
-      run: dotnet nuget push packages/*.nupkg --api-key azdo-placeholder --source ${{ env.AZURE_ARTIFACTS_FEED_URL }}
-
-  az-artifacts-deploy-signed:
+  az-artifacts-deploy:
     name: Deploy signed packages to Dev Feed
     needs: [build, sign]
-    if: needs.build.outputs.sign_packages == true && needs.build.outputs.deploy_to_dev_feed
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
-        source-url: ${{ env.AZURE_ARTIFACTS_FEED_URL }}
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.DEV_FEED_PERSONAL_TOKEN }}
 
     - name: Download signed packages
       uses: actions/download-artifact@v4
@@ -197,12 +128,14 @@ jobs:
         path: packages
 
     - name: Push signed packages to Azure Artifacts
-      run: dotnet nuget push packages/*.nupkg --api-key azdo-placeholder --source ${{ env.AZURE_ARTIFACTS_FEED_URL }}
+      run: |
+        dotnet nuget add source --name 'SteeltoeDevFeed' ${{ env.AZURE_ARTIFACTS_FEED_URL }}
+        dotnet nuget push packages/*.nupkg --api-key ${{ secrets.DEV_FEED_PERSONAL_TOKEN }} --source 'SteeltoeDevFeed'
 
   nuget-org-deploy:
     name: Deploy to nuget.org
     needs: [build, sign]
-    if: needs.build.outputs.deploy_to_nuget_org
+    if: github.event_name == 'release'
     environment: nuget.org
     runs-on: ubuntu-latest
     steps:
