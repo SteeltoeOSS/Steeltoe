@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
@@ -21,6 +22,19 @@ public sealed class ContentNegotiationTest
     {
         ["Management:Endpoints:Actuator:Exposure:Include:0"] = "*"
     };
+
+    [Fact]
+    public void Fail_on_Windows()
+    {
+        if (Platform.IsWindows)
+        {
+            true.Should().BeFalse();
+        }
+        else
+        {
+            true.Should().BeTrue();
+        }
+    }
 
     [Fact]
     public async Task Can_use_content_type_with_alternate_casing()
