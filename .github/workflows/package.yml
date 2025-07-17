@@ -127,45 +127,45 @@ jobs:
       id-token: write
 
     steps:
-      - name: Download unsigned packages
-        uses: actions/download-artifact@v4
-        with:
-          name: unsigned-packages
-          path: packages
+    - name: Download unsigned packages
+      uses: actions/download-artifact@v4
+      with:
+        name: unsigned-packages
+        path: packages
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.*
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.*
 
-      - name: Install code signing tool
-        run: dotnet tool install --global sign --prerelease
+    - name: Install code signing tool
+      run: dotnet tool install --global sign --prerelease
 
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Azure login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Sign packages
-        run: >-
-          sign code azure-key-vault '**/*.nupkg'
-          --base-directory '${{ github.workspace }}/packages'
-          --azure-key-vault-managed-identity true
-          --azure-credential-type 'azure-cli'
-          --azure-key-vault-url '${{ secrets.AZURE_KEY_VAULT_URL }}'
-          --azure-key-vault-certificate '${{ secrets.AZURE_SIGN_CERTIFICATE_ID }}'
-          --publisher-name 'Steeltoe'
-          --description 'Steeltoe'
-          --description-url 'https://steeltoe.io/'
+    - name: Sign packages
+      run: >-
+        sign code azure-key-vault '**/*.nupkg'
+        --base-directory '${{ github.workspace }}/packages'
+        --azure-key-vault-managed-identity true
+        --azure-credential-type 'azure-cli'
+        --azure-key-vault-url '${{ secrets.AZURE_KEY_VAULT_URL }}'
+        --azure-key-vault-certificate '${{ secrets.AZURE_SIGN_CERTIFICATE_ID }}'
+        --publisher-name 'Steeltoe'
+        --description 'Steeltoe'
+        --description-url 'https://steeltoe.io/'
 
-      - name: Upload signed packages
-        uses: actions/upload-artifact@v4
-        with:
-          if-no-files-found: error
-          name: signed-packages
-          path: ${{ github.workspace }}/packages/**/*.nupkg
+    - name: Upload signed packages
+      uses: actions/upload-artifact@v4
+      with:
+        if-no-files-found: error
+        name: signed-packages
+        path: ${{ github.workspace }}/packages/**/*.nupkg
 
   dev-feed-deploy:
     name: Deploy packages to development feed
@@ -180,41 +180,41 @@ jobs:
       VSS_NUGET_URI_PREFIXES: https://pkgs.dev.azure.com/dotnet/
 
     steps:
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Azure login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Download signed packages
-        uses: actions/download-artifact@v4
-        with:
-          name: signed-packages
-          path: packages
+    - name: Download signed packages
+      uses: actions/download-artifact@v4
+      with:
+        name: signed-packages
+        path: packages
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.x
-          source-url: ${{ vars.AZURE_ARTIFACTS_FEED_URL }}
-        env:
-          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+        source-url: ${{ vars.AZURE_ARTIFACTS_FEED_URL }}
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install credential provider for Azure Artifacts
-        run: sh -c "$(curl -fsSL https://aka.ms/install-artifacts-credprovider.sh)"
+    - name: Install credential provider for Azure Artifacts
+      run: sh -c "$(curl -fsSL https://aka.ms/install-artifacts-credprovider.sh)"
 
-      - name: Extract access token
-        run: |
-          accessToken=$(az account get-access-token --query accessToken --resource 499b84ac-1321-427f-aa17-267ca6975798 -o tsv)
-          echo "::add-mask::$accessToken"
-          echo "ACCESS_TOKEN=$accessToken" >> $GITHUB_ENV
+    - name: Extract access token
+      run: |
+        accessToken=$(az account get-access-token --query accessToken --resource 499b84ac-1321-427f-aa17-267ca6975798 -o tsv)
+        echo "::add-mask::$accessToken"
+        echo "ACCESS_TOKEN=$accessToken" >> $GITHUB_ENV
 
-      - name: Configure authentication provider to use Azure DevOps token
-        run: echo "VSS_NUGET_ACCESSTOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
+    - name: Configure authentication provider to use Azure DevOps token
+      run: echo "VSS_NUGET_ACCESSTOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
 
-      - name: Push packages to Azure Artifacts
-        run: dotnet nuget push '${{ github.workspace }}/packages/*.nupkg' --api-key 'azdo-placeholder' --source '${{ vars.AZURE_ARTIFACTS_FEED_URL }}'
+    - name: Push packages to Azure Artifacts
+      run: dotnet nuget push '${{ github.workspace }}/packages/*.nupkg' --api-key 'azdo-placeholder' --source '${{ vars.AZURE_ARTIFACTS_FEED_URL }}'
 
   nuget-org-deploy:
     name: Deploy packages to nuget.org
@@ -224,19 +224,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.x
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
 
-      - name: Download signed packages
-        uses: actions/download-artifact@v4
-        with:
-          name: signed-packages
-          path: packages
+    - name: Download signed packages
+      uses: actions/download-artifact@v4
+      with:
+        name: signed-packages
+        path: packages
 
-      - name: Push packages to nuget.org
-        run: dotnet nuget push '${{ github.workspace }}/packages/*.nupkg' --skip-duplicate --api-key '${{ secrets.STEELTOE_NUGET_API_KEY }}' --source 'nuget.org'
+    - name: Push packages to nuget.org
+      run: dotnet nuget push '${{ github.workspace }}/packages/*.nupkg' --skip-duplicate --api-key '${{ secrets.STEELTOE_NUGET_API_KEY }}' --source 'nuget.org'
 
   open_pr:
     name: Open pull request to bump Steeltoe version after stable release
