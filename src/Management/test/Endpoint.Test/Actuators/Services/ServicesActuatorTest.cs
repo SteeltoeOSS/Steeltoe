@@ -17,7 +17,7 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.Services;
 
 public sealed class ServicesActuatorTest
 {
-    private static readonly string SteeltoeAssemblyVersion = typeof(IServicesEndpointHandler).Assembly.GetName().Version!.ToString();
+    private static readonly string SteeltoeTestAssemblyVersion = typeof(ServicesActuatorTest).Assembly.GetName().Version!.ToString();
     private static readonly string MicrosoftOptionsAssemblyName = typeof(Options).Assembly.ToString();
     private static readonly string MicrosoftLoggingAssemblyName = typeof(LoggerFilterOptions).Assembly.ToString();
     private static readonly string MicrosoftLoggingAbstractionsAssemblyName = typeof(ILogger).Assembly.ToString();
@@ -219,7 +219,7 @@ public sealed class ServicesActuatorTest
                     "{{typeof(ServicesActuatorTest)}}+ExampleService": {
                       "scope": "Transient",
                       "type": "{{typeof(ServicesActuatorTest)}}+ExampleService",
-                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
+                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeTestAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
                       "dependencies": []
                     }
                   }
@@ -246,7 +246,7 @@ public sealed class ServicesActuatorTest
                       "scope": "Transient",
                       "type": "{{typeof(ServicesActuatorTest)}}+ExampleService",
                       "key": "exampleKey",
-                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
+                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeTestAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
                       "dependencies": []
                     }
                   }
@@ -272,7 +272,7 @@ public sealed class ServicesActuatorTest
                     "{{typeof(ServicesActuatorTest)}}+IExampleService": {
                       "scope": "Transient",
                       "type": "{{typeof(ServicesActuatorTest)}}+ExampleService",
-                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
+                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeTestAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
                       "dependencies": []
                     }
                   }
@@ -299,7 +299,7 @@ public sealed class ServicesActuatorTest
                       "scope": "Transient",
                       "type": "{{typeof(ServicesActuatorTest)}}+ExampleService",
                       "key": "exampleKey",
-                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
+                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeTestAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
                       "dependencies": []
                     }
                   }
@@ -325,7 +325,7 @@ public sealed class ServicesActuatorTest
                     "{{typeof(ServicesActuatorTest)}}+ExampleService": {
                       "scope": "Scoped",
                       "type": "{{typeof(ServicesActuatorTest)}}+ExampleService",
-                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
+                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeTestAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
                       "dependencies": []
                     }
                   }
@@ -352,7 +352,7 @@ public sealed class ServicesActuatorTest
                       "scope": "Scoped",
                       "type": "{{typeof(ServicesActuatorTest)}}+ExampleService",
                       "key": "exampleKey",
-                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
+                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeTestAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
                       "dependencies": []
                     }
                   }
@@ -378,7 +378,7 @@ public sealed class ServicesActuatorTest
                     "{{typeof(ServicesActuatorTest)}}+IExampleService": {
                       "scope": "Scoped",
                       "type": "{{typeof(ServicesActuatorTest)}}+IExampleService",
-                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
+                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeTestAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
                       "dependencies": []
                     }
                   }
@@ -405,7 +405,7 @@ public sealed class ServicesActuatorTest
                       "scope": "Scoped",
                       "type": "{{typeof(ServicesActuatorTest)}}+IExampleService",
                       "key": "exampleKey",
-                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
+                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeTestAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
                       "dependencies": []
                     }
                   }
@@ -431,7 +431,7 @@ public sealed class ServicesActuatorTest
                     "{{typeof(ServicesActuatorTest)}}+ExampleService": {
                       "scope": "Singleton",
                       "type": "{{typeof(ServicesActuatorTest)}}+ExampleService",
-                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
+                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeTestAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
                       "dependencies": []
                     }
                   }
@@ -458,7 +458,7 @@ public sealed class ServicesActuatorTest
                       "scope": "Singleton",
                       "type": "{{typeof(ServicesActuatorTest)}}+ExampleService",
                       "key": "exampleKey",
-                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
+                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeTestAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
                       "dependencies": []
                     }
                   }
@@ -484,7 +484,7 @@ public sealed class ServicesActuatorTest
                     "{{typeof(ServicesActuatorTest)}}+IExampleService": {
                       "scope": "Singleton",
                       "type": "{{typeof(ServicesActuatorTest)}}+ExampleService",
-                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
+                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeTestAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
                       "dependencies": []
                     }
                   }
@@ -511,7 +511,7 @@ public sealed class ServicesActuatorTest
                       "scope": "Singleton",
                       "type": "{{typeof(ServicesActuatorTest)}}+ExampleService",
                       "key": "exampleKey",
-                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
+                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeTestAssemblyVersion}}, Culture=neutral, PublicKeyToken=null",
                       "dependencies": []
                     }
                   }

@@ -49,7 +49,7 @@ If you want to try the latest bits from the `main` branch, use the Steeltoe deve
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <packageSources>
-    <add key="Steeltoe-dev" value="https://pkgs.dev.azure.com/dotnet/Steeltoe/_packaging/dev/nuget/v3/index.json" />
+    <add key="Steeltoe-dev" value="https://pkgs.dev.azure.com/dotnet/Steeltoe/_packaging/ci/nuget/v3/index.json" />
     <add key="NuGet" value="https://api.nuget.org/v3/index.json" />
   </packageSources>
 </configuration>
