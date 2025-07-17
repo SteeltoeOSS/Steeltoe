@@ -273,14 +273,14 @@ jobs:
         $oldVersionPrefix = '${{ env.OLD_PACKAGE_VERSION_PREFIX }}'
         $newVersionPrefix = '${{ env.NEW_PACKAGE_VERSION_PREFIX }}'
         $prBranchName = "bump-version-to-$newVersionPrefix-${{ github.run_number }}"
-        $commitMessage = "Bump Steeltoe version from $oldVersionPrefix to $newVersionPrefix."
+        $commitMessage = "Bump Steeltoe version from $oldVersionPrefix to $newVersionPrefix.`n`n> [!TIP]`n> Close and reopen this pull request to run status checks."
 
         $pattern = '(?<left>^\s*\<VersionPrefix\>)[^>]+(?<right>\<\/VersionPrefix\>)\s*$'
         $fileContent = Get-Content $env:VERSION_FILE
         $fileContent = $fileContent -Replace $pattern,"`${left}$newVersionPrefix`${right}"
         Set-Content $fileContent -Path $env:VERSION_FILE
 
-        Write-Output "Creating pull request for commit: $commitMessage"
+        Write-Output "Creating pull request with commit message:`n$commitMessage"
         git config --local user.name "github-actions[bot]"
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git checkout -b $prBranchName
