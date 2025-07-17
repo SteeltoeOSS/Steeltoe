@@ -27,7 +27,7 @@ env:
 
 jobs:
   build:
-    name: Build
+    name: Build and Package
     timeout-minutes: 15
     runs-on: ubuntu-latest
 
@@ -236,10 +236,11 @@ jobs:
           path: packages
 
       - name: Push packages to nuget.org
-        run: dotnet nuget push '${{ github.workspace }}/packages/*.nupkg' --api-key '${{ secrets.STEELTOE_NUGET_API_KEY }}' --source 'nuget.org'
+        run: dotnet nuget push '${{ github.workspace }}/packages/*.nupkg' --skip-duplicate --api-key '${{ secrets.STEELTOE_NUGET_API_KEY }}' --source 'nuget.org'
 
   open_pr:
-    name: Open pull request to bump Steeltoe version after release
+    name: Open pull request to bump Steeltoe version after stable release
+    if: ${{ github.event_name == 'release' && !contains(github.ref_name, '-') }}
     needs: nuget-org-deploy
     timeout-minutes: 15
     runs-on: ubuntu-latest
