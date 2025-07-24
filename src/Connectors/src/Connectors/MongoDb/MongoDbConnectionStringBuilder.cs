@@ -135,7 +135,9 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
             if (connectionString.Contains(','))
             {
                 // MongoDB allows multiple servers in the connection string, but we haven't found any service bindings that actually use that.
-                throw new NotSupportedException("Support for multiple servers is not implemented. Please open a GitHub issue if you need this.");
+#pragma warning disable S3717 // Track use of "NotImplementedException"
+                throw new NotImplementedException("Support for multiple servers is not implemented. Please open a GitHub issue if you need this.");
+#pragma warning restore S3717 // Track use of "NotImplementedException"
             }
 
             // MongoDB allows semicolon as separator for query string parameters, to provide backwards compatibility.
