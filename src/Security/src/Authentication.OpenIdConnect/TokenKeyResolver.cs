@@ -37,9 +37,11 @@ internal sealed class TokenKeyResolver
             return [resolved];
         }
 
-        // can't be async all the way until updates are complete in Microsoft libraries
+#pragma warning disable S4462 // Calls to "async" methods should not be blocking
+        // Justification: can't be async all the way until updates are complete in Microsoft libraries
         // https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/issues/468
         JsonWebKeySet? keySet = FetchKeySetAsync(CancellationToken.None).GetAwaiter().GetResult();
+#pragma warning restore S4462 // Calls to "async" methods should not be blocking
 
         if (keySet != null)
         {
