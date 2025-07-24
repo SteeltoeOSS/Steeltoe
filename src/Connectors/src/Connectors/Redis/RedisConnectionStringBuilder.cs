@@ -103,7 +103,7 @@ internal sealed class RedisConnectionStringBuilder : IConnectionStringBuilder
                     if (option.Contains(','))
                     {
                         // Redis allows multiple servers in the connection string, but we haven't found any service bindings that actually use that.
-                        throw new NotImplementedException("Support for multiple servers is not implemented. Please open a GitHub issue if you need this.");
+                        throw new NotSupportedException("Support for multiple servers is not implemented. Please open a GitHub issue if you need this.");
                     }
 
                     string[] hostWithPort = option.Split(':', 2);
