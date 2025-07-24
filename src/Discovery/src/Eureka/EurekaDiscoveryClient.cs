@@ -107,7 +107,10 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
                 try
                 {
                     // Only register when periodically refreshing. Just once at startup doesn't make sense.
+#pragma warning disable S4462 // Calls to "async" methods should not be blocking
+                    // Justification: Async calls from a constructor are not possible. To fix this, an alternate design is needed.
                     RegisterAsync(false, CancellationToken.None).GetAwaiter().GetResult();
+#pragma warning restore S4462 // Calls to "async" methods should not be blocking
                 }
                 catch (Exception exception)
                 {
@@ -125,7 +128,10 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             try
             {
+#pragma warning disable S4462 // Calls to "async" methods should not be blocking
+                // Justification: Async calls from a constructor are not possible. To fix this, an alternate design is needed.
                 FetchRegistryAsync(true, CancellationToken.None).GetAwaiter().GetResult();
+#pragma warning restore S4462 // Calls to "async" methods should not be blocking
             }
             catch (Exception exception)
             {

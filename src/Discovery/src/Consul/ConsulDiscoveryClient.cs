@@ -54,7 +54,10 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
         _thisServiceInstance = new ThisServiceInstance(registrar.Registration);
         _registrar = registrar;
 
+#pragma warning disable S4462 // Calls to "async" methods should not be blocking
+        // Justification: Async calls from a constructor are not possible. To fix this, an alternate design is needed.
         _registrar.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
+#pragma warning restore S4462 // Calls to "async" methods should not be blocking
     }
 
     private static ConsulServiceRegistrar CreateRegistrar(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor,

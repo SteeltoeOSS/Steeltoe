@@ -132,7 +132,10 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         {
             if (_refreshTimer == null)
             {
+#pragma warning disable S4462 // Calls to "async" methods should not be blocking
+                // Justification: Configuration sources and providers don't support async.
                 _refreshTimer = new Timer(_ => DoPolledLoadAsync().GetAwaiter().GetResult(), null, TimeSpan.Zero, ClientOptions.PollingInterval);
+#pragma warning restore S4462 // Calls to "async" methods should not be blocking
             }
             else if (existingPollingInterval != ClientOptions.PollingInterval)
             {
@@ -197,7 +200,10 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// </summary>
     public override void Load()
     {
+#pragma warning disable S4462 // Calls to "async" methods should not be blocking
+        // Justification: Configuration sources and providers don't support async.
         LoadInternalAsync(true, CancellationToken.None).GetAwaiter().GetResult();
+#pragma warning restore S4462 // Calls to "async" methods should not be blocking
     }
 
     internal async Task<ConfigEnvironment?> LoadInternalAsync(bool updateDictionary, CancellationToken cancellationToken)
@@ -695,8 +701,11 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
     private void RenewToken()
     {
+#pragma warning disable S4462 // Calls to "async" methods should not be blocking
+        // Justification: Configuration sources and providers don't support async.
         _ = new Timer(_ => RefreshVaultTokenAsync(CancellationToken.None).GetAwaiter().GetResult(), null,
             TimeSpan.FromMilliseconds(ClientOptions.TokenRenewRate), TimeSpan.FromMilliseconds(ClientOptions.TokenRenewRate));
+#pragma warning restore S4462 // Calls to "async" methods should not be blocking
     }
 
     // fire and forget
