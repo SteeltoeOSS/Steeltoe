@@ -148,6 +148,13 @@ jobs:
     condition: eq(variables['integrationTests'], 'true')
     displayName: Start Docker services
   - task: DotNetCoreCLI@2
+    displayName: dotnet test 8.0
+    inputs:
+      command: test
+      projects: '**/*.csproj'
+      arguments: '--blame-hang-timeout 3m -f net8.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      publishTestResults: false
+  - task: DotNetCoreCLI@2
     displayName: dotnet test 6.0
     inputs:
       command: test

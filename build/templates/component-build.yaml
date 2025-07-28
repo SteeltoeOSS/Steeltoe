@@ -46,6 +46,13 @@ jobs:
     condition: eq(${{parameters.runConfigServer}}, 'true')
     displayName: Start Config Server
   - task: DotNetCoreCLI@2
+    displayName: dotnet test 8.0
+    inputs:
+      command: test
+      projects: $(SolutionFile)
+      arguments: -f net8.0 ${{parameters.skipFilter}} $(CommonTestArgs)
+      publishTestResults: false
+  - task: DotNetCoreCLI@2
     displayName: dotnet test 6.0
     inputs:
       command: test

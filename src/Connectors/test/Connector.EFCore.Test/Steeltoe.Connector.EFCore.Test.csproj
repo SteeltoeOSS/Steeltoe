@@ -21,7 +21,7 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <PackageReference Include="MySql.EntityFrameworkCore" Version="$(MySqlEFCoreVersion)" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0' Or '$(TargetFramework)' == 'net6.0'">
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="$(PomeloEFCoreVersion)" />
     <ProjectReference Include="..\..\..\Configuration\src\Kubernetes.ServiceBinding\Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.csproj" />
   </ItemGroup>

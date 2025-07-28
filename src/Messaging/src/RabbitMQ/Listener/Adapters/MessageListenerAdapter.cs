@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using RC=RabbitMQ.Client;
+using SteeltoeMethodInvoker=Steeltoe.Common.Util.MethodInvoker;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
@@ -139,7 +140,7 @@ public class MessageListenerAdapter : AbstractMessageListenerAdapter
     {
         try
         {
-            var methodInvoker = new MethodInvoker();
+            var methodInvoker = new SteeltoeMethodInvoker();
             methodInvoker.SetTargetObject(Instance);
             methodInvoker.TargetMethod = methodName;
             methodInvoker.SetArguments(arguments);
