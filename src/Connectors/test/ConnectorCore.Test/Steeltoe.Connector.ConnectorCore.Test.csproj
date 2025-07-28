@@ -39,7 +39,7 @@
     <ProjectReference Include="..\..\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\src\ConnectorCore\Steeltoe.Connector.ConnectorCore.csproj" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0' Or '$(TargetFramework)' == 'net6.0'">
     <ProjectReference Include="..\..\..\Configuration\src\Kubernetes.ServiceBinding\Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.csproj" />
   </ItemGroup>
 </Project>

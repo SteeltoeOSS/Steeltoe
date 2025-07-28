@@ -1,7 +1,8 @@
 <Project>
   <PropertyGroup Condition="'$(TF_BUILD)' != 'true'">
-    <VersionPrefix>3.2.9</VersionPrefix>
+    <VersionPrefix>3.3.0</VersionPrefix>
   </PropertyGroup>
+
   <PropertyGroup>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <CSharpVersion>4.5.0</CSharpVersion>
@@ -63,8 +64,6 @@
     <SourceLinkGitHubVersion>1.0.0</SourceLinkGitHubVersion>
     <StyleCopVersion>1.1.118</StyleCopVersion>
 
-    <EF6Version>6.3.0</EF6Version>
-
     <PollyVersion>7.1.1</PollyVersion>
     <PollyContribVersion>1.0.0</PollyContribVersion>
     <CastleCoreVersion>4.4.0</CastleCoreVersion>
@@ -80,7 +79,6 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
     <EFCoreTestVersion>3.1.6</EFCoreTestVersion>
-    <EF6Version>6.3.0</EF6Version>
     <ExtensionsVersion>3.1.0</ExtensionsVersion>
     <MySqlEFCoreVersion>3.1.10</MySqlEFCoreVersion>
     <NpgsqlEFCoreVersion>3.1.0</NpgsqlEFCoreVersion>
@@ -88,6 +86,7 @@
     <OracleEFCoreVersion>3.19.80</OracleEFCoreVersion>
     <MicrosoftExtensionsRedisVersion>3.1.19</MicrosoftExtensionsRedisVersion>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <AspNetCoreVersion>6.0.0</AspNetCoreVersion>
     <EFCoreTestVersion>6.0.0</EFCoreTestVersion>
@@ -95,11 +94,24 @@
     <NpgsqlEFCoreVersion>6.0.0</NpgsqlEFCoreVersion>
     <OracleEFCoreVersion>6.21.5</OracleEFCoreVersion>
     <PomeloEFCoreVersion>6.0.0</PomeloEFCoreVersion>
-    <EF6Version>6.4.0</EF6Version>
     <ExtensionsVersion>6.0.0</ExtensionsVersion>
     <MicrosoftExtensionsRedisVersion>6.0.0</MicrosoftExtensionsRedisVersion>
     <SystemJsonVersion>6.0.0</SystemJsonVersion>
     <SystemNetHttpJsonVersion>6.0.0</SystemNetHttpJsonVersion>
     <UnsafeCompilerServicesVersion>6.0.0</UnsafeCompilerServicesVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <AspNetCoreVersion>8.0.0</AspNetCoreVersion>
+    <EFCoreTestVersion>8.0.0</EFCoreTestVersion>
+    <MySqlEFCoreVersion>8.0.0</MySqlEFCoreVersion>
+    <NpgsqlEFCoreVersion>8.0.0</NpgsqlEFCoreVersion>
+    <OracleEFCoreVersion>8.23.90</OracleEFCoreVersion>
+    <PomeloEFCoreVersion>8.0.0</PomeloEFCoreVersion>
+    <ExtensionsVersion>8.0.0</ExtensionsVersion>
+    <MicrosoftExtensionsRedisVersion>8.0.0</MicrosoftExtensionsRedisVersion>
+    <SystemJsonVersion>8.0.0</SystemJsonVersion>
+    <SystemNetHttpJsonVersion>8.0.0</SystemNetHttpJsonVersion>
+    <UnsafeCompilerServicesVersion>8.0.0</UnsafeCompilerServicesVersion>
   </PropertyGroup>
 </Project>
