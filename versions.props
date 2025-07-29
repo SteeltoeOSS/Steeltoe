@@ -30,6 +30,7 @@
     <CastleCoreVersion>4.4.0</CastleCoreVersion>
     <RuntimeLoaderVersion>4.3.0</RuntimeLoaderVersion>
     <ExtensionsVersion>8.0.0</ExtensionsVersion>
+    <ExtensionsCachingMemoryVersion>8.0.1</ExtensionsCachingMemoryVersion>
     <HealthChecksVersion>3.1.0</HealthChecksVersion>
     <LoggingVersion>3.1.0</LoggingVersion>
     <LightweightEmitVersion>4.7.0</LightweightEmitVersion>
