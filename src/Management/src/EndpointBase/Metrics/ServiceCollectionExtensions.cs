@@ -4,20 +4,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using OpenTelemetry;
 using OpenTelemetry.Metrics;
-using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management;
-using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
 using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -118,41 +111,41 @@ public static partial class ServiceCollectionExtensions
         }
 
         services.AddSingleton(new { ConfiguredSteeltoeMetrics = true });
-        return services.AddOpenTelemetryMetrics(builder => builder.ConfigureSteeltoeMetrics());
+        services.AddOpenTelemetry().WithMetrics();
+        services.ConfigureOpenTelemetryMeterProvider((serviceProvider, meterProviderBuilder) =>
+            ConfigureSteeltoeMetrics(meterProviderBuilder, serviceProvider, configure, name, version));
+
+        return services;
     }
 
     /// <summary>
     /// Configures the <see cref="MeterProviderBuilder"></see> as an underlying Metrics processor and exporter for Steeltoe in actuators and exporters. />
     /// </summary>
-    /// <param name="builder">MeterProviderBuilder </param>
+    /// <param name="builder">MeterProviderBuilder</param>
+    /// <param name="serviceProvider">Service provider</param>
     /// <param name="configure"> Configuration callback</param>
     /// <param name="name">Instrumentation Name</param>
     /// <param name="version">Instrumentation Version</param>
     /// <returns>Configured MeterProviderBuilder</returns>
-    public static MeterProviderBuilder ConfigureSteeltoeMetrics(this MeterProviderBuilder builder, Action<IServiceProvider, MeterProviderBuilder> configure = null, string name = null, string version = null)
+    public static MeterProviderBuilder ConfigureSteeltoeMetrics(this MeterProviderBuilder builder, IServiceProvider serviceProvider, Action<IServiceProvider, MeterProviderBuilder> configure = null, string name = null, string version = null)
     {
-        if (configure != null)
+        configure?.Invoke(serviceProvider, builder);
+
+        var views = serviceProvider.GetService<IViewRegistry>();
+        var exporters = serviceProvider.GetServices(typeof(IMetricsExporter)) as System.Collections.Generic.IEnumerable<IMetricsExporter>;
+
+        builder
+            .AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)
+            .AddRegisteredViews(views)
+            .AddExporters(exporters);
+
+        var wavefrontExporter = serviceProvider.GetService<WavefrontMetricsExporter>(); // Not an IMetricsExporter
+
+        if (wavefrontExporter != null)
         {
-            builder.Configure(configure);
+            builder.AddWavefrontExporter(wavefrontExporter);
         }
 
-        builder.Configure((provider, deferredBuilder) =>
-        {
-            var views = provider.GetService<IViewRegistry>();
-            var exporters = provider.GetServices(typeof(IMetricsExporter)) as System.Collections.Generic.IEnumerable<IMetricsExporter>;
-
-            deferredBuilder
-                .AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)
-                .AddRegisteredViews(views)
-                .AddExporters(exporters);
-
-            var wavefrontExporter = provider.GetService<WavefrontMetricsExporter>(); // Not an IMetricsExporter
-
-            if (wavefrontExporter != null)
-            {
-                deferredBuilder.AddWavefrontExporter(wavefrontExporter);
-            }
-        });
         return builder;
     }
 }

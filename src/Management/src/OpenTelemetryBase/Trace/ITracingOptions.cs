@@ -59,11 +59,6 @@ public interface ITracingOptions
     bool SingleB3Header { get; }
 
     /// <summary>
-    /// Gets a value indicating whether GRPC requests should participate in tracing
-    /// </summary>
-    bool EnableGrpcAspNetCoreSupport { get; }
-
-    /// <summary>
     /// Gets a value representing the endpoint used for exporting traces
     /// </summary>
     Uri ExporterEndpoint { get; }

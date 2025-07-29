@@ -12,6 +12,7 @@ using Steeltoe.Management.OpenTelemetry.Trace;
 using System.Collections.Generic;
 using System.Reflection;
 using Xunit;
+using B3Propagator = OpenTelemetry.Extensions.Propagators.B3Propagator;
 
 namespace Steeltoe.Management.Tracing.Test;
 

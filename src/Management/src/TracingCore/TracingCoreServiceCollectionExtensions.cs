@@ -7,7 +7,6 @@ using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Trace;
 using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
-using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Tracing;
@@ -36,10 +35,9 @@ public static class TracingCoreServiceCollectionExtensions
 
         action += builder => builder.AddAspNetCoreInstrumentation();
 
-        services.AddOptions<AspNetCoreInstrumentationOptions>().PostConfigure<ITracingOptions>((options, traceOpts) =>
+        services.AddOptions<AspNetCoreTraceInstrumentationOptions>().PostConfigure<ITracingOptions>((options, traceOpts) =>
         {
             var pathMatcher = new Regex(traceOpts.IngressIgnorePattern);
-            options.EnableGrpcAspNetCoreSupport = traceOpts.EnableGrpcAspNetCoreSupport;
             options.Filter += context => !pathMatcher.IsMatch(context.Request.Path);
         });
 

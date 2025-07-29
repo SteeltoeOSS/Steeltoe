@@ -614,10 +614,13 @@ public class ManagementWebHostBuilderExtensionsTest
         using (var unConsole = new ConsoleOutputBorrower())
         {
             var host = hostBuilder
-                .ConfigureServices(services => services.AddOpenTelemetryMetrics(
-                    builder => builder
+                .ConfigureServices(services =>
+                {
+                    services.AddOpenTelemetry().WithMetrics();
+                    services.ConfigureOpenTelemetryMeterProvider(builder => builder
                         .AddMeter("TestMeter")
-                        .AddConsoleExporter((opts, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
+                        .AddConsoleExporter((opts, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000));
+                })
                 .AddAllActuators()
                 .Start();
             var client = host.GetTestServer().CreateClient();
@@ -636,7 +639,7 @@ public class ManagementWebHostBuilderExtensionsTest
             Assert.Contains("OpenTelemetry for Steeltoe", output);
 
             // Assert Otel configuration is respected
-            Assert.Contains("Export TestCounter, Meter: TestMeter", output);
+            Assert.Contains("Metric Name: TestCounter, Meter: TestMeter", output);
         }
     }
 
@@ -650,11 +653,14 @@ public class ManagementWebHostBuilderExtensionsTest
         using (var unConsole = new ConsoleOutputBorrower())
         {
             var host = hostBuilder
-                .ConfigureServices(services => services.AddOpenTelemetryMetrics(
-                    builder => builder
-                        .ConfigureSteeltoeMetrics()
+                .ConfigureServices(services =>
+                {
+                    services.AddOpenTelemetry().WithMetrics();
+                    services.ConfigureOpenTelemetryMeterProvider((serviceProvider, builder) => builder
+                        .ConfigureSteeltoeMetrics(serviceProvider)
                         .AddMeter("TestMeter")
-                        .AddConsoleExporter((opts, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
+                        .AddConsoleExporter((opts, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000));
+                })
                 .AddAllActuators()
                 .Start();
             var client = host.GetTestServer().CreateClient();
@@ -673,11 +679,11 @@ public class ManagementWebHostBuilderExtensionsTest
             Assert.Contains("OpenTelemetry for Steeltoe", output);
 
             // Assert Otel configuration is respected
-            Assert.Contains("Export TestCounter, Meter: TestMeter", output);
+            Assert.Contains("Metric Name: TestCounter, Meter: TestMeter", output);
 
             // Assert Steeltoe configuration is respected
-            Assert.Contains("Export clr.process.uptime", output);
-            Assert.Contains("Export clr.cpu.count", output);
+            Assert.Contains("Metric Name: clr.process.uptime", output);
+            Assert.Contains("Metric Name: clr.cpu.count", output);
         }
     }
 
@@ -692,10 +698,13 @@ public class ManagementWebHostBuilderExtensionsTest
         {
             var host = hostBuilder
                 .AddAllActuators()
-                .ConfigureServices(services => services.AddOpenTelemetryMetrics(
-                    builder => builder
+                .ConfigureServices(services =>
+                {
+                    services.AddOpenTelemetry().WithMetrics();
+                    services.ConfigureOpenTelemetryMeterProvider(builder => builder
                         .AddMeter("TestMeter")
-                        .AddConsoleExporter((opts, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
+                        .AddConsoleExporter((opts, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000));
+                })
                 .Start();
             var client = host.GetTestServer().CreateClient();
 
@@ -713,7 +722,7 @@ public class ManagementWebHostBuilderExtensionsTest
             Assert.DoesNotContain("OpenTelemetry for Steeltoe", output);
 
             // Assert Otel configuration is respected
-            Assert.Contains("Export TestCounter, Meter: TestMeter", output);
+            Assert.Contains("Metric Name: TestCounter, Meter: TestMeter", output);
         }
     }
 
