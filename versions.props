@@ -41,7 +41,7 @@
     <MySqlV8>8.0.23</MySqlV8>
     <NpgsqlVersion>4.0.0</NpgsqlVersion>
     <SqlClientVersion>4.8.6</SqlClientVersion>
-    <MicrosoftSqlClientVersion>5.0.1</MicrosoftSqlClientVersion>
+    <MicrosoftSqlClientVersion>5.1.3</MicrosoftSqlClientVersion>
     <StackExchangeVersion>2.0.593</StackExchangeVersion>
     <CoverletVersion>3.1.0</CoverletVersion>
     <FluentAssertionsVersion>5.10.*</FluentAssertionsVersion>
