@@ -11,7 +11,7 @@
     <SymReaderVersion>1.2.0</SymReaderVersion>
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
     <SystemDiagnosticsVersion>8.0.0</SystemDiagnosticsVersion>
-    <SystemJsonVersion>8.0.0</SystemJsonVersion>
+    <SystemJsonVersion>8.0.5</SystemJsonVersion>
     <SystemNetHttpJsonVersion>3.2.1</SystemNetHttpJsonVersion>
     <SystemReflectionVersion>4.6.0</SystemReflectionVersion>
     <KubernetesClientVersion>5.0.13</KubernetesClientVersion>
