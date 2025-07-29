@@ -78,7 +78,11 @@ namespace Steeltoe.Management.Endpoint.Test
 
             var host = hostBuilder.AddHealthActuator().Build();
 
-            Assert.Single(host.Services.GetServices<HealthEndpointCore>());
+            using (var scope = host.Services.CreateScope())
+            {
+                Assert.Single(scope.ServiceProvider.GetServices<HealthEndpointCore>());
+            }
+
             Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         }
 
@@ -89,7 +93,11 @@ namespace Steeltoe.Management.Endpoint.Test
 
             var host = hostBuilder.AddHealthActuator(new Type[] { typeof(DownContributor) }).Build();
 
-            Assert.Single(host.Services.GetServices<HealthEndpointCore>());
+            using (var scope = host.Services.CreateScope())
+            {
+                Assert.Single(scope.ServiceProvider.GetServices<HealthEndpointCore>());
+            }
+
             Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         }
 
@@ -100,7 +108,11 @@ namespace Steeltoe.Management.Endpoint.Test
 
             var host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), new Type[] { typeof(DownContributor) }).Build();
 
-            Assert.Single(host.Services.GetServices<HealthEndpointCore>());
+            using (var scope = host.Services.CreateScope())
+            {
+                Assert.Single(scope.ServiceProvider.GetServices<HealthEndpointCore>());
+            }
+
             Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         }
 

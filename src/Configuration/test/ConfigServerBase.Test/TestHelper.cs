@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using System.Reflection;
 using Xunit;
 
@@ -32,15 +33,7 @@ public class TestHelper
         Assert.Equal(ConfigServerClientSettings.DEFAULT_HEALTH_ENABLED, settings.HealthEnabled);
         Assert.Equal(ConfigServerClientSettings.DEFAULT_HEALTH_TIMETOLIVE, settings.HealthTimeToLive);
 
-        try
-        {
-            Assert.Null(settings.Name);
-        }
-        catch
-        {
-            Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, settings.Name);
-        }
-
+        settings.Name.Should().BeNullOrEmpty();
         Assert.Null(settings.Label);
         Assert.Null(settings.Username);
         Assert.Null(settings.Password);
