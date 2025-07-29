@@ -20,7 +20,7 @@
     <HdrHistogramVersion>2.0.0</HdrHistogramVersion>
     <HttpExtensionsVersion>3.1.0</HttpExtensionsVersion>
     <DiagnosticsExtensionsVersion>2.2.5</DiagnosticsExtensionsVersion>
-    <JsonNetVersion>11.0.2</JsonNetVersion>
+    <JsonNetVersion>13.0.1</JsonNetVersion>
     <OpenTelemetryVersion>[1.2.0,1.3.2]</OpenTelemetryVersion>
     <OpenTelemetryInstrumentationVersion>[1.0.0-rc9.2,1.0.0-rc9.9]</OpenTelemetryInstrumentationVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
