@@ -32,15 +32,12 @@ public class CommandExecutorTest
         var result = await executor.ExecuteAsync("dotnet --no-such-option");
 
         result.ExitCode.Should().NotBe(0);
-        try
-        {
-            result.Error.Should().Contain("Unknown option: --no-such-option");
-        }
-        catch (XunitException)
-        {
-            // message changes if .NET 6 sdk is installed
-            result.Error.Should().Contain("--no-such-option does not exist");
-        }
+
+        // The message depends on the version of the .NET SDK installed.
+        result.Error.Should().ContainAny(
+            "Unknown option: --no-such-option",
+            "--no-such-option does not exist",
+            "Could not execute because the specified command or file was not found.");
     }
 
     [Fact]
