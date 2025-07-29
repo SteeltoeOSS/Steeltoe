@@ -49,7 +49,6 @@ public class TracingBaseServiceCollectionExtensionsTest : TestBase
         Assert.NotNull(tracerProvider);
 
         Assert.NotNull(serviceProvider.GetService<IOptions<ZipkinExporterOptions>>());
-        Assert.NotNull(serviceProvider.GetService<IOptions<JaegerExporterOptions>>());
     }
 
     [Fact]
