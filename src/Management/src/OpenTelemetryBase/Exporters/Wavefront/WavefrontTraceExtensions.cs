@@ -11,6 +11,7 @@ using System.Text;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 
+[Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public static class WavefrontTraceExtensions
 {
     public static TracerProviderBuilder AddWavefrontExporter(this TracerProviderBuilder builder, IWavefrontExporterOptions exporterOptions, ILogger<WavefrontTraceExporter> logger = null)

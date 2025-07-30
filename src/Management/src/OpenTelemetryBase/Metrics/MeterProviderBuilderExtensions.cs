@@ -4,6 +4,7 @@
 
 using OpenTelemetry.Metrics;
 using Steeltoe.Management.OpenTelemetry.Exporters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -41,6 +42,7 @@ public static class MeterProviderBuilderExtensions
         return builder;
     }
 
+    [Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public static MeterProviderBuilder AddWavefrontExporter(this MeterProviderBuilder builder, WavefrontMetricsExporter wavefrontExporter)
     {
         var metricReader = new PeriodicExportingMetricReader(wavefrontExporter, wavefrontExporter.Options.Step);
