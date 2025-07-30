@@ -1,6 +1,7 @@
 <Project>
   <PropertyGroup Condition="'$(TF_BUILD)' != 'true'">
     <VersionPrefix>3.3.0</VersionPrefix>
+    <NoWarn>$(NoWarn);CS0618</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
