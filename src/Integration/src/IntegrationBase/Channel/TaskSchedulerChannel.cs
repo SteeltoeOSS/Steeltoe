@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Integration.Channel;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class TaskSchedulerChannel : AbstractTaskSchedulerChannel
 {
     public TaskSchedulerChannel(IApplicationContext context, TaskScheduler executor, ILogger logger = null)

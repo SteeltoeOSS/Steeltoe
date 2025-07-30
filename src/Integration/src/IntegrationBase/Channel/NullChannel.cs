@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Integration.Channel;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class NullChannel : Channel<IMessage>, IPollableChannel
 {
     private readonly ILogger _logger;

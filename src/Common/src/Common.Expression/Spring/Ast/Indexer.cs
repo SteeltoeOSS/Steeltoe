@@ -12,6 +12,7 @@ using System.Reflection.Emit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class Indexer : SpelNode
 {
     private static readonly MethodInfo _listGetItemMethod = typeof(IList).GetMethods().Single(m => m.Name == "get_Item");

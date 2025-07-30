@@ -9,6 +9,7 @@ using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class InlineMap : SpelNode
 {
     // If the map is purely literals, it is a constant value and can be computed and cached

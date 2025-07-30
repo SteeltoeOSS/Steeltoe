@@ -9,6 +9,7 @@ namespace Steeltoe.Common.Utils.Diagnostics;
 /// <summary>
 /// A utility abstraction to simplify the running of commands.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface ICommandExecutor
 {
     /// <summary>

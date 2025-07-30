@@ -14,6 +14,7 @@ using System.Reactive.Observable.Aliases;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixMetricsStreamPublisher : IDisposable
 {
     protected const string SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE = "spring.cloud.hystrix.stream";

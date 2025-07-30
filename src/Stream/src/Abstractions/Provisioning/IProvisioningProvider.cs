@@ -11,6 +11,7 @@ namespace Steeltoe.Stream.Provisioning;
 /// topics. This SPI will allow the binders to be separated from any provisioning concerns
 /// and only focus on setting up endpoints for sending/receiving messages.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IProvisioningProvider
 {
     /// <summary>

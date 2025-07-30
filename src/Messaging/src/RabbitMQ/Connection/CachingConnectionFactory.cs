@@ -21,16 +21,19 @@ using RC=RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownListener
 {
     public const string DEFAULT_SERVICE_NAME = "ccFactory";
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public enum CachingMode
     {
         CHANNEL,
         CONNECTION
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public enum ConfirmType
     {
         SIMPLE,

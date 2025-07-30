@@ -67,6 +67,7 @@ public static class RabbitMessageBuilder
     }
 }
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RabbitMessageBuilder<P> : MessageBuilder<P>
 {
     protected internal RabbitMessageBuilder()

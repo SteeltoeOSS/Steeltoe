@@ -9,6 +9,7 @@ namespace Steeltoe.Messaging.Support;
 /// <summary>
 ///  A MessageChannel that maintains a list of ChannelInterceptors and allows interception of message sending.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IInterceptableChannel
 {
     /// <summary>

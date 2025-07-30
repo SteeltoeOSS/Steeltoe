@@ -6,6 +6,7 @@ using System;
 
 namespace Steeltoe.CircuitBreaker;
 #pragma warning disable S3246 // Generic type parameters should be co/contravariant when possible
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface ICollapsedRequest<RequestResponseType, RequestArgumentType>
 #pragma warning restore S3246 // Generic type parameters should be co/contravariant when possible
 {

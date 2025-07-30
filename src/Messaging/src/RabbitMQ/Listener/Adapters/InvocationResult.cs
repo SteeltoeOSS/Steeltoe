@@ -8,6 +8,7 @@ using System.Reflection;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class InvocationResult
 {
     public InvocationResult(object result, IExpression sendTo, Type returnType, object instance, MethodInfo method)

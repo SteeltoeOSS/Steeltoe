@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.Support;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class NotSupportedChannelWriter : ChannelWriter<IMessage>
 {
     public override bool TryComplete(Exception error = null)

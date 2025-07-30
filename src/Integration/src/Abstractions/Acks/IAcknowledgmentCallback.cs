@@ -7,6 +7,7 @@ namespace Steeltoe.Integration.Acks;
 /// <summary>
 /// AcknowledgmentCallback status values
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public enum Status
 {
     /// <summary>
@@ -28,6 +29,7 @@ public enum Status
 /// <summary>
 /// General abstraction over acknowlegements
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IAcknowledgmentCallback
 {
     /// <summary>

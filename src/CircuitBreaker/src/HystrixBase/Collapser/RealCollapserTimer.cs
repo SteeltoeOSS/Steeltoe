@@ -7,6 +7,7 @@ using Steeltoe.Common.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Collapser;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RealCollapserTimer : ICollapserTimer
 {
     private static readonly HystrixTimer Timer = HystrixTimer.GetInstance();

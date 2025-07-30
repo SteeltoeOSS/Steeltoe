@@ -10,6 +10,7 @@ namespace Steeltoe.Stream.Attributes;
 /// Indicates that an input binding target will be created by the framework.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false)]
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class InputAttribute : Attribute
 {
     /// <summary>

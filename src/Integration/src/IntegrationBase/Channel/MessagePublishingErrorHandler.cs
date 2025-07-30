@@ -13,6 +13,7 @@ using System;
 
 namespace Steeltoe.Integration.Channel;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandler
 {
     public const string DEFAULT_SERVICE_NAME = nameof(MessagePublishingErrorHandler);

@@ -7,6 +7,7 @@ namespace Steeltoe.Stream.Config;
 /// <summary>
 /// TODO: Look at making internal
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IListenerContainerCustomizer
 {
     void Configure(object container, string destinationName, string group);

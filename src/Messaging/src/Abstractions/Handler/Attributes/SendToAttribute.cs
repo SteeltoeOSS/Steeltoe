@@ -11,6 +11,7 @@ namespace Steeltoe.Messaging.Handler.Attributes;
 ///  message if necessary and sent to the specified destination.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class SendToAttribute : Attribute
 {
     private readonly string[] _destinations;

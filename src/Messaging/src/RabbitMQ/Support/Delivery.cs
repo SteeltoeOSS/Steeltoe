@@ -7,6 +7,7 @@ using RC=RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class Delivery
 {
     public Delivery(string consumerTag, Envelope envelope, RC.IBasicProperties properties, byte[] body, string queue)

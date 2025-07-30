@@ -11,6 +11,7 @@ using System.Reflection.Emit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class ReflectivePropertyAccessor : IPropertyAccessor
 {
     private readonly bool _allowWrite;
@@ -510,6 +511,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
         return method;
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class InvokerPair
     {
         private readonly MemberInfo _member;
@@ -528,6 +530,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
     }
 
 #pragma warning disable S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class PropertyCacheKey : IComparable<PropertyCacheKey>
 #pragma warning restore S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
     {
@@ -582,6 +585,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
         }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class OptimalPropertyAccessor : ICompilablePropertyAccessor
     {
         private readonly MemberInfo _member;

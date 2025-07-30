@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 
 [Serializable]
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixTimeoutException : Exception
 {
     public HystrixTimeoutException(string message)

@@ -31,6 +31,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Core;
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRabbitTemplate, IMessageListener, IListenerContainerAware, IPublisherCallbackChannel.IListener, IDisposable
 {
     public const string DEFAULT_SERVICE_NAME = "rabbitTemplate";
@@ -2814,6 +2815,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public interface IConfirmCallback
     {
         void Confirm(CorrelationData correlationData, bool ack, string cause);
@@ -2834,6 +2836,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public interface IReturnCallback
     {
         void ReturnedMessage(IMessage<byte[]> message, int replyCode, string replyText, string exchange, string routingKey);

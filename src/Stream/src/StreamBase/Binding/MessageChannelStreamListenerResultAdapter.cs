@@ -9,6 +9,7 @@ using System;
 
 namespace Steeltoe.Stream.Binding;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class MessageChannelStreamListenerResultAdapter : IStreamListenerResultAdapter
 {
     private readonly IApplicationContext _context;
@@ -36,6 +37,7 @@ public class MessageChannelStreamListenerResultAdapter : IStreamListenerResultAd
             : throw new ArgumentException("Invalid arguments, IMessageChannel required");
 
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class NoOpDisposable : IDisposable
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {

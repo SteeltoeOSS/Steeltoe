@@ -13,6 +13,7 @@ namespace Steeltoe.Integration.Channel;
 ///  A channel that invokes a single subscriber for each sent Message.
 ///  The invocation will occur in the sender's thread.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class DirectChannel : AbstractSubscribableChannel
 {
     public DirectChannel(ILogger logger = null)

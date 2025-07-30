@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 namespace Steeltoe.Security.DataProtection.CredHub;
 
 [JsonConverter(typeof(StringCredentialJsonConverter<PasswordCredential>))]
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class PasswordCredential : StringCredential
 {
     public PasswordCredential(string value)

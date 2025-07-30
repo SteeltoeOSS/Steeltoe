@@ -8,6 +8,7 @@ using static Steeltoe.Messaging.RabbitMQ.Config.Binding;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class BindingBuilder
 {
     public static DestinationConfigurer Bind(IQueue queue)
@@ -31,6 +32,7 @@ public class BindingBuilder
         return map;
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class DestinationConfigurer
     {
         public string Name { get; }
@@ -70,6 +72,7 @@ public class BindingBuilder
         }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class HeadersExchangeMapConfigurer
     {
         public DestinationConfigurer Destination { get; }
@@ -107,6 +110,7 @@ public class BindingBuilder
             return new HeadersExchangeMapBindingCreator(this, headerValues, true);
         }
 
+        [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
         public class HeadersExchangeSingleValueBindingCreator
         {
             private readonly string _key;
@@ -150,6 +154,7 @@ public class BindingBuilder
             }
         }
 
+        [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
         public class HeadersExchangeKeysBindingCreator
         {
             private readonly Dictionary<string, object> _headerMap;
@@ -180,6 +185,7 @@ public class BindingBuilder
             }
         }
 
+        [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
         public class HeadersExchangeMapBindingCreator
         {
             private readonly Dictionary<string, object> _headerMap;
@@ -224,6 +230,7 @@ public class BindingBuilder
         }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class TopicExchangeRoutingKeyConfigurer : AbstractRoutingKeyConfigurer
     {
         public TopicExchangeRoutingKeyConfigurer(DestinationConfigurer destination, TopicExchange exchange)
@@ -244,6 +251,7 @@ public class BindingBuilder
         }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class GenericExchangeRoutingKeyConfigurer : AbstractRoutingKeyConfigurer
     {
         public GenericExchangeRoutingKeyConfigurer(DestinationConfigurer destination, IExchange exchange)
@@ -262,6 +270,7 @@ public class BindingBuilder
         }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class GenericArgumentsConfigurer
     {
         private readonly GenericExchangeRoutingKeyConfigurer _configurer;
@@ -287,6 +296,7 @@ public class BindingBuilder
         }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class DirectExchangeRoutingKeyConfigurer : AbstractRoutingKeyConfigurer
     {
         public DirectExchangeRoutingKeyConfigurer(DestinationConfigurer destination, DirectExchange exchange)

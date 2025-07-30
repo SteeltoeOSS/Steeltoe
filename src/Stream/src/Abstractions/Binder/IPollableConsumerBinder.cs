@@ -7,6 +7,7 @@ namespace Steeltoe.Stream.Binder;
 /// <summary>
 /// A binder that supports pollable message sources.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IPollableConsumerBinder
 {
 }
@@ -15,6 +16,7 @@ public interface IPollableConsumerBinder
 ///  A binder that supports pollable message sources.
 /// </summary>
 /// <typeparam name="H">the polled consumer handler type</typeparam>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IPollableConsumerBinder<H> : IBinder<IPollableSource<H>>, IPollableConsumerBinder
 {
 }

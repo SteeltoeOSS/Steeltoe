@@ -6,6 +6,7 @@ using Steeltoe.Common.Services;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IRabbitListenerContainerFactory : IServiceNameAware
 {
     IMessageListenerContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint);
@@ -16,6 +17,7 @@ public interface IRabbitListenerContainerFactory : IServiceNameAware
     }
 }
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IRabbitListenerContainerFactory<out C> : IRabbitListenerContainerFactory
     where C : IMessageListenerContainer
 {

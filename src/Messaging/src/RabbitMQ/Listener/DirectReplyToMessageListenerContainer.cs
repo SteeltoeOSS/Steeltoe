@@ -12,6 +12,7 @@ using RC=RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class DirectReplyToMessageListenerContainer : DirectMessageListenerContainer
 {
     internal readonly ConcurrentDictionary<RC.IModel, SimpleConsumer> _inUseConsumerChannels = new ();
@@ -206,6 +207,7 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
         _whenUsed.Remove(consumer, out _);
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class ChannelHolder
     {
         public ChannelHolder(RC.IModel channel, int consumerEpoch)

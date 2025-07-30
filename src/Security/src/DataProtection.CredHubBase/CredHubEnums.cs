@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Security.DataProtection.CredHub;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public enum CredentialType
 {
     Value,
@@ -19,6 +20,7 @@ public enum CredentialType
     SSH
 }
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public enum CertificateKeyLength
 {
     Length_2048 = 2048,
@@ -31,6 +33,7 @@ public enum CertificateKeyLength
 /// Overwrite mode for existing credentials (https://credhub-api.cfapps.io/#overwriting-credential-values)
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public enum OverwiteMode
 {
     [EnumMember(Value = "no-overwrite")]
@@ -43,6 +46,7 @@ public enum OverwiteMode
 /// Uses for certificates
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public enum KeyUsage
 {
     digital_signature,
@@ -60,6 +64,7 @@ public enum KeyUsage
 /// Extended key usage for certificates
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public enum ExtendedKeyUsage
 {
     [Description("Client Auth")]
@@ -74,6 +79,7 @@ public enum ExtendedKeyUsage
 /// Operations that can be allowed for an actor
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public enum OperationPermissions
 {
     read,

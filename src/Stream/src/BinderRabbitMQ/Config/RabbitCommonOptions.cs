@@ -9,6 +9,7 @@ using RabbitConfig = Steeltoe.Messaging.RabbitMQ.Config;
 
 namespace Steeltoe.Stream.Binder.Rabbit.Config;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RabbitCommonOptions
 {
     public const string DEAD_LETTER_EXCHANGE = "DLX";
@@ -282,6 +283,7 @@ public class RabbitCommonOptions
         }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class QuorumConfig
     {
         public bool? Enabled { get; set; }

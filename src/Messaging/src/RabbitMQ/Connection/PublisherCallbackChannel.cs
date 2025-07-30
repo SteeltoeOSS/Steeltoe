@@ -21,6 +21,7 @@ using RC=RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class PublisherCallbackChannel : IPublisherCallbackChannel
 {
     public const string RETURNED_MESSAGE_CORRELATION_KEY = "spring_returned_message_correlation";

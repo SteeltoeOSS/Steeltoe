@@ -4,6 +4,7 @@
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IDeclarableCustomizer
 {
     IDeclarable Apply(IDeclarable declarable);

@@ -6,6 +6,7 @@ using System;
 
 namespace Steeltoe.Messaging.RabbitMQ.Retry;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageRecoverer
 {
     void Recover(IMessage message, Exception exception);

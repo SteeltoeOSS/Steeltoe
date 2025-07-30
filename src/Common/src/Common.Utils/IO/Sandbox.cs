@@ -10,6 +10,7 @@ namespace Steeltoe.Common.Utils.IO;
 /// A temporary directory that can be used as a sandbox.
 /// Files and directories created in the sandbox are deleted when the sandbox is disposed.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class Sandbox : TempDirectory
 {
     /// <summary>

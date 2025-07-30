@@ -13,6 +13,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Host;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RabbitMQHostBuilder : IHostBuilder
 {
     public IDictionary<object, object> Properties => _hostbuilder.Properties;

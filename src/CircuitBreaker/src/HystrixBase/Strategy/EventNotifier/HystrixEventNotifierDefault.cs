@@ -4,6 +4,7 @@
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.EventNotifier;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixEventNotifierDefault : HystrixEventNotifier
 {
     private static readonly HystrixEventNotifierDefault Instance = new ();

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Integration.Support;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
 {
     protected MutableMessage _mutableMessage;
@@ -227,6 +228,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
     }
 }
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class MutableIntegrationMessageBuilder<T> : MutableIntegrationMessageBuilder, IMessageBuilder<T>
 {
     private MutableIntegrationMessageBuilder(IMessage<T> message)

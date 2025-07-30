@@ -4,6 +4,7 @@
 
 namespace Steeltoe.Messaging.RabbitMQ.Core;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class Envelope
 {
     public Envelope(ulong deliveryTag, bool redeliver, string exchange, string routingKey)

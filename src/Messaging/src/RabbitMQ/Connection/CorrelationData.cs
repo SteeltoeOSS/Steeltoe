@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class CorrelationData // : Correlation
 {
     public CorrelationData(string id)
@@ -33,6 +34,7 @@ public class CorrelationData // : Correlation
         return "CorrelationData [id=" + Id + "]";
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class Confirm
     {
         public Confirm(bool ack, string reason)

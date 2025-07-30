@@ -17,6 +17,7 @@ using static Steeltoe.Messaging.RabbitMQ.Core.RabbitTemplate;
 
 namespace Steeltoe.Integration.Rabbit.Outbound;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RabbitOutboundEndpoint : AbstractRabbitOutboundEndpoint, IConfirmCallback, IReturnCallback
 {
     public RabbitOutboundEndpoint(IApplicationContext context, RabbitTemplate rabbitTemplate, ILogger logger)

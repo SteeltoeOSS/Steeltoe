@@ -11,6 +11,7 @@ namespace Steeltoe.Integration.Support;
 /// <summary>
 /// A message builder that creates immutable GenericMessages.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageBuilder
 {
     /// <summary>
@@ -172,6 +173,7 @@ public interface IMessageBuilder
 /// A typed MessageBuilder.
 /// </summary>
 /// <typeparam name="T">the type of the payload</typeparam>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageBuilder<T> : IMessageBuilder
 {
     /// <summary>

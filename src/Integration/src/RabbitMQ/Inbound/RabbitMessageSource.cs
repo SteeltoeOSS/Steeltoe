@@ -20,6 +20,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Integration.Rabbit.Inbound;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RabbitMessageSource : AbstractMessageSource<object>
 {
     public RabbitMessageSource(IApplicationContext context, IConnectionFactory connectionFactory, string queueName)
@@ -121,6 +122,7 @@ public class RabbitMessageSource : AbstractMessageSource<object>
         }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class RabbitAckCallbackFactory : IAcknowledgmentCallbackFactory<RabbitAckInfo>
     {
         public IAcknowledgmentCallback CreateCallback(RabbitAckInfo info)
@@ -129,6 +131,7 @@ public class RabbitMessageSource : AbstractMessageSource<object>
         }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class RabbitAckInfo
     {
         public RabbitAckInfo(IConnection connection, RC.IModel channel, bool transacted, RC.BasicGetResult getResponse)
@@ -153,6 +156,7 @@ public class RabbitMessageSource : AbstractMessageSource<object>
         }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class RabbitAckCallback : IAcknowledgmentCallback
     {
         public RabbitAckCallback(RabbitAckInfo ackInfo)

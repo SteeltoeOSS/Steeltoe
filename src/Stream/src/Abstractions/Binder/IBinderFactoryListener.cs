@@ -10,6 +10,7 @@ namespace Steeltoe.Stream.Binder;
 /// <summary>
 /// A listener that can be registered with the BinderFactory that allows the registration of additional configuration.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IBinderFactoryListener
 {
     /// <summary>

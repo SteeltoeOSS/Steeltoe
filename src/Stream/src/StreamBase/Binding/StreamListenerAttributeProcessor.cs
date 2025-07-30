@@ -18,6 +18,7 @@ using System.Linq;
 
 namespace Steeltoe.Stream.Binding
 {
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class StreamListenerAttributeProcessor
     {
         internal readonly Dictionary<string, List<StreamListenerHandlerMethodMapping>> _mappedListenerMethods = new ();

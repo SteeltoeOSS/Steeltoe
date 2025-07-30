@@ -11,6 +11,7 @@ namespace Steeltoe.Stream.Binding;
 /// Handles binding of input/output targets by delegating to an underlying Binder.
 /// TODO: Try to make this internal interface
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IBindingService
 {
     ICollection<IBinding> BindConsumer<T>(T inputChannel, string name);

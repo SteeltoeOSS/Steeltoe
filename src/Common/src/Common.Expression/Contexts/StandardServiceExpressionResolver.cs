@@ -10,6 +10,7 @@ using System.Collections.Concurrent;
 
 namespace Steeltoe.Common.Expression.Internal.Contexts;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class StandardServiceExpressionResolver : IServiceExpressionResolver
 {
     public static readonly string DEFAULT_EXPRESSION_PREFIX = "#{";
