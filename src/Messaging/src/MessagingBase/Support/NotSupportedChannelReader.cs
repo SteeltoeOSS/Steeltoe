@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.Support;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class NotSupportedChannelReader : ChannelReader<IMessage>
 {
     public override Task Completion => throw new NotSupportedException("This channel does not implement ChannelReaders");

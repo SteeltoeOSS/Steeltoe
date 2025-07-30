@@ -9,6 +9,7 @@ using System.Reflection.Emit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class OpGE : Operator
 {
     public OpGE(int startPos, int endPos, params SpelNode[] operands)

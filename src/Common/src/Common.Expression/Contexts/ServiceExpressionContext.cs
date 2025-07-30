@@ -8,6 +8,7 @@ using System;
 namespace Steeltoe.Common.Expression.Internal.Contexts;
 
 // Used as root context with StandardServiceExpressionResolver
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class ServiceExpressionContext : IServiceExpressionContext
 {
     private const string _environmentName = "configuration";

@@ -9,6 +9,7 @@ namespace Steeltoe.Messaging.Handler.Invocation;
 /// <summary>
 /// Async return value handler
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IAsyncHandlerMethodReturnValueHandler : IHandlerMethodReturnValueHandler
 {
     /// <summary>

@@ -4,6 +4,7 @@
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public enum HystrixEventType
 {
     EMIT,
@@ -25,6 +26,7 @@ public enum HystrixEventType
     COLLAPSED
 }
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public enum ThreadPoolEventType
 {
     EXECUTED,
@@ -32,6 +34,7 @@ public enum ThreadPoolEventType
     UNKNOWN
 }
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public enum CollapserEventType
 {
     BATCH_EXECUTED,

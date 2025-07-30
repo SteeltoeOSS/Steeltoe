@@ -10,6 +10,7 @@ using System.Reflection;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RabbitHeaderAccessor : MessageHeaderAccessor
 {
     public const int INT_MASK = 32;

@@ -11,6 +11,7 @@ using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HeaderMethodArgumentResolver : AbstractNamedValueMethodArgumentResolver
 {
     public HeaderMethodArgumentResolver(IConversionService conversionService, IApplicationContext context = null)

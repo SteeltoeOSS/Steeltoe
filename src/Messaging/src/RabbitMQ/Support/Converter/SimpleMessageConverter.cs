@@ -12,6 +12,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support.Converter;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class SimpleMessageConverter : AbstractMessageConverter
 {
     public const string DEFAULT_SERVICE_NAME = nameof(SimpleMessageConverter);

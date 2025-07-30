@@ -13,6 +13,7 @@ using System.Reflection;
 
 namespace Steeltoe.Integration.Handler.Support;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class CollectionArgumentResolver : AbstractExpressionEvaluator, IHandlerMethodArgumentResolver
 {
     private readonly bool _canProcessMessageList;

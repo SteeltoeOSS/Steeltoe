@@ -4,6 +4,7 @@
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixCommandExecutionHookDefault : HystrixCommandExecutionHook
 {
     private static readonly HystrixCommandExecutionHookDefault Instance = new ();

@@ -10,6 +10,7 @@ using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RabbitOptions
 {
     public const string PREFIX = "spring:rabbitmq";
@@ -166,6 +167,7 @@ public class RabbitOptions
 
     public TemplateOptions Template { get; set; }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class SslOptions
     {
         public bool Enabled { get; set; } = false;
@@ -183,6 +185,7 @@ public class RabbitOptions
         public SslProtocols Algorithm { get; set; } = SslProtocols.Tls13 | SslProtocols.Tls12;
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class CacheOptions
     {
         public ChannelOptions Channel { get; set; } = new ChannelOptions();
@@ -190,6 +193,7 @@ public class RabbitOptions
         public ConnectionOptions Connection { get; set; } = new ConnectionOptions();
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class ListenerOptions
     {
         public ContainerType Type { get; } = ContainerType.DIRECT;
@@ -197,6 +201,7 @@ public class RabbitOptions
         public DirectContainerOptions Direct { get; set; } = new DirectContainerOptions();
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class TemplateOptions
     {
         public RetryOptions Retry { get; set; } = new RetryOptions();
@@ -214,6 +219,7 @@ public class RabbitOptions
         public string DefaultReceiveQueue { get; set; }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class ChannelOptions
     {
         public int? Size { get; set; }
@@ -221,6 +227,7 @@ public class RabbitOptions
         public TimeSpan? CheckoutTimeout { get; set; }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class ConnectionOptions
     {
         public CachingMode Mode { get; set; } = CachingMode.CHANNEL;
@@ -228,6 +235,7 @@ public class RabbitOptions
         public int? Size { get; set; }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class DirectContainerOptions
     {
         public bool AutoStartup { get; set; } = true;
@@ -249,6 +257,7 @@ public class RabbitOptions
         public bool PossibleAuthenticationFailureFatal { get; set; } = true;
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class RetryOptions
     {
         public bool Enabled { get; set; } = false;
@@ -262,6 +271,7 @@ public class RabbitOptions
         public TimeSpan MaxInterval { get; set; } = TimeSpan.FromMilliseconds(10000);
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class ListenerRetryOptions : RetryOptions
     {
         public bool Stateless { get; set; } = true;
@@ -361,6 +371,7 @@ public class RabbitOptions
     }
 }
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public enum ContainerType
 {
     DIRECT

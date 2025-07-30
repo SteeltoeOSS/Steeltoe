@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Steeltoe.Integration.Expression;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class ExpressionEvalDictionary : IDictionary<string, object>
 {
     private readonly IDictionary<string, IExpression> _original;
@@ -136,6 +137,7 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
         return null;
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class ComponentsEvaluationCallback : IEvaluationCallback
     {
         private readonly IEvaluationContext _context;
@@ -172,6 +174,7 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
         }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class SimpleCallback : IEvaluationCallback
     {
         public object Evaluate(IExpression expression)
@@ -180,6 +183,7 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
         }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class ExpressionEvalDictionaryBuilder
     {
         private static readonly IEvaluationCallback _simpleCallback = new SimpleCallback();

@@ -14,6 +14,7 @@ using static Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.HystrixDashboardStr
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixEventSourceService : IHostedService
 {
     public HystrixDashboardStream Stream { get; }

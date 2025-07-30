@@ -10,6 +10,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 /// <summary>
 /// A key to represent a <seealso cref="IHystrixThreadPool"/> for monitoring, metrics publishing, caching and other such uses.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IHystrixThreadPoolKey : IHystrixKey
 {
 }
@@ -17,6 +18,7 @@ public interface IHystrixThreadPoolKey : IHystrixKey
 /// <summary>
 /// Default implementation of the interface
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixThreadPoolKeyDefault : HystrixKeyDefault, IHystrixThreadPoolKey
 {
     private static readonly ConcurrentDictionary<string, HystrixThreadPoolKeyDefault> Intern = new ();

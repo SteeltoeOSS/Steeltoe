@@ -45,6 +45,7 @@ using SteeltoeConnectionFactory = Steeltoe.Messaging.RabbitMQ.Connection.IConnec
 
 namespace Steeltoe.Stream.Binder.Rabbit;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 {
     private static readonly SimplePassthroughMessageConverter _passThoughConverter = new ();

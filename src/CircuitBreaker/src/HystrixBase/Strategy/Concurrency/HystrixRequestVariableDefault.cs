@@ -7,6 +7,7 @@ using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixRequestVariableDefault<T> : IHystrixRequestVariable<T>
 {
     private readonly Action<T> _disposeAction;

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class Binding : AbstractDeclarable, IBinding
 {
     internal static IBinding Create(string bindingName, string destination, DestinationType destinationType, string exchange, string routingKey, Dictionary<string, object> arguments)
@@ -18,6 +19,7 @@ public class Binding : AbstractDeclarable, IBinding
         return new QueueBinding(bindingName, destination, exchange, routingKey, arguments);
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public enum DestinationType
     {
         QUEUE,

@@ -10,6 +10,7 @@ using System;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class SpelExpression : IExpression
 {
     // Number of times to interpret an expression before compiling it

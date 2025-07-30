@@ -9,6 +9,7 @@ namespace Steeltoe.Integration.Support.Channel;
 /// <summary>
 /// Implementations convert a channel to a name, retaining a reference to the channel keyed by the name.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IHeaderChannelRegistry
 {
     /// <summary>

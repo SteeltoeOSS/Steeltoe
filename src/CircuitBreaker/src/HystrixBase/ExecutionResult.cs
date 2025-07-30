@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class ExecutionResult
 {
     private static readonly IList<HystrixEventType> ALL_EVENT_TYPES = HystrixEventTypeHelper.Values;

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Support;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageHeaderAccessor
 {
     string Id { get; }

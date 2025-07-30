@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Integration.Dispatcher;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class BroadcastingDispatcher : AbstractDispatcher
 {
     private readonly bool _requireSubscribers;

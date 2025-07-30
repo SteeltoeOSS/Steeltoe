@@ -11,6 +11,7 @@ namespace Steeltoe.Messaging.Support;
 /// Interface for interceptors that are able to view and/or modify the Messages
 /// being sent-to and/or received-from a MessageChannel
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IChannelInterceptor : IOrdered
 {
     /// <summary>

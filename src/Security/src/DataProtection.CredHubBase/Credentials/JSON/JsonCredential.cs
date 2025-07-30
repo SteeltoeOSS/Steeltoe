@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 namespace Steeltoe.Security.DataProtection.CredHub;
 
 [JsonConverter(typeof(JsonCredentialJsonConverter))]
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class JsonCredential : ICredentialValue
 {
     public JsonCredential(JsonElement value)

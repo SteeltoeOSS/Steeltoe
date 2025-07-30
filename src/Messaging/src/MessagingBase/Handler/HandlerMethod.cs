@@ -10,6 +10,7 @@ using System.Text;
 
 namespace Steeltoe.Messaging.Handler;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HandlerMethod
 {
     // Keep these readonly for perf reasons
@@ -17,6 +18,7 @@ public class HandlerMethod
     protected readonly int _argCount;
     protected readonly object _handler;
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public delegate object Invoker(object target, object[] args);
 
     public object Handler

@@ -7,6 +7,7 @@ namespace Steeltoe.Messaging.Core;
 /// <summary>
 /// Strategy for resolving a string name to a destination
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IDestinationResolver
 {
     /// <summary>
@@ -21,6 +22,7 @@ public interface IDestinationResolver
 /// A typed strategy for resolving a string name to a destination
 /// </summary>
 /// <typeparam name="T">the type of destinations this resolver returns</typeparam>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IDestinationResolver<out T> : IDestinationResolver
 {
     /// <summary>

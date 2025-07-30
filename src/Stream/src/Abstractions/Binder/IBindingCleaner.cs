@@ -9,6 +9,7 @@ namespace Steeltoe.Stream.Binder;
 /// <summary>
 /// TODO: See if this can be made internal
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IBindingCleaner
 {
     IDictionary<string, List<string>> Clean(string entity, bool isJob);

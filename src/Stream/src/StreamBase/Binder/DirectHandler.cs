@@ -6,6 +6,7 @@ using Steeltoe.Messaging;
 
 namespace Steeltoe.Stream.Binder;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class DirectHandler : IMessageHandler
 {
     private readonly IMessageChannel _outputChannel;

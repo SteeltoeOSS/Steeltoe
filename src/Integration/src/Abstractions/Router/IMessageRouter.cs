@@ -9,6 +9,7 @@ namespace Steeltoe.Integration;
 /// <summary>
 ///  Routers implementing this interface have a default output channel.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageRouter
 {
     /// <summary>

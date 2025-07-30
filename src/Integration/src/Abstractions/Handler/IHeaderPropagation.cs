@@ -10,6 +10,7 @@ namespace Steeltoe.Integration.Handler;
 /// MessageHandlers implementing this interface can propagate headers from
 /// an input message to an output message.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IHeaderPropagation
 {
     /// <summary>

@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Security.DataProtection.CredHub.Credentials.Utilities;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class SetRequestJsonConverter : JsonConverter<CredentialSetRequest>
 {
     public override CredentialSetRequest Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

@@ -17,6 +17,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes;
 /// <summary>
 /// Replace bootstrapped components used by KubernetesConfigurationProvider with objects provided by Dependency Injection
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class KubernetesHostedService : IHostedService
 {
     private readonly IEnumerable<KubernetesConfigMapProvider> _configMapProviders;

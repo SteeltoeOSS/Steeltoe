@@ -9,6 +9,7 @@ namespace Steeltoe.Integration.Support;
 /// <summary>
 /// A factory for creating message builders
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageBuilderFactory
 {
     /// <summary>

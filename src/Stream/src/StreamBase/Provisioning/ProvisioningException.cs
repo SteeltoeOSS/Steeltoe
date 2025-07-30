@@ -6,6 +6,7 @@ using System;
 
 namespace Steeltoe.Stream.Provisioning;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class ProvisioningException : Exception
 {
     public ProvisioningException(string msg)

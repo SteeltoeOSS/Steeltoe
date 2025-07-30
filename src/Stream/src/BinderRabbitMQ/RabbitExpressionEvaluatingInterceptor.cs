@@ -11,6 +11,7 @@ using System;
 
 namespace Steeltoe.Stream.Binder.Rabbit;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RabbitExpressionEvaluatingInterceptor : IChannelInterceptor
 {
     public const string ROUTING_KEY_HEADER = "scst_routingKey";

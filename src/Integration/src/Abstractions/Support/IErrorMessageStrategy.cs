@@ -11,6 +11,7 @@ namespace Steeltoe.Integration.Support;
 /// <summary>
 /// A strategy to build an ErrorMessage based on the provided Exception AttributeAccessor as a context.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IErrorMessageStrategy
 {
     /// <summary>

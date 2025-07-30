@@ -12,6 +12,7 @@ namespace Steeltoe.Messaging.Core;
 /// Provide operations for sending and receiving messages to and from a destination specified as a string
 /// </summary>
 /// <typeparam name="D">the type of the destination</typeparam>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IDestinationResolvingMessageRequestReplyOperations<D> : IMessageRequestReplyOperations<D>
 {
     /// <summary>

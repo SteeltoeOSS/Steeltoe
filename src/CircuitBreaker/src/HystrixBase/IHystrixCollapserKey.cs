@@ -7,10 +7,12 @@ using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IHystrixCollapserKey : IHystrixKey
 {
 }
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixCollapserKeyDefault : HystrixKeyDefault, IHystrixCollapserKey
 {
     private static readonly ConcurrentDictionary<string, HystrixCollapserKeyDefault> Intern = new ();

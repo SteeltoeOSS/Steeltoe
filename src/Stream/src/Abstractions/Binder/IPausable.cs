@@ -10,6 +10,7 @@ namespace Steeltoe.Stream.Binder;
 /// <summary>
 /// TODO: IPausable is a integration type.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IPausable : ILifecycle
 {
     Task Pause();

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.Core;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTemplate<IMessageChannel>
 {
     public const string DEFAULT_SEND_TIMEOUT_HEADER = "sendTimeout";

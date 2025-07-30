@@ -9,6 +9,7 @@ namespace Steeltoe.Integration;
 /// <summary>
 /// Base interface for any source of Messages that can be polled.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageSource
 {
     /// <summary>
@@ -22,6 +23,7 @@ public interface IMessageSource
 /// A typed interface for any source of Messages that can be polled.
 /// </summary>
 /// <typeparam name="T">the type of payload in the message</typeparam>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageSource<out T> : IMessageSource
 {
     /// <summary>

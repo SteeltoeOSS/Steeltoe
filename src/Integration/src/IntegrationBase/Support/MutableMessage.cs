@@ -10,6 +10,7 @@ using System.Text;
 
 namespace Steeltoe.Integration.Support;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class MutableMessage : IMessage
 {
     protected readonly object _payload;
@@ -86,6 +87,7 @@ public class MutableMessage : IMessage
     protected internal IDictionary<string, object> RawHeaders => _headers.RawHeaders;
 }
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class MutableMessage<T> : MutableMessage, IMessage<T>
 {
     public MutableMessage(T payload)

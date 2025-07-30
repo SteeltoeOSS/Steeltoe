@@ -10,6 +10,7 @@ namespace Steeltoe.Integration.Dispatcher;
 /// <summary>
 /// Strategy for determining the iteration order of a MessageHandler list.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface ILoadBalancingStrategy
 {
     /// <summary>

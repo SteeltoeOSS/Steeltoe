@@ -10,6 +10,7 @@ namespace Steeltoe.Stream.Attributes;
 /// Annotation that marks a method to be a listener to inputs declared via EnableBinding
 /// </summary>
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class StreamListenerAttribute : Attribute
 {
     /// <summary>

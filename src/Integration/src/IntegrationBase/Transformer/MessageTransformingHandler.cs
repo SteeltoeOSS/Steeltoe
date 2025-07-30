@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Integration.Transformer;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class MessageTransformingHandler : AbstractReplyProducingMessageHandler, ILifecycle
 {
     public MessageTransformingHandler(IApplicationContext context, ITransformer transformer)

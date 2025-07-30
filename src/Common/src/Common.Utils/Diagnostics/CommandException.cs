@@ -9,6 +9,7 @@ namespace Steeltoe.Common.Utils.Diagnostics;
 /// <summary>
 /// The exception that is thrown when a system error occurs running a command.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class CommandException : Exception
 {
     /// <inheritdoc cref="Exception"/>

@@ -4,6 +4,7 @@
 
 namespace Steeltoe.Common.Kubernetes;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class ReloadSettings
 {
     /// <summary>
@@ -27,6 +28,7 @@ public class ReloadSettings
     public bool Secrets { get; set; } = false;
 }
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public enum ReloadMethods
 {
     Event,

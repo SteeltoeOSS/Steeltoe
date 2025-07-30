@@ -10,6 +10,7 @@ using System.Reflection;
 
 namespace Steeltoe.Stream.Converter;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class ApplicationJsonMessageMarshallingConverter : NewtonJsonMessageConverter
 {
     internal ApplicationJsonMessageMarshallingConverter()

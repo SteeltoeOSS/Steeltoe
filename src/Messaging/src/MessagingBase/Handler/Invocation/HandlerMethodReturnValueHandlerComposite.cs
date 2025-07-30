@@ -8,6 +8,7 @@ using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Invocation;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HandlerMethodReturnValueHandlerComposite : IAsyncHandlerMethodReturnValueHandler
 {
     private readonly List<IHandlerMethodReturnValueHandler> _returnValueHandlers = new ();

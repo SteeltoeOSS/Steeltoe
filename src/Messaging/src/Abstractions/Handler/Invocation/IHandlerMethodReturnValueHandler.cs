@@ -9,6 +9,7 @@ namespace Steeltoe.Messaging.Handler.Invocation;
 /// <summary>
 /// Strategy interface to handle the value returned from the invocation of a method handling a Message.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IHandlerMethodReturnValueHandler
 {
     /// <summary>
