@@ -9,6 +9,9 @@ using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
+/// <summary>
+/// Example comment to trigger ci component build.
+/// </summary>
 public static class HystrixApplicationBuilderExtensions
 {
     [Obsolete("This functionality is now performed by an IHostedService, you may remove this method call")]
