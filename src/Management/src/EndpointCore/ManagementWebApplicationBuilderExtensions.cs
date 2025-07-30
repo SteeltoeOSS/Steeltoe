@@ -230,6 +230,7 @@ namespace Steeltoe.Management.Endpoint
         /// Add Wavefront Metrics Exporter
         /// </summary>
         /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+        [Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
         public static WebApplicationBuilder AddWavefrontMetrics(this WebApplicationBuilder applicationBuilder)
         {
             applicationBuilder.Services.AddWavefrontMetrics();

@@ -87,6 +87,7 @@ public static class EndpointServiceCollectionExtensions
     /// </summary>
     /// <param name="services">Reference to the service collection</param>
     /// <returns>A reference to the service collection</returns>
+    [Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public static IServiceCollection AddWavefrontMetrics(this IServiceCollection services)
     {
         if (services == null)

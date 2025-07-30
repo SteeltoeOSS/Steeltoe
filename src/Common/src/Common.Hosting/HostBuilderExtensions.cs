@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 
 namespace Steeltoe.Common.Hosting;
 
+[Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public static class HostBuilderExtensions
 {
     public const string DEFAULT_URL = "http://*:8080";
