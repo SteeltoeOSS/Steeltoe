@@ -15,7 +15,7 @@ public class ServiceBindingConfigurationProviderTest
     [Fact]
     public void EnvironmentVariableNotSet()
     {
-        // Optional defaults true, no throw
+        Environment.SetEnvironmentVariable(ServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, null);
         var source = new ServiceBindingConfigurationSource();
         var provider = new ServiceBindingConfigurationProvider(source);
 
