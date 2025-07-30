@@ -4,6 +4,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <NoWarn>$(NoWarn);CS0618</NoWarn>
+
     <!-- Exposed dependencies, observable by Steeltoe library consumers. Only update when vulnerable. -->
     <DriveInfoVersion>4.3.1</DriveInfoVersion>
     <WinHttpHandlerVersion>4.7.0</WinHttpHandlerVersion>
