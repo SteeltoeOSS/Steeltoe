@@ -16,14 +16,13 @@ jobs:
     vmImage: ${{parameters.OS}}-latest
   steps:
   - task: UseDotNet@2
-    displayName: Install .NET Core 3.1
-    inputs:
-      version: 3.1.x
-  - task: UseDotNet@2
     displayName: Install .NET 6
     inputs:
       version: 6.0.x
-      includePreviewVersions: true
+  - task: UseDotNet@2
+    displayName: Install .NET 8
+    inputs:
+      version: 8.0.x
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
@@ -45,6 +44,13 @@ jobs:
   - script: docker run -d --name configserver -p 8888:8888 steeltoeoss/config-server --spring.cloud.config.server.git.default-label=main; sleep 10s
     condition: eq(${{parameters.runConfigServer}}, 'true')
     displayName: Start Config Server
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test 8.0
+    inputs:
+      command: test
+      projects: $(SolutionFile)
+      arguments: -f net8.0 ${{parameters.skipFilter}} $(CommonTestArgs)
+      publishTestResults: false
   - task: DotNetCoreCLI@2
     displayName: dotnet test 6.0
     inputs:
