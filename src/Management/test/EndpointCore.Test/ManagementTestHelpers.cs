@@ -26,8 +26,10 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
 {
     public static string AuthenticationScheme = "TestScheme";
 
+#pragma warning disable CS0618 // Type or member is obsolete
     public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
         : base(options, logger, encoder, clock)
+#pragma warning restore CS0618 // Type or member is obsolete
     {
     }
 

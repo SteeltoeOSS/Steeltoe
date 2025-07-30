@@ -631,7 +631,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             {
                 stackTraceAsString = stackTraceAsString.Substring(0, _maxStackTraceLength);
 
-                _logger.LogWarning("Stack trace in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the stack trace depth", cause);
+                _logger.LogWarning(cause, "Stack trace in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the stack trace depth");
             }
 
             accessor.SetHeader(RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE, stackTraceAsString);

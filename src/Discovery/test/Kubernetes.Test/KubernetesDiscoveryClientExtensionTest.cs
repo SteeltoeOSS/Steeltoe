@@ -30,7 +30,7 @@ public class KubernetesDiscoveryClientExtensionTest
     public void ClientDisabledBySpringCloudDiscoveryEnabledFalse()
     {
         var services = new ServiceCollection();
-        var appSettings = new Dictionary<string, string> { { "spring:cloud:discovery:enabled", "false" } };
+        var appSettings = new Dictionary<string, string?> { { "spring:cloud:discovery:enabled", "false" } };
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
@@ -44,7 +44,7 @@ public class KubernetesDiscoveryClientExtensionTest
     public void ClientFavorsKubernetesDiscoveryEnabled()
     {
         var services = new ServiceCollection();
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:cloud:discovery:enabled", "false" },
             { "spring:cloud:kubernetes:discovery:enabled", "true" }

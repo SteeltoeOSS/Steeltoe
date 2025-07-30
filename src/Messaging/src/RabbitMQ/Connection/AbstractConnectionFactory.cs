@@ -319,7 +319,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
         }
         catch (Exception e)
         {
-            _logger?.LogWarning("Could not get host name, using 'localhost' as default value", e);
+            _logger?.LogWarning(e, "Could not get host name, using 'localhost' as default value");
             temp = "localhost";
         }
 

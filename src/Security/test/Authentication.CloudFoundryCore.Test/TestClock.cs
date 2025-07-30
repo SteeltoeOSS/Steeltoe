@@ -7,7 +7,9 @@ using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 public class TestClock : ISystemClock
+#pragma warning restore CS0618 // Type or member is obsolete
 {
     public TestClock()
     {
