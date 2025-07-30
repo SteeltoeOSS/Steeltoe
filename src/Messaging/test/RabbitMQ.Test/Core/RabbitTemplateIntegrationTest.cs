@@ -918,6 +918,7 @@ public class RabbitTemplateIntegrationTest : IDisposable
                 var request = random.NextDouble() * 100;
                 var messageHeaders = new RabbitHeaderAccessor(new MessageHeaders());
                 messageHeaders.ContentType = MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT;
+
                 // TODO: don't disable this warning! https://aka.ms/binaryformatter
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
                 var formatter = new BinaryFormatter();
