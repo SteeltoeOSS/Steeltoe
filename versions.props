@@ -36,7 +36,7 @@
     <LightweightEmitVersion>4.7.0</LightweightEmitVersion>
 
     <!-- Non-exposed dependencies, only referenced from test projects, build infrastructure and internal tools. -->
-    <MongoDbClientVersion>2.19.0</MongoDbClientVersion>
+    <MongoDbClientVersion>3.0.0</MongoDbClientVersion>
     <MySqlConnectorVersion>0.49.3</MySqlConnectorVersion>
     <MySqlV8>8.0.23</MySqlV8>
     <NpgsqlVersion>4.0.14</NpgsqlVersion>
@@ -52,7 +52,7 @@
     <XunitVersion>2.4.1</XunitVersion>
     <XunitStudioVersion>2.4.3</XunitStudioVersion>
     <HealthChecksMySqlVersion>2.2.0</HealthChecksMySqlVersion>
-    <HealthChecksMongoDbVersion>2.2.2</HealthChecksMongoDbVersion>
+    <HealthChecksMongoDbVersion>9.0.0</HealthChecksMongoDbVersion>
     <HealthChecksNpgSqlVersion>2.2.0</HealthChecksNpgSqlVersion>
     <HealthChecksRabbitmqVersion>2.2.1</HealthChecksRabbitmqVersion>
     <HealthChecksRedisVersion>2.2.3</HealthChecksRedisVersion>

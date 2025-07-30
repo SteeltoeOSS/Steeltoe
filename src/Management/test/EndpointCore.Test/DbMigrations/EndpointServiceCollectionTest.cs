@@ -17,16 +17,12 @@ public class EndpointServiceCollectionTest : BaseTest
     [Fact]
     public void AddEntityFrameworkActuator_ThrowsOnNulls()
     {
+        var action1 = () => EndpointServiceCollectionExtensions.AddDbMigrationsActuator(null, null);
+        action1.Should().ThrowExactly<ArgumentNullException>().Which.ParamName.Should().Be("services");
+
         var services = new ServiceCollection();
-        ServiceCollection nullServices = null;
-        nullServices.Invoking(s => s.AddDbMigrationsActuator(null))
-            .Should()
-            .Throw<ArgumentNullException>()
-            .Where(x => x.ParamName == "services");
-        services.Invoking(s => s.AddDbMigrationsActuator(null))
-            .Should()
-            .Throw<ArgumentNullException>()
-            .Where(x => x.ParamName == "config");
+        var action2 = () => services.AddDbMigrationsActuator(null);
+        action2.Should().ThrowExactly<ArgumentNullException>().Which.ParamName.Should().Be("config");
     }
 
     [Fact]

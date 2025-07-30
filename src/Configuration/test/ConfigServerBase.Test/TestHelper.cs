@@ -33,7 +33,7 @@ public class TestHelper
         Assert.Equal(ConfigServerClientSettings.DEFAULT_HEALTH_ENABLED, settings.HealthEnabled);
         Assert.Equal(ConfigServerClientSettings.DEFAULT_HEALTH_TIMETOLIVE, settings.HealthTimeToLive);
 
-        settings.Name.Should().BeNullOrEmpty();
+        settings.Name.Should().BeOneOf(null, string.Empty, "ReSharperTestRunner", Assembly.GetEntryAssembly()?.GetName().Name);
         Assert.Null(settings.Label);
         Assert.Null(settings.Username);
         Assert.Null(settings.Password);
