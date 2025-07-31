@@ -4,6 +4,7 @@
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixMetricsPublisherCommandDefault : IHystrixMetricsPublisherCommand
 {
     public HystrixMetricsPublisherCommandDefault(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandGroupKey, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)

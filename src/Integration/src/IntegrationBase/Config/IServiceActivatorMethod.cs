@@ -8,6 +8,7 @@ using System.Reflection;
 
 namespace Steeltoe.Integration.Config;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IServiceActivatorMethod
 {
     public MethodInfo Method { get; }

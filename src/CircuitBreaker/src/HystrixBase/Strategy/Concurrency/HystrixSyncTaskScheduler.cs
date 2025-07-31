@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixSyncTaskScheduler : HystrixTaskScheduler
 {
     [ThreadStatic]
@@ -212,6 +213,7 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
 
     #endregion IHystrixTaskScheduler
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class ThreadTaskQueue
     {
         public ThreadTaskQueue()

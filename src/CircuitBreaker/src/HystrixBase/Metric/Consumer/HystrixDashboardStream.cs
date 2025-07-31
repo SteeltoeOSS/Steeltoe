@@ -11,6 +11,7 @@ using System.Reactive.Observable.Aliases;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixDashboardStream
 {
     private const int Default_Dashboard_IntervalInMilliseconds = 500;
@@ -56,6 +57,7 @@ public class HystrixDashboardStream
         return new HystrixDashboardStream(delayInMs);
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class DashboardData
     {
         public DashboardData(ICollection<HystrixCommandMetrics> commandMetrics, ICollection<HystrixThreadPoolMetrics> threadPoolMetrics, ICollection<HystrixCollapserMetrics> collapserMetrics)

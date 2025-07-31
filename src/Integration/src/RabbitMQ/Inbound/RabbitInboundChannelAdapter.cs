@@ -26,6 +26,7 @@ using RabbitConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter;
 
 namespace Steeltoe.Integration.Rabbit.Inbound;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
 {
     private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new ();

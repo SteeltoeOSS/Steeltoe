@@ -8,6 +8,7 @@ namespace Steeltoe.Messaging.Core;
 /// A contract for processing a message after it has been created, either
 /// returning a modified(effectively new) message or returning the same.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessagePostProcessor
 {
     /// <summary>

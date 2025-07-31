@@ -9,6 +9,7 @@ using System.Linq;
 
 namespace Steeltoe.Messaging.Handler;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class DestinationPatternsMessageCondition : AbstractMessageCondition<DestinationPatternsMessageCondition>
 {
     public const string LOOKUP_DESTINATION_HEADER = "lookupDestination";

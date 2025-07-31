@@ -23,7 +23,20 @@ public class MySqlTypeLocatorTest
         Assert.NotNull(type);
     }
 
-#if !NETCOREAPP3_1
+#if NET8_0_OR_GREATER
+    [Fact]
+    public void Driver_Found_In_MySqlData_Assembly()
+    {
+        // arrange ~ narrow the assembly list to one specific nuget package
+        var types = MySqlTypeLocator.Assemblies;
+        MySqlTypeLocator.Assemblies = new string[] { "MySql.Data" };
+
+        var type = MySqlTypeLocator.MySqlConnection;
+
+        Assert.NotNull(type);
+        MySqlTypeLocator.Assemblies = types;
+    }
+#else
     [Fact]
     public void Driver_Found_In_MySqlConnector_Assembly()
     {

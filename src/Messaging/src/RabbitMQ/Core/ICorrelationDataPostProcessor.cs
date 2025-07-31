@@ -6,6 +6,7 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 
 namespace Steeltoe.Messaging.RabbitMQ.Core;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface ICorrelationDataPostProcessor
 {
     CorrelationData PostProcess(IMessage message, CorrelationData correlationData);

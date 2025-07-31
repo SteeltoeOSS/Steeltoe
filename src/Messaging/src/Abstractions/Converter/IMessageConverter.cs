@@ -11,6 +11,7 @@ namespace Steeltoe.Messaging.Converter;
 /// A converter to turn the payload of a message from serialized form to a typed
 /// object and vice versa.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageConverter : IServiceNameAware
 {
     /// <summary>

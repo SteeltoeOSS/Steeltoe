@@ -15,6 +15,7 @@ public static class CancellationTokenExtensions
         return new CancellationTokenAwaiter(cancellationToken);
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class CancellationTokenAwaiter : INotifyCompletion
     {
         private readonly CancellationToken _cancellationToken;

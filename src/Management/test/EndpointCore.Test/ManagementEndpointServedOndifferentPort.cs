@@ -22,7 +22,6 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public class ManagementEndpointServedOnDifferentPort
 {
-#if NET6_0_OR_GREATER
     [Fact]
     public void AddAllActuators_WebApplication_MakeSureTheManagementPortIsSet()
     {
@@ -100,7 +99,6 @@ public class ManagementEndpointServedOnDifferentPort
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-#endif
     [Fact]
     public void AddAllActuators_GenericHost_MakeSureTheManagementPortIsSet()
     {

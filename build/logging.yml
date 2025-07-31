@@ -1,12 +1,16 @@
 pr:
-  branches:
-    include:
-    - main
-    - release/3.*
   paths:
     exclude:
-    - /
+    - build
+    - src
     include:
+    - .gitattributes
+    - .gitignore
+    - .editorconfig
+    - stylecop.json
+    - coverlet.runsettings
+    - '*.props'
+    - '*.ruleset'
     - build/templates
     - build/logging.yml
     - src/Logging

@@ -209,7 +209,7 @@ public class MongoDbProviderServiceCollectionExtensionsTest
 
         var cm = new ConnectionStringManager(config);
         var ci = cm.Get<MongoDbConnectionInfo>();
-        services.AddHealthChecks().AddMongoDb(ci.ConnectionString, name: ci.Name);
+        services.AddHealthChecks().AddMongoDb(name: ci.Name);
 
         services.AddMongoClient(config, "steeltoe");
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as MongoDbHealthContributor;
@@ -231,7 +231,7 @@ public class MongoDbProviderServiceCollectionExtensionsTest
 
         var cm = new ConnectionStringManager(config);
         var ci = cm.Get<MongoDbConnectionInfo>();
-        services.AddHealthChecks().AddMongoDb(ci.ConnectionString, name: ci.Name);
+        services.AddHealthChecks().AddMongoDb(name: ci.Name);
 
         services.AddMongoClient(config, "steeltoe", addSteeltoeHealthChecks: true);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as MongoDbHealthContributor;

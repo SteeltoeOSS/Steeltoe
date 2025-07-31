@@ -18,6 +18,7 @@ using System.Linq;
 
 namespace Steeltoe.Discovery.Kubernetes;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class KubernetesDiscoveryClientExtension : IDiscoveryClientExtension
 {
     private const string _springDiscoveryEnabled = "spring:cloud:discovery:enabled";

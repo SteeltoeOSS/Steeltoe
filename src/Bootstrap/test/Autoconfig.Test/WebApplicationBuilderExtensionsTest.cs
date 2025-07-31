@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -41,6 +40,12 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
 {
     public class WebApplicationBuilderExtensionsTest
     {
+#if NET8_0_OR_GREATER
+        private const int ConfigurationProviderCountDelta = 2;
+#else
+        private const int ConfigurationProviderCountDelta = 0;
+#endif
+
         [Fact]
         public void ConfigServerConfiguration_IsAutowired()
         {
@@ -48,7 +53,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
             // WebApplication.CreateBuilder() automatically includes a few builders
-            Assert.Equal(9, config.Providers.Count());
+            Assert.Equal(ConfigurationProviderCountDelta + 9, config.Providers.Count());
             Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
             Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
         }
@@ -59,7 +64,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             var host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.Steeltoe_Extensions_Configuration_CloudFoundryCore);
             var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
-            Assert.Equal(8, config.Providers.Count());
+            Assert.Equal(ConfigurationProviderCountDelta + 8, config.Providers.Count());
             Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
         }
 
@@ -81,7 +86,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             var host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.Steeltoe_Extensions_Configuration_RandomValueBase);
             var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
-            Assert.Equal(8, config.Providers.Count());
+            Assert.Equal(ConfigurationProviderCountDelta + 8, config.Providers.Count());
             Assert.Single(config.Providers.OfType<RandomValueProvider>());
         }
 
@@ -100,15 +105,18 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
             var services = host.Services;
 
-            Assert.Equal(8, config.Providers.Count());
+            Assert.Equal(ConfigurationProviderCountDelta + 8, config.Providers.Count());
             Assert.Single(config.Providers.OfType<ConnectionStringConfigurationProvider>());
-            Assert.NotNull(services.GetService<MySql.Data.MySqlClient.MySqlConnection>());
-            Assert.NotNull(services.GetService<MongoDB.Driver.MongoClient>());
-            Assert.NotNull(services.GetService<Oracle.ManagedDataAccess.Client.OracleConnection>());
-            Assert.NotNull(services.GetService<Npgsql.NpgsqlConnection>());
-            Assert.NotNull(services.GetService<RabbitMQ.Client.ConnectionFactory>());
             Assert.NotNull(services.GetService<StackExchange.Redis.ConnectionMultiplexer>());
-            Assert.NotNull(services.GetService<System.Data.SqlClient.SqlConnection>());
+            Assert.NotNull(services.GetService<MongoDB.Driver.MongoClient>());
+            using (var scope = host.Services.CreateScope())
+            {
+                Assert.NotNull(scope.ServiceProvider.GetService<MySql.Data.MySqlClient.MySqlConnection>());
+                Assert.NotNull(scope.ServiceProvider.GetService<Oracle.ManagedDataAccess.Client.OracleConnection>());
+                Assert.NotNull(scope.ServiceProvider.GetService<Npgsql.NpgsqlConnection>());
+                Assert.NotNull(scope.ServiceProvider.GetService<RabbitMQ.Client.ConnectionFactory>());
+                Assert.NotNull(scope.ServiceProvider.GetService<System.Data.SqlClient.SqlConnection>());
+            }
         }
 
         [Fact]
@@ -254,7 +262,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             var host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.Steeltoe_Security_Authentication_CloudFoundryCore);
             var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
-            Assert.Equal(8, config.Providers.Count());
+            Assert.Equal(ConfigurationProviderCountDelta + 8, config.Providers.Count());
             Assert.Single(config.Providers.OfType<PemCertificateProvider>());
             Assert.NotNull(host.Services.GetRequiredService<IOptions<CertificateOptions>>());
             Assert.NotNull(host.Services.GetRequiredService<ICertificateRotationService>());
@@ -287,5 +295,3 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
         }
     }
 }
-
-#endif

@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class SpelMessage
 {
 #pragma warning disable IDE0090
@@ -230,6 +231,7 @@ public class SpelMessage
 
 #pragma warning restore IDE0090
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public enum Kind
     {
         INFO,

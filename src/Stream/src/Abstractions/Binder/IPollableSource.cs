@@ -9,6 +9,7 @@ namespace Steeltoe.Stream.Binder;
 /// <summary>
 /// An abstraction which defines a mechanism to poll a consumer
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IPollableSource
 {
     /// <summary>
@@ -33,6 +34,7 @@ public interface IPollableSource
 /// An abstraction which defines a mechanism to poll a consumer
 /// </summary>
 /// <typeparam name="H">the handler type</typeparam>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IPollableSource<in H> : IPollableSource
 {
     /// <summary>

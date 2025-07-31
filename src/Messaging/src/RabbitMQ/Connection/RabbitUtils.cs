@@ -325,6 +325,6 @@ public static class RabbitUtils
 
         return args.ClassId == Exchange_ClassId &&
                args.MethodId == Declare_MethodId &&
-               args.ReplyCode == Command_Invalid;
+               args.ReplyCode is Command_Invalid or Precondition_Failed;
     }
 }

@@ -8,6 +8,7 @@ using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Common;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class CompositeStringExpression : IExpression
 {
     public CompositeStringExpression(string expressionString, List<IExpression> expressions)

@@ -65,7 +65,9 @@ public static class DynamicLoggingBuilder
         {
             if (Platform.IsCloudFoundry)
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 options.DisableColors = true;
+#pragma warning restore CS0618 // Type or member is obsolete
             }
 
             base.Configure(options);

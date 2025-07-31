@@ -4,6 +4,7 @@
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixThreadPoolUtilization
 {
     public HystrixThreadPoolUtilization(int currentActiveCount, int currentCorePoolSize, int currentPoolSize, int currentQueueSize)

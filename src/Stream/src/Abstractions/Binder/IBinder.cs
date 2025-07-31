@@ -13,6 +13,7 @@ namespace Steeltoe.Stream.Binder;
 /// intended to identify a logical consumer or producer of messages. This may be a queue, a
 /// channel adapter, another message channel, etc.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IBinder : IServiceNameAware, IDisposable
 {
     /// <summary>
@@ -46,6 +47,7 @@ public interface IBinder : IServiceNameAware, IDisposable
 /// channel adapter, another message channel, etc.
 /// </summary>
 /// <typeparam name="T">the target type supported by the binder</typeparam>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IBinder<in T> : IBinder
 {
     /// <summary>

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.Handler.Invocation;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
 {
     private static readonly object[] EMPTY_ARGS = Array.Empty<object>();

@@ -10,6 +10,7 @@ using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Collapser;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RequestCollapserFactory
 {
     private readonly ICollapserTimer _timer;

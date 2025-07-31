@@ -558,6 +558,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
     //        existingMessageChannel.removeInterceptor(channelInterceptor);
     //    }
     // }
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class ErrorInfrastructure
     {
         public ErrorInfrastructure(ISubscribableChannel errorChannel, ErrorMessageSendingRecoverer recoverer, IMessageHandler handler)

@@ -9,6 +9,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 /// <summary>
 /// Factory for creating publisher callbacks
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IPublisherCallbackChannelFactory
 {
     /// <summary>

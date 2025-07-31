@@ -8,6 +8,7 @@ using System;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 
+[Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class WavefrontExporterOptions : IWavefrontExporterOptions
 {
     // Note: this key is shared between tracing and metrics to mirror the Spring boot configuration settings.

@@ -10,6 +10,7 @@ namespace Steeltoe.Stream.Binder;
 /// A factory for creating or obtaining binders.
 /// </summary>
 /// TODO: Figure out Disposable/Closable/DisposableBean usages
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IBinderFactory // : IDisposable
 {
     /// <summary>

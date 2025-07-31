@@ -13,6 +13,7 @@ using System;
 
 namespace Steeltoe.Stream.Binding;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class SubscribableChannelBindingTargetFactory : AbstractBindingTargetFactory<ISubscribableChannel>
 {
     private readonly IMessageChannelConfigurer _messageChannelConfigurer;

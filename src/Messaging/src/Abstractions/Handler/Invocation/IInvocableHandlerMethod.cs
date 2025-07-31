@@ -9,6 +9,7 @@ namespace Steeltoe.Messaging.Handler.Invocation;
 /// <summary>
 /// Invokes the underlying method with argument values resolved from the current message.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IInvocableHandlerMethod
 {
     object Handler { get; }

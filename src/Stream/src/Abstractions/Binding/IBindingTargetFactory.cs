@@ -9,6 +9,7 @@ namespace Steeltoe.Stream.Binding;
 /// <summary>
 /// Defines methods to create/configure the binding targets defined by EnableBinding
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IBindingTargetFactory
 {
     /// <summary>

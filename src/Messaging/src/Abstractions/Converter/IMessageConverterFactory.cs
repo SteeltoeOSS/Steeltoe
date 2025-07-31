@@ -10,6 +10,7 @@ namespace Steeltoe.Messaging.Converter;
 /// <summary>
 /// An implementation provides a factory for obtaining message converters
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageConverterFactory
 {
     /// <summary>

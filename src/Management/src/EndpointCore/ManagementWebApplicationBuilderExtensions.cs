@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Steeltoe.Common.HealthChecks;
@@ -230,6 +229,7 @@ namespace Steeltoe.Management.Endpoint
         /// Add Wavefront Metrics Exporter
         /// </summary>
         /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+        [Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
         public static WebApplicationBuilder AddWavefrontMetrics(this WebApplicationBuilder applicationBuilder)
         {
             applicationBuilder.Services.AddWavefrontMetrics();
@@ -249,4 +249,3 @@ namespace Steeltoe.Management.Endpoint
         }
     }
 }
-#endif

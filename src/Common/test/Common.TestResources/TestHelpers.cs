@@ -2,10 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
-#endif
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -43,9 +41,6 @@ public static class TestHelpers
         serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
         serviceCollection.AddLogging(builder => builder.AddConsole((opts) =>
         {
-#if NETCOREAPP3_1
-                opts.DisableColors = true;
-#endif
         }));
         serviceCollection.AddLogging(builder => builder.AddDebug());
         return serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
@@ -100,7 +95,6 @@ public static class TestHelpers
         { "management:metrics:export:wavefront:uri", "proxy://localhost:7828" }
     }.ToImmutableDictionary();
 
-#if NET6_0_OR_GREATER
     public static WebApplicationBuilder GetTestWebApplicationBuilder(string[] args = null)
     {
         var webAppBuilder = WebApplication.CreateBuilder(args);
@@ -108,5 +102,4 @@ public static class TestHelpers
         webAppBuilder.WebHost.UseTestServer();
         return webAppBuilder;
     }
-#endif
 }

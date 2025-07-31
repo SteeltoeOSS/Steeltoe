@@ -7,8 +7,10 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class QueueBuilder : AbstractBuilder
 {
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class OverFlow
     {
         public static OverFlow DropHead { get; } = new OverFlow("drop-head");
@@ -23,6 +25,7 @@ public class QueueBuilder : AbstractBuilder
         }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class MasterLocator
     {
         public static MasterLocator MinMasters { get; } = new MasterLocator("min-masters");

@@ -7,6 +7,7 @@ using System;
 
 namespace Steeltoe.Messaging.Converter;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class DefaultContentTypeResolver : IContentTypeResolver
 {
     public MimeType DefaultMimeType { get; set; }

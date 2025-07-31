@@ -49,7 +49,6 @@ public class CertificateRotationServiceTest
         var collection = personalCertStore.Certificates.Find(X509FindType.FindByIssuerName, "Diego Instance Identity Intermediate CA", false);
         collection.Should().NotBeNull();
 
-#if NET6_0_OR_GREATER
         if (!File.Exists(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem")))
         {
             var orgId = Guid.NewGuid();
@@ -67,15 +66,10 @@ public class CertificateRotationServiceTest
 
         var newCollection = personalCertStore.Certificates.Find(X509FindType.FindByIssuerName, "Diego Instance Identity Intermediate CA", false);
         newCollection.Should().NotIntersectWith(collection);
-#else
-        // avoid warning about missing await for .NET Core 3.1 target
-        await Task.Yield();
-#endif
 
         personalCertStore.Close();
     }
 
-#if NET6_0_OR_GREATER
     private X509Certificate2 GetX509FromCertKeyPair(string certFile, string keyFile)
     {
         using var cert = new X509Certificate2(certFile);
@@ -84,5 +78,4 @@ public class CertificateRotationServiceTest
 
         return cert.CopyWithPrivateKey(key);
     }
-#endif
 }

@@ -13,6 +13,7 @@ namespace Steeltoe.Stream.Binder;
 /// represents a connection from an adapter to an input. A producer binding represents a
 /// connection from an output to an adapter.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IBinding : IPausable
 {
     /// <summary>

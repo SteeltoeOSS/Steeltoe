@@ -206,7 +206,9 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     internal JsonSerializerOptions SerializerOptions { get; private set; } =
         new JsonSerializerOptions
         {
+#pragma warning disable SYSLIB0020 // Type or member is obsolete
             IgnoreNullValues = true,
+#pragma warning restore SYSLIB0020 // Type or member is obsolete
             PropertyNameCaseInsensitive = true,
         };
 

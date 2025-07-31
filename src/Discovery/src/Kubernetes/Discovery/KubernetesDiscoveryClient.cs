@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Kubernetes.Discovery;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class KubernetesDiscoveryClient : IDiscoveryClient
 {
     private const string DefaultNamespace = "default";
@@ -206,28 +207,6 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
         return serviceMetadata;
     }
 
-#if NETSTANDARD2_0
-        private V1EndpointPort FindEndpointPort(V1EndpointSubset subset)
-        {
-            var ports = subset.Ports;
-            V1EndpointPort endpointPort;
-            if (ports.Count == 1)
-            {
-                endpointPort = ports[0];
-            }
-            else
-            {
-                endpointPort = ports
-                    .FirstOrDefault(port =>
-                        string.IsNullOrEmpty(_discoveryOptions.CurrentValue.PrimaryPortName) ||
-                        _discoveryOptions.CurrentValue.PrimaryPortName.ToUpper().Equals(port.Name.ToUpper()));
-            }
-
-            return endpointPort;
-        }
-#endif
-
-#if NETSTANDARD2_1
     private Corev1EndpointPort FindEndpointPort(V1EndpointSubset subset)
     {
         var ports = subset.Ports;
@@ -246,7 +225,6 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
         return endpointPort;
     }
-#endif
 
     private EndpointSubsetNs GetSubsetsFromEndpoints(V1Endpoints endpoints)
     {

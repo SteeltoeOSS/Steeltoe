@@ -35,7 +35,6 @@ public static class ConfigServerHostBuilderExtensions
             .ConfigureAppConfiguration((context, config) => config.AddConfigServer(context.HostingEnvironment, loggerFactory))
             .ConfigureServices((context, services) => services.AddConfigServerServices());
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Add Config Server and Cloud Foundry as application configuration sources.
     /// Also adds Config Server health check contributor and related services to the service container.
@@ -48,5 +47,4 @@ public static class ConfigServerHostBuilderExtensions
         applicationBuilder.Services.AddConfigServerServices();
         return applicationBuilder;
     }
-#endif
 }

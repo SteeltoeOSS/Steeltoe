@@ -9,6 +9,7 @@ using System;
 
 namespace Steeltoe.Integration.Rabbit.Support;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class ManualAckListenerExecutionFailedException : ListenerExecutionFailedException
 {
     public ManualAckListenerExecutionFailedException(string message, Exception cause, IMessage failedMessage, IModel channel, ulong deliveryTag)

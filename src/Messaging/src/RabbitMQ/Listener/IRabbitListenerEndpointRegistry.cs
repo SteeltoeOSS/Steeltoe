@@ -9,6 +9,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IRabbitListenerEndpointRegistry : ISmartLifecycle, IDisposable, IServiceNameAware
 {
     public IMessageListenerContainer GetListenerContainer(string id);

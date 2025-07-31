@@ -9,6 +9,7 @@ using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RollingCommandUserLatencyDistributionStream : RollingDistributionStream<HystrixCommandCompletion>
 {
     private static readonly ConcurrentDictionary<string, RollingCommandUserLatencyDistributionStream> Streams = new ();

@@ -11,6 +11,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support;
 /// <summary>
 /// A factory for invokable handler methods that is suitable to process an incoming message
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageHandlerMethodFactory : IServiceNameAware
 {
     /// <summary>

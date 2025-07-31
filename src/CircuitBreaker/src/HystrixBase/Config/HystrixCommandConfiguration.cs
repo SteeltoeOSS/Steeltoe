@@ -4,6 +4,7 @@
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Config;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixCommandConfiguration
 {
     private readonly IHystrixCommandKey _commandKey;
@@ -72,6 +73,7 @@ public class HystrixCommandConfiguration
 
     public HystrixCommandMetricsConfig MetricsConfig { get; }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class HystrixCommandCircuitBreakerConfig
     {
         public HystrixCommandCircuitBreakerConfig(
@@ -103,6 +105,7 @@ public class HystrixCommandConfiguration
         public int SleepWindowInMilliseconds { get; }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class HystrixCommandExecutionConfig
     {
         public HystrixCommandExecutionConfig(
@@ -150,6 +153,7 @@ public class HystrixCommandConfiguration
         public bool IsRequestLogEnabled { get; }
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class HystrixCommandMetricsConfig
     {
         public HystrixCommandMetricsConfig(

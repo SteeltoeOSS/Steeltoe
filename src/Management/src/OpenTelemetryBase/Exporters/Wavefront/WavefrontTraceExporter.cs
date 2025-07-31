@@ -17,6 +17,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters;
 /// <summary>
 /// Exporter to send spans and traces to Wavefront from OpenTelemetry
 /// </summary>
+[Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class WavefrontTraceExporter : BaseExporter<Activity>
 {
     private readonly ILogger<WavefrontTraceExporter> _logger;

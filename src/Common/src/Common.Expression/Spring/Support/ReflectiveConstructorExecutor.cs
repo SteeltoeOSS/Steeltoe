@@ -8,6 +8,7 @@ using System.Reflection;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class ReflectiveConstructorExecutor : IConstructorExecutor
 {
     private readonly ConstructorInfo _ctor;

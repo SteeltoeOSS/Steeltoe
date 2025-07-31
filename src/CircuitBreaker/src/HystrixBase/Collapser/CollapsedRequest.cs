@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Collapser;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class CollapsedRequest<RequestResponseType, RequestArgumentType> : ICollapsedRequest<RequestResponseType, RequestArgumentType>
 {
     private readonly ConcurrentQueue<CancellationToken> _linkedTokens = new ();

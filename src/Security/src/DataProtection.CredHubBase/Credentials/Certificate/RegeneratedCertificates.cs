@@ -10,6 +10,7 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 /// <summary>
 /// Return object from bulk certificate regeneration request
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RegeneratedCertificates
 {
     /// <summary>

@@ -8,6 +8,7 @@ namespace Steeltoe.Messaging;
 /// A MessageChannel that maintains a registry of subscribers and invokes
 /// them to handle messages sent through this channel.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface ISubscribableChannel : IMessageChannel
 {
     /// <summary>

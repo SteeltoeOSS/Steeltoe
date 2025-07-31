@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class SimpleEvaluationContext : IEvaluationContext
 {
     private static readonly List<IConstructorResolver> _emptyConstrResolver = new ();
@@ -86,6 +87,7 @@ public class SimpleEvaluationContext : IEvaluationContext
         return (T)result;
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class Builder
     {
         private readonly List<IPropertyAccessor> _accessors;

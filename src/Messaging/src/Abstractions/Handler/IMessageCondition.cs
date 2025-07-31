@@ -7,6 +7,7 @@ namespace Steeltoe.Messaging.Handler;
 /// <summary>
 /// Contract for mapping conditions to messages.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageCondition
 {
 }
@@ -15,6 +16,7 @@ public interface IMessageCondition
 /// Contract for mapping conditions to messages
 /// </summary>
 /// <typeparam name="T">the kind of condition that this condition can be combined with</typeparam>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageCondition<T> : IMessageCondition
 {
     /// <summary>

@@ -53,7 +53,6 @@ public static class SpringBootHostBuilderExtensions
         });
     }
 
-#if NET6_0_OR_GREATER
     /// <summary>
     ///  Sets up the configuration provider in spring boot style '.' separated values in CommandLine or as SPRING_APPLICATION_JSON Environment variable
     /// </summary>
@@ -69,5 +68,4 @@ public static class SpringBootHostBuilderExtensions
         builder.Configuration.AddSpringBootCmd(builder.Configuration);
         return builder;
     }
-#endif
 }

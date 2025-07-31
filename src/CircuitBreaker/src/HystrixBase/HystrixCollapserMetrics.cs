@@ -12,6 +12,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixCollapserMetrics : HystrixMetrics
 {
     private static readonly ConcurrentDictionary<string, HystrixCollapserMetrics> Metrics = new ();

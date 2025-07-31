@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers;
 
 [Route("hystrix/config.stream")]
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixConfigStreamController : HystrixStreamBaseController
 {
     public HystrixConfigStreamController(HystrixConfigurationStream stream)

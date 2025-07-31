@@ -4,6 +4,7 @@
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Config;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixCollapserConfiguration
 {
     public HystrixCollapserConfiguration(
@@ -47,6 +48,7 @@ public class HystrixCollapserConfiguration
 
     public CollapserMetricsConfig CollapserMetricsConfiguration { get; }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class CollapserMetricsConfig
     {
         public CollapserMetricsConfig(

@@ -18,7 +18,9 @@ public class MyTestCloudFoundryHandler : CloudFoundryOAuthHandler
         IOptionsMonitor<CloudFoundryOAuthOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
+#pragma warning disable CS0618 // Type or member is obsolete
         ISystemClock clock)
+#pragma warning restore CS0618 // Type or member is obsolete
         : base(options, logger, encoder, clock)
     {
     }

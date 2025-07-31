@@ -328,9 +328,7 @@ public class HostBuilderExtensionsTest
     }
 
     [Fact]
-#if NET6_0_OR_GREATER
     [Trait("Category", "SkipOnMacOS")] // for .NET 5+, this test produces an admin prompt on OSX
-#endif
     public void UseCloudHosting_GenericHost_UsesLocalPortSettings()
     {
         Environment.SetEnvironmentVariable("PORT", null);
@@ -347,7 +345,6 @@ public class HostBuilderExtensionsTest
         host.Start();
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     [Trait("Category", "SkipOnMacOS")] // for .NET 5+, this test produces an admin prompt on OSX
     public async Task UseCloudHosting_WebApplication_UsesLocalPortSettings()
@@ -405,5 +402,4 @@ public class HostBuilderExtensionsTest
             Environment.SetEnvironmentVariable("PORT", null);
         }
     }
-#endif
 }

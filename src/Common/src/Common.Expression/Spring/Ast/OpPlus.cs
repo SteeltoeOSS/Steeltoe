@@ -10,6 +10,7 @@ using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class OpPlus : Operator
 {
     private static readonly MethodInfo _appendString = typeof(StringBuilder).GetMethod("Append", new Type[] { typeof(string) });

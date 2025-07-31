@@ -10,6 +10,7 @@ using System.Reactive.Linq;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixStreamBaseController : Controller
 {
     protected internal IObservable<string> SampleStream { get; set; }

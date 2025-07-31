@@ -1,86 +1,18 @@
 trigger:
   branches:
     include:
-    - release/3.2
+    - main
+    - '3.x'
   paths:
     exclude:
     - README.md
-    - build/*
-    - project-docs/*
     - roadmaps/*
 
 jobs:
-- job: Steeltoe_Package
-  pool:
-    vmImage: windows-latest
-  variables:
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-    DOTNET_CLI_TELEMETRY_OPTOUT: 1
-    PackageVersion: $[format('3.2.9-{0}', variables['Build.BuildId'])]
-    BUILD_PACKAGES: true
-  steps:
-  - pwsh: |
-      if ($env:PackageVersionOverride) {
-          $env:PackageVersion = $env:PackageVersionOverride
-      }
-      Write-Host "##vso[build.updatebuildnumber]$env:PackageVersion"
-      Write-Host "##vso[task.setvariable variable=PackageVersion;]$env:PackageVersion"
-      $prefix = $env:PackageVersion.Split('-')[0]
-      $suffix = $env:PackageVersion.Split('-')[1]
-      Write-Host "##vso[task.setvariable variable=VersionPrefix;]$prefix"
-      Write-Host "##vso[task.setvariable variable=VersionSuffix;]$suffix"
-    displayName: Set build variables
-    env:
-      PackageVersion: $(PackageVersion)
-      PackageVersionOverride: $(PackageVersionOverride)
-  - task: UseDotNet@2
-    displayName: Install .NET Core 3.1
-    inputs:
-      version: 3.1.x
-  - task: UseDotNet@2
-    displayName: Install .NET 6
-    inputs:
-      version: 6.0.x
-      includePreviewVersions: true
-  - task: DotNetCoreCLI@2
-    displayName: dotnet restore
-    inputs:
-      command: restore
-      projects: src/Steeltoe.All.sln
-      feedsToUse: config
-      nugetConfigPath: nuget.config
-  - task: DotNetCoreCLI@2
-    displayName: dotnet build
-    inputs:
-      command: build
-      projects: src/Steeltoe.All.sln
-      arguments: --no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)
-  - task: DotNetCoreCLI@2
-    displayName: dotnet pack
-    inputs:
-      command: pack
-      feedsToUse: select
-      packagesToPack: src/Steeltoe.All.sln
-      packDirectory: $(Build.ArtifactStagingDirectory)/packages
-      versioningScheme: byEnvVar
-      versionEnvVar: PackageVersion
-      nobuild: true
-  - task: PowerShell@2
-    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
-    displayName: Authenticode sign packages
-    inputs:
-      filePath: build/sign-packages.ps1
-    env:
-      SignClientUser: $(SignClientUser)
-      SignClientSecret: $(SignClientSecret)
-      ArtifactDirectory: $(Build.ArtifactStagingDirectory)/packages
-  - publish: $(Build.ArtifactStagingDirectory)/packages
-    condition: succeeded()
-    displayName: Publish build artifacts
-    artifact: Packages
 - job: Steeltoe_CI
-  timeoutInMinutes: 60
+  timeoutInMinutes: 90
   variables:
+    DOTNET_NOLOGO: true
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
   strategy:
@@ -90,6 +22,7 @@ jobs:
         skipFilter: '--filter "Category!=SkipOnLinux"'
         sonarAnalyze: true
         integrationTests: true
+      # MacOS is turned off because it causes flaky builds.
       # MacOS:
       #   imageName: macOS-latest
       #   skipFilter: '--filter "Category!=Integration&Category!=SkipOnMacOS"'
@@ -101,14 +34,13 @@ jobs:
     vmImage: $(imageName)
   steps:
   - task: UseDotNet@2
-    displayName: Install .NET Core 3.1
-    inputs:
-      version: 3.1.x
-  - task: UseDotNet@2
     displayName: Install .NET 6
     inputs:
       version: 6.0.x
-      includePreviewVersions: true
+  - task: UseDotNet@2
+    displayName: Install .NET 8
+    inputs:
+      version: 8.0.x
   - pwsh: |
       # https://github.com/dotnet/core/issues/4749#issuecomment-2329706172
       wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
@@ -119,10 +51,11 @@ jobs:
     displayName: dotnet restore
     inputs:
       command: restore
+      verbosityRestore: Minimal
       projects: src/Steeltoe.All.sln
       feedsToUse: config
       nugetConfigPath: nuget.config
-  - task: SonarCloudPrepare@1
+  - task: SonarCloudPrepare@3
     condition: eq(variables['sonarAnalyze'], 'true')
     displayName: Prepare analysis on SonarCloud
     inputs:
@@ -139,7 +72,7 @@ jobs:
     inputs:
       command: build
       projects: src/Steeltoe.All.sln
-      arguments: --no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True
+      arguments: --no-restore -c $(buildConfiguration) -v minimal /p:TreatWarningsAsErrors=True
   # RabbitMQ is pinned to 3.13.2 due to failure in Steeltoe.Messaging.RabbitMQ.Core.RabbitAdminIntegrationTest.TestDeclareDelayedExchange
   # Currently failing versions include 3.13.3 and 3.13.4
   - script: |
@@ -148,19 +81,18 @@ jobs:
     condition: eq(variables['integrationTests'], 'true')
     displayName: Start Docker services
   - task: DotNetCoreCLI@2
+    displayName: dotnet test 8.0
+    inputs:
+      command: test
+      projects: '**/*.csproj'
+      arguments: '--blame-hang-timeout 3m -f net8.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      publishTestResults: false
+  - task: DotNetCoreCLI@2
     displayName: dotnet test 6.0
     inputs:
       command: test
       projects: '**/*.csproj'
       arguments: '--blame-hang-timeout 3m -f net6.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
-      publishTestResults: false
-  - task: DotNetCoreCLI@2
-    condition: succeededOrFailed()
-    displayName: dotnet test 3.1
-    inputs:
-      command: test
-      projects: '**/*.csproj'
-      arguments: '--blame-hang-timeout 3m -f netcoreapp3.1 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - task: CopyFiles@2
     condition: failed()
@@ -176,7 +108,7 @@ jobs:
       docker rm configserver
       docker kill rabbitmq
       docker rm rabbitmq
-    condition: eq(variables['integrationTests'], 'true')
+    condition: and(succeededOrFailed(), eq(variables['integrationTests'], 'true'))
     displayName: Stop Docker services
   - task: PublishTestResults@2
     condition: succeededOrFailed()
@@ -185,7 +117,7 @@ jobs:
       testResultsFormat: VSTest
       testResultsFiles: '*.trx'
       mergeTestResults: true
-  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
+  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@5
     condition: and(succeededOrFailed(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
     displayName: Consolidate coverage for this job
     inputs:
@@ -196,13 +128,15 @@ jobs:
     condition: and(succeeded(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
     displayName: Publish code coverage artifacts
     artifact: coverageResults-$(Agent.JobName)
-  - task: SonarCloudAnalyze@1
+  - task: SonarCloudAnalyze@3
     condition: and(succeededOrFailed(), eq(variables['sonarAnalyze'], 'true'))
     displayName: Run code analysis
-  - task: SonarCloudPublish@1
+  - task: SonarCloudPublish@3
     condition: and(succeededOrFailed(), eq(variables['sonarAnalyze'], 'true'))
     displayName: Publish quality gate result
+
 - job: Wrap_up
+  timeoutInMinutes: 15
   dependsOn:
   - Steeltoe_CI
   pool:
@@ -218,7 +152,7 @@ jobs:
     condition: succeededOrFailed()
     displayName: Download test coverage results from Windows
     continueOnError: true
-  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
+  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@5
     condition: succeededOrFailed()
     displayName: Consolidate code coverage results
     inputs:

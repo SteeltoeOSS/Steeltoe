@@ -12,6 +12,7 @@ namespace Steeltoe.Stream.Binding;
 /// Marker interface for instances that can bind/unbind groups of inputs and outputs.
 /// TODO: Try to make this internal
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IBindable
 {
     Type BindingType { get; }

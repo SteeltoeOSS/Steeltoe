@@ -11,6 +11,7 @@ namespace Steeltoe.Integration.Handler;
 /// some Object(or null). Implementations will be focused on generic concerns,
 /// such as invoking a method, running a script, or evaluating an expression.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageProcessor
 {
     /// <summary>
@@ -27,6 +28,7 @@ public interface IMessageProcessor
 /// such as invoking a method, running a script, or evaluating an expression.
 /// </summary>
 /// <typeparam name="T">the type of the processing result</typeparam>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageProcessor<out T> : IMessageProcessor
 {
     /// <summary>

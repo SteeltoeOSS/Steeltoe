@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Converter;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class CompositeMessageConverter : ISmartMessageConverter
 {
     public const string DEFAULT_SERVICE_NAME = nameof(CompositeMessageConverter);

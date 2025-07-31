@@ -12,6 +12,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support.Converter;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class SimpleMessageConverter : AbstractMessageConverter
 {
     public const string DEFAULT_SERVICE_NAME = nameof(SimpleMessageConverter);
@@ -61,12 +62,12 @@ public class SimpleMessageConverter : AbstractMessageConverter
             {
                 try
                 {
-                    var formatter = new BinaryFormatter();
-                    var stream = new MemoryStream(message.Payload);
-
                     // TODO: don't disable this warning! https://aka.ms/binaryformatter
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
 #pragma warning disable S5773 // Types allowed to be deserialized should be restricted
+                    var formatter = new BinaryFormatter();
+                    var stream = new MemoryStream(message.Payload);
+
                     content = formatter.Deserialize(stream);
 #pragma warning restore S5773 // Types allowed to be deserialized should be restricted
 #pragma warning restore SYSLIB0011 // Type or member is obsolete
@@ -124,11 +125,11 @@ public class SimpleMessageConverter : AbstractMessageConverter
                 {
                     try
                     {
+                        // TODO: don't disable this warning! https://aka.ms/binaryformatter
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
                         var formatter = new BinaryFormatter();
                         var stream = new MemoryStream(512);
 
-                        // TODO: don't disable this warning! https://aka.ms/binaryformatter
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
                         formatter.Serialize(stream, payload);
 #pragma warning restore SYSLIB0011 // Type or member is obsolete
                         bytes = stream.ToArray();

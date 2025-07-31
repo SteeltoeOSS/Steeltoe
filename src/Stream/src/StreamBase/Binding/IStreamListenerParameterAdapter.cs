@@ -7,6 +7,7 @@ using System.Reflection;
 
 namespace Steeltoe.Stream.Binding;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IStreamListenerParameterAdapter
 {
     bool Supports(Type bindingTargetType, ParameterInfo methodParameter);
@@ -14,6 +15,7 @@ public interface IStreamListenerParameterAdapter
     object Adapt(object bindingTarget, ParameterInfo parameter);
 }
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IStreamListenerParameterAdapter<out A, in B> : IStreamListenerParameterAdapter
 {
     A Adapt(B bindingTarget, ParameterInfo parameter);

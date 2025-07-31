@@ -261,6 +261,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
         return !(string.IsNullOrEmpty(headerName) || GetTransientHeaderNames().Contains(headerName)) && headerMatcher.MatchHeader(headerName);
     }
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public interface IHeaderMatcher
     {
         bool MatchHeader(string headerName);

@@ -7,6 +7,7 @@ using Steeltoe.Stream.Config;
 
 namespace Steeltoe.Stream.Binding;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IMessageChannelAndSourceConfigurer : IMessageChannelConfigurer
 {
     void ConfigurePolledMessageSource(IPollableMessageSource binding, string name);

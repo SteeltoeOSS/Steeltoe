@@ -10,7 +10,7 @@ using System;
 
 namespace Steeltoe.Management.Kubernetes;
 
-[Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class KubernetesActuatorsStartupFilter : IStartupFilter
 {
     private readonly MediaTypeVersion _mediaTypeVersion;

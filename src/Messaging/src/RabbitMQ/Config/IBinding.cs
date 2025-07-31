@@ -7,6 +7,7 @@ using static Steeltoe.Messaging.RabbitMQ.Config.Binding;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IBinding : IDeclarable, IServiceNameAware
 {
     public string BindingName { get; set; }

@@ -6,6 +6,7 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixThreadPoolOptions : HystrixBaseOptions, IHystrixThreadPoolOptions
 {
     internal const int Default_CoreSize = 10; // core size of thread pool

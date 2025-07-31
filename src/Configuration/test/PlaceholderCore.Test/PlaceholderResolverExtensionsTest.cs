@@ -166,7 +166,6 @@ public class PlaceholderResolverExtensionsTest
         Assert.Equal("myName", config["spring:cloud:config:name"]);
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     public void AddPlaceholderResolverViaWebApplicationBuilderWorks()
     {
@@ -208,5 +207,4 @@ public class PlaceholderResolverExtensionsTest
         var config = server.Services.GetServices<IConfiguration>().First();
         Assert.Equal("myName", config["spring:cloud:config:name"]);
     }
-#endif
 }

@@ -29,8 +29,10 @@ internal class MutualTlsAuthenticationHandler : AuthenticationHandler<MutualTlsA
         IOptionsMonitor<MutualTlsAuthenticationOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
+#pragma warning disable CS0618 // Type or member is obsolete
         ISystemClock clock)
         : base(options, logger, encoder, clock)
+#pragma warning restore CS0618 // Type or member is obsolete
     {
     }
 

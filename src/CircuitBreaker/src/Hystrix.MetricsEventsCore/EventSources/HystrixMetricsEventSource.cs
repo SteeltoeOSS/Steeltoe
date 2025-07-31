@@ -8,8 +8,10 @@ using System.Diagnostics.Tracing;
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources;
 
 [EventSource(Name = "Steeltoe.Hystrix.Events")]
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixMetricsEventSource : EventSource
 {
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public class Keywords
     {
         public const EventKeywords Command = (EventKeywords)1;

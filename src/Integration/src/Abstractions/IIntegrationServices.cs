@@ -14,6 +14,7 @@ namespace Steeltoe.Integration;
 /// <summary>
 /// A group of commonly used services used by the integration components
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IIntegrationServices
 {
     /// <summary>

@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixCommand : HystrixCommand<Unit>, IHystrixExecutable
 {
     protected new readonly Action _run;
@@ -115,6 +116,7 @@ public class HystrixCommand : HystrixCommand<Unit>, IHystrixExecutable
 }
 
 #pragma warning disable SA1402 // File may only contain a single class
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecutable<TResult>
 #pragma warning restore SA1402 // File may only contain a single class
 {

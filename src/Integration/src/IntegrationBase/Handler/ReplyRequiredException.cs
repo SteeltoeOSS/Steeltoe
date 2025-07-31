@@ -7,6 +7,7 @@ using System;
 
 namespace Steeltoe.Integration.Handler;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class ReplyRequiredException : MessagingException
 {
     public ReplyRequiredException(IMessage failedMessage, string description)

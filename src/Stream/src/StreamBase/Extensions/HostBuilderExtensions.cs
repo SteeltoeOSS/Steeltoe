@@ -33,7 +33,6 @@ public static class HostBuilderExtensions
             });
     }
 
-#if NET6_0_OR_GREATER
     public static WebApplicationBuilder AddStreamServices<T>(this WebApplicationBuilder builder)
     {
         builder.AddSpringBootConfiguration();
@@ -41,5 +40,4 @@ public static class HostBuilderExtensions
         builder.Services.AddHostedService<StreamLifeCycleService>();
         return builder;
     }
-#endif
 }

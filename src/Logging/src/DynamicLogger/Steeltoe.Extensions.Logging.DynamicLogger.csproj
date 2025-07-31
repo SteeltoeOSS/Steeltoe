@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net6.0;netstandard2.0</TargetFrameworks>
     <Description>Steeltoe Dynamic Console Logger</Description>
     <PackageTags>logging;dynamic logging;console;management;monitoring;Spring Cloud;</PackageTags>
   </PropertyGroup>
@@ -8,15 +8,15 @@
   <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0' Or '$(TargetFramework)' == 'net6.0'">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(LoggingVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(LoggingVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(LoggingVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(LoggingVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(ExtensionsVersion)" />
   </ItemGroup>
 
   <ItemGroup>

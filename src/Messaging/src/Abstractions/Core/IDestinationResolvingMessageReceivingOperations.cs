@@ -11,6 +11,7 @@ namespace Steeltoe.Messaging.Core;
 /// Provides operations for receiving messages from a destination specifed as a resolvable string
 /// </summary>
 /// <typeparam name="D">the destination type</typeparam>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IDestinationResolvingMessageReceivingOperations<D> : IMessageReceivingOperations<D>
 {
     /// <summary>

@@ -45,6 +45,7 @@ using SteeltoeConnectionFactory = Steeltoe.Messaging.RabbitMQ.Connection.IConnec
 
 namespace Steeltoe.Stream.Binder.Rabbit;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 {
     private static readonly SimplePassthroughMessageConverter _passThoughConverter = new ();
@@ -631,7 +632,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             {
                 stackTraceAsString = stackTraceAsString.Substring(0, _maxStackTraceLength);
 
-                _logger.LogWarning("Stack trace in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the stack trace depth", cause);
+                _logger.LogWarning(cause, "Stack trace in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the stack trace depth");
             }
 
             accessor.SetHeader(RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE, stackTraceAsString);

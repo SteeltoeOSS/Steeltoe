@@ -7,6 +7,7 @@ using System.Reactive;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IHystrixObservable : IHystrixInvokable
 {
     IObservable<Unit> Observe();
@@ -14,6 +15,7 @@ public interface IHystrixObservable : IHystrixInvokable
     IObservable<Unit> ToObservable();
 }
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IHystrixObservable<out TResult> : IHystrixInvokable
 {
     IObservable<TResult> Observe();

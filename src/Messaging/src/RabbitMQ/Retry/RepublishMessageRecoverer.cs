@@ -13,6 +13,7 @@ using System.Text;
 
 namespace Steeltoe.Messaging.RabbitMQ.Retry;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class RepublishMessageRecoverer : IMessageRecoverer
 {
     public const string X_EXCEPTION_STACKTRACE = "x-exception-stacktrace";

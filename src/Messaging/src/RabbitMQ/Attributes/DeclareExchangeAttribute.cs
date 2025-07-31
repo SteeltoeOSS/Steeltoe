@@ -8,6 +8,7 @@ using System;
 namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class DeclareExchangeAttribute : Attribute
 {
     public DeclareExchangeAttribute()

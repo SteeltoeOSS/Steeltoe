@@ -8,6 +8,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IPublisherCallbackChannel : RC.IModel
 {
     /// <summary>
@@ -57,6 +58,7 @@ public interface IPublisherCallbackChannel : RC.IModel
     /// <param name="callback">the callback</param>
     void SetAfterAckCallback(Action<RC.IModel> callback);
 
+    [System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public interface IListener
     {
         /// <summary>

@@ -7,6 +7,7 @@ using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IRabbitListenerErrorHandler : IServiceNameAware
 {
     object HandleError(IMessage origMessage, IMessage message, ListenerExecutionFailedException exception);

@@ -14,6 +14,7 @@ using System.Text;
 
 namespace Steeltoe.Integration.Rabbit.Support;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class DefaultRabbitHeaderMapper : AbstractHeaderMapper<IMessageHeaders>, IRabbitHeaderMapper
 {
     private static readonly List<string> STANDARD_HEADER_NAMES = new ();

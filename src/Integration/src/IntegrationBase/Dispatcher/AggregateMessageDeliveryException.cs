@@ -9,6 +9,7 @@ using System.Text;
 
 namespace Steeltoe.Integration.Dispatcher;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class AggregateMessageDeliveryException : MessageDeliveryException
 {
     private readonly List<Exception> _aggregatedExceptions;

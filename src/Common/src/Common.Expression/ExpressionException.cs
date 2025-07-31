@@ -7,6 +7,7 @@ using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class ExpressionException : Exception
 {
     public string ExpressionString { get; }

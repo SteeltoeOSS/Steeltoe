@@ -114,7 +114,6 @@ public class ConfigServerHostBuilderExtensionsTest
         refreshTimerField.GetValue(provider).Should().BeNull();
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     public void AddConfigServer_WebApplicationBuilder_AddsConfigServer()
     {
@@ -150,5 +149,4 @@ public class ConfigServerHostBuilderExtensionsTest
         FieldInfo refreshTimerField = provider.GetType().GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance) !;
         refreshTimerField.GetValue(provider).Should().BeNull();
     }
-#endif
 }

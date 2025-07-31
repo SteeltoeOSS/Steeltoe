@@ -9,6 +9,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Discovery.Kubernetes.Discovery;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class KubernetesServiceInstance : IServiceInstance
 {
     private const string HttpPrefix = "http";
@@ -17,14 +18,7 @@ public class KubernetesServiceInstance : IServiceInstance
     private const string Coln = ":";
 
     private V1EndpointAddress _endpointAddress;
-
-#if NETSTANDARD2_0
-        private V1EndpointPort _endpointPort;
-#endif
-
-#if NETSTANDARD2_1
     private Corev1EndpointPort _endpointPort;
-#endif
 
     public string InstanceId { get; }
 
@@ -40,25 +34,6 @@ public class KubernetesServiceInstance : IServiceInstance
 
     public IDictionary<string, string> Metadata { get; }
 
-#if NETSTANDARD2_0
-        public KubernetesServiceInstance(
-            string instanceId,
-            string serviceId,
-            V1EndpointAddress endpointAddress,
-            V1EndpointPort endpointPort,
-            IDictionary<string, string> metadata,
-            bool isSecure)
-        {
-            InstanceId = instanceId;
-            ServiceId = serviceId;
-            _endpointAddress = endpointAddress;
-            _endpointPort = endpointPort;
-            IsSecure = isSecure;
-            Metadata = metadata;
-        }
-#endif
-
-#if NETSTANDARD2_1
     public KubernetesServiceInstance(
         string instanceId,
         string serviceId,
@@ -74,7 +49,6 @@ public class KubernetesServiceInstance : IServiceInstance
         IsSecure = isSecure;
         Metadata = metadata;
     }
-#endif
 
     public string GetScheme()
     {

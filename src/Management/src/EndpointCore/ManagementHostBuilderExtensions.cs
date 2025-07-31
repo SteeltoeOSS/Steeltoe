@@ -269,6 +269,7 @@ public static class ManagementHostBuilderExtensions
     /// </summary>
     /// <param name="hostBuilder">Your Hostbuilder</param>
     /// <returns>The updated HostBuilder</returns>
+    [Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
         => hostBuilder
             .AddManagementPort()

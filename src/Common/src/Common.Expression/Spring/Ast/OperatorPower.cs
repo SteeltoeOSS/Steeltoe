@@ -7,6 +7,7 @@ using System.Globalization;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class OperatorPower : Operator
 {
     public OperatorPower(int startPos, int endPos, params SpelNode[] operands)

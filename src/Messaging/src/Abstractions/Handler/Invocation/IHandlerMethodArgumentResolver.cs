@@ -9,6 +9,7 @@ namespace Steeltoe.Messaging.Handler.Invocation;
 /// <summary>
 /// Strategy interface for resolving method parameters into argument values in the context of a given request.
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IHandlerMethodArgumentResolver
 {
     /// <summary>

@@ -9,6 +9,7 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 /// <summary>
 /// Parameters for generating a new password credential. All parameters are optional
 /// </summary>
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class PasswordGenerationParameters
 {
     /// <summary>
