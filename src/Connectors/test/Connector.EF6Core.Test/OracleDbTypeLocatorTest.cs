@@ -5,7 +5,6 @@
 using Steeltoe.Connector.Oracle;
 using Xunit;
 
-#if NET461
 namespace Steeltoe.Connector.EF6Core.OracleDb.Test
 {
     public class OracleDbTypeLocatorTest
@@ -20,4 +19,3 @@ namespace Steeltoe.Connector.EF6Core.OracleDb.Test
         }
     }
 }
-#endif

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-#if NETCOREAPP3_1
+#if NET8_0_OR_GREATER
 using MySql.Data.MySqlClient;
 #else
 using MySqlConnector;
@@ -88,7 +88,7 @@ public class MySqlDbContextOptionsExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var config = new ConfigurationBuilder().Build();
 
-#if NETCOREAPP3_1
+#if NET8_0_OR_GREATER
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
 #else
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
@@ -101,7 +101,6 @@ public class MySqlDbContextOptionsExtensionsTest
         Assert.True(con is MySqlConnection);
     }
 
-#if NET6_0
     // Run a MySQL server with Docker to match creds below with this command
     // docker run --name steeltoe-mysql -p 3306:3306 -e MYSQL_DATABASE=steeltoe -e MYSQL_ROOT_PASSWORD=steeltoe mysql
     [Fact(Skip = "Requires a running MySQL server to support AutoDetect")]
@@ -118,7 +117,6 @@ public class MySqlDbContextOptionsExtensionsTest
         Assert.NotNull(con);
         Assert.NotNull(con as MySqlConnection);
     }
-#endif
 
     [Fact]
     public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
@@ -162,7 +160,7 @@ public class MySqlDbContextOptionsExtensionsTest
         builder.AddCloudFoundry();
         var config = builder.Build();
 
-#if NETCOREAPP3_1
+#if NET8_0_OR_GREATER
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2"));
 #else
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2", serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
@@ -196,7 +194,7 @@ public class MySqlDbContextOptionsExtensionsTest
         builder.AddCloudFoundry();
         var config = builder.Build();
 
-#if NETCOREAPP3_1
+#if NET8_0_OR_GREATER
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
 #else
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));

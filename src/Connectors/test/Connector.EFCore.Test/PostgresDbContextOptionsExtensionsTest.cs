@@ -9,9 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Steeltoe.Connector.EFCore.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-#if NET6_0_OR_GREATER
 using Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding;
-#endif
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -235,7 +233,6 @@ public class PostgresDbContextOptionsExtensionsTest
         Assert.Contains("Database=steeltoe", connString);
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     public void AddDbContext_WithK8sBinding_AddsDbContext()
     {
@@ -276,5 +273,4 @@ public class PostgresDbContextOptionsExtensionsTest
             Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", null);
         }
     }
-#endif
 }

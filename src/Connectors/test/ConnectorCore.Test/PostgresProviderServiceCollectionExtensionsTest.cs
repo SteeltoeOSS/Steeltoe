@@ -8,9 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-#if NET6_0_OR_GREATER
 using Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding;
-#endif
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -181,7 +179,6 @@ public class PostgresProviderServiceCollectionExtensionsTest
         Assert.Contains("pooling=true;", connString);
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     public void AddPostgreSqlConnectionWithConnectionStringAndCloudNativeBindingsAddsRightPostgreSqlConnection()
     {
@@ -218,7 +215,6 @@ public class PostgresProviderServiceCollectionExtensionsTest
             Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", null);
         }
     }
-#endif
 
     [Fact]
     public void AddPosgreSqlConnection_AddsRelationalHealthContributor()

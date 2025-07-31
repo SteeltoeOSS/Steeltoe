@@ -17,7 +17,7 @@ public class EntityFrameworkCoreTypeLocatorTest
         Assert.NotNull(type);
     }
 
-#if NETCOREAPP3_1
+#if NET8_0_OR_GREATER
     [Fact]
     public void Options_Found_In_MySql_Assembly()
     {
