@@ -10,7 +10,7 @@ trigger:
 
 jobs:
 - job: Steeltoe_CI
-  timeoutInMinutes: 60
+  timeoutInMinutes: 90
   variables:
     DOTNET_NOLOGO: true
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -136,6 +136,7 @@ jobs:
     displayName: Publish quality gate result
 
 - job: Wrap_up
+  timeoutInMinutes: 15
   dependsOn:
   - Steeltoe_CI
   pool:
