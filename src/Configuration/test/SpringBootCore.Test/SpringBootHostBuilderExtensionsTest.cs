@@ -24,15 +24,11 @@ public class SpringBootHostBuilderExtensionsTest
     {
         IHostBuilder builder = null;
         IWebHostBuilder webHostBuilder = null;
-#if NET6_0_OR_GREATER
         WebApplicationBuilder webAppBuilder = null;
-#endif
 
         var ex = Assert.Throws<ArgumentNullException>(() => SpringBootHostBuilderExtensions.AddSpringBootConfiguration(builder));
         ex = Assert.Throws<ArgumentNullException>(() => SpringBootHostBuilderExtensions.AddSpringBootConfiguration(webHostBuilder));
-#if NET6_0_OR_GREATER
         ex = Assert.Throws<ArgumentNullException>(() => SpringBootHostBuilderExtensions.AddSpringBootConfiguration(webAppBuilder));
-#endif
     }
 
     [Fact]
@@ -123,7 +119,6 @@ public class SpringBootHostBuilderExtensionsTest
         Assert.Equal("testGroup", config["spring:cloud:stream:bindings:input:group"]);
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     public void WebApplicationConfiguresIConfiguration_Spring_Application_Json()
     {
@@ -156,5 +151,4 @@ public class SpringBootHostBuilderExtensionsTest
         Assert.NotNull(config["spring:cloud:stream:bindings:input:group"]);
         Assert.Equal("testGroup", config["spring:cloud:stream:bindings:input:group"]);
     }
-#endif
 }

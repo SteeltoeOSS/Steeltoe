@@ -268,7 +268,6 @@ public class PlaceholderResolverProviderTest
         Assert.Equal("newMyName", val);
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     public void AdjustConfigManagerBuilder_CorrectlyReflectNewValues()
     {
@@ -290,7 +289,6 @@ public class PlaceholderResolverProviderTest
         // result = manager.GetValue<string>("placeholder");
         // Assert.Equal("a", result);
     }
-#endif
 
     [Fact]
     public void GetChildKeys_ReturnsResolvableSection()

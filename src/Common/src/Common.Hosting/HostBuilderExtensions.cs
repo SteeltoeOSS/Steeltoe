@@ -60,7 +60,6 @@ public static class HostBuilderExtensions
         return hostBuilder.ConfigureWebHost(configure => configure.BindToPorts(runLocalHttpPort, runLocalHttpsPort));
     }
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
     /// </summary>
@@ -82,7 +81,6 @@ public static class HostBuilderExtensions
         webApplicationBuilder.WebHost.BindToPorts(runLocalHttpPort, runLocalHttpsPort);
         return webApplicationBuilder;
     }
-#endif
 
     private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, int? runLocalHttpPort, int? runLocalHttpsPort)
     {

@@ -62,7 +62,6 @@ public static class PlaceholderResolverExtensions
     public static IHostBuilder AddPlaceholderResolver(this IHostBuilder hostBuilder, ILoggerFactory loggerFactory = null) =>
         hostBuilder.ConfigureAppConfiguration((context, builder) => builder.AddPlaceholderResolver(loggerFactory));
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Add a placeholder resolver configuration source to the <see cref="ConfigurationBuilder"/>. The placeholder resolver source will capture and wrap all
     /// the existing sources <see cref="IConfigurationSource"/> contained in the builder.  The newly created source will then replace the existing sources
@@ -77,5 +76,4 @@ public static class PlaceholderResolverExtensions
         applicationBuilder.Configuration.AddPlaceholderResolver(loggerFactory);
         return applicationBuilder;
     }
-#endif
 }

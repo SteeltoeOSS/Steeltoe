@@ -20,7 +20,6 @@ public class ConfigServerHostedServiceTest
         Assert.Throws<ArgumentNullException>(() => new ConfigServerHostedService(null, null));
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     public async Task ServiceConstructsAndOperatesWithConfigurationManager()
     {
@@ -37,7 +36,6 @@ public class ConfigServerHostedServiceTest
 
         await startStopAction.Should().NotThrowAsync("ConfigServerHostedService should start");
     }
-#endif
 
     [Fact]
     public async Task ServiceConstructsAndOperatesWithConfigurationRoot()

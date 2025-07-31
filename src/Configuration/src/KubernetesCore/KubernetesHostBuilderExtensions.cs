@@ -37,7 +37,6 @@ public static class KubernetesHostBuilderExtensions
             .ConfigureAppConfiguration(cfg => cfg.AddKubernetes(kubernetesClientConfiguration, loggerFactory))
             .ConfigureServices(svc => svc.AddKubernetesConfigurationServices());
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Add Kubernetes Configuration Providers for configmaps and secrets
     /// </summary>
@@ -50,5 +49,4 @@ public static class KubernetesHostBuilderExtensions
         applicationBuilder.Services.AddKubernetesConfigurationServices();
         return applicationBuilder;
     }
-#endif
 }

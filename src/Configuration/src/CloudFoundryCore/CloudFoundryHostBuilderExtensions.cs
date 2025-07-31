@@ -45,7 +45,6 @@ public static class CloudFoundryHostBuilderExtensions
             .ConfigureAppConfiguration((context, config) => { config.AddCloudFoundry(); })
             .ConfigureServices((context, serviceCollection) => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Add Cloud Foundry Configuration Provider
     /// </summary>
@@ -56,5 +55,4 @@ public static class CloudFoundryHostBuilderExtensions
         applicationBuilder.Services.RegisterCloudFoundryApplicationInstanceInfo();
         return applicationBuilder;
     }
-#endif
 }

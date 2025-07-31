@@ -55,7 +55,6 @@ public class CloudFoundryHostBuilderExtensionsTest
         Assert.Contains(cfg.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     public void WebApplicationAddCloudFoundryConfiguration_Adds()
     {
@@ -66,5 +65,4 @@ public class CloudFoundryHostBuilderExtensionsTest
         var config = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
         Assert.Contains(config.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
     }
-#endif
 }
