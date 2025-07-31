@@ -157,6 +157,7 @@ namespace Steeltoe.Management.Endpoint
         /// Adds the Metrics actuator to the application
         /// </summary>
         /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+        [Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
         public static WebApplicationBuilder AddMetricsActuator(this WebApplicationBuilder applicationBuilder)
         {
             applicationBuilder.Services.AddMetricsActuator(applicationBuilder.Configuration);

@@ -183,6 +183,7 @@ public static class ManagementHostBuilderExtensions
     /// Adds the Metrics actuator to the application
     /// </summary>
     /// <param name="hostBuilder">Your HostBuilder</param>
+    [Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public static IHostBuilder AddMetricsActuator(this IHostBuilder hostBuilder)
         => hostBuilder
             .AddManagementPort()

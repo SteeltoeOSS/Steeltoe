@@ -26,6 +26,7 @@ public static partial class ServiceCollectionExtensions
     /// <param name="services">Reference to the service collection</param>
     /// <param name="configuration">Reference to the configuration system</param>
     /// <returns>A reference to the service collection</returns>
+    [Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public static IServiceCollection AddMetricsActuatorServices(this IServiceCollection services, IConfiguration configuration)
     {
         if (services == null)
@@ -98,6 +99,7 @@ public static partial class ServiceCollectionExtensions
     /// <param name="name">Instrumentation Name </param>
     /// <param name="version">Instrumentation Version</param>
     /// <returns>A reference to the service collection </returns>
+    [Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public static IServiceCollection AddOpenTelemetryMetricsForSteeltoe(this IServiceCollection services, Action<IServiceProvider, MeterProviderBuilder> configure = null, string name = null, string version = null)
     {
         if (services.Any(sd => sd.ServiceType == typeof(MeterProvider)))
@@ -127,6 +129,7 @@ public static partial class ServiceCollectionExtensions
     /// <param name="name">Instrumentation Name</param>
     /// <param name="version">Instrumentation Version</param>
     /// <returns>Configured MeterProviderBuilder</returns>
+    [Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
     public static MeterProviderBuilder ConfigureSteeltoeMetrics(this MeterProviderBuilder builder, IServiceProvider serviceProvider, Action<IServiceProvider, MeterProviderBuilder> configure = null, string name = null, string version = null)
     {
         configure?.Invoke(serviceProvider, builder);
