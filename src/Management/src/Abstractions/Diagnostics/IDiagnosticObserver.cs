@@ -8,6 +8,7 @@ using System.Diagnostics;
 
 namespace Steeltoe.Common.Diagnostics;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public interface IDiagnosticObserver : IObserver<KeyValuePair<string, object>>
 {
     string ObserverName { get; }

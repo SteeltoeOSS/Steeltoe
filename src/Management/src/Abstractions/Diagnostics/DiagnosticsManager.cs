@@ -12,6 +12,7 @@ using System.Threading;
 
 namespace Steeltoe.Common.Diagnostics;
 
+[System.Obsolete("This feature will be removed in the next major version. See https://steeltoe.io/docs/v3/obsolete for details.")]
 public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
 {
     internal IDisposable _listenersSubscription;
