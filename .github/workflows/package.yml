@@ -121,7 +121,7 @@ jobs:
     if: ${{ github.event_name != 'pull_request' }}
     timeout-minutes: 15
     needs: build
-    runs-on: windows-latest
+    runs-on: windows-2025
     environment: signing
     permissions:
       id-token: write
