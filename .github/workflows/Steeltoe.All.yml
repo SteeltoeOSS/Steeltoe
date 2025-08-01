@@ -32,11 +32,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-2025, macos-latest]
         include:
         - os: ubuntu-latest
           runDockerContainers: true
-        - os: windows-latest
+        - os: windows-2025
           skipFilter: Category!=Integration
         - os: macos-latest
           skipFilter: Category!=Integration&Category!=SkipOnMacOS
