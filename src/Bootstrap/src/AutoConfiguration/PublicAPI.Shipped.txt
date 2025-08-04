@@ -1,1 +1,32 @@
-﻿
+#nullable enable
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ConfigurationCloudFoundry = "Steeltoe.Configuration.CloudFoundry" -> string!
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ConfigurationConfigServer = "Steeltoe.Configuration.ConfigServer" -> string!
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ConfigurationEncryption = "Steeltoe.Configuration.Encryption" -> string!
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ConfigurationPlaceholder = "Steeltoe.Configuration.Placeholder" -> string!
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ConfigurationRandomValue = "Steeltoe.Configuration.RandomValue" -> string!
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ConfigurationSpringBoot = "Steeltoe.Configuration.SpringBoot" -> string!
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.Connectors = "Steeltoe.Connectors" -> string!
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.DiscoveryConfiguration = "Steeltoe.Discovery.Configuration" -> string!
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.DiscoveryConsul = "Steeltoe.Discovery.Consul" -> string!
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.DiscoveryEureka = "Steeltoe.Discovery.Eureka" -> string!
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.LoggingDynamicConsole = "Steeltoe.Logging.DynamicConsole" -> string!
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.LoggingDynamicSerilog = "Steeltoe.Logging.DynamicSerilog" -> string!
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ManagementEndpoint = "Steeltoe.Management.Endpoint" -> string!
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ManagementPrometheus = "Steeltoe.Management.Prometheus" -> string!
+const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ManagementTracing = "Steeltoe.Management.Tracing" -> string!
+static Steeltoe.Bootstrap.AutoConfiguration.HostApplicationBuilderExtensions.AddSteeltoe(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
+static Steeltoe.Bootstrap.AutoConfiguration.HostApplicationBuilderExtensions.AddSteeltoe(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, System.Collections.Generic.IReadOnlySet<string!>! assemblyNamesToExclude, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
+static Steeltoe.Bootstrap.AutoConfiguration.HostApplicationBuilderExtensions.AddSteeltoe(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, System.Collections.Generic.IReadOnlySet<string!>! assemblyNamesToExclude) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
+static Steeltoe.Bootstrap.AutoConfiguration.HostApplicationBuilderExtensions.AddSteeltoe(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
+static Steeltoe.Bootstrap.AutoConfiguration.HostBuilderExtensions.AddSteeltoe(this Microsoft.Extensions.Hosting.IHostBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Hosting.IHostBuilder!
+static Steeltoe.Bootstrap.AutoConfiguration.HostBuilderExtensions.AddSteeltoe(this Microsoft.Extensions.Hosting.IHostBuilder! builder, System.Collections.Generic.IReadOnlySet<string!>! assemblyNamesToExclude, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Hosting.IHostBuilder!
+static Steeltoe.Bootstrap.AutoConfiguration.HostBuilderExtensions.AddSteeltoe(this Microsoft.Extensions.Hosting.IHostBuilder! builder, System.Collections.Generic.IReadOnlySet<string!>! assemblyNamesToExclude) -> Microsoft.Extensions.Hosting.IHostBuilder!
+static Steeltoe.Bootstrap.AutoConfiguration.HostBuilderExtensions.AddSteeltoe(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
+static Steeltoe.Bootstrap.AutoConfiguration.WebHostBuilderExtensions.AddSteeltoe(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
+static Steeltoe.Bootstrap.AutoConfiguration.WebHostBuilderExtensions.AddSteeltoe(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, System.Collections.Generic.IReadOnlySet<string!>! assemblyNamesToExclude, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
+static Steeltoe.Bootstrap.AutoConfiguration.WebHostBuilderExtensions.AddSteeltoe(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, System.Collections.Generic.IReadOnlySet<string!>! assemblyNamesToExclude) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
+static Steeltoe.Bootstrap.AutoConfiguration.WebHostBuilderExtensions.AddSteeltoe(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
+Steeltoe.Bootstrap.AutoConfiguration.HostApplicationBuilderExtensions
+Steeltoe.Bootstrap.AutoConfiguration.HostBuilderExtensions
+Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames
+Steeltoe.Bootstrap.AutoConfiguration.WebHostBuilderExtensions
