@@ -1,18 +1,1 @@
 #nullable enable
-Steeltoe.Management.Configuration.EndpointOptions
-Steeltoe.Management.Configuration.EndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Management.Configuration.EndpointOptions.EndpointOptions() -> void
-Steeltoe.Management.Configuration.EndpointOptions.RequiredPermissions.get -> Steeltoe.Management.Configuration.EndpointPermissions
-Steeltoe.Management.Configuration.EndpointOptions.RequiredPermissions.set -> void
-Steeltoe.Management.Configuration.EndpointPermissions
-Steeltoe.Management.Configuration.EndpointPermissions.Full = 2 -> Steeltoe.Management.Configuration.EndpointPermissions
-Steeltoe.Management.Configuration.EndpointPermissions.None = 0 -> Steeltoe.Management.Configuration.EndpointPermissions
-Steeltoe.Management.Configuration.EndpointPermissions.Restricted = 1 -> Steeltoe.Management.Configuration.EndpointPermissions
-virtual Steeltoe.Management.Configuration.EndpointOptions.Enabled.get -> bool?
-virtual Steeltoe.Management.Configuration.EndpointOptions.Enabled.set -> void
-virtual Steeltoe.Management.Configuration.EndpointOptions.GetDefaultAllowedVerbs() -> System.Collections.Generic.IList<string!>!
-virtual Steeltoe.Management.Configuration.EndpointOptions.Id.get -> string?
-virtual Steeltoe.Management.Configuration.EndpointOptions.Id.set -> void
-virtual Steeltoe.Management.Configuration.EndpointOptions.Path.get -> string?
-virtual Steeltoe.Management.Configuration.EndpointOptions.Path.set -> void
-virtual Steeltoe.Management.Configuration.EndpointOptions.RequiresExactMatch() -> bool
