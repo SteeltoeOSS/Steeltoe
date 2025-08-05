@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
@@ -14,6 +14,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
+    <PackageReference Include="System.Formats.Asn1" Version="$(SystemFormatsAsn1Version)" />
     <PackageReference Include="System.Text.Json" Version="$(SystemJsonVersion)" />
     <PackageReference Include="xunit.abstractions" Version="$(XunitAbstractionsVersion)" />
   </ItemGroup>
