@@ -16,5 +16,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="$(JwtTokensVersion)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
   </ItemGroup>
 </Project>

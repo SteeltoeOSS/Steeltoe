@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="KubernetesClient" Version="$(KubernetesClientVersion)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
   </ItemGroup>
 
   <ItemGroup>
