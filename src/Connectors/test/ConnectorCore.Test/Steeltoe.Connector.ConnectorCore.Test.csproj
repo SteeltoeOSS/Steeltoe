@@ -32,6 +32,7 @@
     <!--<PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />-->
     <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="System.Net.Security" Version="$(SystemNetSecurityVersion)" />
   </ItemGroup>
 
   <ItemGroup>
