@@ -45,7 +45,6 @@
     <MongoDbClientVersion>3.0.0</MongoDbClientVersion>
     <MySqlConnectorVersion>0.49.3</MySqlConnectorVersion>
     <MySqlV8>8.0.23</MySqlV8>
-    <NpgsqlVersion>4.0.14</NpgsqlVersion>
     <SqlClientVersion>4.8.6</SqlClientVersion>
     <MicrosoftSqlClientVersion>5.1.3</MicrosoftSqlClientVersion>
     <OracleManagedDataAccessCoreVersion>3.21.90</OracleManagedDataAccessCoreVersion>
@@ -96,6 +95,7 @@
     <!-- Non-exposed dependencies, only referenced from test projects, build infrastructure and internal tools. -->
     <EFCoreTestVersion>6.0.0</EFCoreTestVersion>
     <MySqlEFCoreVersion>6.0.0</MySqlEFCoreVersion>
+    <NpgsqlVersion>6.0.11</NpgsqlVersion>
     <NpgsqlEFCoreVersion>6.0.0</NpgsqlEFCoreVersion>
     <OracleEFCoreVersion>6.21.5</OracleEFCoreVersion>
     <PomeloEFCoreVersion>6.0.0</PomeloEFCoreVersion>
@@ -111,6 +111,7 @@
     <!-- Non-exposed dependencies, only referenced from test projects, build infrastructure and internal tools. -->
     <EFCoreTestVersion>8.0.0</EFCoreTestVersion>
     <MySqlEFCoreVersion>8.0.0</MySqlEFCoreVersion>
+    <NpgsqlVersion>8.0.3</NpgsqlVersion>
     <NpgsqlEFCoreVersion>8.0.0</NpgsqlEFCoreVersion>
     <OracleEFCoreVersion>8.23.90</OracleEFCoreVersion>
     <PomeloEFCoreVersion>8.0.0</PomeloEFCoreVersion>
