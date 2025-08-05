@@ -9,7 +9,7 @@
   <Import Project="..\..\..\..\..\versions.props" />
   
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.12.0" />
+    <PackageReference Include="BenchmarkDotNet" Version="$(BenchmarkDotNetVersion)" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Azure.Cosmos;
+using Microsoft.Azure.Cosmos;
 using Steeltoe.Connector.Services;
 using System;
 using Xunit;
@@ -53,7 +53,7 @@ public class CosmosDbConnectorFactoryTest
     public void Create_ReturnsCosmosDbConnection_v3()
     {
         var optionsTypes = CosmosDbTypeLocator.ClientOptionsTypeNames;
-        CosmosDbTypeLocator.ClientOptionsTypeNames = new string[] { CosmosDbTypeLocator.ClientOptionsTypeNames[1] };
+        CosmosDbTypeLocator.ClientOptionsTypeNames = new string[] { CosmosDbTypeLocator.ClientOptionsTypeNames[0] };
 
         var si = new CosmosDbServiceInfo("MyId")
         {
