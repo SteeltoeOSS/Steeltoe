@@ -55,6 +55,7 @@
     <EasyNetQVersion>1.3.0</EasyNetQVersion>
     <MicrosoftAzureCosmosVersion>3.52.1</MicrosoftAzureCosmosVersion>
     <StackExchangeVersion>2.0.593</StackExchangeVersion>
+    <AzureIdentityVersion>1.14.2</AzureIdentityVersion>
     <CoverletVersion>6.0.4</CoverletVersion>
     <FluentAssertionsJsonVersion>6.1.0</FluentAssertionsJsonVersion>
     <FluentAssertionsVersion>7.2.0</FluentAssertionsVersion>
