@@ -13,6 +13,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(ExtensionsCachingMemoryVersion)" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="$(JwtTokensVersion)" />
   </ItemGroup>
 
   <ItemGroup>
