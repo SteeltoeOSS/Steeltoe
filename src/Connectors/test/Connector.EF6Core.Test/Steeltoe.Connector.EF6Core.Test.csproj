@@ -16,6 +16,7 @@
     <PackageReference Include="Google.Protobuf" Version="$(GoogleProtobufVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
     <PackageReference Include="MySql.Data.EntityFramework" Version="$(MySqlV8)" />
+    <PackageReference Include="System.Drawing.Common" Version="$(SystemDrawingCommonVersion)" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="$(OracleManagedDataAccessCoreVersion)" />
     <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
   </ItemGroup>

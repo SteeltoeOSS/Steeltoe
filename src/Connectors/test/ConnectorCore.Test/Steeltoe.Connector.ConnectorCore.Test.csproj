@@ -20,6 +20,7 @@
     
     <!--<PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />-->
     <PackageReference Include="MySql.Data" Version="$(MySqlV8)" />
+    <PackageReference Include="System.Drawing.Common" Version="$(SystemDrawingCommonVersion)" />
 
     <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="$(HealthChecksMySqlVersion)" />
     <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="$(HealthChecksMongoDbVersion)" />
