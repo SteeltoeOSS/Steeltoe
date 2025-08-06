@@ -42,6 +42,7 @@
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
     <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />
     <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
+    <PackageReference Include="SSH.NET" Version="$(SshNetVersion)" />
   </ItemGroup>
 
 </Project>

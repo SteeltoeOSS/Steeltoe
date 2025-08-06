@@ -49,6 +49,7 @@
     <MySqlConnectorVersion>0.49.3</MySqlConnectorVersion>
     <MySqlV8>8.0.23</MySqlV8>
     <SystemDrawingCommonVersion>8.0.19</SystemDrawingCommonVersion>
+    <SshNetVersion>2024.2.0</SshNetVersion>
     <SqlClientVersion>4.8.6</SqlClientVersion>
     <MicrosoftSqlClientVersion>5.1.3</MicrosoftSqlClientVersion>
     <EasyNetQVersion>1.3.0</EasyNetQVersion>
