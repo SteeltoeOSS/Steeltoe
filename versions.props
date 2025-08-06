@@ -72,6 +72,7 @@
     <SerilogExceptionsVersion>5.0.0</SerilogExceptionsVersion>
     <SerilogSinksDebugVersion>2.0.0</SerilogSinksDebugVersion>
     <SystemNetSecurityVersion>4.3.1</SystemNetSecurityVersion>
+    <GoogleProtobufVersion>3.15.0</GoogleProtobufVersion>
     <SonarAnalyzerVersion>8.32.0.39516</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>1.1.1</SourceLinkGitHubVersion>
     <StyleCopVersion>1.1.118</StyleCopVersion>
