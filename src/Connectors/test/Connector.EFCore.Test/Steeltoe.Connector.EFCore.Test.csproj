@@ -20,6 +20,8 @@
     <PackageReference Include="Oracle.EntityFrameworkCore" Version="$(OracleEFCoreVersion)" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="$(OracleManagedDataAccessCoreVersion)" />
     <PackageReference Include="System.Drawing.Common" Version="$(SystemDrawingCommonVersion)" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="$(JwtTokensVersion)" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(JwtTokensVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">

@@ -9,7 +9,7 @@
     <!-- Exposed dependencies, observable by Steeltoe library consumers. Only update when vulnerable. -->
     <DriveInfoVersion>4.3.1</DriveInfoVersion>
     <WinHttpHandlerVersion>4.7.0</WinHttpHandlerVersion>
-    <JwtTokensVersion>5.2.2</JwtTokensVersion>
+    <JwtTokensVersion>7.7.1</JwtTokensVersion>
     <SymReaderVersion>1.2.0</SymReaderVersion>
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
     <SystemDiagnosticsVersion>8.0.0</SystemDiagnosticsVersion>
