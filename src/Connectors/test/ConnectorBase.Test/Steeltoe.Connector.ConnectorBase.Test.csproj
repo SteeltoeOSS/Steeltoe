@@ -29,6 +29,7 @@
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="$(JwtTokensVersion)" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(JwtTokensVersion)" />
+    <PackageReference Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
   </ItemGroup>
 
   <ItemGroup>
