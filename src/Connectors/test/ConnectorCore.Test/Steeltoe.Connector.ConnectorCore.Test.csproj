@@ -13,12 +13,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="$(GoogleProtobufVersion)" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MicrosoftExtensionsRedisVersion)" />
     <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />
     <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
     
     <!--<PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />-->
     <PackageReference Include="MySql.Data" Version="$(MySqlV8)" />
+    <PackageReference Include="System.Drawing.Common" Version="$(SystemDrawingCommonVersion)" />
+    <PackageReference Include="SSH.NET" Version="$(SshNetVersion)" />
 
     <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="$(HealthChecksMySqlVersion)" />
     <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="$(HealthChecksMongoDbVersion)" />
@@ -32,6 +35,7 @@
     <!--<PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />-->
     <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="System.Net.Security" Version="$(SystemNetSecurityVersion)" />
   </ItemGroup>
 
   <ItemGroup>

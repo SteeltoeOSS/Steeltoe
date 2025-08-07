@@ -11,9 +11,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="$(SerilogVersion)" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="$(SerilogVersion)" />
     <PackageReference Include="Serilog.Sinks.Console" Version="$(SerilogSinksConsoleVersion)" />
+    <PackageReference Include="System.Text.Json" Version="$(SystemJsonVersion)" />
   </ItemGroup>
 
   <ItemGroup>

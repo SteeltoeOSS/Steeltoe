@@ -21,6 +21,8 @@
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="$(CastleCoreVersion)" />
     <PackageReference Include="System.Runtime.Loader" Version="$(RuntimeLoaderVersion)" />
+    <PackageReference Include="System.Net.Http" Version="$(SystemNetHttpVersion)" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="$(SystemTextRegularExpressionsVersion)" />
   </ItemGroup>
 
 </Project>

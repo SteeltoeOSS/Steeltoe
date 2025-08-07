@@ -33,14 +33,16 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
-
+    <PackageReference Include="Google.Protobuf" Version="$(GoogleProtobufVersion)" />
     <PackageReference Include="MySql.Data" Version="$(MySqlV8)" />
+    <PackageReference Include="System.Drawing.Common" Version="$(SystemDrawingCommonVersion)" />
     <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="$(OracleManagedDataAccessCoreVersion)" />
     <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
     <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />
     <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
+    <PackageReference Include="SSH.NET" Version="$(SshNetVersion)" />
   </ItemGroup>
 
 </Project>
