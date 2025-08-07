@@ -50,7 +50,7 @@ public sealed class ConsulHealthContributorTest
         };
 
         var catalogMoq = new Mock<ICatalogEndpoint>();
-        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, It.IsAny<CancellationToken>())).Returns(Task.FromResult(queryResult));
+        catalogMoq.Setup(endpoint => endpoint.Services(It.IsAny<CancellationToken>())).Returns(Task.FromResult(queryResult));
 
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Catalog).Returns(catalogMoq.Object);
@@ -89,7 +89,7 @@ public sealed class ConsulHealthContributorTest
         statusMoq.Setup(endpoint => endpoint.Leader(It.IsAny<CancellationToken>())).Returns(Task.FromResult("the-status"));
 
         var catalogMoq = new Mock<ICatalogEndpoint>();
-        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, It.IsAny<CancellationToken>())).Returns(Task.FromResult(queryResult));
+        catalogMoq.Setup(endpoint => endpoint.Services(It.IsAny<CancellationToken>())).Returns(Task.FromResult(queryResult));
 
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Status).Returns(statusMoq.Object);
