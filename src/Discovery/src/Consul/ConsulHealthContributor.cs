@@ -67,7 +67,7 @@ internal sealed class ConsulHealthContributor : IHealthContributor
 
     internal async Task<Dictionary<string, string[]>> GetCatalogServicesAsync(CancellationToken cancellationToken)
     {
-        QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(QueryOptions.Default, cancellationToken);
+        QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(cancellationToken);
         return result.Response;
     }
 }
