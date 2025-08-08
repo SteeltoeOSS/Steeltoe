@@ -1,1 +1,4 @@
 #nullable enable
+Steeltoe.Common.Net.WindowsNetworkFileShare
+Steeltoe.Common.Net.WindowsNetworkFileShare.Dispose() -> void
+Steeltoe.Common.Net.WindowsNetworkFileShare.WindowsNetworkFileShare(string! networkName, System.Net.NetworkCredential! credentials) -> void

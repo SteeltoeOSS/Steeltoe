@@ -1,3 +1,1 @@
-#nullable enable
-static Steeltoe.Security.Authentication.OpenIdConnect.OpenIdConnectAuthenticationBuilderExtensions.ConfigureOpenIdConnectForCloudFoundry(this Microsoft.AspNetCore.Authentication.AuthenticationBuilder! builder) -> Microsoft.AspNetCore.Authentication.AuthenticationBuilder!
-Steeltoe.Security.Authentication.OpenIdConnect.OpenIdConnectAuthenticationBuilderExtensions
+﻿

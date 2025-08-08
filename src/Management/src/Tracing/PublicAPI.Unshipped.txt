@@ -1,1 +1,6 @@
 #nullable enable
+static Steeltoe.Management.Tracing.TracingServiceCollectionExtensions.AddTracingLogProcessor(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+Steeltoe.Management.Tracing.TracingLogProcessor.TracingLogProcessor(Steeltoe.Common.IApplicationInstanceInfo! applicationInstanceInfo) -> void
+Steeltoe.Management.Tracing.TracingServiceCollectionExtensions
+Steeltoe.Management.Tracing.TracingLogProcessor
+Steeltoe.Management.Tracing.TracingLogProcessor.Process(string! message) -> string!

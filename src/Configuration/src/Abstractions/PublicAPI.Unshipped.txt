@@ -1,1 +1,3 @@
 #nullable enable
+Steeltoe.Configuration.ICompositeConfigurationSource
+Steeltoe.Configuration.ICompositeConfigurationSource.Sources.get -> System.Collections.Generic.IList<Microsoft.Extensions.Configuration.IConfigurationSource!>!

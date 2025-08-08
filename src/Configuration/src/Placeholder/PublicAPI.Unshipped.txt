@@ -1,1 +1,4 @@
 #nullable enable
+static Steeltoe.Configuration.Placeholder.PlaceholderConfigurationBuilderExtensions.AddPlaceholderResolver(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.Placeholder.PlaceholderConfigurationBuilderExtensions.AddPlaceholderResolver(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+Steeltoe.Configuration.Placeholder.PlaceholderConfigurationBuilderExtensions

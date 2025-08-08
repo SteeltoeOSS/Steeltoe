@@ -1,1 +1,25 @@
 #nullable enable
+static Steeltoe.Discovery.Configuration.ConfigurationServiceCollectionExtensions.AddConfigurationDiscoveryClient(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient
+Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient.ConfigurationDiscoveryClient(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Discovery.Configuration.ConfigurationDiscoveryOptions!>! optionsMonitor) -> void
+Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient.Description.get -> string!
+Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient.GetInstancesAsync(string! serviceId, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<Steeltoe.Common.Discovery.IServiceInstance!>!>!
+Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient.GetLocalServiceInstance() -> Steeltoe.Common.Discovery.IServiceInstance?
+Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient.GetServiceIdsAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.ISet<string!>!>!
+Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient.ShutdownAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+Steeltoe.Discovery.Configuration.ConfigurationDiscoveryOptions
+Steeltoe.Discovery.Configuration.ConfigurationDiscoveryOptions.ConfigurationDiscoveryOptions() -> void
+Steeltoe.Discovery.Configuration.ConfigurationDiscoveryOptions.Services.get -> System.Collections.Generic.IList<Steeltoe.Discovery.Configuration.ConfigurationServiceInstance!>!
+Steeltoe.Discovery.Configuration.ConfigurationServiceCollectionExtensions
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.ConfigurationServiceInstance() -> void
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.Host.get -> string?
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.Host.set -> void
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.IsSecure.get -> bool
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.IsSecure.set -> void
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.Metadata.get -> System.Collections.Generic.IDictionary<string!, string?>!
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.Port.get -> int
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.Port.set -> void
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.ServiceId.get -> string?
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.ServiceId.set -> void
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.Uri.get -> System.Uri!

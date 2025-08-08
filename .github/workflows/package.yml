@@ -104,8 +104,7 @@ jobs:
         exit 1
 
     - name: Verify public API files (for release)
-# TODO: Revert after testing
-#      if: ${{ github.event_name == 'release' }}
+      if: ${{ github.event_name == 'release' }}
       shell: pwsh
       run: |
         # To recover from this:

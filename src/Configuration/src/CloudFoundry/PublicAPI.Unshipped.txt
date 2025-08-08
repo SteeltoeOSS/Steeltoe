@@ -1,1 +1,94 @@
 #nullable enable
+override Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ApplicationName.get -> string?
+override Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ApplicationName.set -> void
+static Steeltoe.Configuration.CloudFoundry.CloudFoundryConfigurationBuilderExtensions.AddCloudFoundry(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.CloudFoundry.CloudFoundryConfigurationBuilderExtensions.AddCloudFoundry(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader? settingsReader) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.CloudFoundry.CloudFoundryConfigurationBuilderExtensions.AddCloudFoundry(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader? settingsReader, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundryConfiguration(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
+static Steeltoe.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundryConfiguration(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
+static Steeltoe.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundryConfiguration(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
+static Steeltoe.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundryConfiguration(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
+static Steeltoe.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundryConfiguration(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
+static Steeltoe.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundryConfiguration(this Microsoft.Extensions.Hosting.IHostBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Hosting.IHostBuilder!
+static Steeltoe.Configuration.CloudFoundry.CloudFoundryServiceCollectionExtensions.AddCloudFoundryOptions(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Configuration.CloudFoundry.ServiceBindings.ConfigurationBuilderExtensions.AddCloudFoundryServiceBindings(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.CloudFoundry.ServiceBindings.ConfigurationBuilderExtensions.AddCloudFoundryServiceBindings(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Steeltoe.Configuration.CloudFoundry.ServiceBindings.IServiceBindingsReader! serviceBindingsReader) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.CloudFoundry.ServiceBindings.ConfigurationBuilderExtensions.AddCloudFoundryServiceBindings(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, System.Predicate<string!>! ignoreKeyPredicate, Steeltoe.Configuration.CloudFoundry.ServiceBindings.IServiceBindingsReader! serviceBindingsReader, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+Steeltoe.Configuration.CloudFoundry.ApplicationLimits
+Steeltoe.Configuration.CloudFoundry.ApplicationLimits.ApplicationLimits() -> void
+Steeltoe.Configuration.CloudFoundry.ApplicationLimits.Disk.get -> int
+Steeltoe.Configuration.CloudFoundry.ApplicationLimits.Disk.set -> void
+Steeltoe.Configuration.CloudFoundry.ApplicationLimits.FileDescriptor.get -> int
+Steeltoe.Configuration.CloudFoundry.ApplicationLimits.FileDescriptor.set -> void
+Steeltoe.Configuration.CloudFoundry.ApplicationLimits.Memory.get -> int
+Steeltoe.Configuration.CloudFoundry.ApplicationLimits.Memory.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.Api.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.Api.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ApplicationId.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ApplicationId.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ApplicationVersion.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ApplicationVersion.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.CloudFoundryApplicationOptions() -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.InstanceId.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.InstanceId.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.InstanceIndex.get -> int
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.InstanceIndex.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.InstanceIP.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.InstanceIP.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.InstancePort.get -> int
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.InstancePort.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.InternalIP.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.InternalIP.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.Limits.get -> Steeltoe.Configuration.CloudFoundry.ApplicationLimits?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.Limits.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.OrganizationId.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.OrganizationId.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.OrganizationName.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.OrganizationName.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ProcessId.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ProcessId.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ProcessType.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ProcessType.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.SpaceId.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.SpaceId.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.SpaceName.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.SpaceName.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.Start.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.Start.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.StartedAtTimestamp.get -> long
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.StartedAtTimestamp.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryApplicationOptions.Uris.get -> System.Collections.Generic.IList<string!>!
+Steeltoe.Configuration.CloudFoundry.CloudFoundryConfigurationBuilderExtensions
+Steeltoe.Configuration.CloudFoundry.CloudFoundryCredentials
+Steeltoe.Configuration.CloudFoundry.CloudFoundryCredentials.CloudFoundryCredentials() -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryCredentials.CloudFoundryCredentials(string! value) -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryCredentials.Value.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions
+Steeltoe.Configuration.CloudFoundry.CloudFoundryService
+Steeltoe.Configuration.CloudFoundry.CloudFoundryService.CloudFoundryService() -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryService.Credentials.get -> Steeltoe.Configuration.CloudFoundry.CloudFoundryCredentials!
+Steeltoe.Configuration.CloudFoundry.CloudFoundryService.Label.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryService.Label.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryService.Name.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryService.Name.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryService.Plan.get -> string?
+Steeltoe.Configuration.CloudFoundry.CloudFoundryService.Plan.set -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryService.Tags.get -> System.Collections.Generic.IList<string!>!
+Steeltoe.Configuration.CloudFoundry.CloudFoundryServiceCollectionExtensions
+Steeltoe.Configuration.CloudFoundry.CloudFoundryServicesOptions
+Steeltoe.Configuration.CloudFoundry.CloudFoundryServicesOptions.CloudFoundryServicesOptions() -> void
+Steeltoe.Configuration.CloudFoundry.CloudFoundryServicesOptions.GetAllServices() -> System.Collections.Generic.IList<Steeltoe.Configuration.CloudFoundry.CloudFoundryService!>!
+Steeltoe.Configuration.CloudFoundry.CloudFoundryServicesOptions.GetServicesOfType(string! serviceType) -> System.Collections.Generic.IList<Steeltoe.Configuration.CloudFoundry.CloudFoundryService!>!
+Steeltoe.Configuration.CloudFoundry.CloudFoundryServicesOptions.Services.get -> System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<Steeltoe.Configuration.CloudFoundry.CloudFoundryService!>!>!
+Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader
+Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader.ApplicationJson.get -> string?
+Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstanceId.get -> string?
+Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstanceIndex.get -> string?
+Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstanceInternalIP.get -> string?
+Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstanceIP.get -> string?
+Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstancePort.get -> string?
+Steeltoe.Configuration.CloudFoundry.ICloudFoundrySettingsReader.ServicesJson.get -> string?
+Steeltoe.Configuration.CloudFoundry.ServiceBindings.ConfigurationBuilderExtensions
+Steeltoe.Configuration.CloudFoundry.ServiceBindings.IServiceBindingsReader
+Steeltoe.Configuration.CloudFoundry.ServiceBindings.IServiceBindingsReader.GetServiceBindingsJson() -> string?

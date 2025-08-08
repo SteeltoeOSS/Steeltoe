@@ -1,12 +1,1 @@
-#nullable enable
-static Steeltoe.Management.Tasks.TaskHostExtensions.HasApplicationTask(this Microsoft.AspNetCore.Hosting.IWebHost! host) -> bool
-static Steeltoe.Management.Tasks.TaskHostExtensions.HasApplicationTask(this Microsoft.Extensions.Hosting.IHost! host) -> bool
-static Steeltoe.Management.Tasks.TaskHostExtensions.RunWithTasksAsync(this Microsoft.AspNetCore.Hosting.IWebHost! host, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
-static Steeltoe.Management.Tasks.TaskHostExtensions.RunWithTasksAsync(this Microsoft.Extensions.Hosting.IHost! host, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
-static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! taskName, Steeltoe.Common.IApplicationTask! task) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! taskName, System.Func<System.IServiceProvider!, string!, Steeltoe.Common.IApplicationTask!>! factory) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! taskName, System.Func<System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task!>! asyncAction) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask<T>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! taskName, Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask<T>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! taskName) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-Steeltoe.Management.Tasks.TaskHostExtensions
-Steeltoe.Management.Tasks.TaskServiceCollectionExtensions
+﻿

@@ -17,9 +17,6 @@ public class MessageProcessingLogger : ILogger
     protected IReadOnlyCollection<IDynamicMessageProcessor> MessageProcessors { get; }
     protected ILogger InnerLogger { get; }
 
-    /// <summary/>
-    public bool IsHidden => true;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageProcessingLogger" /> class.
     /// </summary>
