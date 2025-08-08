@@ -1,10 +1,1 @@
 #nullable enable
-override Steeltoe.Management.Prometheus.PrometheusEndpointOptions.RequiresExactMatch() -> bool
-static Steeltoe.Management.Prometheus.PrometheusExtensions.AddPrometheusActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Prometheus.PrometheusExtensions.AddPrometheusActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Prometheus.PrometheusExtensions.AddPrometheusActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware, System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>? configurePrometheusPipeline) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Prometheus.PrometheusExtensions.UsePrometheusActuator(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
-static Steeltoe.Management.Prometheus.PrometheusExtensions.UsePrometheusActuator(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder, System.Action<Microsoft.AspNetCore.Builder.IApplicationBuilder!>? configurePrometheusPipeline) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
-Steeltoe.Management.Prometheus.PrometheusEndpointOptions
-Steeltoe.Management.Prometheus.PrometheusEndpointOptions.PrometheusEndpointOptions() -> void
-Steeltoe.Management.Prometheus.PrometheusExtensions

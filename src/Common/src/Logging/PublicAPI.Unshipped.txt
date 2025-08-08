@@ -1,11 +1,1 @@
 #nullable enable
-static Steeltoe.Common.Logging.BootstrapLoggerFactory.CreateConsole() -> Steeltoe.Common.Logging.BootstrapLoggerFactory!
-static Steeltoe.Common.Logging.BootstrapLoggerFactory.CreateConsole(System.Action<Microsoft.Extensions.Logging.ILoggingBuilder!>! configure) -> Steeltoe.Common.Logging.BootstrapLoggerFactory!
-static Steeltoe.Common.Logging.BootstrapLoggerFactory.CreateEmpty(System.Action<Microsoft.Extensions.Logging.ILoggingBuilder!>! configure) -> Steeltoe.Common.Logging.BootstrapLoggerFactory!
-static Steeltoe.Common.Logging.BootstrapLoggerServiceCollectionExtensions.UpgradeBootstrapLoggerFactory(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Common.Logging.BootstrapLoggerFactory! bootstrapLoggerFactory) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-Steeltoe.Common.Logging.BootstrapLoggerFactory
-Steeltoe.Common.Logging.BootstrapLoggerFactory.AddProvider(Microsoft.Extensions.Logging.ILoggerProvider! provider) -> void
-Steeltoe.Common.Logging.BootstrapLoggerFactory.CreateLogger(string! categoryName) -> Microsoft.Extensions.Logging.ILogger!
-Steeltoe.Common.Logging.BootstrapLoggerFactory.Dispose() -> void
-Steeltoe.Common.Logging.BootstrapLoggerFactory.Upgrade(Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
-Steeltoe.Common.Logging.BootstrapLoggerServiceCollectionExtensions
