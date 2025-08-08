@@ -1,1 +1,2 @@
 #nullable enable
+Steeltoe.Logging.MessageProcessingLogger.IsHidden.get -> bool

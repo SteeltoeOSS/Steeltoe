@@ -30,15 +30,15 @@ public static class RandomValueConfigurationBuilderExtensions
     /// <param name="builder">
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
-    /// <param name="loggerFactory">
+    /// <param name="factory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, ILoggerFactory loggerFactory)
+    public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, ILoggerFactory factory)
     {
-        return AddRandomValueSource(builder, null, loggerFactory);
+        return AddRandomValueSource(builder, null, factory);
     }
 
     /// <summary>
@@ -75,8 +75,33 @@ public static class RandomValueConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, string? prefix, ILoggerFactory loggerFactory)
     {
+        return AddRandomValueSource(builder, prefix, null, loggerFactory);
+    }
+
+    /// <summary>
+    /// Adds a random value configuration source to the <see cref="ConfigurationBuilder" /> using a custom prefix for key values.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
+    /// </param>
+    /// <param name="prefix">
+    /// The prefix used for random key values.
+    /// </param>
+    /// <param name="seed">
+    /// The randomizer seed.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, string? prefix, int? seed, ILoggerFactory loggerFactory)
+    {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(loggerFactory);
+
+        _ = seed;
 
         if (!builder.EnumerateSources<RandomValueSource>().Any())
         {
