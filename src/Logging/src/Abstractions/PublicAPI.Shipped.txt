@@ -30,6 +30,7 @@ Steeltoe.Logging.MessageProcessingLogger.BeginScope<TState>(TState state) -> Sys
 Steeltoe.Logging.MessageProcessingLogger.ChangeFilter(Steeltoe.Logging.LoggerFilter! filter) -> void
 Steeltoe.Logging.MessageProcessingLogger.InnerLogger.get -> Microsoft.Extensions.Logging.ILogger!
 Steeltoe.Logging.MessageProcessingLogger.IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) -> bool
+Steeltoe.Logging.MessageProcessingLogger.IsHidden.get -> bool
 Steeltoe.Logging.MessageProcessingLogger.MessageProcessingLogger(Microsoft.Extensions.Logging.ILogger! innerLogger, Steeltoe.Logging.LoggerFilter! filter, System.Collections.Generic.IEnumerable<Steeltoe.Logging.IDynamicMessageProcessor!>! messageProcessors) -> void
 Steeltoe.Logging.MessageProcessingLogger.MessageProcessors.get -> System.Collections.Generic.IReadOnlyCollection<Steeltoe.Logging.IDynamicMessageProcessor!>!
 virtual Steeltoe.Logging.DynamicLoggerProvider.CreateMessageProcessingLogger(string! categoryName) -> Steeltoe.Logging.MessageProcessingLogger!

@@ -1,4 +1,1 @@
 #nullable enable
-*REMOVED*static Steeltoe.Configuration.RandomValue.RandomValueConfigurationBuilderExtensions.AddRandomValueSource(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.RandomValue.RandomValueConfigurationBuilderExtensions.AddRandomValueSource(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! factory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.RandomValue.RandomValueConfigurationBuilderExtensions.AddRandomValueSource(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, string? prefix, int? seed, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
