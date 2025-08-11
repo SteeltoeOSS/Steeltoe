@@ -16,7 +16,6 @@
     <SystemJsonVersion>8.0.5</SystemJsonVersion>
     <SystemNetHttpJsonVersion>3.2.1</SystemNetHttpJsonVersion>
     <SystemReflectionVersion>4.6.0</SystemReflectionVersion>
-    <KubernetesClientVersion>5.0.13</KubernetesClientVersion>
     <BouncyCastleVersion>1.8.4</BouncyCastleVersion>
     <ConsulVersion>1.6.10.3</ConsulVersion>
     <HdrHistogramVersion>2.0.0</HdrHistogramVersion>
@@ -25,7 +24,7 @@
     <JsonNetVersion>13.0.1</JsonNetVersion>
     <OpenTelemetryVersion>1.8.1</OpenTelemetryVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
-    <RabbitClientVersion>5.0.1</RabbitClientVersion>
+    <RabbitClientVersion>5.1.2</RabbitClientVersion>
     <ReactiveVersion>4.1.5</ReactiveVersion>
     <PollyVersion>7.1.1</PollyVersion>
     <PollyContribVersion>1.0.0</PollyContribVersion>
@@ -36,8 +35,13 @@
     <HealthChecksVersion>3.1.0</HealthChecksVersion>
     <LoggingVersion>3.1.0</LoggingVersion>
     <LightweightEmitVersion>4.7.0</LightweightEmitVersion>
+    <DiagnosticsNETCoreClientVersion>0.2.236902</DiagnosticsNETCoreClientVersion>
+    <DiagnosticsTracingTraceEventVersion>2.0.64</DiagnosticsTracingTraceEventVersion>
+    <SerilogSinksConsoleVersion>3.1.1</SerilogSinksConsoleVersion>
+    <SerilogVersion>3.0.1</SerilogVersion>
 
     <!-- Non-exposed dependencies, only referenced from test projects, build infrastructure and internal tools. -->
+    <BenchmarkDotNetVersion>0.12.0</BenchmarkDotNetVersion>
     <MongoDbClientVersion>3.0.0</MongoDbClientVersion>
     <MySqlConnectorVersion>0.49.3</MySqlConnectorVersion>
     <MySqlV8>8.0.23</MySqlV8>
@@ -45,23 +49,42 @@
     <SqlClientVersion>4.8.6</SqlClientVersion>
     <MicrosoftSqlClientVersion>5.1.3</MicrosoftSqlClientVersion>
     <OracleManagedDataAccessCoreVersion>3.21.90</OracleManagedDataAccessCoreVersion>
+    <EasyNetQVersion>1.3.0</EasyNetQVersion>
+    <MicrosoftAzureCosmosVersion>3.52.1</MicrosoftAzureCosmosVersion>
     <StackExchangeVersion>2.0.593</StackExchangeVersion>
     <CoverletVersion>6.0.4</CoverletVersion>
+    <FluentAssertionsJsonVersion>6.1.0</FluentAssertionsJsonVersion>
     <FluentAssertionsVersion>7.2.0</FluentAssertionsVersion>
     <MockHttpVersion>6.0.0</MockHttpVersion>
     <MoqVersion>4.13.1</MoqVersion>
+    <NSubstituteVersion>4.2.0</NSubstituteVersion>
     <TestSdkVersion>17.0.0</TestSdkVersion>
     <XunitVersion>2.4.1</XunitVersion>
+    <XunitAbstractionsVersion>2.0.3</XunitAbstractionsVersion>
     <XunitStudioVersion>2.4.3</XunitStudioVersion>
+    <AspNetCoreHealthChecksVersion>3.1.2</AspNetCoreHealthChecksVersion>
     <HealthChecksMySqlVersion>2.2.0</HealthChecksMySqlVersion>
     <HealthChecksMongoDbVersion>9.0.0</HealthChecksMongoDbVersion>
     <HealthChecksNpgSqlVersion>2.2.0</HealthChecksNpgSqlVersion>
     <HealthChecksRabbitmqVersion>2.2.1</HealthChecksRabbitmqVersion>
     <HealthChecksRedisVersion>2.2.3</HealthChecksRedisVersion>
     <HealthChecksSqlServerVersion>2.2.0</HealthChecksSqlServerVersion>
+    <SerilogEnrichersThreadVersion>3.1.0</SerilogEnrichersThreadVersion>
+    <SerilogExceptionsVersion>5.0.0</SerilogExceptionsVersion>
+    <SerilogSinksDebugVersion>2.0.0</SerilogSinksDebugVersion>
     <SonarAnalyzerVersion>8.32.0.39516</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>1.1.1</SourceLinkGitHubVersion>
     <StyleCopVersion>1.1.118</StyleCopVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <!-- Exposed dependencies, observable by Steeltoe library consumers. Only update when vulnerable. -->
+    <KubernetesClientVersion>2.0.16</KubernetesClientVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+    <!-- Exposed dependencies, observable by Steeltoe library consumers. Only update when vulnerable. -->
+    <KubernetesClientVersion>5.0.13</KubernetesClientVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
