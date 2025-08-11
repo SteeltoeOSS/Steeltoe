@@ -1,5 +1,6 @@
 <Project>
   <Target Name="FailTheBuild" BeforeTargets="BeforeCompile;CoreCompile">
-    <Error Text="This package has been replaced in Steeltoe v4. Reference Steeltoe.Logging.DynamicSerilog instead. See https://steeltoe.io/docs/v3/obsolete for details." />
+    <Error
+      Text="This package has been replaced in Steeltoe v4. Reference Steeltoe.Logging.DynamicSerilog instead. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>
 </Project>
