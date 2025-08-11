@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Abstractions commonly used across Steeltoe components.</Description>
-    <PackageTags>TODO: Fill package tags.</PackageTags>
+    <PackageTags>Steeltoe</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

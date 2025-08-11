@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Abstractions used in Steeltoe Configuration libraries.</Description>
-    <PackageTags>TODO: Fill package tags.</PackageTags>
+    <PackageTags>configuration;spring boot</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

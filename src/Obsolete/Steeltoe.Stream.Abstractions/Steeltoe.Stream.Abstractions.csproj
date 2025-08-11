@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Abstractions for use with Steeltoe Stream.</Description>
-    <PackageTags>TODO: Fill package tags.</PackageTags>
+    <PackageTags>Streams, NET Core, Spring, Spring Cloud</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

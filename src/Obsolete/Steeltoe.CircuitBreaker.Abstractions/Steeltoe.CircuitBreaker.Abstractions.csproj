@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Circuit breaker abstractions.</Description>
-    <PackageTags>TODO: Fill package tags.</PackageTags>
+    <PackageTags>Spring Cloud;Hystrix Client;Circuit Breaker</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

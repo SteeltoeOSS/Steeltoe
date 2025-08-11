@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Abstractions for working with backing services.</Description>
-    <PackageTags>TODO: Fill package tags.</PackageTags>
+    <PackageTags>connectors;services</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
