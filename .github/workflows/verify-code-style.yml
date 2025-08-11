@@ -42,7 +42,7 @@ jobs:
       run: dotnet tool restore --verbosity minimal
 
     - name: Restore packages
-      run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal
+      run: dotnet restore ${{ env.SOLUTION_FILE }} /p:Configuration=Release --verbosity minimal
 
     - name: CleanupCode (on PR diff)
       if: ${{ github.event_name == 'pull_request' }}
