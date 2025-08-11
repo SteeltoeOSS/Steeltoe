@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Support for storing data protection keys in Redis.</Description>
-    <PackageTags>CloudFoundry;security;dataprotection;redis;aspnetcore;</PackageTags>
+    <PackageTags>CloudFoundry;security;dataprotection;redis;aspnetcore</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
