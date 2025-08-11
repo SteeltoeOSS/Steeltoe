@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Consul;
+using Consul.Filtering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -130,7 +131,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
 
         if (options.Enabled)
         {
-            ISet<string> serviceIds = await GetServiceIdsAsync(queryOptions, cancellationToken);
+            ISet<string> serviceIds = await GetServiceIdsAsync(null, null, queryOptions, cancellationToken);
 
             foreach (string serviceId in serviceIds)
             {
@@ -144,14 +145,20 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     /// <inheritdoc />
     public Task<ISet<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
-        return GetServiceIdsAsync(QueryOptions.Default, cancellationToken);
+        return GetServiceIdsAsync(null, null, QueryOptions.Default, cancellationToken);
     }
 
     /// <summary>
     /// Gets all registered service IDs from the Consul catalog.
     /// </summary>
+    /// <param name="dataCenter">
+    /// Specifies the datacenter to query.
+    /// </param>
+    /// <param name="filter">
+    /// Specifies the expression used to filter the queries results prior to returning the data.
+    /// </param>
     /// <param name="queryOptions">
-    /// Any Consul query options to use.
+    /// Options to parameterize the Consul query.
     /// </param>
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.
@@ -159,7 +166,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     /// <returns>
     /// The list of service IDs.
     /// </returns>
-    public async Task<ISet<string>> GetServiceIdsAsync(QueryOptions queryOptions, CancellationToken cancellationToken)
+    public async Task<ISet<string>> GetServiceIdsAsync(string? dataCenter, Filter? filter, QueryOptions queryOptions, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(queryOptions);
 
@@ -170,7 +177,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
             return new HashSet<string>();
         }
 
-        QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(queryOptions, cancellationToken);
+        QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(dataCenter, filter, queryOptions, cancellationToken);
         return result.Response.Keys.ToHashSet();
     }
 
