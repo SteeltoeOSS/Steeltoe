@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Steeltoe Stream RabbitMQ Binder.</Description>
-    <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud, RabbitMQ, Binder</PackageTags>
+    <PackageTags>Streams;ASPNET Core;Spring;Spring Cloud;RabbitMQ;Binder</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

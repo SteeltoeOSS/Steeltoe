@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Steeltoe Stream Base.</Description>
-    <PackageTags>Streams, NET Core, Spring, Spring Cloud</PackageTags>
+    <PackageTags>Streams;NET Core;Spring;Spring Cloud</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

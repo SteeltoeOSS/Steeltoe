@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Steeltoe Integration Base.</Description>
-    <PackageTags>Integration, NET Core, Spring, Spring Cloud</PackageTags>
+    <PackageTags>Integration;NET Core;Spring;Spring Cloud</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

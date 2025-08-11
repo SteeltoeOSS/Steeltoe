@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Steeltoe Integration RabbitMQ.</Description>
-    <PackageTags>Integration, ASPNET Core, Spring, Spring Cloud, RabbitMQ</PackageTags>
+    <PackageTags>Integration;ASPNET Core;Spring;Spring Cloud;RabbitMQ</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
