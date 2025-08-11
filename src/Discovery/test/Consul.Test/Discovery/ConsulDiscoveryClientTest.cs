@@ -124,14 +124,14 @@ public sealed class ConsulDiscoveryClientTest
         };
 
         var catalogMoq = new Mock<ICatalogEndpoint>();
-        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, It.IsAny<CancellationToken>())).Returns(Task.FromResult(queryResult));
+        catalogMoq.Setup(endpoint => endpoint.Services(null, null, QueryOptions.Default, It.IsAny<CancellationToken>())).Returns(Task.FromResult(queryResult));
 
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Catalog).Returns(catalogMoq.Object);
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
-        ISet<string> serviceIds = await discoveryClient.GetServiceIdsAsync(QueryOptions.Default, TestContext.Current.CancellationToken);
+        ISet<string> serviceIds = await discoveryClient.GetServiceIdsAsync(TestContext.Current.CancellationToken);
 
         serviceIds.Should().HaveCount(2);
         serviceIds.Should().Contain("foo");
@@ -196,7 +196,7 @@ public sealed class ConsulDiscoveryClientTest
         };
 
         var catalogMoq = new Mock<ICatalogEndpoint>();
-        catalogMoq.Setup(endpoint => endpoint.Services(QueryOptions.Default, It.IsAny<CancellationToken>())).Returns(Task.FromResult(queryResult1));
+        catalogMoq.Setup(endpoint => endpoint.Services(null, null, QueryOptions.Default, It.IsAny<CancellationToken>())).Returns(Task.FromResult(queryResult1));
 
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Catalog).Returns(catalogMoq.Object);
