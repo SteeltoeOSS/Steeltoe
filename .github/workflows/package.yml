@@ -102,6 +102,17 @@ jobs:
         echo "Package version suffix is empty. This should never happen."
         exit 1
 
+    - name: Verify public API files (for release)
+      if: ${{ github.event_name == 'release' }}
+      shell: pwsh
+      run: |
+        # To recover from this:
+        # - Delete the GitHub release
+        # - Run: git push --delete origin the-invalid-tag-name
+        # - Run public-api-mark-shipped.ps1, commit and push
+        # - Recreate the GitHub release
+        ./public-api-verify-shipped.ps1
+
     - name: Build solution
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal /p:VersionSuffix=${{ env.PACKAGE_VERSION_SUFFIX }}
 
