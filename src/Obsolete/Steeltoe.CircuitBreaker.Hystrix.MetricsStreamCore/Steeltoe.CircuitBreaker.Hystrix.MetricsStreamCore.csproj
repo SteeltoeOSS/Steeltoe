@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>TODO: Fill package description.</Description>
-    <PackageTags>TODO: Fill package tags.</PackageTags>
+    <Description>Netflix Hystrix metrics event stream for ASP.NET Core over RabbitMQ.</Description>
+    <PackageTags>aspnetcore;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix;turbine;cloudfoundry</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

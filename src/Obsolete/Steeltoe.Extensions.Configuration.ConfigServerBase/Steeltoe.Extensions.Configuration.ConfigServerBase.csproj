@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>TODO: Fill package description.</Description>
-    <PackageTags>TODO: Fill package tags.</PackageTags>
+    <Description>Configuration provider for reading from Spring Cloud Config Server.</Description>
+    <PackageTags>configuration;Spring Cloud;Spring Cloud Config Server</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

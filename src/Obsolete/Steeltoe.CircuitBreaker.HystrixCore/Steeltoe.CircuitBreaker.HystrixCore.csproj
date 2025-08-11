@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>TODO: Fill package description.</Description>
-    <PackageTags>TODO: Fill package tags.</PackageTags>
+    <Description>Package for adding Steeltoe Hystrix to ASP.NET Core applications.</Description>
+    <PackageTags>aspnetcore;Spring Cloud;Netflix;Hystrix Client;Circuit Breaker</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>TODO: Fill package description.</Description>
-    <PackageTags>TODO: Fill package tags.</PackageTags>
+    <Description>Package for enabling Steeltoe Connectors on Cloud Foundry.</Description>
+    <PackageTags>CloudFoundry;vcap;connectors</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

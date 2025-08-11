@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>TODO: Fill package description.</Description>
-    <PackageTags>TODO: Fill package tags.</PackageTags>
+    <Description>ASP.NET Core middleware that enables an application to support certificate authentication.</Description>
+    <PackageTags>aspnetcore;authentication;security;x509;certificate;mtls</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

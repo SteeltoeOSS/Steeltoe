@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>TODO: Fill package description.</Description>
-    <PackageTags>TODO: Fill package tags.</PackageTags>
+    <Description>Steeltoe library for enabling dynamic management of Serilog in ASP.NET Core applications. Includes Console sink.</Description>
+    <PackageTags>logging;dynamic logging;serilog;aspnetcore;management;monitoring;Spring Cloud</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

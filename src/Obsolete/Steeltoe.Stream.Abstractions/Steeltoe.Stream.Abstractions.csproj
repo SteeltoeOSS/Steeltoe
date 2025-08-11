@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>TODO: Fill package description.</Description>
+    <Description>Abstractions for use with Steeltoe Stream.</Description>
     <PackageTags>TODO: Fill package tags.</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>

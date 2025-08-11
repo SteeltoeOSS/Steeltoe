@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>TODO: Fill package description.</Description>
-    <PackageTags>TODO: Fill package tags.</PackageTags>
+    <Description>NET Client for CredHub - Base Package.</Description>
+    <PackageTags>CloudFoundry;NET Core;Security;DataProtection;CredHub</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

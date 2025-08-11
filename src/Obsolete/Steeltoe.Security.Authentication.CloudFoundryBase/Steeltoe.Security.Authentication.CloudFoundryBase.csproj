@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>TODO: Fill package description.</Description>
-    <PackageTags>TODO: Fill package tags.</PackageTags>
+    <Description>Base Security Provider for CloudFoundry.</Description>
+    <PackageTags>CloudFoundry;security;oauth2;sso;openid</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
