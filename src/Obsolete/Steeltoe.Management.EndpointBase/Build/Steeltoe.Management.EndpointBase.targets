@@ -1,6 +1,10 @@
 <Project>
-  <Target Name="FailTheBuild" BeforeTargets="BeforeCompile;CoreCompile">
-    <Error
+  <Target Name="Warn_SteeltoeManagementEndpointBase" BeforeTargets="BeforeResolveReferences">
+    <Warning
       Text="This package has been replaced in Steeltoe v4. Reference Steeltoe.Management.Endpoint instead. See https://steeltoe.io/docs/v3/obsolete for details." />
+  </Target>
+
+  <Target Name="Fail_Steeltoe" BeforeTargets="BeforeCompile;CoreCompile">
+    <Error Text="One or more Steeltoe package dependencies need attention. See the build warnings for details." />
   </Target>
 </Project>
