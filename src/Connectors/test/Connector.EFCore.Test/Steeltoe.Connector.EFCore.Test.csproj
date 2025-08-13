@@ -13,9 +13,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="$(MicrosoftSqlClientVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EFCoreTestVersion)" />
+    <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(NpgsqlEFCoreVersion)" />
     <PackageReference Include="Oracle.EntityFrameworkCore" Version="$(OracleEFCoreVersion)" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="$(OracleManagedDataAccessCoreVersion)" />
+    <PackageReference Include="System.Drawing.Common" Version="$(SystemDrawingCommonVersion)" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="$(JwtTokensVersion)" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(JwtTokensVersion)" />
+    <PackageReference Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
+    <PackageReference Include="BouncyCastle.Cryptography" Version="$(BouncyCastleCryptographyVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">

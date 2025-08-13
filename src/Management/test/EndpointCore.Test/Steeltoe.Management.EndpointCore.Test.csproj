@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <AssemblyName>Steeltoe.Management.EndpointCore.Test</AssemblyName>
@@ -45,6 +45,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.System" Version="$(AspNetCoreHealthChecksVersion)" />
     <PackageReference Include="FluentAssertions.Json" Version="$(FluentAssertionsJsonVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(ExtensionsCachingMemoryVersion)" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="$(OpenTelemetryVersion)" />
   </ItemGroup>
 </Project>

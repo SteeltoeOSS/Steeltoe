@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Consul" Version="$(ConsulVersion)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
     <PackageReference Include="System.Net.Http.WinHttpHandler" Version="$(WinHttpHandlerVersion)" />
   </ItemGroup>
 
