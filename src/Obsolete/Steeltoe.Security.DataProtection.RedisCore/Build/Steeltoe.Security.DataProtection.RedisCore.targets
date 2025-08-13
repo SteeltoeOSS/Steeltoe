@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="Warn_SteeltoeSecurityDataProtectionRedisCore" BeforeTargets="BeforeResolveReferences">
+  <Target Name="Warn_SteeltoeSecurityDataProtectionRedisCore" AfterTargets="AfterResolveReferences">
     <Warning
       Text="The NuGet package Steeltoe.Security.DataProtection.RedisCore has been replaced in Steeltoe v4. Reference Steeltoe.Security.DataProtection.Redis instead. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>

@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="Warn_SteeltoeSecurityAuthenticationCloudFoundryCore" BeforeTargets="BeforeResolveReferences">
+  <Target Name="Warn_SteeltoeSecurityAuthenticationCloudFoundryCore" AfterTargets="AfterResolveReferences">
     <Warning
       Text="The NuGet package Steeltoe.Security.Authentication.CloudFoundryCore has been replaced in Steeltoe v4. Reference Steeltoe.Security.Authentication.JwtBearer / Steeltoe.Security.Authentication.OpenIdConnect / Steeltoe.Security.Authorization.Certificate instead. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>

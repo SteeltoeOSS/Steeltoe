@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="Warn_SteeltoeCommonSecurity" BeforeTargets="BeforeResolveReferences">
+  <Target Name="Warn_SteeltoeCommonSecurity" AfterTargets="AfterResolveReferences">
     <Warning
       Text="The NuGet package Steeltoe.Common.Security has been replaced in Steeltoe v4. Reference Steeltoe.Common.Certificates instead. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>

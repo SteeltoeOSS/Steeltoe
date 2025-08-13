@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="Warn_SteeltoeBootstrapAutoconfig" BeforeTargets="BeforeResolveReferences">
+  <Target Name="Warn_SteeltoeBootstrapAutoconfig" AfterTargets="AfterResolveReferences">
     <Warning
       Text="The NuGet package Steeltoe.Bootstrap.Autoconfig has been replaced in Steeltoe v4. Reference Steeltoe.Bootstrap.AutoConfiguration instead. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>

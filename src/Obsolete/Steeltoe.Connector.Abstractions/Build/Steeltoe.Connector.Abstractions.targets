@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="Warn_SteeltoeConnectorAbstractions" BeforeTargets="BeforeResolveReferences">
+  <Target Name="Warn_SteeltoeConnectorAbstractions" AfterTargets="AfterResolveReferences">
     <Warning
       Text="The NuGet package Steeltoe.Connector.Abstractions has been replaced in Steeltoe v4. Reference Steeltoe.Connectors instead. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>

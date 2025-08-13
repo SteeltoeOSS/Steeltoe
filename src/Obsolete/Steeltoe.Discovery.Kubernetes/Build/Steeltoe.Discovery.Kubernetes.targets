@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="Warn_SteeltoeDiscoveryKubernetes" BeforeTargets="BeforeResolveReferences">
+  <Target Name="Warn_SteeltoeDiscoveryKubernetes" AfterTargets="AfterResolveReferences">
     <Warning
       Text="The NuGet package Steeltoe.Discovery.Kubernetes is no longer available in Steeltoe v4. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>

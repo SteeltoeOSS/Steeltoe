@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="Warn_SteeltoeExtensionsConfigurationKubernetesCore" BeforeTargets="BeforeResolveReferences">
+  <Target Name="Warn_SteeltoeExtensionsConfigurationKubernetesCore" AfterTargets="AfterResolveReferences">
     <Warning
       Text="The NuGet package Steeltoe.Extensions.Configuration.KubernetesCore is no longer available in Steeltoe v4. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>

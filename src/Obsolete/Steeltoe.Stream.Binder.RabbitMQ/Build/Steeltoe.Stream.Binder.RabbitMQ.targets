@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="Warn_SteeltoeStreamBinderRabbitMQ" BeforeTargets="BeforeResolveReferences">
+  <Target Name="Warn_SteeltoeStreamBinderRabbitMQ" AfterTargets="AfterResolveReferences">
     <Warning
       Text="The NuGet package Steeltoe.Stream.Binder.RabbitMQ is no longer available in Steeltoe v4. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>

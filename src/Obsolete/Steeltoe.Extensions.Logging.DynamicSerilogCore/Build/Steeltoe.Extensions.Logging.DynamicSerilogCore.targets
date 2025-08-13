@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="Warn_SteeltoeExtensionsLoggingDynamicSerilogCore" BeforeTargets="BeforeResolveReferences">
+  <Target Name="Warn_SteeltoeExtensionsLoggingDynamicSerilogCore" AfterTargets="AfterResolveReferences">
     <Warning
       Text="The NuGet package Steeltoe.Extensions.Logging.DynamicSerilogCore has been replaced in Steeltoe v4. Reference Steeltoe.Logging.DynamicSerilog instead. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>

@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="Warn_SteeltoeSecurityDataProtectionCredHubBase" BeforeTargets="BeforeResolveReferences">
+  <Target Name="Warn_SteeltoeSecurityDataProtectionCredHubBase" AfterTargets="AfterResolveReferences">
     <Warning
       Text="The NuGet package Steeltoe.Security.DataProtection.CredHubBase is no longer available in Steeltoe v4. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>

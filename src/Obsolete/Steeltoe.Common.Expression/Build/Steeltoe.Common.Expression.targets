@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="Warn_SteeltoeCommonExpression" BeforeTargets="BeforeResolveReferences">
+  <Target Name="Warn_SteeltoeCommonExpression" AfterTargets="AfterResolveReferences">
     <Warning Text="The NuGet package Steeltoe.Common.Expression is no longer available in Steeltoe v4. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>
 

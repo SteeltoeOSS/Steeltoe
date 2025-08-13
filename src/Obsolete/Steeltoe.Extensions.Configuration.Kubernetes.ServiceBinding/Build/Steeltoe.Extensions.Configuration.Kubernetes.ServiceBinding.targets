@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="Warn_SteeltoeExtensionsConfigurationKubernetesServiceBinding" BeforeTargets="BeforeResolveReferences">
+  <Target Name="Warn_SteeltoeExtensionsConfigurationKubernetesServiceBinding" AfterTargets="AfterResolveReferences">
     <Warning
       Text="The NuGet package Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding has been replaced in Steeltoe v4. Reference Steeltoe.Configuration.Kubernetes.ServiceBindings instead. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>

@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="Warn_SteeltoeManagementTracingCore" BeforeTargets="BeforeResolveReferences">
+  <Target Name="Warn_SteeltoeManagementTracingCore" AfterTargets="AfterResolveReferences">
     <Warning
       Text="The NuGet package Steeltoe.Management.TracingCore has been replaced in Steeltoe v4. Reference Steeltoe.Management.Tracing instead. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>

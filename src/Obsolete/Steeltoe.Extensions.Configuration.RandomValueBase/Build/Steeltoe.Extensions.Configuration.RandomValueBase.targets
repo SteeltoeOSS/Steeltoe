@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="Warn_SteeltoeExtensionsConfigurationRandomValueBase" BeforeTargets="BeforeResolveReferences">
+  <Target Name="Warn_SteeltoeExtensionsConfigurationRandomValueBase" AfterTargets="AfterResolveReferences">
     <Warning
       Text="The NuGet package Steeltoe.Extensions.Configuration.RandomValueBase has been replaced in Steeltoe v4. Reference Steeltoe.Configuration.RandomValue instead. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>

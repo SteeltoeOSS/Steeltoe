@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="Warn_SteeltoeExtensionsConfigurationConfigServerCore" BeforeTargets="BeforeResolveReferences">
+  <Target Name="Warn_SteeltoeExtensionsConfigurationConfigServerCore" AfterTargets="AfterResolveReferences">
     <Warning
       Text="The NuGet package Steeltoe.Extensions.Configuration.ConfigServerCore has been replaced in Steeltoe v4. Reference Steeltoe.Configuration.ConfigServer instead. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>
