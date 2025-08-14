@@ -90,7 +90,7 @@
                 },
                 "Env": {
                   "type": "string",
-                  "description": "Gets or sets the environment used when accessing configuration data. Default value: \"Production\"."
+                  "description": "Gets or sets a comma-separated list of environments used when accessing configuration data. Default value: \"Production\"."
                 },
                 "FailFast": {
                   "type": "boolean",

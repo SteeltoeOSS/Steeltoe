@@ -179,4 +179,20 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         path.Should().Be($"http://localhost:9999/{options.Name}/{options.Environment}");
     }
+
+    [Fact]
+    public void GetConfigServerUri_MultipleEnvironments_EncodesComma()
+    {
+        var options = new ConfigServerClientOptions
+        {
+            Name = "myName",
+            Environment = "one,two",
+            Label = "demo"
+        };
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        string path = provider.BuildConfigServerUri(options.Uri!, options.Label).ToString();
+
+        path.Should().Be("http://localhost:8888/myName/one%2Ctwo/demo");
+    }
 }

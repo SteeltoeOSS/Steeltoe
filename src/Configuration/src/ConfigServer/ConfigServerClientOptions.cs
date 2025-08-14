@@ -32,7 +32,7 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     public bool FailFast { get; set; }
 
     /// <summary>
-    /// Gets or sets the environment used when accessing configuration data. Default value: "Production".
+    /// Gets or sets a comma-separated list of environments used when accessing configuration data. Default value: "Production".
     /// </summary>
     [ConfigurationKeyName("Env")]
     public string? Environment { get; set; } = "Production";

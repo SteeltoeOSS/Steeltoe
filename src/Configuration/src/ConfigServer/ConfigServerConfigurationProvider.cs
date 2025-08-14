@@ -638,7 +638,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             uriBuilder.Password = ClientOptions.Password;
         }
 
-        string pathSuffix = $"{ClientOptions.Name}/{ClientOptions.Environment}";
+        string pathSuffix = $"{ClientOptions.Name}/{WebUtility.UrlEncode(ClientOptions.Environment)}";
 
         if (!string.IsNullOrWhiteSpace(label))
         {
