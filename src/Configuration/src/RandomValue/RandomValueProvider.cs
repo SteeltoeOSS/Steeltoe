@@ -165,7 +165,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
 
     private int GetNextIntInRange(string range)
     {
-        string[] tokens = range.Split(',');
+        string[] tokens = range.Split(',', 2);
         int.TryParse(tokens[0], CultureInfo.InvariantCulture, out int start);
 
         if (tokens.Length == 1)
@@ -179,7 +179,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
 
     private long GetNextLongInRange(string range)
     {
-        string[] tokens = range.Split(',');
+        string[] tokens = range.Split(',', 2);
         long.TryParse(tokens[0], CultureInfo.InvariantCulture, out long start);
 
         if (tokens.Length == 1)

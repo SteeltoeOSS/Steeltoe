@@ -48,7 +48,7 @@ internal static class UriExtensions
 
         string userInfo = uri.GetComponents(UriComponents.UserInfo, UriFormat.UriEscaped);
 
-        string[] parts = userInfo.Split(':');
+        string[] parts = userInfo.Split(':', 2);
 
         if (parts.Length == 2)
         {
