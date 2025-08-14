@@ -1,7 +1,7 @@
 <Project>
   <Target Name="Warn_SteeltoeExtensionsConfigurationPlaceholderCore" AfterTargets="AfterResolveReferences">
     <Warning
-      Text="The NuGet package Steeltoe.Extensions.Configuration.PlaceholderCore has been replaced in Steeltoe v4. Reference Steeltoe.Configuration.Placeholder instead. See https://steeltoe.io/docs/v3/obsolete for details." />
+      Text="The NuGet package Steeltoe.Extensions.Configuration.PlaceholderCore has been superseded in Steeltoe v4. Reference Steeltoe.Configuration.Placeholder instead. See https://steeltoe.io/docs/v3/obsolete for details." />
   </Target>
 
   <Target Name="Fail_Steeltoe" BeforeTargets="BeforeCompile;CoreCompile">
