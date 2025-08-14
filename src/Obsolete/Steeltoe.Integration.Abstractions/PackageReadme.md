@@ -1,7 +1,7 @@
 # Steeltoe
 
 > [!IMPORTANT]
-> This feature is no longer available in Steeltoe v4.
+> This package has been removed from Steeltoe in v4.
 > See <https://steeltoe.io/docs/v3/obsolete> for details.
 
 [Steeltoe](https://steeltoe.io/) provides building blocks for development of .NET applications that integrate with [Spring](https://spring.io/) and [Spring Boot](https://spring.io/projects/spring-boot) environments, as well as [Cloud Foundry](https://www.cloudfoundry.org/) and [Kubernetes](https://kubernetes.io/) with first-party support for [Tanzu](https://tanzu.vmware.com/tanzu).
