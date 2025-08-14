@@ -630,15 +630,15 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
         if (!string.IsNullOrEmpty(ClientOptions.Username))
         {
-            uriBuilder.UserName = ClientOptions.Username;
+            uriBuilder.UserName = WebUtility.UrlEncode(ClientOptions.Username);
         }
 
         if (!string.IsNullOrEmpty(ClientOptions.Password))
         {
-            uriBuilder.Password = ClientOptions.Password;
+            uriBuilder.Password = WebUtility.UrlEncode(ClientOptions.Password);
         }
 
-        string pathSuffix = $"{ClientOptions.Name}/{WebUtility.UrlEncode(ClientOptions.Environment)}";
+        string pathSuffix = $"{WebUtility.UrlEncode(ClientOptions.Name)}/{WebUtility.UrlEncode(ClientOptions.Environment)}";
 
         if (!string.IsNullOrWhiteSpace(label))
         {
@@ -648,7 +648,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 label = label.Replace("/", "(_)", StringComparison.Ordinal);
             }
 
-            pathSuffix = $"{pathSuffix}/{label.Trim()}";
+            pathSuffix = $"{pathSuffix}/{WebUtility.UrlEncode(label)}";
         }
 
         if (!uriBuilder.Path.EndsWith('/'))
