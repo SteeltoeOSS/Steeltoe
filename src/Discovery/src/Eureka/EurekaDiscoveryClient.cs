@@ -206,7 +206,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         _registryFetchAsyncLock.Dispose();
     }
 
-    // ReSharper disable once AsyncVoidMethod
+    // ReSharper disable once AsyncVoidEventHandlerMethod
     private async void AppInfoManagerOnInstanceChanged(object? sender, InstanceChangedEventArgs args)
     {
         if (!IsAlive)
