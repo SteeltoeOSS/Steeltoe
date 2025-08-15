@@ -143,8 +143,18 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     /// </summary>
     public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
 
-    internal IList<string> GetUris()
+    internal List<Uri> GetUris()
     {
-        return !string.IsNullOrEmpty(Uri) ? Uri.Split(CommaDelimiter, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) : [];
+        return Uri == null ? [] : Uri.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(ParseSingleUri).ToList();
+    }
+
+    private static Uri ParseSingleUri(string uri)
+    {
+        if (!System.Uri.TryCreate(uri, UriKind.Absolute, out Uri? result))
+        {
+            throw new ConfigServerException("One or more Config Server URIs in configuration are invalid.");
+        }
+
+        return result;
     }
 }

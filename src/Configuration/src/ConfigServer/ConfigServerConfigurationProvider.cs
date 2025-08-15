@@ -223,8 +223,6 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         // Adds client settings (e.g. spring:cloud:config:uri, etc.) to the Data dictionary
         AddConfigServerClientOptions();
 
-        string logUri = string.Join(',', ClientOptions.GetUris().Select(uri => new Uri(uri).ToMaskedString()));
-
         if (ClientOptions is { Retry.Enabled: true, FailFast: true })
         {
             int attempts = 0;
@@ -232,7 +230,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
             do
             {
-                _logger.LogDebug("Fetching configuration from server at: {Uri}", logUri);
+                _logger.LogDebug("Fetching configuration from server(s).");
 
                 try
                 {
@@ -240,7 +238,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 }
                 catch (ConfigServerException exception)
                 {
-                    _logger.LogWarning(exception, "Failed fetching configuration from server at: {Uri}.", logUri);
+                    _logger.LogWarning(exception, "Failed fetching configuration from server(s).");
                     attempts++;
 
                     if (attempts < ClientOptions.Retry.MaxAttempts)
@@ -258,7 +256,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             while (true);
         }
 
-        _logger.LogDebug("Fetching configuration from server at: {Uri}", logUri);
+        _logger.LogDebug("Fetching configuration from server(s).");
         return await DoLoadAsync(updateDictionary, cancellationToken);
     }
 
@@ -266,8 +264,8 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     {
         Exception? error = null;
 
-        // Get arrays of Config Server uris to check
-        IList<string> uris = ClientOptions.GetUris();
+        // Get list of Config Server uris to check
+        List<Uri> uris = ClientOptions.GetUris();
 
         try
         {
@@ -543,7 +541,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         }
     }
 
-    internal async Task<ConfigEnvironment?> RemoteLoadAsync(IEnumerable<string> requestUris, string? label, CancellationToken cancellationToken)
+    internal async Task<ConfigEnvironment?> RemoteLoadAsync(List<Uri> requestUris, string? label, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Entered {Method}", nameof(RemoteLoadAsync));
 
@@ -552,10 +550,12 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
         Exception? error = null;
 
-        foreach (string requestUri in requestUris)
+        foreach (Uri requestUri in requestUris)
         {
             // Make Config Server URI from settings
             Uri uri = BuildConfigServerUri(requestUri, label);
+
+            _logger.LogDebug("Trying to connect to Config Server at {RequestUri}", uri.ToMaskedString());
 
             // Get the request message
             _logger.LogTrace("Building HTTP request message");
@@ -622,11 +622,11 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// <returns>
     /// The request URI for the Configuration Server.
     /// </returns>
-    internal Uri BuildConfigServerUri(string serverUri, string? label)
+    internal Uri BuildConfigServerUri(Uri serverUri, string? label)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(serverUri);
+        ArgumentNullException.ThrowIfNull(serverUri);
 
-        var uriBuilder = new UriBuilder(new Uri(serverUri));
+        var uriBuilder = new UriBuilder(serverUri);
 
         if (!string.IsNullOrEmpty(ClientOptions.Username))
         {
