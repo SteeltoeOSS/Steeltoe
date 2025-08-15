@@ -64,7 +64,7 @@ jobs:
         fetch-depth: 0
 
     - name: Restore packages
-      run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal
+      run: dotnet restore ${{ env.SOLUTION_FILE }} /p:Configuration=Release --verbosity minimal
 
     - name: Begin Sonar .NET scanner
       id: sonar_begin

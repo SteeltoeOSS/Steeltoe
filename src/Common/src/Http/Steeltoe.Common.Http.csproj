@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Shared code related to HTTP, primarily for working with HttpClient.</Description>
-    <PackageTags>http;</PackageTags>
+    <PackageTags>http</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

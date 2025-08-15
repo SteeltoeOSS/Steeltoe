@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Provides support for authorization with client certificates.</Description>
-    <PackageTags>authorization;security;x509;certificate;mutualtls;CloudFoundry;tanzu;aspnetcore;</PackageTags>
+    <PackageTags>authorization;security;x509;certificate;mutualtls;CloudFoundry;tanzu;aspnetcore</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

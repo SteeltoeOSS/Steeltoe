@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Configuration provider for generating random values.</Description>
-    <PackageTags>configuration;ConfigurationProvider;random;</PackageTags>
+    <PackageTags>configuration;ConfigurationProvider;random</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

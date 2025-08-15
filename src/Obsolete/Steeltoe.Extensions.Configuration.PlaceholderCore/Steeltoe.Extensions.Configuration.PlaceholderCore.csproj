@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <Description>Package for adding property placeholder resolving config provider to ASP.NET Core applications.</Description>
+    <PackageTags>configuration;placeholders;aspnetcore;spring boot</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\shared.props" />
+
+  <ItemGroup>
+    <None Include="Build\*.props" Pack="True" PackagePath="build" />
+    <None Include="Build\*.targets" Pack="True" PackagePath="build" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <Description>Steeltoe Netflix Hystrix Metrics Event Stream ASP.NET Core.</Description>
+    <PackageTags>aspnetcore;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\shared.props" />
+
+  <ItemGroup>
+    <None Include="Build\*.props" Pack="True" PackagePath="build" />
+    <None Include="Build\*.targets" Pack="True" PackagePath="build" />
+  </ItemGroup>
+</Project>

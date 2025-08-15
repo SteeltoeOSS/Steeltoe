@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Library for using OpenID Connect with UAA-based systems, including Cloud Foundry.</Description>
-    <PackageTags>CloudFoundry;uaa;security;sso;openid;oidc;tanzu;aspnetcore;</PackageTags>
+    <PackageTags>CloudFoundry;uaa;security;sso;openid;oidc;tanzu;aspnetcore</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

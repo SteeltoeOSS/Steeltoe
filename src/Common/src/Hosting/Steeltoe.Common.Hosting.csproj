@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Steeltoe library for commonly-used ASP.NET Core hosting-related functions.</Description>
-    <PackageTags>hosting;</PackageTags>
+    <PackageTags>hosting</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

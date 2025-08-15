@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Library for using JWT Bearer tokens with UAA-based systems, including Cloud Foundry.</Description>
-    <PackageTags>CloudFoundry;uaa;security;jwt;bearer;tanzu;aspnetcore;</PackageTags>
+    <PackageTags>CloudFoundry;uaa;security;jwt;bearer;tanzu;aspnetcore</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

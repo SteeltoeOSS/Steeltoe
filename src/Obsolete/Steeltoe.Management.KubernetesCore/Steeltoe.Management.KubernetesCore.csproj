@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <Description>Package for using Steeltoe management endpoints with ASP.NET Core on Kubernetes.</Description>
+    <PackageTags>actuator;management;monitoring;aspnetcore;Kubernetes;Spring Cloud;k8s</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\shared.props" />
+
+  <ItemGroup>
+    <None Include="Build\*.props" Pack="True" PackagePath="build" />
+    <None Include="Build\*.targets" Pack="True" PackagePath="build" />
+  </ItemGroup>
+</Project>
