@@ -63,7 +63,7 @@ public static class RabbitMQServiceCollectionExtensions
         if (!ConnectorFactoryShim<RabbitMQOptions>.IsRegistered(packageResolver.ConnectionInterface.Type, services))
         {
             var optionsBuilder = new ConnectorAddOptionsBuilder(
-                (serviceProvider, serviceBindingName) => CreateConnectionAsync(serviceProvider, serviceBindingName, packageResolver, CancellationToken.None),
+                (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver, CancellationToken.None),
                 (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
             {
                 // From https://www.rabbitmq.com/dotnet-api-guide.html#connection-and-channel-lifespan:
@@ -120,8 +120,8 @@ public static class RabbitMQServiceCollectionExtensions
         return (string?)builder["host"] ?? "localhost";
     }
 
-    private static async Task<IDisposable> CreateConnectionAsync(IServiceProvider serviceProvider, string serviceBindingName,
-        RabbitMQPackageResolver packageResolver, CancellationToken cancellationToken)
+    private static IDisposable CreateConnection(IServiceProvider serviceProvider, string serviceBindingName, RabbitMQPackageResolver packageResolver,
+        CancellationToken cancellationToken)
     {
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
         RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
@@ -134,7 +134,7 @@ public static class RabbitMQServiceCollectionExtensions
         }
 
         ConnectionFactoryInterfaceShim connectionFactoryInterfaceShim = connectionFactoryShim.AsInterface();
-        ConnectionInterfaceShim connectionInterfaceShim = await connectionFactoryInterfaceShim.CreateConnectionAsync(cancellationToken);
+        ConnectionInterfaceShim connectionInterfaceShim = connectionFactoryInterfaceShim.CreateConnection(cancellationToken);
         return connectionInterfaceShim.Instance;
     }
 }

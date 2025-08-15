@@ -347,6 +347,26 @@ public sealed class RabbitMQConnectorTest
         rabbitMQHealthContributors[1].Host.Should().Be("host2");
     }
 
+    [Fact(Skip = "Integration test - Requires local RabbitMQ server")]
+    public async Task Can_connect_to_running_server()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Steeltoe:Client:RabbitMQ:Default:ConnectionString"] = "amqp://localhost:5672"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.AddRabbitMQ();
+
+        await using WebApplication app = builder.Build();
+
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
+        IConnection connection = connectorFactory.Get().GetConnection();
+
+        connection.IsOpen.Should().BeTrue();
+    }
+
     [Fact]
     public async Task Registers_default_connection_string_when_only_single_server_binding_found()
     {
