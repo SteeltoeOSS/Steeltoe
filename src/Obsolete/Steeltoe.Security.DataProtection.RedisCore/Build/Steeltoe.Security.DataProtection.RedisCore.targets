@@ -1,0 +1,10 @@
+<Project>
+  <Target Name="Warn_SteeltoeSecurityDataProtectionRedisCore" AfterTargets="AfterResolveReferences">
+    <Warning
+      Text="The NuGet package Steeltoe.Security.DataProtection.RedisCore has been superseded in Steeltoe v4. Reference Steeltoe.Security.DataProtection.Redis instead. See https://steeltoe.io/docs/v3/obsolete for details." />
+  </Target>
+
+  <Target Name="Fail_Steeltoe" BeforeTargets="BeforeCompile;CoreCompile">
+    <Error Text="One or more Steeltoe package dependencies need attention. See the build warnings for details." />
+  </Target>
+</Project>
