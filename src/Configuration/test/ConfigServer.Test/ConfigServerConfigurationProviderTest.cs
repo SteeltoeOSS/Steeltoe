@@ -145,7 +145,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        Uri requestUri = provider.BuildConfigServerUri(options.Uri, null);
+        Uri requestUri = provider.BuildConfigServerUri(new Uri(options.Uri), null);
         HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);
@@ -169,7 +169,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        Uri requestUri = provider.BuildConfigServerUri(options.Uri, null);
+        Uri requestUri = provider.BuildConfigServerUri(new Uri(options.Uri), null);
         HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);
@@ -193,7 +193,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        Uri requestUri = provider.BuildConfigServerUri(options.Uri, null);
+        Uri requestUri = provider.BuildConfigServerUri(new Uri(options.Uri), null);
         HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);
@@ -215,7 +215,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        Uri requestUri = provider.BuildConfigServerUri(options.Uri!, null);
+        Uri requestUri = provider.BuildConfigServerUri(new Uri(options.Uri!), null);
         HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);

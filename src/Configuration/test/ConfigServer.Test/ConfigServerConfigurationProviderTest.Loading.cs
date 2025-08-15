@@ -14,18 +14,6 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 public sealed partial class ConfigServerConfigurationProviderTest
 {
     [Fact]
-    public async Task RemoteLoadAsync_InvalidUri()
-    {
-        var options = new ConfigServerClientOptions();
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
-
-        // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.RemoteLoadAsync([@"foobar\foobar\"], null, TestContext.Current.CancellationToken);
-
-        await action.Should().ThrowExactlyAsync<UriFormatException>();
-    }
-
-    [Fact]
     public async Task RemoteLoadAsync_HostTimesOut()
     {
         var options = new ConfigServerClientOptions
@@ -35,9 +23,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         var httpClientHandler = new SlowHttpClientHandler(1.Seconds(), new HttpResponseMessage());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        List<Uri> requestUris = [new("http://localhost:9999/app/profile")];
 
         // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.RemoteLoadAsync(["http://localhost:9999/app/profile"], null, TestContext.Current.CancellationToken);
+        Func<Task> action = async () => await provider.RemoteLoadAsync(requestUris, null, TestContext.Current.CancellationToken);
 
         (await action.Should().ThrowExactlyAsync<TaskCanceledException>()).WithInnerExceptionExactly<TimeoutException>();
     }
@@ -504,6 +493,32 @@ public sealed partial class ConfigServerConfigurationProviderTest
         await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
         startup.RequestCount.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Load_UriInvalid_FailFastEnabled()
+    {
+        using var startup = new TestConfigServerStartup();
+        startup.ReturnStatus = [500];
+
+        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
+        startup.Configure(app);
+        await app.StartAsync(TestContext.Current.CancellationToken);
+
+        using TestServer server = app.GetTestServer();
+        server.BaseAddress = new Uri("http://localhost:8888");
+
+        ConfigServerClientOptions options = GetCommonOptions();
+        options.Uri = "http://username:p@ssword@localhost:8888";
+        options.FailFast = true;
+
+        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
+        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+
+        await action.Should().ThrowExactlyAsync<ConfigServerException>().WithMessage("One or more Config Server URIs in configuration are invalid.");
     }
 
     [Fact]

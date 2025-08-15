@@ -40,4 +40,16 @@ public sealed class UriExtensionsTest
 
         masked.Should().Be(expected);
     }
+
+    [Fact]
+    public void TryGetUsernamePassword_AllowsColonInPassword()
+    {
+        var uri = new Uri("http://username:pass::word@host.com");
+
+        bool result = uri.TryGetUsernamePassword(out string? username, out string? password);
+
+        result.Should().BeTrue();
+        username.Should().Be("username");
+        password.Should().Be("pass::word");
+    }
 }

@@ -602,8 +602,8 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             }
             """;
 
-        string username = WebUtility.UrlEncode("u$er?N@me");
-        string password = WebUtility.UrlEncode(":p@ssw0rd=");
+        string username = WebUtility.UrlEncode("u$er?,N@me");
+        string password = WebUtility.UrlEncode(":p@ss,w0rd=");
 
         var appSettings = new Dictionary<string, string?>
         {
@@ -619,7 +619,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         var handler = new DelegateToMockHttpClientHandler();
 
-        handler.Mock.Expect(HttpMethod.Get, "https://api.eureka-server.com/eureka/apps").WithHeaders("Authorization", "Basic dSRlcj9OQG1lOjpwQHNzdzByZD0=")
+        handler.Mock.Expect(HttpMethod.Get, "https://api.eureka-server.com/eureka/apps").WithHeaders("Authorization", "Basic dSRlcj8sTkBtZTo6cEBzcyx3MHJkPQ==")
             .WithHeaders("X-Discovery-AllowRedirect", "false").Respond("application/json", applicationsResponse);
 
         await using WebApplication webApplication = builder.Build();

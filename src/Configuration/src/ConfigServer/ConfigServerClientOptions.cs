@@ -32,7 +32,7 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     public bool FailFast { get; set; }
 
     /// <summary>
-    /// Gets or sets the environment used when accessing configuration data. Default value: "Production".
+    /// Gets or sets a comma-separated list of environments used when accessing configuration data. Default value: "Production".
     /// </summary>
     [ConfigurationKeyName("Env")]
     public string? Environment { get; set; } = "Production";
@@ -143,8 +143,18 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     /// </summary>
     public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
 
-    internal IList<string> GetUris()
+    internal List<Uri> GetUris()
     {
-        return !string.IsNullOrEmpty(Uri) ? Uri.Split(CommaDelimiter, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) : [];
+        return Uri == null ? [] : Uri.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(ParseSingleUri).ToList();
+    }
+
+    private static Uri ParseSingleUri(string uri)
+    {
+        if (!System.Uri.TryCreate(uri, UriKind.Absolute, out Uri? result))
+        {
+            throw new ConfigServerException("One or more Config Server URIs in configuration are invalid.");
+        }
+
+        return result;
     }
 }
