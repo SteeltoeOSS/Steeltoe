@@ -117,7 +117,7 @@ jobs:
       testResultsFormat: VSTest
       testResultsFiles: '*.trx'
       mergeTestResults: true
-  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@5
+  - task: reportgenerator@5
     condition: and(succeededOrFailed(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
     displayName: Consolidate coverage for this job
     inputs:
@@ -152,16 +152,11 @@ jobs:
     condition: succeededOrFailed()
     displayName: Download test coverage results from Windows
     continueOnError: true
-  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@5
+  - task: reportgenerator@5
     condition: succeededOrFailed()
     displayName: Consolidate code coverage results
     inputs:
       reports: $(Pipeline.Workspace)/**/Cobertura.xml
       targetdir: $(Build.ArtifactStagingDirectory)/CodeCoverage
-      reporttypes: Cobertura
-  - task: PublishCodeCoverageResults@1
-    condition: succeededOrFailed()
-    displayName: Publish code coverage to Azure DevOps
-    inputs:
-      codeCoverageTool: Cobertura
-      summaryFileLocation: $(Build.ArtifactStagingDirectory)/CodeCoverage/Cobertura.xml
+      reporttypes: Cobertura;HtmlInline_AzurePipelines
+      publishCodeCoverageResults: true
