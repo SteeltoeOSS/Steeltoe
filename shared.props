@@ -12,6 +12,12 @@
     <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <LangVersion>preview</LangVersion>
+    <!-- CA1873: Evaluation of this argument may be expensive and unnecessary if logging is disabled -->
+    <NoWarn>$(NoWarn);CA1873</NoWarn>
+  </PropertyGroup>
+
   <PropertyGroup>
     <!--
       Disabled IDE analyzers for "Remove unused member" (IDE0051, IDE0052) because they currently don't "see" code added
