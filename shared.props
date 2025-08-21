@@ -17,7 +17,7 @@
       Disabled IDE analyzers for "Remove unused member" (IDE0051, IDE0052) because they currently don't "see" code added
       by source generators, resulting in false positives. See https://github.com/dotnet/roslyn/issues/75483.
     -->
-    <NoWarn>$(NoWarn)IDE0051;IDE0052</NoWarn>
+    <NoWarn>$(NoWarn);IDE0051;IDE0052</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
