@@ -16,4 +16,10 @@ public sealed class CertificateOptions
     public X509Certificate2? Certificate { get; set; }
 
     public IList<X509Certificate2> IssuerChain { get; } = [];
+
+    /// <summary>
+    /// Gets or sets the certificate revocation mode for certificate validation.
+    /// Default is Online for security, but can be set to NoCheck for environments where revocation checking is not available.
+    /// </summary>
+    public X509RevocationMode RevocationMode { get; set; } = X509RevocationMode.Online;
 }

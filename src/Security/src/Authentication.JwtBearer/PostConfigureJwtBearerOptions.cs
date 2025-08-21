@@ -25,6 +25,17 @@ internal sealed class PostConfigureJwtBearerOptions : IPostConfigureOptions<JwtB
     {
         ArgumentNullException.ThrowIfNull(options);
 
+        // Set secure defaults for token validation
+        options.TokenValidationParameters.ValidateIssuer = true;
+        options.TokenValidationParameters.ValidateAudience = true;
+        options.TokenValidationParameters.ValidateLifetime = true;
+        options.TokenValidationParameters.ValidateIssuerSigningKey = true;
+        options.TokenValidationParameters.RequireExpirationTime = true;
+        options.TokenValidationParameters.RequireSignedTokens = true;
+        
+        // Set clock skew to a reasonable value (default is 5 minutes, we reduce to 30 seconds)
+        options.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
+
         string? clientId = _configuration.GetValue<string>($"{BearerConfigurationKeyPrefix}:ClientId");
 
         if (!string.IsNullOrEmpty(clientId) && options.TokenValidationParameters.ValidAudiences?.Contains(clientId) != true)
