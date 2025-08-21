@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+    <NoWarn>$(NoWarn);NU1510;NU1608</NoWarn>
+  </PropertyGroup>
+</Project>
