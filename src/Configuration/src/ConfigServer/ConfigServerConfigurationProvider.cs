@@ -830,11 +830,14 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         _refreshTimer?.Dispose();
         _refreshTimer = null;
 
+        // Needs investigation, likely a compiler bug.
+#pragma warning disable IDE0031 // Null check can be simplified
         if (_timerTickLock != null)
         {
             _timerTickLock.Dispose();
             _timerTickLock = null;
         }
+#pragma warning restore IDE0031
 
         if (_ownsHttpClientHandler)
         {
