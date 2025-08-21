@@ -16,7 +16,11 @@ namespace Steeltoe.Connectors.EntityFrameworkCore.Test.MySql.Pomelo;
 
 public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 {
+#if NET10_0_OR_GREATER
+    [Fact(Skip = "Disabled because there is no Pomelo version that's compatible with EF Core 10 yet.")]
+#else
     [Fact]
+#endif
     public async Task Registers_connection_string_for_default_service_binding()
     {
         var appSettings = new Dictionary<string, string?>
@@ -42,7 +46,11 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
             "Server=localhost;User ID=steeltoe;Password=steeltoe;Database=myDb;Allow User Variables=True;Connection Timeout=15;Use Affected Rows=False;Use Compression=False");
     }
 
+#if NET10_0_OR_GREATER
+    [Fact(Skip = "Disabled because there is no Pomelo version that's compatible with EF Core 10 yet.")]
+#else
     [Fact]
+#endif
     public async Task Registers_connection_string_for_named_service_binding()
     {
         var appSettings = new Dictionary<string, string?>

@@ -167,7 +167,7 @@ internal sealed class AspNetEndpointProvider
         if (endpointOptions != null)
         {
             string displayName = endpoint.DisplayName ?? string.Empty;
-            MethodInfo handlerMethod = typeof(EndpointMiddleware<,>).GetMethod(nameof(EndpointMiddleware<object, object>.InvokeAsync))!;
+            MethodInfo handlerMethod = typeof(EndpointMiddleware<,>).GetMethod(nameof(EndpointMiddleware<,>.InvokeAsync))!;
             var metadataProvider = endpoint.Metadata.GetMetadata<ActuatorMetadataProvider>()!;
 
             foreach (string httpMethod in endpointOptions.GetSafeAllowedVerbs())
