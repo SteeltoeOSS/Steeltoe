@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+    <!--
+      NU1608: Detected package version outside of dependency constraint
+        There is no .NET 10 preview version of Pomelo yet. Suppressed here because the following does not work:
+          <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="$(PomeloTestVersion)" NoWarn="NU1608" />
+    -->
+    <NoWarn>$(NoWarn);NU1608</NoWarn>
+  </PropertyGroup>
+</Project>
