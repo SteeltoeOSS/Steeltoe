@@ -33,10 +33,20 @@
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <EntityFrameworkCoreTestVersion>8.0.*</EntityFrameworkCoreTestVersion>
+    <NpgsqlTestVersion>$(EntityFrameworkCoreTestVersion)</NpgsqlTestVersion>
+    <PomeloTestVersion>$(EntityFrameworkCoreTestVersion)</PomeloTestVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <EntityFrameworkCoreTestVersion>9.0.*-*</EntityFrameworkCoreTestVersion>
+    <EntityFrameworkCoreTestVersion>9.0.*</EntityFrameworkCoreTestVersion>
+    <NpgsqlTestVersion>$(EntityFrameworkCoreTestVersion)</NpgsqlTestVersion>
+    <PomeloTestVersion>$(EntityFrameworkCoreTestVersion)</PomeloTestVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <EntityFrameworkCoreTestVersion>10.0.*-*</EntityFrameworkCoreTestVersion>
+    <NpgsqlTestVersion>9.0.*</NpgsqlTestVersion>
+    <PomeloTestVersion>9.0.*</PomeloTestVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -86,6 +96,17 @@
         Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
       -->
       9.0.*
+    </MatchTargetFrameworkVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <MatchTargetFrameworkVersion>
+      <!--
+        Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
+        For example, v8 targets only .NET 8; v9 targets only .NET 9.
+        Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
+      -->
+      10.0.*-*
     </MatchTargetFrameworkVersion>
   </PropertyGroup>
 </Project>
