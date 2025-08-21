@@ -63,14 +63,32 @@ public sealed class SpringBootEnvironmentVariableProviderTest
         value.Should().Be("q");
 
         provider.TryGet("r", out value).Should().BeTrue();
+#if NET10_0_OR_GREATER
+        value.Should().BeNull();
+#else
         value.Should().BeEmpty();
+#endif
 
         provider.TryGet("s:t", out value).Should().BeTrue();
+#if NET10_0_OR_GREATER
+        value.Should().BeNull();
+#else
         value.Should().BeEmpty();
+#endif
 
+#if NET10_0_OR_GREATER
+        provider.TryGet("u", out _).Should().BeTrue();
+        value.Should().BeNull();
+#else
         provider.TryGet("u", out _).Should().BeFalse();
+#endif
 
+#if NET10_0_OR_GREATER
+        provider.TryGet("v:w", out _).Should().BeTrue();
+        value.Should().BeNull();
+#else
         provider.TryGet("v:w", out _).Should().BeFalse();
+#endif
     }
 
     [Fact]
@@ -113,14 +131,32 @@ public sealed class SpringBootEnvironmentVariableProviderTest
         value.Should().Be("q");
 
         provider.TryGet("a:b:c:2:r", out value).Should().BeTrue();
+#if NET10_0_OR_GREATER
+        value.Should().BeNull();
+#else
         value.Should().BeEmpty();
+#endif
 
         provider.TryGet("a:b:c:2:s:t", out value).Should().BeTrue();
+#if NET10_0_OR_GREATER
+        value.Should().BeNull();
+#else
         value.Should().BeEmpty();
+#endif
 
+#if NET10_0_OR_GREATER
+        provider.TryGet("a:b:c:2:u", out _).Should().BeTrue();
+        value.Should().BeNull();
+#else
         provider.TryGet("a:b:c:2:u", out _).Should().BeFalse();
+#endif
 
+#if NET10_0_OR_GREATER
+        provider.TryGet("a:b:c:2:v:w", out _).Should().BeTrue();
+        value.Should().BeNull();
+#else
         provider.TryGet("a:b:c:2:v:w", out _).Should().BeFalse();
+#endif
     }
 
     [Fact]
