@@ -18,14 +18,14 @@ public class CloudFoundryJwtBearerOptionsTest
 
         data.Add(string.Empty, DEFAULT_JWT_TOKEN_URL);
         data.Add("   ", DEFAULT_JWT_TOKEN_URL);
-        data.Add(default, DEFAULT_JWT_TOKEN_URL);
+        data.Add(null, DEFAULT_JWT_TOKEN_URL);
         data.Add(newDomain, newDomain + CloudFoundryDefaults.JwtTokenUri);
 
         return data;
     }
 
     [Fact]
-    public void DefaultConstructor_SetsupDefaultOptions()
+    public void DefaultConstructor_SetsUpDefaultOptions()
     {
         var opts = new CloudFoundryJwtBearerOptions();
 

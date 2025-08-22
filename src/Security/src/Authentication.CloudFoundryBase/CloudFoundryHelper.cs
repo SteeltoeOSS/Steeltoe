@@ -62,19 +62,17 @@ public static class CloudFoundryHelper
 
         var tokenValidator = new CloudFoundryTokenValidator(options ?? new AuthServerOptions());
         parameters.IssuerValidator = tokenValidator.ValidateIssuer;
-        parameters.AudienceValidator = tokenValidator.ValidateAudience;
-
-        CloudFoundryTokenKeyResolver tkr;
-        if (options is null)
+        if (!string.IsNullOrEmpty(parameters.ValidAudience) || parameters.ValidAudiences != null)
         {
-            tkr = new CloudFoundryTokenKeyResolver(keyUrl, handler, validateCertificates);
-        }
-        else
-        {
-            tkr = new CloudFoundryTokenKeyResolver(keyUrl, handler, validateCertificates, options.ClientTimeout);
+            parameters.ValidateAudience = true;
+            parameters.AudienceValidator = tokenValidator.ValidateAudience;
         }
 
-        parameters.IssuerSigningKeyResolver = tkr.ResolveSigningKey;
+        var tokenKeyResolver = options is null
+            ? new CloudFoundryTokenKeyResolver(keyUrl, handler, validateCertificates)
+            : new CloudFoundryTokenKeyResolver(keyUrl, handler, validateCertificates, options.ClientTimeout);
+
+        parameters.IssuerSigningKeyResolver = tokenKeyResolver.ResolveSigningKey;
 
         return parameters;
     }
