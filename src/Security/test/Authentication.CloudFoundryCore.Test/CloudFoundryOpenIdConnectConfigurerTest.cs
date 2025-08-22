@@ -17,9 +17,18 @@ public class CloudFoundryOpenIdConnectConfigurerTest
     public void Configure_NoServiceInfo_ReturnsExpected()
     {
         var oidcOptions = new OpenIdConnectOptions();
+        var cloudFoundryOptions = new CloudFoundryOpenIdConnectOptions
+        {
+            Authority = "http://localhost:8080/uaa",
+            MetadataAddress = "http://localhost:8080/.well-known/openid-configuration",
+            RequireHttpsMetadata = false,
+            ValidateCertificates = false
+        };
 
-        CloudFoundryOpenIdConnectConfigurer.Configure(null, oidcOptions, new CloudFoundryOpenIdConnectOptions() { ValidateCertificates = false });
+        CloudFoundryOpenIdConnectConfigurer.Configure(null, oidcOptions, cloudFoundryOptions);
 
+        Assert.Equal("http://localhost:8080/uaa", oidcOptions.Authority);
+        Assert.Equal("http://localhost:8080/.well-known/openid-configuration", oidcOptions.MetadataAddress);
         Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, oidcOptions.ClaimsIssuer);
         Assert.Equal(CloudFoundryDefaults.ClientId, oidcOptions.ClientId);
         Assert.Equal(CloudFoundryDefaults.ClientSecret, oidcOptions.ClientSecret);
@@ -28,6 +37,7 @@ public class CloudFoundryOpenIdConnectConfigurerTest
         Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, oidcOptions.SignInScheme);
         Assert.False(oidcOptions.SaveTokens);
         Assert.NotNull(oidcOptions.BackchannelHttpHandler);
+        Assert.False(oidcOptions.RequireHttpsMetadata);
     }
 
     [Fact]
@@ -49,5 +59,6 @@ public class CloudFoundryOpenIdConnectConfigurerTest
         Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, oidcOptions.SignInScheme);
         Assert.False(oidcOptions.SaveTokens);
         Assert.Null(oidcOptions.BackchannelHttpHandler);
+        Assert.True(oidcOptions.RequireHttpsMetadata);
     }
 }
