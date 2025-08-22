@@ -27,12 +27,7 @@ public class CloudFoundryTokenValidator
     /// <returns>The issuer, if valid, else <see langword="null" /></returns>
     public virtual string ValidateIssuer(string issuer, SecurityToken securityToken, TokenValidationParameters validationParameters)
     {
-        if (issuer.Contains("uaa"))
-        {
-            return issuer;
-        }
-
-        return null;
+        return issuer.Contains("uaa") ? issuer : null;
     }
 
     /// <summary>
@@ -47,6 +42,11 @@ public class CloudFoundryTokenValidator
         foreach (var audience in audiences)
         {
             if (audience.Equals(_options.ClientId))
+            {
+                return true;
+            }
+
+            if (validationParameters != null && (audience.Equals(validationParameters.ValidAudience) || validationParameters.ValidAudiences?.Contains(audience) == true))
             {
                 return true;
             }

@@ -24,7 +24,7 @@ public class CloudFoundryJwtBearerOptions : JwtBearerOptions
     public bool Validate_Certificates { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether gets a value indicating whether to validate auth server certificate
+    /// Gets or sets a value indicating whether to validate auth server certificate
     /// </summary>
     public bool ValidateCertificates
     {
@@ -39,7 +39,11 @@ public class CloudFoundryJwtBearerOptions : JwtBearerOptions
 
     public void SetEndpoints(string authDomain)
     {
-        JwtKeyUrl = (!string.IsNullOrWhiteSpace(authDomain)) ?
-            authDomain + CloudFoundryDefaults.JwtTokenUri : JwtKeyUrl;
+        if (string.IsNullOrEmpty(JwtKeyUrl) || JwtKeyUrl == $"http://{CloudFoundryDefaults.OAuthServiceUrl}{CloudFoundryDefaults.JwtTokenUri}")
+        {
+            JwtKeyUrl = !string.IsNullOrWhiteSpace(authDomain)
+                ? authDomain + CloudFoundryDefaults.JwtTokenUri
+                : JwtKeyUrl;
+        }
     }
 }

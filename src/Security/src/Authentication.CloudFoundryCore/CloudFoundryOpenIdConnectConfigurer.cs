@@ -43,6 +43,8 @@ internal static class CloudFoundryOpenIdConnectConfigurer
         oidcOptions.BackchannelHttpHandler = CloudFoundryHelper.GetBackChannelHandler(cfOptions.ValidateCertificates);
         oidcOptions.CallbackPath = cfOptions.CallbackPath;
         oidcOptions.ClaimsIssuer = cfOptions.ClaimsIssuer;
+        oidcOptions.MetadataAddress = cfOptions.MetadataAddress;
+        oidcOptions.RequireHttpsMetadata = cfOptions.RequireHttpsMetadata;
         oidcOptions.ResponseType = cfOptions.ResponseType;
         oidcOptions.SaveTokens = cfOptions.SaveTokens;
         oidcOptions.SignInScheme = cfOptions.SignInScheme;
