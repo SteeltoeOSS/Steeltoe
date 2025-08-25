@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
@@ -41,7 +42,12 @@ internal sealed class CloudFoundryServiceBindingConfigurationProvider : PostProc
     {
         using MemoryStream stream = GetStream(json);
         var builder = new ConfigurationBuilder();
-        builder.Add(new JsonStreamConfigurationSource(stream));
+
+        builder.Add(new JsonStreamConfigurationSource
+        {
+            Stream = stream
+        });
+
         return builder.Build();
     }
 
