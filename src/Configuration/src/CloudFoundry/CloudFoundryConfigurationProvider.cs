@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
@@ -68,7 +69,12 @@ internal sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
         {
             using Stream stream = GetStream(applicationJson);
             var builder = new ConfigurationBuilder();
-            builder.Add(new JsonStreamConfigurationSource(stream));
+
+            builder.Add(new JsonStreamConfigurationSource
+            {
+                Stream = stream
+            });
+
             IConfigurationRoot applicationData = builder.Build();
 
             LoadData("vcap:application", applicationData.GetChildren(), data);
@@ -85,7 +91,12 @@ internal sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
         {
             using Stream stream = GetStream(servicesJson);
             var builder = new ConfigurationBuilder();
-            builder.Add(new JsonStreamConfigurationSource(stream));
+
+            builder.Add(new JsonStreamConfigurationSource
+            {
+                Stream = stream
+            });
+
             IConfigurationRoot servicesData = builder.Build();
 
             LoadData("vcap:services", servicesData.GetChildren(), data);
