@@ -60,6 +60,7 @@ jobs:
     - name: Git checkout
       uses: actions/checkout@v4
       with:
+        persist-credentials: false
         # Sonar: Shallow clones should be disabled for a better relevancy of analysis.
         fetch-depth: 0
 
