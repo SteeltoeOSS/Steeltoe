@@ -105,6 +105,15 @@ public static class ServiceCollectionExtensions
     /// <param name="services">Service collection</param>
     /// <param name="authenticationScheme">An identifier for this authentication mechanism. Default value is <see cref="CertificateAuthenticationDefaults.AuthenticationScheme"/></param>
     /// <param name="configurer">Used to configure the <see cref="MutualTlsAuthenticationOptions"/></param>
+    public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, string authenticationScheme, Action<MutualTlsAuthenticationOptions> configurer)
+        => AddCloudFoundryCertificateAuth(services, authenticationScheme, configurer, null);
+
+    /// <summary>
+    /// Adds options and services for Cloud Foundry container identity certificates along with certificate-based authentication and authorization
+    /// </summary>
+    /// <param name="services">Service collection</param>
+    /// <param name="authenticationScheme">An identifier for this authentication mechanism. Default value is <see cref="CertificateAuthenticationDefaults.AuthenticationScheme"/></param>
+    /// <param name="configurer">Used to configure the <see cref="MutualTlsAuthenticationOptions"/></param>
     /// <param name="forwardingConfigurer">Customize the <see cref="CertificateForwardingOptions"/></param>
     public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, string authenticationScheme, Action<MutualTlsAuthenticationOptions> configurer, Action<CertificateForwardingOptions> forwardingConfigurer)
     {
