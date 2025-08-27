@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <Description>Netflix Hystrix metrics event stream for ASP.NET Core over RabbitMQ</Description>
@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" PrivateAssets="All" />
+    <PackageReference Include="RabbitMQ.Client" Version="[$(RabbitClientVersion),$(RabbitClientMaxVersion))" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>

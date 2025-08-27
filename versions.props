@@ -25,6 +25,7 @@
     <OpenTelemetryVersion>1.8.1</OpenTelemetryVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
     <RabbitClientVersion>5.1.2</RabbitClientVersion>
+    <RabbitClientMaxVersion>6.0.0</RabbitClientMaxVersion>
     <ReactiveVersion>4.1.5</ReactiveVersion>
     <PollyVersion>7.1.1</PollyVersion>
     <PollyContribVersion>1.0.0</PollyContribVersion>
