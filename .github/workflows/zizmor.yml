@@ -1,0 +1,24 @@
+name: GHA Security Analysis with zizmor
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+    - '[0-9]+.x'
+  pull_request:
+
+permissions:
+  security-events: write
+
+jobs:
+  zizmor:
+    name: Run zizmor
+    runs-on: ubuntu-latest
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - name: Run zizmor
+      uses: zizmorcore/zizmor-action@v0.1.2
