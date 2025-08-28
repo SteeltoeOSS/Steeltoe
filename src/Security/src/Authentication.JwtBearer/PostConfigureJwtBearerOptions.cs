@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 
 namespace Steeltoe.Security.Authentication.JwtBearer;
 
@@ -42,7 +43,18 @@ internal sealed class PostConfigureJwtBearerOptions : IPostConfigureOptions<JwtB
             return;
         }
 
-        options.TokenValidationParameters.ValidIssuer = $"{options.Authority}/oauth/token";
+        if (Platform.IsCloudFoundry && options.Authority.Contains(".login", StringComparison.OrdinalIgnoreCase))
+        {
+            options.TokenValidationParameters.ValidIssuers =
+            [
+                $"{options.Authority}/oauth/token",
+                $"{options.Authority.Replace(".login", ".uaa", StringComparison.OrdinalIgnoreCase)}/oauth/token"
+            ];
+        }
+        else
+        {
+            options.TokenValidationParameters.ValidIssuer = $"{options.Authority}/oauth/token";
+        }
 
         var keyResolver = new TokenKeyResolver(options.Authority, options.Backchannel);
         options.TokenValidationParameters.IssuerSigningKeyResolver = (_, _, keyId, _) => keyResolver.ResolveSigningKey(keyId);
