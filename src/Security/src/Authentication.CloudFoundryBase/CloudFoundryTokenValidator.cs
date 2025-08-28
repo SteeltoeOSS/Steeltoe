@@ -47,14 +47,14 @@ public class CloudFoundryTokenValidator
                 return true;
             }
 
-            if (validationParameters != null && (audience.Equals(validationParameters.ValidAudience, StringComparison.Ordinal) || validationParameters.ValidAudiences?.Contains(audience) == true))
+            if (validationParameters != null && (audience == validationParameters.ValidAudience || validationParameters.ValidAudiences?.Contains(audience) == true))
             {
                 return true;
             }
 
             if (_options.AdditionalAudiences != null)
             {
-                var found = _options.AdditionalAudiences.Any(x => x.Equals(audience, StringComparison.Ordinal));
+                var found = _options.AdditionalAudiences.Any(x => x == audience);
                 if (found)
                 {
                     return true;

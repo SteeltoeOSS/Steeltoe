@@ -30,12 +30,12 @@ public class CloudFoundryTokenValidatorTest
             AdditionalAudiences = new[] { "additional-audience" }
         });
         var audiences = new[] { "profile", "some-api", "additional-audience" };
-        var validAudience = cftv.ValidateAudience(audiences, null, null);
-        Assert.True(validAudience);
+        var result = cftv.ValidateAudience(audiences, null, null);
+        Assert.True(result);
 
         audiences = new[] { "invalid-audience" };
-        var invalidAudience = cftv.ValidateAudience(audiences, null, null);
-        Assert.False(invalidAudience);
+        result = cftv.ValidateAudience(audiences, null, null);
+        Assert.False(result);
     }
 
     [Fact]
@@ -44,20 +44,20 @@ public class CloudFoundryTokenValidatorTest
         var cftv = new CloudFoundryTokenValidator();
         var audiences = new[] { "profile", "some-api", "additional-audience" };
         var validationParametersSingleAudience = new TokenValidationParameters { ValidAudience = "some-api" };
-        var validAudience = cftv.ValidateAudience(audiences, null, validationParametersSingleAudience);
-        Assert.True(validAudience, "Valid from single audience in TokenValidationParameters");
+        var result = cftv.ValidateAudience(audiences, null, validationParametersSingleAudience);
+        Assert.True(result, "Valid from single audience in TokenValidationParameters");
 
         var validationParametersListOfAudiences = new TokenValidationParameters
         {
             ValidAudiences = new[] { "some-api" }
         };
-        validAudience = cftv.ValidateAudience(audiences, null, validationParametersListOfAudiences);
-        Assert.True(validAudience, "Valid from audience list in TokenValidationParameters");
+        result = cftv.ValidateAudience(audiences, null, validationParametersListOfAudiences);
+        Assert.True(result, "Valid from audience list in TokenValidationParameters");
 
         audiences = new[] { "invalid-audience" };
-        var invalidAudience = cftv.ValidateAudience(audiences, null, validationParametersSingleAudience);
-        Assert.False(invalidAudience, "Invalid from single audience in TokenValidationParameters");
-        invalidAudience = cftv.ValidateAudience(audiences, null, validationParametersSingleAudience);
-        Assert.False(invalidAudience, "Invalid from audience list in TokenValidationParameters");
+        result = cftv.ValidateAudience(audiences, null, validationParametersSingleAudience);
+        Assert.False(result, "Invalid from single audience in TokenValidationParameters");
+        result = cftv.ValidateAudience(audiences, null, validationParametersSingleAudience);
+        Assert.False(result, "Invalid from audience list in TokenValidationParameters");
     }
 }

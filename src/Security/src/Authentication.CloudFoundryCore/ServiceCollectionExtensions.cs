@@ -24,21 +24,21 @@ public static class ServiceCollectionExtensions
     /// <param name="configuration">Application Configuration</param>
     [Obsolete("The IConfiguration parameter is not used")]
     public static void AddCloudFoundryContainerIdentity(this IServiceCollection services, IConfiguration configuration)
-        => AddCloudFoundryContainerIdentity(services, configureCertificateForwarding: null);
+        => AddCloudFoundryContainerIdentity(services, configurer: null);
 
     /// <summary>
     /// Adds options and services to use Cloud Foundry container identity certificates
     /// </summary>
     /// <param name="services">Service collection</param>
     public static void AddCloudFoundryContainerIdentity(this IServiceCollection services)
-        => AddCloudFoundryContainerIdentity(services, configureCertificateForwarding: null);
+        => AddCloudFoundryContainerIdentity(services, configurer: null);
 
     /// <summary>
     /// Adds options and services to use Cloud Foundry container identity certificates
     /// </summary>
     /// <param name="services">Service collection</param>
-    /// <param name="configureCertificateForwarding">Customize the <see cref="CertificateForwardingOptions"/></param>
-    public static void AddCloudFoundryContainerIdentity(this IServiceCollection services, Action<CertificateForwardingOptions> configureCertificateForwarding)
+    /// <param name="configurer">Used to configure the <see cref="CertificateForwardingOptions"/></param>
+    public static void AddCloudFoundryContainerIdentity(this IServiceCollection services, Action<CertificateForwardingOptions> configurer)
     {
         if (services == null)
         {
@@ -55,7 +55,7 @@ public static class ServiceCollectionExtensions
         services.AddCertificateForwarding(opt =>
         {
             opt.CertificateHeader = "X-Forwarded-Client-Cert";
-            configureCertificateForwarding?.Invoke(opt);
+            configurer?.Invoke(opt);
         });
     }
 
@@ -113,20 +113,20 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">Service collection</param>
     /// <param name="authenticationScheme">An identifier for this authentication mechanism. Default value is <see cref="CertificateAuthenticationDefaults.AuthenticationScheme"/></param>
-    /// <param name="configurer">Used to configure the <see cref="MutualTlsAuthenticationOptions"/></param>
-    /// <param name="forwardingConfigurer">Customize the <see cref="CertificateForwardingOptions"/></param>
-    public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, string authenticationScheme, Action<MutualTlsAuthenticationOptions> configurer, Action<CertificateForwardingOptions> forwardingConfigurer)
+    /// <param name="configureMutualTlsAuthentication">Used to configure the <see cref="MutualTlsAuthenticationOptions"/></param>
+    /// <param name="configureCertificateForwarding">Used to configure the <see cref="CertificateForwardingOptions"/></param>
+    public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, string authenticationScheme, Action<MutualTlsAuthenticationOptions> configureMutualTlsAuthentication, Action<CertificateForwardingOptions> configureCertificateForwarding)
     {
         if (services is null)
         {
             throw new ArgumentNullException(nameof(services));
         }
 
-        services.AddCloudFoundryContainerIdentity(forwardingConfigurer);
+        services.AddCloudFoundryContainerIdentity(configureCertificateForwarding);
 
         services
             .AddAuthentication(authenticationScheme)
-            .AddCloudFoundryIdentityCertificate(authenticationScheme, configurer);
+            .AddCloudFoundryIdentityCertificate(authenticationScheme, configureMutualTlsAuthentication);
 
         services.AddAuthorization(cfg =>
         {
