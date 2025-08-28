@@ -36,6 +36,8 @@ jobs:
 
     - name: Git checkout
       uses: actions/checkout@v4
+      with:
+        persist-credentials: false
 
     - name: Report vulnerable dependencies
       run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal /p:NuGetAudit=true /p:NuGetAuditMode=all /p:NuGetAuditLevel=low /p:TreatWarningsAsErrors=True

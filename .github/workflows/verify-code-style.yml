@@ -36,6 +36,7 @@ jobs:
     - name: Git checkout
       uses: actions/checkout@v4
       with:
+        persist-credentials: false
         fetch-depth: 2
 
     - name: Restore tools
