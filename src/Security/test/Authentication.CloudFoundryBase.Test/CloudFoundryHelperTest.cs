@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text.Json;
 using Xunit;
@@ -25,10 +26,25 @@ public class CloudFoundryHelperTest
     {
         var parameters = CloudFoundryHelper.GetTokenValidationParameters(null, "https://foo.bar.com/keyurl", null, false);
         Assert.False(parameters.ValidateAudience, "Audience validation should not be enabled by default");
+        Assert.Null(parameters.AudienceValidator);
         Assert.True(parameters.ValidateIssuer, "Issuer validation should be enabled by default");
         Assert.NotNull(parameters.IssuerValidator);
         Assert.True(parameters.ValidateLifetime, "Token lifetime validation should be enabled by default");
         Assert.NotNull(parameters.IssuerSigningKeyResolver);
+    }
+
+    [Fact]
+    public void GetTokenValidationParameters_ValidatesAudienceWhenProvided()
+    {
+        var tokenValidationParameters =
+            new TokenValidationParameters { ValidAudience = "some-api", ValidAudiences = new[] { "another-audience" } };
+        var parameters = CloudFoundryHelper.GetTokenValidationParameters(tokenValidationParameters, "https://foo.bar.com/keyurl", null, false);
+
+        Assert.True(parameters.ValidateAudience, "Audience validation should be enabled when ValidAudience or ValidAudiences are provided");
+        Assert.NotNull(parameters.AudienceValidator);
+        Assert.True(parameters.AudienceValidator(new[] { "some-api" }, null, tokenValidationParameters), "Validates single audience");
+        Assert.True(parameters.AudienceValidator(new[] { "another-audience" }, null, tokenValidationParameters), "Validates from list of audiences");
+        Assert.False(parameters.AudienceValidator(new[] { "invalid-audience" }, null, tokenValidationParameters), "Unlisted audience is not valid");
     }
 
     [Fact]

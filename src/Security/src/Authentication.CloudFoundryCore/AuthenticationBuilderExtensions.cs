@@ -282,10 +282,7 @@ public static class AuthenticationBuilderExtensions
     /// <returns><see cref="AuthenticationBuilder"/> configured to use application identity certificates</returns>
     public static AuthenticationBuilder AddCloudFoundryIdentityCertificate(this AuthenticationBuilder builder, string authenticationScheme, Action<MutualTlsAuthenticationOptions> configurer)
     {
-        builder.AddMutualTls(authenticationScheme, options =>
-        {
-            configurer?.Invoke(options);
-        });
+        builder.AddMutualTls(authenticationScheme, configurer);
         return builder;
     }
 

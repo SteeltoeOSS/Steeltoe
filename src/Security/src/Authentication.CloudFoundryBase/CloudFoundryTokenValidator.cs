@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -27,12 +28,7 @@ public class CloudFoundryTokenValidator
     /// <returns>The issuer, if valid, else <see langword="null" /></returns>
     public virtual string ValidateIssuer(string issuer, SecurityToken securityToken, TokenValidationParameters validationParameters)
     {
-        if (issuer.Contains("uaa"))
-        {
-            return issuer;
-        }
-
-        return null;
+        return issuer.Contains("uaa") ? issuer : null;
     }
 
     /// <summary>
@@ -46,14 +42,19 @@ public class CloudFoundryTokenValidator
     {
         foreach (var audience in audiences)
         {
-            if (audience.Equals(_options.ClientId))
+            if (audience.Equals(_options.ClientId, StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            if (validationParameters != null && (audience == validationParameters.ValidAudience || validationParameters.ValidAudiences?.Contains(audience) == true))
             {
                 return true;
             }
 
             if (_options.AdditionalAudiences != null)
             {
-                var found = _options.AdditionalAudiences.Any(x => x.Equals(audience));
+                var found = _options.AdditionalAudiences.Any(x => x == audience);
                 if (found)
                 {
                     return true;
