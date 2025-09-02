@@ -830,11 +830,8 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         _refreshTimer?.Dispose();
         _refreshTimer = null;
 
-        if (_timerTickLock != null)
-        {
-            _timerTickLock.Dispose();
-            _timerTickLock = null;
-        }
+        _timerTickLock?.Dispose();
+        _timerTickLock = null;
 
         if (_ownsHttpClientHandler)
         {
