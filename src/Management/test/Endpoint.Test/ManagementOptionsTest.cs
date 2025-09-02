@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Json;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
@@ -177,6 +178,44 @@ public sealed class ManagementOptionsTest
 
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddInfoActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        ManagementOptions options = serviceProvider.GetRequiredService<IOptions<ManagementOptions>>().Value;
+
+        options.Exposure.Include.Should().BeEmpty();
+        options.Exposure.Exclude.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Can_clear_default_exposure_via_JSON()
+    {
+        const string appSettings = """
+            {
+              "Management": {
+                "Endpoints": {
+                  "Actuator": {
+                    "Exposure": {
+                      "Include": [
+                        ""
+                      ],
+                      "Exclude": [
+                        ""
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+            """;
+
+        await using var stream = TextConverter.ToStream(appSettings);
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddJsonStream(stream);
+        IConfiguration configuration = configurationBuilder.Build();
+
+        var services = new ServiceCollection();
+        services.AddSingleton(configuration);
         services.AddInfoActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 

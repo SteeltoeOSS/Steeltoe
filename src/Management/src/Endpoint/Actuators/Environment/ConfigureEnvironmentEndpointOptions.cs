@@ -26,9 +26,6 @@ internal sealed class ConfigureEnvironmentEndpointOptions(IConfiguration configu
 
         base.Configure(options);
 
-        // It's not possible to distinguish between null and an empty list in configuration.
-        // See https://github.com/dotnet/extensions/issues/1341.
-        // As a workaround, we interpret a single empty string element to clear the defaults.
         if (options.KeysToSanitize.Count == 0)
         {
             foreach (string defaultKey in DefaultKeysToSanitize)
@@ -38,6 +35,9 @@ internal sealed class ConfigureEnvironmentEndpointOptions(IConfiguration configu
         }
         else if (options.KeysToSanitize is [""])
         {
+            // When binding a collection property from a JSON configuration file, setting the key to null or an empty
+            // collection is ignored. As a workaround, we interpret a single empty string element to clear the defaults.
+
             options.KeysToSanitize.Clear();
         }
     }

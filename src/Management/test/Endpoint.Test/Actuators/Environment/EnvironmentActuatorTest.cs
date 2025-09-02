@@ -109,6 +109,38 @@ public sealed class EnvironmentActuatorTest
         options.KeysToSanitize.Should().BeEmpty();
     }
 
+    [Fact]
+    public async Task Can_clear_default_keys_to_sanitize_via_JSON()
+    {
+        const string appSettings = """
+            {
+              "Management": {
+                "Endpoints": {
+                  "Env": {
+                    "KeysToSanitize": [
+                      ""
+                    ]
+                  }
+                }
+              }
+            }
+            """;
+
+        await using var stream = TextConverter.ToStream(appSettings);
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddJsonStream(stream);
+        IConfiguration configuration = configurationBuilder.Build();
+
+        var services = new ServiceCollection();
+        services.AddSingleton(configuration);
+        services.AddEnvironmentActuator();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        EnvironmentEndpointOptions options = serviceProvider.GetRequiredService<IOptions<EnvironmentEndpointOptions>>().Value;
+
+        options.KeysToSanitize.Should().BeEmpty();
+    }
+
     [Theory]
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
