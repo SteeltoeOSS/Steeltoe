@@ -118,9 +118,9 @@ public sealed class SpringBootEnvironmentVariableProviderTest
         provider.TryGet("a:b:c:2:s:t", out value).Should().BeTrue();
         value.Should().BeEmpty();
 
-        provider.TryGet("a:b:c:3:u", out _).Should().BeFalse();
+        provider.TryGet("a:b:c:2:u", out _).Should().BeFalse();
 
-        provider.TryGet("a:b:c:3:v:w", out _).Should().BeFalse();
+        provider.TryGet("a:b:c:2:v:w", out _).Should().BeFalse();
     }
 
     [Fact]

@@ -117,6 +117,9 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
             }
             else
             {
+                // When binding a collection property from a JSON configuration file, setting the key to null or an empty
+                // collection is ignored. As a workaround, we interpret a single empty string element to clear the defaults.
+
                 if (options.Include is [""])
                 {
                     includes.Clear();
