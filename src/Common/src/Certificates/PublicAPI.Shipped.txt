@@ -1,1 +1,12 @@
-﻿
+#nullable enable
+static Steeltoe.Common.Certificates.CertificateConfigurationExtensions.AddAppInstanceIdentityCertificate(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, System.Guid? orgId, System.Guid? spaceId) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Common.Certificates.CertificateConfigurationExtensions.AddAppInstanceIdentityCertificate(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, System.TimeProvider! timeProvider, System.Guid? orgId, System.Guid? spaceId) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Common.Certificates.CertificateConfigurationExtensions.AddAppInstanceIdentityCertificate(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Common.Certificates.CertificateServiceCollectionExtensions.ConfigureCertificateOptions(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! certificateName) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+Steeltoe.Common.Certificates.CertificateConfigurationExtensions
+Steeltoe.Common.Certificates.CertificateOptions
+Steeltoe.Common.Certificates.CertificateOptions.Certificate.get -> System.Security.Cryptography.X509Certificates.X509Certificate2?
+Steeltoe.Common.Certificates.CertificateOptions.Certificate.set -> void
+Steeltoe.Common.Certificates.CertificateOptions.CertificateOptions() -> void
+Steeltoe.Common.Certificates.CertificateOptions.IssuerChain.get -> System.Collections.Generic.IList<System.Security.Cryptography.X509Certificates.X509Certificate2!>!
+Steeltoe.Common.Certificates.CertificateServiceCollectionExtensions

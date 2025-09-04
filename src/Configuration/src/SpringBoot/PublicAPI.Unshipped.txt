@@ -1,6 +1,1 @@
 #nullable enable
-static Steeltoe.Configuration.SpringBoot.SpringBootConfigurationBuilderExtensions.AddSpringBootFromCommandLine(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, string![]! args) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.SpringBoot.SpringBootConfigurationBuilderExtensions.AddSpringBootFromCommandLine(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, string![]! args, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.SpringBoot.SpringBootConfigurationBuilderExtensions.AddSpringBootFromEnvironmentVariable(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Configuration.SpringBoot.SpringBootConfigurationBuilderExtensions.AddSpringBootFromEnvironmentVariable(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-Steeltoe.Configuration.SpringBoot.SpringBootConfigurationBuilderExtensions
