@@ -1,9 +1,0 @@
-<Project>
-  <Target Name="Warn_SteeltoeConnectorEF6Core" AfterTargets="AfterResolveReferences">
-    <Warning Text="The NuGet package Steeltoe.Connector.EF6Core has been removed from Steeltoe in v4. See https://steeltoe.io/docs/v3/obsolete for details." />
-  </Target>
-
-  <Target Name="Fail_Steeltoe" BeforeTargets="BeforeCompile;CoreCompile">
-    <Error Text="One or more Steeltoe package dependencies need attention. See the build warnings for details." />
-  </Target>
-</Project>
