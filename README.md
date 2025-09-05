@@ -33,7 +33,7 @@ In addition to the [feature documentation](https://steeltoe.io/api), we have bui
 | --- | --- |
 | 4.x | .NET 8 - 9 |
 | 3.x | .NET Core 3.1 - .NET 8 |
-| 3.x (Steeltoe.Stream) | .NET Core 3.1 - .NET 6 |
+| 3.x (Integration, Messaging and Stream) | .NET Core 3.1 - .NET 6 |
 | 2.x | .NET Framework 4.6.1+ |
 
 For more details, see [Supported Versions on the Wiki](https://github.com/SteeltoeOSS/Steeltoe/wiki/Steeltoe-Support-Versions).
