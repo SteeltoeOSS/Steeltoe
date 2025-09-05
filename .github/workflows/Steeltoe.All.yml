@@ -65,6 +65,12 @@ jobs:
           8.0.*
           9.0.*
 
+    - name: Setup .NET 10 (preview)
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.*
+        dotnet-quality: preview
+
     - name: Turn off dev certificate (macOS only)
       if: ${{ matrix.os == 'macos-latest' }}
       # Setting DOTNET_GENERATE_ASPNET_CERTIFICATE to "false" makes it easier to determine which test failed on macOS when it tried to start a web server with https enabled.
@@ -105,6 +111,12 @@ jobs:
 
     - name: Test (net9.0) (memory dumps)
       run: dotnet test ${{ env.SOLUTION_FILE }} --framework net9.0 --filter "${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
+
+    - name: Test (net10.0)
+      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net10.0 --filter "${{ env.SKIP_FILTER_NO_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
+
+    - name: Test (net10.0) (memory dumps)
+      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net10.0 --filter "${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
 
     - name: Upload crash/hang dumps (on failure)
       if: ${{ failure() }}
