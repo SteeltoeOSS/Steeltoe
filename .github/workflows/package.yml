@@ -195,7 +195,7 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-        source-url: ${{ vars.AZURE_ARTIFACTS_FEED_URL_3X }}
+        source-url: ${{ vars.AZURE_ARTIFACTS_FEED_URL }}
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -212,7 +212,7 @@ jobs:
       run: echo "VSS_NUGET_ACCESSTOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
 
     - name: Push packages to Azure Artifacts
-      run: dotnet nuget push '${{ github.workspace }}/packages/*.nupkg' --api-key 'azdo-placeholder' --source '${{ vars.AZURE_ARTIFACTS_FEED_URL_3X }}'
+      run: dotnet nuget push '${{ github.workspace }}/packages/*.nupkg' --api-key 'azdo-placeholder' --source '${{ vars.AZURE_ARTIFACTS_FEED_URL }}'
 
   nuget-org-deploy:
     name: Deploy packages to nuget.org
