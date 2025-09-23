@@ -161,7 +161,7 @@ public sealed class ConsulRegistrationTest
         options.Heartbeat = null;
         const int port = 1234;
         result = ConsulRegistration.CreateCheck(port, options);
-        var uri = new Uri($"{options.Scheme}://{options.HostName}:{port}{options.HealthCheckPath}");
+        var uri = new Uri($"{options.EffectiveScheme}://{options.HostName}:{port}{options.HealthCheckPath}");
 
         result.HTTP.Should().Be(uri.ToString());
         result.Interval.Should().Be(DateTimeConversions.ToTimeSpan(options.HealthCheckInterval!));

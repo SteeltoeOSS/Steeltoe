@@ -15,6 +15,7 @@ public sealed class ConsulDiscoveryOptions
 
     internal bool IsHeartbeatEnabled => Heartbeat is { Enabled: true };
     internal bool IsRetryEnabled => Retry is { Enabled: true };
+    internal string EffectiveScheme => Scheme ?? "http";
 
     /// <summary>
     /// Gets or sets a value indicating whether to enable the Consul client. Default value: true.
@@ -58,9 +59,9 @@ public sealed class ConsulDiscoveryOptions
     public bool QueryPassing { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the scheme to register the running app with ("http" or "https"). Default value: http.
+    /// Gets or sets the scheme to register the running app with ("http" or "https").
     /// </summary>
-    public string? Scheme { get; set; } = "http";
+    public string? Scheme { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether to enable periodic health checking for the running app. Default value: true.
