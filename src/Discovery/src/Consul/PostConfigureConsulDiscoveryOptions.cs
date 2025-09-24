@@ -65,7 +65,7 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
         if (options.Port == 0)
         {
             ICollection<string> addresses = _configuration.GetListenAddresses();
-            SetPortsFromListenAddresses(options, addresses);
+            SetSchemeWithPortFromListenAddresses(options, addresses);
         }
 
         options.InstanceId = GetInstanceId(options);
@@ -77,11 +77,11 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
         return NormalizeForConsul(serviceName, nameof(ConsulDiscoveryOptions.ServiceName));
     }
 
-    private void SetPortsFromListenAddresses(ConsulDiscoveryOptions options, IEnumerable<string> listenOnAddresses)
+    private void SetSchemeWithPortFromListenAddresses(ConsulDiscoveryOptions options, IEnumerable<string> listenOnAddresses)
     {
         // Try to pull some values out of server configuration to override defaults, but only if not using NetUtils.
         // If NetUtils are configured, the user probably wants to define their own behavior.
-        if (options is { UseAspNetCoreUrls: true, Port: 0 })
+        if (options is { UseAspNetCoreUrls: true, Port: 0, Scheme: null })
         {
             int? listenHttpPort = null;
             int? listenHttpsPort = null;
@@ -100,11 +100,15 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
                 }
             }
 
-            int? listenPort = listenHttpsPort ?? listenHttpPort;
-
-            if (listenPort != null)
+            if (listenHttpsPort != null)
             {
-                options.Port = listenPort.Value;
+                options.Port = listenHttpsPort.Value;
+                options.Scheme = "https";
+            }
+            else if (listenHttpPort != null)
+            {
+                options.Port = listenHttpPort.Value;
+                options.Scheme = "http";
             }
         }
     }

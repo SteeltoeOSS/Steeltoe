@@ -34,10 +34,10 @@ internal sealed class ConsulRegistration : IServiceInstance
     public int Port { get; }
 
     /// <inheritdoc />
-    public bool IsSecure => _optionsMonitor.CurrentValue.Scheme == "https";
+    public bool IsSecure => _optionsMonitor.CurrentValue.EffectiveScheme == "https";
 
     /// <inheritdoc />
-    public Uri Uri => new($"{_optionsMonitor.CurrentValue.Scheme}://{Host}:{Port}");
+    public Uri Uri => new($"{_optionsMonitor.CurrentValue.EffectiveScheme}://{Host}:{Port}");
 
     public IReadOnlyList<string> Tags { get; }
 
@@ -114,7 +114,7 @@ internal sealed class ConsulRegistration : IServiceInstance
         }
 
         // store the secure flag in the metadata so that clients will be able to figure out whether to use http or https automatically
-        metadata.TryAdd("secure", options.Scheme == "https" ? "true" : "false");
+        metadata.TryAdd("secure", options.EffectiveScheme == "https" ? "true" : "false");
 
         return metadata;
     }
@@ -145,7 +145,7 @@ internal sealed class ConsulRegistration : IServiceInstance
         }
         else
         {
-            var uri = new Uri($"{options.Scheme}://{options.HostName}:{port}{options.HealthCheckPath}");
+            var uri = new Uri($"{options.EffectiveScheme}://{options.HostName}:{port}{options.HealthCheckPath}");
             check.HTTP = uri.ToString();
         }
 

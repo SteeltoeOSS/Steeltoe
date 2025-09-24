@@ -41,7 +41,8 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         options.InstanceZone.Should().BeNull();
         options.PreferIPAddress.Should().BeFalse();
         options.QueryPassing.Should().BeTrue();
-        options.Scheme.Should().Be("http");
+        options.Scheme.Should().BeNull();
+        options.EffectiveScheme.Should().Be("http");
         options.ServiceName.Should().BeNull();
         options.Tags.Should().BeEmpty();
         options.Metadata.Should().BeEmpty();

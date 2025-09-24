@@ -173,7 +173,7 @@
             },
             "Scheme": {
               "type": "string",
-              "description": "Gets or sets the scheme to register the running app with (\"http\" or \"https\"). Default value: http."
+              "description": "Gets or sets the scheme to register the running app with (\"http\" or \"https\")."
             },
             "ServiceName": {
               "type": "string",
