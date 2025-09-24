@@ -7,7 +7,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.ServiceDiscovery.Http;
+using RichardSzalay.MockHttp;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
@@ -76,5 +79,35 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         Func<Task> action = async () => await resolveTask.WaitAsync(5.Seconds(), TestContext.Current.CancellationToken);
 
         await action.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task AddEurekaDiscoveryClient_WorksWithAspireGlobalServiceDiscovery()
+    {
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
+        });
+
+        builder.Services.AddEurekaDiscoveryClient();
+        builder.Services.AddTransient<ResolvingHttpDelegatingHandler>();
+        builder.Services.ConfigureHttpClientDefaults(action => action.AddHttpMessageHandler<ResolvingHttpDelegatingHandler>());
+
+        var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", "{}");
+
+        await using WebApplication host = builder.Build();
+
+        host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+
+        var discoveryClient = host.Services.GetRequiredService<EurekaDiscoveryClient>();
+        Func<Task> action = async () => await discoveryClient.FetchRegistryAsync(true, TestContext.Current.CancellationToken);
+
+        await action.Should().NotThrowAsync();
+
+        handler.Mock.VerifyNoOutstandingExpectation();
     }
 }

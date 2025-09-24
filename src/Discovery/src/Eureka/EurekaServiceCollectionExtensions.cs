@@ -20,6 +20,7 @@ namespace Steeltoe.Discovery.Eureka;
 public static class EurekaServiceCollectionExtensions
 {
     private const string SpringDiscoveryEnabled = "spring:cloud:discovery:enabled";
+    private const string ResolvingHttpDelegatingHandlerName = "Microsoft.Extensions.ServiceDiscovery.Http.ResolvingHttpDelegatingHandler";
 
     /// <summary>
     /// Configures to use <see cref="EurekaDiscoveryClient" /> for service discovery.
@@ -108,7 +109,7 @@ public static class EurekaServiceCollectionExtensions
         services.ConfigureCertificateOptions("Eureka");
 
         IHttpClientBuilder eurekaHttpClientBuilder = services.AddHttpClient("Eureka");
-        eurekaHttpClientBuilder.ConfigureAdditionalHttpMessageHandlers((defaultHandlers, _) => RemoveDiscoveryHttpDelegatingHandler(defaultHandlers));
+        eurekaHttpClientBuilder.ConfigureAdditionalHttpMessageHandlers((defaultHandlers, _) => RemoveDiscoveryHttpHandlers(defaultHandlers));
 
         eurekaHttpClientBuilder.ConfigurePrimaryHttpMessageHandler(serviceProvider =>
         {
@@ -122,7 +123,7 @@ public static class EurekaServiceCollectionExtensions
         });
 
         IHttpClientBuilder eurekaTokenHttpClientBuilder = services.AddHttpClient("AccessTokenForEureka");
-        eurekaTokenHttpClientBuilder.ConfigureAdditionalHttpMessageHandlers((defaultHandlers, _) => RemoveDiscoveryHttpDelegatingHandler(defaultHandlers));
+        eurekaTokenHttpClientBuilder.ConfigureAdditionalHttpMessageHandlers((defaultHandlers, _) => RemoveDiscoveryHttpHandlers(defaultHandlers));
 
         eurekaTokenHttpClientBuilder.ConfigurePrimaryHttpMessageHandler(serviceProvider =>
         {
@@ -139,11 +140,18 @@ public static class EurekaServiceCollectionExtensions
         services.AddSingleton<EurekaClient>();
     }
 
-    private static void RemoveDiscoveryHttpDelegatingHandler(ICollection<DelegatingHandler> defaultHandlers)
+    private static void RemoveDiscoveryHttpHandlers(ICollection<DelegatingHandler> defaultHandlers)
     {
+        // Prevent infinite recursion: The inner HttClient used by EurekaDiscoveryClient must not use service discovery.
+
         DelegatingHandler[] discoveryHandlers = defaultHandlers.Where(handler =>
         {
             Type handlerType = handler.GetType();
+
+            if (handlerType.FullName == ResolvingHttpDelegatingHandlerName)
+            {
+                return true;
+            }
 
             if (handlerType.IsConstructedGenericType)
             {
@@ -160,7 +168,6 @@ public static class EurekaServiceCollectionExtensions
 
         foreach (DelegatingHandler discoveryHandler in discoveryHandlers)
         {
-            // Prevent infinite recursion: DiscoveryHttpDelegatingHandler depends on EurekaDiscoveryClient.
             defaultHandlers.Remove(discoveryHandler);
         }
     }
