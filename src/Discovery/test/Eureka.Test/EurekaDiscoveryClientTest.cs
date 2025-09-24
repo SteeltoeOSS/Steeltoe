@@ -167,6 +167,7 @@ public sealed class EurekaDiscoveryClientTest
         thisService.Metadata.Should().BeEmpty();
         thisService.Port.Should().Be(5000);
         thisService.ServiceId.Should().Be("DEMO");
+        thisService.InstanceId.Should().Be($"{instanceOptions.HostName}:demo:5000");
         thisService.Uri.Should().Be(new Uri($"http://{instanceOptions.HostName}:5000"));
     }
 

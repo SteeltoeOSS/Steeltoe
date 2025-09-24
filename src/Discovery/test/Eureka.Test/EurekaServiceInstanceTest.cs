@@ -27,6 +27,7 @@ public sealed class EurekaServiceInstanceTest
         var serviceInstance = new EurekaServiceInstance(instance);
 
         serviceInstance.ServiceId.Should().Be(instance.AppName);
+        serviceInstance.InstanceId.Should().Be("id");
         serviceInstance.Host.Should().Be(instance.HostName);
         serviceInstance.Port.Should().Be(instance.SecurePort);
         serviceInstance.IsSecure.Should().BeTrue();
