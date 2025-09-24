@@ -114,7 +114,6 @@ internal sealed class HypermediaService
         };
 
         string href = builder.Uri.ToString();
-        bool isTemplated = !endpointOptions.RequiresExactMatch();
-        return new Link(href, isTemplated);
+        return new Link(href, false);
     }
 }
