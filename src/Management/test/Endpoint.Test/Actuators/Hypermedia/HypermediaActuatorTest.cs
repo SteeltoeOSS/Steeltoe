@@ -111,7 +111,7 @@ public sealed class HypermediaActuatorTest
               "_links": {
                 "health": {
                   "href": "http://localhost/actuator/health",
-                  "templated": true
+                  "templated": false
                 },
                 "info": {
                   "href": "http://localhost/actuator/info",
@@ -196,7 +196,7 @@ public sealed class HypermediaActuatorTest
                 },
                 "loggers": {
                   "href": "http://localhost/alt-actuator/alt-loggers-path",
-                  "templated": true
+                  "templated": false
                 },
                 "self": {
                   "href": "http://localhost/alt-actuator/hypermedia",
@@ -448,7 +448,7 @@ public sealed class HypermediaActuatorTest
               "_links": {
                 "health": {
                   "href": "http://localhost/actuator/health",
-                  "templated": true
+                  "templated": false
                 },
                 "self": {
                   "href": "http://localhost/actuator",

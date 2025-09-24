@@ -176,7 +176,7 @@ public sealed class CloudFoundryActuatorTest
                 },
                 "health": {
                   "href": "http://localhost/cloudfoundryapplication/health",
-                  "templated": true
+                  "templated": false
                 },
                 "heapdump": {
                   "href": "http://localhost/cloudfoundryapplication/heapdump",
@@ -192,7 +192,7 @@ public sealed class CloudFoundryActuatorTest
                 },
                 "loggers": {
                   "href": "http://localhost/cloudfoundryapplication/loggers",
-                  "templated": true
+                  "templated": false
                 },
                 "mappings": {
                   "href": "http://localhost/cloudfoundryapplication/mappings",
@@ -410,7 +410,7 @@ public sealed class CloudFoundryActuatorTest
               "_links": {
                 "loggers": {
                   "href": "http://localhost/cloudfoundryapplication/loggers",
-                  "templated": true
+                  "templated": false
                 },
                 "self": {
                   "href": "http://localhost/cloudfoundryapplication",
@@ -507,7 +507,7 @@ public sealed class CloudFoundryActuatorTest
               "_links": {
                 "health": {
                   "href": "http://localhost/cloudfoundryapplication/health",
-                  "templated": true
+                  "templated": false
                 },
                 "self": {
                   "href": "http://localhost/cloudfoundryapplication",
