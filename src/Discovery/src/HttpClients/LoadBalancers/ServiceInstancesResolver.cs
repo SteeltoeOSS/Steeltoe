@@ -138,6 +138,7 @@ public sealed class ServiceInstancesResolver
         // Trust that deserialized instances meet the IServiceInstance contract, so suppress nullability warnings.
 
         public string ServiceId { get; set; } = null!;
+        public string InstanceId { get; set; } = null!;
         public string Host { get; set; } = null!;
         public int Port { get; set; }
         public bool IsSecure { get; set; }
@@ -151,6 +152,7 @@ public sealed class ServiceInstancesResolver
             return new JsonSerializableServiceInstance
             {
                 ServiceId = instance.ServiceId,
+                InstanceId = instance.InstanceId,
                 Host = instance.Host,
                 Port = instance.Port,
                 IsSecure = instance.IsSecure,

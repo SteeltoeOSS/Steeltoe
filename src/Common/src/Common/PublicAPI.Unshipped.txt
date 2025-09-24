@@ -1,1 +1,2 @@
 #nullable enable
+Steeltoe.Common.Discovery.IServiceInstance.InstanceId.get -> string!

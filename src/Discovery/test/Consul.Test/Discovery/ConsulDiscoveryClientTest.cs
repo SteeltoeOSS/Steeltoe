@@ -32,6 +32,7 @@ public sealed class ConsulDiscoveryClientTest
                     Service = new AgentService
                     {
                         Service = "ServiceId",
+                        ID = "Instance1",
                         Address = "foo.bar.com",
                         Port = 1234,
                         Meta = new Dictionary<string, string>
@@ -46,6 +47,7 @@ public sealed class ConsulDiscoveryClientTest
                     Service = new AgentService
                     {
                         Service = "ServiceId",
+                        ID = "Instance2",
                         Address = "foo1.bar1.com",
                         Port = 5678,
                         Meta = new Dictionary<string, string>
@@ -79,6 +81,7 @@ public sealed class ConsulDiscoveryClientTest
 
         serviceInstances[0].Host.Should().Be("foo.bar.com");
         serviceInstances[0].ServiceId.Should().Be("ServiceId");
+        serviceInstances[0].InstanceId.Should().Be("Instance1");
         serviceInstances[0].IsSecure.Should().BeTrue();
         serviceInstances[0].Port.Should().Be(1234);
         serviceInstances[0].Metadata.Should().HaveCount(2);
@@ -88,6 +91,7 @@ public sealed class ConsulDiscoveryClientTest
 
         serviceInstances[1].Host.Should().Be("foo1.bar1.com");
         serviceInstances[1].ServiceId.Should().Be("ServiceId");
+        serviceInstances[1].InstanceId.Should().Be("Instance2");
         serviceInstances[1].IsSecure.Should().BeFalse();
         serviceInstances[1].Port.Should().Be(5678);
         serviceInstances[1].Metadata.Should().HaveCount(2);
@@ -169,6 +173,7 @@ public sealed class ConsulDiscoveryClientTest
                     Service = new AgentService
                     {
                         Service = "ServiceId",
+                        ID = "Instance1",
                         Address = "foo.bar.com",
                         Port = 1234,
                         Meta = new Dictionary<string, string>
@@ -183,6 +188,7 @@ public sealed class ConsulDiscoveryClientTest
                     Service = new AgentService
                     {
                         Service = "ServiceId",
+                        ID = "Instance2",
                         Address = "foo1.bar1.com",
                         Port = 5678,
                         Meta = new Dictionary<string, string>
@@ -215,6 +221,7 @@ public sealed class ConsulDiscoveryClientTest
 
         serviceInstances[0].Host.Should().Be("foo.bar.com");
         serviceInstances[0].ServiceId.Should().Be("ServiceId");
+        serviceInstances[0].InstanceId.Should().Be("Instance1");
         serviceInstances[0].IsSecure.Should().BeTrue();
         serviceInstances[0].Port.Should().Be(1234);
         serviceInstances[0].Metadata.Should().HaveCount(2);
@@ -224,6 +231,7 @@ public sealed class ConsulDiscoveryClientTest
 
         serviceInstances[1].Host.Should().Be("foo1.bar1.com");
         serviceInstances[1].ServiceId.Should().Be("ServiceId");
+        serviceInstances[1].InstanceId.Should().Be("Instance2");
         serviceInstances[1].IsSecure.Should().BeFalse();
         serviceInstances[1].Port.Should().Be(5678);
         serviceInstances[1].Metadata.Should().HaveCount(2);

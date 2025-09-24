@@ -241,6 +241,7 @@ public sealed class RoundRobinLoadBalancerTest
     private sealed class TestServiceInstance(Uri uri) : IServiceInstance
     {
         public string ServiceId => throw new NotImplementedException();
+        public string InstanceId => throw new NotImplementedException();
         public string Host => throw new NotImplementedException();
         public int Port => throw new NotImplementedException();
         public bool IsSecure => throw new NotImplementedException();

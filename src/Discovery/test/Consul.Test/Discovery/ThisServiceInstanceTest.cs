@@ -32,6 +32,7 @@ public sealed class ThisServiceInstanceTest
 
         instance.Host.Should().Be("test.foo.bar");
         instance.ServiceId.Should().Be("foobar");
+        instance.InstanceId.Should().Be("ID");
         instance.IsSecure.Should().BeFalse();
         instance.Port.Should().Be(1234);
         instance.Metadata.Should().ContainSingle();

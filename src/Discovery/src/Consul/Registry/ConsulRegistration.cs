@@ -22,9 +22,7 @@ internal sealed class ConsulRegistration : IServiceInstance
     /// <inheritdoc />
     public string ServiceId { get; }
 
-    /// <summary>
-    /// Gets the instance ID as registered by the Consul server.
-    /// </summary>
+    /// <inheritdoc />
     public string InstanceId { get; }
 
     /// <inheritdoc />

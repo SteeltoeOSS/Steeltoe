@@ -12,6 +12,11 @@ public interface IServiceInstance
     string ServiceId { get; }
 
     /// <summary>
+    /// Gets the instance ID as registered by the discovery client.
+    /// </summary>
+    string InstanceId { get; }
+
+    /// <summary>
     /// Gets the hostname of the registered service instance.
     /// </summary>
     string Host { get; }

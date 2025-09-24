@@ -16,6 +16,7 @@ public sealed class ConsulServiceInstanceTest
             Service = new AgentService
             {
                 Service = "ServiceId",
+                ID = "Instance1",
                 Address = "foo.bar.com",
                 Port = 1234,
                 Tags =
@@ -35,6 +36,7 @@ public sealed class ConsulServiceInstanceTest
 
         serviceInstance.Host.Should().Be("foo.bar.com");
         serviceInstance.ServiceId.Should().Be("ServiceId");
+        serviceInstance.InstanceId.Should().Be("Instance1");
         serviceInstance.IsSecure.Should().BeTrue();
         serviceInstance.Port.Should().Be(1234);
         serviceInstance.Tags.Should().HaveCount(2);

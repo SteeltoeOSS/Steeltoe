@@ -23,6 +23,9 @@ public sealed class ConfigurationServiceInstance : IServiceInstance
     public string? ServiceId { get; set; }
 
     /// <inheritdoc />
+    public string InstanceId => string.Empty;
+
+    /// <inheritdoc />
     [Required]
     public string? Host { get; set; }
 
