@@ -112,3 +112,8 @@ Steeltoe.Connectors.SqlServer.SqlServerOptions.SqlServerOptions() -> void
 Steeltoe.Connectors.SqlServer.SqlServerServiceCollectionExtensions
 virtual Steeltoe.Connectors.ConnectorCreateConnection.Invoke(System.IServiceProvider! serviceProvider, string! serviceBindingName) -> object!
 virtual Steeltoe.Connectors.ConnectorCreateHealthContributor.Invoke(System.IServiceProvider! serviceProvider, string! serviceBindingName) -> Steeltoe.Common.HealthChecks.IHealthContributor!
+Steeltoe.Connectors.RelationalDatabaseHealthContributor
+Steeltoe.Connectors.RelationalDatabaseHealthContributor.RelationalDatabaseHealthContributor(System.Data.Common.DbConnection! connection, string? id, string? host, string? commandText, Microsoft.Extensions.Logging.ILogger<Steeltoe.Connectors.RelationalDatabaseHealthContributor!>! logger) -> void
+Steeltoe.Connectors.RelationalDatabaseHealthContributor.RelationalDatabaseHealthContributor(System.Data.Common.DbConnection! connection, string? host, Microsoft.Extensions.Logging.ILogger<Steeltoe.Connectors.RelationalDatabaseHealthContributor!>! logger) -> void
+Steeltoe.Connectors.RelationalDatabaseHealthContributor.CheckHealthAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Common.HealthChecks.HealthCheckResult?>!
+Steeltoe.Connectors.RelationalDatabaseHealthContributor.Dispose() -> void
