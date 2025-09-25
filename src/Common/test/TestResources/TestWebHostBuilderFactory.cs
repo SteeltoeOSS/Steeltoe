@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
+#pragma warning disable ASPDEPR004 // 'WebHostBuilder' is deprecated in favor of HostBuilder and WebApplicationBuilder.
+
 namespace Steeltoe.Common.TestResources;
 
 public static class TestWebHostBuilderFactory

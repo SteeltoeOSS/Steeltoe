@@ -25,7 +25,7 @@ internal sealed class ConnectorShim<TOptions>(Type connectionType, object instan
 
     public object GetConnection()
     {
-        return InstanceAccessor.InvokeMethod(nameof(Connector<TOptions, object>.GetConnection), true)!;
+        return InstanceAccessor.InvokeMethod(nameof(Connector<,>.GetConnection), true)!;
     }
 
     public void Dispose()

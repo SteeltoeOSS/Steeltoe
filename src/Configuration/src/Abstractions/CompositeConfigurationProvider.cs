@@ -97,10 +97,14 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
 
         LogSet(GetType().Name, key, value);
 
+#pragma warning disable IDE0031 // Use null propagation
+        // ReSharper disable once UseNullPropagation
+        // Justification: Triggers warning in Sonar, which doesn't support .NET 10 yet.
         if (ConfigurationRoot != null)
         {
             ConfigurationRoot[key] = value;
         }
+#pragma warning restore IDE0031 // Use null propagation
     }
 
     public void Dispose()
