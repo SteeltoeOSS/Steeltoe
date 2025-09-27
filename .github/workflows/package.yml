@@ -234,6 +234,8 @@ jobs:
     if: ${{ github.event_name == 'release' }}
     environment: nuget.org
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
 
     steps:
     - name: Setup .NET
@@ -247,8 +249,14 @@ jobs:
         name: signed-packages
         path: packages
 
+    - name: NuGet login
+      uses: NuGet/login@v1
+      id: nuget-login
+      with:
+        user: ${{ secrets.NUGET_USER }}
+
     - name: Push packages to nuget.org
-      run: dotnet nuget push '${{ github.workspace }}/packages/*.nupkg' --skip-duplicate --api-key '${{ secrets.STEELTOE_NUGET_API_KEY }}' --source 'nuget.org'
+      run: dotnet nuget push '${{ github.workspace }}/packages/*.nupkg' --skip-duplicate --api-key '${{ steps.nuget-login.outputs.NUGET_API_KEY }}' --source 'nuget.org'
 
   open_pr:
     name: Open pull request to bump Steeltoe version after stable release
