@@ -169,6 +169,8 @@ public sealed class EurekaDiscoveryClientTest
         thisService.ServiceId.Should().Be("DEMO");
         thisService.InstanceId.Should().Be($"{instanceOptions.HostName}:demo:5000");
         thisService.Uri.Should().Be(new Uri($"http://{instanceOptions.HostName}:5000"));
+        thisService.NonSecureUri.Should().Be(thisService.Uri);
+        thisService.SecureUri.Should().BeNull();
     }
 
     [Fact]

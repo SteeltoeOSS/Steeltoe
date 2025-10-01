@@ -37,6 +37,12 @@ internal sealed class ConsulRegistration : IServiceInstance
     /// <inheritdoc />
     public Uri Uri => new($"{_optionsMonitor.CurrentValue.EffectiveScheme}://{Host}:{Port}");
 
+    /// <inheritdoc />
+    public Uri? NonSecureUri => IsSecure ? null : Uri;
+
+    /// <inheritdoc />
+    public Uri? SecureUri => IsSecure ? Uri : null;
+
     public IReadOnlyList<string> Tags { get; }
 
     /// <inheritdoc />

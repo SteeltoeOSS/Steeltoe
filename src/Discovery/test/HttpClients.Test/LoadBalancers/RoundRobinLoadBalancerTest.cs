@@ -246,6 +246,8 @@ public sealed class RoundRobinLoadBalancerTest
         public int Port => throw new NotImplementedException();
         public bool IsSecure => throw new NotImplementedException();
         public Uri Uri { get; } = uri;
+        public Uri? NonSecureUri => throw new NotImplementedException();
+        public Uri? SecureUri => throw new NotImplementedException();
         public IReadOnlyDictionary<string, string?> Metadata => throw new NotImplementedException();
     }
 

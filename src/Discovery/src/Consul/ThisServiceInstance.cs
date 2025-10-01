@@ -31,6 +31,12 @@ internal sealed class ThisServiceInstance : IServiceInstance
     public Uri Uri { get; }
 
     /// <inheritdoc />
+    public Uri? NonSecureUri { get; }
+
+    /// <inheritdoc />
+    public Uri? SecureUri { get; }
+
+    /// <inheritdoc />
     public IReadOnlyDictionary<string, string?> Metadata { get; }
 
     public ThisServiceInstance(ConsulRegistration registration)
@@ -44,5 +50,7 @@ internal sealed class ThisServiceInstance : IServiceInstance
         Port = registration.Port;
         Metadata = registration.Metadata;
         Uri = registration.Uri;
+        NonSecureUri = registration.NonSecureUri;
+        SecureUri = registration.SecureUri;
     }
 }

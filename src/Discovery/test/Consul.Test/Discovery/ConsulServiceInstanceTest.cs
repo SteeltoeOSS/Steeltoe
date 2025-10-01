@@ -46,5 +46,7 @@ public sealed class ConsulServiceInstanceTest
         serviceInstance.Metadata.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
         serviceInstance.Metadata.Should().ContainKey("secure").WhoseValue.Should().Be("true");
         serviceInstance.Uri.Should().Be(new Uri("https://foo.bar.com:1234"));
+        serviceInstance.NonSecureUri.Should().BeNull();
+        serviceInstance.SecureUri.Should().Be(serviceInstance.Uri);
     }
 }

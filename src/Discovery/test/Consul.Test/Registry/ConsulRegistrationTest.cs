@@ -46,6 +46,8 @@ public sealed class ConsulRegistrationTest
         registration.Metadata.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
         registration.IsSecure.Should().BeFalse();
         registration.Uri.Should().Be(new Uri("http://address:1234"));
+        registration.NonSecureUri.Should().Be(registration.Uri);
+        registration.SecureUri.Should().BeNull();
     }
 
     [Fact]
@@ -177,17 +179,20 @@ public sealed class ConsulRegistrationTest
         {
             ["spring:application:name"] = "foobar",
             ["consul:discovery:hostName"] = "some-host",
-            ["consul:discovery:port"] = "1100"
+            ["consul:discovery:port"] = "1100",
+            ["consul:discovery:scheme"] = "https"
         };
 
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
 
         registration.InstanceId.Should().StartWith("foobar-");
-        registration.IsSecure.Should().BeFalse();
+        registration.IsSecure.Should().BeTrue();
         registration.ServiceId.Should().Be("foobar");
         registration.Host.Should().Be("some-host");
         registration.Port.Should().Be(1100);
-        registration.Uri.Should().Be(new Uri("http://some-host:1100"));
+        registration.Uri.Should().Be(new Uri("https://some-host:1100"));
+        registration.SecureUri.Should().Be(registration.Uri);
+        registration.NonSecureUri.Should().BeNull();
 
         registration.InnerRegistration.Should().NotBeNull();
         registration.InnerRegistration.Address.Should().Be("some-host");

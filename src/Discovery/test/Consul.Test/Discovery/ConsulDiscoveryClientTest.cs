@@ -88,6 +88,8 @@ public sealed class ConsulDiscoveryClientTest
         serviceInstances[0].Metadata.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
         serviceInstances[0].Metadata.Should().ContainKey("secure").WhoseValue.Should().Be("true");
         serviceInstances[0].Uri.Should().Be(new Uri("https://foo.bar.com:1234"));
+        serviceInstances[0].NonSecureUri.Should().BeNull();
+        serviceInstances[0].SecureUri.Should().Be(serviceInstances[0].Uri);
 
         serviceInstances[1].Host.Should().Be("foo1.bar1.com");
         serviceInstances[1].ServiceId.Should().Be("ServiceId");
@@ -98,6 +100,8 @@ public sealed class ConsulDiscoveryClientTest
         serviceInstances[1].Metadata.Should().ContainKey("bar").WhoseValue.Should().Be("foo");
         serviceInstances[1].Metadata.Should().ContainKey("secure").WhoseValue.Should().Be("false");
         serviceInstances[1].Uri.Should().Be(new Uri("http://foo1.bar1.com:5678"));
+        serviceInstances[1].NonSecureUri.Should().Be(serviceInstances[1].Uri);
+        serviceInstances[1].SecureUri.Should().BeNull();
     }
 
     [Fact]
@@ -228,6 +232,8 @@ public sealed class ConsulDiscoveryClientTest
         serviceInstances[0].Metadata.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
         serviceInstances[0].Metadata.Should().ContainKey("secure").WhoseValue.Should().Be("true");
         serviceInstances[0].Uri.Should().Be(new Uri("https://foo.bar.com:1234"));
+        serviceInstances[0].NonSecureUri.Should().BeNull();
+        serviceInstances[0].SecureUri.Should().Be(serviceInstances[0].Uri);
 
         serviceInstances[1].Host.Should().Be("foo1.bar1.com");
         serviceInstances[1].ServiceId.Should().Be("ServiceId");
@@ -238,5 +244,7 @@ public sealed class ConsulDiscoveryClientTest
         serviceInstances[1].Metadata.Should().ContainKey("bar").WhoseValue.Should().Be("foo");
         serviceInstances[1].Metadata.Should().ContainKey("secure").WhoseValue.Should().Be("false");
         serviceInstances[1].Uri.Should().Be(new Uri("http://foo1.bar1.com:5678"));
+        serviceInstances[1].NonSecureUri.Should().Be(serviceInstances[1].Uri);
+        serviceInstances[1].SecureUri.Should().BeNull();
     }
 }
