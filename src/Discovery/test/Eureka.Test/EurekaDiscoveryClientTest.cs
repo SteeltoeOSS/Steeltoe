@@ -417,7 +417,7 @@ public sealed class EurekaDiscoveryClientTest
     }
 
     [Fact]
-    public async Task GetInstancesByVipAddress_ReturnsExpected()
+    public async Task GetInstancesAsync_ReturnsExpected()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -435,13 +435,13 @@ public sealed class EurekaDiscoveryClientTest
 
         discoveryClient.Applications = new ApplicationInfoCollection([
             new ApplicationInfo("app1", [
-                new InstanceInfo("id1", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
+                new InstanceInfo("id11", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
                     VipAddress = "vapp1",
                     SecureVipAddress = "svapp1",
                     Status = InstanceStatus.Down
                 },
-                new InstanceInfo("id2", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
+                new InstanceInfo("id12", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
                     VipAddress = "vapp1",
                     SecureVipAddress = "svapp1",
@@ -464,18 +464,18 @@ public sealed class EurekaDiscoveryClientTest
             ])
         ]);
 
-        IReadOnlyList<InstanceInfo> result = discoveryClient.GetInstancesByVipAddress("vapp1", false);
+        IList<IServiceInstance> result = await discoveryClient.GetInstancesAsync("vapp1", TestContext.Current.CancellationToken);
 
         result.Should().HaveCount(2);
-        result.Should().ContainSingle(info => info.InstanceId == "id1");
-        result.Should().ContainSingle(info => info.InstanceId == "id2");
+        result.Should().ContainSingle(info => info.InstanceId == "id11");
+        result.Should().ContainSingle(info => info.InstanceId == "id12");
 
-        result = discoveryClient.GetInstancesByVipAddress("boohoo", false);
+        result = await discoveryClient.GetInstancesAsync("boohoo", TestContext.Current.CancellationToken);
 
         result.Should().BeEmpty();
 
         discoveryClient.Applications.ReturnUpInstancesOnly = true;
-        result = discoveryClient.GetInstancesByVipAddress("vapp1", false);
+        result = await discoveryClient.GetInstancesAsync("vapp1", TestContext.Current.CancellationToken);
 
         result.Should().BeEmpty();
     }

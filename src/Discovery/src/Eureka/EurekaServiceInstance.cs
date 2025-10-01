@@ -50,7 +50,9 @@ internal sealed class EurekaServiceInstance : IServiceInstance
 
         if (instance is { IsNonSecurePortEnabled: true, NonSecurePort: > 0 })
         {
+#pragma warning disable S5332 // Using clear-text protocols is security-sensitive
             NonSecureUri = new Uri($"http://{Host}:{instance.NonSecurePort}");
+#pragma warning restore S5332 // Using clear-text protocols is security-sensitive
             Port = instance.NonSecurePort;
         }
 

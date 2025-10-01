@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.ObjectModel;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
 
@@ -64,8 +65,8 @@ public sealed class ApplicationInfoCollectionTest
 
         apps.GetInstancesByVipAddress("vip1a").Should().ContainSingle();
         apps.GetInstancesByVipAddress("vip1b").Should().ContainSingle();
-        apps.GetInstancesBySecureVipAddress("svip2a").Should().ContainSingle();
-        apps.GetInstancesBySecureVipAddress("svip2b").Should().ContainSingle();
+        apps.GetInstancesByVipAddress("svip2a").Should().ContainSingle();
+        apps.GetInstancesByVipAddress("svip2b").Should().ContainSingle();
     }
 
     [Fact]
@@ -117,13 +118,11 @@ public sealed class ApplicationInfoCollectionTest
             app2
         ];
 
-        apps.VipInstanceMap.Should().HaveCount(2);
+        apps.VipInstanceMap.Should().HaveCount(4);
         apps.VipInstanceMap.Should().ContainKey("vapp1".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
         apps.VipInstanceMap.Should().ContainKey("vapp2".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
-
-        apps.SecureVipInstanceMap.Should().HaveCount(2);
-        apps.SecureVipInstanceMap.Should().ContainKey("svapp1".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
-        apps.SecureVipInstanceMap.Should().ContainKey("svapp2".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
+        apps.VipInstanceMap.Should().ContainKey("svapp1".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
+        apps.VipInstanceMap.Should().ContainKey("svapp2".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
     }
 
     [Fact]
@@ -159,26 +158,20 @@ public sealed class ApplicationInfoCollectionTest
             ])
         ]);
 
-        apps.VipInstanceMap.Should().HaveCount(2);
+        apps.VipInstanceMap.Should().HaveCount(4);
         apps.VipInstanceMap.Should().ContainKey("vapp1".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
         apps.VipInstanceMap.Should().ContainKey("vapp2".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
+        apps.VipInstanceMap.Should().ContainKey("svapp1".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
+        apps.VipInstanceMap.Should().ContainKey("svapp2".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
 
-        apps.SecureVipInstanceMap.Should().HaveCount(2);
-        apps.SecureVipInstanceMap.Should().ContainKey("svapp1".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
-        apps.SecureVipInstanceMap.Should().ContainKey("svapp2".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
+        apps.RemoveFromVipInstanceMap(new InstanceInfoBuilder().WithId("id2").WithVipAddress("vapp1").WithSecureVipAddress("svapp1").Build());
+        apps.RemoveFromVipInstanceMap(new InstanceInfoBuilder().WithId("id1").WithVipAddress("vapp1").WithSecureVipAddress("svapp1").Build());
 
-        apps.RemoveInstanceFromVip(new InstanceInfoBuilder().WithId("id2").WithVipAddress("vapp1").WithSecureVipAddress("svapp1").Build());
-        apps.RemoveInstanceFromVip(new InstanceInfoBuilder().WithId("id1").WithVipAddress("vapp1").WithSecureVipAddress("svapp1").Build());
-
-        apps.VipInstanceMap.Should().ContainSingle();
-        apps.VipInstanceMap.Should().NotContainKey("vapp1".ToUpperInvariant());
-        apps.VipInstanceMap.TryGetValue("vapp1".ToUpperInvariant(), out _).Should().BeFalse();
+        apps.VipInstanceMap.Should().HaveCount(4);
+        apps.VipInstanceMap.Should().ContainKey("vapp1".ToUpperInvariant()).WhoseValue.Should().BeEmpty();
         apps.VipInstanceMap.Should().ContainKey("vapp2".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
-
-        apps.SecureVipInstanceMap.Should().ContainSingle();
-        apps.SecureVipInstanceMap.Should().NotContainKey("svapp1".ToUpperInvariant());
-        apps.SecureVipInstanceMap.TryGetValue("svapp1".ToUpperInvariant(), out _).Should().BeFalse();
-        apps.SecureVipInstanceMap.Should().ContainKey("svapp2".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
+        apps.VipInstanceMap.Should().ContainKey("svapp1".ToUpperInvariant()).WhoseValue.Should().BeEmpty();
+        apps.VipInstanceMap.Should().ContainKey("svapp2".ToUpperInvariant()).WhoseValue.Should().HaveCount(2);
     }
 
     [Fact]
@@ -206,51 +199,22 @@ public sealed class ApplicationInfoCollectionTest
     }
 
     [Fact]
-    public void GetInstancesBySecureVipAddress_ReturnsExpected()
-    {
-        var app1 = new ApplicationInfo("app1", [
-            new InstanceInfoBuilder().WithId("id1").WithVipAddress("vapp1").WithSecureVipAddress("svapp1").Build(),
-            new InstanceInfoBuilder().WithId("id2").WithVipAddress("vapp1").WithSecureVipAddress("svapp1").Build()
-        ]);
-
-        var app2 = new ApplicationInfo("app2", [
-            new InstanceInfoBuilder().WithId("id1").WithVipAddress("vapp2").WithSecureVipAddress("svapp2").Build(),
-            new InstanceInfoBuilder().WithId("id2").WithVipAddress("vapp2").WithSecureVipAddress("svapp2").Build()
-        ]);
-
-        var apps = new ApplicationInfoCollection([
-            app1,
-            app2
-        ]);
-
-        List<InstanceInfo> result = apps.GetInstancesBySecureVipAddress("svapp1");
-
-        result.Should().HaveCount(2);
-        result.Should().Contain(app1.GetInstance("id1")!);
-        result.Should().Contain(app1.GetInstance("id2")!);
-
-        result = apps.GetInstancesBySecureVipAddress("svapp2");
-
-        result.Should().HaveCount(2);
-        result.Should().Contain(app2.GetInstance("id1")!);
-        result.Should().Contain(app2.GetInstance("id2")!);
-
-        result = apps.GetInstancesBySecureVipAddress("foobar");
-
-        result.Should().BeEmpty();
-    }
-
-    [Fact]
     public void GetInstancesByVipAddress_ReturnsExpected()
     {
+        InstanceInfo instance11 = new InstanceInfoBuilder().WithId("id1").WithVipAddress("vapp1").WithSecureVipAddress("svapp1").Build();
+        InstanceInfo instance12 = new InstanceInfoBuilder().WithId("id2").WithVipAddress("vapp1").WithSecureVipAddress("svapp1").Build();
+
         var app1 = new ApplicationInfo("app1", [
-            new InstanceInfoBuilder().WithId("id1").WithVipAddress("vapp1").WithSecureVipAddress("svapp1").Build(),
-            new InstanceInfoBuilder().WithId("id2").WithVipAddress("vapp1").WithSecureVipAddress("svapp1").Build()
+            instance11,
+            instance12
         ]);
 
+        InstanceInfo instance21 = new InstanceInfoBuilder().WithId("id1").WithVipAddress("vapp2").WithSecureVipAddress("svapp2").Build();
+        InstanceInfo instance22 = new InstanceInfoBuilder().WithId("id2").WithVipAddress("vapp2").WithSecureVipAddress("svapp2").Build();
+
         var app2 = new ApplicationInfo("app2", [
-            new InstanceInfoBuilder().WithId("id1").WithVipAddress("vapp2").WithSecureVipAddress("svapp2").Build(),
-            new InstanceInfoBuilder().WithId("id2").WithVipAddress("vapp2").WithSecureVipAddress("svapp2").Build()
+            instance21,
+            instance22
         ]);
 
         var apps = new ApplicationInfoCollection([
@@ -258,21 +222,31 @@ public sealed class ApplicationInfoCollectionTest
             app2
         ]);
 
-        List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
+        ReadOnlyCollection<InstanceInfo> secureInstances1 = apps.GetInstancesByVipAddress("svapp1");
 
-        result.Should().HaveCount(2);
-        result.Should().Contain(app1.GetInstance("id1")!);
-        result.Should().Contain(app1.GetInstance("id2")!);
+        secureInstances1.Should().HaveCount(2);
+        secureInstances1.Should().Contain(instance11);
+        secureInstances1.Should().Contain(instance12);
 
-        result = apps.GetInstancesByVipAddress("vapp2");
+        ReadOnlyCollection<InstanceInfo> secureInstances2 = apps.GetInstancesByVipAddress("svapp2");
 
-        result.Should().HaveCount(2);
-        result.Should().Contain(app2.GetInstance("id1")!);
-        result.Should().Contain(app2.GetInstance("id2")!);
+        secureInstances2.Should().HaveCount(2);
+        secureInstances2.Should().Contain(instance21);
+        secureInstances2.Should().Contain(instance22);
 
-        result = apps.GetInstancesByVipAddress("foobar");
+        ReadOnlyCollection<InstanceInfo> nonSecureInstances1 = apps.GetInstancesByVipAddress("vapp1");
 
-        result.Should().BeEmpty();
+        nonSecureInstances1.Should().HaveCount(2);
+        nonSecureInstances1.Should().Contain(instance11);
+        nonSecureInstances1.Should().Contain(instance12);
+
+        ReadOnlyCollection<InstanceInfo> nonSecureInstances2 = apps.GetInstancesByVipAddress("vapp2");
+
+        nonSecureInstances2.Should().HaveCount(2);
+        nonSecureInstances2.Should().Contain(instance21);
+        nonSecureInstances2.Should().Contain(instance22);
+
+        apps.GetInstancesByVipAddress("foobar").Should().BeEmpty();
     }
 
     [Fact]
@@ -310,7 +284,7 @@ public sealed class ApplicationInfoCollectionTest
         registered.Name.Should().Be("app2");
         registered.Instances.Should().HaveCount(2);
 
-        List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
+        ReadOnlyCollection<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
         result.Should().HaveCount(2);
         result.Should().Contain(app1.GetInstance("id1")!);
@@ -375,7 +349,7 @@ public sealed class ApplicationInfoCollectionTest
         registered.Name.Should().Be("app3");
         registered.Instances.Should().ContainSingle();
 
-        List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
+        ReadOnlyCollection<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
         result.Should().HaveCount(2);
         result.Should().Contain(app1.GetInstance("id1")!);
@@ -438,7 +412,7 @@ public sealed class ApplicationInfoCollectionTest
         registered.Name.Should().Be("app2");
         registered.Instances.Should().HaveCount(3);
 
-        List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
+        ReadOnlyCollection<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
         result.Should().HaveCount(2);
         result.Should().Contain(app1.GetInstance("id1")!);
@@ -501,7 +475,7 @@ public sealed class ApplicationInfoCollectionTest
         registered.Instances.Should().HaveCount(2);
         registered.Instances.Should().AllSatisfy(instance => instance.Status.Should().Be(InstanceStatus.Up));
 
-        List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
+        ReadOnlyCollection<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
         result.Should().HaveCount(2);
         result.Should().Contain(app1.GetInstance("id1")!);
@@ -562,7 +536,7 @@ public sealed class ApplicationInfoCollectionTest
         registered.Name.Should().Be("app2");
         registered.Instances.Should().ContainSingle().Which.Status.Should().Be(InstanceStatus.Up);
 
-        List<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
+        ReadOnlyCollection<InstanceInfo> result = apps.GetInstancesByVipAddress("vapp1");
 
         result.Should().HaveCount(2);
         result.Should().Contain(app1.GetInstance("id1")!);
