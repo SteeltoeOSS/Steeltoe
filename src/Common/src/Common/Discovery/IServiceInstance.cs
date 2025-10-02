@@ -37,6 +37,16 @@ public interface IServiceInstance
     Uri Uri { get; }
 
     /// <summary>
+    /// Gets the HTTP-based resolved address of the registered service instance, if available.
+    /// </summary>
+    Uri? NonSecureUri { get; }
+
+    /// <summary>
+    /// Gets the HTTPS-based resolved address of the registered service instance, if available.
+    /// </summary>
+    Uri? SecureUri { get; }
+
+    /// <summary>
     /// Gets the key/value metadata associated with this service instance.
     /// </summary>
     IReadOnlyDictionary<string, string?> Metadata { get; }

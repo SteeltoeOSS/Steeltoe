@@ -38,5 +38,7 @@ public sealed class ThisServiceInstanceTest
         instance.Metadata.Should().ContainSingle();
         instance.Metadata.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
         instance.Uri.Should().Be(new Uri("http://test.foo.bar:1234"));
+        instance.NonSecureUri.Should().Be(instance.Uri);
+        instance.SecureUri.Should().BeNull();
     }
 }

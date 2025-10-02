@@ -33,6 +33,8 @@ public sealed class EurekaServiceInstanceTest
         serviceInstance.IsSecure.Should().BeTrue();
         serviceInstance.Metadata.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
         serviceInstance.Uri.Should().Be("https://host:9999/");
+        serviceInstance.NonSecureUri.Should().Be("http://host:8888/");
+        serviceInstance.SecureUri.Should().Be("https://host:9999/");
     }
 
     [Fact]
@@ -51,6 +53,8 @@ public sealed class EurekaServiceInstanceTest
         serviceInstance.Port.Should().Be(instance.SecurePort);
         serviceInstance.IsSecure.Should().BeTrue();
         serviceInstance.Uri.Should().Be("https://host:9999/");
+        serviceInstance.NonSecureUri.Should().BeNull();
+        serviceInstance.SecureUri.Should().Be("https://host:9999/");
     }
 
     [Fact]
@@ -69,6 +73,8 @@ public sealed class EurekaServiceInstanceTest
         serviceInstance.Port.Should().Be(instance.NonSecurePort);
         serviceInstance.IsSecure.Should().BeFalse();
         serviceInstance.Uri.Should().Be("http://host:8888/");
+        serviceInstance.NonSecureUri.Should().Be("http://host:8888/");
+        serviceInstance.SecureUri.Should().BeNull();
     }
 
     [Fact]
@@ -87,5 +93,7 @@ public sealed class EurekaServiceInstanceTest
         serviceInstance.Port.Should().Be(0);
         serviceInstance.IsSecure.Should().BeFalse();
         serviceInstance.Uri.Should().Be("http://host:0/");
+        serviceInstance.NonSecureUri.Should().BeNull();
+        serviceInstance.SecureUri.Should().BeNull();
     }
 }

@@ -4,6 +4,7 @@
 
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Text.Json;
 using Steeltoe.Common;
@@ -17,11 +18,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo;
 /// </summary>
 public sealed class ApplicationInfoCollection : IReadOnlyCollection<ApplicationInfo>
 {
-    private readonly object _addRemoveInstanceLock = new();
-
     internal ConcurrentDictionary<string, ApplicationInfo> ApplicationMap { get; } = new();
     internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> VipInstanceMap { get; } = new();
-    internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVipInstanceMap { get; } = new();
 
     public string? AppsHashCode { get; internal set; }
     public long? Version { get; private set; }
@@ -51,18 +49,25 @@ public sealed class ApplicationInfoCollection : IReadOnlyCollection<ApplicationI
         return ApplicationMap.GetValueOrDefault(appName.ToUpperInvariant());
     }
 
-    internal List<InstanceInfo> GetInstancesBySecureVipAddress(string secureVipAddress)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(secureVipAddress);
-
-        return GetByVipAddress(secureVipAddress, SecureVipInstanceMap);
-    }
-
-    internal List<InstanceInfo> GetInstancesByVipAddress(string vipAddress)
+    internal ReadOnlyCollection<InstanceInfo> GetInstancesByVipAddress(string vipAddress)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(vipAddress);
 
-        return GetByVipAddress(vipAddress, VipInstanceMap);
+        List<InstanceInfo> result = [];
+        string addressUpper = vipAddress.ToUpperInvariant();
+
+        if (VipInstanceMap.TryGetValue(addressUpper, out ConcurrentDictionary<string, InstanceInfo>? instancesById))
+        {
+            foreach (InstanceInfo instance in instancesById.Values)
+            {
+                if ((ReturnUpInstancesOnly && instance.EffectiveStatus == InstanceStatus.Up) || !ReturnUpInstancesOnly)
+                {
+                    result.Add(instance);
+                }
+            }
+        }
+
+        return result.AsReadOnly();
     }
 
     /// <inheritdoc />
@@ -92,79 +97,51 @@ public sealed class ApplicationInfoCollection : IReadOnlyCollection<ApplicationI
 
         foreach (InstanceInfo instance in app.Instances)
         {
-            AddInstanceToVip(instance);
+            AddToVipInstanceMap(instance);
         }
     }
 
-    private void AddInstanceToVip(InstanceInfo instance)
+    private void AddToVipInstanceMap(InstanceInfo instance)
     {
-        foreach (string vipAddress in ExpandVipAddresses(instance.VipAddress))
+        foreach (string vipAddress in ExpandVipAddresses(instance))
         {
-            AddInstanceToVip(instance, vipAddress, VipInstanceMap);
-        }
+            string addressUpper = vipAddress.ToUpperInvariant();
 
-        foreach (string secureVipAddress in ExpandVipAddresses(instance.SecureVipAddress))
-        {
-            AddInstanceToVip(instance, secureVipAddress, SecureVipInstanceMap);
+            ConcurrentDictionary<string, InstanceInfo> instancesById = VipInstanceMap.GetOrAdd(addressUpper, new ConcurrentDictionary<string, InstanceInfo>());
+            instancesById.AddOrUpdate(instance.InstanceId, _ => instance, (_, _) => instance);
         }
     }
 
-    private void AddInstanceToVip(InstanceInfo instance, string address, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dictionary)
+    private static HashSet<string> ExpandVipAddresses(InstanceInfo instance)
     {
-        lock (_addRemoveInstanceLock)
+        HashSet<string> addresses = [];
+
+        if (instance.SecureVipAddress != null)
         {
-            string addressUpper = address.ToUpperInvariant();
-
-            if (!dictionary.TryGetValue(addressUpper, out ConcurrentDictionary<string, InstanceInfo>? instances))
-            {
-                instances = new ConcurrentDictionary<string, InstanceInfo>();
-                dictionary[addressUpper] = instances;
-            }
-
-            instances[instance.InstanceId] = instance;
-        }
-    }
-
-    private static string[] ExpandVipAddresses(string? addresses)
-    {
-        if (string.IsNullOrWhiteSpace(addresses))
-        {
-            return [];
+            string[] secureAddresses = instance.SecureVipAddress.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            addresses.UnionWith(secureAddresses);
         }
 
-        return addresses.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        if (instance.VipAddress != null)
+        {
+            string[] vipAddresses = instance.VipAddress.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            addresses.UnionWith(vipAddresses);
+        }
+
+        return addresses;
     }
 
-    internal void RemoveInstanceFromVip(InstanceInfo instance)
+    internal void RemoveFromVipInstanceMap(InstanceInfo instance)
     {
         ArgumentNullException.ThrowIfNull(instance);
 
-        foreach (string vipAddress in ExpandVipAddresses(instance.VipAddress))
+        foreach (string vipAddress in ExpandVipAddresses(instance))
         {
-            RemoveInstanceFromVip(instance, vipAddress, VipInstanceMap);
-        }
+            string addressUpper = vipAddress.ToUpperInvariant();
 
-        foreach (string secureVipAddress in ExpandVipAddresses(instance.SecureVipAddress))
-        {
-            RemoveInstanceFromVip(instance, secureVipAddress, SecureVipInstanceMap);
-        }
-    }
-
-    private void RemoveInstanceFromVip(InstanceInfo instance, string address,
-        ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dictionary)
-    {
-        lock (_addRemoveInstanceLock)
-        {
-            string addressUpper = address.ToUpperInvariant();
-
-            if (dictionary.TryGetValue(addressUpper, out ConcurrentDictionary<string, InstanceInfo>? instances))
+            if (VipInstanceMap.TryGetValue(addressUpper, out ConcurrentDictionary<string, InstanceInfo>? instancesById))
             {
-                _ = instances.TryRemove(instance.InstanceId, out _);
-
-                if (instances.IsEmpty)
-                {
-                    _ = dictionary.TryRemove(addressUpper, out _);
-                }
+                instancesById.TryRemove(instance.InstanceId, out _);
             }
         }
     }
@@ -190,11 +167,11 @@ public sealed class ApplicationInfoCollection : IReadOnlyCollection<ApplicationI
                     case ActionType.Added:
                     case ActionType.Modified:
                         existingApp.Add(instance);
-                        AddInstanceToVip(instance);
+                        AddToVipInstanceMap(instance);
                         break;
                     case ActionType.Deleted:
                         existingApp.Remove(instance);
-                        RemoveInstanceFromVip(instance);
+                        RemoveFromVipInstanceMap(instance);
                         break;
                 }
             }
@@ -260,23 +237,5 @@ public sealed class ApplicationInfoCollection : IReadOnlyCollection<ApplicationI
         }
 
         return apps;
-    }
-
-    private List<InstanceInfo> GetByVipAddress(string name, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dictionary)
-    {
-        List<InstanceInfo> result = [];
-
-        if (dictionary.TryGetValue(name.ToUpperInvariant(), out ConcurrentDictionary<string, InstanceInfo>? instances))
-        {
-            foreach (InstanceInfo instance in instances.Values.ToArray())
-            {
-                if ((ReturnUpInstancesOnly && instance.EffectiveStatus == InstanceStatus.Up) || !ReturnUpInstancesOnly)
-                {
-                    result.Add(instance);
-                }
-            }
-        }
-
-        return result;
     }
 }

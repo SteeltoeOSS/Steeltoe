@@ -143,6 +143,8 @@ public sealed class ServiceInstancesResolver
         public int Port { get; set; }
         public bool IsSecure { get; set; }
         public Uri Uri { get; set; } = null!;
+        public Uri? NonSecureUri { get; set; }
+        public Uri? SecureUri { get; set; }
         public IReadOnlyDictionary<string, string?> Metadata { get; set; } = null!;
 
         public static JsonSerializableServiceInstance CopyFrom(IServiceInstance instance)
@@ -157,6 +159,8 @@ public sealed class ServiceInstancesResolver
                 Port = instance.Port,
                 IsSecure = instance.IsSecure,
                 Uri = instance.Uri,
+                NonSecureUri = instance.NonSecureUri,
+                SecureUri = instance.SecureUri,
                 Metadata = instance.Metadata
             };
         }

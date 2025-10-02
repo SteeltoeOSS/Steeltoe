@@ -424,6 +424,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         public int Port { get; } = uri.Port;
         public bool IsSecure { get; } = uri.Scheme == Uri.UriSchemeHttps;
         public Uri Uri { get; } = uri;
+        public Uri? NonSecureUri => IsSecure ? null : Uri;
+        public Uri? SecureUri => IsSecure ? Uri : null;
         public IReadOnlyDictionary<string, string?> Metadata { get; } = metadata;
     }
 }

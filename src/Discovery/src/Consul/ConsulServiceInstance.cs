@@ -31,6 +31,12 @@ internal sealed class ConsulServiceInstance : IServiceInstance
     /// <inheritdoc />
     public Uri Uri { get; }
 
+    /// <inheritdoc />
+    public Uri? NonSecureUri { get; }
+
+    /// <inheritdoc />
+    public Uri? SecureUri { get; }
+
     public IReadOnlyList<string> Tags { get; }
 
     /// <inheritdoc />
@@ -54,5 +60,7 @@ internal sealed class ConsulServiceInstance : IServiceInstance
         InstanceId = serviceEntry.Service.ID;
         Port = serviceEntry.Service.Port;
         Uri = new Uri($"{(IsSecure ? "https" : "http")}://{Host}:{Port}");
+        NonSecureUri = IsSecure ? null : Uri;
+        SecureUri = IsSecure ? Uri : null;
     }
 }

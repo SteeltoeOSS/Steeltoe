@@ -1,2 +1,4 @@
 #nullable enable
 Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.InstanceId.get -> string!
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.NonSecureUri.get -> System.Uri?
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.SecureUri.get -> System.Uri?
