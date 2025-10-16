@@ -35,6 +35,12 @@ public sealed class EventPipeThreadDumperTest
         StackTraceElement? backgroundThreadFrame = threads.SelectMany(thread => thread.StackTrace)
             .FirstOrDefault(frame => frame.MethodName == "BackgroundThreadCallback(class System.Object)");
 
+        if (backgroundThreadFrame == null)
+        {
+            string logs = loggerProvider.GetAsText();
+            throw new InvalidOperationException($"Failed to find expected stack frame. Captured log:{System.Environment.NewLine}{logs}");
+        }
+
         backgroundThreadFrame.Should().NotBeNull();
         backgroundThreadFrame.IsNativeMethod.Should().BeFalse();
         backgroundThreadFrame.ModuleName.Should().Be(GetType().Assembly.GetName().Name);

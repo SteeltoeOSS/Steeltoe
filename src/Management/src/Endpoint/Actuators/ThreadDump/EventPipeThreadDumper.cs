@@ -300,7 +300,7 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
 
         while (!frameName.StartsWith(ThreadIdTemplate, StringComparison.Ordinal))
         {
-            SourceLocation? sourceLocation = stackSource.GetSourceLine(frameIndex, symbolReader);
+            SourceLocation? sourceLocation = stackSource.GetSourceLine(frameIndex, symbolReader) ?? LegacyGetSourceLine(stackSource, frameIndex, symbolReader);
             StackTraceElement stackElement = GetStackTraceElement(frameName, sourceLocation);
 
             yield return stackElement;
@@ -309,6 +309,94 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
             frameIndex = stackSource.GetFrameIndex(stackIndex);
             frameName = stackSource.GetFrameName(frameIndex, false);
         }
+    }
+
+    // Much of this code is from PerfView/TraceLog.cs
+    private SourceLocation? LegacyGetSourceLine(TraceEventStackSource stackSource, StackSourceFrameIndex frameIndex, SymbolReader reader)
+    {
+        TraceLog log = stackSource.TraceLog;
+        uint codeAddress = (uint)frameIndex - (uint)StackSourceFrameIndex.Start;
+
+        if (codeAddress >= log.CodeAddresses.Count)
+        {
+            return null;
+        }
+
+        var codeAddressIndex = (CodeAddressIndex)codeAddress;
+        TraceModuleFile moduleFile = log.CodeAddresses.ModuleFile(codeAddressIndex);
+
+        if (moduleFile == null)
+        {
+            string hexAddress = log.CodeAddresses.Address(codeAddressIndex).ToString("X", CultureInfo.InvariantCulture);
+            _logger.LogTrace("LegacyGetSourceLine: Could not find moduleFile {HexAddress}.", hexAddress);
+            return null;
+        }
+
+        MethodIndex methodIndex = log.CodeAddresses.MethodIndex(codeAddressIndex);
+
+        if (methodIndex == MethodIndex.Invalid)
+        {
+            string hexAddress = log.CodeAddresses.Address(codeAddressIndex).ToString("X", CultureInfo.InvariantCulture);
+            _logger.LogTrace("LegacyGetSourceLine: Could not find method for {HexAddress}.", hexAddress);
+            return null;
+        }
+
+        int methodToken = log.CodeAddresses.Methods.MethodToken(methodIndex);
+
+        if (methodToken == 0)
+        {
+            string hexAddress = log.CodeAddresses.Address(codeAddressIndex).ToString("X", CultureInfo.InvariantCulture);
+            _logger.LogTrace("LegacyGetSourceLine: Could not find method for {HexAddress}.", hexAddress);
+            return null;
+        }
+
+        int ilOffset = log.CodeAddresses.ILOffset(codeAddressIndex);
+
+        if (ilOffset < 0)
+        {
+            ilOffset = 0;
+        }
+
+        string? pdbFileName = null;
+
+        if (moduleFile.PdbSignature != Guid.Empty)
+        {
+            pdbFileName = reader.FindSymbolFilePath(moduleFile.PdbName, moduleFile.PdbSignature, moduleFile.PdbAge, moduleFile.FilePath,
+                moduleFile.ProductVersion, true);
+        }
+
+        if (pdbFileName == null)
+        {
+            string simpleName = Path.GetFileNameWithoutExtension(moduleFile.FilePath);
+
+            if (simpleName.EndsWith(".il", StringComparison.Ordinal))
+            {
+                simpleName = Path.GetFileNameWithoutExtension(simpleName);
+            }
+
+            pdbFileName = reader.FindSymbolFilePath($"{simpleName}.pdb", Guid.Empty, 0);
+        }
+
+        if (pdbFileName != null)
+        {
+            ManagedSymbolModule symbolReaderModule = reader.OpenSymbolFile(pdbFileName);
+
+            if (symbolReaderModule != null)
+            {
+                if (moduleFile.PdbSignature != Guid.Empty && symbolReaderModule.PdbGuid != moduleFile.PdbSignature)
+                {
+                    _logger.LogTrace("ERROR: The PDB opened does not match the PDB desired. PDB GUID = {PdbGuid}, DESIRED GUID = {DesiredGuid}",
+                        symbolReaderModule.PdbGuid, moduleFile.PdbSignature);
+
+                    return null;
+                }
+
+                symbolReaderModule.ExePath = moduleFile.FilePath;
+                return symbolReaderModule.SourceLocationForManagedCode((uint)methodToken, ilOffset);
+            }
+        }
+
+        return null;
     }
 
     private static StackTraceElement GetStackTraceElement(string frameName, SourceLocation? sourceLocation)
