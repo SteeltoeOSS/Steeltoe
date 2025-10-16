@@ -155,7 +155,7 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
 
             List<ThreadInfo> results = ReadStackSource(stackSource, symbolReader).ToList();
 
-            _logger.LogTrace("Finished thread walk.");
+            _logger.LogTrace("Finished thread walk, found {Count} results.", results.Count);
             return results;
         }
         finally
@@ -237,6 +237,8 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
 
         stackSource.ForEach(sample =>
         {
+            _logger.LogTrace("Analyzing sample: {Sample}", sample);
+
             StackSourceCallStackIndex stackIndex = sample.StackIndex;
 
             while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith(ThreadIdTemplate, StringComparison.Ordinal))
@@ -256,6 +258,11 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
                 samplesForThread[threadId] = [sample];
             }
         });
+
+        if (samplesForThread.Count == 0)
+        {
+            _logger.LogWarning("No managed samples found.");
+        }
 
         // For every thread recorded in our trace, use the first stack.
         foreach ((int threadId, List<StackSourceSample> samples) in samplesForThread)
