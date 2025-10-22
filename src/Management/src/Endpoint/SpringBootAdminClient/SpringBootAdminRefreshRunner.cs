@@ -128,7 +128,7 @@ internal sealed class SpringBootAdminRefreshRunner
     {
         Application app = CreateApplication(new Uri(clientOptions.BaseUrl!), clientOptions);
 
-        _logger.LogInformation("Registering with Spring Boot Admin Server at {Url}.", clientOptions.Url);
+        _logger.LogDebug("Registering with Spring Boot Admin Server at {Url}.", clientOptions.Url);
         _lastRegistrationId = await _springBootAdminApiClient.RegisterAsync(app, clientOptions, cancellationToken);
         _lastGoodOptions = clientOptions;
     }
@@ -175,7 +175,7 @@ internal sealed class SpringBootAdminRefreshRunner
         {
             try
             {
-                _logger.LogInformation("Unregistering from Spring Boot Admin Server at {Url}.", clientOptions.Url);
+                _logger.LogDebug("Unregistering from Spring Boot Admin Server at {Url}.", clientOptions.Url);
                 await _springBootAdminApiClient.UnregisterAsync(_lastRegistrationId, clientOptions, cancellationToken);
                 _lastRegistrationId = null;
             }
