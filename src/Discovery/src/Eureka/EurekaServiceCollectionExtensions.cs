@@ -35,13 +35,18 @@ public static class EurekaServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        if (services.All(descriptor => descriptor.SafeGetImplementationType() != typeof(EurekaDiscoveryClient)))
+        if (!IsRegistered(services))
         {
             ConfigureEurekaServices(services);
             AddEurekaServices(services);
         }
 
         return services;
+    }
+
+    private static bool IsRegistered(IServiceCollection services)
+    {
+        return services.Any(descriptor => descriptor.SafeGetImplementationType() == typeof(EurekaDiscoveryClient));
     }
 
     private static void ConfigureEurekaServices(IServiceCollection services)
@@ -86,9 +91,9 @@ public static class EurekaServiceCollectionExtensions
     private static void AddEurekaServices(IServiceCollection services)
     {
         services.TryAddSingleton(TimeProvider.System);
-        services.AddSingleton<HealthCheckHandlerProvider>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHealthContributor, EurekaServerHealthContributor>());
-        services.AddSingleton<EurekaApplicationInfoManager>();
+        services.TryAddSingleton<HealthCheckHandlerProvider>();
+        services.AddSingleton<IHealthContributor, EurekaServerHealthContributor>();
+        services.TryAddSingleton<EurekaApplicationInfoManager>();
 
         services.TryAddSingleton<EurekaDiscoveryClient>();
         services.AddSingleton<IDiscoveryClient>(serviceProvider => serviceProvider.GetRequiredService<EurekaDiscoveryClient>());
@@ -103,9 +108,9 @@ public static class EurekaServiceCollectionExtensions
     private static void AddEurekaClient(IServiceCollection services)
     {
         services.TryAddSingleton<HttpClientHandlerFactory>();
-        services.TryAddSingleton<ValidateCertificatesHttpClientHandlerConfigurer<EurekaClientOptions>>();
+        services.AddSingleton<ValidateCertificatesHttpClientHandlerConfigurer<EurekaClientOptions>>();
         services.TryAddSingleton<ClientCertificateHttpClientHandlerConfigurer>();
-        services.TryAddSingleton<EurekaHttpClientHandlerConfigurer>();
+        services.AddSingleton<EurekaHttpClientHandlerConfigurer>();
         services.ConfigureCertificateOptions("Eureka");
 
         IHttpClientBuilder eurekaHttpClientBuilder = services.AddHttpClient("Eureka");

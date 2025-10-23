@@ -873,4 +873,20 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         serviceProvider.GetServices<IHealthContributor>().OfType<EurekaServerHealthContributor>().Should().ContainSingle();
         serviceProvider.GetServices<IHealthContributor>().OfType<EurekaApplicationsHealthContributor>().Should().BeEmpty();
     }
+
+    [Fact]
+    public void WithMultipleClients_DotNotRegisterMultipleTimes()
+    {
+        var services = new ServiceCollection();
+        services.AddConfigurationDiscoveryClient();
+        services.AddConsulDiscoveryClient();
+        services.AddEurekaDiscoveryClient();
+        int beforeServiceCount = services.Count;
+
+        services.AddConfigurationDiscoveryClient();
+        services.AddConsulDiscoveryClient();
+        services.AddEurekaDiscoveryClient();
+
+        services.Count.Should().Be(beforeServiceCount);
+    }
 }

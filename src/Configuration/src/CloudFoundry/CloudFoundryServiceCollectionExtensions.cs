@@ -28,17 +28,25 @@ public static class CloudFoundryServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddOptions<CloudFoundryServicesOptions>().BindConfiguration("vcap");
-
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ApplicationInstanceInfo>, ConfigureApplicationInstanceInfo>());
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<CloudFoundryApplicationOptions>, ConfigureCloudFoundryApplicationOptions>());
-
-        services.Replace(ServiceDescriptor.Singleton<IApplicationInstanceInfo>(serviceProvider =>
+        if (!IsRegistered(services))
         {
-            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryApplicationOptions>>();
-            return optionsMonitor.CurrentValue;
-        }));
+            services.AddOptions<CloudFoundryServicesOptions>().BindConfiguration("vcap");
+
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ApplicationInstanceInfo>, ConfigureApplicationInstanceInfo>());
+            services.AddSingleton<IConfigureOptions<CloudFoundryApplicationOptions>, ConfigureCloudFoundryApplicationOptions>();
+
+            services.Replace(ServiceDescriptor.Singleton<IApplicationInstanceInfo>(serviceProvider =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryApplicationOptions>>();
+                return optionsMonitor.CurrentValue;
+            }));
+        }
 
         return services;
+    }
+
+    private static bool IsRegistered(IServiceCollection services)
+    {
+        return services.Any(descriptor => descriptor.SafeGetImplementationType() == typeof(ConfigureCloudFoundryApplicationOptions));
     }
 }
