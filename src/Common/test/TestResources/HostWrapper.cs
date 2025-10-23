@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 
+#pragma warning disable ASPDEPR008 // 'IWebHost' is obsolete: Use IHost instead.
+
 namespace Steeltoe.Common.TestResources;
 
 public sealed class HostWrapper : IAsyncDisposable
