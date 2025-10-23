@@ -725,9 +725,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             Uri uri = GetVaultRenewUri();
             HttpRequestMessage message = await GetVaultRenewRequestMessageAsync(uri, cancellationToken);
 
-            _logger.LogInformation("Renewing Vault token {Token} for {Ttl} milliseconds at Uri {Uri}", obscuredToken, ClientOptions.TokenTtl,
-                uri.ToMaskedString());
-
+            _logger.LogDebug("Renewing Vault token {Token} for {Ttl} milliseconds at Uri {Uri}", obscuredToken, ClientOptions.TokenTtl, uri.ToMaskedString());
             using HttpResponseMessage response = await httpClient.SendAsync(message, cancellationToken);
 
             if (response.StatusCode != HttpStatusCode.OK)
