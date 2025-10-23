@@ -104,7 +104,7 @@ public static class SerilogLoggingBuilderExtensions
     private static bool IsSerilogDynamicLoggerProviderAlreadyRegistered(ILoggingBuilder builder)
     {
         return builder.Services.Any(descriptor =>
-            descriptor.ServiceType == typeof(ILoggerProvider) && descriptor.SafeGetImplementationType() == typeof(DynamicSerilogLoggerProvider));
+            descriptor.SafeGetImplementationType() == typeof(DynamicSerilogLoggerProvider) && descriptor.ServiceType == typeof(ILoggerProvider));
     }
 
     private static void AssertNoDynamicLoggerProviderRegistered(ILoggingBuilder builder)
