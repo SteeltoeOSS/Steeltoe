@@ -4,6 +4,7 @@
 
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
+using System.Text.Unicode;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Json;
 
@@ -54,9 +55,9 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
     {
         options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 
-        // This was added initially for the route mappings actuator, to make generic method signatures human-readable,
-        // but may affect other endpoints too. Removing this is a breaking change.
-        options.SerializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+        // Use safe JSON encoding to prevent XSS vulnerabilities. Allow only a specific set of characters
+        // that are needed for generic method signatures to remain human-readable in route mappings.
+        options.SerializerOptions.Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Latin1Supplement);
 
         options.SerializerOptions.AddJsonIgnoreEmptyCollection();
 
