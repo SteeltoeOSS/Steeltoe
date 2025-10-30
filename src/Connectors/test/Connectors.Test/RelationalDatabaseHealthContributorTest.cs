@@ -181,4 +181,46 @@ public sealed class RelationalDatabaseHealthContributorTest
 
         await action.Should().ThrowExactlyAsync<OperationCanceledException>();
     }
+
+    [Fact]
+    public async Task Uses_Custom_Command_Text()
+    {
+        var commandMock = new Mock<DbCommand>();
+        commandMock.Setup(command => command.ExecuteScalarAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult<object?>(1));
+
+        var connectionMock = new Mock<DbConnection>();
+        connectionMock.Setup(connection => connection.Open());
+        connectionMock.Protected().Setup<DbCommand>("CreateDbCommand").Returns(() => commandMock.Object);
+
+        using var healthContributor =
+            new RelationalDatabaseHealthContributor(connectionMock.Object, null, "localhost", "FOO_COMMAND", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+            {
+                ServiceName = "Example"
+            };
+
+        await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
+
+        commandMock.VerifySet(command => command.CommandText = "FOO_COMMAND", Times.Once());
+    }
+
+    [Fact]
+    public async Task Uses_Default_Command_Text()
+    {
+        var commandMock = new Mock<DbCommand>();
+        commandMock.Setup(command => command.ExecuteScalarAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult<object?>(1));
+
+        var connectionMock = new Mock<DbConnection>();
+        connectionMock.Setup(connection => connection.Open());
+        connectionMock.Protected().Setup<DbCommand>("CreateDbCommand").Returns(() => commandMock.Object);
+
+        using var healthContributor =
+            new RelationalDatabaseHealthContributor(connectionMock.Object, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+            {
+                ServiceName = "Example"
+            };
+
+        await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
+
+        commandMock.VerifySet(command => command.CommandText = "SELECT 1;", Times.Once());
+    }
 }
