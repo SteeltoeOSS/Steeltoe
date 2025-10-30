@@ -49,7 +49,10 @@
 
     <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
     <ConsulVersion>1.7.14.*</ConsulVersion>
-    <DotnetGCDumpVersion>9.0.652701</DotnetGCDumpVersion>
+    <DotnetGCDumpVersion>
+      <!-- Caution: This constant occurs in multiple places and must be kept in sync. -->
+      9.0.652701
+    </DotnetGCDumpVersion>
     <EntityFrameworkCoreVersion>8.0.*</EntityFrameworkCoreVersion>
     <FoundationalVersion>
       <!--
