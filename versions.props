@@ -26,7 +26,7 @@
     <SystemCommandLineVersion>2.0.0-beta4.24324.3</SystemCommandLineVersion>
     <SystemIdentityModelVersion>8.12.*</SystemIdentityModelVersion>
     <SystemSqlClientVersion>4.9.*</SystemSqlClientVersion>
-    <TestSdkVersion>17.14.*</TestSdkVersion>
+    <TestSdkVersion>18.0.*</TestSdkVersion>
     <XunitVersion>2.0.*</XunitVersion>
     <XunitVisualStudioVersion>3.1.*</XunitVisualStudioVersion>
   </PropertyGroup>
@@ -49,7 +49,10 @@
 
     <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
     <ConsulVersion>1.7.14.*</ConsulVersion>
-    <DotnetGCDumpVersion>9.0.621003</DotnetGCDumpVersion>
+    <DotnetGCDumpVersion>
+      <!-- Caution: This constant occurs in multiple places and must be kept in sync. -->
+      9.0.652701
+    </DotnetGCDumpVersion>
     <EntityFrameworkCoreVersion>8.0.*</EntityFrameworkCoreVersion>
     <FoundationalVersion>
       <!--
@@ -59,8 +62,8 @@
       9.0.*
     </FoundationalVersion>
     <MicrosoftIdentityModelVersion>8.12.*</MicrosoftIdentityModelVersion>
-    <MicrosoftDiagnosticsNETCoreClientVersion>0.2.621003</MicrosoftDiagnosticsNETCoreClientVersion>
-    <MicrosoftDiagnosticsTracingTraceEventVersion>3.1.16</MicrosoftDiagnosticsTracingTraceEventVersion>
+    <MicrosoftDiagnosticsNETCoreClientVersion>0.2.652701</MicrosoftDiagnosticsNETCoreClientVersion>
+    <MicrosoftDiagnosticsTracingTraceEventVersion>3.1.26</MicrosoftDiagnosticsTracingTraceEventVersion>
     <OpenTelemetryExporterPrometheusVersion>1.12.*-*</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryVersion>1.12.*</OpenTelemetryVersion>
     <SerilogVersion>9.0.*</SerilogVersion>
