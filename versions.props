@@ -6,7 +6,8 @@
     -->
 
     <AspNetCoreHealthChecksVersion>9.0.*</AspNetCoreHealthChecksVersion>
-    <CoverletVersion>6.0.*</CoverletVersion>
+    <MicrosoftTestingExtensionsCodeCoverageVersion>18.1.*</MicrosoftTestingExtensionsCodeCoverageVersion>
+    <MicrosoftTestingPlatformVersion>2.0.*</MicrosoftTestingPlatformVersion>
     <FluentAssertionsVersion>7.2.*</FluentAssertionsVersion>
     <MicrosoftAzureCosmosVersion>3.51.*</MicrosoftAzureCosmosVersion>
     <MicrosoftCodeAnalysisVersion>4.14.*</MicrosoftCodeAnalysisVersion>
@@ -27,7 +28,7 @@
     <SystemIdentityModelVersion>8.12.*</SystemIdentityModelVersion>
     <SystemSqlClientVersion>4.9.*</SystemSqlClientVersion>
     <TestSdkVersion>18.0.*</TestSdkVersion>
-    <XunitVersion>2.0.*</XunitVersion>
+    <XunitVersion>3.2.*</XunitVersion>
     <XunitVisualStudioVersion>3.1.*</XunitVisualStudioVersion>
   </PropertyGroup>
 

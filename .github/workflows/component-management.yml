@@ -31,7 +31,7 @@ jobs:
     with:
       component: Management
       OS: macos
-      skipFilter: Category!=SkipOnMacOS
+      skipFilter: '--filter-not-trait Category=SkipOnMacOS'
 
   windows:
     uses: ./.github/workflows/component-shared-workflow.yml
