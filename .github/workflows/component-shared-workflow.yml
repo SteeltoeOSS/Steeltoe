@@ -79,6 +79,10 @@ jobs:
       with:
         persist-credentials: false
 
+    - uses: actions/setup-dotnet@v5
+      with:
+        global-json-file: global.json
+
     - name: Restore packages
       run: dotnet restore ${{ env.SOLUTION_FILE }} /p:Configuration=Release --verbosity minimal
 
