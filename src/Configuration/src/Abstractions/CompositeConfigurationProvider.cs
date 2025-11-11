@@ -97,10 +97,7 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
 
         LogSet(GetType().Name, key, value);
 
-        if (ConfigurationRoot != null)
-        {
-            ConfigurationRoot[key] = value;
-        }
+        ConfigurationRoot?[key] = value;
     }
 
     public void Dispose()
