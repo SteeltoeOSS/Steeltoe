@@ -22,8 +22,8 @@ env:
   DOTNET_NOLOGO: true
   SOLUTION_FILE: 'src/Steeltoe.All.sln'
   SONAR_TEST_ARGS: >-
-    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}
-    --settings coverlet.runsettings -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.UseSourceLink=false
+    --no-build --configuration Release --coverage --report-trx --results-directory ${{ github.workspace }}
+    --coverage-settings coverage.config
 
 jobs:
   analyze:
@@ -79,16 +79,16 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
 
     - name: Test (net8.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" --framework net8.0 ${{ env.SONAR_TEST_ARGS }}
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter-not-trait "Category=MemoryDumps" --framework net8.0 ${{ env.SONAR_TEST_ARGS }}
 
     - name: Test (net8.0) (memory dumps)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category=MemoryDumps" --framework net8.0 ${{ env.SONAR_TEST_ARGS }}
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter-trait "Category=MemoryDumps" --framework net8.0 ${{ env.SONAR_TEST_ARGS }}
 
     - name: Test (net9.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" --framework net9.0  ${{ env.SONAR_TEST_ARGS }}
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter-not-trait "Category=MemoryDumps" --framework net9.0  ${{ env.SONAR_TEST_ARGS }}
 
     - name: Test (net9.0) (memory dumps)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category=MemoryDumps" --framework net9.0  ${{ env.SONAR_TEST_ARGS }}
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter-trait "Category=MemoryDumps" --framework net9.0  ${{ env.SONAR_TEST_ARGS }}
 
     - name: End Sonar .NET scanner
       if: ${{ !cancelled() && steps.sonar_begin.outcome == 'success' }}

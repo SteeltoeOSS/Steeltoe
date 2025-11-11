@@ -26,12 +26,12 @@ env:
   DOTNET_NOLOGO: true
   SOLUTION_FILE: src/Steeltoe.${{ inputs.component }}.slnf
   COMMON_TEST_ARGS: >-
-    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/dumps
-    --settings coverlet.runsettings --blame-crash --blame-hang-timeout 3m
+    --no-build --configuration Release --coverage --report-trx --results-directory ${{ github.workspace }}/dumps
+    --coverage-settings coverage.config --crashdump --hangdump --hangdump-timeout 3m
   SKIP_FILTER_NO_MEMORY_DUMPS: >-
-    ${{ inputs.skipFilter && format('--filter "{0}&Category!=MemoryDumps"', inputs.skipFilter) || '--filter "Category!=MemoryDumps"' }}
+    ${{ inputs.skipFilter && format('{0} --filter-not-trait "Category=MemoryDumps"', inputs.skipFilter) || '--filter-not-trait "Category=MemoryDumps"' }}
   SKIP_FILTER_WITH_MEMORY_DUMPS: >-
-    ${{ inputs.skipFilter && format('--filter "{0}&Category=MemoryDumps"', inputs.skipFilter) || '--filter "Category=MemoryDumps"' }}
+    ${{ inputs.skipFilter && format('{0} --filter-trait "Category=MemoryDumps"', inputs.skipFilter) || '--filter-trait "Category=MemoryDumps"' }}
 
 jobs:
   build:
