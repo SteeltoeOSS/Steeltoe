@@ -4,6 +4,7 @@
 
 using System.Collections.ObjectModel;
 using System.Text.Json;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
@@ -572,6 +573,11 @@ public sealed class InstanceInfo
         // The same applies to changes in the ordering of metadata entries.
 
         return ReferenceEquals(left, right) || left.SequenceEqual(right, KeyValuePairEqualityComparer<string, string?>.Instance);
+    }
+
+    public IServiceInstance ToServiceInstance()
+    {
+        return new EurekaServiceInstance(this);
     }
 
     private sealed class KeyValuePairEqualityComparer<TKey, TValue> : IEqualityComparer<KeyValuePair<TKey, TValue>>
