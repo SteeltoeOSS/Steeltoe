@@ -86,12 +86,12 @@ jobs:
     - name: Build solution
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
 
-    - name: Test (net8.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net8.0 ${{ env.SKIP_FILTER_NO_MEMORY_DUMPS }} ${{ env.COMMON_TEST_ARGS }}
+    - name: Test (net10.0)
+      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net10.0 ${{ env.SKIP_FILTER_NO_MEMORY_DUMPS }} ${{ env.COMMON_TEST_ARGS }}
 
-    - name: Test (net8.0) (memory dumps)
+    - name: Test (net10.0) (memory dumps)
       if: ${{ inputs.component == 'Management' }}
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net8.0 ${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }} ${{ env.COMMON_TEST_ARGS }}
+      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net10.0 ${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }} ${{ env.COMMON_TEST_ARGS }}
 
     - name: Test (net9.0)
       run: dotnet test ${{ env.SOLUTION_FILE }} --framework net9.0 ${{ env.SKIP_FILTER_NO_MEMORY_DUMPS }} ${{ env.COMMON_TEST_ARGS }}
@@ -99,6 +99,14 @@ jobs:
     - name: Test (net9.0) (memory dumps)
       if: ${{ inputs.component == 'Management' }}
       run: dotnet test ${{ env.SOLUTION_FILE }} --framework net9.0 ${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }} ${{ env.COMMON_TEST_ARGS }}
+
+    - name: Test (net8.0)
+      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net8.0 ${{ env.SKIP_FILTER_NO_MEMORY_DUMPS }} ${{ env.COMMON_TEST_ARGS }}
+
+    - name: Test (net8.0) (memory dumps)
+      if: ${{ inputs.component == 'Management' }}
+      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net8.0 ${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }} ${{ env.COMMON_TEST_ARGS }}
+
 
     - name: Upload crash/hang dumps (on failure)
       if: ${{ failure() }}

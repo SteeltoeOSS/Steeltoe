@@ -95,17 +95,23 @@ jobs:
         echo SKIP_FILTER_NO_MEMORY_DUMPS="${{ matrix.skipFilter && format('{0}&Category!=MemoryDumps', matrix.skipFilter) || 'Category!=MemoryDumps' }}" >> $GITHUB_ENV
         echo SKIP_FILTER_WITH_MEMORY_DUMPS="${{ matrix.skipFilter && format('{0}&Category=MemoryDumps', matrix.skipFilter) || 'Category=MemoryDumps' }}" >> $GITHUB_ENV
 
-    - name: Test (net8.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net8.0 --filter "${{ env.SKIP_FILTER_NO_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
+    - name: Test (net10.0)
+      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net10.0 --filter "${{ env.SKIP_FILTER_NO_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
 
-    - name: Test (net8.0) (memory dumps)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net8.0 --filter "${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
+    - name: Test (net10.0) (memory dumps)
+      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net10.0 --filter "${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
 
     - name: Test (net9.0)
       run: dotnet test ${{ env.SOLUTION_FILE }} --framework net9.0 --filter "${{ env.SKIP_FILTER_NO_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
 
     - name: Test (net9.0) (memory dumps)
       run: dotnet test ${{ env.SOLUTION_FILE }} --framework net9.0 --filter "${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
+
+    - name: Test (net8.0)
+      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net8.0 --filter "${{ env.SKIP_FILTER_NO_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
+
+    - name: Test (net8.0) (memory dumps)
+      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net8.0 --filter "${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
 
     - name: Upload crash/hang dumps (on failure)
       if: ${{ failure() }}
