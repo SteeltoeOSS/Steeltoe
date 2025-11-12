@@ -484,6 +484,29 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
         await _consoleOutput.WaitForFlushAsync(TestContext.Current.CancellationToken);
         string logOutput = _consoleOutput.ToString();
 
+#if NET10_0_OR_GREATER
+        logOutput.Should().Be("""
+            {
+              "EventId": 0,
+              "LogLevel": "Information",
+              "Category": "Fully.Qualified.Type",
+              "Message": "Processing of { RequestUrl = https://www.example.com, UserAgent = Steeltoe } started.",
+              "State": {
+                "@IncomingRequest": "{ RequestUrl = https://www.example.com, UserAgent = Steeltoe }",
+                "{OriginalFormat}": "Processing of {@IncomingRequest} started."
+              },
+              "Scopes": [
+                "OuterScope",
+                {
+                  "Message": "InnerScope=InnerScopeValue",
+                  "InnerScopeKey": "InnerScopeValue",
+                  "{OriginalFormat}": "InnerScope={InnerScopeKey}"
+                }
+              ]
+            }
+
+            """);
+#else
         logOutput.Should().Be("""
             {
               "EventId": 0,
@@ -506,6 +529,7 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             }
 
             """);
+#endif
     }
 
     [Fact]
