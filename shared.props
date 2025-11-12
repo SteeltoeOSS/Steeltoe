@@ -20,6 +20,13 @@
     <NoWarn>$(NoWarn);IDE0051;IDE0052</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net8.0' And '$(TargetFramework)' != 'net9.0'">
+    <!--
+      Suppress new obsolete warnings for WebHostBuilder and WebHost on .NET 10 and higher.
+    -->
+    <NoWarn>$(NoWarn);ASPDEPR004;ASPDEPR008</NoWarn>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\Steeltoe.Debug.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
