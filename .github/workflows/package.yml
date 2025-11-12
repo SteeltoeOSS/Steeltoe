@@ -32,11 +32,12 @@ jobs:
 
     steps:
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: |
           8.0.*
           9.0.*
+          10.0.*
 
     - name: Git checkout
       uses: actions/checkout@v4
@@ -146,7 +147,7 @@ jobs:
         path: packages
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 8.0.*
 
@@ -206,9 +207,9 @@ jobs:
         path: packages
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 8.0.*
         source-url: ${{ vars.AZURE_ARTIFACTS_FEED_URL }}
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -237,9 +238,9 @@ jobs:
 
     steps:
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 8.0.*
 
     - name: Download signed packages
       uses: actions/download-artifact@v4
