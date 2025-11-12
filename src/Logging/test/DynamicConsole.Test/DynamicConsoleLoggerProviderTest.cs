@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.TestResources;
 
+#pragma warning disable CA1873 // Avoid potentially expensive logging
+
 namespace Steeltoe.Logging.DynamicConsole.Test;
 
 public sealed class DynamicConsoleLoggerProviderTest : IDisposable
