@@ -97,10 +97,10 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
 
         LogSet(GetType().Name, key, value);
 
-        if (ConfigurationRoot != null)
-        {
-            ConfigurationRoot[key] = value;
-        }
+#pragma warning disable S1121 // Assignments should not be made from within sub-expressions
+        // Justification: Workaround for Sonar bug https://github.com/SonarSource/sonar-dotnet/issues/9761.
+        ConfigurationRoot?[key] = value;
+#pragma warning restore S1121 // Assignments should not be made from within sub-expressions
     }
 
     public void Dispose()
