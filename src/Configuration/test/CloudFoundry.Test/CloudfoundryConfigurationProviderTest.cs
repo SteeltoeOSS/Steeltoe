@@ -12,7 +12,13 @@ using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
-using IPNetwork = Microsoft.AspNetCore.HttpOverrides.IPNetwork;
+using IPNetworkAlias =
+#if NET10_0_OR_GREATER
+    System.Net.IPNetwork
+#else
+    Microsoft.AspNetCore.HttpOverrides.IPNetwork
+#endif
+    ;
 
 namespace Steeltoe.Configuration.CloudFoundry.Test;
 
@@ -244,14 +250,22 @@ public sealed class CloudFoundryConfigurationProviderTest
         {
             options.ForwardedHeaders.Should().HaveFlag(ForwardedHeaders.XForwardedFor);
             options.ForwardedHeaders.Should().HaveFlag(ForwardedHeaders.XForwardedProto);
+#if NET10_0_OR_GREATER
+            options.KnownIPNetworks.Should().BeEmpty();
+#else
             options.KnownNetworks.Should().BeEmpty();
+#endif
             options.KnownProxies.Should().BeEmpty();
         }
         else
         {
             options.ForwardedHeaders.Should().NotHaveFlag(ForwardedHeaders.XForwardedFor);
             options.ForwardedHeaders.Should().NotHaveFlag(ForwardedHeaders.XForwardedProto);
-            options.KnownNetworks.Should().ContainSingle().Which.Should().BeEquivalentTo(IPNetwork.Parse("127.0.0.1/8"));
+#if NET10_0_OR_GREATER
+            options.KnownIPNetworks.Should().ContainSingle().Which.Should().BeEquivalentTo(IPNetworkAlias.Parse("127.0.0.1/8"));
+#else
+            options.KnownNetworks.Should().ContainSingle().Which.Should().BeEquivalentTo(IPNetworkAlias.Parse("127.0.0.1/8"));
+#endif
             options.KnownProxies.Should().ContainSingle().Which.Should().Be(IPAddress.Parse("::1"));
         }
     }
