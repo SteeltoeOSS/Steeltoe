@@ -259,12 +259,9 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
             }
         });
 
-        // Workaround for Sonar bug, which incorrectly flags the code as unreachable.
-#pragma warning disable S2589 // Boolean expressions should not be gratuitous
         logWriter.WriteLine(samplesForThread.Count == 0
             ? "[Steeltoe] WARN: No managed samples found in memory dump."
             : $"[Steeltoe] Start analyzing all {samplesForThread.Count} threads.");
-#pragma warning restore S2589 // Boolean expressions should not be gratuitous
 
         // For every thread recorded in our trace, use the first stack.
         foreach ((int threadId, List<StackSourceSample> samples) in samplesForThread)
