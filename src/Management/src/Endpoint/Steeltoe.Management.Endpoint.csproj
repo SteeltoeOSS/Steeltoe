@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
     <Description>Steeltoe management endpoints, also known as actuators. Includes support for Cloud Foundry integration.</Description>
     <PackageTags>actuator;actuators;management;monitoring;Spring;Boot;dbmigrations;health;heap-dump;loggers;route-mappings;thread-dump;tanzu</PackageTags>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
