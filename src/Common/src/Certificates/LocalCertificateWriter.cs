@@ -63,7 +63,9 @@ internal sealed class LocalCertificateWriter
         }
         else
         {
+#pragma warning disable SYSLIB0057 // Type or member is obsolete
             caCertificate = new X509Certificate2(RootCaPfxPath);
+#pragma warning restore SYSLIB0057 // Type or member is obsolete
         }
 
         // Create the intermediate certificate if it doesn't already exist (can be shared by multiple applications)
@@ -76,7 +78,9 @@ internal sealed class LocalCertificateWriter
         }
         else
         {
+#pragma warning disable SYSLIB0057 // Type or member is obsolete
             intermediateCertificate = new X509Certificate2(IntermediatePfxPath);
+#pragma warning restore SYSLIB0057 // Type or member is obsolete
         }
 
         var subjectAlternativeNameBuilder = new SubjectAlternativeNameBuilder();

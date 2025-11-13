@@ -39,8 +39,10 @@ internal sealed class PostConfigureCertificateAuthenticationOptions : IPostConfi
 
         if (!string.IsNullOrEmpty(systemCertPath))
         {
+#pragma warning disable SYSLIB0057 // Type or member is obsolete
             X509Certificate2[] systemCertificates =
                 Directory.GetFiles(systemCertPath).Select(certificateFilename => new X509Certificate2(certificateFilename)).ToArray();
+#pragma warning restore SYSLIB0057 // Type or member is obsolete
 
             options.CustomTrustStore.AddRange(systemCertificates);
         }
