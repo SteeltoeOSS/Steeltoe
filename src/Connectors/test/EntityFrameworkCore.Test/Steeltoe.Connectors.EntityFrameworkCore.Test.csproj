@@ -5,12 +5,25 @@
 
   <Import Project="..\..\..\..\shared.props" />
 
+  <PropertyGroup>
+    <NoWarn>
+      <!--
+        Temporary workaround: Stable EF Core 10 packages for Npgsql.EntityFrameworkCore.PostgreSQL and
+        Pomelo.EntityFrameworkCore.MySql are not available yet.
+
+        NU1608: Detected package version outside of dependency constraint
+      -->
+      $(NoWarn);NU1608
+    </NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EntityFrameworkCoreTestVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EntityFrameworkCoreTestVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EntityFrameworkCoreTestVersion)" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(EntityFrameworkCoreTestVersion)" />
     <PackageReference Include="MySql.EntityFrameworkCore" Version="$(EntityFrameworkCoreTestVersion)" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="$(EntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="$(PomeloEntityFrameworkCoreTestVersion)" />
     <PackageReference Include="System.Text.Json" Version="$(FoundationalVersion)" />
   </ItemGroup>
 

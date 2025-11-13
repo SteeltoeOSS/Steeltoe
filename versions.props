@@ -23,7 +23,7 @@
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
     <SonarAnalyzerVersion>10.15.0.120848</SonarAnalyzerVersion>
     <StyleCopVersion>1.2.0-beta.556</StyleCopVersion>
-    <SystemCommandLineVersion>2.0.0-beta4.24324.3</SystemCommandLineVersion>
+    <SystemCommandLineVersion>2.0.*</SystemCommandLineVersion>
     <SystemIdentityModelVersion>8.12.*</SystemIdentityModelVersion>
     <SystemSqlClientVersion>4.9.*</SystemSqlClientVersion>
     <TestSdkVersion>18.0.*</TestSdkVersion>
@@ -33,10 +33,20 @@
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <EntityFrameworkCoreTestVersion>8.0.*</EntityFrameworkCoreTestVersion>
+    <PomeloEntityFrameworkCoreTestVersion>$(EntityFrameworkCoreTestVersion)</PomeloEntityFrameworkCoreTestVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <EntityFrameworkCoreTestVersion>9.0.*-*</EntityFrameworkCoreTestVersion>
+    <EntityFrameworkCoreTestVersion>9.0.*</EntityFrameworkCoreTestVersion>
+    <PomeloEntityFrameworkCoreTestVersion>$(EntityFrameworkCoreTestVersion)</PomeloEntityFrameworkCoreTestVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <EntityFrameworkCoreTestVersion>10.0.*-*</EntityFrameworkCoreTestVersion>
+    <PomeloEntityFrameworkCoreTestVersion>
+      <!-- Temporary workaround: Unstable EF Core 10 package for Pomelo.EntityFrameworkCore.MySql is not available yet. -->
+      9.0.*
+    </PomeloEntityFrameworkCoreTestVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -57,9 +67,9 @@
     <FoundationalVersion>
       <!--
         Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
-        For example, v8 explicitly targets .NET 8; v9 explicitly targets .NET 8 and 9.
+        For example, v8 explicitly targets .NET 8; v9 explicitly targets .NET 8 and 9; v10 explicitly targets .NET 8, 9 and 10.
       -->
-      9.0.*
+      10.0.*
     </FoundationalVersion>
     <MicrosoftIdentityModelVersion>8.12.*</MicrosoftIdentityModelVersion>
     <MicrosoftDiagnosticsNETCoreClientVersion>0.2.652701</MicrosoftDiagnosticsNETCoreClientVersion>
@@ -74,7 +84,7 @@
     <MatchTargetFrameworkVersion>
       <!--
         Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
-        For example, v8 targets only .NET 8; v9 targets only .NET 9.
+        For example, v8 targets only .NET 8; v9 targets only .NET 9; v10 targets only .NET 10.
         Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
       -->
       8.0.*
@@ -85,10 +95,21 @@
     <MatchTargetFrameworkVersion>
       <!--
         Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
-        For example, v8 targets only .NET 8; v9 targets only .NET 9.
+        For example, v8 targets only .NET 8; v9 targets only .NET 9; v10 targets only .NET 10.
         Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
       -->
       9.0.*
+    </MatchTargetFrameworkVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <MatchTargetFrameworkVersion>
+      <!--
+        Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
+        For example, v8 targets only .NET 8; v9 targets only .NET 9; v10 targets only .NET 10.
+        Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
+      -->
+      10.0.*
     </MatchTargetFrameworkVersion>
   </PropertyGroup>
 </Project>
