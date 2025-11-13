@@ -8,26 +8,26 @@
     <AspNetCoreHealthChecksVersion>9.0.*</AspNetCoreHealthChecksVersion>
     <CoverletVersion>6.0.*</CoverletVersion>
     <FluentAssertionsVersion>7.2.*</FluentAssertionsVersion>
-    <MicrosoftAzureCosmosVersion>3.51.*</MicrosoftAzureCosmosVersion>
+    <MicrosoftAzureCosmosVersion>3.54.*</MicrosoftAzureCosmosVersion>
     <MicrosoftCodeAnalysisVersion>4.14.*</MicrosoftCodeAnalysisVersion>
-    <MicrosoftSqlClientVersion>6.0.*</MicrosoftSqlClientVersion>
+    <MicrosoftSqlClientVersion>6.1.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>7.0.*</MockHttpVersion>
-    <MongoDbDriverVersion>3.4.*</MongoDbDriverVersion>
+    <MongoDbDriverVersion>3.5.*</MongoDbDriverVersion>
     <MoqVersion>4.20.69</MoqVersion>
-    <MySqlConnectorVersion>2.4.*</MySqlConnectorVersion>
-    <MySqlDataVersion>9.3.*</MySqlDataVersion>
+    <MySqlConnectorVersion>2.5.*</MySqlConnectorVersion>
+    <MySqlDataVersion>9.5.*</MySqlDataVersion>
     <NewtonsoftJsonVersion>13.0.*</NewtonsoftJsonVersion>
     <PublicApiAnalyzersVersion>4.14.*</PublicApiAnalyzersVersion>
-    <RabbitClientTestVersion>7.1.*</RabbitClientTestVersion>
+    <RabbitClientTestVersion>7.2.*</RabbitClientTestVersion>
     <SerilogEnrichersThreadVersion>4.0.*</SerilogEnrichersThreadVersion>
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
     <SonarAnalyzerVersion>10.15.0.120848</SonarAnalyzerVersion>
     <StyleCopVersion>1.2.0-beta.556</StyleCopVersion>
     <SystemCommandLineVersion>2.0.*</SystemCommandLineVersion>
-    <SystemIdentityModelVersion>8.12.*</SystemIdentityModelVersion>
+    <SystemIdentityModelVersion>8.14.*</SystemIdentityModelVersion>
     <SystemSqlClientVersion>4.9.*</SystemSqlClientVersion>
     <TestSdkVersion>18.0.*</TestSdkVersion>
-    <XunitVersion>2.0.*</XunitVersion>
+    <XunitVersion>3.2.*</XunitVersion>
     <XunitVisualStudioVersion>3.1.*</XunitVisualStudioVersion>
   </PropertyGroup>
 
@@ -71,13 +71,13 @@
       -->
       10.0.*
     </FoundationalVersion>
-    <MicrosoftIdentityModelVersion>8.12.*</MicrosoftIdentityModelVersion>
+    <MicrosoftIdentityModelVersion>8.14.*</MicrosoftIdentityModelVersion>
     <MicrosoftDiagnosticsNETCoreClientVersion>0.2.652701</MicrosoftDiagnosticsNETCoreClientVersion>
     <MicrosoftDiagnosticsTracingTraceEventVersion>3.1.26</MicrosoftDiagnosticsTracingTraceEventVersion>
-    <OpenTelemetryExporterPrometheusVersion>1.12.*-*</OpenTelemetryExporterPrometheusVersion>
-    <OpenTelemetryVersion>1.12.*</OpenTelemetryVersion>
+    <OpenTelemetryExporterPrometheusVersion>1.14.*-*</OpenTelemetryExporterPrometheusVersion>
+    <OpenTelemetryVersion>1.14.*</OpenTelemetryVersion>
     <SerilogVersion>9.0.*</SerilogVersion>
-    <SerilogSinksConsoleVersion>6.0.*</SerilogSinksConsoleVersion>
+    <SerilogSinksConsoleVersion>6.1.*</SerilogSinksConsoleVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">

@@ -13,7 +13,6 @@ namespace Steeltoe.Configuration.SpringBoot;
 internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigurationProvider
 {
     private const string SpringApplicationJson = "SPRING_APPLICATION_JSON";
-    private static readonly bool IsAtLeastDotNet10 = typeof(JsonStreamConfigurationProvider).Assembly.GetName().Version?.Major >= 10;
     private readonly string? _springApplicationJson;
     private bool _loaded;
 
@@ -62,12 +61,8 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
             {
                 string? value = Data[key];
 
-                // Breaking change in .NET 10, see JsonConfigurationFileParser at https://github.com/dotnet/runtime/pull/116677
-                if (IsAtLeastDotNet10 || value != null)
-                {
-                    string newKey = key.Contains('.') ? key.Replace('.', ':') : key;
-                    data[newKey] = value;
-                }
+                string newKey = key.Contains('.') ? key.Replace('.', ':') : key;
+                data[newKey] = value;
             }
         }
 
