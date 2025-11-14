@@ -28,7 +28,7 @@ env:
 jobs:
   analyze:
     name: Analyze
-    timeout-minutes: 30
+    timeout-minutes: 60
     runs-on: ubuntu-latest
 
     services:
@@ -48,11 +48,12 @@ jobs:
 
     steps:
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: |
           8.0.*
           9.0.*
+          10.0.*
 
     - name: Install Sonar .NET Scanner
       run: dotnet tool install --global dotnet-sonarscanner
@@ -78,17 +79,23 @@ jobs:
     - name: Build solution
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
 
+    - name: Test (net10.0)
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" --framework net10.0 ${{ env.SONAR_TEST_ARGS }}
+
+    - name: Test (net10.0) (memory dumps)
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category=MemoryDumps" --framework net10.0 ${{ env.SONAR_TEST_ARGS }}
+
+    - name: Test (net9.0)
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" --framework net9.0 ${{ env.SONAR_TEST_ARGS }}
+
+    - name: Test (net9.0) (memory dumps)
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category=MemoryDumps" --framework net9.0 ${{ env.SONAR_TEST_ARGS }}
+
     - name: Test (net8.0)
       run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" --framework net8.0 ${{ env.SONAR_TEST_ARGS }}
 
     - name: Test (net8.0) (memory dumps)
       run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category=MemoryDumps" --framework net8.0 ${{ env.SONAR_TEST_ARGS }}
-
-    - name: Test (net9.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" --framework net9.0  ${{ env.SONAR_TEST_ARGS }}
-
-    - name: Test (net9.0) (memory dumps)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category=MemoryDumps" --framework net9.0  ${{ env.SONAR_TEST_ARGS }}
 
     - name: End Sonar .NET scanner
       if: ${{ !cancelled() && steps.sonar_begin.outcome == 'success' }}

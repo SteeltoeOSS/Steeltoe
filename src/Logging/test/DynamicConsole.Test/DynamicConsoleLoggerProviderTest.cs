@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.TestResources;
 
+#pragma warning disable CA1873 // Avoid potentially expensive logging
+
 namespace Steeltoe.Logging.DynamicConsole.Test;
 
 public sealed class DynamicConsoleLoggerProviderTest : IDisposable
@@ -489,7 +491,6 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
               "Category": "Fully.Qualified.Type",
               "Message": "Processing of { RequestUrl = https://www.example.com, UserAgent = Steeltoe } started.",
               "State": {
-                "Message": "Processing of { RequestUrl = https://www.example.com, UserAgent = Steeltoe } started.",
                 "@IncomingRequest": "{ RequestUrl = https://www.example.com, UserAgent = Steeltoe }",
                 "{OriginalFormat}": "Processing of {@IncomingRequest} started."
               },

@@ -33,6 +33,14 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <!--
+      Temporary workaround for CA1873: Evaluation of this argument may be expensive and unnecessary if logging is disabled.
+      Should be revisited as part of https://github.com/SteeltoeOSS/Steeltoe/issues/969.
+      -->
+    <NoWarn>$(NoWarn);CA1873</NoWarn>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(CI)' != ''">
     <!--
       While deterministic builds are enabled by default in .NET SDK projects, there is an extra property, ContinuousIntegrationBuild,

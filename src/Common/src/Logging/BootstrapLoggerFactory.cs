@@ -4,6 +4,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using LockPrimitive =
+#if NET10_0_OR_GREATER
+    System.Threading.Lock
+#else
+    object
+#endif
+    ;
 
 namespace Steeltoe.Common.Logging;
 
@@ -30,7 +37,7 @@ public sealed class BootstrapLoggerFactory : ILoggerFactory
         loggingBuilder.AddConfiguration(configuration);
     };
 
-    private readonly object _lock = new();
+    private readonly LockPrimitive _lock = new();
     private readonly Dictionary<string, UpgradableLogger> _loggersByCategoryName = [];
     private ILoggerFactory _innerFactory;
 

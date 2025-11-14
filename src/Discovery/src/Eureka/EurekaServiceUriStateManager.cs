@@ -6,6 +6,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
+using LockPrimitive =
+#if NET10_0_OR_GREATER
+    System.Threading.Lock
+#else
+    object
+#endif
+    ;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -17,7 +24,7 @@ public sealed class EurekaServiceUriStateManager
     private readonly IOptionsMonitor<EurekaClientOptions> _optionsMonitor;
     private readonly ILogger<EurekaServiceUriStateManager> _logger;
 
-    private readonly object _lockObject = new();
+    private readonly LockPrimitive _lockObject = new();
     private readonly HashSet<Uri> _failedServiceUris = [];
     private Uri? _lastWorkingServiceUri;
 

@@ -6,8 +6,6 @@ namespace Steeltoe.Management.Configuration;
 
 public abstract class EndpointOptions
 {
-    private string? _path;
-
     /// <summary>
     /// Gets or sets a value indicating whether this endpoint is enabled.
     /// </summary>
@@ -23,8 +21,8 @@ public abstract class EndpointOptions
     /// </summary>
     public virtual string? Path
     {
-        get => _path ?? Id;
-        set => _path = value;
+        get => field ?? Id;
+        set;
     }
 
     /// <summary>
