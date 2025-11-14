@@ -35,6 +35,8 @@ public sealed class CloudFoundryActuatorTest
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0b3B0YWwuY29tIiwiZXhwIjoxNDI2NDIwODAwLCJhd2Vzb21lIjp0cnVlfQ." +
         Convert.ToBase64String("signature"u8.ToArray());
 
+    // TODO: Add test somewhere to ensure a security check is still performed properly when PathBase is used.
+
     [Fact]
     public async Task Registers_dependent_services()
     {

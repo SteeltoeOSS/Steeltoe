@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
@@ -19,6 +20,7 @@ internal sealed class CloudFoundryEndpointHandler : ICloudFoundryEndpointHandler
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _endpointOptionsMonitor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IEndpointOptionsMonitorProvider[] _optionsMonitorProviderArray;
     private readonly ILogger<HypermediaService> _hypermediaServiceLogger;
 
@@ -26,11 +28,12 @@ internal sealed class CloudFoundryEndpointHandler : ICloudFoundryEndpointHandler
 
     public CloudFoundryEndpointHandler(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor, IEnumerable<IEndpointOptionsMonitorProvider> endpointOptionsMonitorProviders,
-        ILoggerFactory loggerFactory)
+        IHttpContextAccessor httpContextAccessor, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
         ArgumentNullException.ThrowIfNull(endpointOptionsMonitor);
         ArgumentNullException.ThrowIfNull(endpointOptionsMonitorProviders);
+        ArgumentNullException.ThrowIfNull(httpContextAccessor);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         IEndpointOptionsMonitorProvider[] optionsMonitorProviderArray = endpointOptionsMonitorProviders.ToArray();
@@ -38,6 +41,7 @@ internal sealed class CloudFoundryEndpointHandler : ICloudFoundryEndpointHandler
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptionsMonitor = endpointOptionsMonitor;
+        _httpContextAccessor = httpContextAccessor;
         _optionsMonitorProviderArray = optionsMonitorProviderArray;
         _hypermediaServiceLogger = loggerFactory.CreateLogger<HypermediaService>();
     }
@@ -46,8 +50,8 @@ internal sealed class CloudFoundryEndpointHandler : ICloudFoundryEndpointHandler
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(baseUrl);
 
-        var hypermediaService =
-            new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _optionsMonitorProviderArray, _hypermediaServiceLogger);
+        var hypermediaService = new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _optionsMonitorProviderArray, _httpContextAccessor,
+            _hypermediaServiceLogger);
 
         Links result = hypermediaService.Invoke(new Uri(baseUrl));
         return await Task.FromResult(result);

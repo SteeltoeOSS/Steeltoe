@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
@@ -17,6 +18,7 @@ internal sealed class HypermediaEndpointHandler : IHypermediaEndpointHandler
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IOptionsMonitor<HypermediaEndpointOptions> _endpointOptionsMonitor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IEndpointOptionsMonitorProvider[] _endpointOptionsMonitorProviderArray;
     private readonly ILogger<HypermediaService> _hypermediaServiceLogger;
 
@@ -24,11 +26,12 @@ internal sealed class HypermediaEndpointHandler : IHypermediaEndpointHandler
 
     public HypermediaEndpointHandler(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         IOptionsMonitor<HypermediaEndpointOptions> endpointOptionsMonitor, IEnumerable<IEndpointOptionsMonitorProvider> endpointOptionsMonitorProviders,
-        ILoggerFactory loggerFactory)
+        IHttpContextAccessor httpContextAccessor, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
         ArgumentNullException.ThrowIfNull(endpointOptionsMonitor);
         ArgumentNullException.ThrowIfNull(endpointOptionsMonitorProviders);
+        ArgumentNullException.ThrowIfNull(httpContextAccessor);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         IEndpointOptionsMonitorProvider[] endpointOptionsMonitorProviderArray = endpointOptionsMonitorProviders.ToArray();
@@ -36,6 +39,7 @@ internal sealed class HypermediaEndpointHandler : IHypermediaEndpointHandler
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptionsMonitor = endpointOptionsMonitor;
+        _httpContextAccessor = httpContextAccessor;
         _endpointOptionsMonitorProviderArray = endpointOptionsMonitorProviderArray;
         _hypermediaServiceLogger = loggerFactory.CreateLogger<HypermediaService>();
     }
@@ -44,7 +48,9 @@ internal sealed class HypermediaEndpointHandler : IHypermediaEndpointHandler
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(baseUrl);
 
-        var service = new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _endpointOptionsMonitorProviderArray, _hypermediaServiceLogger);
+        var service = new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _endpointOptionsMonitorProviderArray, _httpContextAccessor,
+            _hypermediaServiceLogger);
+
         Links result = service.Invoke(new Uri(baseUrl));
         return Task.FromResult(result);
     }

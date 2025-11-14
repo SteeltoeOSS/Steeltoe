@@ -43,6 +43,8 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
+        services.AddHttpContextAccessor();
+
         services.AddCoreActuatorServices<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions, CloudFoundryEndpointMiddleware,
             ICloudFoundryEndpointHandler, CloudFoundryEndpointHandler, string, Links>(configureMiddleware);
 

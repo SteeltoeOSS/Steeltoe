@@ -28,7 +28,7 @@ internal sealed class CloudFoundryEndpointMiddleware(
             ? headerScheme.ToString()
             : httpContext.Request.Scheme;
 
-        string uri = $"{scheme}://{httpContext.Request.Host}{httpContext.Request.PathBase}{httpContext.Request.Path}";
+        string uri = $"{scheme}://{httpContext.Request.Host}{httpContext.Request.Path}";
         return Task.FromResult<string?>(uri);
     }
 
