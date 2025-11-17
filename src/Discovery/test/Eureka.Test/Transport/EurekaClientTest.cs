@@ -131,7 +131,7 @@ public sealed class EurekaClientTest
     [Fact]
     public async Task RegisterAsync_ThrowsOnUnreachableServer()
     {
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
 
         var services = new ServiceCollection();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
@@ -169,7 +169,7 @@ public sealed class EurekaClientTest
     [Fact]
     public async Task RegisterAsync_ThrowsOnErrorResponse()
     {
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
 
         var services = new ServiceCollection();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
@@ -218,7 +218,7 @@ public sealed class EurekaClientTest
     [Fact]
     public async Task RegisterAsync_ThrowsOnRetryLimitReached()
     {
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
 
         var services = new ServiceCollection();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
@@ -266,7 +266,7 @@ public sealed class EurekaClientTest
     {
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
 
         var services = new ServiceCollection();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
@@ -299,7 +299,7 @@ public sealed class EurekaClientTest
     [Fact]
     public async Task RegisterAsync_SendsRequestToServer()
     {
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
 
         using JsonDocument requestDocument = JsonDocument.Parse("""
             {
@@ -373,7 +373,7 @@ public sealed class EurekaClientTest
     [Fact]
     public async Task RegisterAsync_TriesSecondServerIfFirstOneFails()
     {
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
 
         var services = new ServiceCollection();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
@@ -606,7 +606,7 @@ public sealed class EurekaClientTest
     {
         const string jsonResponse = """{"applications": {""";
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
 
         var services = new ServiceCollection();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
@@ -713,7 +713,8 @@ public sealed class EurekaClientTest
     [Fact]
     public async Task Redacts_HTTP_headers()
     {
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("System.Net.Http.HttpClient", StringComparison.Ordinal));
+        using var capturingLoggerProvider =
+            new CapturingLoggerProvider(category => category.StartsWith("System.Net.Http.HttpClient", StringComparison.Ordinal));
 
         var services = new ServiceCollection();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));

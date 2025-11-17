@@ -22,7 +22,7 @@ public sealed class HostBuilderWrapperTest
             ["foo"] = "bar"
         };
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
@@ -57,7 +57,7 @@ public sealed class HostBuilderWrapperTest
             ["foo"] = "bar"
         };
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
         HostApplicationBuilder builder = TestHostApplicationBuilderFactory.Create();
 
@@ -91,7 +91,7 @@ public sealed class HostBuilderWrapperTest
             ["foo"] = "bar"
         };
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
 
@@ -128,7 +128,7 @@ public sealed class HostBuilderWrapperTest
             ["foo"] = "bar"
         };
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
         HostBuilder builder = TestHostBuilderFactory.CreateWeb();
 

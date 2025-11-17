@@ -424,7 +424,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", env1);
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", env2);
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
         using var loggerFactory = new LoggerFactory([capturingLoggerProvider]);
 
         var configurationBuilder = new ConfigurationBuilder();
