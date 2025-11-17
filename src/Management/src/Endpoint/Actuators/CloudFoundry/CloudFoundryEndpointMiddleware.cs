@@ -28,8 +28,8 @@ internal sealed class CloudFoundryEndpointMiddleware(
             ? headerScheme.ToString()
             : httpContext.Request.Scheme;
 
-        string uri = $"{scheme}://{httpContext.Request.Host}{httpContext.Request.PathBase}{httpContext.Request.Path}";
-        return Task.FromResult<string?>(uri);
+        string requestUri = $"{scheme}://{httpContext.Request.Host}{httpContext.Request.Path}";
+        return Task.FromResult<string?>(requestUri);
     }
 
     protected override async Task<Links> InvokeEndpointHandlerAsync(string? uri, CancellationToken cancellationToken)

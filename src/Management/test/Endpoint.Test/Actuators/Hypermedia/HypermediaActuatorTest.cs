@@ -370,6 +370,44 @@ public sealed class HypermediaActuatorTest
             """);
     }
 
+    [Fact]
+    public async Task Includes_base_path_from_UsePathBase_in_hypermedia_links()
+    {
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Services.AddHypermediaActuator(false);
+        builder.Services.AddInfoActuator(false);
+        await using WebApplication host = builder.Build();
+
+        host.UsePathBase("/some/prefix");
+        host.UseRouting();
+        host.UseActuatorEndpoints();
+
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using HttpClient httpClient = host.GetTestClient();
+
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/some/prefix/actuator"), TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        responseBody.Should().BeJson("""
+            {
+              "type": "steeltoe",
+              "_links": {
+                "info": {
+                  "href": "http://localhost/some/prefix/actuator/info",
+                  "templated": false
+                },
+                "self": {
+                  "href": "http://localhost/some/prefix/actuator",
+                  "templated": false
+                }
+              }
+            }
+            """);
+    }
+
     [Theory]
     [InlineData("http://somehost:1234", "https://somehost:1234", "https")]
     [InlineData("http://somehost:443", "https://somehost", "https")]
