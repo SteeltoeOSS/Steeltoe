@@ -2,15 +2,27 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint;
 
 internal sealed class ConfigureActuatorsMiddlewareStartupFilter : IStartupFilter
 {
+    private readonly ILogger<ConfigureActuatorsMiddlewareStartupFilter> _logger;
+
+    public ConfigureActuatorsMiddlewareStartupFilter(ILogger<ConfigureActuatorsMiddlewareStartupFilter> logger)
+    {
+        ArgumentNullException.ThrowIfNull(logger);
+
+        _logger = logger;
+    }
+
     public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
     {
         ArgumentNullException.ThrowIfNull(next);
@@ -33,9 +45,30 @@ internal sealed class ConfigureActuatorsMiddlewareStartupFilter : IStartupFilter
                 app.UseCloudFoundrySecurity();
             }
 
+            int? beforeMiddlewareCount = GetMiddlewareCount(app);
             next.Invoke(app);
+            int? afterMiddlewareCount = GetMiddlewareCount(app);
+
+            if (beforeMiddlewareCount != afterMiddlewareCount)
+            {
+                _logger.LogWarning(
+                    "Your app adds custom middleware to the pipeline, while actuators were registered to auto-perform middleware setup. This combination is usually undesired. " +
+                    "To correct this, either remove your middleware setup code, or register actuators by setting their configureMiddleware parameter to false.");
+            }
 
             app.UseActuatorEndpoints();
         };
+    }
+
+    private static int? GetMiddlewareCount(IApplicationBuilder app)
+    {
+        FieldInfo? componentsField = app.GetType().GetField("_components", BindingFlags.NonPublic | BindingFlags.Instance);
+        return componentsField?.GetValue(app) is List<Func<RequestDelegate, RequestDelegate>> components ? components.Count(IsMiddleware) : null;
+    }
+
+    private static bool IsMiddleware(Func<RequestDelegate, RequestDelegate> component)
+    {
+        // This type exists so that ASP.NET Core can identify where to inject UseRouting. It is not a real middleware.
+        return component.Target == null || component.Target.ToString() != "Microsoft.AspNetCore.Builder.WebApplicationBuilder+WireSourcePipeline";
     }
 }
