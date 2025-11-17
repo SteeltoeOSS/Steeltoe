@@ -327,7 +327,7 @@ public sealed class HypermediaActuatorTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         IList<string> logLines = loggerProvider.GetAll();
-        logLines.Should().ContainSingle().Which.Should().Be($"WARN {typeof(HypermediaService).FullName}: Duplicate endpoint with ID 'same' detected.");
+        logLines.Should().ContainSingle().Which.Should().Be($"WARN {typeof(HypermediaService)}: Duplicate endpoint with ID 'same' detected.");
     }
 
     [Fact]

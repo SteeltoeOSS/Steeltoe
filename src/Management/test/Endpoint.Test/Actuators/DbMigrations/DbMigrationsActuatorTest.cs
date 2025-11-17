@@ -190,6 +190,6 @@ public sealed class DbMigrationsActuatorTest
             """);
 
         IList<string> logLines = loggerProvider.GetAll();
-        logLines.Should().Contain($"WARN {typeof(DbMigrationsEndpointHandler).FullName}: Failed to load pending/applied migrations, returning all migrations.");
+        logLines.Should().Contain($"WARN {typeof(DbMigrationsEndpointHandler)}: Failed to load pending/applied migrations, returning all migrations.");
     }
 }

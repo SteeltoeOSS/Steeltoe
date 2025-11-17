@@ -92,12 +92,12 @@ public sealed class HostBuilderTest : IDisposable
         logOutput.Should().Contain("SERILOG [ERR] TestError");
 
         logOutput.Should().Contain($"""
-            info: {typeof(HostBuilderTest).FullName}[0]
+            info: {typeof(HostBuilderTest)}[0]
                   TestInfo
             """);
 
         logOutput.Should().Contain($"""
-            fail: {typeof(HostBuilderTest).FullName}[0]
+            fail: {typeof(HostBuilderTest)}[0]
                   TestError
             """);
     }

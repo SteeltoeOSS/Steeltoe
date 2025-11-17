@@ -161,9 +161,9 @@ public sealed class EurekaClientTest
         IList<string> logMessages = capturingLoggerProvider.GetAll();
 
         logMessages.Should().BeEquivalentTo(
-            $"DBUG {typeof(EurekaClient).FullName}: Sending POST request to 'http://host-that-does-not-exist.net:9999/apps/FOOBAR' with body: " +
+            $"DBUG {typeof(EurekaClient)}: Sending POST request to 'http://host-that-does-not-exist.net:9999/apps/FOOBAR' with body: " +
             """{"instance":{"instanceId":"some","app":"FOOBAR","ipAddr":"127.0.0.1","port":{"@enabled":"true","$":8080},"securePort":{"@enabled":"false","$":9090},"dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},"hostName":"localhost","overriddenstatus":"UNKNOWN","metadata":{"@class":"java.util.Collections$EmptyMap"},"lastUpdatedTimestamp":"1708427732823","lastDirtyTimestamp":"1708427732823"}}.""",
-            $"WARN {typeof(EurekaClient).FullName}: Failed to execute HTTP POST request to 'http://host-that-does-not-exist.net:9999/apps/FOOBAR' in attempt 1.");
+            $"WARN {typeof(EurekaClient)}: Failed to execute HTTP POST request to 'http://host-that-does-not-exist.net:9999/apps/FOOBAR' in attempt 1.");
     }
 
     [Fact]
@@ -208,10 +208,10 @@ public sealed class EurekaClientTest
 
         logMessages.Should().BeEquivalentTo(
         [
-            $"DBUG {typeof(EurekaClient).FullName}: Sending POST request to 'http://localhost:8761/eureka/apps/FOOBAR' with body: " +
+            $"DBUG {typeof(EurekaClient)}: Sending POST request to 'http://localhost:8761/eureka/apps/FOOBAR' with body: " +
             """{"instance":{"instanceId":"some","app":"FOOBAR","ipAddr":"127.0.0.1","port":{"@enabled":"true","$":8080},"securePort":{"@enabled":"false","$":9090},"dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},"hostName":"localhost","overriddenstatus":"UNKNOWN","metadata":{"@class":"java.util.Collections$EmptyMap"},"lastUpdatedTimestamp":"1708427732823","lastDirtyTimestamp":"1708427732823"}}.""",
-            $"DBUG {typeof(EurekaClient).FullName}: HTTP POST request to 'http://localhost:8761/eureka/apps/FOOBAR' returned status 404 in attempt 1.",
-            $"INFO {typeof(EurekaClient).FullName}: HTTP POST request to 'http://localhost:8761/eureka/apps/FOOBAR' failed with status 404: Sorry!"
+            $"DBUG {typeof(EurekaClient)}: HTTP POST request to 'http://localhost:8761/eureka/apps/FOOBAR' returned status 404 in attempt 1.",
+            $"INFO {typeof(EurekaClient)}: HTTP POST request to 'http://localhost:8761/eureka/apps/FOOBAR' failed with status 404: Sorry!"
         ], options => options.WithStrictOrdering());
     }
 
@@ -254,10 +254,10 @@ public sealed class EurekaClientTest
 
         logMessages.Should().BeEquivalentTo(
         [
-            $"DBUG {typeof(EurekaClient).FullName}: Sending POST request to 'http://localhost:8761/eureka/apps/FOOBAR' with body: " +
+            $"DBUG {typeof(EurekaClient)}: Sending POST request to 'http://localhost:8761/eureka/apps/FOOBAR' with body: " +
             """{"instance":{"instanceId":"some","app":"FOOBAR","ipAddr":"127.0.0.1","port":{"@enabled":"true","$":8080},"securePort":{"@enabled":"false","$":9090},"dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},"hostName":"localhost","overriddenstatus":"UNKNOWN","metadata":{"@class":"java.util.Collections$EmptyMap"},"lastUpdatedTimestamp":"1708427732823","lastDirtyTimestamp":"1708427732823"}}.""",
-            $"DBUG {typeof(EurekaClient).FullName}: HTTP POST request to 'http://localhost:8761/eureka/apps/FOOBAR' returned status 404 in attempt 1.",
-            $"INFO {typeof(EurekaClient).FullName}: HTTP POST request to 'http://localhost:8761/eureka/apps/FOOBAR' failed with status 404: "
+            $"DBUG {typeof(EurekaClient)}: HTTP POST request to 'http://localhost:8761/eureka/apps/FOOBAR' returned status 404 in attempt 1.",
+            $"INFO {typeof(EurekaClient)}: HTTP POST request to 'http://localhost:8761/eureka/apps/FOOBAR' failed with status 404: "
         ], options => options.WithStrictOrdering());
     }
 
@@ -293,7 +293,7 @@ public sealed class EurekaClientTest
         IList<string> logMessages = capturingLoggerProvider.GetAll();
 
         logMessages.Should().Contain(
-            $"WARN {typeof(EurekaClient).FullName}: Registering with hostname 'localhost' in containerized or cloud environments may not be valid. Please configure Eureka:Instance:HostName with a non-localhost address.");
+            $"WARN {typeof(EurekaClient)}: Registering with hostname 'localhost' in containerized or cloud environments may not be valid. Please configure Eureka:Instance:HostName with a non-localhost address.");
     }
 
     [Fact]
@@ -364,9 +364,9 @@ public sealed class EurekaClientTest
 
         logMessages.Should().BeEquivalentTo(
         [
-            $"DBUG {typeof(EurekaClient).FullName}: Sending POST request to 'http://localhost:8761/eureka/apps/FOOBAR' with body: " +
+            $"DBUG {typeof(EurekaClient)}: Sending POST request to 'http://localhost:8761/eureka/apps/FOOBAR' with body: " +
             """{"instance":{"instanceId":"some","app":"FOOBAR","ipAddr":"127.0.0.1","port":{"@enabled":"true","$":8080},"securePort":{"@enabled":"false","$":9090},"dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},"hostName":"localhost","overriddenstatus":"UNKNOWN","metadata":{"@class":"java.util.Collections$EmptyMap"},"lastUpdatedTimestamp":"1708427732823","lastDirtyTimestamp":"1708427732823"}}.""",
-            $"DBUG {typeof(EurekaClient).FullName}: HTTP POST request to 'http://localhost:8761/eureka/apps/FOOBAR' returned status 204 in attempt 1."
+            $"DBUG {typeof(EurekaClient)}: HTTP POST request to 'http://localhost:8761/eureka/apps/FOOBAR' returned status 204 in attempt 1."
         ], options => options.WithStrictOrdering());
     }
 
@@ -408,13 +408,13 @@ public sealed class EurekaClientTest
 
         logMessages.Should().BeEquivalentTo(
         [
-            $"DBUG {typeof(EurekaClient).FullName}: Sending POST request to 'http://server1:8761/apps/FOOBAR' with body: " +
+            $"DBUG {typeof(EurekaClient)}: Sending POST request to 'http://server1:8761/apps/FOOBAR' with body: " +
             """{"instance":{"instanceId":"some","app":"FOOBAR","ipAddr":"127.0.0.1","port":{"@enabled":"true","$":8080},"securePort":{"@enabled":"false","$":9090},"dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},"hostName":"localhost","overriddenstatus":"UNKNOWN","metadata":{"@class":"java.util.Collections$EmptyMap"},"lastUpdatedTimestamp":"1708427732823","lastDirtyTimestamp":"1708427732823"}}.""",
-            $"DBUG {typeof(EurekaClient).FullName}: HTTP POST request to 'http://server1:8761/apps/FOOBAR' returned status 404 in attempt 1.",
-            $"INFO {typeof(EurekaClient).FullName}: HTTP POST request to 'http://server1:8761/apps/FOOBAR' failed with status 404: ",
-            $"DBUG {typeof(EurekaClient).FullName}: Sending POST request to 'http://server2:8761/apps/FOOBAR' with body: " +
+            $"DBUG {typeof(EurekaClient)}: HTTP POST request to 'http://server1:8761/apps/FOOBAR' returned status 404 in attempt 1.",
+            $"INFO {typeof(EurekaClient)}: HTTP POST request to 'http://server1:8761/apps/FOOBAR' failed with status 404: ",
+            $"DBUG {typeof(EurekaClient)}: Sending POST request to 'http://server2:8761/apps/FOOBAR' with body: " +
             """{"instance":{"instanceId":"some","app":"FOOBAR","ipAddr":"127.0.0.1","port":{"@enabled":"true","$":8080},"securePort":{"@enabled":"false","$":9090},"dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},"hostName":"localhost","overriddenstatus":"UNKNOWN","metadata":{"@class":"java.util.Collections$EmptyMap"},"lastUpdatedTimestamp":"1708427732823","lastDirtyTimestamp":"1708427732823"}}.""",
-            $"DBUG {typeof(EurekaClient).FullName}: HTTP POST request to 'http://server2:8761/apps/FOOBAR' returned status 204 in attempt 2."
+            $"DBUG {typeof(EurekaClient)}: HTTP POST request to 'http://server2:8761/apps/FOOBAR' returned status 204 in attempt 2."
         ], options => options.WithStrictOrdering());
     }
 
@@ -630,11 +630,10 @@ public sealed class EurekaClientTest
 
         IList<string> logMessages = capturingLoggerProvider.GetAll();
 
-        logMessages.Should().BeEquivalentTo(
-        [
-            $"DBUG {typeof(EurekaClient).FullName}: Sending GET request to 'http://localhost:8761/eureka/apps' without request body.",
-            $"DBUG {typeof(EurekaClient).FullName}: HTTP GET request to 'http://localhost:8761/eureka/apps' returned status 200 in attempt 1.",
-            $"DBUG {typeof(EurekaClient).FullName}: Failed to deserialize HTTP response from GET 'http://localhost:8761/eureka/apps'."
+        logMessages.Should().BeEquivalentTo([
+            $"DBUG {typeof(EurekaClient)}: Sending GET request to 'http://localhost:8761/eureka/apps' without request body.",
+            $"DBUG {typeof(EurekaClient)}: HTTP GET request to 'http://localhost:8761/eureka/apps' returned status 200 in attempt 1.",
+            $"DBUG {typeof(EurekaClient)}: Failed to deserialize HTTP response from GET 'http://localhost:8761/eureka/apps'."
         ], options => options.WithStrictOrdering());
     }
 
