@@ -73,7 +73,7 @@
     </FoundationalVersion>
     <MicrosoftIdentityModelVersion>8.14.*</MicrosoftIdentityModelVersion>
     <MicrosoftDiagnosticsNETCoreClientVersion>0.2.652701</MicrosoftDiagnosticsNETCoreClientVersion>
-    <MicrosoftDiagnosticsTracingTraceEventVersion>3.1.26</MicrosoftDiagnosticsTracingTraceEventVersion>
+    <MicrosoftDiagnosticsTracingTraceEventVersion>3.1.23</MicrosoftDiagnosticsTracingTraceEventVersion>
     <OpenTelemetryExporterPrometheusVersion>1.14.*-*</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryVersion>1.14.*</OpenTelemetryVersion>
     <SerilogVersion>9.0.*</SerilogVersion>
