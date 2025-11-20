@@ -15,7 +15,7 @@ public sealed class BootstrapperLoggerFactoryTest
     [Fact]
     public async Task Upgrades_existing_loggers()
     {
-        var capturingLoggerProvider = new CapturingLoggerProvider(categoryName => categoryName.StartsWith("Test", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(categoryName => categoryName.StartsWith("Test", StringComparison.Ordinal));
 
         var bootstrapLoggerFactory = BootstrapLoggerFactory.CreateEmpty(loggingBuilder =>
         {
