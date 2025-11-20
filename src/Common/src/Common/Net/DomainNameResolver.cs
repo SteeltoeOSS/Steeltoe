@@ -42,28 +42,46 @@ internal sealed class DomainNameResolver : IDomainNameResolver
 
     public string? ResolveHostName(bool throwOnError = false)
     {
+        string? resultingHostName = null;
+        string? resultingHostEntryHostName = null;
+
         try
         {
             string hostName = Dns.GetHostName();
+            resultingHostName = hostName;
 
             if (string.IsNullOrEmpty(hostName))
             {
                 // Workaround for failure when running on macOS.
                 // See https://github.com/actions/runner-images/issues/1335 and https://github.com/dotnet/runtime/issues/36849.
-                hostName = "localhost";
+
+                throw new InvalidOperationException($"Dns.GetHostName is {GetTextFor(resultingHostName)}.");
             }
 
             IPHostEntry hostEntry = Dns.GetHostEntry(hostName);
-            return hostEntry.HostName;
+            resultingHostEntryHostName = hostEntry.HostName;
+
+            if (string.IsNullOrEmpty(resultingHostEntryHostName))
+            {
+                throw new InvalidOperationException($"IPHostEntry.HostName is {GetTextFor(resultingHostEntryHostName)}.");
+            }
+
+            return resultingHostEntryHostName;
         }
-        catch (Exception)
+        catch (Exception exception)
         {
             if (throwOnError)
             {
-                throw;
+                throw new InvalidOperationException(
+                    $"Failed to resolve hostname. First={GetTextFor(resultingHostName)}, Second={GetTextFor(resultingHostEntryHostName)}", exception);
             }
 
             return null;
         }
+    }
+
+    private static string GetTextFor(string? value)
+    {
+        return value == null ? "null" : "empty";
     }
 }

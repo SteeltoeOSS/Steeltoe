@@ -1,0 +1,48 @@
+name: TestHostName
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+    - '[0-9]+.x'
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: true
+
+jobs:
+  testHostName:
+    name: Test hostname on ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+        - os: ubuntu-latest
+        - os: windows-latest
+        - os: macos-latest
+    runs-on: ${{ matrix.os }}
+    continue-on-error: true
+
+    steps:
+    - name: resolve1
+      shell: pwsh
+      run: |
+        $hostName = [System.Net.Dns]::GetHostName()
+        [System.Net.Dns]::GetHostEntry($hostName)
+    - name: resolve2
+      shell: pwsh
+      run: |
+        $hostName = [System.Net.Dns]::GetHostName()
+        [System.Net.Dns]::GetHostEntry($hostName + ".local")
