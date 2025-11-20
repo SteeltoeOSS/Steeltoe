@@ -52,8 +52,8 @@ internal sealed class ConfigureActuatorsMiddlewareStartupFilter : IStartupFilter
             if (beforeMiddlewareCount != afterMiddlewareCount)
             {
                 _logger.LogWarning(
-                    "Your app adds custom middleware to the pipeline, while actuators were registered to auto-perform middleware setup. This combination is usually undesired. " +
-                    "To correct this, either remove your middleware setup code, or register actuators by setting their configureMiddleware parameter to false.");
+                    "Actuators were registered with automatic middleware setup, and at least one additional middleware was registered afterward. This combination is usually undesired. " +
+                    "To remove this warning, either remove the additional middleware registration or set configureMiddleware to false when registering actuators.");
             }
 
             app.UseActuatorEndpoints();
