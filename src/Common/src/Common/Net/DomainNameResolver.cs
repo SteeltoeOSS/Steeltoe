@@ -44,6 +44,7 @@ internal sealed class DomainNameResolver : IDomainNameResolver
     {
         string? resultingHostName = null;
         string? resultingHostEntryHostName = null;
+        bool? workaroundApplied = null;
 
         try
         {
@@ -55,7 +56,8 @@ internal sealed class DomainNameResolver : IDomainNameResolver
                 // Workaround for failure when running on macOS.
                 // See https://github.com/actions/runner-images/issues/1335 and https://github.com/dotnet/runtime/issues/36849.
 
-                throw new InvalidOperationException($"Dns.GetHostName is {GetTextFor(resultingHostName)}.");
+                hostName = "localhost";
+                workaroundApplied = true;
             }
 
             IPHostEntry hostEntry = Dns.GetHostEntry(hostName);
@@ -73,7 +75,8 @@ internal sealed class DomainNameResolver : IDomainNameResolver
             if (throwOnError)
             {
                 throw new InvalidOperationException(
-                    $"Failed to resolve hostname. First={GetTextFor(resultingHostName)}, Second={GetTextFor(resultingHostEntryHostName)}", exception);
+                    $"Failed to resolve hostname. First={GetTextFor(resultingHostName)}, Second={GetTextFor(resultingHostEntryHostName)}, WorkaroundApplied={workaroundApplied}",
+                    exception);
             }
 
             return null;

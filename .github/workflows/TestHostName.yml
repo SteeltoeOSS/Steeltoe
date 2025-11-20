@@ -37,11 +37,13 @@ jobs:
 
     steps:
     - name: resolve1
+      if: always()
       shell: pwsh
       run: |
         $hostName = [System.Net.Dns]::GetHostName()
         [System.Net.Dns]::GetHostEntry($hostName)
     - name: resolve2
+      if: always()
       shell: pwsh
       run: |
         $hostName = [System.Net.Dns]::GetHostName()
