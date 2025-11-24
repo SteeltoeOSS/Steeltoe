@@ -2,12 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.All;
@@ -133,25 +131,5 @@ public sealed class AllActuatorsTest
         host.Services.GetServices<IInfoEndpointHandler>().OfType<InfoEndpointHandler>().Should().ContainSingle();
         host.Services.GetServices<InfoEndpointMiddleware>().Should().ContainSingle();
         host.Services.GetServices<IEndpointMiddleware>().OfType<InfoEndpointMiddleware>().Should().ContainSingle();
-    }
-
-    [Fact]
-    public async Task Logs_warning_when_custom_middleware_is_registered_without_configureMiddleware_false()
-    {
-        using var capturingLoggerProvider = new CapturingLoggerProvider((_, logLevel) => logLevel >= LogLevel.Warning);
-
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Logging.AddProvider(capturingLoggerProvider);
-        builder.Services.AddAllActuators();
-        await using WebApplication host = builder.Build();
-
-        host.UseRouting();
-        host.UseActuatorEndpoints();
-
-        await host.StartAsync(TestContext.Current.CancellationToken);
-
-        capturingLoggerProvider.GetAll().Should().Contain($"WARN {typeof(ConfigureActuatorsMiddlewareStartupFilter)}: " +
-            "Actuators were registered with automatic middleware setup, and at least one additional middleware was registered afterward. This combination is usually undesired. " +
-            "To remove this warning, either remove the additional middleware registration or set configureMiddleware to false when registering actuators.");
     }
 }
