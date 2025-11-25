@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Discovery;
@@ -156,12 +157,11 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         return Applications.GetRegisteredApplication(appName);
     }
 
-    internal IReadOnlyList<InstanceInfo> GetInstancesByVipAddress(string vipAddress, bool secure)
+    internal IReadOnlyList<InstanceInfo> GetInstancesByVipAddress(string vipAddress)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(vipAddress);
 
-        List<InstanceInfo> instances = secure ? Applications.GetInstancesBySecureVipAddress(vipAddress) : Applications.GetInstancesByVipAddress(vipAddress);
-        return instances.AsReadOnly();
+        return Applications.GetInstancesByVipAddress(vipAddress);
     }
 
     /// <inheritdoc />
@@ -533,16 +533,38 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(serviceId);
 
-        IReadOnlyList<InstanceInfo> nonSecureInstances = GetInstancesByVipAddress(serviceId, false);
-        IReadOnlyList<InstanceInfo> secureInstances = GetInstancesByVipAddress(serviceId, true);
-
-        IEnumerable<InstanceInfo> instances = secureInstances.Concat(nonSecureInstances).DistinctBy(instance => instance.InstanceId);
+        IReadOnlyList<InstanceInfo> instances = GetInstancesByVipAddress(serviceId);
         IServiceInstance[] serviceInstances = instances.Select(instance => new EurekaServiceInstance(instance)).Cast<IServiceInstance>().ToArray();
 
-        _logger.LogDebug("Returning {Count} service instances: {ServiceInstances}", serviceInstances.Length,
-            string.Join(", ", serviceInstances.Select(instance => $"{instance.ServiceId}={instance.Uri}")));
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            string instanceNames = string.Join(", ", serviceInstances.Select(FormatServiceInstance));
+            _logger.LogDebug("Returning {Count} service instances for '{ServiceId}': {ServiceInstances}", serviceInstances.Length, serviceId, instanceNames);
+        }
 
         return Task.FromResult<IList<IServiceInstance>>(serviceInstances);
+    }
+
+    private static string FormatServiceInstance(IServiceInstance instance)
+    {
+        var builder = new StringBuilder();
+
+        if (instance.SecureUri != null)
+        {
+            builder.Append(instance.SecureUri);
+        }
+
+        if (instance.NonSecureUri != null)
+        {
+            if (builder.Length > 0)
+            {
+                builder.Append(';');
+            }
+
+            builder.Append(instance.NonSecureUri);
+        }
+
+        return $"{instance.InstanceId}={builder}";
     }
 
     /// <inheritdoc />

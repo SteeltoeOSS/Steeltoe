@@ -33,38 +33,18 @@ internal sealed class PostConfigureCertificateAuthenticationOptions : IPostConfi
         CertificateOptions appInstanceIdentityOptions = _certificateOptionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
         options.ChainTrustValidationMode = X509ChainTrustMode.CustomRootTrust;
         options.ClaimsIssuer = appInstanceIdentityOptions.Certificate?.Issuer;
-        
-        // Use the configured revocation mode from options, with Online as the secure default
-        options.RevocationMode = appInstanceIdentityOptions.RevocationMode;
+        options.RevocationMode = X509RevocationMode.NoCheck;
 
         string? systemCertPath = Environment.GetEnvironmentVariable("CF_SYSTEM_CERT_PATH");
 
         if (!string.IsNullOrEmpty(systemCertPath))
         {
-            try
-            {
-                // Validate the path to prevent directory traversal attacks
-                string fullPath = Path.GetFullPath(systemCertPath);
-                
-                if (Directory.Exists(fullPath))
-                {
-                    X509Certificate2[] systemCertificates =
-                        Directory.GetFiles(fullPath, "*.crt", SearchOption.TopDirectoryOnly)
-                            .Concat(Directory.GetFiles(fullPath, "*.pem", SearchOption.TopDirectoryOnly))
-                            .Select(certificateFilename => new X509Certificate2(certificateFilename))
-                            .ToArray();
+#pragma warning disable SYSLIB0057 // Type or member is obsolete
+            X509Certificate2[] systemCertificates =
+                Directory.GetFiles(systemCertPath).Select(certificateFilename => new X509Certificate2(certificateFilename)).ToArray();
+#pragma warning restore SYSLIB0057 // Type or member is obsolete
 
-                    options.CustomTrustStore.AddRange(systemCertificates);
-                }
-                else
-                {
-                    _logger.LogWarning("Certificate path from CF_SYSTEM_CERT_PATH does not exist: {CertPath}", fullPath);
-                }
-            }
-            catch (Exception exception) when (exception is ArgumentException or UnauthorizedAccessException or DirectoryNotFoundException)
-            {
-                _logger.LogWarning(exception, "Failed to load system certificates from CF_SYSTEM_CERT_PATH: {CertPath}", systemCertPath);
-            }
+            options.CustomTrustStore.AddRange(systemCertificates);
         }
 
         if (appInstanceIdentityOptions.IssuerChain.Count > 0)

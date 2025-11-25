@@ -8,35 +8,45 @@
     <AspNetCoreHealthChecksVersion>9.0.*</AspNetCoreHealthChecksVersion>
     <CoverletVersion>6.0.*</CoverletVersion>
     <FluentAssertionsVersion>7.2.*</FluentAssertionsVersion>
-    <MicrosoftAzureCosmosVersion>3.51.*</MicrosoftAzureCosmosVersion>
+    <MicrosoftAzureCosmosVersion>3.54.*</MicrosoftAzureCosmosVersion>
     <MicrosoftCodeAnalysisVersion>4.14.*</MicrosoftCodeAnalysisVersion>
-    <MicrosoftSqlClientVersion>6.0.*</MicrosoftSqlClientVersion>
+    <MicrosoftSqlClientVersion>6.1.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>7.0.*</MockHttpVersion>
-    <MongoDbDriverVersion>3.4.*</MongoDbDriverVersion>
+    <MongoDbDriverVersion>3.5.*</MongoDbDriverVersion>
     <MoqVersion>4.20.69</MoqVersion>
-    <MySqlConnectorVersion>2.4.*</MySqlConnectorVersion>
-    <MySqlDataVersion>9.3.*</MySqlDataVersion>
+    <MySqlConnectorVersion>2.5.*</MySqlConnectorVersion>
+    <MySqlDataVersion>9.5.*</MySqlDataVersion>
     <NewtonsoftJsonVersion>13.0.*</NewtonsoftJsonVersion>
     <PublicApiAnalyzersVersion>4.14.*</PublicApiAnalyzersVersion>
-    <RabbitClientTestVersion>7.1.*</RabbitClientTestVersion>
+    <RabbitClientTestVersion>7.2.*</RabbitClientTestVersion>
     <SerilogEnrichersThreadVersion>4.0.*</SerilogEnrichersThreadVersion>
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
-    <SonarAnalyzerVersion>10.9.0.115408</SonarAnalyzerVersion>
+    <SonarAnalyzerVersion>10.15.0.120848</SonarAnalyzerVersion>
     <StyleCopVersion>1.2.0-beta.556</StyleCopVersion>
-    <SystemCommandLineVersion>2.0.0-beta4.24324.3</SystemCommandLineVersion>
-    <SystemIdentityModelVersion>8.12.*</SystemIdentityModelVersion>
+    <SystemCommandLineVersion>2.0.*</SystemCommandLineVersion>
+    <SystemIdentityModelVersion>8.14.*</SystemIdentityModelVersion>
     <SystemSqlClientVersion>4.9.*</SystemSqlClientVersion>
-    <TestSdkVersion>17.14.*</TestSdkVersion>
-    <XunitVersion>2.0.*</XunitVersion>
+    <TestSdkVersion>18.0.*</TestSdkVersion>
+    <XunitVersion>3.2.*</XunitVersion>
     <XunitVisualStudioVersion>3.1.*</XunitVisualStudioVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <EntityFrameworkCoreTestVersion>8.0.*</EntityFrameworkCoreTestVersion>
+    <PomeloEntityFrameworkCoreTestVersion>$(EntityFrameworkCoreTestVersion)</PomeloEntityFrameworkCoreTestVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <EntityFrameworkCoreTestVersion>9.0.*-*</EntityFrameworkCoreTestVersion>
+    <EntityFrameworkCoreTestVersion>9.0.*</EntityFrameworkCoreTestVersion>
+    <PomeloEntityFrameworkCoreTestVersion>$(EntityFrameworkCoreTestVersion)</PomeloEntityFrameworkCoreTestVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <EntityFrameworkCoreTestVersion>10.0.*-*</EntityFrameworkCoreTestVersion>
+    <PomeloEntityFrameworkCoreTestVersion>
+      <!-- Temporary workaround: Unstable EF Core 10 package for Pomelo.EntityFrameworkCore.MySql is not available yet. -->
+      9.0.*
+    </PomeloEntityFrameworkCoreTestVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -49,29 +59,29 @@
 
     <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
     <ConsulVersion>1.7.14.*</ConsulVersion>
-    <DotnetGCDumpVersion>9.0.621003</DotnetGCDumpVersion>
+    <DotnetGCDumpVersion>9.0.652701</DotnetGCDumpVersion>
     <EntityFrameworkCoreVersion>8.0.*</EntityFrameworkCoreVersion>
     <FoundationalVersion>
       <!--
         Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
-        For example, v8 explicitly targets .NET 8; v9 explicitly targets .NET 8 and 9.
+        For example, v8 explicitly targets .NET 8; v9 explicitly targets .NET 8 and 9; v10 explicitly targets .NET 8, 9 and 10.
       -->
-      9.0.*
+      10.0.*
     </FoundationalVersion>
-    <MicrosoftIdentityModelVersion>8.12.*</MicrosoftIdentityModelVersion>
-    <MicrosoftDiagnosticsNETCoreClientVersion>0.2.621003</MicrosoftDiagnosticsNETCoreClientVersion>
-    <MicrosoftDiagnosticsTracingTraceEventVersion>3.1.16</MicrosoftDiagnosticsTracingTraceEventVersion>
-    <OpenTelemetryExporterPrometheusVersion>1.12.*-*</OpenTelemetryExporterPrometheusVersion>
-    <OpenTelemetryVersion>1.12.*</OpenTelemetryVersion>
+    <MicrosoftIdentityModelVersion>8.14.*</MicrosoftIdentityModelVersion>
+    <MicrosoftDiagnosticsNETCoreClientVersion>0.2.652701</MicrosoftDiagnosticsNETCoreClientVersion>
+    <MicrosoftDiagnosticsTracingTraceEventVersion>3.1.23</MicrosoftDiagnosticsTracingTraceEventVersion>
+    <OpenTelemetryExporterPrometheusVersion>1.14.*-*</OpenTelemetryExporterPrometheusVersion>
+    <OpenTelemetryVersion>1.14.*</OpenTelemetryVersion>
     <SerilogVersion>9.0.*</SerilogVersion>
-    <SerilogSinksConsoleVersion>6.0.*</SerilogSinksConsoleVersion>
+    <SerilogSinksConsoleVersion>6.1.*</SerilogSinksConsoleVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <MatchTargetFrameworkVersion>
       <!--
         Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
-        For example, v8 targets only .NET 8; v9 targets only .NET 9.
+        For example, v8 targets only .NET 8; v9 targets only .NET 9; v10 targets only .NET 10.
         Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
       -->
       8.0.*
@@ -82,10 +92,21 @@
     <MatchTargetFrameworkVersion>
       <!--
         Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
-        For example, v8 targets only .NET 8; v9 targets only .NET 9.
+        For example, v8 targets only .NET 8; v9 targets only .NET 9; v10 targets only .NET 10.
         Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
       -->
       9.0.*
+    </MatchTargetFrameworkVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <MatchTargetFrameworkVersion>
+      <!--
+        Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
+        For example, v8 targets only .NET 8; v9 targets only .NET 9; v10 targets only .NET 10.
+        Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
+      -->
+      10.0.*
     </MatchTargetFrameworkVersion>
   </PropertyGroup>
 </Project>

@@ -16,6 +16,7 @@ public sealed class ConsulServiceInstanceTest
             Service = new AgentService
             {
                 Service = "ServiceId",
+                ID = "Instance1",
                 Address = "foo.bar.com",
                 Port = 1234,
                 Tags =
@@ -35,6 +36,7 @@ public sealed class ConsulServiceInstanceTest
 
         serviceInstance.Host.Should().Be("foo.bar.com");
         serviceInstance.ServiceId.Should().Be("ServiceId");
+        serviceInstance.InstanceId.Should().Be("Instance1");
         serviceInstance.IsSecure.Should().BeTrue();
         serviceInstance.Port.Should().Be(1234);
         serviceInstance.Tags.Should().HaveCount(2);
@@ -44,5 +46,7 @@ public sealed class ConsulServiceInstanceTest
         serviceInstance.Metadata.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
         serviceInstance.Metadata.Should().ContainKey("secure").WhoseValue.Should().Be("true");
         serviceInstance.Uri.Should().Be(new Uri("https://foo.bar.com:1234"));
+        serviceInstance.NonSecureUri.Should().BeNull();
+        serviceInstance.SecureUri.Should().Be(serviceInstance.Uri);
     }
 }

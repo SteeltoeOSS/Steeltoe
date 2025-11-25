@@ -198,7 +198,7 @@ public sealed class TaskHostExtensionsTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
         builder.Services.AddLogging(options => options.AddProvider(capturingLoggerProvider));
 
         WebApplication app = builder.Build();

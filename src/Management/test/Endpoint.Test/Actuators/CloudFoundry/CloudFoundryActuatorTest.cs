@@ -176,7 +176,7 @@ public sealed class CloudFoundryActuatorTest
                 },
                 "health": {
                   "href": "http://localhost/cloudfoundryapplication/health",
-                  "templated": true
+                  "templated": false
                 },
                 "heapdump": {
                   "href": "http://localhost/cloudfoundryapplication/heapdump",
@@ -192,7 +192,7 @@ public sealed class CloudFoundryActuatorTest
                 },
                 "loggers": {
                   "href": "http://localhost/cloudfoundryapplication/loggers",
-                  "templated": true
+                  "templated": false
                 },
                 "mappings": {
                   "href": "http://localhost/cloudfoundryapplication/mappings",
@@ -410,10 +410,61 @@ public sealed class CloudFoundryActuatorTest
               "_links": {
                 "loggers": {
                   "href": "http://localhost/cloudfoundryapplication/loggers",
-                  "templated": true
+                  "templated": false
                 },
                 "self": {
                   "href": "http://localhost/cloudfoundryapplication",
+                  "templated": false
+                }
+              }
+            }
+            """);
+    }
+
+    [Fact]
+    public async Task Ignores_exposure_with_UsePathBase()
+    {
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", VcapApplicationForMock);
+
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Management:Endpoints:Actuator:Exposure:Include:0"] = "*",
+            ["Management:Endpoints:Actuator:Exposure:Exclude:1"] = "loggers"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddCloudFoundry();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddCloudFoundryActuator(false);
+        builder.Services.AddLoggersActuator(false);
+
+        await using WebApplication host = builder.Build();
+
+        host.UsePathBase("/some/prefix");
+        host.UseRouting();
+        host.UseCloudFoundrySecurity();
+        host.UseActuatorEndpoints();
+
+        host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using HttpClient httpClient = host.GetTestClient();
+
+        HttpResponseMessage response = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/some/prefix/cloudfoundryapplication"));
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        responseBody.Should().BeJson("""
+            {
+              "type": "steeltoe",
+              "_links": {
+                "loggers": {
+                  "href": "http://localhost/some/prefix/cloudfoundryapplication/loggers",
+                  "templated": false
+                },
+                "self": {
+                  "href": "http://localhost/some/prefix/cloudfoundryapplication",
                   "templated": false
                 }
               }
@@ -507,7 +558,7 @@ public sealed class CloudFoundryActuatorTest
               "_links": {
                 "health": {
                   "href": "http://localhost/cloudfoundryapplication/health",
-                  "templated": true
+                  "templated": false
                 },
                 "self": {
                   "href": "http://localhost/cloudfoundryapplication",

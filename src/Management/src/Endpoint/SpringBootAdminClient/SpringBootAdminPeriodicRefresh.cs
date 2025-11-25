@@ -40,6 +40,7 @@ internal sealed class SpringBootAdminPeriodicRefresh : IAsyncDisposable
         try
         {
             _logger.LogDebug("Starting periodic refresh loop with interval {Interval}.", interval);
+            bool isFirstTime = true;
 
             do
             {
@@ -47,12 +48,14 @@ internal sealed class SpringBootAdminPeriodicRefresh : IAsyncDisposable
 
                 try
                 {
-                    await _runner.RunAsync(_timerTokenSource.Token);
+                    await _runner.RunAsync(isFirstTime, _timerTokenSource.Token);
                 }
                 catch (Exception exception) when (!exception.IsCancellation())
                 {
                     _logger.LogWarning(exception, "Refresh cycle failed.");
                 }
+
+                isFirstTime = false;
             }
             while (await _periodicTimer.WaitForNextTickAsync(_timerTokenSource.Token));
         }

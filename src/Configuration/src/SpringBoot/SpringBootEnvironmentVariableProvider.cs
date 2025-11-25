@@ -61,11 +61,8 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
             {
                 string? value = Data[key];
 
-                if (value != null)
-                {
-                    string newKey = key.Contains('.') ? key.Replace('.', ':') : key;
-                    data[newKey] = value;
-                }
+                string newKey = key.Contains('.') ? key.Replace('.', ':') : key;
+                data[newKey] = value;
             }
         }
 

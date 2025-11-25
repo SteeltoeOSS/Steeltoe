@@ -23,6 +23,9 @@ public sealed class ConfigurationServiceInstance : IServiceInstance
     public string? ServiceId { get; set; }
 
     /// <inheritdoc />
+    public string InstanceId => string.Empty;
+
+    /// <inheritdoc />
     [Required]
     public string? Host { get; set; }
 
@@ -34,6 +37,12 @@ public sealed class ConfigurationServiceInstance : IServiceInstance
 
     /// <inheritdoc />
     public Uri Uri => new($"{(IsSecure ? Uri.UriSchemeHttps : Uri.UriSchemeHttp)}{Uri.SchemeDelimiter}{Host}:{Port}");
+
+    /// <inheritdoc />
+    public Uri? NonSecureUri => IsSecure ? null : Uri;
+
+    /// <inheritdoc />
+    public Uri? SecureUri => IsSecure ? Uri : null;
 
     /// <inheritdoc cref="IServiceInstance.Metadata" />
     public IDictionary<string, string?> Metadata { get; } = new Dictionary<string, string?>();

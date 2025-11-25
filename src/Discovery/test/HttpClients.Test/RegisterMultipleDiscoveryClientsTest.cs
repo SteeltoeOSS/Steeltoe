@@ -424,7 +424,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", env1);
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", env2);
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
         using var loggerFactory = new LoggerFactory([capturingLoggerProvider]);
 
         var configurationBuilder = new ConfigurationBuilder();
@@ -434,7 +434,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         IList<string> logMessages = capturingLoggerProvider.GetAll();
 
         logMessages.Should().BeEquivalentTo(
-            $"WARN {typeof(EurekaCloudFoundryPostProcessor).FullName}: Multiple Eureka service bindings found, which is not supported. Using the first binding from VCAP_SERVICES.");
+            $"WARN {typeof(EurekaCloudFoundryPostProcessor)}: Multiple Eureka service bindings found, which is not supported. Using the first binding from VCAP_SERVICES.");
     }
 
     [Fact]
@@ -872,5 +872,21 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         serviceProvider.GetServices<IHealthContributor>().OfType<ConsulHealthContributor>().Should().ContainSingle();
         serviceProvider.GetServices<IHealthContributor>().OfType<EurekaServerHealthContributor>().Should().ContainSingle();
         serviceProvider.GetServices<IHealthContributor>().OfType<EurekaApplicationsHealthContributor>().Should().BeEmpty();
+    }
+
+    [Fact]
+    public void WithMultipleClients_DotNotRegisterMultipleTimes()
+    {
+        var services = new ServiceCollection();
+        services.AddConfigurationDiscoveryClient();
+        services.AddConsulDiscoveryClient();
+        services.AddEurekaDiscoveryClient();
+        int beforeServiceCount = services.Count;
+
+        services.AddConfigurationDiscoveryClient();
+        services.AddConsulDiscoveryClient();
+        services.AddEurekaDiscoveryClient();
+
+        services.Count.Should().Be(beforeServiceCount);
     }
 }

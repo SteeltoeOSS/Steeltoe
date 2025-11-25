@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
     <Description>Steeltoe management endpoints, also known as actuators. Includes support for Cloud Foundry integration.</Description>
     <PackageTags>actuator;actuators;management;monitoring;Spring;Boot;dbmigrations;health;heap-dump;loggers;route-mappings;thread-dump;tanzu</PackageTags>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -25,23 +25,30 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="dotnet-gcdump">
-      <HintPath>$(Pkgdotnet-gcdump)\tools\net8.0\any\dotnet-gcdump.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Diagnostics.FastSerialization">
-      <!--
-        Caution: The version of this DLL must be binary compatible with the one embedded in Microsoft.Diagnostics.Tracing.TraceEvent,
-        otherwise a TypeLoadException will occur at runtime.
-      -->
-      <HintPath>$(Pkgdotnet-gcdump)\tools\net8.0\any\Microsoft.Diagnostics.FastSerialization.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Hosting\Steeltoe.Common.Hosting.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicConsole\Steeltoe.Logging.DynamicConsole.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="dotnet-gcdump">
+      <!--
+        Caution: The embedded version of Microsoft.Diagnostics.FastSerialization must be binary compatible with the one
+        embedded in Microsoft.Diagnostics.Tracing.TraceEvent, otherwise a TypeLoadException will occur at runtime.
+      -->
+      <HintPath>$(Pkgdotnet-gcdump)\tools\net8.0\any\dotnet-gcdump.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Embed dotnet-gcdump.dll in our multi-targeted NuGet package. -->
+  <Target Name="IncludeDotNetGCDumpAssemblyInPack" BeforeTargets="_GetPackageFiles">
+    <ItemGroup>
+      <_DotNetGCDumpNet10 Include="$(MSBuildProjectDirectory)\bin\$(Configuration)\net10.0\dotnet-gcdump.dll" Pack="True" PackagePath="lib\net10.0" />
+      <_DotNetGCDumpNet8 Include="$(MSBuildProjectDirectory)\bin\$(Configuration)\net8.0\dotnet-gcdump.dll" Pack="True" PackagePath="lib\net8.0" />
+      <None Include="@(_DotNetGCDumpNet10)" />
+      <None Include="@(_DotNetGCDumpNet8)" />
+    </ItemGroup>
+  </Target>
 </Project>

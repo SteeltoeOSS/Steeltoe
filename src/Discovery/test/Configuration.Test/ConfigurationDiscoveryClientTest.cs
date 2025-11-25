@@ -179,4 +179,16 @@ public sealed class ConfigurationDiscoveryClientTest
 
         serviceProvider.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
+
+    [Fact]
+    public void Does_not_register_multiple_times()
+    {
+        var services = new ServiceCollection();
+        services.AddConfigurationDiscoveryClient();
+        int beforeServiceCount = services.Count;
+
+        services.AddConfigurationDiscoveryClient();
+
+        services.Count.Should().Be(beforeServiceCount);
+    }
 }

@@ -12,7 +12,13 @@ using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
-using IPNetwork = Microsoft.AspNetCore.HttpOverrides.IPNetwork;
+using IPNetworkAlias =
+#if NET10_0_OR_GREATER
+    System.Net.IPNetwork
+#else
+    Microsoft.AspNetCore.HttpOverrides.IPNetwork
+#endif
+    ;
 
 namespace Steeltoe.Configuration.CloudFoundry.Test;
 
@@ -192,8 +198,8 @@ public sealed class CloudFoundryConfigurationProviderTest
     {
         const string environment = """
             {
-                "name": "my-app",
-                "version": "fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"
+                "application_version": "fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca",
+                "space_name": "test-space"
             }
             """;
 
@@ -204,7 +210,7 @@ public sealed class CloudFoundryConfigurationProviderTest
 
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        VcapApp? options = null;
+        CloudFoundryApplicationOptions? options = null;
 
         using var tokenSource = new CancellationTokenSource(250.Milliseconds());
 
@@ -219,12 +225,12 @@ public sealed class CloudFoundryConfigurationProviderTest
 
         while (!tokenSource.IsCancellationRequested)
         {
-            options = configurationRoot.GetSection("vcap:application").Get<VcapApp>();
+            options = configurationRoot.GetSection("vcap:application").Get<CloudFoundryApplicationOptions>();
         }
 
         options.Should().NotBeNull();
-        options.Name.Should().Be("my-app");
-        options.Version.Should().Be("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca");
+        options.ApplicationVersion.Should().Be("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca");
+        options.SpaceName.Should().Be("test-space");
     }
 
     [Theory]
@@ -244,14 +250,22 @@ public sealed class CloudFoundryConfigurationProviderTest
         {
             options.ForwardedHeaders.Should().HaveFlag(ForwardedHeaders.XForwardedFor);
             options.ForwardedHeaders.Should().HaveFlag(ForwardedHeaders.XForwardedProto);
+#if NET10_0_OR_GREATER
+            options.KnownIPNetworks.Should().BeEmpty();
+#else
             options.KnownNetworks.Should().BeEmpty();
+#endif
             options.KnownProxies.Should().BeEmpty();
         }
         else
         {
             options.ForwardedHeaders.Should().NotHaveFlag(ForwardedHeaders.XForwardedFor);
             options.ForwardedHeaders.Should().NotHaveFlag(ForwardedHeaders.XForwardedProto);
-            options.KnownNetworks.Should().ContainSingle().Which.Should().BeEquivalentTo(IPNetwork.Parse("127.0.0.1/8"));
+#if NET10_0_OR_GREATER
+            options.KnownIPNetworks.Should().ContainSingle().Which.Should().BeEquivalentTo(IPNetworkAlias.Parse("127.0.0.1/8"));
+#else
+            options.KnownNetworks.Should().ContainSingle().Which.Should().BeEquivalentTo(IPNetworkAlias.Parse("127.0.0.1/8"));
+#endif
             options.KnownProxies.Should().ContainSingle().Which.Should().Be(IPAddress.Parse("::1"));
         }
     }
@@ -466,15 +480,5 @@ public sealed class CloudFoundryConfigurationProviderTest
 
         provider.TryGet("p-mysql:1:credentials:uri", out value).Should().BeTrue();
         value.Should().Be("mysql://gxXQb2pMbzFsZQW8:lvMkGf6oJQvKSOwn@192.168.0.97:3306/cf_b2d83697_5fa1_4a51_991b_975c9d7e5515?reconnect=true");
-    }
-
-    private sealed class VcapApp
-    {
-#pragma warning disable S3459 // Unassigned members should be removed
-#pragma warning disable S1144 // Unused private types or members should be removed
-        public string? Name { get; set; }
-        public string? Version { get; set; }
-#pragma warning restore S1144 // Unused private types or members should be removed
-#pragma warning restore S3459 // Unassigned members should be removed
     }
 }

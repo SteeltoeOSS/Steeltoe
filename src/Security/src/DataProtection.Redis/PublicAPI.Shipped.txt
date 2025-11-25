@@ -1,1 +1,4 @@
-﻿
+#nullable enable
+static Steeltoe.Security.DataProtection.Redis.RedisDataProtectionBuilderExtensions.PersistKeysToRedis(this Microsoft.AspNetCore.DataProtection.IDataProtectionBuilder! builder, string! serviceBindingName) -> Microsoft.AspNetCore.DataProtection.IDataProtectionBuilder!
+static Steeltoe.Security.DataProtection.Redis.RedisDataProtectionBuilderExtensions.PersistKeysToRedis(this Microsoft.AspNetCore.DataProtection.IDataProtectionBuilder! builder) -> Microsoft.AspNetCore.DataProtection.IDataProtectionBuilder!
+Steeltoe.Security.DataProtection.Redis.RedisDataProtectionBuilderExtensions

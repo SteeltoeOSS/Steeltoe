@@ -6,6 +6,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
+using LockPrimitive =
+#if NET10_0_OR_GREATER
+    System.Threading.Lock
+#else
+    object
+#endif
+    ;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -19,7 +26,7 @@ public sealed class EurekaApplicationInfoManager : IDisposable
     private readonly TimeProvider _timeProvider;
     private readonly IDisposable? _instanceOptionsChangeToken;
     private readonly ILogger<EurekaApplicationInfoManager> _logger;
-    private readonly object _instanceWriteLock = new();
+    private readonly LockPrimitive _instanceWriteLock = new();
 
     // Readers must never be blocked, as it may delay the periodic heartbeat.
     // Updates from user code must be synchronized with configuration changes.

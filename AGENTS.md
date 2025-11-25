@@ -5,13 +5,13 @@ This document provides step-by-step instructions for building and testing the St
 ## Prerequisites
 
 ### .NET SDK Requirements
-You need both .NET 8.0 and .NET 9.0 SDKs installed. The project targets multiple frameworks:
+You need both .NET 8.0 and .NET 10.0 SDKs installed. The project targets multiple frameworks:
 - .NET 8.0 (net8.0)
-- .NET 9.0 (net9.0)
+- .NET 10.0 (net10.0)
 
 Install both SDKs:
 ```bash
-# Install .NET 8.0 and 9.0 SDKs
+# Install .NET 8.0 and 10.0 SDKs
 # Follow instructions at: https://dotnet.microsoft.com/download
 ```
 
@@ -87,13 +87,13 @@ dotnet test src/Steeltoe.All.sln --framework net8.0 --filter "$SKIP_FILTER_NO_ME
 dotnet test src/Steeltoe.All.sln --framework net8.0 --filter "$SKIP_FILTER_WITH_MEMORY_DUMPS" $COMMON_TEST_ARGS
 ```
 
-#### Test .NET 9.0 Framework
+#### Test .NET 10.0 Framework
 ```bash
 # Regular tests (excluding memory dumps)
-dotnet test src/Steeltoe.All.sln --framework net9.0 --filter "$SKIP_FILTER_NO_MEMORY_DUMPS" $COMMON_TEST_ARGS
+dotnet test src/Steeltoe.All.sln --framework net10.0 --filter "$SKIP_FILTER_NO_MEMORY_DUMPS" $COMMON_TEST_ARGS
 
 # Memory dump tests
-dotnet test src/Steeltoe.All.sln --framework net9.0 --filter "$SKIP_FILTER_WITH_MEMORY_DUMPS" $COMMON_TEST_ARGS
+dotnet test src/Steeltoe.All.sln --framework net10.0 --filter "$SKIP_FILTER_WITH_MEMORY_DUMPS" $COMMON_TEST_ARGS
 ```
 
 ## Quick Build and Test Script
@@ -140,12 +140,12 @@ echo "Running tests..."
 dotnet test src/Steeltoe.All.sln --framework net8.0 --filter "$SKIP_FILTER_NO_MEMORY_DUMPS" $COMMON_TEST_ARGS
 dotnet test src/Steeltoe.All.sln --framework net8.0 --filter "$SKIP_FILTER_WITH_MEMORY_DUMPS" $COMMON_TEST_ARGS
 
-# Test .NET 9.0 (if SDK is available)
-if dotnet --list-sdks | grep -q "9\."; then
-    dotnet test src/Steeltoe.All.sln --framework net9.0 --filter "$SKIP_FILTER_NO_MEMORY_DUMPS" $COMMON_TEST_ARGS
-    dotnet test src/Steeltoe.All.sln --framework net9.0 --filter "$SKIP_FILTER_WITH_MEMORY_DUMPS" $COMMON_TEST_ARGS
+# Test .NET 10.0 (if SDK is available)
+if dotnet --list-sdks | grep -q "10\."; then
+    dotnet test src/Steeltoe.All.sln --framework net10.0 --filter "$SKIP_FILTER_NO_MEMORY_DUMPS" $COMMON_TEST_ARGS
+    dotnet test src/Steeltoe.All.sln --framework net10.0 --filter "$SKIP_FILTER_WITH_MEMORY_DUMPS" $COMMON_TEST_ARGS
 else
-    echo "Warning: .NET 9.0 SDK not found, skipping .NET 9.0 tests"
+    echo "Warning: .NET 10.0 SDK not found, skipping .NET 10.0 tests"
 fi
 
 echo "Build and test completed!"
@@ -174,7 +174,7 @@ docker run -d --name config-server -p 8888:8888 \
 
 1. **Network connectivity errors**: Some Azure DevOps package feeds (especially `frdvsblobprodcus327.vsblob.vsassets.io`) may be blocked in sandboxed environments. This affects packages like `System.CommandLine.2.0.0-beta4.24324.3`. This is a known limitation in sandboxed environments and is expected.
 
-2. **.NET 9.0 not found**: Install the .NET 9.0 SDK or skip .NET 9.0 tests by only running .NET 8.0 tests. You'll see errors like `NETSDK1045: The current .NET SDK does not support targeting .NET 9.0`.
+2. **.NET 10.0 not found**: Install the .NET 10.0 SDK or skip .NET 10.0 tests by only running .NET 8.0 tests. You'll see errors like `NETSDK1045: The current .NET SDK does not support targeting .NET 10.0`.
 
 3. **macOS certificate prompts**: Set `DOTNET_GENERATE_ASPNET_CERTIFICATE=false` and use the `SkipOnMacOS` test filter.
 

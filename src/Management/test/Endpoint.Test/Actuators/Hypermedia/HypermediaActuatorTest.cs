@@ -111,7 +111,7 @@ public sealed class HypermediaActuatorTest
               "_links": {
                 "health": {
                   "href": "http://localhost/actuator/health",
-                  "templated": true
+                  "templated": false
                 },
                 "info": {
                   "href": "http://localhost/actuator/info",
@@ -196,7 +196,7 @@ public sealed class HypermediaActuatorTest
                 },
                 "loggers": {
                   "href": "http://localhost/alt-actuator/alt-loggers-path",
-                  "templated": true
+                  "templated": false
                 },
                 "self": {
                   "href": "http://localhost/alt-actuator/hypermedia",
@@ -327,7 +327,7 @@ public sealed class HypermediaActuatorTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         IList<string> logLines = loggerProvider.GetAll();
-        logLines.Should().ContainSingle().Which.Should().Be($"WARN {typeof(HypermediaService).FullName}: Duplicate endpoint with ID 'same' detected.");
+        logLines.Should().ContainSingle().Which.Should().Be($"WARN {typeof(HypermediaService)}: Duplicate endpoint with ID 'same' detected.");
     }
 
     [Fact]
@@ -363,6 +363,44 @@ public sealed class HypermediaActuatorTest
                 },
                 "self": {
                   "href": "http://localhost/",
+                  "templated": false
+                }
+              }
+            }
+            """);
+    }
+
+    [Fact]
+    public async Task Includes_base_path_from_UsePathBase_in_hypermedia_links()
+    {
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Services.AddHypermediaActuator(false);
+        builder.Services.AddInfoActuator(false);
+        await using WebApplication host = builder.Build();
+
+        host.UsePathBase("/some/prefix");
+        host.UseRouting();
+        host.UseActuatorEndpoints();
+
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using HttpClient httpClient = host.GetTestClient();
+
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/some/prefix/actuator"), TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        responseBody.Should().BeJson("""
+            {
+              "type": "steeltoe",
+              "_links": {
+                "info": {
+                  "href": "http://localhost/some/prefix/actuator/info",
+                  "templated": false
+                },
+                "self": {
+                  "href": "http://localhost/some/prefix/actuator",
                   "templated": false
                 }
               }
@@ -448,7 +486,7 @@ public sealed class HypermediaActuatorTest
               "_links": {
                 "health": {
                   "href": "http://localhost/actuator/health",
-                  "templated": true
+                  "templated": false
                 },
                 "self": {
                   "href": "http://localhost/actuator",

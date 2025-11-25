@@ -83,8 +83,8 @@ internal sealed class PermissionsProvider
         }
         catch (HttpRequestException exception)
         {
-            _logger.LogWarning(exception, "HTTP request failed while obtaining permissions from Cloud Foundry");
-            return new SecurityResult(HttpStatusCode.ServiceUnavailable, Messages.CloudFoundryNotReachable);
+            return new SecurityResult(HttpStatusCode.ServiceUnavailable,
+                $"Exception of type '{typeof(HttpRequestException)}' with error '{exception.HttpRequestError}' was thrown");
         }
         catch (Exception exception) when (exception.IsHttpClientTimeout())
         {

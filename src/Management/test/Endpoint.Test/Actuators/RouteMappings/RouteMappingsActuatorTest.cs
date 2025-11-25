@@ -183,7 +183,7 @@ public sealed partial class RouteMappingsActuatorTest
             """);
 
         IList<string> logMessages = loggerProvider.GetAll();
-        logMessages.Should().Contain($"WARN {typeof(AspNetEndpointProvider).FullName}: Conventional routing is not supported.");
+        logMessages.Should().Contain($"WARN {typeof(AspNetEndpointProvider)}: Conventional routing is not supported.");
     }
 
     [Theory]

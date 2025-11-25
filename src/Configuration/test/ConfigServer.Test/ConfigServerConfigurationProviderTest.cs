@@ -373,8 +373,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         List<IServiceInstance> instances =
         [
-            new TestServiceInstance("i1", new Uri("https://foo.bar:8888/"), metadata1),
-            new TestServiceInstance("i2", new Uri("https://foo.bar.baz:9999/"), metadata2)
+            new TestServiceInstance("s", "i1", new Uri("https://foo.bar:8888/"), metadata1),
+            new TestServiceInstance("s", "i2", new Uri("https://foo.bar.baz:9999/"), metadata2)
         ];
 
         provider.UpdateSettingsFromDiscovery(instances, options);
@@ -416,13 +416,16 @@ public sealed partial class ConfigServerConfigurationProviderTest
         return Convert.ToBase64String(Encoding.ASCII.GetBytes($"{user}:{password}"));
     }
 
-    private sealed class TestServiceInstance(string serviceId, Uri uri, IReadOnlyDictionary<string, string?> metadata) : IServiceInstance
+    private sealed class TestServiceInstance(string serviceId, string instanceId, Uri uri, IReadOnlyDictionary<string, string?> metadata) : IServiceInstance
     {
         public string ServiceId { get; } = serviceId;
+        public string InstanceId { get; } = instanceId;
         public string Host { get; } = uri.Host;
         public int Port { get; } = uri.Port;
         public bool IsSecure { get; } = uri.Scheme == Uri.UriSchemeHttps;
         public Uri Uri { get; } = uri;
+        public Uri? NonSecureUri => IsSecure ? null : Uri;
+        public Uri? SecureUri => IsSecure ? Uri : null;
         public IReadOnlyDictionary<string, string?> Metadata { get; } = metadata;
     }
 }

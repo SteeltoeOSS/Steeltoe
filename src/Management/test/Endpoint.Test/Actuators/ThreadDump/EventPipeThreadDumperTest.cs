@@ -35,7 +35,12 @@ public sealed class EventPipeThreadDumperTest
         StackTraceElement? backgroundThreadFrame = threads.SelectMany(thread => thread.StackTrace)
             .FirstOrDefault(frame => frame.MethodName == "BackgroundThreadCallback(class System.Object)");
 
-        backgroundThreadFrame.Should().NotBeNull();
+        if (backgroundThreadFrame == null)
+        {
+            string logs = loggerProvider.GetAsText();
+            throw new InvalidOperationException($"Failed to find expected stack frame. Captured log:{System.Environment.NewLine}{logs}");
+        }
+
         backgroundThreadFrame.IsNativeMethod.Should().BeFalse();
         backgroundThreadFrame.ModuleName.Should().Be(GetType().Assembly.GetName().Name);
         backgroundThreadFrame.ClassName.Should().Be(typeof(NestedType).FullName);
@@ -47,11 +52,11 @@ public sealed class EventPipeThreadDumperTest
         backgroundThread.Join();
 
         IList<string> logLines = loggerProvider.GetAll();
-        logLines.Should().Contain($"INFO {typeof(EventPipeThreadDumper).FullName}: Attempting to create a thread dump.");
-        logLines.Should().Contain($"INFO {typeof(EventPipeThreadDumper).FullName}: Successfully created a thread dump.");
+        logLines.Should().Contain($"INFO {typeof(EventPipeThreadDumper)}: Attempting to create a thread dump.");
+        logLines.Should().Contain($"INFO {typeof(EventPipeThreadDumper)}: Successfully created a thread dump.");
 
         string logText = loggerProvider.GetAsText();
-        logText.Should().Contain($"TRCE {typeof(EventPipeThreadDumper).FullName}: Captured log from thread dump:");
+        logText.Should().Contain($"TRCE {typeof(EventPipeThreadDumper)}: Captured log from thread dump:");
         logText.Should().Contain("Created SymbolReader with SymbolPath");
     }
 

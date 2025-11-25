@@ -63,4 +63,18 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
 
         configurationRoot.EnumerateProviders<CloudFoundryConfigurationProvider>().Should().ContainSingle();
     }
+
+    [Fact]
+    public void Does_not_register_multiple_times()
+    {
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
+        hostBuilder.AddCloudFoundryConfiguration();
+        int beforeSourceCount = hostBuilder.Configuration.EnumerateSources().Count();
+        int beforeServiceCount = hostBuilder.Services.Count;
+
+        hostBuilder.AddCloudFoundryConfiguration();
+
+        hostBuilder.Configuration.EnumerateSources().Count().Should().Be(beforeSourceCount);
+        hostBuilder.Services.Count.Should().Be(beforeServiceCount);
+    }
 }

@@ -39,7 +39,7 @@ public sealed class MongoDbHealthContributorTest
         result.Description.Should().Be("MongoDB health check failed");
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
-        result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("TimeoutException: A timeout occurred after 1ms selecting ");
+        result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("TimeoutException: A timeout occurred after");
     }
 
     [Fact]

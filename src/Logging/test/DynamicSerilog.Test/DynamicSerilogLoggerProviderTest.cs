@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using Serilog.Context;
 using Steeltoe.Common.TestResources;
 
+#pragma warning disable CA1873 // Avoid potentially expensive logging
+
 namespace Steeltoe.Logging.DynamicSerilog.Test;
 
 public sealed class DynamicSerilogLoggerProviderTest : IDisposable

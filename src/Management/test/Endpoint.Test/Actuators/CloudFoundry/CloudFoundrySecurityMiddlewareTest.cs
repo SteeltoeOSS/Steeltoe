@@ -331,7 +331,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
             ["vcap:application:cf_api"] = "https://example.api.com"
         };
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("System.Net.Http.HttpClient", StringComparison.Ordinal));
+        using var capturingLoggerProvider =
+            new CapturingLoggerProvider(category => category.StartsWith("System.Net.Http.HttpClient", StringComparison.Ordinal));
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);

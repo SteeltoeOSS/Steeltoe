@@ -17,6 +17,9 @@ internal sealed class ConsulServiceInstance : IServiceInstance
     public string ServiceId { get; }
 
     /// <inheritdoc />
+    public string InstanceId { get; }
+
+    /// <inheritdoc />
     public string Host { get; }
 
     /// <inheritdoc />
@@ -27,6 +30,12 @@ internal sealed class ConsulServiceInstance : IServiceInstance
 
     /// <inheritdoc />
     public Uri Uri { get; }
+
+    /// <inheritdoc />
+    public Uri? NonSecureUri { get; }
+
+    /// <inheritdoc />
+    public Uri? SecureUri { get; }
 
     public IReadOnlyList<string> Tags { get; }
 
@@ -48,7 +57,10 @@ internal sealed class ConsulServiceInstance : IServiceInstance
         Metadata = serviceEntry.Service.Meta.AsReadOnly();
         IsSecure = serviceEntry.Service.Meta != null && serviceEntry.Service.Meta.TryGetValue("secure", out string? secureString) && bool.Parse(secureString);
         ServiceId = serviceEntry.Service.Service;
+        InstanceId = serviceEntry.Service.ID;
         Port = serviceEntry.Service.Port;
         Uri = new Uri($"{(IsSecure ? "https" : "http")}://{Host}:{Port}");
+        NonSecureUri = IsSecure ? null : Uri;
+        SecureUri = IsSecure ? Uri : null;
     }
 }
