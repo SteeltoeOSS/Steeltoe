@@ -35,7 +35,7 @@ internal sealed class ConsulRegistration : IServiceInstance
     public bool IsSecure => _optionsMonitor.CurrentValue.EffectiveScheme == "https";
 
     /// <inheritdoc />
-    public Uri Uri => new($"{_optionsMonitor.CurrentValue.EffectiveScheme}://{Host}:{Port}");
+    public Uri Uri => FormatUri();
 
     /// <inheritdoc />
     public Uri? NonSecureUri => IsSecure ? null : Uri;
@@ -71,6 +71,20 @@ internal sealed class ConsulRegistration : IServiceInstance
         Port = innerRegistration.Port;
         Tags = innerRegistration.Tags;
         Metadata = innerRegistration.Meta.AsReadOnly();
+    }
+
+    private Uri FormatUri()
+    {
+        string scheme = _optionsMonitor.CurrentValue.EffectiveScheme;
+
+        try
+        {
+            return new Uri($"{scheme}://{Host}:{Port}");
+        }
+        catch (UriFormatException exception)
+        {
+            throw new UriFormatException($"Failed to build URI from components. Scheme={scheme}, Host={Host},Port={Port}.", exception);
+        }
     }
 
     /// <summary>
