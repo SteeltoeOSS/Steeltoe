@@ -106,14 +106,20 @@ Integration tests on Linux require Docker services to be running. The CI workflo
 
 ### Eureka Server
 ```bash
-docker run -d -p 8761:8761 steeltoe.azurecr.io/eureka-server
+docker run -d -p 8761:8761 --name eurekaServer steeltoe.azurecr.io/eureka-server
 ```
 
 ### Config Server
 ```bash
+# Note: When running locally, you may need to adjust the network configuration
+# to allow the Config Server to communicate with Eureka Server.
+# The CI workflow uses Docker services with automatic networking.
+
 docker run -d -p 8888:8888 \
+  --name configServer \
+  --link eurekaServer \
   -e eureka.client.enabled=true \
-  -e eureka.client.serviceUrl.defaultZone=http://localhost:8761/eureka \
+  -e eureka.client.serviceUrl.defaultZone=http://eurekaServer:8761/eureka \
   -e eureka.instance.hostname=localhost \
   -e eureka.instance.instanceId=localhost:configServer:8888 \
   steeltoe.azurecr.io/config-server
