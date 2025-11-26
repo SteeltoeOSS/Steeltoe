@@ -125,7 +125,7 @@ docker run -d -p 8888:8888 \
   steeltoe.azurecr.io/config-server
 ```
 
-**Note:** These Docker images are hosted in a private Azure Container Registry. You may need authentication or use alternative public images for local development.
+**Note:** These Docker images are hosted in the Steeltoe Azure Container Registry, which allows anonymous pulls. No authentication is required to pull these images.
 
 ## Complete Build and Test Script
 
