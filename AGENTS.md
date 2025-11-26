@@ -35,6 +35,8 @@ dotnet build src/Steeltoe.All.sln --no-restore --configuration Release --verbosi
 
 ### Run All Tests
 
+**Important:** Tests should pass before committing and pushing changes. When possible, code coverage levels should be increased or at least maintained.
+
 ```bash
 # Test with .NET 10.0
 dotnet test src/Steeltoe.All.sln --framework net10.0 --no-build --configuration Release

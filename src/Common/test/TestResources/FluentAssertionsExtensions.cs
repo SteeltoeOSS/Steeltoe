@@ -5,7 +5,6 @@
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Text.Unicode;
 using FluentAssertions;
 using FluentAssertions.Primitives;
 
@@ -16,7 +15,7 @@ public static class FluentAssertionsExtensions
     private static readonly JsonWriterOptions NormalizedJsonWriterOptions = new()
     {
         Indented = true,
-        Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Latin1Supplement)
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
 
     /// <summary>
