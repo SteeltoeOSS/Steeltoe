@@ -6,11 +6,11 @@ This document provides comprehensive instructions for building and testing the S
 
 Before building and testing Steeltoe, ensure you have the following installed:
 
-- **.NET SDK 8.0** (latest patch version)
-- **.NET SDK 9.0** (latest patch version)
 - **.NET SDK 10.0** (latest patch version)
+- **.NET Runtime 8.0** (latest patch version)
+- **.NET Runtime 9.0** (latest patch version)
 
-You can download the .NET SDKs from:
+You can download the .NET SDK and runtimes from:
 - [.NET 8.0](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [.NET 9.0](https://dotnet.microsoft.com/download/dotnet/9.0)
 - [.NET 10.0](https://dotnet.microsoft.com/download/dotnet/10.0)
@@ -18,6 +18,7 @@ You can download the .NET SDKs from:
 Verify your installation:
 ```bash
 dotnet --list-sdks
+dotnet --list-runtimes
 ```
 
 ## Quick Start
@@ -194,6 +195,49 @@ dotnet test $SOLUTION_FILE --framework net8.0 --filter "$SKIP_FILTER" \
 
 echo "Build and test completed!"
 ```
+
+## Code Style Validation
+
+Steeltoe uses ReSharper/Rider code cleanup tools via `regitlint` to enforce consistent code style. Before submitting a PR, ensure your code passes style validation.
+
+### Using the cleanupcode.ps1 Script
+
+The repository includes a PowerShell script to run code cleanup:
+
+```powershell
+# Run cleanup on all files
+./cleanupcode.ps1
+
+# Run cleanup on files changed since a specific branch/commit
+./cleanupcode.ps1 -revision main
+```
+
+**Note:** This script requires PowerShell 7.0 or later.
+
+### Manual Code Style Check
+
+You can also run the code style check manually:
+
+```bash
+# Restore .NET tools
+dotnet tool restore
+
+# Restore packages
+dotnet restore src/Steeltoe.All.sln /p:Configuration=Release --verbosity minimal
+
+# Run code cleanup check (without making changes)
+dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check \
+  --jb --dotnetcoresdk=$(dotnet --version) \
+  --jb-profile="Steeltoe Full Cleanup" \
+  --jb --properties:Configuration=Release \
+  --jb --properties:NuGetAudit=false \
+  --jb --verbosity=WARN \
+  --fail-on-diff --print-diff
+```
+
+### CI Code Style Verification
+
+The CI workflow (`.github/workflows/verify-code-style.yml`) automatically verifies code style on all pull requests. If your PR fails the code style check, run `cleanupcode.ps1` locally and commit the changes.
 
 ## Troubleshooting
 
