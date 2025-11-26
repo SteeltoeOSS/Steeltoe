@@ -2,6 +2,21 @@
 
 This document provides comprehensive instructions for building and testing the Steeltoe codebase. These instructions are based on the official CI workflow and are designed to work for both human developers and automated CI/CD agents.
 
+## General Guidelines
+
+### Code Review and Suggestions
+- Only make high confidence suggestions when reviewing code changes.
+- Always use the latest version of C#, currently C# 13 features.
+- Never add or change `global.json` unless explicitly asked to.
+- Never change `NuGet.config` files unless explicitly asked to.
+
+### Null Handling
+- Declare variables non-nullable, and check for null at entry points.
+- Trust the C# null annotations and don't add null checks when the type system says a value cannot be null.
+
+### Writing Tests
+- Do not emit "Act", "Arrange" or "Assert" comments in test code.
+
 ## Prerequisites
 
 Before building and testing Steeltoe, ensure you have the following installed:
@@ -262,6 +277,13 @@ Error: Unable to load the service index for source...
 
 #### Test Timeouts
 **Solution:** The `--blame-hang-timeout 3m` flag helps identify hanging tests. If tests consistently timeout, there may be an environmental issue or resource constraint.
+
+#### Build Warnings During Refactoring
+If temporarily introducing warnings during refactoring, add `/p:TreatWarningsAsErrors=false` to prevent build failure:
+```bash
+dotnet build src/Steeltoe.All.sln --configuration Release /p:TreatWarningsAsErrors=false
+```
+**Important:** All warnings should be addressed before committing any final changes.
 
 ### Docker Authentication Issues
 If you need to authenticate with the Steeltoe Azure Container Registry for integration tests:
