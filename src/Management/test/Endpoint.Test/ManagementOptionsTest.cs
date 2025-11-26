@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Globalization;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
@@ -27,8 +26,7 @@ public sealed class ManagementOptionsTest
         {
             new JsonStringEnumConverter()
         },
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     }.AddJsonIgnoreEmptyCollection();
 
     [Fact]
