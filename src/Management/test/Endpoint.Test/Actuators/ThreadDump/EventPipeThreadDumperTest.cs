@@ -8,9 +8,10 @@ using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.ThreadDump;
 
+[Collection("TestsForMemoryDumpsMustRunSequentially")]
+[Trait("Category", "MemoryDumps")]
 public sealed class EventPipeThreadDumperTest
 {
-    [Trait("Category", "MemoryDumps")]
     [Fact]
     public async Task Can_resolve_source_location_from_pdb()
     {
