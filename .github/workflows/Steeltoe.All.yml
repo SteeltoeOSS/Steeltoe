@@ -79,7 +79,7 @@ jobs:
       run: echo "DOTNET_GENERATE_ASPNET_CERTIFICATE=false" >> $GITHUB_ENV
 
     - name: Git checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         persist-credentials: false
 
@@ -115,7 +115,7 @@ jobs:
 
     - name: Upload crash/hang dumps (on failure)
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: FailedTestOutput-${{ matrix.os }}
         path: |
