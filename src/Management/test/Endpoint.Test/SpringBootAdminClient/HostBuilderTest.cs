@@ -4,6 +4,7 @@
 
 using System.Net;
 using System.Net.Http.Json;
+using System.Runtime.InteropServices;
 using System.Text;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -58,8 +59,7 @@ public sealed class HostBuilderTest
         requestApplication.ServiceUrl.Port.Should().BePositive();
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")]
+    [SkipOnPlatformFact(nameof(OSPlatform.OSX))]
     public async Task CanUseDynamicHttpsPort()
     {
         var appSettings = new Dictionary<string, string?>

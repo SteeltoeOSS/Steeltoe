@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -55,8 +56,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
         options.Value.StatusPageUrlPath.Should().Be("/actuator/info");
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")]
+    [SkipOnPlatformFact(nameof(OSPlatform.OSX))]
     public async Task AddEurekaDiscoveryClient_UsesServerTimeout()
     {
         var appSettings = new Dictionary<string, string?>

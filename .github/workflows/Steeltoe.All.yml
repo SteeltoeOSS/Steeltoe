@@ -38,7 +38,7 @@ jobs:
         - os: windows-latest
           skipFilter: Category!=Integration
         - os: macos-latest
-          skipFilter: Category!=Integration&Category!=SkipOnMacOS
+          skipFilter: Category!=Integration
     runs-on: ${{ matrix.os }}
     continue-on-error: true
 
@@ -74,7 +74,7 @@ jobs:
       #   When that happens, select 'Always Allow' to grant 'dotnet' access to the certificate key in the future.
       # and the test run fails, but without indicating which test caused it. By setting this, the causing test fails with the next message:
       #   Unable to configure HTTPS endpoint. No server certificate was specified, and the default developer certificate could not be found or is out of date.
-      # To prevent the causing test from failing the test run, disable it on macOS by adding [Trait("Category", "SkipOnMacOS")].
+      # To prevent the causing test from failing the test run, disable it on macOS using SkipOnPlatformFact/Theory.
       shell: bash
       run: echo "DOTNET_GENERATE_ASPNET_CERTIFICATE=false" >> $GITHUB_ENV
 

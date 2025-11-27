@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.InteropServices;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -61,8 +62,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")]
+    [SkipOnPlatformFact(nameof(OSPlatform.OSX))]
     public async Task AddEurekaDiscoveryClient_WorksWithGlobalServiceDiscovery()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
