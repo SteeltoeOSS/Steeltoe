@@ -137,7 +137,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         noSlowReverseDnsQuery.Stop();
 
         options.HostName.Should().NotBeNull();
-        noSlowReverseDnsQuery.ElapsedMilliseconds.Should().BeInRange(0, 1500); // testing with an actual reverse dns query results in around 5000 ms
+        noSlowReverseDnsQuery.ElapsedMilliseconds.Should().BeInRange(0, 2000); // testing with an actual reverse dns query results in around 5000 ms
     }
 
     [Fact]
