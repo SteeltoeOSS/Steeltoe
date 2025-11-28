@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -20,7 +19,7 @@ namespace Steeltoe.Security.DataProtection.Redis.Test;
 
 public sealed partial class RedisDataProtectionBuilderExtensionsTest
 {
-    [SkipOnPlatformFact(nameof(OSPlatform.OSX))]
+    [Fact]
     public async Task Stores_session_state_in_Redis()
     {
         const string appName = "SHARED-APP-NAME";
