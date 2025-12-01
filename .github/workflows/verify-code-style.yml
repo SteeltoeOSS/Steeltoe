@@ -24,6 +24,7 @@ jobs:
   verify:
     name: Verify Code Style
     runs-on: ubuntu-latest
+    timeout-minutes: 90
 
     steps:
     - name: Setup .NET
@@ -44,7 +45,10 @@ jobs:
       run: dotnet tool restore --verbosity minimal
 
     - name: Restore packages
-      run: dotnet restore ${{ env.SOLUTION_FILE }} /p:Configuration=Release --verbosity minimal
+      run: dotnet restore ${{ env.SOLUTION_FILE }} /p:Configuration=Release /p:NuGetAudit=false --verbosity minimal
+
+    - name: Build
+      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release /p:RunAnalyzers=false
 
     - name: CleanupCode (on PR diff)
       if: ${{ github.event_name == 'pull_request' }}
@@ -56,11 +60,13 @@ jobs:
         $baseCommitHash = git rev-parse HEAD~1
 
         Write-Output "Running code cleanup on commit range $baseCommitHash..$headCommitHash in pull request."
-        dotnet regitlint -s ${{ env.SOLUTION_FILE }} --print-command --skip-tool-check --max-runs=5 --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --properties:RunAnalyzers=false --jb --properties:NuGetAudit=false --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash --fail-on-diff --print-diff
+        dotnet jb cleanupcode --version
+        dotnet regitlint -s $env:SOLUTION_FILE --print-command --skip-tool-check --max-runs=5 --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --no-updates --jb --properties:Configuration=Release --jb --properties:RunAnalyzers=false --jb --properties:NuGetAudit=false --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash --fail-on-diff --print-diff
 
     - name: CleanupCode (on branch)
-      if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'release' }}
+      if: ${{ github.event_name == 'push' || github.event_name == 'release' || github.event_name == 'workflow_dispatch' }}
       shell: pwsh
       run: |
-        Write-Output "Running code cleanup on all files."
-        dotnet regitlint -s ${{ env.SOLUTION_FILE }} --print-command --skip-tool-check --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --properties:RunAnalyzers=false --jb --properties:NuGetAudit=false --jb --verbosity=WARN --fail-on-diff --print-diff
+        Write-Output 'Running code cleanup on all files.'
+        dotnet jb cleanupcode --version
+        dotnet regitlint -s $env:SOLUTION_FILE --print-command --skip-tool-check --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --no-updates --jb --properties:Configuration=Release --jb --properties:RunAnalyzers=false --jb --properties:NuGetAudit=false --jb --verbosity=WARN --fail-on-diff --print-diff
