@@ -6,12 +6,12 @@ This document provides comprehensive instructions for building and testing the S
 
 ### Code Review and Suggestions
 - Only make high confidence suggestions when reviewing code changes.
-- Always use the latest version of C#, currently C# 13 features.
+- Always use the latest stable version of C#.
 - Never add or change `global.json` unless explicitly asked to.
 - Never change `NuGet.config` files unless explicitly asked to.
 
 ### Null Handling
-- Declare variables non-nullable, and check for null at entry points.
+- Declare variables non-nullable, and check for null at public API entry points.
 - Trust the C# null annotations and don't add null checks when the type system says a value cannot be null.
 
 ### Writing Tests
