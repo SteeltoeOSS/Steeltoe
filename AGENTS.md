@@ -51,9 +51,10 @@ For detailed test procedures including environment-specific filters, test catego
 
 **Important context for agents:**
 - Tests run on multiple frameworks: net8.0, net9.0, and net10.0
-- Tests use xUnit trait categories: `Integration` (requires Docker services), `MemoryDumps` (generates memory dumps), and `SkipOnMacOS` (platform-specific)
-- Integration tests require Docker and are primarily designed for Linux CI environments
-- When writing tests, use appropriate categories: `[Trait("Category", "Integration")]` for tests requiring external services
+- Tests use xUnit trait categories: `Integration` (requires Docker services), `MemoryDumps` (generates memory dumps)
+- Platform-specific test skipping uses attributes like `[FactSkippedOnPlatform]` and `[TheorySkippedOnPlatform]` instead of trait categories
+- Integration tests require Docker containers to be running (e.g., Config Server, Eureka Server) and are primarily designed for Linux CI environments
+- When writing tests, use `[Trait("Category", "Integration")]` for tests requiring external services like Docker containers
 
 ## Code Style Validation
 
