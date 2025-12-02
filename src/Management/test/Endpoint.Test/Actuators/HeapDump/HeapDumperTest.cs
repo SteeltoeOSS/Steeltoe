@@ -10,11 +10,12 @@ using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 
+[Collection("TestsForMemoryDumpsMustRunSequentially")]
+[Trait("Category", "MemoryDumps")]
 public sealed class HeapDumperTest
 {
     private static readonly TimeSpan DumpTimeout = TimeSpan.FromMinutes(3);
 
-    [Trait("Category", "MemoryDumps")]
     [Theory]
     [InlineData(HeapDumpType.Full, "fulldump_", "full dump")]
     [InlineData(HeapDumpType.Heap, "heapdump_", "dump with heap")]

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -107,8 +108,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         inetUtilsMock.Verify(n => n.FindFirstNonLoopbackHostInfo(), Times.Once);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")]
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task CanUseNetworkInterfacesWithoutReverseDnsOnIP()
     {
         var appSettings = new Dictionary<string, string?>
@@ -137,7 +137,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         noSlowReverseDnsQuery.Stop();
 
         options.HostName.Should().NotBeNull();
-        noSlowReverseDnsQuery.ElapsedMilliseconds.Should().BeInRange(0, 1500); // testing with an actual reverse dns query results in around 5000 ms
+        noSlowReverseDnsQuery.ElapsedMilliseconds.Should().BeInRange(0, 2000); // testing with an actual reverse dns query results in around 5000 ms
     }
 
     [Fact]

@@ -25,4 +25,4 @@ jobs:
     with:
       component: Configuration
       OS: ubuntu
-      runConfigServer: true
+      runDockerContainers: true
