@@ -61,7 +61,7 @@ Steeltoe uses ReSharper/Rider code cleanup tools via `regitlint` to enforce cons
 
 To run code cleanup locally:
 ```powershell
-./cleanupcode.ps1
+./cleanupcode.ps1 main
 ```
 
 If your PR fails the code style check, run `cleanupcode.ps1` locally and commit the changes.
