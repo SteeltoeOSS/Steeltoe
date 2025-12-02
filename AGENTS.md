@@ -33,21 +33,21 @@ dotnet --list-runtimes
 
 ## Quick Start
 
-### Build the Solution
-
+For quick iteration during development:
 ```bash
-dotnet restore src/Steeltoe.All.sln /p:Configuration=Release --verbosity minimal
-dotnet build src/Steeltoe.All.sln --no-restore --configuration Release --verbosity minimal
+dotnet build
+dotnet test
+```
+
+For final validation before committing changes:
+```bash
+dotnet build src/Steeltoe.All.sln --configuration Release
+dotnet test src/Steeltoe.All.sln --configuration Release
 ```
 
 ### Run Tests
 
 For detailed test procedures including environment-specific filters, test categories, and coverage collection, see [`.github/workflows/Steeltoe.All.yml`](.github/workflows/Steeltoe.All.yml).
-
-Quick test command:
-```bash
-dotnet test src/Steeltoe.All.sln --framework net10.0 --no-build --configuration Release
-```
 
 **Important context for agents:**
 - Tests run on multiple frameworks: net8.0, net9.0, and net10.0
