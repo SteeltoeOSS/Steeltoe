@@ -64,7 +64,7 @@ jobs:
       #   When that happens, select 'Always Allow' to grant 'dotnet' access to the certificate key in the future.
       # and the test run fails, but without indicating which test caused it. By setting this, the causing test fails with the next message:
       #   Unable to configure HTTPS endpoint. No server certificate was specified, and the default developer certificate could not be found or is out of date.
-      # To prevent the causing test from failing the test run, disable it on macOS using SkipOnPlatformFact/Theory.
+      # To prevent the causing test from failing the test run, disable it on macOS using FactSkippedOnPlatform/TheorySkippedOnPlatform.
       shell: bash
       run: echo "DOTNET_GENERATE_ASPNET_CERTIFICATE=false" >> $GITHUB_ENV
 
