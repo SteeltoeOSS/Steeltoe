@@ -5,6 +5,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -217,8 +218,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         instanceOptions.IPAddress.Should().Be("254.254.254.254");
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")]
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task Can_use_network_interfaces_without_reverse_DNS_on_IP()
     {
         var appSettings = new Dictionary<string, string?>

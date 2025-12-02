@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -81,8 +82,7 @@ public sealed class CertificateAuthorizationTest
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")]
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task CertificateAuth_AcceptsSameSpace_DiegoCert()
     {
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
@@ -98,8 +98,7 @@ public sealed class CertificateAuthorizationTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")]
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task CertificateAuth_AcceptsSameOrg_DiegoCert()
     {
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrg}");

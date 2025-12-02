@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,8 +12,7 @@ namespace Steeltoe.Discovery.Eureka.Test;
 
 public sealed class DynamicPortAssignmentTest
 {
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")]
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task Applies_dynamically_assigned_ports_after_startup()
     {
         var appSettings = new Dictionary<string, string?>

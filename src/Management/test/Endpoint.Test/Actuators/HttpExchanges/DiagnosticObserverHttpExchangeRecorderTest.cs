@@ -17,6 +17,7 @@ using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.HttpExchanges;
 
+[Collection("TestsForMemoryDumpsMustRunSequentially")]
 [Trait("Category", "MemoryDumps")]
 public sealed class DiagnosticObserverHttpExchangeRecorderTest
 {

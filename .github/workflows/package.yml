@@ -40,7 +40,7 @@ jobs:
           10.0.*
 
     - name: Git checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         persist-credentials: false
 
@@ -123,7 +123,7 @@ jobs:
       run: dotnet pack ${{ env.SOLUTION_FILE }} --no-build --configuration Release --output ${{ github.workspace }}/packages /p:VersionSuffix=${{ env.PACKAGE_VERSION_SUFFIX }}
 
     - name: Upload unsigned packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         if-no-files-found: error
         name: unsigned-packages
@@ -174,7 +174,7 @@ jobs:
         --description-url 'https://steeltoe.io/'
 
     - name: Upload signed packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         if-no-files-found: error
         name: signed-packages
@@ -263,7 +263,7 @@ jobs:
 
     steps:
     - name: Git checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         persist-credentials: true
 

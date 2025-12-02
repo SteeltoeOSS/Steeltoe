@@ -11,7 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(MSBuildThisFileDirectory)\src\Common\test\TestResources\Steeltoe.Common.TestResources.csproj" />
+    <ProjectReference Condition="'$(MSBuildProjectName)' != 'ConfigurationSchemaGenerator.Tests'"
+      Include="$(MSBuildThisFileDirectory)\src\Common\test\TestResources\Steeltoe.Common.TestResources.csproj" />
   </ItemGroup>
 
   <ItemGroup>
