@@ -82,7 +82,7 @@ public sealed class CertificateAuthorizationTest
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    [SkipOnPlatformFact(nameof(OSPlatform.OSX))]
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task CertificateAuth_AcceptsSameSpace_DiegoCert()
     {
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
@@ -98,7 +98,7 @@ public sealed class CertificateAuthorizationTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [SkipOnPlatformFact(nameof(OSPlatform.OSX))]
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task CertificateAuth_AcceptsSameOrg_DiegoCert()
     {
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrg}");

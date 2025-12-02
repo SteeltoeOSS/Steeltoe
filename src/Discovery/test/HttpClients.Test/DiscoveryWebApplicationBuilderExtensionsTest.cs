@@ -62,7 +62,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();
     }
 
-    [SkipOnPlatformFact(nameof(OSPlatform.OSX))]
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AddEurekaDiscoveryClient_WorksWithGlobalServiceDiscovery()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();

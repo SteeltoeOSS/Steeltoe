@@ -56,7 +56,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
         options.Value.StatusPageUrlPath.Should().Be("/actuator/info");
     }
 
-    [SkipOnPlatformFact(nameof(OSPlatform.OSX))]
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AddEurekaDiscoveryClient_UsesServerTimeout()
     {
         var appSettings = new Dictionary<string, string?>

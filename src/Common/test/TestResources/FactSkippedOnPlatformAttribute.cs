@@ -17,9 +17,9 @@ namespace Steeltoe.Common.TestResources;
 /// </remarks>
 [XunitTestCaseDiscoverer(typeof(FactDiscoverer))]
 [AttributeUsage(AttributeTargets.Method)]
-public sealed class SkipOnPlatformFactAttribute : FactAttribute
+public sealed class FactSkippedOnPlatformAttribute : FactAttribute
 {
-    public SkipOnPlatformFactAttribute(params string[] platformNames)
+    public FactSkippedOnPlatformAttribute(params string[] platformNames)
     {
         foreach (OSPlatform platform in platformNames.Select(OSPlatform.Create))
         {

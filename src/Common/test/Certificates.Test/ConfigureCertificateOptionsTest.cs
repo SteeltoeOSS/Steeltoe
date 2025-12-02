@@ -51,7 +51,7 @@ public sealed class ConfigureCertificateOptionsTest
         options.Certificate.Should().BeNull();
     }
 
-    [SkipOnPlatformTheory(nameof(OSPlatform.OSX))]
+    [TheorySkippedOnPlatform(nameof(OSPlatform.OSX))]
     [InlineData("")]
     [InlineData(CertificateName)]
     public void ConfigureCertificateOptions_ThrowsOnEmptyFile(string certificateName)

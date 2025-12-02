@@ -218,7 +218,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         instanceOptions.IPAddress.Should().Be("254.254.254.254");
     }
 
-    [SkipOnPlatformFact(nameof(OSPlatform.OSX))]
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task Can_use_network_interfaces_without_reverse_DNS_on_IP()
     {
         var appSettings = new Dictionary<string, string?>

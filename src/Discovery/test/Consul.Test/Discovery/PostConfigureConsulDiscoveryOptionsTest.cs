@@ -108,7 +108,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         inetUtilsMock.Verify(n => n.FindFirstNonLoopbackHostInfo(), Times.Once);
     }
 
-    [SkipOnPlatformFact(nameof(OSPlatform.OSX))]
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task CanUseNetworkInterfacesWithoutReverseDnsOnIP()
     {
         var appSettings = new Dictionary<string, string?>

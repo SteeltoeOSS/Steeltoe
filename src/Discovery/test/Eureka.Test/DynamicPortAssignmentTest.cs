@@ -12,7 +12,7 @@ namespace Steeltoe.Discovery.Eureka.Test;
 
 public sealed class DynamicPortAssignmentTest
 {
-    [SkipOnPlatformFact(nameof(OSPlatform.OSX))]
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task Applies_dynamically_assigned_ports_after_startup()
     {
         var appSettings = new Dictionary<string, string?>

@@ -17,9 +17,9 @@ namespace Steeltoe.Common.TestResources;
 /// </remarks>
 [XunitTestCaseDiscoverer(typeof(TheoryDiscoverer))]
 [AttributeUsage(AttributeTargets.Method)]
-public sealed class SkipOnPlatformTheoryAttribute : TheoryAttribute
+public sealed class TheorySkippedOnPlatformAttribute : TheoryAttribute
 {
-    public SkipOnPlatformTheoryAttribute(params string[] platformNames)
+    public TheorySkippedOnPlatformAttribute(params string[] platformNames)
     {
         foreach (OSPlatform platform in platformNames.Select(OSPlatform.Create))
         {

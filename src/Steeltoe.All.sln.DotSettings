@@ -373,8 +373,8 @@
           &lt;Or&gt;&#xD;
             &lt;HasAttribute Name="Xunit.FactAttribute" /&gt;&#xD;
             &lt;HasAttribute Name="Xunit.TheoryAttribute" /&gt;&#xD;
-            &lt;HasAttribute Name="SkipOnPlatformFactAttribute" /&gt;&#xD;
-            &lt;HasAttribute /&gt;&#xD;
+            &lt;HasAttribute Name="FactSkippedOnPlatform" /&gt;&#xD;
+            &lt;HasAttribute Name="TheorySkippedOnPlatform" /&gt;&#xD;
           &lt;/Or&gt;&#xD;
         &lt;/And&gt;&#xD;
       &lt;/Entry.Match&gt;&#xD;

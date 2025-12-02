@@ -59,7 +59,7 @@ public sealed class HostBuilderTest
         requestApplication.ServiceUrl.Port.Should().BePositive();
     }
 
-    [SkipOnPlatformFact(nameof(OSPlatform.OSX))]
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task CanUseDynamicHttpsPort()
     {
         var appSettings = new Dictionary<string, string?>
