@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Globalization;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
@@ -19,14 +20,15 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public sealed class ManagementOptionsTest
 {
-    private static readonly JsonSerializerOptions DefaultJsonSerializerOptions = new JsonSerializerOptions
+    private static readonly JsonSerializerOptions ExpectedJsonSerializerOptions = new JsonSerializerOptions
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         Converters =
         {
             new JsonStringEnumConverter()
         },
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     }.AddJsonIgnoreEmptyCollection();
 
     [Fact]
@@ -49,7 +51,7 @@ public sealed class ManagementOptionsTest
         options.Port.Should().Be(0);
         options.SslEnabled.Should().BeFalse();
         options.UseStatusCodeFromResponse.Should().BeTrue();
-        options.SerializerOptions.Should().BeEquivalentTo(DefaultJsonSerializerOptions);
+        options.SerializerOptions.Should().BeEquivalentTo(ExpectedJsonSerializerOptions);
         options.CustomJsonConverters.Should().BeEmpty();
 
         options.GetBasePath("/cloudfoundryapplication/info").Should().Be("/cloudfoundryapplication");
@@ -95,7 +97,7 @@ public sealed class ManagementOptionsTest
         options.SslEnabled.Should().BeTrue();
         options.UseStatusCodeFromResponse.Should().BeFalse();
 
-        options.SerializerOptions.Should().BeEquivalentTo(new JsonSerializerOptions(DefaultJsonSerializerOptions)
+        options.SerializerOptions.Should().BeEquivalentTo(new JsonSerializerOptions(ExpectedJsonSerializerOptions)
         {
             WriteIndented = true,
             Converters =
