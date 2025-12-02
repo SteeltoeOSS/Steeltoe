@@ -52,4 +52,48 @@ public static class FluentAssertionsExtensions
         writer.Flush();
         return Encoding.UTF8.GetString(stream.ToArray());
     }
+
+    /// <summary>
+    /// Same as the built-in Be() method, but allows specifying a custom comparer.
+    /// </summary>
+    /// <param name="source">
+    /// The source text to assert on.
+    /// </param>
+    /// <param name="expected">
+    /// The expected text.
+    /// </param>
+    /// <param name="comparer">
+    /// An equality comparer to compare values.
+    /// </param>
+    [CustomAssertion]
+    public static void Be(this StringAssertions source, string expected, IEqualityComparer<string> comparer)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(expected);
+        ArgumentNullException.ThrowIfNull(comparer);
+
+        object subject = source.Subject;
+        subject.Should().Be(expected, comparer);
+    }
+
+    /// <summary>
+    /// Same as the built-in Contain() method, but normalizes line endings upfront.
+    /// </summary>
+    /// <param name="source">
+    /// The source text to assert on.
+    /// </param>
+    /// <param name="expected">
+    /// The expected text.
+    /// </param>
+    [CustomAssertion]
+    public static void ContainLines(this StringAssertions source, string expected)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(expected);
+
+        string sourceText = source.Subject.ReplaceLineEndings();
+        string expectedText = expected.ReplaceLineEndings();
+
+        sourceText.Should().Contain(expectedText);
+    }
 }
