@@ -12,7 +12,7 @@ This document provides essential guidelines for working with the Steeltoe codeba
 
 ### Null Handling
 - Declare variables non-nullable, and check for null at public API entry points.
-- Trust the C# null annotations and don't add null checks when the type system says a value cannot be null.
+- For internal code, trust the C# null annotations and don't add null checks when the type system says a value cannot be null.
 
 ### Writing Tests
 - Do not emit "Act", "Arrange" or "Assert" comments in test code.
