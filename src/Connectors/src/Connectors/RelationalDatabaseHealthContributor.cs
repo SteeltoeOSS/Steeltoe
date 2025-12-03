@@ -10,24 +10,31 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Connectors;
 
-internal sealed class RelationalDatabaseHealthContributor : IHealthContributor, IDisposable
+public sealed class RelationalDatabaseHealthContributor : IHealthContributor, IDisposable
 {
     private readonly DbConnection _connection;
     private readonly ILogger<RelationalDatabaseHealthContributor> _logger;
+    private readonly string _commandText;
 
     public string Id { get; }
     public string Host { get; }
     public string? ServiceName { get; set; }
 
-    public RelationalDatabaseHealthContributor(DbConnection connection, string? host, ILogger<RelationalDatabaseHealthContributor> logger)
+    public RelationalDatabaseHealthContributor(DbConnection connection, string? id, string? host, string? commandText, ILogger<RelationalDatabaseHealthContributor> logger)
     {
         ArgumentNullException.ThrowIfNull(connection);
         ArgumentNullException.ThrowIfNull(logger);
 
         _connection = connection;
+        _commandText = commandText ?? "SELECT 1;";
+        Id = id ?? GetDatabaseType(connection);
         Host = host ?? string.Empty;
         _logger = logger;
-        Id = GetDatabaseType(connection);
+    }
+
+    public RelationalDatabaseHealthContributor(DbConnection connection, string? host, ILogger<RelationalDatabaseHealthContributor> logger):
+        this(connection, null, host, null, logger)
+    {
     }
 
     public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
@@ -51,7 +58,7 @@ internal sealed class RelationalDatabaseHealthContributor : IHealthContributor, 
         {
             await _connection.OpenAsync(cancellationToken);
             DbCommand command = _connection.CreateCommand();
-            command.CommandText = "SELECT 1;";
+            command.CommandText = _commandText;
             await command.ExecuteScalarAsync(cancellationToken);
 
             result.Status = HealthStatus.Up;
