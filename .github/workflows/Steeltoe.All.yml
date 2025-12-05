@@ -23,7 +23,7 @@ env:
   TEST_RESULTS_DIRECTORY: '${{ github.workspace }}/AllTestResults'
   COMMON_TEST_ARGS: >-
     --no-build --configuration Release --coverage --report-trx --results-directory ${{ github.workspace }}/AllTestResults
-    --coverage-settings coverage.config --crashdump --hangdump --hangdump-timeout 3m
+    --coverage-settings coverage.config --crashdump --hangdump --hangdump-timeout 3m --no-progress
 
 jobs:
   analyze:

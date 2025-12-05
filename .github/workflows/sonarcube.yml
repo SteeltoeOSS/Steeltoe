@@ -24,7 +24,7 @@ env:
   TEST_RESULTS_DIRECTORY: '${{ github.workspace }}/AllTestResults'
   SONAR_TEST_ARGS: >-
     --no-build --configuration Release --coverage --report-trx --results-directory ${{ github.workspace }}/AllTestResults
-    --coverage-settings coverage.config
+    --coverage-settings coverage.config --no-progress
 
 jobs:
   analyze:
