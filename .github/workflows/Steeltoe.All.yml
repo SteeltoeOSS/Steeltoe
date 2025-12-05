@@ -120,7 +120,7 @@ jobs:
     - name: Generate code coverage report
       uses: danielpalme/ReportGenerator-GitHub-Action@v5
       with:
-        reports: '${{ env.TEST_RESULTS_DIRECTORY }}/*.xml'
+        reports: '${{ env.TEST_RESULTS_DIRECTORY }}/*cobertura.xml'
         targetdir: 'coveragereport'
         reporttypes: 'MarkdownAssembliesSummary;MarkdownSummaryGithub'
         filefilters: '-*.g.cs'
