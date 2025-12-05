@@ -37,9 +37,9 @@ jobs:
         - os: ubuntu-latest
           runDockerContainers: true
         - os: windows-latest
-          testArgs: '--filter-not-trait "Category=Integration"'
+          skipIntegrationTests: true
         - os: macos-latest
-          testArgs: '--filter-not-trait "Category=Integration"'
+          skipIntegrationTests: true
     runs-on: ${{ matrix.os }}
     continue-on-error: true
 
@@ -91,10 +91,10 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
 
     - name: Test
-      run: dotnet test --solution ${{ env.SOLUTION_FILE }} --filter-not-trait "Category=MemoryDumps" ${{ matrix.testArgs }} ${{ env.COMMON_TEST_ARGS }}
+      run: dotnet test --solution ${{ env.SOLUTION_FILE }} --filter-query "${{ matrix.skipIntegrationTests == true && '/[(Category!=MemoryDumps)&(Category!=Integration)]' || '/[Category!=MemoryDumps]' }}" ${{ env.COMMON_TEST_ARGS }}
 
     - name: Test (memory dumps)
-      run: dotnet test --project src/Management/test/Endpoint.Test/Steeltoe.Management.Endpoint.Test.csproj --filter-trait "Category=MemoryDumps" ${{ matrix.testArgs }} ${{ env.COMMON_TEST_ARGS }}
+      run: dotnet test --project src/Management/test/Endpoint.Test/Steeltoe.Management.Endpoint.Test.csproj --filter-trait "Category=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
 
     - name: Upload crash/hang dumps (on failure)
       if: ${{ failure() }}
