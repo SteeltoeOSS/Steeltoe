@@ -49,4 +49,24 @@ public sealed class ConsulServiceInstanceTest
         serviceInstance.NonSecureUri.Should().BeNull();
         serviceInstance.SecureUri.Should().Be(serviceInstance.Uri);
     }
+
+    [Fact]
+    public void Constructor_accepts_null_tags_and_meta()
+    {
+        var healthService = new ServiceEntry
+        {
+            Service = new AgentService
+            {
+                Service = "ServiceId",
+                ID = "Instance1",
+                Address = "foo.bar.com",
+                Port = 1234
+            }
+        };
+
+        var serviceInstance = new ConsulServiceInstance(healthService);
+
+        serviceInstance.Tags.Should().BeEmpty();
+        serviceInstance.Metadata.Should().BeEmpty();
+    }
 }
