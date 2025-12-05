@@ -9,8 +9,8 @@
     <FluentAssertionsVersion>7.2.*</FluentAssertionsVersion>
     <MicrosoftAzureCosmosVersion>3.54.*</MicrosoftAzureCosmosVersion>
     <MicrosoftCodeAnalysisVersion>4.14.*</MicrosoftCodeAnalysisVersion>
-    <MicrosoftTestingExtensionsCodeCoverageVersion>18.1.*</MicrosoftTestingExtensionsCodeCoverageVersion>
-    <MicrosoftTestingPlatformVersion>2.0.*</MicrosoftTestingPlatformVersion>
+    <MicrosoftTestingExtensionsCodeCoverageVersion>18.3.*-*</MicrosoftTestingExtensionsCodeCoverageVersion>
+    <MicrosoftTestingPlatformVersion>2.1.*-*</MicrosoftTestingPlatformVersion>
     <MicrosoftSqlClientVersion>6.1.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>7.0.*</MockHttpVersion>
     <MongoDbDriverVersion>3.5.*</MongoDbDriverVersion>

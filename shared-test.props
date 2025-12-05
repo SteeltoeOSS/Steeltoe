@@ -7,6 +7,8 @@
   <PropertyGroup>
     <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
     <TestTfmsInParallel>false</TestTfmsInParallel>
+    <!-- Suppress certificate warnings about preview MTP extensions on dev-feed -->
+    <NoWarn>$(NoWarn);NU3018;NU3027;NU3042</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
