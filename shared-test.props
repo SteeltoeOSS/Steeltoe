@@ -5,9 +5,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- https://github.com/xunit/xunit/issues/3238#issuecomment-2770720936 -->
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
     <TestTfmsInParallel>false</TestTfmsInParallel>
-    <DisableTestingPlatformServerCapability>true</DisableTestingPlatformServerCapability>
+    <!-- Suppress certificate warnings about preview MTP extensions on dev-feed -->
+    <NoWarn>$(NoWarn);NU3018;NU3027;NU3042</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,14 +17,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="coverlet.collector" Version="$(CoverletVersion)" PrivateAssets="All" />
     <PackageReference Include="FluentAssertions" Version="$(FluentAssertionsVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(MatchTargetFrameworkVersion)" />
     <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="$(FoundationalVersion)" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="$(MicrosoftTestingExtensionsCodeCoverageVersion)" />
+    <PackageReference Include="Microsoft.Testing.Extensions.CrashDump" Version="$(MicrosoftTestingPlatformVersion)" />
+    <PackageReference Include="Microsoft.Testing.Extensions.HangDump" Version="$(MicrosoftTestingPlatformVersion)" />
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" Version="$(MicrosoftTestingPlatformVersion)" />
+    <!-- <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" /> -->
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
-    <PackageReference Include="xunit.v3" Version="$(XunitVersion)" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVisualStudioVersion)" />
+    <PackageReference Include="xunit.v3.mtp-v2" Version="$(XunitVersion)" />
+    <!-- <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVisualStudioVersion)" /> -->
   </ItemGroup>
 
   <ItemGroup>

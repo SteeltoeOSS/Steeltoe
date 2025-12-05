@@ -91,7 +91,7 @@ public sealed class ApiControllerTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -208,7 +208,7 @@ public sealed class ApiControllerTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -398,7 +398,7 @@ public sealed class ApiControllerTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -461,7 +461,7 @@ public sealed class ApiControllerTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -536,7 +536,7 @@ public sealed class ApiControllerTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -613,6 +613,6 @@ public sealed class ApiControllerTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 }

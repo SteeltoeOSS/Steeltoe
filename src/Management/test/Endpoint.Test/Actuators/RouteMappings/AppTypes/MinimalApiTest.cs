@@ -83,7 +83,7 @@ public sealed class MinimalApiTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public sealed class MinimalApiTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -268,7 +268,7 @@ public sealed class MinimalApiTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -364,7 +364,7 @@ public sealed class MinimalApiTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -432,7 +432,7 @@ public sealed class MinimalApiTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -523,7 +523,7 @@ public sealed class MinimalApiTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -615,7 +615,7 @@ public sealed class MinimalApiTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -720,7 +720,7 @@ public sealed class MinimalApiTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -781,7 +781,7 @@ public sealed class MinimalApiTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -845,7 +845,7 @@ public sealed class MinimalApiTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     private static string HandlePingRequest()

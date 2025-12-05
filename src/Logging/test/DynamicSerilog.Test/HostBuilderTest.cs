@@ -91,12 +91,12 @@ public sealed class HostBuilderTest : IDisposable
         logOutput.Should().Contain("SERILOG [INF] TestInfo");
         logOutput.Should().Contain("SERILOG [ERR] TestError");
 
-        logOutput.Should().Contain($"""
+        logOutput.Should().ContainLines($"""
             info: {typeof(HostBuilderTest)}[0]
                   TestInfo
             """);
 
-        logOutput.Should().Contain($"""
+        logOutput.Should().ContainLines($"""
             fail: {typeof(HostBuilderTest)}[0]
                   TestError
             """);
@@ -133,7 +133,7 @@ public sealed class HostBuilderTest : IDisposable
             [INF] TestInfo
             [ERR] TestError
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -167,7 +167,7 @@ public sealed class HostBuilderTest : IDisposable
         logOutput.Should().Be("""
             [ERR] TestError
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -201,7 +201,7 @@ public sealed class HostBuilderTest : IDisposable
         logOutput.Should().Be("""
             [ERR] TestError
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -236,7 +236,7 @@ public sealed class HostBuilderTest : IDisposable
         logOutput.Should().Be("""
             [ERR] TestError
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -273,7 +273,7 @@ public sealed class HostBuilderTest : IDisposable
         logOutput.Should().Be("""
             [ERR] TestError
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -311,7 +311,7 @@ public sealed class HostBuilderTest : IDisposable
         logOutput.Should().Be("""
             [ERR] TestError
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
