@@ -93,6 +93,11 @@ internal sealed class DomainNameResolver : IDomainNameResolver
 
     private static string GetTextFor(string? value)
     {
-        return value == null ? "(null)" : "(empty)";
+        if (value == null)
+        {
+            return "(null)";
+        }
+
+        return value.Length == 0 ? "(empty)" : value;
     }
 }
