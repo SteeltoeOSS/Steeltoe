@@ -1,4 +1,8 @@
 #nullable enable
+Steeltoe.Common.Calculator
+Steeltoe.Common.Calculator.Add(int left, int right) -> int
+Steeltoe.Common.Calculator.Calculator() -> void
+Steeltoe.Common.Calculator.Subtract(int left, int right) -> int
 Steeltoe.Common.Discovery.IServiceInstance.InstanceId.get -> string!
 Steeltoe.Common.Discovery.IServiceInstance.NonSecureUri.get -> System.Uri?
 Steeltoe.Common.Discovery.IServiceInstance.SecureUri.get -> System.Uri?
