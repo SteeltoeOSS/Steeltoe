@@ -22,7 +22,7 @@ env:
   DOTNET_NOLOGO: true
   SOLUTION_FILE: 'src/Steeltoe.All.sln'
   SONAR_TEST_ARGS: >-
-    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}
+    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/TestOutput
     --settings coverlet.runsettings -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.UseSourceLink=false
 
 jobs:
@@ -79,23 +79,11 @@ jobs:
     - name: Build solution
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
 
-    - name: Test (net10.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" --framework net10.0 ${{ env.SONAR_TEST_ARGS }}
+    - name: Test
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" ${{ env.SONAR_TEST_ARGS }}
 
-    - name: Test (net10.0) (memory dumps)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category=MemoryDumps" --framework net10.0 ${{ env.SONAR_TEST_ARGS }}
-
-    - name: Test (net9.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" --framework net9.0 ${{ env.SONAR_TEST_ARGS }}
-
-    - name: Test (net9.0) (memory dumps)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category=MemoryDumps" --framework net9.0 ${{ env.SONAR_TEST_ARGS }}
-
-    - name: Test (net8.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" --framework net8.0 ${{ env.SONAR_TEST_ARGS }}
-
-    - name: Test (net8.0) (memory dumps)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category=MemoryDumps" --framework net8.0 ${{ env.SONAR_TEST_ARGS }}
+    - name: Test (memory dumps)
+      run: dotnet test src/Management/test/Endpoint.Test --filter "Category=MemoryDumps" ${{ env.SONAR_TEST_ARGS }}
 
     - name: End Sonar .NET scanner
       if: ${{ !cancelled() && steps.sonar_begin.outcome == 'success' }}

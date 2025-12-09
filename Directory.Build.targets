@@ -101,7 +101,7 @@
     <Exec Command="$(GeneratorCommandLine)" />
 
     <ItemGroup>
-      <FileWrites Include="$(GeneratedConfigurationSchemaOutputPath)" Condition="Exists('$(GeneratedConfigurationSchemaOutputPath)')"/>
+      <FileWrites Include="$(GeneratedConfigurationSchemaOutputPath)" Condition="Exists('$(GeneratedConfigurationSchemaOutputPath)')" />
     </ItemGroup>
   </Target>
 
@@ -123,7 +123,7 @@
     </PropertyGroup>
 
     <Warning Condition="'$(CurrentConfigurationSchemaFileContent)' != '$(GeneratedConfigurationSchemaFileContent)'"
-      Text="ConfigurationSchema.json is out of date for $(MSBuildProjectFile). Run 'dotnet build --no-incremental /p:UpdateConfigurationSchema=true' to update it." />
+             Text="ConfigurationSchema.json is out of date for $(MSBuildProjectFile). Run 'dotnet build --no-incremental /p:UpdateConfigurationSchema=true' to update it." />
   </Target>
 
 </Project>

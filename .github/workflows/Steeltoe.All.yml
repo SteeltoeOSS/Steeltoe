@@ -21,7 +21,7 @@ env:
   DOTNET_NOLOGO: true
   SOLUTION_FILE: 'src/Steeltoe.All.sln'
   COMMON_TEST_ARGS: >-
-    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/dumps
+    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/TestOutput
     --settings coverlet.runsettings --blame-crash --blame-hang-timeout 3m
 
 jobs:
@@ -36,9 +36,9 @@ jobs:
         - os: ubuntu-latest
           runDockerContainers: true
         - os: windows-latest
-          skipFilter: Category!=Integration
+          skipIntegrationTests: true
         - os: macos-latest
-          skipFilter: Category!=Integration
+          skipIntegrationTests: true
     runs-on: ${{ matrix.os }}
     continue-on-error: true
 
@@ -89,29 +89,11 @@ jobs:
     - name: Build solution
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
 
-    - name: Set skip filters for tests
-      shell: bash
-      run: |
-        echo SKIP_FILTER_NO_MEMORY_DUMPS="${{ matrix.skipFilter && format('{0}&Category!=MemoryDumps', matrix.skipFilter) || 'Category!=MemoryDumps' }}" >> $GITHUB_ENV
-        echo SKIP_FILTER_WITH_MEMORY_DUMPS="${{ matrix.skipFilter && format('{0}&Category=MemoryDumps', matrix.skipFilter) || 'Category=MemoryDumps' }}" >> $GITHUB_ENV
+    - name: Test
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "${{ matrix.skipIntegrationTests == true && 'Category!=MemoryDumps&Category!=Integration' || 'Category!=MemoryDumps' }}" ${{ env.COMMON_TEST_ARGS }}
 
-    - name: Test (net10.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net10.0 --filter "${{ env.SKIP_FILTER_NO_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
-
-    - name: Test (net10.0) (memory dumps)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net10.0 --filter "${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
-
-    - name: Test (net9.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net9.0 --filter "${{ env.SKIP_FILTER_NO_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
-
-    - name: Test (net9.0) (memory dumps)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net9.0 --filter "${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
-
-    - name: Test (net8.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net8.0 --filter "${{ env.SKIP_FILTER_NO_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
-
-    - name: Test (net8.0) (memory dumps)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net8.0 --filter "${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }}" ${{ env.COMMON_TEST_ARGS }}
+    - name: Test (memory dumps)
+      run: dotnet test src/Management/test/Endpoint.Test --filter "Category=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
 
     - name: Upload crash/hang dumps (on failure)
       if: ${{ failure() }}
@@ -119,8 +101,8 @@ jobs:
       with:
         name: FailedTestOutput-${{ matrix.os }}
         path: |
-          ${{ github.workspace }}/dumps/**/*.dmp
-          ${{ github.workspace }}/dumps/**/Sequence_*.xml
+          ${{ github.workspace }}/TestOutput/**/*.dmp
+          ${{ github.workspace }}/TestOutput/**/Sequence_*.xml
         if-no-files-found: ignore
 
     - name: Report test results
