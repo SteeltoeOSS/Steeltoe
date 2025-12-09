@@ -17,6 +17,7 @@ permissions:
   pull-requests: write
 
 env:
+  STEELTOE_MACOS_DIAGNOSE_HOSTNAME_LOOKUP: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_NOLOGO: true
   SOLUTION_FILE: 'src/Steeltoe.All.sln'

@@ -9,6 +9,8 @@ namespace Steeltoe.Common.Net;
 
 internal sealed class DomainNameResolver : IDomainNameResolver
 {
+    private static readonly bool IsInDiagnosticsMode = Environment.GetEnvironmentVariable("STEELTOE_MACOS_DIAGNOSE_HOSTNAME_LOOKUP") == "true";
+
     public static DomainNameResolver Instance { get; } = new();
 
     private DomainNameResolver()
@@ -42,22 +44,44 @@ internal sealed class DomainNameResolver : IDomainNameResolver
 
     public string? ResolveHostName(bool throwOnError = false)
     {
+        // Gather diagnostic information to investigate intermittent failures on macOS.
+        string? resultFromGetHostName = null;
+        string? resultFromGetHostEntry = null;
+        bool? workaroundApplied = null;
+
         try
         {
             string hostName = Dns.GetHostName();
+            resultFromGetHostName = hostName;
 
             if (string.IsNullOrEmpty(hostName))
             {
                 // Workaround for failure when running on macOS.
                 // See https://github.com/actions/runner-images/issues/1335 and https://github.com/dotnet/runtime/issues/36849.
+
                 hostName = "localhost";
+                workaroundApplied = true;
             }
 
             IPHostEntry hostEntry = Dns.GetHostEntry(hostName);
-            return hostEntry.HostName;
+            resultFromGetHostEntry = hostEntry.HostName;
+
+            if (IsInDiagnosticsMode && string.IsNullOrEmpty(resultFromGetHostEntry))
+            {
+                throw new InvalidOperationException($"IPHostEntry.HostName returned {GetTextFor(resultFromGetHostEntry)}.");
+            }
+
+            return resultFromGetHostEntry;
         }
-        catch (Exception)
+        catch (Exception exception)
         {
+            if (IsInDiagnosticsMode)
+            {
+                throw new InvalidOperationException(
+                    $"Failed to resolve hostname. GetHostName={GetTextFor(resultFromGetHostName)}, GetHostEntry={GetTextFor(resultFromGetHostEntry)}, WorkaroundApplied={workaroundApplied}",
+                    exception);
+            }
+
             if (throwOnError)
             {
                 throw;
@@ -65,5 +89,10 @@ internal sealed class DomainNameResolver : IDomainNameResolver
 
             return null;
         }
+    }
+
+    private static string GetTextFor(string? value)
+    {
+        return value == null ? "(null)" : "(empty)";
     }
 }
