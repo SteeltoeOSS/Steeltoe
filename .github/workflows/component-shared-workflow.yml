@@ -25,7 +25,7 @@ env:
   SOLUTION_FILE: 'src/Steeltoe.${{ inputs.component }}.slnf'
   COMMON_TEST_ARGS: >-
     --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/TestOutput
-    --settings coverlet.runsettings --blame-crash --blame-hang-timeout 3m
+    --settings coverlet.runsettings --blame-crash --blame-hang-timeout 1m
 
 jobs:
   build:
