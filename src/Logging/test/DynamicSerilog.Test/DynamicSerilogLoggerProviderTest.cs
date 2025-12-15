@@ -287,7 +287,7 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             [INF] Fully.Qualified.Type: {InnerScopeKey="InnerScopeValue", Scope=["OuterScope", "InnerScope=InnerScopeValue"]}
               TestInfo
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -331,7 +331,7 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             [INF] Fully.Qualified.Type: {A=1}
               Carries property A = 1, again
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -360,7 +360,7 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
         logOutput.Should().Be("""
             [INF] Fully.Qualified.Type: Processing of {"RequestUrl": "https://www.example.com", "UserAgent": "Steeltoe"} started.
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -391,7 +391,7 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             [INF] {SourceContext="Test", Scope=["TwoOne"]}
               Three
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     private static IDynamicLoggerProvider CreateLoggerProvider(Action<ConfigurationBuilder>? configure = null)

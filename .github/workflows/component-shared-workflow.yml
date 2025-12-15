@@ -19,12 +19,13 @@ permissions:
   pull-requests: write
 
 env:
+  STEELTOE_MACOS_DIAGNOSE_HOSTNAME_LOOKUP: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_NOLOGO: true
   SOLUTION_FILE: 'src/Steeltoe.${{ inputs.component }}.slnf'
   COMMON_TEST_ARGS: >-
-    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/dumps
-    --settings coverlet.runsettings --blame-crash --blame-hang-timeout 3m
+    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/TestOutput
+    --settings coverlet.runsettings --blame-crash --blame-hang-timeout 1m
 
 jobs:
   build:
@@ -79,26 +80,12 @@ jobs:
     - name: Build solution
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
 
-    - name: Test (net10.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net10.0 --filter "Category!=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
+    - name: Test
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
 
-    - name: Test (net10.0) (memory dumps)
+    - name: Test (memory dumps)
       if: ${{ inputs.component == 'Management' }}
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net10.0 --filter "Category=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
-
-    - name: Test (net9.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net9.0 --filter "Category!=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
-
-    - name: Test (net9.0) (memory dumps)
-      if: ${{ inputs.component == 'Management' }}
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net9.0 --filter "Category=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
-
-    - name: Test (net8.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net8.0 --filter "Category!=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
-
-    - name: Test (net8.0) (memory dumps)
-      if: ${{ inputs.component == 'Management' }}
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net8.0 --filter "Category=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
+      run: dotnet test src/Management/test/Endpoint.Test --filter "Category=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
 
     - name: Upload crash/hang dumps (on failure)
       if: ${{ failure() }}
@@ -106,8 +93,8 @@ jobs:
       with:
         name: FailedTestOutput-${{ inputs.OS }}-latest
         path: |
-          ${{ github.workspace }}/dumps/**/*.dmp
-          ${{ github.workspace }}/dumps/**/Sequence_*.xml
+          ${{ github.workspace }}/TestOutput/**/*.dmp
+          ${{ github.workspace }}/TestOutput/**/Sequence_*.xml
         if-no-files-found: ignore
 
     - name: Report test results

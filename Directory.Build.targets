@@ -1,6 +1,12 @@
 <Project>
+  <!-- Workaround for https://github.com/microsoft/testfx/issues/7045#issuecomment-3611560686 -->
+  <Target Name="WorkaroundMacOSDumpIssue" AfterTargets="Build"
+          Condition="$([MSBuild]::IsOSPlatform('OSX')) AND '$(UseAppHost)' != 'false' AND '$(OutputType)' == 'Exe' AND '$(TargetFramework)' != '' AND '$(RunCommand)' != '' AND '$(RunCommand)' != 'dotnet'">
+    <Exec Command="codesign --sign - --force --entitlements '$(MSBuildThisFileDirectory)macos-dump-entitlements.plist' '$(RunCommand)'" />
+  </Target>
+
   <!--
-  Steeltoe: This file was copied from the .NET Aspire Configuration Schema generator
+  Steeltoe: The remainder of this file was copied from the .NET Aspire Configuration Schema generator
   at https://github.com/dotnet/aspire/tree/cb7cc4d78f8dd2b4df1053a229493cdbf88f50df/src/Tools/ConfigurationSchemaGenerator.
   -->
 
@@ -101,7 +107,7 @@
     <Exec Command="$(GeneratorCommandLine)" />
 
     <ItemGroup>
-      <FileWrites Include="$(GeneratedConfigurationSchemaOutputPath)" Condition="Exists('$(GeneratedConfigurationSchemaOutputPath)')"/>
+      <FileWrites Include="$(GeneratedConfigurationSchemaOutputPath)" Condition="Exists('$(GeneratedConfigurationSchemaOutputPath)')" />
     </ItemGroup>
   </Target>
 
@@ -123,7 +129,7 @@
     </PropertyGroup>
 
     <Warning Condition="'$(CurrentConfigurationSchemaFileContent)' != '$(GeneratedConfigurationSchemaFileContent)'"
-      Text="ConfigurationSchema.json is out of date for $(MSBuildProjectFile). Run 'dotnet build --no-incremental /p:UpdateConfigurationSchema=true' to update it." />
+             Text="ConfigurationSchema.json is out of date for $(MSBuildProjectFile). Run 'dotnet build --no-incremental /p:UpdateConfigurationSchema=true' to update it." />
   </Target>
 
 </Project>

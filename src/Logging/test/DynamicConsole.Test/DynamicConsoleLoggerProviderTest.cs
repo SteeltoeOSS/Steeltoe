@@ -504,7 +504,7 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
               ]
             }
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]

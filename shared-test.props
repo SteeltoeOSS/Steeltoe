@@ -1,13 +1,8 @@
 <Project>
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <NoWarn>$(NoWarn);S2094;S3717;SA1602;CA1062;CA1707;NU5104</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <!-- https://github.com/xunit/xunit/issues/3238#issuecomment-2770720936 -->
     <TestTfmsInParallel>false</TestTfmsInParallel>
-    <DisableTestingPlatformServerCapability>true</DisableTestingPlatformServerCapability>
+    <NoWarn>$(NoWarn);S2094;S3717;SA1602;CA1062;CA1707;NU5104</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
