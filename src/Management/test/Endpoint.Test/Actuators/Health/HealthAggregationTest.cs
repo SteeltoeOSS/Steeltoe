@@ -556,9 +556,9 @@ public sealed class HealthAggregationTest
 
         aspNetResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string aspnetResponseBody = await aspNetResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        string aspNetResponseBody = await aspNetResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
-        aspnetResponseBody.Should().Be("Healthy");
+        aspNetResponseBody.Should().Be("Healthy");
     }
 
     private sealed class AspNetHealthyCheck : IHealthCheck
