@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Steeltoe.Common.Extensions;
 using MicrosoftHealthCheckResult = Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult;
@@ -108,7 +109,10 @@ internal sealed class HealthAggregator : IHealthAggregator
 
         try
         {
-            IHealthCheck check = registration.Factory(serviceProvider);
+            // Match the behavior of ASP.NET's HealthCheckService, which creates a scope for each check.
+            await using AsyncServiceScope serviceScope = serviceProvider.CreateAsyncScope();
+
+            IHealthCheck check = registration.Factory(serviceScope.ServiceProvider);
             MicrosoftHealthCheckResult result = await check.CheckHealthAsync(context, cancellationToken);
 
             healthCheckResult.Status = ToHealthStatus(result.Status);

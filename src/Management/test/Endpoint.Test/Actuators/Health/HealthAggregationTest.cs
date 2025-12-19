@@ -7,6 +7,7 @@ using System.Net;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -516,6 +517,50 @@ public sealed class HealthAggregationTest
             """);
     }
 
+    [Fact]
+    public async Task Can_use_scoped_AspNet_health_check()
+    {
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(AppSettings);
+        builder.Services.AddDbContext<TestDbContext>(options => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+        builder.Services.AddHealthChecks().AddDbContextCheck<TestDbContext>();
+        builder.Services.AddHealthActuator();
+        await using WebApplication host = builder.Build();
+
+        // ReSharper disable once AccessToDisposedClosure
+        Action action = () => host.Services.GetRequiredService<TestDbContext>();
+        action.Should().ThrowExactly<InvalidOperationException>();
+
+        host.MapHealthChecks("/health");
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using HttpClient httpClient = host.GetTestClient();
+
+        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+
+        actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string actuatorResponseBody = await actuatorResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        actuatorResponseBody.Should().BeJson("""
+            {
+              "status": "UP",
+              "components": {
+                "TestDbContext": {
+                  "status": "UP"
+                }
+              }
+            }
+            """);
+
+        HttpResponseMessage aspNetResponse = await httpClient.GetAsync(new Uri("http://localhost/health"), TestContext.Current.CancellationToken);
+
+        aspNetResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string aspnetResponseBody = await aspNetResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        aspnetResponseBody.Should().Be("Healthy");
+    }
+
     private sealed class AspNetHealthyCheck : IHealthCheck
     {
         public async Task<MicrosoftHealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
@@ -562,4 +607,7 @@ public sealed class HealthAggregationTest
             throw new InvalidOperationException("test-exception");
         }
     }
+
+    private sealed class TestDbContext(DbContextOptions options)
+        : DbContext(options);
 }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Common.TestResources;
 
@@ -89,6 +90,7 @@ public static class TestWebApplicationBuilderFactory
 
     private static void ConfigureBuilder(WebApplicationBuilder builder, bool useTestServer, bool deactivateDiagnostics)
     {
+        builder.Host.UseDefaultServiceProvider(ConfigureServiceProvider);
         builder.WebHost.UseDefaultServiceProvider(ConfigureServiceProvider);
 
         if (useTestServer)
