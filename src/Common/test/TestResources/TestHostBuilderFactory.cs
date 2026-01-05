@@ -48,6 +48,7 @@ public static class TestHostBuilderFactory
         {
             builder.ConfigureWebHostDefaults(webHostBuilder =>
             {
+                webHostBuilder.UseDefaultServiceProvider(ConfigureServiceProvider);
                 webHostBuilder.Configure(EmptyAction);
 
                 if (useTestServer)
