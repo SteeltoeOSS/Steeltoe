@@ -6,10 +6,12 @@
     -->
 
     <AspNetCoreHealthChecksVersion>9.0.*</AspNetCoreHealthChecksVersion>
-    <CoverletVersion>6.0.*</CoverletVersion>
     <FluentAssertionsVersion>7.2.*</FluentAssertionsVersion>
     <MicrosoftAzureCosmosVersion>3.54.*</MicrosoftAzureCosmosVersion>
     <MicrosoftCodeAnalysisVersion>4.14.*</MicrosoftCodeAnalysisVersion>
+    <!-- TODO: Use stable MTPv2 versions (don't use wildcards, the latest build from dev-feed is often broken). -->
+    <MicrosoftTestingExtensionsCodeCoverageVersion>18.3.0-preview.25611.1</MicrosoftTestingExtensionsCodeCoverageVersion>
+    <MicrosoftTestingPlatformVersion>2.1.0-preview.25611.7</MicrosoftTestingPlatformVersion>
     <MicrosoftSqlClientVersion>6.1.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>7.0.*</MockHttpVersion>
     <MongoDbDriverVersion>3.5.*</MongoDbDriverVersion>
@@ -26,9 +28,7 @@
     <SystemCommandLineVersion>2.0.*</SystemCommandLineVersion>
     <SystemIdentityModelVersion>8.14.*</SystemIdentityModelVersion>
     <SystemSqlClientVersion>4.9.*</SystemSqlClientVersion>
-    <TestSdkVersion>18.0.*</TestSdkVersion>
     <XunitVersion>3.2.*</XunitVersion>
-    <XunitVisualStudioVersion>3.1.*</XunitVisualStudioVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">

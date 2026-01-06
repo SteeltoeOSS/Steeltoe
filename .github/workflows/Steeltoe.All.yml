@@ -21,9 +21,10 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_NOLOGO: true
   SOLUTION_FILE: 'src/Steeltoe.All.sln'
+  TEST_OUTPUT_DIRECTORY: '${{ github.workspace }}/TestOutput'
   COMMON_TEST_ARGS: >-
-    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/TestOutput
-    --settings coverlet.runsettings --blame-crash --blame-hang-timeout 1m
+    --no-build --no-progress --configuration Release --results-directory '${{ github.workspace }}/TestOutput'
+    --report-trx --coverage --coverage-settings coverage.config --crashdump --hangdump --hangdump-timeout 1m
 
 jobs:
   analyze:
@@ -91,10 +92,10 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
 
     - name: Test
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "${{ matrix.skipIntegrationTests == true && 'Category!=MemoryDumps&Category!=Integration' || 'Category!=MemoryDumps' }}" ${{ env.COMMON_TEST_ARGS }}
+      run: dotnet test --solution ${{ env.SOLUTION_FILE }} --filter-query "${{ matrix.skipIntegrationTests == true && '/[(Category!=MemoryDumps)&(Category!=Integration)]' || '/[Category!=MemoryDumps]' }}" ${{ env.COMMON_TEST_ARGS }}
 
     - name: Test (memory dumps)
-      run: dotnet test src/Management/test/Endpoint.Test --filter "Category=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
+      run: dotnet test --project src/Management/test/Endpoint.Test/Steeltoe.Management.Endpoint.Test.csproj --filter-trait "Category=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
 
     - name: Upload crash/hang dumps (on failure)
       if: ${{ failure() }}
@@ -102,8 +103,8 @@ jobs:
       with:
         name: FailedTestOutput-${{ matrix.os }}
         path: |
-          ${{ github.workspace }}/TestOutput/**/*.dmp
-          ${{ github.workspace }}/TestOutput/**/Sequence_*.xml
+          ${{ env.TEST_OUTPUT_DIRECTORY }}/*.dmp
+          ${{ env.TEST_OUTPUT_DIRECTORY }}/Sequence_*.xml
         if-no-files-found: ignore
 
     - name: Report test results
@@ -112,14 +113,15 @@ jobs:
       with:
         name: ${{ matrix.os }} test results
         reporter: dotnet-trx
-        path: '**/*.trx'
+        path: '${{ env.TEST_OUTPUT_DIRECTORY }}/*.trx'
+        path-replace-backslashes: true
         fail-on-empty: 'true'
         fail-on-error: 'false'
 
     - name: Generate code coverage report
       uses: danielpalme/ReportGenerator-GitHub-Action@v5
       with:
-        reports: '**/coverage.opencover.xml'
+        reports: '${{ env.TEST_OUTPUT_DIRECTORY }}/*cobertura.xml'
         targetdir: 'coveragereport'
         reporttypes: 'MarkdownAssembliesSummary;MarkdownSummaryGithub'
         filefilters: '-*.g.cs'
