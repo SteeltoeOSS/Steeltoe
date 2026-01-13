@@ -4,6 +4,7 @@
 
 using System.Net;
 using System.Reflection;
+using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -126,7 +127,21 @@ public sealed class InfoActuatorTest
 
         string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
-        responseBody.Should().BeJson($$"""
+        // Parse the response to verify structure
+        JsonDocument json = JsonDocument.Parse(responseBody);
+        // Verify runtime info is present (values depend on runtime so we check separately)
+        json.RootElement.TryGetProperty("runtime", out JsonElement runtimeElement).Should().BeTrue();
+        runtimeElement.TryGetProperty("name", out _).Should().BeTrue();
+        runtimeElement.TryGetProperty("version", out _).Should().BeTrue();
+        runtimeElement.TryGetProperty("runtimeIdentifier", out _).Should().BeTrue();
+
+        // Create a copy without runtime for comparison with expected static content
+        var jsonObject = JsonSerializer.Deserialize<Dictionary<string, object?>>(responseBody);
+        jsonObject.Should().NotBeNull();
+        jsonObject!.Remove("runtime");
+        string responseBodyWithoutRuntime = JsonSerializer.Serialize(jsonObject);
+
+        responseBodyWithoutRuntime.Should().BeJson($$"""
             {
               "git": {
                 "branch": "924aabdad9eb1da7bfe5b075f9befa2d0b2374e8",
@@ -314,5 +329,33 @@ public sealed class InfoActuatorTest
         await using WebApplication host = builder.Build();
 
         host.Services.GetServices<IInfoContributor>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task Endpoint_includes_runtime_information()
+    {
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(AppSettings);
+        builder.Services.AddInfoActuator();
+        await using WebApplication host = builder.Build();
+
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using HttpClient httpClient = host.GetTestClient();
+
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/info"), TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        JsonDocument json = JsonDocument.Parse(responseBody);
+
+        json.RootElement.TryGetProperty("runtime", out JsonElement runtimeElement).Should().BeTrue();
+        runtimeElement.TryGetProperty("name", out JsonElement nameElement).Should().BeTrue();
+        runtimeElement.TryGetProperty("version", out JsonElement versionElement).Should().BeTrue();
+        runtimeElement.TryGetProperty("runtimeIdentifier", out JsonElement ridElement).Should().BeTrue();
+
+        nameElement.GetString().Should().NotBeNullOrEmpty();
+        versionElement.GetString().Should().NotBeNullOrEmpty();
+        ridElement.GetString().Should().NotBeNullOrEmpty();
     }
 }
