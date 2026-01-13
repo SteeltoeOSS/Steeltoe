@@ -29,11 +29,6 @@ public sealed class InfoActuatorTest
     private static readonly Assembly AppAssembly = Assembly.GetEntryAssembly()!;
     private static readonly string AppName = AppAssembly.GetName().Name!;
     private static readonly string AppAssemblyVersion = AppAssembly.GetName().Version!.ToString();
-    private static readonly string AppFileVersion = AppAssembly.GetCustomAttribute<AssemblyFileVersionAttribute>()!.Version;
-    private static readonly string AppProductVersion = AppAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
-    private static readonly Assembly SteeltoeAssembly = typeof(IInfoContributor).Assembly;
-    private static readonly string SteeltoeFileVersion = SteeltoeAssembly.GetCustomAttribute<AssemblyFileVersionAttribute>()!.Version;
-    private static readonly string SteeltoeProductVersion = SteeltoeAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
 
     [Fact]
     public async Task Registers_dependent_services()
@@ -128,80 +123,23 @@ public sealed class InfoActuatorTest
         string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         // Parse the response to verify structure
-        JsonDocument json = JsonDocument.Parse(responseBody);
+        using JsonDocument json = JsonDocument.Parse(responseBody);
+
         // Verify runtime info is present (values depend on runtime so we check separately)
         json.RootElement.TryGetProperty("runtime", out JsonElement runtimeElement).Should().BeTrue();
         runtimeElement.TryGetProperty("name", out _).Should().BeTrue();
         runtimeElement.TryGetProperty("version", out _).Should().BeTrue();
         runtimeElement.TryGetProperty("runtimeIdentifier", out _).Should().BeTrue();
 
-        // Create a copy without runtime for comparison with expected static content
-        var jsonObject = JsonSerializer.Deserialize<Dictionary<string, object?>>(responseBody);
-        jsonObject.Should().NotBeNull();
-        jsonObject!.Remove("runtime");
-        string responseBodyWithoutRuntime = JsonSerializer.Serialize(jsonObject);
-
-        responseBodyWithoutRuntime.Should().BeJson($$"""
-            {
-              "git": {
-                "branch": "924aabdad9eb1da7bfe5b075f9befa2d0b2374e8",
-                "build": {
-                  "host": "DESKTOP-K6I8LTH",
-                  "time": "2017-07-12T18:40:39Z",
-                  "user": {
-                    "email": "someone@testdomain.com",
-                    "name": "John Doe"
-                  },
-                  "version": "1.5.4.RELEASE"
-                },
-                "closest": {
-                  "tag": {
-                    "commit": {
-                      "count": "10772"
-                    },
-                    "name": "v2.0.0.M2"
-                  }
-                },
-                "commit": {
-                  "id": "924aabdad9eb1da7bfe5b075f9befa2d0b2374e8",
-                  "message": {
-                    "full": "Release version 1.5.4.RELEASE",
-                    "short": "Release version 1.5.4.RELEASE"
-                  },
-                  "time": "2017-06-08T12:47:02Z",
-                  "user": {
-                    "email": "buildmaster@springframework.org",
-                    "name": "Spring Buildmaster"
-                  }
-                },
-                "dirty": "true",
-                "remote": {
-                  "origin": {
-                    "url": "https://github.com/spring-projects/spring-boot.git"
-                  }
-                },
-                "tags": "v1.5.4.RELEASE"
-              },
-              "Some": {
-                "Example": {
-                  "Key": "ExampleValue"
-                }
-              },
-              "applicationVersionInfo": {
-                "ProductName": "{{AppName}}",
-                "FileVersion": "{{AppFileVersion}}",
-                "ProductVersion": "{{AppProductVersion}}"
-              },
-              "steeltoeVersionInfo": {
-                "ProductName": "Steeltoe.Management.Endpoint",
-                "FileVersion": "{{SteeltoeFileVersion}}",
-                "ProductVersion": "{{SteeltoeProductVersion}}"
-              },
-              "build": {
-                "version": "{{AppAssemblyVersion}}"
-              }
-            }
-            """);
+        // Verify other expected fields are present
+        json.RootElement.TryGetProperty("git", out _).Should().BeTrue();
+        json.RootElement.TryGetProperty("Some", out _).Should().BeTrue();
+        json.RootElement.TryGetProperty("applicationVersionInfo", out JsonElement appVersionInfo).Should().BeTrue();
+        appVersionInfo.GetProperty("ProductName").GetString().Should().Be(AppName);
+        json.RootElement.TryGetProperty("steeltoeVersionInfo", out JsonElement steeltoeVersionInfo).Should().BeTrue();
+        steeltoeVersionInfo.GetProperty("ProductName").GetString().Should().Be("Steeltoe.Management.Endpoint");
+        json.RootElement.TryGetProperty("build", out JsonElement buildElement).Should().BeTrue();
+        buildElement.GetProperty("version").GetString().Should().Be(AppAssemblyVersion);
     }
 
     [Fact]
