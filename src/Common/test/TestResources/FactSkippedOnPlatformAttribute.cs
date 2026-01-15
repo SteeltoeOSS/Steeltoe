@@ -23,7 +23,11 @@ public sealed class FactSkippedOnPlatformAttribute : FactAttribute
     {
         foreach (OSPlatform platform in platformNames.Select(OSPlatform.Create))
         {
-            Assert.SkipWhen(RuntimeInformation.IsOSPlatform(platform), $"Skipping test on platform {platform}.");
+            if (RuntimeInformation.IsOSPlatform(platform))
+            {
+                Skip = $"Skipping test on incompatible platform {platform}.";
+                break;
+            }
         }
     }
 }
