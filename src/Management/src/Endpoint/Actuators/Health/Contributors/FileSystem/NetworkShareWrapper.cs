@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Contributors.FileSystem;
@@ -27,7 +26,6 @@ internal sealed partial class NetworkShareWrapper : INetworkShareWrapper
             : null;
     }
 
-    [ExcludeFromCodeCoverage(Justification = "Workaround for https://github.com/coverlet-coverage/coverlet/issues/1762")]
     private static partial class NativeMethods
     {
         [LibraryImport("kernel32.dll", EntryPoint = "GetDiskFreeSpaceExW", StringMarshalling = StringMarshalling.Utf16, SetLastError = true)]
