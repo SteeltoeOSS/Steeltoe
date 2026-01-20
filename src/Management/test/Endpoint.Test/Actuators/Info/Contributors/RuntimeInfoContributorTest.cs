@@ -33,7 +33,7 @@ public sealed class RuntimeInfoContributorTest
     }
 
     [Fact]
-    public async Task Does_not_throw_when_builder_is_null()
+    public async Task Throws_ArgumentNullException_when_builder_is_null()
     {
         var contributor = new RuntimeInfoContributor();
 
