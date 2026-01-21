@@ -52,7 +52,7 @@ jobs:
       uses: fast-actions/setup-dotnet@db3799efeb074451b86d1f8d2ccb86070b2863db # v1.2.0
       with:
         sdk-version: 10.x
-        runtime-version: |
+        aspnetcore-version: |
           9.x
           8.x
 
