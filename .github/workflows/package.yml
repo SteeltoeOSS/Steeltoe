@@ -32,12 +32,12 @@ jobs:
 
     steps:
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+      uses: fast-actions/setup-dotnet@db3799efeb074451b86d1f8d2ccb86070b2863db # v1.2.0
       with:
-        dotnet-version: |
-          8.0.*
-          9.0.*
-          10.0.*
+        sdk-version: 10.x
+        runtime-version: |
+          9.*
+          8.*
 
     - name: Git checkout
       uses: actions/checkout@v6
@@ -147,9 +147,9 @@ jobs:
         path: packages
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+      uses: fast-actions/setup-dotnet@db3799efeb074451b86d1f8d2ccb86070b2863db # v1.2.0
       with:
-        dotnet-version: 8.0.*
+        sdk-version: 8.*
 
     - name: Install code signing tool
       run: dotnet tool install --global sign --prerelease
@@ -238,9 +238,9 @@ jobs:
 
     steps:
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+      uses: fast-actions/setup-dotnet@db3799efeb074451b86d1f8d2ccb86070b2863db # v1.2.0
       with:
-        dotnet-version: 8.0.*
+        sdk-version: 8.*
 
     - name: Download signed packages
       uses: actions/download-artifact@v4
