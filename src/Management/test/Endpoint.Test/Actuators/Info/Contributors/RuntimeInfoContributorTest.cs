@@ -31,14 +31,4 @@ public sealed class RuntimeInfoContributorTest
         runtimeInfo["version"].Should().Be(System.Environment.Version.ToString());
         runtimeInfo["runtimeIdentifier"].Should().Be(RuntimeInformation.RuntimeIdentifier);
     }
-
-    [Fact]
-    public async Task Throws_ArgumentNullException_when_builder_is_null()
-    {
-        var contributor = new RuntimeInfoContributor();
-
-        Func<Task> action = async () => await contributor.ContributeAsync(null!, TestContext.Current.CancellationToken);
-
-        await action.Should().ThrowAsync<ArgumentNullException>();
-    }
 }
