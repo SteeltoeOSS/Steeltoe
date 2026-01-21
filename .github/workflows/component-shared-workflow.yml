@@ -54,8 +54,8 @@ jobs:
       with:
         sdk-version: 10.x
         runtime-version: |
-          9.*
-          8.*
+          9.x
+          8.x
 
     - name: Turn off dev certificate (macOS only)
       if: ${{ inputs.OS == 'macos' }}

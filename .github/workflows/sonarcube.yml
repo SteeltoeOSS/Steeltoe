@@ -53,8 +53,8 @@ jobs:
       with:
         sdk-version: 10.x
         runtime-version: |
-          9.*
-          8.*
+          9.x
+          8.x
 
     - name: Install Sonar .NET Scanner
       run: dotnet tool install --global dotnet-sonarscanner
