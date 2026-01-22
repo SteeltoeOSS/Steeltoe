@@ -37,6 +37,10 @@ public sealed class InfoActuatorTest
     private static readonly string RuntimeName = RuntimeInformation.FrameworkDescription;
     private static readonly string RuntimeVersion = System.Environment.Version.ToString();
     private static readonly string RuntimeIdentifier = RuntimeInformation.RuntimeIdentifier;
+    private static readonly string ProcessArchitecture = RuntimeInformation.ProcessArchitecture.ToString();
+    private static readonly string OSArchitecture = RuntimeInformation.OSArchitecture.ToString();
+    private static readonly string OSDescription = RuntimeInformation.OSDescription;
+    private static readonly string OSVersion = System.Environment.OSVersion.ToString();
 
     [Fact]
     public async Task Registers_dependent_services()
@@ -190,9 +194,13 @@ public sealed class InfoActuatorTest
                 "version": "{{AppAssemblyVersion}}"
               },
               "runtime": {
-                "name": "{{RuntimeName}}",
-                "version": "{{RuntimeVersion}}",
-                "runtimeIdentifier": "{{RuntimeIdentifier}}"
+                "runtimeName": "{{RuntimeName}}",
+                "runtimeVersion": "{{RuntimeVersion}}",
+                "runtimeIdentifier": "{{RuntimeIdentifier}}",
+                "processArchitecture": "{{ProcessArchitecture}}",
+                "osArchitecture": "{{OSArchitecture}}",
+                "osDescription": "{{OSDescription}}",
+                "osVersion": "{{OSVersion}}"
               }
             }
             """);

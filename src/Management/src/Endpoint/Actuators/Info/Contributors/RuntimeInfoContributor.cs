@@ -14,9 +14,13 @@ internal sealed class RuntimeInfoContributor : IInfoContributor
 
         builder.WithInfo("runtime", new Dictionary<string, string?>
         {
-            ["name"] = RuntimeInformation.FrameworkDescription,
-            ["version"] = System.Environment.Version.ToString(),
-            ["runtimeIdentifier"] = RuntimeInformation.RuntimeIdentifier
+            ["runtimeName"] = RuntimeInformation.FrameworkDescription,
+            ["runtimeVersion"] = System.Environment.Version.ToString(),
+            ["runtimeIdentifier"] = RuntimeInformation.RuntimeIdentifier,
+            ["processArchitecture"] = RuntimeInformation.ProcessArchitecture.ToString(),
+            ["osArchitecture"] = RuntimeInformation.OSArchitecture.ToString(),
+            ["osDescription"] = RuntimeInformation.OSDescription,
+            ["osVersion"] = System.Environment.OSVersion.ToString()
         });
 
         return Task.CompletedTask;
