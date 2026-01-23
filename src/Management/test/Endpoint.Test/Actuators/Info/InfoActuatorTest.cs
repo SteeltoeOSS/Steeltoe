@@ -4,6 +4,7 @@
 
 using System.Net;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -33,6 +34,13 @@ public sealed class InfoActuatorTest
     private static readonly Assembly SteeltoeAssembly = typeof(IInfoContributor).Assembly;
     private static readonly string SteeltoeFileVersion = SteeltoeAssembly.GetCustomAttribute<AssemblyFileVersionAttribute>()!.Version;
     private static readonly string SteeltoeProductVersion = SteeltoeAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
+    private static readonly string RuntimeName = RuntimeInformation.FrameworkDescription;
+    private static readonly string RuntimeVersion = System.Environment.Version.ToString();
+    private static readonly string RuntimeIdentifier = RuntimeInformation.RuntimeIdentifier;
+    private static readonly string ProcessArchitecture = RuntimeInformation.ProcessArchitecture.ToString();
+    private static readonly string OSArchitecture = RuntimeInformation.OSArchitecture.ToString();
+    private static readonly string OSDescription = RuntimeInformation.OSDescription;
+    private static readonly string OSVersion = System.Environment.OSVersion.ToString();
 
     [Fact]
     public async Task Registers_dependent_services()
@@ -184,6 +192,15 @@ public sealed class InfoActuatorTest
               },
               "build": {
                 "version": "{{AppAssemblyVersion}}"
+              },
+              "runtime": {
+                "runtimeName": "{{RuntimeName}}",
+                "runtimeVersion": "{{RuntimeVersion}}",
+                "runtimeIdentifier": "{{RuntimeIdentifier}}",
+                "processArchitecture": "{{ProcessArchitecture}}",
+                "osArchitecture": "{{OSArchitecture}}",
+                "osDescription": "{{OSDescription}}",
+                "osVersion": "{{OSVersion}}"
               }
             }
             """);
