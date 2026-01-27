@@ -518,6 +518,53 @@ public sealed class HealthAggregationTest
     }
 
     [Fact]
+    public async Task Can_skip_AspNet_health_check()
+    {
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(AppSettings);
+        builder.Services.AddHealthActuator();
+
+        IHealthChecksBuilder checksBuilder = builder.Services.AddHealthChecks();
+        checksBuilder.AddCheck<AspNetUnhealthyCheck>("aspnet-unhealthy-check", tags: ["SkipFromHealthActuator"]);
+        checksBuilder.AddCheck<AspNetHealthyCheck>("aspnet-healthy-check");
+
+        await using WebApplication host = builder.Build();
+
+        host.MapHealthChecks("/health");
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using HttpClient httpClient = host.GetTestClient();
+
+        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+
+        actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string actuatorResponseBody = await actuatorResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        actuatorResponseBody.Should().BeJson("""
+            {
+              "status": "UP",
+              "components": {
+                "aspnet-healthy-check": {
+                  "status": "UP",
+                  "description": "healthy-description",
+                  "details": {
+                    "healthy-data-key": "healthy-data-value"
+                  }
+                }
+              }
+            }
+            """);
+
+        HttpResponseMessage aspNetResponse = await httpClient.GetAsync(new Uri("http://localhost/health"), TestContext.Current.CancellationToken);
+
+        aspNetResponse.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
+
+        string aspNetResponseBody = await aspNetResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        aspNetResponseBody.Should().Be("Unhealthy");
+    }
+
+    [Fact]
     public async Task Can_use_scoped_AspNet_health_check()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
