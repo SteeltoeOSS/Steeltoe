@@ -525,7 +525,7 @@ public sealed class HealthAggregationTest
         builder.Services.AddHealthActuator();
 
         IHealthChecksBuilder checksBuilder = builder.Services.AddHealthChecks();
-        checksBuilder.AddCheck<AspNetUnhealthyCheck>("aspnet-unhealthy-check", tags: ["SkipFromHealthActuator"]);
+        checksBuilder.AddCheck<AspNetUnhealthyCheck>("aspnet-unhealthy-check", tags: ["ExcludeFromHealthActuator"]);
         checksBuilder.AddCheck<AspNetHealthyCheck>("aspnet-healthy-check");
 
         await using WebApplication host = builder.Build();

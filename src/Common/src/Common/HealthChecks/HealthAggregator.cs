@@ -69,7 +69,7 @@ internal sealed class HealthAggregator : IHealthAggregator
         ICollection<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         HealthCheckRegistration[] activeHealthCheckRegistrations =
-            healthCheckRegistrations.Where(registration => !registration.Tags.Contains("SkipFromHealthActuator")).ToArray();
+            healthCheckRegistrations.Where(registration => !registration.Tags.Contains("ExcludeFromHealthActuator")).ToArray();
 
         if (activeHealthCheckRegistrations.Length == 0)
         {
