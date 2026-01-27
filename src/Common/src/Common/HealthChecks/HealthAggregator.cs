@@ -68,7 +68,10 @@ internal sealed class HealthAggregator : IHealthAggregator
     private static async Task<IDictionary<string, SteeltoeHealthCheckResult>> AggregateMicrosoftHealthChecksAsync(ICollection<IHealthContributor> contributors,
         ICollection<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        if (healthCheckRegistrations.Count == 0)
+        HealthCheckRegistration[] activeHealthCheckRegistrations =
+            healthCheckRegistrations.Where(registration => !registration.Tags.Contains("ExcludeFromHealthActuator")).ToArray();
+
+        if (activeHealthCheckRegistrations.Length == 0)
         {
             return new Dictionary<string, SteeltoeHealthCheckResult>();
         }
@@ -76,8 +79,7 @@ internal sealed class HealthAggregator : IHealthAggregator
         var healthChecks = new ConcurrentDictionary<string, SteeltoeHealthCheckResult>();
         var keys = new ConcurrentBag<string>(contributors.Select(contributor => contributor.Id));
 
-        // run all HealthCheckRegistration checks in parallel
-        await Parallel.ForEachAsync(healthCheckRegistrations, cancellationToken, async (registration, _) =>
+        await Parallel.ForEachAsync(activeHealthCheckRegistrations, cancellationToken, async (registration, _) =>
         {
             string contributorName = GetKey(keys, registration.Name);
             SteeltoeHealthCheckResult healthCheckResult;
