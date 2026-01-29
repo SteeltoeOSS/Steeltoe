@@ -8,9 +8,7 @@
   <PropertyGroup>
     <NoWarn>
       <!--
-        Temporary workaround: Stable EF Core 10 packages for Npgsql.EntityFrameworkCore.PostgreSQL and
-        Pomelo.EntityFrameworkCore.MySql are not available yet.
-
+        Temporary workaround: Unstable EF Core 10 package for Pomelo.EntityFrameworkCore.MySql is not available yet.
         NU1608: Detected package version outside of dependency constraint
       -->
       $(NoWarn);NU1608

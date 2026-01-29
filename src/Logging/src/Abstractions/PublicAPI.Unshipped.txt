@@ -1,1 +1,2 @@
 #nullable enable
+*REMOVED*virtual Steeltoe.Logging.LoggerFilter.Invoke(Microsoft.Extensions.Logging.LogLevel level) -> bool

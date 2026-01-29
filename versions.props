@@ -8,23 +8,23 @@
     <AspNetCoreHealthChecksVersion>9.0.*</AspNetCoreHealthChecksVersion>
     <CoverletVersion>6.0.*</CoverletVersion>
     <FluentAssertionsVersion>7.2.*</FluentAssertionsVersion>
-    <MicrosoftAzureCosmosVersion>3.54.*</MicrosoftAzureCosmosVersion>
-    <MicrosoftCodeAnalysisVersion>4.14.*</MicrosoftCodeAnalysisVersion>
+    <MicrosoftAzureCosmosVersion>3.57.*</MicrosoftAzureCosmosVersion>
+    <MicrosoftCodeAnalysisVersion>5.0.*</MicrosoftCodeAnalysisVersion>
     <MicrosoftSqlClientVersion>6.1.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>7.0.*</MockHttpVersion>
-    <MongoDbDriverVersion>3.5.*</MongoDbDriverVersion>
+    <MongoDbDriverVersion>3.6.*</MongoDbDriverVersion>
     <MoqVersion>4.20.69</MoqVersion>
     <MySqlConnectorVersion>2.5.*</MySqlConnectorVersion>
-    <MySqlDataVersion>9.5.*</MySqlDataVersion>
+    <MySqlDataVersion>9.6.*</MySqlDataVersion>
     <NewtonsoftJsonVersion>13.0.*</NewtonsoftJsonVersion>
-    <PublicApiAnalyzersVersion>4.14.*</PublicApiAnalyzersVersion>
+    <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
     <RabbitClientTestVersion>7.2.*</RabbitClientTestVersion>
     <SerilogEnrichersThreadVersion>4.0.*</SerilogEnrichersThreadVersion>
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
-    <SonarAnalyzerVersion>10.15.0.120848</SonarAnalyzerVersion>
+    <SonarAnalyzerVersion>10.18.0.131500</SonarAnalyzerVersion>
     <StyleCopVersion>1.2.0-beta.556</StyleCopVersion>
     <SystemCommandLineVersion>2.0.*</SystemCommandLineVersion>
-    <SystemIdentityModelVersion>8.14.*</SystemIdentityModelVersion>
+    <SystemIdentityModelVersion>8.15.*</SystemIdentityModelVersion>
     <SystemSqlClientVersion>4.9.*</SystemSqlClientVersion>
     <TestSdkVersion>18.0.*</TestSdkVersion>
     <XunitVersion>3.2.*</XunitVersion>
@@ -42,7 +42,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
-    <EntityFrameworkCoreTestVersion>10.0.*-*</EntityFrameworkCoreTestVersion>
+    <EntityFrameworkCoreTestVersion>10.0.*</EntityFrameworkCoreTestVersion>
     <PomeloEntityFrameworkCoreTestVersion>
       <!-- Temporary workaround: Unstable EF Core 10 package for Pomelo.EntityFrameworkCore.MySql is not available yet. -->
       9.0.*
