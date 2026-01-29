@@ -22,9 +22,10 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_NOLOGO: true
   SOLUTION_FILE: 'src/Steeltoe.All.sln'
+  TEST_OUTPUT_DIRECTORY: '${{ github.workspace }}/TestOutput'
   SONAR_TEST_ARGS: >-
-    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/TestOutput
-    --settings coverlet.runsettings -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.UseSourceLink=false
+    --no-build --no-progress --configuration Release --results-directory '${{ github.workspace }}/TestOutput'
+    --report-trx --coverage --coverage-settings coverage.sonar.config
 
 jobs:
   analyze:
@@ -75,16 +76,24 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: >-
         dotnet sonarscanner begin /k:"SteeltoeOSS_steeltoe" /o:"steeltoeoss" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-        /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=**/coverage.opencover.xml
+        /d:sonar.host.url="https://sonarcloud.io" /d:sonar.coverageReportPaths="${{ env.TEST_OUTPUT_DIRECTORY }}/SonarQube.xml"
 
     - name: Build solution
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
 
     - name: Test
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" ${{ env.SONAR_TEST_ARGS }}
+      run: dotnet test --solution ${{ env.SOLUTION_FILE }} --filter-not-trait "Category=MemoryDumps" ${{ env.SONAR_TEST_ARGS }}
 
     - name: Test (memory dumps)
-      run: dotnet test src/Management/test/Endpoint.Test --filter "Category=MemoryDumps" ${{ env.SONAR_TEST_ARGS }}
+      run: dotnet test --project src/Management/test/Endpoint.Test/Steeltoe.Management.Endpoint.Test.csproj --filter-trait "Category=MemoryDumps" ${{ env.SONAR_TEST_ARGS }}
+
+    - name: Convert Cobertura coverage to Sonar format
+      uses: danielpalme/ReportGenerator-GitHub-Action@v5
+      with:
+        reports: '${{ env.TEST_OUTPUT_DIRECTORY }}/*cobertura.xml'
+        targetdir: '${{ env.TEST_OUTPUT_DIRECTORY }}'
+        reporttypes: 'SonarQube'
+        filefilters: '-*.g.cs'
 
     - name: End Sonar .NET scanner
       if: ${{ !cancelled() && steps.sonar_begin.outcome == 'success' }}
