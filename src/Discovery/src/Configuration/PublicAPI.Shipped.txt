@@ -15,11 +15,14 @@ Steeltoe.Discovery.Configuration.ConfigurationServiceInstance
 Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.ConfigurationServiceInstance() -> void
 Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.Host.get -> string?
 Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.Host.set -> void
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.InstanceId.get -> string!
 Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.IsSecure.get -> bool
 Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.IsSecure.set -> void
 Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.Metadata.get -> System.Collections.Generic.IDictionary<string!, string?>!
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.NonSecureUri.get -> System.Uri?
 Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.Port.get -> int
 Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.Port.set -> void
+Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.SecureUri.get -> System.Uri?
 Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.ServiceId.get -> string?
 Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.ServiceId.set -> void
 Steeltoe.Discovery.Configuration.ConfigurationServiceInstance.Uri.get -> System.Uri!

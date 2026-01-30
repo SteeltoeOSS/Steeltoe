@@ -110,5 +110,3 @@ Steeltoe.Connectors.SqlServer.SqlServerHostApplicationBuilderExtensions
 Steeltoe.Connectors.SqlServer.SqlServerOptions
 Steeltoe.Connectors.SqlServer.SqlServerOptions.SqlServerOptions() -> void
 Steeltoe.Connectors.SqlServer.SqlServerServiceCollectionExtensions
-virtual Steeltoe.Connectors.ConnectorCreateConnection.Invoke(System.IServiceProvider! serviceProvider, string! serviceBindingName) -> object!
-virtual Steeltoe.Connectors.ConnectorCreateHealthContributor.Invoke(System.IServiceProvider! serviceProvider, string! serviceBindingName) -> Steeltoe.Common.HealthChecks.IHealthContributor!

@@ -75,6 +75,7 @@ Steeltoe.Discovery.Eureka.AppInfo.InstanceInfo.Status.get -> Steeltoe.Discovery.
 Steeltoe.Discovery.Eureka.AppInfo.InstanceInfo.Status.init -> void
 Steeltoe.Discovery.Eureka.AppInfo.InstanceInfo.StatusPageUrl.get -> string?
 Steeltoe.Discovery.Eureka.AppInfo.InstanceInfo.StatusPageUrl.init -> void
+Steeltoe.Discovery.Eureka.AppInfo.InstanceInfo.ToServiceInstance() -> Steeltoe.Common.Discovery.IServiceInstance!
 Steeltoe.Discovery.Eureka.AppInfo.InstanceInfo.VipAddress.get -> string?
 Steeltoe.Discovery.Eureka.AppInfo.InstanceInfo.VipAddress.init -> void
 Steeltoe.Discovery.Eureka.AppInfo.InstanceStatus

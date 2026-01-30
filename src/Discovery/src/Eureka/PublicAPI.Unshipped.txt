@@ -1,2 +1,1 @@
 #nullable enable
-Steeltoe.Discovery.Eureka.AppInfo.InstanceInfo.ToServiceInstance() -> Steeltoe.Common.Discovery.IServiceInstance!

@@ -27,9 +27,12 @@ Steeltoe.Common.Discovery.IDiscoveryClient.GetServiceIdsAsync(System.Threading.C
 Steeltoe.Common.Discovery.IDiscoveryClient.ShutdownAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 Steeltoe.Common.Discovery.IServiceInstance
 Steeltoe.Common.Discovery.IServiceInstance.Host.get -> string!
+Steeltoe.Common.Discovery.IServiceInstance.InstanceId.get -> string!
 Steeltoe.Common.Discovery.IServiceInstance.IsSecure.get -> bool
 Steeltoe.Common.Discovery.IServiceInstance.Metadata.get -> System.Collections.Generic.IReadOnlyDictionary<string!, string?>!
+Steeltoe.Common.Discovery.IServiceInstance.NonSecureUri.get -> System.Uri?
 Steeltoe.Common.Discovery.IServiceInstance.Port.get -> int
+Steeltoe.Common.Discovery.IServiceInstance.SecureUri.get -> System.Uri?
 Steeltoe.Common.Discovery.IServiceInstance.ServiceId.get -> string!
 Steeltoe.Common.Discovery.IServiceInstance.Uri.get -> System.Uri!
 Steeltoe.Common.Extensions.ServiceCollectionExtensions
