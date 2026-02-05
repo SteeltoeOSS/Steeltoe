@@ -58,7 +58,7 @@ public sealed class BootstrapLoggerFactory : ILoggerFactory
     /// Creates a new <see cref="BootstrapLoggerFactory" /> that writes to the console.
     /// </summary>
     /// <param name="configure">
-    /// Enables further configuration of the bootstrap logger from code.
+    /// Enables further configuring the bootstrap logger from code.
     /// </param>
     public static BootstrapLoggerFactory CreateConsole(Action<ILoggingBuilder> configure)
     {
