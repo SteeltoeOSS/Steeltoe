@@ -8,7 +8,7 @@ using Xunit.Sdk;
 namespace Steeltoe.Common.TestResources;
 
 /// <summary>
-/// Enables to capture log output in failing tests. Call <see cref="Register" /> or use <see cref="LoggerFactory" /> to hook up. When an assertion fails,
+/// Enables capturing log output in failing tests. Call <see cref="Register" /> or use <see cref="LoggerFactory" /> to hook up. When an assertion fails,
 /// the log output is included in the exception message.
 /// </summary>
 public sealed class TestFailureTracer : IDisposable

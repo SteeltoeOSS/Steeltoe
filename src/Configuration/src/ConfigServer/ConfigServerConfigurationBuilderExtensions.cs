@@ -55,7 +55,7 @@ public static class ConfigServerConfigurationBuilderExtensions
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="options">
-    /// Enables to configure Config Server from code.
+    /// Enables configuring Config Server from code.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.

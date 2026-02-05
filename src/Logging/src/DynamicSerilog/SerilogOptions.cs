@@ -23,7 +23,7 @@ public sealed class SerilogOptions
     public MinimumLevel? MinimumLevel { get; set; }
 
     /// <summary>
-    /// Enables to bind from configuration.
+    /// Enables binding from configuration.
     /// </summary>
     /// <param name="configuration">
     /// The configuration to bind from.
@@ -56,7 +56,7 @@ public sealed class SerilogOptions
     }
 
     /// <summary>
-    /// Enables to configure programmatically.
+    /// Enables configuring programmatically.
     /// </summary>
     /// <param name="loggerConfiguration">
     /// The instance to obtain settings from.

@@ -58,7 +58,7 @@ public sealed class BootstrapLoggerFactory : ILoggerFactory
     /// Creates a new <see cref="BootstrapLoggerFactory" /> that writes to the console.
     /// </summary>
     /// <param name="configure">
-    /// Enables to further configure the bootstrap logger from code.
+    /// Enables further configuration of the bootstrap logger from code.
     /// </param>
     public static BootstrapLoggerFactory CreateConsole(Action<ILoggingBuilder> configure)
     {
@@ -75,7 +75,7 @@ public sealed class BootstrapLoggerFactory : ILoggerFactory
     /// Creates a new empty <see cref="BootstrapLoggerFactory" />.
     /// </summary>
     /// <param name="configure">
-    /// Enables to fully configure the bootstrap logger from code.
+    /// Enables fully configuring the bootstrap logger from code.
     /// </param>
     public static BootstrapLoggerFactory CreateEmpty(Action<ILoggingBuilder> configure)
     {
