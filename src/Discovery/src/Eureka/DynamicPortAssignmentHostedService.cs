@@ -95,7 +95,7 @@ internal sealed class DynamicPortAssignmentHostedService : IHostedLifecycleServi
     }
 
     /// <summary>
-    /// Enables triggering changes in <see cref="OptionsMonitor{EurekaInstanceOptions}" />.
+    /// Enables triggering change in <see cref="OptionsMonitor{EurekaInstanceOptions}" />.
     /// </summary>
     internal sealed class EurekaInstanceOptionsChangeTokenSource : IOptionsChangeTokenSource<EurekaInstanceOptions>
     {
