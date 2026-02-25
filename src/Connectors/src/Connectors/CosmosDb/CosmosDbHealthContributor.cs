@@ -12,7 +12,7 @@ using Steeltoe.Connectors.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.CosmosDb;
 
-internal sealed class CosmosDbHealthContributor : IHealthContributor, IDisposable
+internal sealed partial class CosmosDbHealthContributor : IHealthContributor, IDisposable
 {
     private readonly CosmosClientShimFactory _clientFactory;
     private readonly ILogger<CosmosDbHealthContributor> _logger;
@@ -40,7 +40,7 @@ internal sealed class CosmosDbHealthContributor : IHealthContributor, IDisposabl
 
     public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
-        _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
+        LogCheckingHealth(Id, Host);
 
         var result = new HealthCheckResult
         {
@@ -64,7 +64,7 @@ internal sealed class CosmosDbHealthContributor : IHealthContributor, IDisposabl
 
             result.Status = HealthStatus.Up;
 
-            _logger.LogTrace("{DbConnection} at {Host} is up!", Id, Host);
+            LogHealthUp(Id, Host);
         }
         catch (Exception exception)
         {
@@ -75,7 +75,7 @@ internal sealed class CosmosDbHealthContributor : IHealthContributor, IDisposabl
                 ExceptionDispatchInfo.Capture(exception).Throw();
             }
 
-            _logger.LogError(exception, "{DbConnection} at {Host} is down!", Id, Host);
+            LogHealthDown(exception, Id, Host);
 
             result.Status = HealthStatus.Down;
             result.Description = $"{Id} health check failed";
@@ -90,6 +90,15 @@ internal sealed class CosmosDbHealthContributor : IHealthContributor, IDisposabl
         _cosmosClientShim?.Dispose();
         _cosmosClientShim = null;
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Checking {DbConnection} health at {Host}.")]
+    private partial void LogCheckingHealth(string dbConnection, string host);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "{DbConnection} at {Host} is up.")]
+    private partial void LogHealthUp(string dbConnection, string host);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "{DbConnection} at {Host} is down.")]
+    private partial void LogHealthDown(Exception exception, string dbConnection, string host);
 
     private sealed class CosmosClientShimFactory
     {

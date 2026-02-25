@@ -22,7 +22,7 @@ namespace Steeltoe.Configuration.Placeholder;
 /// .
 /// </para>
 /// </summary>
-internal sealed class PropertyPlaceholderHelper
+internal sealed partial class PropertyPlaceholderHelper
 {
     private const string Prefix = "${";
     private const string Suffix = "}";
@@ -110,7 +110,7 @@ internal sealed class PropertyPlaceholderHelper
                     propertyValue = ParseStringValue(propertyValue, configuration, visitedPlaceholders);
                     Replace(result, startIndex, endIndex + Suffix.Length, propertyValue);
 
-                    _logger.LogDebug("Resolved placeholder '{Placeholder}' to '{Value}'", innerPlaceholder, propertyValue);
+                    LogPlaceholderResolved(innerPlaceholder, propertyValue);
                     startIndex = IndexOf(result, Prefix, startIndex + propertyValue.Length);
                 }
                 else
@@ -201,6 +201,9 @@ internal sealed class PropertyPlaceholderHelper
     {
         return builder.ToString()[start..end];
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Resolved placeholder '{Placeholder}' to '{Value}'.")]
+    private partial void LogPlaceholderResolved(string placeholder, string value);
 
     private readonly struct PlaceholderExpression(string key, string? defaultValue) : IEquatable<PlaceholderExpression>
     {

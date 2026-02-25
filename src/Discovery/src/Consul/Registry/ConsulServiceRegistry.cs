@@ -8,13 +8,14 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Consul.Configuration;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Steeltoe.Discovery.Consul.Registry;
 
 /// <summary>
 /// A service registry that uses Consul.
 /// </summary>
-internal sealed class ConsulServiceRegistry : IAsyncDisposable
+internal sealed partial class ConsulServiceRegistry : IAsyncDisposable
 {
     private const string Up = "UP";
     private const string OutOfService = "OUT_OF_SERVICE";
@@ -67,7 +68,7 @@ internal sealed class ConsulServiceRegistry : IAsyncDisposable
     {
         ArgumentNullException.ThrowIfNull(registration);
 
-        _logger.LogInformation("Registering service {ServiceId} with Consul.", registration.ServiceId);
+        LogRegistering(registration.ServiceId);
 
         try
         {
@@ -82,11 +83,11 @@ internal sealed class ConsulServiceRegistry : IAsyncDisposable
         {
             if (Options.FailFast)
             {
-                _logger.LogError(exception, "Error registering service {ServiceId} with Consul.", registration.ServiceId);
+                LogRegisterFailed(exception, registration.ServiceId);
                 throw;
             }
 
-            _logger.LogWarning(exception, "FailFast is false. Error registering service {ServiceId} with Consul.", registration.ServiceId);
+            LogWarnForRegisterFailed(exception, registration.ServiceId);
         }
     }
 
@@ -110,12 +111,12 @@ internal sealed class ConsulServiceRegistry : IAsyncDisposable
                 await _scheduler.RemoveAsync(registration.InstanceId);
             }
 
-            _logger.LogInformation("Deregistering service {InstanceId} with Consul.", registration.InstanceId);
+            LogDeregistering(registration.InstanceId);
             await _client.Agent.ServiceDeregister(registration.InstanceId, cancellationToken);
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            _logger.LogError(exception, "Error deregistering service {ServiceId} with Consul.", registration.ServiceId);
+            LogDeregisterFailed(exception, registration.ServiceId);
         }
     }
 
@@ -184,4 +185,19 @@ internal sealed class ConsulServiceRegistry : IAsyncDisposable
             await _scheduler.DisposeAsync();
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Registering service {ServiceId} with Consul.")]
+    private partial void LogRegistering(string serviceId);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Error registering service {ServiceId} with Consul.")]
+    private partial void LogRegisterFailed(Exception exception, string serviceId);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "FailFast is false. Error registering service {ServiceId} with Consul.")]
+    private partial void LogWarnForRegisterFailed(Exception exception, string serviceId);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Deregistering service {InstanceId} with Consul.")]
+    private partial void LogDeregistering(string instanceId);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Error deregistering service {ServiceId} with Consul.")]
+    private partial void LogDeregisterFailed(Exception exception, string serviceId);
 }

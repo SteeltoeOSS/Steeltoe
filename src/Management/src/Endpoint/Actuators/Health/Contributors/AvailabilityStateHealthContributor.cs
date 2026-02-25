@@ -8,7 +8,7 @@ using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Contributors;
 
-internal abstract class AvailabilityStateHealthContributor : IHealthContributor
+internal abstract partial class AvailabilityStateHealthContributor : IHealthContributor
 {
     private readonly IDictionary<AvailabilityState, HealthStatus> _stateMappings;
     private readonly ILogger _logger;
@@ -39,18 +39,18 @@ internal abstract class AvailabilityStateHealthContributor : IHealthContributor
 
         if (currentHealth == null)
         {
-            _logger.LogError("Failed to get current availability state");
+            LogFailedToGetState();
             health.Description = "Failed to get current availability state";
         }
         else
         {
-            try
+            if (_stateMappings.TryGetValue(currentHealth, out HealthStatus status))
             {
-                health.Status = _stateMappings[currentHealth];
+                health.Status = status;
             }
-            catch (Exception exception)
+            else
             {
-                _logger.LogError(exception, "Failed to map current availability state");
+                LogFailedToMapState(currentHealth);
                 health.Description = "Failed to map current availability state";
             }
         }
@@ -59,4 +59,10 @@ internal abstract class AvailabilityStateHealthContributor : IHealthContributor
     }
 
     protected abstract AvailabilityState? GetState();
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to get current availability state.")]
+    private partial void LogFailedToGetState();
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to map availability state {State}.")]
+    private partial void LogFailedToMapState(AvailabilityState state);
 }

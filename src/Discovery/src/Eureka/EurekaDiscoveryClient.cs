@@ -23,7 +23,7 @@ namespace Steeltoe.Discovery.Eureka;
 /// </see>
 /// .
 /// </summary>
-public sealed class EurekaDiscoveryClient : IDiscoveryClient
+public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
 {
     private readonly EurekaApplicationInfoManager _appInfoManager;
     private readonly EurekaClient _eurekaClient;
@@ -115,10 +115,10 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogInformation(exception, "Initial registration failed.");
+                    LogInitialRegistrationFailed(exception);
                 }
 
-                _logger.LogInformation("Starting heartbeat timer.");
+                LogStartingHeartbeatTimer();
                 _heartbeatTimer = StartTimer(leaseRenewalInterval.Value, HeartbeatAsyncTask);
 
                 _appInfoManager.InstanceChanged += AppInfoManagerOnInstanceChanged;
@@ -136,10 +136,10 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             }
             catch (Exception exception)
             {
-                _logger.LogInformation(exception, "Initial fetch registry failed.");
+                LogInitialFetchRegistryFailed(exception);
             }
 
-            _logger.LogInformation("Starting applications cache refresh timer.");
+            LogStartingCacheRefreshTimer();
             _cacheRefreshTimer = StartTimer(clientOptions.RegistryFetchInterval, CacheRefreshAsyncTask);
 
             _clientOptionsChangeToken = _clientOptionsMonitor.OnChange(options =>
@@ -198,7 +198,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            _logger.LogWarning(exception, "Deregister failed during shutdown.");
+            LogDeregisterFailedDuringShutdown(exception);
         }
 
         _appInfoManager.Dispose();
@@ -216,7 +216,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
         try
         {
-            _logger.LogDebug("Instance changed event handler: New={NewInstance}, Previous={PreviousInstance}", args.NewInstance, args.PreviousInstance);
+            LogInstanceChangedEvent(args.NewInstance, args.PreviousInstance);
 
             if (args.NewInstance.LeaseInfo?.RenewalInterval != args.PreviousInstance.LeaseInfo?.RenewalInterval)
             {
@@ -230,7 +230,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             if (!exception.IsCancellation())
             {
-                _logger.LogError(exception, "Failed to handle {EventName} event.", nameof(EurekaApplicationInfoManager.InstanceChanged));
+                LogFailedToHandleEvent(exception, nameof(EurekaApplicationInfoManager.InstanceChanged));
             }
         }
     }
@@ -259,9 +259,9 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
             if (!requireDirtyInstance || snapshot.IsDirty)
             {
-                _logger.LogDebug("Registering {Application}/{Instance}.", snapshot.AppName, snapshot.InstanceId);
+                LogRegistering(snapshot.AppName, snapshot.InstanceId);
                 await _eurekaClient.RegisterAsync(snapshot, cancellationToken);
-                _logger.LogDebug("Register {Application}/{Instance} succeeded.", snapshot.AppName, snapshot.InstanceId);
+                LogRegistrationSucceeded(snapshot.AppName, snapshot.InstanceId);
 
                 snapshot.IsDirty = false;
             }
@@ -280,9 +280,9 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             InstanceInfo snapshot = _appInfoManager.Instance;
 
-            _logger.LogDebug("Deregistering {Application}/{Instance}.", snapshot.AppName, snapshot.InstanceId);
+            LogDeregistering(snapshot.AppName, snapshot.InstanceId);
             await _eurekaClient.DeregisterAsync(snapshot.AppName, snapshot.InstanceId, cancellationToken);
-            _logger.LogDebug("Deregister {Application}/{Instance} succeeded.", snapshot.AppName, snapshot.InstanceId);
+            LogDeregistrationSucceeded(snapshot.AppName, snapshot.InstanceId);
         }
         finally
         {
@@ -299,16 +299,15 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             InstanceInfo snapshot = _appInfoManager.Instance;
 
-            _logger.LogDebug("Sending heartbeat for {Application}/{Instance}.", snapshot.AppName, snapshot.InstanceId);
+            LogSendingHeartbeat(snapshot.AppName, snapshot.InstanceId);
             await _eurekaClient.HeartbeatAsync(snapshot.AppName, snapshot.InstanceId, snapshot.LastDirtyTimeUtc, cancellationToken);
-            _logger.LogDebug("Heartbeat for {Application}/{Instance} succeeded.", snapshot.AppName, snapshot.InstanceId);
+            LogHeartbeatSucceeded(snapshot.AppName, snapshot.InstanceId);
 
             _lastGoodHeartbeatTimeUtc = new NullableValueWrapper<DateTime>(_timeProvider.GetUtcNow().UtcDateTime);
         }
         catch (EurekaTransportException exception)
         {
-            _logger.LogWarning(exception,
-                "Eureka heartbeat failed. This could happen if Eureka was offline during app startup. Attempting to (re)register now.");
+            LogHeartbeatFailed(exception);
 
             await RegisterAsync(false, cancellationToken);
         }
@@ -368,7 +367,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogError(exception, "Failed to handle {EventName} event.", nameof(ApplicationsFetched));
+                    LogFailedToHandleEvent(exception, nameof(ApplicationsFetched));
                 }
             });
         }
@@ -378,13 +377,13 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     {
         EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
 
-        _logger.LogDebug("Sending request to fetch applications.");
+        LogFetchingApplications();
 
         ApplicationInfoCollection applications = string.IsNullOrWhiteSpace(clientOptions.RegistryRefreshSingleVipAddress)
             ? await _eurekaClient.GetApplicationsAsync(cancellationToken)
             : await _eurekaClient.GetByVipAsync(clientOptions.RegistryRefreshSingleVipAddress, cancellationToken);
 
-        _logger.LogDebug("Full registry fetch succeeded with {Count} applications.", applications.Count);
+        LogFullRegistryFetchSucceeded(applications.Count);
         return applications;
     }
 
@@ -394,29 +393,28 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
         try
         {
-            _logger.LogDebug("Sending request to fetch applications delta.");
+            LogFetchingApplicationsDelta();
             delta = await _eurekaClient.GetDeltaAsync(cancellationToken);
         }
         catch (EurekaTransportException exception)
         {
-            _logger.LogDebug(exception, "Failed to fetch registry delta. Trying full fetch.");
+            LogFailedToFetchDelta(exception);
             return await FetchFullRegistryAsync(cancellationToken);
         }
 
-        _logger.LogDebug("Registry delta fetched, updating local cache.");
+        LogRegistryDeltaFetched();
         _remoteApps.UpdateFromDelta(delta);
 
         string hashCode = _remoteApps.ComputeHashCode();
 
         if (hashCode != delta.AppsHashCode)
         {
-            _logger.LogWarning("Discarding fetched registry delta due to hash codes mismatch (Local={HashLocal}, Remote={HashRemote}). Trying full fetch.",
-                hashCode, delta.AppsHashCode);
+            LogDeltaHashCodeMismatch(hashCode, delta.AppsHashCode);
 
             return await FetchFullRegistryAsync(cancellationToken);
         }
 
-        _logger.LogDebug("Registry delta fetch succeeded with {Count} changes.", delta.Count);
+        LogDeltaFetchSucceeded(delta.Count);
         _remoteApps.AppsHashCode = delta.AppsHashCode;
         return _remoteApps;
     }
@@ -427,26 +425,26 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             if (_appInfoManager.Instance.Status == InstanceStatus.Starting)
             {
-                _logger.LogDebug("Skipping health check handler in starting state.");
+                LogSkippingHealthCheck();
                 return;
             }
 
             try
             {
                 InstanceStatus aggregatedStatus = await HealthCheckHandler.GetStatusAsync(_hasFirstHeartbeatCompleted, cancellationToken);
-                _logger.LogDebug("Health check handler returned status {Status}.", aggregatedStatus);
+                LogHealthCheckStatus(aggregatedStatus);
 
                 InstanceInfo snapshot = _appInfoManager.Instance;
 
                 if (aggregatedStatus != snapshot.Status)
                 {
-                    _logger.LogDebug("Changing instance status from {LocalStatus} to {RemoteStatus}.", snapshot.Status, aggregatedStatus);
+                    LogChangingInstanceStatus(snapshot.Status, aggregatedStatus);
                     _appInfoManager.UpdateStatusWithoutRaisingEvent(aggregatedStatus);
                 }
             }
             catch (Exception exception) when (!exception.IsCancellation())
             {
-                _logger.LogError(exception, "Failed to determine health status.");
+                LogFailedToDetermineHealthStatus(exception);
             }
         }
     }
@@ -461,8 +459,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             if (remoteInstance.EffectiveStatus != snapshot.EffectiveStatus)
             {
-                _logger.LogWarning("Remote instance status {RemoteStatus} differs from local status {LocalStatus}.", remoteInstance.EffectiveStatus,
-                    snapshot.EffectiveStatus);
+                LogRemoteStatusDiffers(remoteInstance.EffectiveStatus, snapshot.EffectiveStatus);
             }
 
             // We have ownership of the local instance, so don't take the remote status.
@@ -486,7 +483,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             if (!exception.IsCancellation())
             {
-                _logger.LogError(exception, "Periodic renew failed.");
+                LogPeriodicRenewFailed(exception);
             }
         }
     }
@@ -507,7 +504,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             if (!exception.IsCancellation())
             {
-                _logger.LogError(exception, "Periodic fetch of applications failed.");
+                LogPeriodicFetchFailed(exception);
             }
         }
     }
@@ -539,7 +536,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         if (_logger.IsEnabled(LogLevel.Debug))
         {
             string instanceNames = string.Join(", ", serviceInstances.Select(FormatServiceInstance));
-            _logger.LogDebug("Returning {Count} service instances for '{ServiceId}': {ServiceInstances}", serviceInstances.Length, serviceId, instanceNames);
+            LogReturningServiceInstances(serviceInstances.Length, serviceId, instanceNames);
         }
 
         return Task.FromResult<IList<IServiceInstance>>(serviceInstances);
@@ -572,4 +569,94 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     {
         return new EurekaServiceInstance(_appInfoManager.Instance);
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Initial registration failed.")]
+    private partial void LogInitialRegistrationFailed(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Starting heartbeat timer.")]
+    private partial void LogStartingHeartbeatTimer();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Initial fetch registry failed.")]
+    private partial void LogInitialFetchRegistryFailed(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Starting applications cache refresh timer.")]
+    private partial void LogStartingCacheRefreshTimer();
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Deregister failed during shutdown.")]
+    private partial void LogDeregisterFailedDuringShutdown(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Debug,
+        Message = "Instance changed event handler invoked with new instance {NewInstance} and previous instance {PreviousInstance}.")]
+    private partial void LogInstanceChangedEvent(InstanceInfo newInstance, InstanceInfo previousInstance);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to handle {EventName} event.")]
+    private partial void LogFailedToHandleEvent(Exception exception, string eventName);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Registering {Application}/{Instance}.")]
+    private partial void LogRegistering(string application, string instance);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Register {Application}/{Instance} succeeded.")]
+    private partial void LogRegistrationSucceeded(string application, string instance);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Deregistering {Application}/{Instance}.")]
+    private partial void LogDeregistering(string application, string instance);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Deregister {Application}/{Instance} succeeded.")]
+    private partial void LogDeregistrationSucceeded(string application, string instance);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Sending heartbeat for {Application}/{Instance}.")]
+    private partial void LogSendingHeartbeat(string application, string instance);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Heartbeat for {Application}/{Instance} succeeded.")]
+    private partial void LogHeartbeatSucceeded(string application, string instance);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Eureka heartbeat failed. This could happen if Eureka was offline during app startup. Attempting to (re)register now.")]
+    private partial void LogHeartbeatFailed(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Sending request to fetch applications.")]
+    private partial void LogFetchingApplications();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Full registry fetch succeeded with {Count} applications.")]
+    private partial void LogFullRegistryFetchSucceeded(int count);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Sending request to fetch applications delta.")]
+    private partial void LogFetchingApplicationsDelta();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Failed to fetch registry delta. Trying full fetch.")]
+    private partial void LogFailedToFetchDelta(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Registry delta fetched, updating local cache.")]
+    private partial void LogRegistryDeltaFetched();
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Discarding fetched registry delta due to hash code mismatch between local {HashLocal} and remote {HashRemote}. Trying full fetch.")]
+    private partial void LogDeltaHashCodeMismatch(string hashLocal, string? hashRemote);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Registry delta fetch succeeded with {Count} changes.")]
+    private partial void LogDeltaFetchSucceeded(int count);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Skipping health check handler in starting state.")]
+    private partial void LogSkippingHealthCheck();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Health check handler returned status {Status}.")]
+    private partial void LogHealthCheckStatus(InstanceStatus status);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Changing instance status from {LocalStatus} to {RemoteStatus}.")]
+    private partial void LogChangingInstanceStatus(InstanceStatus? localStatus, InstanceStatus remoteStatus);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to determine health status.")]
+    private partial void LogFailedToDetermineHealthStatus(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Remote instance status {RemoteStatus} differs from local status {LocalStatus}.")]
+    private partial void LogRemoteStatusDiffers(InstanceStatus remoteStatus, InstanceStatus localStatus);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Periodic renew failed.")]
+    private partial void LogPeriodicRenewFailed(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Periodic fetch of applications failed.")]
+    private partial void LogPeriodicFetchFailed(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Returning {Count} service instances for '{ServiceId}': {ServiceInstances}.")]
+    private partial void LogReturningServiceInstances(int count, string serviceId, string serviceInstances);
 }

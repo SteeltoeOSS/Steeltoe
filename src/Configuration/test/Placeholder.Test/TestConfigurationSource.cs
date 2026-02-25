@@ -25,5 +25,5 @@ internal sealed partial class TestConfigurationSource(string name, ILoggerFactor
     }
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Build ({Name}).")]
-    private static partial void LogBuild(ILogger<TestConfigurationSource> logger, string name);
+    private static partial void LogBuild(ILogger logger, string name);
 }

@@ -14,7 +14,7 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 
 namespace Steeltoe.Discovery.Eureka.Configuration;
 
-public sealed class EurekaInstanceOptions
+public sealed partial class EurekaInstanceOptions
 {
     internal const string ConfigurationPrefix = "eureka:instance";
     internal const string DefaultStatusPageUrlPath = "/info";
@@ -257,14 +257,13 @@ public sealed class EurekaInstanceOptions
             {
                 if (listenHttpPort != null)
                 {
-                    // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
                     if (nonSecurePort == null)
                     {
-                        logger.LogDebug("Activating non-secure port {NonSecurePort} from {Source}.", listenHttpPort, source);
+                        LogActivatingNonSecurePort(logger, listenHttpPort, source);
                     }
                     else
                     {
-                        logger.LogDebug("Changing non-secure port to {NonSecurePort} from {Source}.", listenHttpPort, source);
+                        LogChangingNonSecurePort(logger, listenHttpPort, source);
                     }
 
                     NonSecurePort = listenHttpPort.Value;
@@ -272,7 +271,7 @@ public sealed class EurekaInstanceOptions
                 }
                 else if (nonSecurePort != null)
                 {
-                    logger.LogDebug("Deactivating non-secure port from {Source}.", source);
+                    LogDeactivatingNonSecurePort(logger, source);
                     IsNonSecurePortEnabled = false;
                 }
             }
@@ -281,14 +280,13 @@ public sealed class EurekaInstanceOptions
             {
                 if (listenHttpsPort != null)
                 {
-                    // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
                     if (securePort == null)
                     {
-                        logger.LogDebug("Activating secure port {SecurePort} from {Source}.", listenHttpsPort, source);
+                        LogActivatingSecurePort(logger, listenHttpsPort, source);
                     }
                     else
                     {
-                        logger.LogDebug("Changing secure port to {SecurePort} from {Source}.", listenHttpsPort, source);
+                        LogChangingSecurePort(logger, listenHttpsPort, source);
                     }
 
                     SecurePort = listenHttpsPort.Value;
@@ -296,10 +294,28 @@ public sealed class EurekaInstanceOptions
                 }
                 else if (securePort != null)
                 {
-                    logger.LogDebug("Deactivating secure port from {Source}.", source);
+                    LogDeactivatingSecurePort(logger, source);
                     IsSecurePortEnabled = false;
                 }
             }
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Activating non-secure port {NonSecurePort} from {Source}.")]
+    private static partial void LogActivatingNonSecurePort(ILogger logger, int? nonSecurePort, string source);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Changing non-secure port to {NonSecurePort} from {Source}.")]
+    private static partial void LogChangingNonSecurePort(ILogger logger, int? nonSecurePort, string source);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Deactivating non-secure port from {Source}.")]
+    private static partial void LogDeactivatingNonSecurePort(ILogger logger, string source);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Activating secure port {SecurePort} from {Source}.")]
+    private static partial void LogActivatingSecurePort(ILogger logger, int? securePort, string source);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Changing secure port to {SecurePort} from {Source}.")]
+    private static partial void LogChangingSecurePort(ILogger logger, int? securePort, string source);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Deactivating secure port from {Source}.")]
+    private static partial void LogDeactivatingSecurePort(ILogger logger, string source);
 }

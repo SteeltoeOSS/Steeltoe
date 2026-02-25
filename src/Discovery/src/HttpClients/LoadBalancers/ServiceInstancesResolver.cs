@@ -14,7 +14,7 @@ namespace Steeltoe.Discovery.HttpClients.LoadBalancers;
 /// <summary>
 /// Queries all discovery clients for service instances, optionally caching the results using <see cref="IDistributedCache" />.
 /// </summary>
-public sealed class ServiceInstancesResolver
+public sealed partial class ServiceInstancesResolver
 {
     private readonly IDiscoveryClient[] _discoveryClients;
     private readonly IDistributedCache? _distributedCache;
@@ -66,7 +66,7 @@ public sealed class ServiceInstancesResolver
 
         if (_discoveryClients.Length == 0)
         {
-            _logger.LogWarning("No discovery clients are registered.");
+            LogNoDiscoveryClients();
         }
     }
 
@@ -83,7 +83,7 @@ public sealed class ServiceInstancesResolver
 
             if (instancesFromCache != null)
             {
-                _logger.LogDebug("Returning {Count} instances from cache.", instancesFromCache.Count);
+                LogReturningInstancesFromCache(instancesFromCache.Count);
                 return instancesFromCache;
             }
         }
@@ -99,7 +99,7 @@ public sealed class ServiceInstancesResolver
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Failed to get instances from {DiscoveryClient}.", discoveryClient.GetType());
+                LogFailedToGetInstances(exception, discoveryClient.GetType());
             }
         }
 
@@ -132,6 +132,15 @@ public sealed class ServiceInstancesResolver
         JsonSerializableServiceInstance[] serializableInstances = instances.Select(JsonSerializableServiceInstance.CopyFrom).ToArray();
         return JsonSerializer.SerializeToUtf8Bytes(serializableInstances);
     }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "No discovery clients are registered.")]
+    private partial void LogNoDiscoveryClients();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Returning {Count} instances from cache.")]
+    private partial void LogReturningInstancesFromCache(int count);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to get instances from {DiscoveryClient}.")]
+    private partial void LogFailedToGetInstances(Exception exception, Type discoveryClient);
 
     private sealed class JsonSerializableServiceInstance : IServiceInstance
     {

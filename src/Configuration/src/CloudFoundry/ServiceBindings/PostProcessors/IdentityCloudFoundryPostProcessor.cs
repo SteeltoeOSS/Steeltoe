@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
 
-internal sealed class IdentityCloudFoundryPostProcessor : CloudFoundryPostProcessor
+internal sealed partial class IdentityCloudFoundryPostProcessor : CloudFoundryPostProcessor
 {
     internal const string BindingType = "p-identity";
     internal const string AuthenticationConfigurationKeyPrefix = "Authentication:Schemes";
@@ -34,7 +34,7 @@ internal sealed class IdentityCloudFoundryPostProcessor : CloudFoundryPostProces
         {
             if (hasMapped)
             {
-                _logger.LogWarning("Multiple identity service bindings found, which is not supported. Using the first binding from VCAP_SERVICES.");
+                LogMultipleIdentityBindings();
                 break;
             }
 
@@ -50,4 +50,8 @@ internal sealed class IdentityCloudFoundryPostProcessor : CloudFoundryPostProces
             hasMapped = true;
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Multiple identity service bindings found, which is not supported. Using the first binding from VCAP_SERVICES.")]
+    private partial void LogMultipleIdentityBindings();
 }

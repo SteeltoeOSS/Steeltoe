@@ -13,7 +13,7 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
-public abstract class EndpointMiddleware<TRequest, TResponse> : IEndpointMiddleware
+public abstract partial class EndpointMiddleware<TRequest, TResponse> : IEndpointMiddleware
 {
     private readonly ILogger _logger;
     protected IOptionsMonitor<ManagementOptions> ManagementOptionsMonitor { get; }
@@ -57,25 +57,24 @@ public abstract class EndpointMiddleware<TRequest, TResponse> : IEndpointMiddlew
             {
                 if (!allowedVerbs.Contains(context.Request.Method))
                 {
-                    _logger.LogTrace("{Method} method is unavailable at path {Path}.", context.Request.Method, context.Request.Path.Value);
+                    LogUnavailableHttpMethod(context.Request.Method, context.Request.Path.Value);
                     context.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
                 }
                 else if (!IsValidContentType(context.Request))
                 {
-                    _logger.LogDebug("Content-Type header '{RequestContentType}' is not supported for this request.", context.Request.ContentType);
+                    LogUnsupportedContentType(context.Request.ContentType);
                     context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
                     await context.Response.WriteAsync($"Only the '{ContentType}' content type is supported.", context.RequestAborted);
                 }
                 else if (!IsCompatibleAcceptHeader(context.Request))
                 {
-                    _logger.LogDebug("Accept header '{AcceptType}' is not supported for this request.", context.Request.Headers.Accept.ToString());
+                    LogUnsupportedAcceptHeader(context.Request.Headers.Accept.ToString());
                     context.Response.StatusCode = (int)HttpStatusCode.NotAcceptable;
                     await context.Response.WriteAsync($"Only the '{ContentType}' content type is supported.", context.RequestAborted);
                 }
                 else
                 {
-                    _logger.LogDebug("Reading {Method} request at path {Path} using {MiddlewareType}.", context.Request.Method, context.Request.Path.Value,
-                        GetType());
+                    LogReadingRequest(context.Request.Method, context.Request.Path.Value, GetType());
 
                     TRequest? request = await ParseRequestAsync(context, context.RequestAborted);
                     TResponse response = await InvokeEndpointHandlerAsync(request, context.RequestAborted);
@@ -87,7 +86,7 @@ public abstract class EndpointMiddleware<TRequest, TResponse> : IEndpointMiddlew
         }
         else
         {
-            _logger.LogTrace("CanInvoke returned false for {Method} request at path {Path}.", context.Request.Method, context.Request.Path.Value);
+            LogInvokeDenied(context.Request.Method, context.Request.Path.Value);
         }
 
         context.Response.StatusCode = (int)HttpStatusCode.NotFound;
@@ -147,4 +146,19 @@ public abstract class EndpointMiddleware<TRequest, TResponse> : IEndpointMiddlew
         JsonSerializerOptions options = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
         await JsonSerializer.SerializeAsync(httpContext.Response.Body, response, options, cancellationToken);
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "{Method} method is unavailable at path {Path}.")]
+    private partial void LogUnavailableHttpMethod(string method, string? path);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Content-Type header '{RequestContentType}' is not supported for this request.")]
+    private partial void LogUnsupportedContentType(string? requestContentType);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Accept header '{AcceptType}' is not supported for this request.")]
+    private partial void LogUnsupportedAcceptHeader(string acceptType);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Reading {Method} request at path {Path} using {MiddlewareType}.")]
+    private partial void LogReadingRequest(string method, string? path, Type middlewareType);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "CanInvoke returned false for {Method} request at path {Path}.")]
+    private partial void LogInvokeDenied(string method, string? path);
 }

@@ -8,13 +8,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Discovery.Consul.Configuration;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Steeltoe.Discovery.Consul;
 
 /// <summary>
 /// Scheduler used to issue TTL (time-to-live) requests to the Consul server.
 /// </summary>
-internal sealed class TtlScheduler : IAsyncDisposable
+internal sealed partial class TtlScheduler : IAsyncDisposable
 {
     private const string InstancePrefix = "service:";
 
@@ -80,7 +81,7 @@ internal sealed class TtlScheduler : IAsyncDisposable
 
     private void AddOrUpdate(string instanceId, ConsulHeartbeatOptions heartbeatOptions)
     {
-        _schedulerLogger.LogDebug("Adding/updating instance '{InstanceId}'.", instanceId);
+        LogAddingOrUpdatingInstance(_schedulerLogger, instanceId);
 
         TimeSpan interval = heartbeatOptions.ComputeHeartbeatInterval();
         string checkId = instanceId;
@@ -109,7 +110,7 @@ internal sealed class TtlScheduler : IAsyncDisposable
 
         if (ServiceHeartbeats.TryRemove(instanceId, out PeriodicHeartbeat? heartbeat))
         {
-            _schedulerLogger.LogDebug("Removing instance '{InstanceId}'.", instanceId);
+            LogRemovingInstance(_schedulerLogger, instanceId);
             await heartbeat.DisposeAsync();
         }
     }
@@ -130,4 +131,10 @@ internal sealed class TtlScheduler : IAsyncDisposable
             _isDisposed = true;
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Adding/updating instance '{InstanceId}'.")]
+    private static partial void LogAddingOrUpdatingInstance(ILogger logger, string instanceId);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Removing instance '{InstanceId}'.")]
+    private static partial void LogRemovingInstance(ILogger logger, string instanceId);
 }

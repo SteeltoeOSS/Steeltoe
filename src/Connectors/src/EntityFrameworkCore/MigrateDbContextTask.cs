@@ -18,7 +18,7 @@ namespace Steeltoe.Connectors.EntityFrameworkCore;
 /// <typeparam name="TDbContext">
 /// The <see cref="DbContext" /> to run migrations from.
 /// </typeparam>
-public sealed class MigrateDbContextTask<TDbContext> : IApplicationTask
+public sealed partial class MigrateDbContextTask<TDbContext> : IApplicationTask
     where TDbContext : DbContext
 {
     public const string Name = "migrate";
@@ -50,7 +50,7 @@ public sealed class MigrateDbContextTask<TDbContext> : IApplicationTask
             isNewDatabase = true;
         }
 
-        _logger.LogInformation("Starting database migration...");
+        LogStartingMigration();
         await _dbContext.Database.MigrateAsync(cancellationToken);
 
         if (isNewDatabase)
@@ -60,12 +60,21 @@ public sealed class MigrateDbContextTask<TDbContext> : IApplicationTask
 
         if (migrations.Length > 0)
         {
-            string migrationNames = string.Join(", ", migrations);
-            _logger.LogInformation("The following migrations have been successfully applied: {MigrationNames}.", migrationNames);
+            string migrationNames = string.Join(", ", migrations.Select(migration => $"'{migration}'"));
+            LogMigrationsApplied(migrationNames);
         }
         else
         {
-            _logger.LogInformation("Database is already up to date.");
+            LogAlreadyUpToDate();
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Starting database migration.")]
+    private partial void LogStartingMigration();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "The following migrations have been successfully applied: {MigrationNames}.")]
+    private partial void LogMigrationsApplied(string migrationNames);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Database is already up to date.")]
+    private partial void LogAlreadyUpToDate();
 }

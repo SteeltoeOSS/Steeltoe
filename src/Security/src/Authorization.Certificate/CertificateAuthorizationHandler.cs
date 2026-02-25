@@ -10,7 +10,7 @@ using Steeltoe.Common.Certificates;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
-internal sealed class CertificateAuthorizationHandler : IAuthorizationHandler
+internal sealed partial class CertificateAuthorizationHandler : IAuthorizationHandler
 {
     private readonly ILogger<CertificateAuthorizationHandler> _logger;
     private ApplicationInstanceCertificate? _applicationInstanceCertificate;
@@ -48,8 +48,7 @@ internal sealed class CertificateAuthorizationHandler : IAuthorizationHandler
         }
         else
         {
-            _logger.LogError("Identity certificate did not match an expected pattern. Subject was: {CertificateSubject}",
-                certificateOptions.Certificate.Subject);
+            LogIdentityCertificateMismatch(certificateOptions.Certificate.Subject);
         }
     }
 
@@ -75,8 +74,14 @@ internal sealed class CertificateAuthorizationHandler : IAuthorizationHandler
         }
         else
         {
-            _logger.LogDebug("User has the required claim, but the value doesn't match. Expected {ExpectedClaimValue} but got {ActualClaimValue}", claimValue,
-                context.User.FindFirstValue(claimType));
+            LogClaimValueMismatch(claimValue, context.User.FindFirstValue(claimType));
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Identity certificate did not match an expected pattern. Subject was '{CertificateSubject}'.")]
+    private partial void LogIdentityCertificateMismatch(string certificateSubject);
+
+    [LoggerMessage(Level = LogLevel.Debug,
+        Message = "User has the required claim, but the value doesn't match. Expected '{ExpectedClaimValue}' but got '{ActualClaimValue}'.")]
+    private partial void LogClaimValueMismatch(string expectedClaimValue, string? actualClaimValue);
 }

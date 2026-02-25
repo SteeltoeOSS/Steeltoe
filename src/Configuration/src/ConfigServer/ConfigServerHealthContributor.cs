@@ -8,7 +8,7 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
-internal sealed class ConfigServerHealthContributor : IHealthContributor
+internal sealed partial class ConfigServerHealthContributor : IHealthContributor
 {
     private readonly TimeProvider _timeProvider;
     private readonly ILogger<ConfigServerHealthContributor> _logger;
@@ -30,7 +30,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 
         if (Provider == null)
         {
-            _logger.LogWarning("Unable to find ConfigServerConfigurationProvider, health check disabled");
+            LogHealthCheckDisabled();
         }
     }
 
@@ -40,7 +40,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 
         if (Provider == null)
         {
-            _logger.LogDebug("No Config Server provider found");
+            LogNoProviderFound();
             health.Status = HealthStatus.Unknown;
             health.Details.Add("error", "No Config Server provider found");
             return health;
@@ -55,7 +55,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 
         if (sources == null || sources.Count == 0)
         {
-            _logger.LogDebug("No property sources found");
+            LogNoPropertySourcesFound();
             health.Status = HealthStatus.Unknown;
             health.Details.Add("error", "No property sources found");
             return health;
@@ -67,14 +67,14 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 
     internal void UpdateHealth(HealthCheckResult health, IList<PropertySource> sources)
     {
-        _logger.LogDebug("Config Server health check returning UP");
+        LogHealthCheckReturningUp();
 
         health.Status = HealthStatus.Up;
         List<string?> names = [];
 
         foreach (PropertySource source in sources)
         {
-            _logger.LogDebug("Returning property source: {PropertySource}", source.Name);
+            LogReturningPropertySource(source.Name);
             names.Add(source.Name);
         }
 
@@ -88,7 +88,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
         if (IsCacheStale(currentTime))
         {
             LastAccess = currentTime;
-            _logger.LogDebug("Cache stale, fetching config server health");
+            LogCacheStale();
             Cached = await provider.LoadInternalAsync(false, cancellationToken);
         }
 
@@ -114,4 +114,22 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
     {
         return Provider != null ? Provider.ClientOptions.Health.TimeToLive : long.MaxValue;
     }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "No Config Server provider found, health check disabled.")]
+    private partial void LogHealthCheckDisabled();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "No Config Server provider found.")]
+    private partial void LogNoProviderFound();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "No property sources found.")]
+    private partial void LogNoPropertySourcesFound();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Config Server health check returning UP.")]
+    private partial void LogHealthCheckReturningUp();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Returning property source {PropertySource}.")]
+    private partial void LogReturningPropertySource(string? propertySource);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Cache stale, fetching config server health.")]
+    private partial void LogCacheStale();
 }

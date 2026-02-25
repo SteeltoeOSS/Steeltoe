@@ -25,7 +25,7 @@ namespace Steeltoe.Discovery.Eureka;
 /// <summary>
 /// Sends HTTP requests to Eureka servers.
 /// </summary>
-public sealed class EurekaClient
+public sealed partial class EurekaClient
 {
     // HTTP endpoints are described at: https://github.com/Netflix/eureka/wiki/Eureka-REST-operations
     // Self preservation is described at: https://www.baeldung.com/eureka-self-preservation-renewal
@@ -92,8 +92,7 @@ public sealed class EurekaClient
 
         if ((Platform.IsContainerized || Platform.IsCloudHosted) && string.Equals(instance.HostName, "localhost", StringComparison.OrdinalIgnoreCase))
         {
-            _logger.LogWarning("Registering with hostname 'localhost' in containerized or cloud environments may not be valid. " +
-                "Please configure Eureka:Instance:HostName with a non-localhost address.");
+            LogHostNamePotentiallyInvalid();
         }
 
         string requestBody = JsonSerializer.Serialize(new JsonInstanceInfoRoot
@@ -257,20 +256,18 @@ public sealed class EurekaClient
 
             if (!string.IsNullOrEmpty(requestBody))
             {
-                _logger.LogDebug("Sending {RequestMethod} request to '{RequestUri}' with body: {RequestBody}.", request.Method, requestUri.ToMaskedString(),
-                    requestBody);
+                LogSendingRequestWithBody(request.Method, requestUri.ToMaskedString(), requestBody);
             }
             else
             {
-                _logger.LogDebug("Sending {RequestMethod} request to '{RequestUri}' without request body.", request.Method, requestUri.ToMaskedString());
+                LogSendingRequestWithoutBody(request.Method, requestUri.ToMaskedString());
             }
 
             try
             {
                 using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
-                _logger.LogDebug("HTTP {RequestMethod} request to '{RequestUri}' returned status {StatusCode} in attempt {Attempt}.", request.Method,
-                    requestUri.ToMaskedString(), (int)response.StatusCode, attempt);
+                LogRequestReturnedStatus(request.Method, requestUri.ToMaskedString(), (int)response.StatusCode, attempt);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -282,22 +279,19 @@ public sealed class EurekaClient
                     }
                     catch (JsonException exception) when (!exception.IsCancellation())
                     {
-                        _logger.LogDebug(exception, "Failed to deserialize HTTP response from {RequestMethod} '{RequestUri}'.", request.Method,
-                            requestUri.ToMaskedString());
+                        LogFailedToDeserializeResponse(exception, request.Method, requestUri.ToMaskedString());
                     }
                 }
                 else
                 {
                     string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                    _logger.LogInformation("HTTP {RequestMethod} request to '{RequestUri}' failed with status {StatusCode}: {ResponseBody}", request.Method,
-                        requestUri.ToMaskedString(), (int)response.StatusCode, responseBody);
+                    LogRequestFailed(request.Method, requestUri.ToMaskedString(), (int)response.StatusCode, responseBody);
                 }
             }
             catch (Exception exception) when (!exception.IsCancellation())
             {
-                _logger.LogWarning(exception, "Failed to execute HTTP {RequestMethod} request to '{RequestUri}' in attempt {Attempt}.", request.Method,
-                    requestUri.ToMaskedString(), attempt);
+                LogAttemptFailed(exception, request.Method, requestUri.ToMaskedString(), attempt);
             }
 
             _eurekaServiceUriStateManager.MarkFailingServiceUri(serviceUri);
@@ -335,7 +329,7 @@ public sealed class EurekaClient
 
         if (requestUri.TryGetUsernamePassword(out string? username, out string? password) && password.Length > 0)
         {
-            _logger.LogDebug("Adding credentials from '{RequestUri}' to Authorization header.", requestUri.ToMaskedString());
+            LogAddingCredentials(requestUri.ToMaskedString());
 
             requestMessage.Headers.Authorization =
                 new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}")));
@@ -352,7 +346,7 @@ public sealed class EurekaClient
                 string accessToken = await httpClient.GetAccessTokenAsync(accessTokenUri, clientOptions.ClientId,
                     clientOptions.ClientSecret, cancellationToken);
 
-                _logger.LogDebug("Fetched access token from '{AccessTokenUri}'.", accessTokenUri.ToMaskedString());
+                LogAccessTokenFetched(accessTokenUri.ToMaskedString());
                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             }
         }
@@ -364,4 +358,33 @@ public sealed class EurekaClient
 
         return requestMessage;
     }
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Registering with hostname 'localhost' in containerized or cloud environments may not be valid. " +
+            "Please configure Eureka:Instance:HostName with a non-localhost address.")]
+    private partial void LogHostNamePotentiallyInvalid();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Sending {RequestMethod} request to '{RequestUri}' with body: '{RequestBody}'.")]
+    private partial void LogSendingRequestWithBody(HttpMethod requestMethod, string requestUri, string? requestBody);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Sending {RequestMethod} request to '{RequestUri}' without request body.")]
+    private partial void LogSendingRequestWithoutBody(HttpMethod requestMethod, string requestUri);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "HTTP {RequestMethod} request to '{RequestUri}' returned status {StatusCode} in attempt {Attempt}.")]
+    private partial void LogRequestReturnedStatus(HttpMethod requestMethod, string requestUri, int statusCode, int attempt);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Failed to deserialize HTTP response from {RequestMethod} '{RequestUri}'.")]
+    private partial void LogFailedToDeserializeResponse(Exception exception, HttpMethod requestMethod, string requestUri);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "HTTP {RequestMethod} request to '{RequestUri}' failed with status {StatusCode}: '{ResponseBody}'.")]
+    private partial void LogRequestFailed(HttpMethod requestMethod, string requestUri, int statusCode, string responseBody);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to execute HTTP {RequestMethod} request to '{RequestUri}' in attempt {Attempt}.")]
+    private partial void LogAttemptFailed(Exception exception, HttpMethod requestMethod, string requestUri, int attempt);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Adding credentials from '{RequestUri}' to Authorization header.")]
+    private partial void LogAddingCredentials(string requestUri);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Fetched access token from '{AccessTokenUri}'.")]
+    private partial void LogAccessTokenFetched(string accessTokenUri);
 }

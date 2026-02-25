@@ -58,7 +58,11 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
         ArgumentNullException.ThrowIfNull(earlierKeysArray, nameof(earlierKeys));
 #pragma warning restore S3236 // Caller information arguments should not be provided explicitly
 
-        LogGetChildKeys(GetType().Name, earlierKeysArray, parentPath);
+        if (_logger.IsEnabled(LogLevel.Trace))
+        {
+            string earlierKeyNames = string.Join(", ", earlierKeysArray.Select(key => $"'{key}'"));
+            LogGetChildKeys(GetType().Name, earlierKeyNames, parentPath);
+        }
 
         IConfiguration? section = parentPath == null ? ConfigurationRoot : ConfigurationRoot?.GetSection(parentPath);
 
@@ -125,8 +129,9 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
     [LoggerMessage(Level = LogLevel.Trace, Message = "CreateConfigurationRoot from {Type} with {ProviderCount} providers.")]
     private partial void LogCreateConfigurationRoot(string type, int providerCount);
 
-    [LoggerMessage(Level = LogLevel.Trace, Message = "GetChildKeys from {Type} with earlierKeys [{EarlierKeys}] and parentPath '{ParentPath}'.")]
-    private partial void LogGetChildKeys(string type, string[] earlierKeys, string? parentPath);
+    [LoggerMessage(Level = LogLevel.Trace, SkipEnabledCheck = true,
+        Message = "GetChildKeys from {Type} with earlierKeys [{EarlierKeys}] and parentPath '{ParentPath}'.")]
+    private partial void LogGetChildKeys(string type, string earlierKeys, string? parentPath);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "TryGet from {Type} with key '{Key}'.")]
     private partial void LogTryGet(string type, string key);

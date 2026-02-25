@@ -9,7 +9,7 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Refresh;
 
-internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
+internal sealed partial class RefreshEndpointHandler : IRefreshEndpointHandler
 {
     private readonly IOptionsMonitor<RefreshEndpointOptions> _optionsMonitor;
     private readonly IConfiguration _configuration;
@@ -30,7 +30,7 @@ internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
 
     public Task<IList<string>> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Refreshing Configuration");
+        LogRefreshingConfiguration();
 
         if (_configuration is not IConfigurationRoot root)
         {
@@ -51,4 +51,7 @@ internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
 
         return Task.FromResult<IList<string>>(keys.ToList());
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Refreshing configuration.")]
+    private partial void LogRefreshingConfiguration();
 }

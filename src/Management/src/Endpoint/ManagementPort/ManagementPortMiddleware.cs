@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.ManagementPort;
 /// <summary>
 /// Blocks access to actuator endpoints on ports other than the management port. Blocks access to non-actuator endpoints on the management port.
 /// </summary>
-internal sealed class ManagementPortMiddleware
+internal sealed partial class ManagementPortMiddleware
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly RequestDelegate? _next;
@@ -36,7 +36,7 @@ internal sealed class ManagementPortMiddleware
         ArgumentNullException.ThrowIfNull(context);
 
         ManagementOptions managementOptions = _managementOptionsMonitor.CurrentValue;
-        _logger.LogDebug("InvokeAsync({RequestPath}), OptionsPath: {OptionsPath}", context.Request.Path.Value, managementOptions.Path);
+        LogEntering(context.Request.Path.Value, managementOptions.Path);
 
         bool allowRequest = IsRequestAllowed(context.Request, managementOptions);
 
@@ -81,12 +81,7 @@ internal sealed class ManagementPortMiddleware
 
             if (portMapping != null)
             {
-                if (_logger.IsEnabled(LogLevel.Trace))
-                {
-                    _logger.LogTrace(
-                        "Request received on port {RequestPort}. Allowed by CF_INSTANCE_PORTS mapping: [ Internal: {InternalPort}, ExternalTlsProxy: {ExternalTlsProxy}, InternalTlsProxy: {InternalTlsProxy} ]",
-                        requestPort, portMapping.Internal, portMapping.ExternalTlsProxy, portMapping.InternalTlsProxy);
-                }
+                LogPortMappingAllowed(requestPort, portMapping.Internal, portMapping.ExternalTlsProxy, portMapping.InternalTlsProxy);
 
                 return true;
             }
@@ -104,11 +99,22 @@ internal sealed class ManagementPortMiddleware
             defaultPort = context.Request.Scheme == "http" ? 80 : 443;
         }
 
-        _logger.LogWarning("Access to {Path} on port {Port} denied because 'Management:Endpoints:Port' is set to {ManagementPort}.", context.Request.Path,
-            defaultPort ?? context.Request.Host.Port, managementPort);
+        LogAccessDenied(context.Request.Path, defaultPort ?? context.Request.Host.Port, managementPort);
 
         context.Response.StatusCode = StatusCodes.Status404NotFound;
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Handling request at path {RequestPath} with options path {OptionsPath}.")]
+    private partial void LogEntering(string? requestPath, string? optionsPath);
+
+    [LoggerMessage(Level = LogLevel.Trace,
+        Message =
+            "Request received on port {RequestPort}, allowed by CF_INSTANCE_PORTS mapping with internal port {InternalPort}, external TLS proxy {ExternalTlsProxy} and internal TLS proxy {InternalTlsProxy}.")]
+    private partial void LogPortMappingAllowed(int? requestPort, int? internalPort, int? externalTlsProxy, int? internalTlsProxy);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Access to {Path} on port {Port} denied because 'Management:Endpoints:Port' is set to {ManagementPort}.")]
+    private partial void LogAccessDenied(PathString path, int? port, int managementPort);
 
     private sealed record PortMapping
     {

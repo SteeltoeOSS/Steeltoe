@@ -18,7 +18,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 /// <summary>
 /// Thread dumper that uses the EventPipe to acquire the call stacks of all the running threads.
 /// </summary>
-internal sealed class EventPipeThreadDumper : IThreadDumper
+internal sealed partial class EventPipeThreadDumper : IThreadDumper
 {
     private const string ThreadIdTemplate = "Thread (";
 
@@ -63,7 +63,7 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
         {
             try
             {
-                _logger.LogInformation("Attempting to create a thread dump.");
+                LogStart();
 
                 var client = new DiagnosticsClient(System.Environment.ProcessId);
                 List<EventPipeProvider> providers = [new("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)];
@@ -72,16 +72,16 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
                 using EventPipeSession session = client.StartEventPipeSession(providers);
                 List<ThreadInfo> threads = await GetThreadsFromEventPipeSessionAsync(session, logWriter, cancellationToken);
 
-                _logger.LogInformation("Successfully created a thread dump.");
+                LogSucceeded();
                 return threads;
             }
             finally
             {
 #pragma warning disable S1215 // "GC.Collect" should not be called
-                long totalMemory = GC.GetTotalMemory(true);
+                long memoryInBytes = GC.GetTotalMemory(true);
 #pragma warning restore S1215 // "GC.Collect" should not be called
 
-                _logger.LogDebug("Total memory: {Memory}.", totalMemory);
+                LogTotalMemory(memoryInBytes);
             }
         }, cancellationToken);
     }
@@ -128,7 +128,7 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
 
         if (isTraceLogEnabled)
         {
-            _logger.LogTrace("Captured log from thread dump:{LineBreak}{DumpLog}", System.Environment.NewLine, logOutput);
+            LogDumpLogCaptured(System.Environment.NewLine, logOutput);
         }
 
         return result!;
@@ -155,7 +155,7 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
 
             List<ThreadInfo> results = ReadStackSource(stackSource, symbolReader, logWriter).ToList();
 
-            _logger.LogTrace("Finished thread walk, found {Count} results.", results.Count);
+            LogThreadWalkFinished(results.Count);
             return results;
         }
         finally
@@ -183,9 +183,7 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
                 }
                 catch (TimeoutException) when (!cancellationToken.IsCancellationRequested)
                 {
-#pragma warning disable S6667 // Logging in a catch clause should pass the caught exception as a parameter.
-                    _logger.LogInformation("Sufficiently large applications can cause this command to take non-trivial amounts of time.");
-#pragma warning restore S6667 // Logging in a catch clause should pass the caught exception as a parameter.
+                    LogPossiblySlow();
 
                     throw;
                 }
@@ -366,6 +364,24 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
                 ? State.Waiting
                 : State.Runnable;
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Attempting to create a thread dump.")]
+    private partial void LogStart();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Successfully created a thread dump.")]
+    private partial void LogSucceeded();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Total memory is {MemoryInBytes} bytes.")]
+    private partial void LogTotalMemory(long memoryInBytes);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Captured log from thread dump:{LineBreak}{DumpLog}")]
+    private partial void LogDumpLogCaptured(string lineBreak, string? dumpLog);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Finished thread walk, found {Count} results.")]
+    private partial void LogThreadWalkFinished(int count);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Sufficiently large applications can cause this command to take non-trivial amounts of time.")]
+    private partial void LogPossiblySlow();
 
     private sealed record StackFrameSymbol(string AssemblyName, string TypeName, string MemberName, string Parameters)
     {

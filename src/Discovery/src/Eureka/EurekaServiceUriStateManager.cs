@@ -19,7 +19,7 @@ namespace Steeltoe.Discovery.Eureka;
 /// <summary>
 /// Keeps track of working and broken Eureka service URIs that are configured, with stickiness to the last working server.
 /// </summary>
-public sealed class EurekaServiceUriStateManager
+public sealed partial class EurekaServiceUriStateManager
 {
     private readonly IOptionsMonitor<EurekaClientOptions> _optionsMonitor;
     private readonly ILogger<EurekaServiceUriStateManager> _logger;
@@ -62,7 +62,7 @@ public sealed class EurekaServiceUriStateManager
 
             if (_failedServiceUris.Count > 0 && _failedServiceUris.Count >= threshold)
             {
-                _logger.LogDebug("Clearing quarantined list of size {Count}.", _failedServiceUris.Count);
+                LogClearingQuarantinedList(_failedServiceUris.Count);
                 _failedServiceUris.Clear();
             }
 
@@ -133,6 +133,9 @@ public sealed class EurekaServiceUriStateManager
             _failedServiceUris.Add(serviceUri);
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Clearing quarantined list of size {Count}.")]
+    private partial void LogClearingQuarantinedList(int count);
 
     /// <summary>
     /// Provides a method to sequentially try all available Eureka servers.

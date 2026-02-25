@@ -10,7 +10,7 @@ using Steeltoe.Common.Certificates;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
-public static class CertificateHttpClientBuilderExtensions
+public static partial class CertificateHttpClientBuilderExtensions
 {
     /// <summary>
     /// Binds certificate paths in configuration to <see cref="CertificateOptions" /> representing the application instance and attaches the certificate to
@@ -94,18 +94,24 @@ public static class CertificateHttpClientBuilderExtensions
 
             if (certificate != null)
             {
-                logger.LogTrace("Adding certificate with subject {CertificateSubject} to outbound requests in header {CertificateHeaderName}",
-                    certificate.Subject, certificateHeaderName);
+                LogAddingCertificate(logger, certificate.Subject, certificateHeaderName);
 
                 string b64 = Convert.ToBase64String(certificate.Export(X509ContentType.Cert));
                 client.DefaultRequestHeaders.Add(certificateHeaderName, b64);
             }
             else
             {
-                logger.LogError("Failed to find a certificate under the name {CertificateOptionsName}", certificateName);
+                LogCertificateNotFound(logger, certificateName);
             }
         });
 
         return builder;
     }
+
+    [LoggerMessage(Level = LogLevel.Trace,
+        Message = "Adding certificate with subject '{CertificateSubject}' to outbound requests in header {CertificateHeaderName}.")]
+    private static partial void LogAddingCertificate(ILogger logger, string certificateSubject, string certificateHeaderName);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to find a certificate under the name {CertificateOptionsName}.")]
+    private static partial void LogCertificateNotFound(ILogger logger, string certificateOptionsName);
 }

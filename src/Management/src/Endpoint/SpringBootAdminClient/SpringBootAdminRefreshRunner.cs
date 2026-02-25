@@ -13,7 +13,7 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
-internal sealed class SpringBootAdminRefreshRunner
+internal sealed partial class SpringBootAdminRefreshRunner
 {
     private readonly AppUrlCalculator _appUrlCalculator;
     private readonly SpringBootAdminApiClient _springBootAdminApiClient;
@@ -56,13 +56,13 @@ internal sealed class SpringBootAdminRefreshRunner
 
     public async Task RunAsync(bool isFirstTime, CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Validating options.");
+        LogValidatingOptions();
         SpringBootAdminClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
         ValidateAndSetOptions(clientOptions);
 
         if (_lastGoodOptions?.Url != null && !string.Equals(_lastGoodOptions.Url, clientOptions.Url, StringComparison.OrdinalIgnoreCase))
         {
-            _logger.LogDebug("Spring Boot Admin Server URL changed from {LastUrl} to {NewUrl}, unregistering first.", _lastGoodOptions.Url, clientOptions.Url);
+            LogUrlChanged(_lastGoodOptions.Url, clientOptions.Url);
             await SafeUnregisterAsync(_lastGoodOptions, cancellationToken);
         }
 
@@ -130,11 +130,11 @@ internal sealed class SpringBootAdminRefreshRunner
 
         if (isFirstTime)
         {
-            _logger.LogInformation("Registering with Spring Boot Admin Server at {Url}.", clientOptions.Url);
+            LogRegisteringFirstTime(clientOptions.Url);
         }
         else
         {
-            _logger.LogDebug("Registering with Spring Boot Admin Server at {Url}.", clientOptions.Url);
+            LogRegisteringNotFirstTime(clientOptions.Url);
         }
 
         _lastRegistrationId = await _springBootAdminApiClient.RegisterAsync(app, clientOptions, cancellationToken);
@@ -183,7 +183,7 @@ internal sealed class SpringBootAdminRefreshRunner
         {
             try
             {
-                _logger.LogDebug("Unregistering from Spring Boot Admin Server at {Url}.", clientOptions.Url);
+                LogUnregistering(clientOptions.Url);
                 await _springBootAdminApiClient.UnregisterAsync(_lastRegistrationId, clientOptions, cancellationToken);
                 _lastRegistrationId = null;
             }
@@ -191,9 +191,27 @@ internal sealed class SpringBootAdminRefreshRunner
             {
                 if (!exception.IsCancellation())
                 {
-                    _logger.LogWarning(exception, "Failed to unregister from Spring Boot Admin server at {Url}.", clientOptions.Url);
+                    LogUnregisterFailed(exception, clientOptions.Url);
                 }
             }
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Validating options.")]
+    private partial void LogValidatingOptions();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Spring Boot Admin Server URL changed from {LastUrl} to {NewUrl}, unregistering first.")]
+    private partial void LogUrlChanged(string? lastUrl, string? newUrl);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Registering with Spring Boot Admin Server at {Url}.")]
+    private partial void LogRegisteringFirstTime(string? url);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Registering with Spring Boot Admin Server at {Url}.")]
+    private partial void LogRegisteringNotFirstTime(string? url);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Unregistering from Spring Boot Admin Server at {Url}.")]
+    private partial void LogUnregistering(string? url);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to unregister from Spring Boot Admin server at {Url}.")]
+    private partial void LogUnregisterFailed(Exception exception, string? url);
 }
