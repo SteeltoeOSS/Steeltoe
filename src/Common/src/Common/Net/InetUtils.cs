@@ -15,6 +15,9 @@ namespace Steeltoe.Common.Net;
 // Non-sealed because this type is mocked by tests.
 internal partial class InetUtils
 {
+    private const RegexOptions InetRegexOptions = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture;
+    private static readonly TimeSpan RegexMatchTimeout = TimeSpan.FromSeconds(1);
+
     private readonly IDomainNameResolver _domainNameResolver;
     private readonly IOptionsMonitor<InetOptions> _optionsMonitor;
     private readonly ILogger<InetUtils> _logger;
@@ -139,7 +142,7 @@ internal partial class InetUtils
         foreach (string regex in preferredNetworks)
         {
             string hostAddress = address.ToString();
-            var matcher = new Regex(regex, RegexOptions.None, TimeSpan.FromSeconds(1));
+            var matcher = new Regex(regex, InetRegexOptions, RegexMatchTimeout);
 
             if (matcher.IsMatch(hostAddress) || hostAddress.StartsWith(regex, StringComparison.Ordinal))
             {
@@ -160,7 +163,7 @@ internal partial class InetUtils
 
         foreach (string regex in inetOptions.GetIgnoredInterfaces())
         {
-            var matcher = new Regex(regex, RegexOptions.None, TimeSpan.FromSeconds(1));
+            var matcher = new Regex(regex, InetRegexOptions, RegexMatchTimeout);
 
             if (matcher.IsMatch(interfaceName))
             {

@@ -7,17 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
-internal sealed class ApplicationInstanceCertificate
+internal sealed partial class ApplicationInstanceCertificate
 {
-    // This pattern is found on certificates issued by Diego
-    private static readonly Regex CloudFoundryInstanceCertificateSubjectRegex =
-        new(@"^CN=(?<instance>[0-9a-f-]+),\sOU=organization:(?<org>[0-9a-f-]+)\s\+\sOU=space:(?<space>[0-9a-f-]+)\s\+\sOU=app:(?<app>[0-9a-f-]+)$",
-            RegexOptions.Compiled | RegexOptions.Singleline, TimeSpan.FromSeconds(1));
-
-    // This pattern is found on certificates created by Steeltoe
-    private static readonly Regex SteeltoeInstanceCertificateSubjectRegex =
-        new(@"^CN=(?<instance>[0-9a-f-]+),\sOU=app:(?<app>[0-9a-f-]+)\s\+\sOU=space:(?<space>[0-9a-f-]+)\s\+\sOU=organization:(?<org>[0-9a-f-]+)$",
-            RegexOptions.Compiled | RegexOptions.Singleline, TimeSpan.FromSeconds(1));
+    private const int RegexMatchTimeoutInMilliseconds = 1_000;
 
     public string OrgId { get; }
     public string SpaceId { get; }
@@ -32,16 +24,26 @@ internal sealed class ApplicationInstanceCertificate
         InstanceId = instanceId;
     }
 
+    // This pattern is found on certificates issued by Diego.
+    [GeneratedRegex(@"^CN=(?<instance>[0-9a-f-]+),\sOU=organization:(?<org>[0-9a-f-]+)\s\+\sOU=space:(?<space>[0-9a-f-]+)\s\+\sOU=app:(?<app>[0-9a-f-]+)$",
+        RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture, RegexMatchTimeoutInMilliseconds)]
+    private static partial Regex CloudFoundryInstanceCertificateSubjectRegex();
+
+    // This pattern is found on certificates created by Steeltoe.
+    [GeneratedRegex(@"^CN=(?<instance>[0-9a-f-]+),\sOU=app:(?<app>[0-9a-f-]+)\s\+\sOU=space:(?<space>[0-9a-f-]+)\s\+\sOU=organization:(?<org>[0-9a-f-]+)$",
+        RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture, RegexMatchTimeoutInMilliseconds)]
+    private static partial Regex SteeltoeInstanceCertificateSubjectRegex();
+
     public static bool TryParse(string certificateSubject, [NotNullWhen(true)] out ApplicationInstanceCertificate? instanceCertificate)
     {
         instanceCertificate = null;
         certificateSubject = certificateSubject.Replace("\"", string.Empty, StringComparison.OrdinalIgnoreCase);
 
-        Match instanceMatch = CloudFoundryInstanceCertificateSubjectRegex.Match(certificateSubject);
+        Match instanceMatch = CloudFoundryInstanceCertificateSubjectRegex().Match(certificateSubject);
 
         if (!instanceMatch.Success)
         {
-            instanceMatch = SteeltoeInstanceCertificateSubjectRegex.Match(certificateSubject);
+            instanceMatch = SteeltoeInstanceCertificateSubjectRegex().Match(certificateSubject);
         }
 
         if (instanceMatch.Success)

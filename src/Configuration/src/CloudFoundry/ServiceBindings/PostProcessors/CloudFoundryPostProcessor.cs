@@ -7,13 +7,17 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
 
-internal abstract class CloudFoundryPostProcessor : IConfigurationPostProcessor
+internal abstract partial class CloudFoundryPostProcessor : IConfigurationPostProcessor
 {
-    private static readonly Regex TagsConfigurationKeyRegex =
-        new("^vcap:services:[^:]+:[0-9]+:tags:[0-9]+", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+    private const int RegexMatchTimeoutInMilliseconds = 1_000;
 
-    private static readonly Regex LabelConfigurationKeyRegex =
-        new("^vcap:services:[^:]+:[0-9]+:label+", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+    [GeneratedRegex("^vcap:services:[^:]+:[0-9]+:tags:[0-9]+", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture,
+        RegexMatchTimeoutInMilliseconds)]
+    private static partial Regex TagsConfigurationKeyRegex();
+
+    [GeneratedRegex("^vcap:services:[^:]+:[0-9]+:label+", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture,
+        RegexMatchTimeoutInMilliseconds)]
+    private static partial Regex LabelConfigurationKeyRegex();
 
     public abstract void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData);
 
@@ -23,7 +27,7 @@ internal abstract class CloudFoundryPostProcessor : IConfigurationPostProcessor
 
         foreach ((string key, string? value) in configurationData)
         {
-            if ((sources & KeyFilterSources.Tag) != 0 && TagsConfigurationKeyRegex.IsMatch(key) &&
+            if ((sources & KeyFilterSources.Tag) != 0 && TagsConfigurationKeyRegex().IsMatch(key) &&
                 string.Equals(value, valueToFind, StringComparison.OrdinalIgnoreCase))
             {
                 string? parentKey = ConfigurationPath.GetParentPath(key);
@@ -39,7 +43,7 @@ internal abstract class CloudFoundryPostProcessor : IConfigurationPostProcessor
                 }
             }
 
-            if ((sources & KeyFilterSources.Label) != 0 && LabelConfigurationKeyRegex.IsMatch(key) &&
+            if ((sources & KeyFilterSources.Label) != 0 && LabelConfigurationKeyRegex().IsMatch(key) &&
                 string.Equals(value, valueToFind, StringComparison.OrdinalIgnoreCase))
             {
                 string? serviceBindingKey = ConfigurationPath.GetParentPath(key);
