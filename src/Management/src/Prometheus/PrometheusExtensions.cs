@@ -30,7 +30,7 @@ public static partial class PrometheusExtensions
     /// </returns>
     public static IServiceCollection AddPrometheusActuator(this IServiceCollection services)
     {
-        return services.AddPrometheusActuator(true, null);
+        return AddPrometheusActuator(services, true, null);
     }
 
     /// <summary>
@@ -48,7 +48,7 @@ public static partial class PrometheusExtensions
     /// </returns>
     public static IServiceCollection AddPrometheusActuator(this IServiceCollection services, bool configureMiddleware)
     {
-        return services.AddPrometheusActuator(configureMiddleware, null);
+        return AddPrometheusActuator(services, configureMiddleware, null);
     }
 
     /// <summary>
@@ -105,7 +105,7 @@ public static partial class PrometheusExtensions
     /// </returns>
     public static IApplicationBuilder UsePrometheusActuator(this IApplicationBuilder builder)
     {
-        return builder.UsePrometheusActuator(null);
+        return UsePrometheusActuator(builder, null);
     }
 
     /// <summary>
