@@ -38,7 +38,7 @@ using Steeltoe.Management.Tracing;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration;
 
-internal sealed class BootstrapScanner
+internal sealed partial class BootstrapScanner
 {
     private readonly HostBuilderWrapper _wrapper;
     private readonly AssemblyLoader _loader;
@@ -93,21 +93,21 @@ internal sealed class BootstrapScanner
     {
         _wrapper.AddConfigServer(_loggerFactory);
 
-        _logger.LogInformation("Configured Config Server configuration provider");
+        LogConfigServerConfigured();
     }
 
     private void WireCloudFoundryConfiguration()
     {
         _wrapper.AddCloudFoundryConfiguration(_loggerFactory);
 
-        _logger.LogInformation("Configured Cloud Foundry configuration provider");
+        LogCloudFoundryConfigured();
     }
 
     private void WireRandomValueProvider()
     {
         _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddRandomValueSource(_loggerFactory));
 
-        _logger.LogInformation("Configured random value configuration provider");
+        LogRandomValueConfigured();
     }
 
     private void WireSpringBootProvider()
@@ -117,21 +117,21 @@ internal sealed class BootstrapScanner
         string[] args = Environment.GetCommandLineArgs().Skip(1).ToArray();
         _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddSpringBootFromCommandLine(args, _loggerFactory));
 
-        _logger.LogInformation("Configured Spring Boot configuration provider");
+        LogSpringBootConfigured();
     }
 
     private void WireDecryptionProvider()
     {
         _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddDecryption(_loggerFactory));
 
-        _logger.LogInformation("Configured decryption configuration provider");
+        LogDecryptionConfigured();
     }
 
     private void WirePlaceholderResolver()
     {
         _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddPlaceholderResolver(_loggerFactory));
 
-        _logger.LogInformation("Configured placeholder configuration provider");
+        LogPlaceholderConfigured();
     }
 
     private void WireConnectors()
@@ -150,7 +150,7 @@ internal sealed class BootstrapScanner
         _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.ConfigureCosmosDb());
         _wrapper.ConfigureServices((host, services) => services.AddCosmosDb(host.Configuration));
 
-        _logger.LogInformation("Configured CosmosDB connector");
+        LogCosmosDbConfigured();
     }
 
     private void WireMongoDbConnector()
@@ -158,7 +158,7 @@ internal sealed class BootstrapScanner
         _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.ConfigureMongoDb());
         _wrapper.ConfigureServices((host, services) => services.AddMongoDb(host.Configuration));
 
-        _logger.LogInformation("Configured MongoDB connector");
+        LogMongoDbConfigured();
     }
 
     private void WireMySqlConnector()
@@ -166,7 +166,7 @@ internal sealed class BootstrapScanner
         _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.ConfigureMySql());
         _wrapper.ConfigureServices((host, services) => services.AddMySql(host.Configuration));
 
-        _logger.LogInformation("Configured MySQL connector");
+        LogMySqlConfigured();
     }
 
     private void WirePostgreSqlConnector()
@@ -174,7 +174,7 @@ internal sealed class BootstrapScanner
         _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.ConfigurePostgreSql());
         _wrapper.ConfigureServices((host, services) => services.AddPostgreSql(host.Configuration));
 
-        _logger.LogInformation("Configured PostgreSQL connector");
+        LogPostgreSqlConfigured();
     }
 
     private void WireRabbitMQConnector()
@@ -182,7 +182,7 @@ internal sealed class BootstrapScanner
         _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.ConfigureRabbitMQ());
         _wrapper.ConfigureServices((host, services) => services.AddRabbitMQ(host.Configuration));
 
-        _logger.LogInformation("Configured RabbitMQ connector");
+        LogRabbitMQConfigured();
     }
 
     private void WireRedisConnector()
@@ -190,12 +190,12 @@ internal sealed class BootstrapScanner
         _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.ConfigureRedis());
         _wrapper.ConfigureServices((host, services) => services.AddRedis(host.Configuration));
 
-        _logger.LogInformation("Configured StackExchange Redis connector");
+        LogRedisConfigured();
 
         // Intentionally ignoring excluded assemblies here.
         if (MicrosoftRedisPackageResolver.Default.IsAvailable())
         {
-            _logger.LogInformation("Configured Redis distributed cache connector");
+            LogRedisDistributedCacheConfigured();
         }
     }
 
@@ -204,63 +204,63 @@ internal sealed class BootstrapScanner
         _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.ConfigureSqlServer());
         _wrapper.ConfigureServices((host, services) => services.AddSqlServer(host.Configuration));
 
-        _logger.LogInformation("Configured SQL Server connector");
+        LogSqlServerConfigured();
     }
 
     private void WireDynamicSerilog()
     {
         _wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicSerilog());
 
-        _logger.LogInformation("Configured dynamic console logger for Serilog");
+        LogDynamicSerilogConfigured();
     }
 
     private void WireDynamicConsole()
     {
         _wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
 
-        _logger.LogInformation("Configured dynamic console logger");
+        LogDynamicConsoleConfigured();
     }
 
     private void WireDiscoveryConfiguration()
     {
         _wrapper.ConfigureServices(services => services.AddConfigurationDiscoveryClient());
 
-        _logger.LogInformation("Configured configuration discovery client");
+        LogConfigurationDiscoveryConfigured();
     }
 
     private void WireDiscoveryConsul()
     {
         _wrapper.ConfigureServices(services => services.AddConsulDiscoveryClient());
 
-        _logger.LogInformation("Configured Consul discovery client");
+        LogConsulDiscoveryConfigured();
     }
 
     private void WireDiscoveryEureka()
     {
         _wrapper.ConfigureServices(services => services.AddEurekaDiscoveryClient());
 
-        _logger.LogInformation("Configured Eureka discovery client");
+        LogEurekaDiscoveryConfigured();
     }
 
     private void WireAllActuators()
     {
         _wrapper.ConfigureServices(services => services.AddAllActuators());
 
-        _logger.LogInformation("Configured actuators");
+        LogActuatorsConfigured();
     }
 
     private void WirePrometheus()
     {
         _wrapper.ConfigureServices(services => services.AddPrometheusActuator());
 
-        _logger.LogInformation("Configured Prometheus");
+        LogPrometheusConfigured();
     }
 
     private void WireDistributedTracingLogProcessor()
     {
         _wrapper.ConfigureServices(services => services.AddTracingLogProcessor());
 
-        _logger.LogInformation("Configured distributed tracing log processor");
+        LogDistributedTracingConfigured();
     }
 
     private bool WireIfLoaded(Action wireAction, string assemblyName)
@@ -281,4 +281,70 @@ internal sealed class BootstrapScanner
             wireAction();
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured Config Server configuration provider.")]
+    private partial void LogConfigServerConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured Cloud Foundry configuration provider.")]
+    private partial void LogCloudFoundryConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured random value configuration provider.")]
+    private partial void LogRandomValueConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured Spring Boot configuration provider.")]
+    private partial void LogSpringBootConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured decryption configuration provider.")]
+    private partial void LogDecryptionConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured placeholder configuration provider.")]
+    private partial void LogPlaceholderConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured CosmosDB connector.")]
+    private partial void LogCosmosDbConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured MongoDB connector.")]
+    private partial void LogMongoDbConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured MySQL connector.")]
+    private partial void LogMySqlConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured PostgreSQL connector.")]
+    private partial void LogPostgreSqlConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured RabbitMQ connector.")]
+    private partial void LogRabbitMQConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured StackExchange Redis connector.")]
+    private partial void LogRedisConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured Redis distributed cache connector.")]
+    private partial void LogRedisDistributedCacheConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured SQL Server connector.")]
+    private partial void LogSqlServerConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured dynamic console logger for Serilog.")]
+    private partial void LogDynamicSerilogConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured dynamic console logger.")]
+    private partial void LogDynamicConsoleConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured configuration discovery client.")]
+    private partial void LogConfigurationDiscoveryConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured Consul discovery client.")]
+    private partial void LogConsulDiscoveryConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured Eureka discovery client.")]
+    private partial void LogEurekaDiscoveryConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured actuators.")]
+    private partial void LogActuatorsConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured Prometheus.")]
+    private partial void LogPrometheusConfigured();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Configured distributed tracing log processor.")]
+    private partial void LogDistributedTracingConfigured();
 }

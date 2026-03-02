@@ -11,7 +11,7 @@ using Steeltoe.Common.Certificates;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
-internal sealed class PostConfigureCertificateAuthenticationOptions : IPostConfigureOptions<CertificateAuthenticationOptions>
+internal sealed partial class PostConfigureCertificateAuthenticationOptions : IPostConfigureOptions<CertificateAuthenticationOptions>
 {
     private readonly IOptionsMonitor<CertificateOptions> _certificateOptionsMonitor;
     private readonly ILogger<PostConfigureCertificateAuthenticationOptions> _logger;
@@ -77,8 +77,7 @@ internal sealed class PostConfigureCertificateAuthenticationOptions : IPostConfi
                 }
                 else
                 {
-                    _logger.LogError("Identity certificate did not match an expected pattern. Subject was: {CertificateSubject}",
-                        context.ClientCertificate.Subject);
+                    LogIdentityCertificateMismatch(context.ClientCertificate.Subject);
                 }
 
                 var identity = new ClaimsIdentity(claims, CertificateAuthenticationDefaults.AuthenticationScheme);
@@ -89,4 +88,7 @@ internal sealed class PostConfigureCertificateAuthenticationOptions : IPostConfi
             }
         };
     }
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Identity certificate did not match an expected pattern. Subject was '{CertificateSubject}'.")]
+    private partial void LogIdentityCertificateMismatch(string certificateSubject);
 }

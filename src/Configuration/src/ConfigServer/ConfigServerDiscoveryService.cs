@@ -15,7 +15,7 @@ using Steeltoe.Discovery.Eureka;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
-internal sealed class ConfigServerDiscoveryService
+internal sealed partial class ConfigServerDiscoveryService
 {
     private static readonly AssemblyLoader AssemblyLoader = new();
     private readonly IConfiguration _configuration;
@@ -99,7 +99,7 @@ internal sealed class ConfigServerDiscoveryService
 
         foreach (IDiscoveryClient discoveryClient in discoveryClients)
         {
-            _logger.LogDebug("Found discovery client of type {DiscoveryClientType}", discoveryClient.GetType());
+            LogDiscoveryClientFound(discoveryClient.GetType());
         }
 
         return discoveryClients;
@@ -113,7 +113,7 @@ internal sealed class ConfigServerDiscoveryService
 
         do
         {
-            _logger.LogDebug("Locating ConfigServer {ServiceId} via discovery", _options.Discovery.ServiceId);
+            LogLocatingConfigServer(_options.Discovery.ServiceId);
 
             if (_options.Discovery.ServiceId != null)
             {
@@ -126,7 +126,7 @@ internal sealed class ConfigServerDiscoveryService
                     }
                     catch (Exception exception) when (!exception.IsCancellation())
                     {
-                        _logger.LogError(exception, "Failed to get instances during ConfigServer lookup from {DiscoveryClient}.", discoveryClient.GetType());
+                        LogFailedToGetInstances(exception, discoveryClient.GetType());
                     }
                 }
             }
@@ -158,7 +158,7 @@ internal sealed class ConfigServerDiscoveryService
     {
         ArgumentNullException.ThrowIfNull(discoveryClientsFromServiceProvider);
 
-        _logger.LogInformation("Replacing the IDiscoveryClient(s) built at startup with the ones for runtime");
+        LogReplacingDiscoveryClients();
 
         await ShutdownAsync(cancellationToken);
 
@@ -178,4 +178,16 @@ internal sealed class ConfigServerDiscoveryService
             _temporaryServiceProviderForDiscoveryClients = null;
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Found discovery client of type {DiscoveryClientType}.")]
+    private partial void LogDiscoveryClientFound(Type discoveryClientType);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Locating ConfigServer {ServiceId} via discovery.")]
+    private partial void LogLocatingConfigServer(string? serviceId);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to get instances during ConfigServer lookup from {DiscoveryClient}.")]
+    private partial void LogFailedToGetInstances(Exception exception, Type discoveryClient);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Replacing the IDiscoveryClient(s) built at startup with the ones for runtime.")]
+    private partial void LogReplacingDiscoveryClients();
 }

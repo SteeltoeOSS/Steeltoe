@@ -13,7 +13,7 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health;
 
-internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRequest, HealthEndpointResponse>
+internal sealed partial class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRequest, HealthEndpointResponse>
 {
     private readonly IOptionsMonitor<HealthEndpointOptions> _endpointOptionsMonitor;
     private readonly ILogger<HealthEndpointMiddleware> _logger;
@@ -59,11 +59,11 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 
         if (requestComponents.Length > 0 && requestComponents[^1] != endpointOptions.Id)
         {
-            _logger.LogTrace("Found group '{HealthGroup}' in the request path.", requestComponents[^1]);
+            LogGroupFound(requestComponents[^1]);
             return requestComponents[^1];
         }
 
-        _logger.LogTrace("Did not find a health group in the request path.");
+        LogNoGroupFound();
         return string.Empty;
     }
 
@@ -127,4 +127,10 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
     {
         return response.Status is HealthStatus.Down or HealthStatus.OutOfService ? 503 : 200;
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Found group '{HealthGroup}' in the request path.")]
+    private partial void LogGroupFound(string healthGroup);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Did not find a health group in the request path.")]
+    private partial void LogNoGroupFound();
 }

@@ -17,7 +17,7 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
-internal sealed class PermissionsProvider
+internal sealed partial class PermissionsProvider
 {
     private const string ReadSensitiveDataJsonPropertyName = "read_sensitive_data";
     public const string HttpClientName = "CloudFoundrySecurity";
@@ -59,14 +59,13 @@ internal sealed class PermissionsProvider
 
         try
         {
-            _logger.LogDebug("GetPermissionsAsync({Uri})", checkPermissionsUri);
+            LogGetPermissions(checkPermissionsUri);
             using HttpClient httpClient = CreateHttpClient();
             using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                _logger.LogInformation("Cloud Foundry returned status: {HttpStatus} while obtaining permissions from: {PermissionsUri}", response.StatusCode,
-                    checkPermissionsUri);
+                LogResponseStatus(response.StatusCode, checkPermissionsUri);
 
                 if (response.StatusCode is HttpStatusCode.Forbidden)
                 {
@@ -103,7 +102,7 @@ internal sealed class PermissionsProvider
         {
             json = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            _logger.LogDebug("GetPermissionsAsync returned json: {Json}", SecurityUtilities.SanitizeInput(json));
+            LogResponseJson(SecurityUtilities.SanitizeInput(json));
 
             var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
@@ -118,7 +117,7 @@ internal sealed class PermissionsProvider
             throw new SecurityException($"Exception extracting permissions from json: {SecurityUtilities.SanitizeInput(json)}", exception);
         }
 
-        _logger.LogDebug("GetPermissionsAsync returning: {Permissions}", permissions);
+        LogPermissions(permissions);
         return permissions;
     }
 
@@ -128,6 +127,18 @@ internal sealed class PermissionsProvider
         httpClient.ConfigureForSteeltoe(GetPermissionsTimeout);
         return httpClient;
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Fetching permissions from {PermissionsUri}.")]
+    private partial void LogGetPermissions(string permissionsUri);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Cloud Foundry returned status {HttpStatus} while obtaining permissions from {PermissionsUri}.")]
+    private partial void LogResponseStatus(HttpStatusCode httpStatus, string permissionsUri);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Permissions response returned JSON: {Json}")]
+    private partial void LogResponseJson(string json);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Resolved permissions to {Permissions}.")]
+    private partial void LogPermissions(EndpointPermissions permissions);
 
     internal static class Messages
     {

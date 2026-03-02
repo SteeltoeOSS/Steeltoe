@@ -59,7 +59,7 @@ public sealed class PermissionsProviderTest
     [InlineData("forbidden", HttpStatusCode.Forbidden, PermissionsProvider.Messages.AccessDenied)]
     [InlineData("timeout", HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.CloudFoundryTimeout)]
     [InlineData("exception", HttpStatusCode.ServiceUnavailable,
-        "Exception of type 'System.Net.Http.HttpRequestException' with error 'NameResolutionError' was thrown")]
+        $"Exception of type 'System.Net.Http.HttpRequestException' with error '{nameof(HttpRequestError.NameResolutionError)}' was thrown")]
     [InlineData("no_sensitive_data", HttpStatusCode.OK, "")]
     [InlineData("success", HttpStatusCode.OK, "")]
     public async Task Returns_expected_response_on_permission_check(string scenario, HttpStatusCode? steeltoeStatusCode, string errorMessage)

@@ -19,7 +19,7 @@ namespace Steeltoe.Discovery.Eureka;
 /// <summary>
 /// Provides access to the Eureka instance that represents the currently running application.
 /// </summary>
-public sealed class EurekaApplicationInfoManager : IDisposable
+public sealed partial class EurekaApplicationInfoManager : IDisposable
 {
     private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
     private readonly IOptionsMonitor<EurekaInstanceOptions> _instanceOptionsMonitor;
@@ -69,7 +69,7 @@ public sealed class EurekaApplicationInfoManager : IDisposable
 
     private void HandleInstanceOptionsChanged(EurekaInstanceOptions instanceOptions)
     {
-        _logger.LogDebug("Responding to changed configuration.");
+        LogRespondingToChangedConfiguration();
 
         try
         {
@@ -77,7 +77,7 @@ public sealed class EurekaApplicationInfoManager : IDisposable
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Failed to update Eureka instance from changed configuration.");
+            LogFailedToUpdateInstance(exception);
         }
     }
 
@@ -121,7 +121,7 @@ public sealed class EurekaApplicationInfoManager : IDisposable
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Failed to adapt to configuration changes. Discarding updated configuration.");
+                LogFailedToAdaptConfiguration(exception);
                 newInstance = previousInstance;
             }
 
@@ -143,13 +143,13 @@ public sealed class EurekaApplicationInfoManager : IDisposable
 
             if (newInstance.IsDirty)
             {
-                _logger.LogDebug("Instance has changed.");
+                LogInstanceHasChanged();
                 _instance = newInstance;
                 eventArgs = new InstanceChangedEventArgs(newInstance, previousInstance);
             }
             else
             {
-                _logger.LogDebug("Instance has not changed.");
+                LogInstanceHasNotChanged();
             }
         }
 
@@ -164,14 +164,14 @@ public sealed class EurekaApplicationInfoManager : IDisposable
         if (instanceOptions.InstanceId != previousInstance.InstanceId)
         {
             // A change of InstanceId would require unregister, then re-register.
-            _logger.LogWarning("Discarding change of InstanceId, which is not supported.");
+            LogDiscardingInstanceIdChange();
             instanceOptions.InstanceId = previousInstance.InstanceId;
         }
 
         if (!string.Equals(instanceOptions.AppName, previousInstance.AppName, StringComparison.OrdinalIgnoreCase))
         {
             // A change of AppName would require unregister, then re-register.
-            _logger.LogWarning("Discarding change of AppName, which is not supported.");
+            LogDiscardingAppNameChange();
             instanceOptions.AppName = previousInstance.AppName;
         }
 
@@ -198,4 +198,25 @@ public sealed class EurekaApplicationInfoManager : IDisposable
     {
         _instanceOptionsChangeToken?.Dispose();
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Responding to changed configuration.")]
+    private partial void LogRespondingToChangedConfiguration();
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to update Eureka instance from changed configuration.")]
+    private partial void LogFailedToUpdateInstance(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to adapt to configuration changes. Discarding updated configuration.")]
+    private partial void LogFailedToAdaptConfiguration(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Instance has changed.")]
+    private partial void LogInstanceHasChanged();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Instance has not changed.")]
+    private partial void LogInstanceHasNotChanged();
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Discarding change of InstanceId, which is not supported.")]
+    private partial void LogDiscardingInstanceIdChange();
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Discarding change of AppName, which is not supported.")]
+    private partial void LogDiscardingAppNameChange();
 }

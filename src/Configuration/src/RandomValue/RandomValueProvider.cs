@@ -12,7 +12,7 @@ namespace Steeltoe.Configuration.RandomValue;
 /// <summary>
 /// Configuration provider that provides random values. Note: This code was inspired by the Spring Boot equivalent class.
 /// </summary>
-internal sealed class RandomValueProvider : ConfigurationProvider
+internal sealed partial class RandomValueProvider : ConfigurationProvider
 {
     private readonly ILogger<RandomValueProvider> _logger;
     private readonly string _prefix;
@@ -60,7 +60,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
         }
 
         value = GetRandomValue(key[_prefix.Length..]);
-        _logger.LogDebug("Generated random value {Value} for '{Key}'", value, key);
+        LogRandomValueGenerated(value, key);
         return true;
     }
 
@@ -199,4 +199,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
         Random.Shared.NextBytes(bytes);
         return Convert.ToHexString(bytes);
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Generated random value '{Value}' for '{Key}'.")]
+    private partial void LogRandomValueGenerated(string? value, string key);
 }

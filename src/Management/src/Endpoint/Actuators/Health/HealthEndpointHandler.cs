@@ -12,7 +12,7 @@ using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health;
 
-internal sealed class HealthEndpointHandler : IHealthEndpointHandler
+internal sealed partial class HealthEndpointHandler : IHealthEndpointHandler
 {
     private readonly IOptionsMonitor<HealthEndpointOptions> _endpointOptionsMonitor;
     private readonly IHealthAggregator _healthAggregator;
@@ -115,8 +115,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 
         if (ShouldClear(showComponents, healthRequest))
         {
-            _logger.LogTrace("Clearing health check components. ShowComponents={ShowComponents}, HasClaim={HasClaimForHealth}.", showComponents,
-                healthRequest.HasClaim);
+            LogClearingComponents(showComponents, healthRequest.HasClaim);
 
             response.Components.Clear();
         }
@@ -126,8 +125,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 
             if (ShouldClear(showDetails, healthRequest))
             {
-                _logger.LogTrace("Clearing health check component details. ShowDetails={ShowDetails}, HasClaim={HasClaimForHealth}.", showDetails,
-                    healthRequest.HasClaim);
+                LogClearingDetails(showDetails, healthRequest.HasClaim);
 
                 foreach (HealthCheckResult component in response.Components.Values)
                 {
@@ -141,4 +139,12 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
     {
         return showValues == ShowValues.Never || (showValues == ShowValues.WhenAuthorized && !healthRequest.HasClaim);
     }
+
+    [LoggerMessage(Level = LogLevel.Trace,
+        Message = "Clearing health check components because ShowComponents is {ShowComponents} and HasClaim is {HasClaimForHealth}.")]
+    private partial void LogClearingComponents(ShowValues showComponents, bool hasClaimForHealth);
+
+    [LoggerMessage(Level = LogLevel.Trace,
+        Message = "Clearing health check component details because ShowDetails is {ShowDetails} and HasClaim is {HasClaimForHealth}.")]
+    private partial void LogClearingDetails(ShowValues showDetails, bool hasClaimForHealth);
 }

@@ -11,7 +11,7 @@ using Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MongoDb;
 
-internal sealed class MongoDbHealthContributor : IHealthContributor
+internal sealed partial class MongoDbHealthContributor : IHealthContributor
 {
     private readonly MongoClientInterfaceShimFactory _clientFactory;
     private readonly ILogger<MongoDbHealthContributor> _logger;
@@ -36,7 +36,7 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
 
     public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
-        _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
+        LogCheckingHealth(Id, Host);
 
         var result = new HealthCheckResult
         {
@@ -59,7 +59,7 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
 
             result.Status = HealthStatus.Up;
 
-            _logger.LogTrace("{DbConnection} at {Host} is up!", Id, Host);
+            LogHealthUp(Id, Host);
         }
         catch (Exception exception)
         {
@@ -70,7 +70,7 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
                 ExceptionDispatchInfo.Capture(exception).Throw();
             }
 
-            _logger.LogError(exception, "{DbConnection} at {Host} is down!", Id, Host);
+            LogHealthDown(exception, Id, Host);
 
             result.Status = HealthStatus.Down;
             result.Description = $"{Id} health check failed";
@@ -79,6 +79,15 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
 
         return result;
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Checking {DbConnection} health at {Host}.")]
+    private partial void LogCheckingHealth(string dbConnection, string host);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "{DbConnection} at {Host} is up.")]
+    private partial void LogHealthUp(string dbConnection, string host);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "{DbConnection} at {Host} is down.")]
+    private partial void LogHealthDown(Exception exception, string dbConnection, string host);
 
     private sealed class MongoClientInterfaceShimFactory
     {

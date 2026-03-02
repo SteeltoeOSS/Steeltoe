@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 
-internal sealed class HypermediaService
+internal sealed partial class HypermediaService
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly EndpointOptions _endpointOptions;
@@ -70,7 +70,7 @@ internal sealed class HypermediaService
             return links;
         }
 
-        _logger.LogTrace("Processing hypermedia for {ManagementOptions}", managementOptions);
+        LogProcessingHypermedia();
 
         Link? selfLink = null;
         bool skipExposureCheck = PermissionsProvider.IsCloudFoundryRequest(baseUrl.PathAndQuery);
@@ -101,7 +101,7 @@ internal sealed class HypermediaService
             {
                 if (links.Entries.ContainsKey(endpointOptions.Id))
                 {
-                    _logger.LogWarning("Duplicate endpoint with ID '{DuplicateEndpointId}' detected.", endpointOptions.Id);
+                    LogDuplicateEndpoint(endpointOptions.Id);
                 }
                 else
                 {
@@ -129,4 +129,10 @@ internal sealed class HypermediaService
         string href = builder.Uri.ToString();
         return new Link(href, false);
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Processing hypermedia.")]
+    private partial void LogProcessingHypermedia();
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Duplicate endpoint with ID '{DuplicateEndpointId}' detected.")]
+    private partial void LogDuplicateEndpoint(string? duplicateEndpointId);
 }

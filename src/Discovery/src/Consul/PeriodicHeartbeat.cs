@@ -5,10 +5,11 @@
 using Consul;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Extensions;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Steeltoe.Discovery.Consul;
 
-internal sealed class PeriodicHeartbeat : IAsyncDisposable
+internal sealed partial class PeriodicHeartbeat : IAsyncDisposable
 {
     private readonly string _serviceId;
     private readonly PeriodicTimer _periodicTimer;
@@ -37,11 +38,11 @@ internal sealed class PeriodicHeartbeat : IAsyncDisposable
     {
         try
         {
-            _logger.LogDebug("Start sending periodic Consul heartbeats for '{ServiceId}' with interval {Interval}.", _serviceId, Interval);
+            LogStartSendingHeartbeats(_serviceId, Interval);
 
             while (await _periodicTimer.WaitForNextTickAsync(_cancellationTokenSource.Token))
             {
-                _logger.LogDebug("Sending Consul heartbeat for '{ServiceId}'.", _serviceId);
+                LogSendingHeartbeat(_serviceId);
 
                 try
                 {
@@ -49,16 +50,13 @@ internal sealed class PeriodicHeartbeat : IAsyncDisposable
                 }
                 catch (Exception exception) when (!exception.IsCancellation())
                 {
-                    _logger.LogError(exception, "Failed to send Consul heartbeat for '{ServiceId}'.", _serviceId);
+                    LogFailedToSendHeartbeat(exception, _serviceId);
                 }
             }
         }
         catch (OperationCanceledException)
         {
-#pragma warning disable S6667 // Logging in a catch clause should pass the caught exception as a parameter.
-            // Justification: The exception contains no useful information. Logging it suggests something crashed, while this is expected behavior.
-            _logger.LogDebug("Stop sending periodic Consul heartbeats for '{ServiceId}'.", _serviceId);
-#pragma warning restore S6667 // Logging in a catch clause should pass the caught exception as a parameter.
+            LogSendingHeartbeatsStopped(_serviceId);
         }
     }
 
@@ -68,7 +66,7 @@ internal sealed class PeriodicHeartbeat : IAsyncDisposable
         {
             _periodicTimer.Period = interval;
             Interval = interval;
-            _logger.LogDebug("Periodic Consul heartbeat interval for '{ServiceId}' changed to {Interval}.", _serviceId, interval);
+            LogHeartbeatIntervalChanged(_serviceId, interval);
         }
     }
 
@@ -80,4 +78,19 @@ internal sealed class PeriodicHeartbeat : IAsyncDisposable
         _task.Dispose();
         _periodicTimer.Dispose();
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Start sending periodic Consul heartbeats for '{ServiceId}' with interval {Interval}.")]
+    private partial void LogStartSendingHeartbeats(string serviceId, TimeSpan interval);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Sending Consul heartbeat for '{ServiceId}'.")]
+    private partial void LogSendingHeartbeat(string serviceId);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to send Consul heartbeat for '{ServiceId}'.")]
+    private partial void LogFailedToSendHeartbeat(Exception exception, string serviceId);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Stopped sending periodic Consul heartbeats for '{ServiceId}'.")]
+    private partial void LogSendingHeartbeatsStopped(string serviceId);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Periodic Consul heartbeat interval for '{ServiceId}' changed to {Interval}.")]
+    private partial void LogHeartbeatIntervalChanged(string serviceId, TimeSpan interval);
 }

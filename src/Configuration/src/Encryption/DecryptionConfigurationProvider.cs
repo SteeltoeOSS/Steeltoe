@@ -13,10 +13,13 @@ internal sealed partial class DecryptionConfigurationProvider(
     IList<IConfigurationProvider> providers, ITextDecryptor? textDecryptor, ILoggerFactory loggerFactory)
     : CompositeConfigurationProvider(providers, loggerFactory)
 {
+    private const int RegexMatchTimeoutInMilliseconds = 1_000;
+
     private readonly ILogger<DecryptionConfigurationProvider> _logger = loggerFactory.CreateLogger<DecryptionConfigurationProvider>();
     private ITextDecryptor? _textDecryptor = textDecryptor;
 
-    [GeneratedRegex("^{cipher}({key:(?<alias>.*)})?(?<cipher>.*)$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture, 1000)]
+    [GeneratedRegex("^{cipher}({key:(?<alias>.*)})?(?<cipher>.*)$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture,
+        RegexMatchTimeoutInMilliseconds)]
     private static partial Regex CipherRegex();
 
     public override bool TryGet(string key, out string? value)

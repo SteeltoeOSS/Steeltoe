@@ -13,7 +13,7 @@ namespace Steeltoe.Discovery.Consul.Registry;
 /// <summary>
 /// A registrar used to register a service in a Consul server.
 /// </summary>
-internal sealed class ConsulServiceRegistrar : IAsyncDisposable
+internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
 {
     private const int NotRunning = 0;
     private const int Running = 1;
@@ -73,7 +73,7 @@ internal sealed class ConsulServiceRegistrar : IAsyncDisposable
     {
         if (!Options.Enabled)
         {
-            _logger.LogDebug("Consul discovery client is turned off.");
+            LogDiscoveryClientTurnedOff();
             return;
         }
 
@@ -94,7 +94,7 @@ internal sealed class ConsulServiceRegistrar : IAsyncDisposable
     {
         if (!Options.Register)
         {
-            _logger.LogDebug("Consul registration is turned off.");
+            LogRegistrationTurnedOff();
             return;
         }
 
@@ -105,7 +105,7 @@ internal sealed class ConsulServiceRegistrar : IAsyncDisposable
     {
         if (!Options.Register || !Options.Deregister)
         {
-            _logger.LogDebug("Consul deregistration is turned off.");
+            LogDeregistrationTurnedOff();
             return;
         }
 
@@ -116,7 +116,7 @@ internal sealed class ConsulServiceRegistrar : IAsyncDisposable
     {
         ArgumentNullException.ThrowIfNull(retryable);
 
-        _logger.LogDebug("Starting retryable action.");
+        LogStartingRetryableAction();
 
         int attempts = 0;
         int backOff = options.InitialInterval;
@@ -126,7 +126,7 @@ internal sealed class ConsulServiceRegistrar : IAsyncDisposable
             try
             {
                 await retryable(cancellationToken);
-                _logger.LogDebug("Finished retryable action.");
+                LogRetryableActionFinished();
                 return;
             }
             catch (Exception exception) when (!exception.IsCancellation())
@@ -135,14 +135,14 @@ internal sealed class ConsulServiceRegistrar : IAsyncDisposable
 
                 if (attempts < options.MaxAttempts)
                 {
-                    _logger.LogError(exception, "Exception during {Attempt} attempts of retryable action, will retry", attempts);
+                    LogStartingRetry(exception, attempts);
                     Thread.CurrentThread.Join(backOff);
                     int nextBackOff = (int)(backOff * options.Multiplier);
                     backOff = Math.Min(nextBackOff, options.MaxInterval);
                 }
                 else
                 {
-                    _logger.LogError(exception, "Exception during {Attempt} attempts of retryable action, done with retry", attempts);
+                    LogRetryFailed(exception, attempts);
                     throw;
                 }
             }
@@ -164,4 +164,25 @@ internal sealed class ConsulServiceRegistrar : IAsyncDisposable
             _isDisposed = true;
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Consul discovery client is turned off.")]
+    private partial void LogDiscoveryClientTurnedOff();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Consul registration is turned off.")]
+    private partial void LogRegistrationTurnedOff();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Consul deregistration is turned off.")]
+    private partial void LogDeregistrationTurnedOff();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Starting retryable action.")]
+    private partial void LogStartingRetryableAction();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Finished retryable action.")]
+    private partial void LogRetryableActionFinished();
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Exception during {Attempt} attempts of retryable action, will retry.")]
+    private partial void LogStartingRetry(Exception exception, int attempt);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Exception during {Attempt} attempts of retryable action, done with retries.")]
+    private partial void LogRetryFailed(Exception exception, int attempt);
 }

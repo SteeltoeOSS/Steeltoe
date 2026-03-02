@@ -8,7 +8,7 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
-internal sealed class ThreadDumpEndpointHandler : IThreadDumpEndpointHandler
+internal sealed partial class ThreadDumpEndpointHandler : IThreadDumpEndpointHandler
 {
     private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _optionsMonitor;
     private readonly IThreadDumper _threadDumper;
@@ -29,7 +29,10 @@ internal sealed class ThreadDumpEndpointHandler : IThreadDumpEndpointHandler
 
     public async Task<IList<ThreadInfo>> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
-        _logger.LogTrace("Invoking ThreadDumper");
+        LogInvokingThreadDumper();
         return await _threadDumper.DumpThreadsAsync(cancellationToken);
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Invoking thread dumper.")]
+    private partial void LogInvokingThreadDumper();
 }

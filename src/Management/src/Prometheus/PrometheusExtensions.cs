@@ -17,7 +17,7 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Prometheus;
 
-public static class PrometheusExtensions
+public static partial class PrometheusExtensions
 {
     /// <summary>
     /// Adds the services used by the Steeltoe-configured OpenTelemetry Prometheus exporter and configures the ASP.NET Core middleware pipeline.
@@ -140,7 +140,7 @@ public static class PrometheusExtensions
 
             if (permissionsProvider is null)
             {
-                logger.LogWarning("The Cloud Foundry Actuator is required in order to run the Prometheus exporter under the Cloud Foundry context.");
+                LogCloudFoundryActuatorRequired(logger);
             }
             else
             {
@@ -154,13 +154,12 @@ public static class PrometheusExtensions
 
         if (applyActuatorConventions && !isEndpointRoutingEnabled)
         {
-            logger.LogWarning("Customizing endpoints is only supported when using endpoint routing.");
+            LogEndpointRoutingRequired(logger);
         }
 
         if (managementOptions.Port == 0 && !applyActuatorConventions && configurePrometheusPipeline is null)
         {
-            logger.LogWarning(
-                "The Prometheus endpoint may not be configured securely. Consider using a dedicated management port, adding actuator conventions or configuring the Prometheus middleware pipeline.");
+            LogPrometheusEndpointNotSecure(logger);
         }
 
         builder.UseOpenTelemetryPrometheusScrapingEndpoint(null, null, endpointPath, ConfigureBranchedPipeline, null);
@@ -195,4 +194,16 @@ public static class PrometheusExtensions
             }
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "The Cloud Foundry Actuator is required in order to run the Prometheus exporter under the Cloud Foundry context.")]
+    private static partial void LogCloudFoundryActuatorRequired(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Customizing endpoints is only supported when using endpoint routing.")]
+    private static partial void LogEndpointRoutingRequired(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "The Prometheus endpoint may not be configured securely. " +
+            "Consider using a dedicated management port, adding actuator conventions or configuring the Prometheus middleware pipeline.")]
+    private static partial void LogPrometheusEndpointNotSecure(ILogger logger);
 }

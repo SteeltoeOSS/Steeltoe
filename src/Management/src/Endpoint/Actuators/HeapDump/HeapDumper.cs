@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
-internal sealed class HeapDumper : IHeapDumper
+internal sealed partial class HeapDumper : IHeapDumper
 {
     private readonly IOptionsMonitor<HeapDumpEndpointOptions> _optionsMonitor;
     private readonly TimeProvider _timeProvider;
@@ -43,7 +43,7 @@ internal sealed class HeapDumper : IHeapDumper
             _ => "full dump"
         };
 
-        _logger.LogInformation("Attempting to create a {DumpType}.", dumpDescription);
+        LogStart(dumpDescription);
 
         try
         {
@@ -64,7 +64,7 @@ internal sealed class HeapDumper : IHeapDumper
             throw;
         }
 
-        _logger.LogInformation("Successfully created a {DumpType}.", dumpDescription);
+        LogSucceeded(dumpDescription);
         return outputPath;
     }
 
@@ -159,7 +159,7 @@ internal sealed class HeapDumper : IHeapDumper
             throw new InvalidOperationException($"Failed to create a {dumpDescription}. Captured log:{System.Environment.NewLine}{logOutput}", error);
         }
 
-        _logger.LogTrace("Captured log from {DumpType}:{LineBreak}{DumpLog}", dumpDescription, System.Environment.NewLine, logOutput);
+        LogDumpLogCaptured(dumpDescription, System.Environment.NewLine, logOutput);
     }
 
     private static void SafeDelete(string? outputPath)
@@ -179,4 +179,13 @@ internal sealed class HeapDumper : IHeapDumper
             }
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Attempting to create a {DumpType}.")]
+    private partial void LogStart(string dumpType);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Successfully created a {DumpType}.")]
+    private partial void LogSucceeded(string dumpType);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Captured log from {DumpType}:{LineBreak}{DumpLog}")]
+    private partial void LogDumpLogCaptured(string dumpType, string lineBreak, string dumpLog);
 }

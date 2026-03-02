@@ -18,7 +18,7 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
-internal sealed class CloudFoundrySecurityMiddleware
+internal sealed partial class CloudFoundrySecurityMiddleware
 {
     private const string BearerTokenPrefix = "Bearer ";
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
@@ -53,7 +53,7 @@ internal sealed class CloudFoundrySecurityMiddleware
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        _logger.LogDebug("InvokeAsync({RequestPath})", context.Request.Path.Value);
+        LogEntering(context.Request.Path.Value);
         ManagementOptions managementOptions = _managementOptionsMonitor.CurrentValue;
 
         if (Platform.IsCloudFoundry && managementOptions.IsCloudFoundryEnabled && PermissionsProvider.IsCloudFoundryRequest(context.Request.Path))
@@ -62,8 +62,7 @@ internal sealed class CloudFoundrySecurityMiddleware
 
             if (string.IsNullOrEmpty(endpointOptions.ApplicationId))
             {
-                _logger.LogError(
-                    "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
+                LogApplicationIdMissing();
 
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.ApplicationIdMissing));
                 return;
@@ -161,7 +160,7 @@ internal sealed class CloudFoundrySecurityMiddleware
 
     private async Task ReturnErrorAsync(HttpContext context, SecurityResult error)
     {
-        _logger.LogError("Actuator Security Error: {Code} - {Message}", error.Code, error.Message);
+        LogSecurityError(error.Code, error.Message);
         context.Response.Headers.Append("Content-Type", "application/json;charset=UTF-8");
 
         // UseStatusCodeFromResponse was added to prevent IIS/HWC from blocking the response body on 500-level errors.
@@ -174,4 +173,14 @@ internal sealed class CloudFoundrySecurityMiddleware
 
         await JsonSerializer.SerializeAsync(context.Response.Body, error, cancellationToken: context.RequestAborted);
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Entering Cloud Foundry Security middleware at path {RequestPath}.")]
+    private partial void LogEntering(string? requestPath);
+
+    [LoggerMessage(Level = LogLevel.Error,
+        Message = "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.")]
+    private partial void LogApplicationIdMissing();
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Actuator security error with status {Code}: '{Message}'.")]
+    private partial void LogSecurityError(HttpStatusCode code, string? message);
 }

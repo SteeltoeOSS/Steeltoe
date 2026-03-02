@@ -11,7 +11,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Tasks;
 
-public static class TaskHostExtensions
+public static partial class TaskHostExtensions
 {
     /// <summary>
     /// Indicates whether <see cref="RunWithTasksAsync(IWebHost,CancellationToken)" /> will run an application task, instead of the regular application.
@@ -132,7 +132,7 @@ public static class TaskHostExtensions
         {
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
             ILogger logger = loggerFactory.CreateLogger($"{typeof(TaskHostExtensions).Namespace}.CloudFoundryTasks");
-            logger.LogError("No task with name '{TaskName}' is registered in the service container.", taskName);
+            LogTaskNotFound(logger, taskName);
         }
     }
 
@@ -147,4 +147,7 @@ public static class TaskHostExtensions
             host.Dispose();
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "No task with name '{TaskName}' is registered in the service container.")]
+    private static partial void LogTaskNotFound(ILogger logger, string taskName);
 }

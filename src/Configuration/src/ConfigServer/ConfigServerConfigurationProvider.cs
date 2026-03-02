@@ -25,7 +25,7 @@ namespace Steeltoe.Configuration.ConfigServer;
 /// <summary>
 /// A Spring Cloud Config Server based <see cref="ConfigurationProvider" />.
 /// </summary>
-internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider, IDisposable
+internal sealed partial class ConfigServerConfigurationProvider : ConfigurationProvider, IDisposable
 {
     private const string VaultRenewPath = "vault/v1/auth/token/renew-self";
     private const string VaultTokenHeader = "X-Vault-Token";
@@ -149,7 +149,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// </remarks>
     private async Task DoPolledLoadAsync()
     {
-        _logger.LogTrace("Entering timer cycle");
+        LogEnteringTimerCycle();
         bool lockTaken = false;
 
         try
@@ -165,23 +165,23 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         {
             if (lockTaken)
             {
-                _logger.LogTrace("Exclusive lock obtained");
+                LogExclusiveLockObtained();
                 await DoLoadAsync(true, CancellationToken.None);
             }
             else
             {
-                _logger.LogTrace("Previous cycle is still running, or already disposed; skipping this cycle");
+                LogSkippingCycle();
             }
         }
         catch (Exception exception)
         {
-            _logger.LogWarning(exception, "Could not reload configuration during polling");
+            LogCouldNotReloadDuringPolling(exception);
         }
         finally
         {
             if (lockTaken)
             {
-                _logger.LogTrace("Timer cycle completed, releasing exclusive lock");
+                LogTimerCycleCompleted();
 
                 try
                 {
@@ -210,7 +210,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     {
         if (!ClientOptions.Enabled)
         {
-            _logger.LogInformation("Config Server client disabled, did not fetch configuration!");
+            LogConfigServerClientDisabled();
             return null;
         }
 
@@ -230,7 +230,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
             do
             {
-                _logger.LogDebug("Fetching configuration from server(s).");
+                LogFetchingConfiguration();
 
                 try
                 {
@@ -238,7 +238,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 }
                 catch (ConfigServerException exception)
                 {
-                    _logger.LogWarning(exception, "Failed fetching configuration from server(s).");
+                    LogFailedFetchingConfiguration(exception);
                     attempts++;
 
                     if (attempts < ClientOptions.Retry.MaxAttempts)
@@ -256,7 +256,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             while (true);
         }
 
-        _logger.LogDebug("Fetching configuration from server(s).");
+        LogFetchingConfiguration();
         return await DoLoadAsync(updateDictionary, cancellationToken);
     }
 
@@ -271,11 +271,11 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         {
             foreach (string label in GetLabels())
             {
-                _logger.LogTrace("Processing label '{Label}'", label);
+                LogProcessingLabel(label);
 
                 if (uris.Count > 1)
                 {
-                    _logger.LogDebug("Multiple Config Server Uris listed.");
+                    LogMultipleConfigServerUris();
                 }
 
                 // Invoke Config Servers
@@ -284,8 +284,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 // Update configuration Data dictionary with any results
                 if (env != null)
                 {
-                    _logger.LogDebug("Located environment name: {Name}, profiles: {Profiles}, labels: {Label}, version: {Version}, state: {State}", env.Name,
-                        env.Profiles, env.Label, env.Version, env.State);
+                    LogEnvironmentLocated(env.Name, string.Join(", ", env.Profiles.Select(p => $"'{p}'")), env.Label, env.Version, env.State);
 
                     if (updateDictionary)
                     {
@@ -314,13 +313,13 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
                         if (!AreDictionariesEqual(Data, data))
                         {
-                            _logger.LogTrace("Data has changed, raising configuration reload");
+                            LogDataChanged();
                             Data = data;
                             OnReload();
                         }
                         else
                         {
-                            _logger.LogTrace("Data has not changed");
+                            LogDataNotChanged();
                         }
                     }
 
@@ -333,11 +332,11 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             error = exception;
         }
 
-        _logger.LogWarning(error, "Could not locate PropertySource");
+        LogCouldNotLocatePropertySource(error);
 
         if (ClientOptions.FailFast)
         {
-            _logger.LogTrace(error, "Failure with FailFast enabled, throwing ConfigServerException");
+            LogFailFastEnabled(error);
             throw new ConfigServerException("Could not locate PropertySource, fail fast property is set, failing", error);
         }
 
@@ -454,7 +453,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
         if (requestUri.TryGetUsernamePassword(out string? username, out string? password) && password.Length > 0)
         {
-            _logger.LogDebug("Adding credentials from '{RequestUri}' to Authorization header.", requestUri.ToMaskedString());
+            LogAddingCredentials(requestUri.ToMaskedString());
 
             requestMessage.Headers.Authorization =
                 new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}")));
@@ -469,7 +468,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 string accessToken =
                     await httpClient.GetAccessTokenAsync(accessTokenUri, ClientOptions.ClientId, ClientOptions.ClientSecret, cancellationToken);
 
-                _logger.LogDebug("Fetched access token from '{AccessTokenUri}'.", accessTokenUri.ToMaskedString());
+                LogAccessTokenFetched(accessTokenUri.ToMaskedString());
                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             }
         }
@@ -543,7 +542,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
     internal async Task<ConfigEnvironment?> RemoteLoadAsync(List<Uri> requestUris, string? label, CancellationToken cancellationToken)
     {
-        _logger.LogTrace("Entered {Method}", nameof(RemoteLoadAsync));
+        LogRemoteLoadEntered(nameof(RemoteLoadAsync));
 
         // Get client if not already set
         using HttpClient httpClient = CreateHttpClient(ClientOptions);
@@ -555,19 +554,19 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             // Make Config Server URI from settings
             Uri uri = BuildConfigServerUri(requestUri, label);
 
-            _logger.LogDebug("Trying to connect to Config Server at {RequestUri}", uri.ToMaskedString());
+            LogTryingToConnect(uri.ToMaskedString());
 
             // Get the request message
-            _logger.LogTrace("Building HTTP request message");
+            LogBuildingHttpRequest();
             HttpRequestMessage request = await GetRequestMessageAsync(uri, cancellationToken);
 
             // Invoke Config Server
             try
             {
-                _logger.LogTrace("Sending HTTP request");
+                LogSendingHttpRequest();
                 using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
-                _logger.LogDebug("Config Server returned status: {StatusCode} invoking path: {RequestUri}", response.StatusCode, uri.ToMaskedString());
+                LogConfigServerReturnedStatus(response.StatusCode, uri.ToMaskedString());
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -585,7 +584,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                     return null;
                 }
 
-                _logger.LogTrace("Parsing JSON response");
+                LogParsingJsonResponse();
                 return await response.Content.ReadFromJsonAsync<ConfigEnvironment>(SerializerOptions, cancellationToken);
             }
             catch (Exception exception) when (!exception.IsCancellation())
@@ -594,7 +593,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
                 if (IsSocketError(exception))
                 {
-                    _logger.LogTrace(exception, "Socket error detected");
+                    LogSocketError(exception);
                     continue;
                 }
 
@@ -689,7 +688,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Config Server exception, property: {Key}={Type}", pair.Key, pair.Value.GetType());
+                LogConfigServerPropertyException(exception, pair.Key, pair.Value.GetType());
             }
         }
     }
@@ -725,17 +724,17 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             Uri uri = GetVaultRenewUri();
             HttpRequestMessage message = await GetVaultRenewRequestMessageAsync(uri, cancellationToken);
 
-            _logger.LogDebug("Renewing Vault token {Token} for {Ttl} milliseconds at Uri {Uri}", obscuredToken, ClientOptions.TokenTtl, uri.ToMaskedString());
+            LogRenewingVaultToken(obscuredToken, ClientOptions.TokenTtl, uri.ToMaskedString());
             using HttpResponseMessage response = await httpClient.SendAsync(message, cancellationToken);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                _logger.LogWarning("Renewing Vault token {Token} returned status: {Status}", obscuredToken, response.StatusCode);
+                LogVaultTokenRenewalStatus(obscuredToken, response.StatusCode);
             }
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            _logger.LogError(exception, "Unable to renew Vault token {Token}. Is the token invalid or expired?", obscuredToken);
+            LogUnableToRenewVaultToken(exception, obscuredToken);
         }
     }
 
@@ -763,7 +762,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
             string accessToken = await httpClient.GetAccessTokenAsync(accessTokenUri, ClientOptions.ClientId, ClientOptions.ClientSecret, cancellationToken);
 
-            _logger.LogDebug("Fetched access token from '{AccessTokenUri}'.", accessTokenUri.ToMaskedString());
+            LogAccessTokenFetched(accessTokenUri.ToMaskedString());
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
 
@@ -838,4 +837,89 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
         _httpClientHandler = null;
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Entering timer cycle.")]
+    private partial void LogEnteringTimerCycle();
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Exclusive lock obtained.")]
+    private partial void LogExclusiveLockObtained();
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Previous cycle is still running, or already disposed; skipping this cycle.")]
+    private partial void LogSkippingCycle();
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Could not reload configuration during polling.")]
+    private partial void LogCouldNotReloadDuringPolling(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Timer cycle completed, releasing exclusive lock.")]
+    private partial void LogTimerCycleCompleted();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Config Server client disabled, not fetching configuration.")]
+    private partial void LogConfigServerClientDisabled();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Fetching configuration from server(s).")]
+    private partial void LogFetchingConfiguration();
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed fetching configuration from server(s).")]
+    private partial void LogFailedFetchingConfiguration(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Processing label '{Label}'.")]
+    private partial void LogProcessingLabel(string? label);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Multiple Config Server Uris listed.")]
+    private partial void LogMultipleConfigServerUris();
+
+    [LoggerMessage(Level = LogLevel.Debug,
+        Message = "Located environment with name {Name}, profiles {Profiles}, label {Label}, version {Version} and state {State}.")]
+    private partial void LogEnvironmentLocated(string? name, string profiles, string? label, string? version, string? state);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Data has changed, raising configuration reload.")]
+    private partial void LogDataChanged();
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Data has not changed.")]
+    private partial void LogDataNotChanged();
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Could not locate property source.")]
+    private partial void LogCouldNotLocatePropertySource(Exception? error);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Failure with FailFast enabled, throwing ConfigServerException.")]
+    private partial void LogFailFastEnabled(Exception? error);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Adding credentials from '{RequestUri}' to Authorization header.")]
+    private partial void LogAddingCredentials(string requestUri);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Fetched access token from {AccessTokenUri}.")]
+    private partial void LogAccessTokenFetched(string accessTokenUri);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Entered {Method}.")]
+    private partial void LogRemoteLoadEntered(string method);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Trying to connect to Config Server at {RequestUri}.")]
+    private partial void LogTryingToConnect(string requestUri);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Building HTTP request message.")]
+    private partial void LogBuildingHttpRequest();
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Sending HTTP request.")]
+    private partial void LogSendingHttpRequest();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Config Server returned status {StatusCode} for path {RequestUri}.")]
+    private partial void LogConfigServerReturnedStatus(HttpStatusCode statusCode, string requestUri);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Parsing JSON response.")]
+    private partial void LogParsingJsonResponse();
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Socket error detected.")]
+    private partial void LogSocketError(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Config Server exception for property {Key} of type {Type}.")]
+    private partial void LogConfigServerPropertyException(Exception exception, string key, Type type);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Renewing Vault token {Token} for {Ttl} milliseconds at Uri {Uri}.")]
+    private partial void LogRenewingVaultToken(string token, int ttl, string uri);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Renewing Vault token {Token} returned status {Status}.")]
+    private partial void LogVaultTokenRenewalStatus(string token, HttpStatusCode status);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Unable to renew Vault token {Token}. The token is likely invalid or has expired.")]
+    private partial void LogUnableToRenewVaultToken(Exception exception, string token);
 }

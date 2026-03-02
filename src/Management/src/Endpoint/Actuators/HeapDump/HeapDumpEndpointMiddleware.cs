@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
-internal sealed class HeapDumpEndpointMiddleware(
+internal sealed partial class HeapDumpEndpointMiddleware(
     IHeapDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
     : EndpointMiddleware<object?, string>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
@@ -28,7 +28,7 @@ internal sealed class HeapDumpEndpointMiddleware(
     {
         ArgumentNullException.ThrowIfNull(httpContext);
 
-        _logger.LogDebug("Returning: {FileName}", fileName);
+        LogReturning(fileName);
 
         if (!File.Exists(fileName))
         {
@@ -51,4 +51,7 @@ internal sealed class HeapDumpEndpointMiddleware(
             File.Delete(fileName);
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Returning heap dump file '{FileName}'.")]
+    private partial void LogReturning(string? fileName);
 }

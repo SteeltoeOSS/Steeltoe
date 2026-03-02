@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges.Diagnostics;
 
-internal sealed class DiagnosticsService : IHostedService
+internal sealed partial class DiagnosticsService : IHostedService
 {
     private readonly ILogger<DiagnosticsService> _logger;
     private readonly DiagnosticsManager _observerManager;
@@ -23,15 +23,21 @@ internal sealed class DiagnosticsService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogTrace("Starting Diagnostics manager");
+        LogStartingDiagnosticsManager();
         _observerManager.Start();
         return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogTrace("Stopping Diagnostics manager");
+        LogStoppingDiagnosticsManager();
         _observerManager.Stop();
         return Task.CompletedTask;
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Starting diagnostics manager.")]
+    private partial void LogStartingDiagnosticsManager();
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Stopping diagnostics manager.")]
+    private partial void LogStoppingDiagnosticsManager();
 }

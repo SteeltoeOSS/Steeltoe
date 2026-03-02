@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
 
-internal sealed class EurekaCloudFoundryPostProcessor : CloudFoundryPostProcessor
+internal sealed partial class EurekaCloudFoundryPostProcessor : CloudFoundryPostProcessor
 {
     internal const string BindingType = "eureka";
     internal const string EurekaConfigurationKeyPrefix = "eureka:client";
@@ -27,7 +27,7 @@ internal sealed class EurekaCloudFoundryPostProcessor : CloudFoundryPostProcesso
         {
             if (hasMapped)
             {
-                _logger.LogWarning("Multiple Eureka service bindings found, which is not supported. Using the first binding from VCAP_SERVICES.");
+                LogMultipleEurekaBindings();
                 break;
             }
 
@@ -52,4 +52,8 @@ internal sealed class EurekaCloudFoundryPostProcessor : CloudFoundryPostProcesso
             hasMapped = true;
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Multiple Eureka service bindings found, which is not supported. Using the first binding from VCAP_SERVICES.")]
+    private partial void LogMultipleEurekaBindings();
 }

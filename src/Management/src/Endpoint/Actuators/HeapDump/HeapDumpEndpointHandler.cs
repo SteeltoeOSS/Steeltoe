@@ -8,7 +8,7 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
-internal sealed class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
+internal sealed partial class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
 {
     private readonly IOptionsMonitor<HeapDumpEndpointOptions> _optionsMonitor;
     private readonly IHeapDumper _heapDumper;
@@ -29,8 +29,11 @@ internal sealed class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
 
     public Task<string> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
-        _logger.LogTrace("Invoking the heap dumper");
+        LogInvokingHeapDumper();
         string filePath = _heapDumper.DumpHeapToFile(cancellationToken);
         return Task.FromResult(filePath);
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Invoking the heap dumper.")]
+    private partial void LogInvokingHeapDumper();
 }
