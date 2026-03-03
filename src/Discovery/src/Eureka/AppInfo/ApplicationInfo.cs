@@ -17,7 +17,7 @@ public sealed class ApplicationInfo
     private readonly ConcurrentDictionary<string, InstanceInfo> _instanceMap = new();
 
     public string Name { get; }
-    public IReadOnlyList<InstanceInfo> Instances => new List<InstanceInfo>(_instanceMap.Values);
+    public IReadOnlyList<InstanceInfo> Instances => GetInstancesSnapshot();
 
     internal ApplicationInfo(string name)
         : this(name, Array.Empty<InstanceInfo>())
@@ -36,6 +36,11 @@ public sealed class ApplicationInfo
         {
             Add(instance);
         }
+    }
+
+    private List<InstanceInfo> GetInstancesSnapshot()
+    {
+        return [.. _instanceMap.Values];
     }
 
     internal InstanceInfo? GetInstance(string instanceId)
