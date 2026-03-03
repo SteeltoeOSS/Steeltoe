@@ -6,9 +6,10 @@ namespace Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
 /// <summary>
 /// The Readiness state of the application.
-/// <para />
+/// <para>
 /// An application is considered ready when it's <see cref="LivenessState.Correct" /> and willing to accept traffic. "Readiness" failure means that the
 /// application is not able to accept traffic and that the infrastructure should not route requests to it.
+/// </para>
 /// </summary>
 public sealed class ReadinessState : AvailabilityState
 {
