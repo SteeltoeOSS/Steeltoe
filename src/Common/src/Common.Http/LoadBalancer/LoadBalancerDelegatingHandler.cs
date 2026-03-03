@@ -20,8 +20,10 @@ public class LoadBalancerDelegatingHandler : DelegatingHandler
     private readonly ILoadBalancer _loadBalancer;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LoadBalancerDelegatingHandler"/> class. <para />
+    /// Initializes a new instance of the <see cref="LoadBalancerDelegatingHandler"/> class.
+    /// <para>
     /// For use with <see cref="IHttpClientBuilder"/>
+    /// </para>
     /// </summary>
     /// <param name="loadBalancer">Load balancer to use</param>
     public LoadBalancerDelegatingHandler(ILoadBalancer loadBalancer)
@@ -30,8 +32,10 @@ public class LoadBalancerDelegatingHandler : DelegatingHandler
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LoadBalancerDelegatingHandler"/> class. <para />
+    /// Initializes a new instance of the <see cref="LoadBalancerDelegatingHandler"/> class.
+    /// <para>
     /// For use with <see cref="IHttpClientBuilder"/>
+    /// </para>
     /// </summary>
     /// <param name="loadBalancer">Load balancer to use</param>
     /// <param name="logger">For logging</param>
@@ -42,7 +46,9 @@ public class LoadBalancerDelegatingHandler : DelegatingHandler
     }
 
     /// <inheritdoc />
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
     {
         // record the original request
         var originalUri = request.RequestUri;
@@ -70,7 +76,8 @@ public class LoadBalancerDelegatingHandler : DelegatingHandler
             request.RequestUri = originalUri;
 
             // track stats
-            await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, DateTime.UtcNow - startTime, exception).ConfigureAwait(false);
+            await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, DateTime.UtcNow - startTime, exception)
+                .ConfigureAwait(false);
         }
     }
 }

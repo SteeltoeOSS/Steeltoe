@@ -35,27 +35,27 @@ public interface IEurekaInstanceConfig
     bool IsInstanceEnabledOnInit { get; set; }
 
     /// <summary>
-    /// Gets or sets the <code>non-secure</code> port on which the instance should receive traffic.
+    /// Gets or sets the <c>non-secure</c> port on which the instance should receive traffic.
     /// Configuration property: eureka:instance:port
     /// </summary>
     int NonSecurePort { get; set; }
 
     /// <summary>
-    /// Gets or sets the <code>Secure port</code> on which the instance should receive traffic.
+    /// Gets or sets the <c>Secure port</c> on which the instance should receive traffic.
     /// Configuration property: eureka:instance:securePort
     /// </summary>
     int SecurePort { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether indicates whether the <code>non-secure</code> port should be enabled for traffic or not.
-    /// Set true if the <code>non-secure</code> port is enabled, false otherwise.
+    /// Gets or sets a value indicating whether indicates whether the <c>non-secure</c> port should be enabled for traffic or not.
+    /// Set true if the <c>non-secure</c> port is enabled, false otherwise.
     /// Configuration property: eureka:instance:nonSecurePortEnabled
     /// </summary>
     bool IsNonSecurePortEnabled { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether indicates whether the <code>secure</code> port should be enabled for traffic or not.
-    /// Set true if the <code>secure</code> port is enabled, false otherwise.
+    /// Gets or sets a value indicating whether indicates whether the <c>secure</c> port should be enabled for traffic or not.
+    /// Set true if the <c>secure</c> port is enabled, false otherwise.
     /// Configuration property: eureka:instance:securePortEnabled
     /// </summary>
     bool SecurePortEnabled { get; set; }
@@ -104,7 +104,7 @@ public interface IEurekaInstanceConfig
     string SecureVirtualHostName { get; set; }
 
     /// <summary>
-    /// Gets or sets the <code>AWS autoscaling group name</code> associated with this instance. This information is
+    /// Gets or sets the <c>AWS autoscaling group name</c> associated with this instance. This information is
     /// specifically used in an AWS environment to automatically put an instance out of service after the instance is
     /// launched and it has been disabled for traffic..
     /// Configuration property: eureka:instance:asgName
@@ -136,7 +136,7 @@ public interface IEurekaInstanceConfig
     /// <see cref="SecurePort"/> and <see cref="NonSecurePort"/>.
     ///
     /// It is normally used for informational purposes for other services to findabout the status of this instance.
-    /// Users can provide a simple <code>HTML</code> indicating what is the current status of the instance.
+    /// Users can provide a simple <c>HTML</c> page indicating what is the current status of the instance.
     /// Configuration property: eureka:instance:statusPageUrlPath
     /// </summary>
     string StatusPageUrlPath { get; set; }
@@ -147,7 +147,7 @@ public interface IEurekaInstanceConfig
     /// users can provide the full URL. If the full URL is provided it takes precedence.
     ///
     /// It is normally used for informational purposes for other services tofind about the status of this instance.
-    /// Users can provide a simple<code>HTML</code> indicating what is the current status of the instance.
+    /// Users can provide a simple <c>HTML</c> page indicating what is the current status of the instance.
     /// The full URL should follow the format http://${eureka.hostname}:7001/ where the value ${eureka.hostname} is
     /// replaced at runtime.
     /// Configuration property: eureka:instance:statusPageUrl
@@ -170,7 +170,7 @@ public interface IEurekaInstanceConfig
     /// provide the full URL. If the full URL is provided it takes precedence.
     ///
     /// It is normally used for informational purposes for other services tofind about the status of this instance.
-    /// Users can provide a simple<code>HTML</code> indicating what is the current status of the instance.
+    /// Users can provide a simple <c>HTML</c> page indicating what is the current status of the instance.
     /// The full URL should follow the format http://${eureka.hostname}:7001/ where the value ${eureka.hostname} is
     /// replaced at runtime.
     /// Configuration property: eureka:instance:homePageUrl

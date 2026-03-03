@@ -11,14 +11,15 @@ public static class ConfigurationDiscoveryClientBuilderExtensions
     /// </summary>
     /// <param name="clientBuilder">this</param>
     /// <remarks>
-    ///     Build your list of service instances under the configuration prefix discovery:services<para></para>
-    ///     For example:
-    ///       "discovery": {
-    ///         "services": [
-    ///           { "serviceId": "CartService", "host": "knownhost1", "port": 443, "isSecure": true },
-    ///           { "serviceId": "CartService", "host": "knownhost2", "port": 443, "isSecure": true },
-    ///         ]
-    ///       }
+    /// Build your list of service instances under the configuration prefix <c>discovery:services</c>, for example:
+    /// <code><![CDATA[
+    /// "discovery": {
+    ///   "services": [
+    ///     { "serviceId": "CartService", "host": "knownhost1", "port": 443, "isSecure": true },
+    ///     { "serviceId": "CartService", "host": "knownhost2", "port": 443, "isSecure": true },
+    ///   ]
+    /// }
+    /// ]]></code>
     /// </remarks>
     public static DiscoveryClientBuilder UseConfiguredInstances(this DiscoveryClientBuilder clientBuilder)
     {

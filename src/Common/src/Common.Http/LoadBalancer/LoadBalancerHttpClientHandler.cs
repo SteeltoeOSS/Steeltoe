@@ -19,8 +19,10 @@ public class LoadBalancerHttpClientHandler : HttpClientHandler
     private readonly ILoadBalancer _loadBalancer;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LoadBalancerHttpClientHandler"/> class. <para />
+    /// Initializes a new instance of the <see cref="LoadBalancerHttpClientHandler"/> class.
+    /// <para>
     /// For use with <see cref="HttpClient"/> without <see cref="IHttpClientFactory"/>
+    /// </para>
     /// </summary>
     /// <param name="loadBalancer">Load balancer to use</param>
     public LoadBalancerHttpClientHandler(ILoadBalancer loadBalancer)
@@ -29,8 +31,10 @@ public class LoadBalancerHttpClientHandler : HttpClientHandler
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LoadBalancerHttpClientHandler"/> class. <para />
+    /// Initializes a new instance of the <see cref="LoadBalancerHttpClientHandler"/> class.
+    /// <para>
     /// For use with <see cref="HttpClient"/> without <see cref="IHttpClientFactory"/>
+    /// </para>
     /// </summary>
     /// <param name="loadBalancer">Load balancer to use</param>
     /// <param name="logger">For logging</param>
@@ -41,7 +45,9 @@ public class LoadBalancerHttpClientHandler : HttpClientHandler
     }
 
     /// <inheritdoc />
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
     {
         // record the original request
         var originalUri = request.RequestUri;
@@ -69,7 +75,8 @@ public class LoadBalancerHttpClientHandler : HttpClientHandler
             request.RequestUri = originalUri;
 
             // track stats
-            await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, DateTime.UtcNow - startTime, exception).ConfigureAwait(false);
+            await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, DateTime.UtcNow - startTime, exception)
+                .ConfigureAwait(false);
         }
     }
 }
