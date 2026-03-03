@@ -19,7 +19,7 @@ public static class ConfigurationServiceCollectionExtensions
     /// Build your list of service instances under the configuration prefix discovery:services.
     /// <example>
     /// Example configuration in appsettings.json:
-    /// <![CDATA[
+    /// <code><![CDATA[
     /// {
     ///   "discovery": {
     ///     "services": [
@@ -37,7 +37,7 @@ public static class ConfigurationServiceCollectionExtensions
     ///     ]
     ///   }
     /// }
-    /// ]]>
+    /// ]]></code>
     /// </example>
     /// </remarks>
     /// <param name="services">

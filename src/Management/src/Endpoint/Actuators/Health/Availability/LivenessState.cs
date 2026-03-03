@@ -6,9 +6,10 @@ namespace Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
 /// <summary>
 /// "Liveness" state of the application.
-/// <para />
+/// <para>
 /// An application is considered live when it's running with a correct internal state. "Liveness" failure means that the internal state of the
 /// application is broken, and we cannot recover from it. As a result, the platform should restart the application.
+/// </para>
 /// </summary>
 public sealed class LivenessState : AvailabilityState
 {
