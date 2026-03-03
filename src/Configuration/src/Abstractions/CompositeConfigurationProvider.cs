@@ -97,10 +97,9 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
 
         LogSet(GetType().Name, key, value);
 
-        if (ConfigurationRoot != null)
-        {
-            ConfigurationRoot[key] = value;
-        }
+#pragma warning disable S1121 // Assignments should not be made from within sub-expressions
+        ConfigurationRoot?[key] = value;
+#pragma warning restore S1121 // Assignments should not be made from within sub-expressions
     }
 
     public void Dispose()
