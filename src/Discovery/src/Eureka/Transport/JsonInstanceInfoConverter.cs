@@ -13,10 +13,10 @@ internal sealed class JsonInstanceInfoConverter : JsonConverter<IList<JsonInstan
     {
         if (reader.TokenType == JsonTokenType.StartArray)
         {
-            return JsonSerializer.Deserialize<List<JsonInstanceInfo?>>(ref reader, options)!;
+            return JsonSerializer.Deserialize(ref reader, EurekaJsonSerializerContext.Default.ListJsonInstanceInfo)!;
         }
 
-        var instanceInfo = JsonSerializer.Deserialize<JsonInstanceInfo>(ref reader, options);
+        JsonInstanceInfo? instanceInfo = JsonSerializer.Deserialize(ref reader, EurekaJsonSerializerContext.Default.JsonInstanceInfo);
         return instanceInfo != null ? [instanceInfo] : [];
     }
 

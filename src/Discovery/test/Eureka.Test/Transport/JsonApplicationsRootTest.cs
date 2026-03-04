@@ -18,7 +18,7 @@ public sealed class JsonApplicationsRootTest
             }
             """;
 
-        var result = JsonSerializer.Deserialize<JsonApplicationsRoot>(json, EurekaClient.ResponseSerializerOptions);
+        JsonApplicationsRoot? result = JsonSerializer.Deserialize(json, EurekaJsonSerializerContext.Default.JsonApplicationsRoot);
 
         result.Should().NotBeNull();
         result.Applications.Should().NotBeNull();

@@ -23,7 +23,7 @@ public sealed class JsonLeaseTest
             ServiceUpTimestamp = 1_457_714_988_223
         };
 
-        string result = JsonSerializer.Serialize(leaseInfo, EurekaClient.RequestSerializerOptions);
+        string result = JsonSerializer.Serialize(leaseInfo, EurekaJsonSerializerContext.Default.JsonLeaseInfo);
 
         result.Should().BeJson("""
             {
@@ -51,7 +51,7 @@ public sealed class JsonLeaseTest
             }
             """;
 
-        var result = JsonSerializer.Deserialize<JsonLeaseInfo>(json, EurekaClient.ResponseSerializerOptions);
+        JsonLeaseInfo? result = JsonSerializer.Deserialize(json, EurekaJsonSerializerContext.Default.JsonLeaseInfo);
 
         result.Should().NotBeNull();
         result.RenewalIntervalInSeconds.Should().Be(30);

@@ -22,7 +22,7 @@ public sealed class JsonSerializationTest
             """;
 #pragma warning restore JSON001 // Invalid JSON pattern
 
-        Action action = () => JsonSerializer.Deserialize<JsonInstanceInfo>(json);
+        Action action = () => JsonSerializer.Deserialize(json, EurekaJsonSerializerContext.Default.JsonInstanceInfo);
 
         action.Should().ThrowExactly<JsonException>();
     }

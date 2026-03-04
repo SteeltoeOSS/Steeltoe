@@ -18,7 +18,7 @@ public sealed class JsonInstanceInfoRootTest
             Instance = new JsonInstanceInfo()
         };
 
-        string result = JsonSerializer.Serialize(root, EurekaClient.RequestSerializerOptions);
+        string result = JsonSerializer.Serialize(root, EurekaJsonSerializerContext.Default.JsonInstanceInfoRoot);
 
         result.Should().BeJson("""
             {
@@ -36,7 +36,7 @@ public sealed class JsonInstanceInfoRootTest
             }
             """;
 
-        var result = JsonSerializer.Deserialize<JsonInstanceInfoRoot>(json, EurekaClient.ResponseSerializerOptions);
+        JsonInstanceInfoRoot? result = JsonSerializer.Deserialize(json, EurekaJsonSerializerContext.Default.JsonInstanceInfoRoot);
 
         result.Should().NotBeNull();
         result.Instance.Should().NotBeNull();

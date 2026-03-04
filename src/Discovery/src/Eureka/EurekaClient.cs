@@ -8,7 +8,6 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -36,21 +35,6 @@ public sealed partial class EurekaClient
     private const string DiscoveryAllowRedirectHeaderName = "X-Discovery-AllowRedirect";
     private static readonly Task<object?> TaskOfNull = Task.FromResult<object?>(null);
     private static readonly TimeSpan GetAccessTokenTimeout = TimeSpan.FromSeconds(10);
-
-    internal static readonly JsonSerializerOptions RequestSerializerOptions = new()
-    {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-    };
-
-    internal static readonly JsonSerializerOptions ResponseSerializerOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        Converters =
-        {
-            new JsonApplicationConverter(),
-            new JsonInstanceInfoConverter()
-        }
-    };
 
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IOptionsMonitor<EurekaClientOptions> _optionsMonitor;
@@ -98,7 +82,7 @@ public sealed partial class EurekaClient
         string requestBody = JsonSerializer.Serialize(new JsonInstanceInfoRoot
         {
             Instance = instance.ToJson()
-        }, RequestSerializerOptions);
+        }, EurekaJsonSerializerContext.Default.JsonInstanceInfoRoot);
 
         string path = $"apps/{WebUtility.UrlEncode(instance.AppName)}";
         await ExecuteRequestAsync(HttpMethod.Post, path, null, requestBody, cancellationToken);
@@ -224,7 +208,7 @@ public sealed partial class EurekaClient
     {
         return await ExecuteRequestAsync(HttpMethod.Get, path, null, null, async response =>
         {
-            var root = await response.Content.ReadFromJsonAsync<JsonApplicationsRoot>(ResponseSerializerOptions, cancellationToken);
+            JsonApplicationsRoot? root = await response.Content.ReadFromJsonAsync(EurekaJsonSerializerContext.Default.JsonApplicationsRoot, cancellationToken);
             return ApplicationInfoCollection.FromJson(root?.Applications, _timeProvider);
         }, cancellationToken);
     }

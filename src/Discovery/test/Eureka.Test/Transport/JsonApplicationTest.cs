@@ -23,7 +23,7 @@ public sealed class JsonApplicationTest
             }
             """;
 
-        var result = JsonSerializer.Deserialize<JsonApplication>(json, EurekaClient.RequestSerializerOptions);
+        JsonApplication? result = JsonSerializer.Deserialize(json, EurekaJsonSerializerContext.Default.JsonApplication);
 
         result.Should().NotBeNull();
         result.Name.Should().Be("FOO");
@@ -45,7 +45,7 @@ public sealed class JsonApplicationTest
             }
             """;
 
-        var result = JsonSerializer.Deserialize<JsonApplication>(json, EurekaClient.ResponseSerializerOptions);
+        JsonApplication? result = JsonSerializer.Deserialize(json, EurekaJsonSerializerContext.Default.JsonApplication);
 
         result.Should().NotBeNull();
         result.Name.Should().Be("FOO");

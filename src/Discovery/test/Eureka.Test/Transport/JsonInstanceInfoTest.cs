@@ -62,7 +62,7 @@ public sealed class JsonInstanceInfoTest
             ActionType = ActionType.Added
         };
 
-        string result = JsonSerializer.Serialize(instanceInfo, EurekaClient.RequestSerializerOptions);
+        string result = JsonSerializer.Serialize(instanceInfo, EurekaJsonSerializerContext.Default.JsonInstanceInfo);
 
         result.Should().BeJson("""
             {
@@ -156,7 +156,7 @@ public sealed class JsonInstanceInfoTest
             }
             """;
 
-        var result = JsonSerializer.Deserialize<JsonInstanceInfo>(json, EurekaClient.ResponseSerializerOptions);
+        JsonInstanceInfo? result = JsonSerializer.Deserialize(json, EurekaJsonSerializerContext.Default.JsonInstanceInfo);
 
         result.Should().NotBeNull();
         result.InstanceId.Should().Be("localhost:foo");
