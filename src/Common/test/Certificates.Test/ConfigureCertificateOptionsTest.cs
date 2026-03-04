@@ -5,7 +5,6 @@
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -212,19 +211,25 @@ public sealed class ConfigureCertificateOptionsTest
 
     private static string BuildAppSettingsJson(string certificateName, string certificatePath, string keyPath)
     {
-        string certificateBlock = $"""
-                "CertificateFilePath": {JsonSerializer.Serialize(certificatePath)},
-                "PrivateKeyFilePath": {JsonSerializer.Serialize(keyPath)}
-            """;
+        string escapedCertificatePath = certificatePath.Replace(@"\", @"\\", StringComparison.Ordinal);
+        string escapedKeyPath = keyPath.Replace(@"\", @"\\", StringComparison.Ordinal);
 
-        string namedCertificateSection = string.IsNullOrEmpty(certificateName)
-            ? certificateBlock
-            : $"{JsonSerializer.Serialize(certificateName)}: {{ {certificateBlock} }}";
-
-        return $$"""
+        return string.IsNullOrEmpty(certificateName)
+            ? $$"""
             {
               "Certificates": {
-                {{namedCertificateSection}}
+                "CertificateFilePath": "{{escapedCertificatePath}}",
+                "PrivateKeyFilePath": "{{escapedKeyPath}}"
+              }
+            }
+            """
+            : $$"""
+            {
+              "Certificates": {
+                "{{certificateName}}": {
+                  "CertificateFilePath": "{{escapedCertificatePath}}",
+                  "PrivateKeyFilePath": "{{escapedKeyPath}}"
+                }
               }
             }
             """;
