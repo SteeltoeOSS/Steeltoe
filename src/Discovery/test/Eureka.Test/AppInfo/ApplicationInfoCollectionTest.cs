@@ -876,9 +876,9 @@ public sealed class ApplicationInfoCollectionTest
                     "IsNonSecurePortEnabled": true,
                     "SecurePort": 8443,
                     "IsSecurePortEnabled": true,
-                    "Status": "Up",
-                    "OverriddenStatus": "OutOfService",
-                    "EffectiveStatus": "OutOfService",
+                    "Status": "UP",
+                    "OverriddenStatus": "OUT_OF_SERVICE",
+                    "EffectiveStatus": "OUT_OF_SERVICE",
                     "HomePageUrl": "http://prod-server-01.example.com:8080/",
                     "StatusPageUrl": "http://prod-server-01.example.com:8080/actuator/info",
                     "HealthCheckUrl": "http://prod-server-01.example.com:8080/actuator/health",
@@ -899,7 +899,7 @@ public sealed class ApplicationInfoCollectionTest
                       "deployment": "blue",
                       "team": "platform"
                     },
-                    "ActionType": "Added",
+                    "ActionType": "ADDED",
                     "IsDirty": false
                   },
                   {
@@ -914,7 +914,7 @@ public sealed class ApplicationInfoCollectionTest
                     "IsNonSecurePortEnabled": false,
                     "SecurePort": 0,
                     "IsSecurePortEnabled": false,
-                    "EffectiveStatus": "Unknown",
+                    "EffectiveStatus": "UNKNOWN",
                     "Metadata": {},
                     "IsDirty": false
                   }

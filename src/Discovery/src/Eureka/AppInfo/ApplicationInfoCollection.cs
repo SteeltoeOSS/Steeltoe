@@ -73,7 +73,7 @@ public sealed class ApplicationInfoCollection : IReadOnlyCollection<ApplicationI
     /// <inheritdoc />
     public override string ToString()
     {
-        return JsonSerializer.Serialize(this, DebugSerializerOptions.Instance);
+        return JsonSerializer.Serialize(this, DebugJsonSerializerContext.Default.ApplicationInfoCollection);
     }
 
     IEnumerator IEnumerable.GetEnumerator()

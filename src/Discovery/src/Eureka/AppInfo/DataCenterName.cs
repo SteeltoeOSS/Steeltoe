@@ -6,8 +6,11 @@
 #pragma warning disable SA1602 // Enumeration items should be documented
 #endif
 
+using System.Text.Json.Serialization;
+
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
+[JsonConverter(typeof(JsonStringEnumConverter<DataCenterName>))]
 public enum DataCenterName
 {
     Netflix,
