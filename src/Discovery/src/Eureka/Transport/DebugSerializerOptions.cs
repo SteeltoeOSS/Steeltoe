@@ -15,6 +15,10 @@ internal static class DebugSerializerOptions
         WriteIndented = true,
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        ReferenceHandler = ReferenceHandler.IgnoreCycles
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        Converters =
+        {
+            new JsonStringEnumConverter()
+        }
     };
 }
