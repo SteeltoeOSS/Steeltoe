@@ -37,12 +37,12 @@ public sealed partial class EurekaClient
     private static readonly Task<object?> TaskOfNull = Task.FromResult<object?>(null);
     private static readonly TimeSpan GetAccessTokenTimeout = TimeSpan.FromSeconds(10);
 
-    private static readonly JsonSerializerOptions RequestSerializerOptions = new()
+    internal static readonly JsonSerializerOptions RequestSerializerOptions = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
-    private static readonly JsonSerializerOptions ResponseSerializerOptions = new()
+    internal static readonly JsonSerializerOptions ResponseSerializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         Converters =
