@@ -102,7 +102,7 @@ internal sealed partial class PermissionsProvider
             string json = await response.Content.ReadAsStringAsync(cancellationToken);
             LogResponseJson(SecurityUtilities.SanitizeInput(json));
 
-            var result = JsonSerializer.Deserialize<PermissionsResponse>(json);
+            PermissionsResponse? result = JsonSerializer.Deserialize(json, CloudFoundryJsonSerializerContext.Default.PermissionsResponse);
 
             EndpointPermissions permissions = result switch
             {
@@ -139,7 +139,7 @@ internal sealed partial class PermissionsProvider
     [LoggerMessage(Level = LogLevel.Debug, Message = "Resolved permissions to {Permissions}.")]
     private partial void LogPermissions(EndpointPermissions permissions);
 
-    private sealed class PermissionsResponse
+    internal sealed class PermissionsResponse
     {
         [JsonPropertyName("read_basic_data")]
         public bool ReadBasicData { get; set; }

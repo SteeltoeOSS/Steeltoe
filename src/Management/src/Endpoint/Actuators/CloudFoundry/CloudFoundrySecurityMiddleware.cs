@@ -171,7 +171,7 @@ internal sealed partial class CloudFoundrySecurityMiddleware
             context.Response.StatusCode = (int)error.Code;
         }
 
-        await JsonSerializer.SerializeAsync(context.Response.Body, error, cancellationToken: context.RequestAborted);
+        await JsonSerializer.SerializeAsync(context.Response.Body, error, CloudFoundryJsonSerializerContext.Default.SecurityResult, context.RequestAborted);
     }
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Entering Cloud Foundry Security middleware at path {RequestPath}.")]
