@@ -33,7 +33,9 @@ public sealed class PermissionsProviderTest
     }
 
     [Theory]
+    [InlineData(false, false, EndpointPermissions.None)]
     [InlineData(false, true, EndpointPermissions.Restricted)]
+    [InlineData(true, false, EndpointPermissions.None)]
     [InlineData(true, true, EndpointPermissions.Full)]
     public async Task ParsePermissionsResponseAsyncReturnsExpected(bool readSensitive, bool readBasic, EndpointPermissions expectedPermissions)
     {
@@ -48,7 +50,7 @@ public sealed class PermissionsProviderTest
             })
         };
 
-        EndpointPermissions result = await permissionsProvider.ParsePermissionsResponseAsync(cloudControllerResponse, TestContext.Current.CancellationToken);
+        EndpointPermissions? result = await permissionsProvider.ParsePermissionsResponseAsync(cloudControllerResponse, TestContext.Current.CancellationToken);
         result.Should().Be(expectedPermissions);
     }
 
@@ -60,8 +62,10 @@ public sealed class PermissionsProviderTest
     [InlineData("timeout", HttpStatusCode.ServiceUnavailable, PermissionsProvider.Messages.CloudFoundryTimeout)]
     [InlineData("exception", HttpStatusCode.ServiceUnavailable,
         $"Exception of type 'System.Net.Http.HttpRequestException' with error '{nameof(HttpRequestError.NameResolutionError)}' was thrown")]
-    [InlineData("no_sensitive_data", HttpStatusCode.OK, "")]
-    [InlineData("success", HttpStatusCode.OK, "")]
+    [InlineData("broken-response", HttpStatusCode.BadGateway, PermissionsProvider.Messages.CloudFoundryBrokenResponse)]
+    [InlineData("no-permissions", HttpStatusCode.OK, "")]
+    [InlineData("restricted-permissions", HttpStatusCode.OK, "")]
+    [InlineData("full-permissions", HttpStatusCode.OK, "")]
     public async Task Returns_expected_response_on_permission_check(string scenario, HttpStatusCode? steeltoeStatusCode, string errorMessage)
     {
         var appSettings = new Dictionary<string, string?>
@@ -87,10 +91,10 @@ public sealed class PermissionsProviderTest
 
         switch (scenario)
         {
-            case "success":
+            case "full-permissions":
                 result.Permissions.Should().Be(EndpointPermissions.Full);
                 break;
-            case "no_sensitive_data":
+            case "restricted-permissions":
                 result.Permissions.Should().Be(EndpointPermissions.Restricted);
                 break;
             default:
