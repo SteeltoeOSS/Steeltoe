@@ -74,7 +74,7 @@ internal sealed partial class ManagementPortMiddleware
 
         if (!string.IsNullOrEmpty(instancePorts))
         {
-            var portMappings = JsonSerializer.Deserialize<List<PortMapping>>(instancePorts);
+            List<PortMapping>? portMappings = JsonSerializer.Deserialize(instancePorts, PortMappingJsonSerializerContext.Default.ListPortMapping);
 
             PortMapping? portMapping = portMappings?.Find(mapping =>
                 mapping.Internal == managementPort && (requestPort == mapping.ExternalTlsProxy || requestPort == mapping.InternalTlsProxy));
@@ -116,7 +116,7 @@ internal sealed partial class ManagementPortMiddleware
         Message = "Access to {Path} on port {Port} denied because 'Management:Endpoints:Port' is set to {ManagementPort}.")]
     private partial void LogAccessDenied(PathString path, int? port, int managementPort);
 
-    private sealed record PortMapping
+    internal sealed record PortMapping
     {
         [JsonPropertyName("internal")]
         public int? Internal { get; init; }
