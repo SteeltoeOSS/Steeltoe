@@ -11,16 +11,16 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
 internal sealed class CloudFoundrySecurityMiddlewareTestScenarios : TheoryData<string, HttpStatusCode?, string?, string[], bool>
 {
     private const string FullPermissionsLog =
-        "INFO System.Net.Http.HttpClient.CloudFoundrySecurity.ClientHandler: Sending HTTP request GET https://example.api.com/v2/apps/full-permissions/permissions";
+        "INFO System.Net.Http.HttpClient.CloudFoundrySecurity.ClientHandler: Sending HTTP request GET https://example.api.com/v3/apps/full-permissions/permissions";
 
     private static readonly string PermissionsCheckForbiddenLog =
-        $"INFO {typeof(PermissionsProvider)}: Cloud Foundry returned status Forbidden while obtaining permissions from https://example.api.com/v2/apps/forbidden/permissions.";
+        $"INFO {typeof(PermissionsProvider)}: Cloud Foundry returned status Forbidden while obtaining permissions from https://example.api.com/v3/apps/forbidden/permissions.";
 
     private static readonly string PermissionsCheckUnauthorizedLog =
-        $"INFO {typeof(PermissionsProvider)}: Cloud Foundry returned status Unauthorized while obtaining permissions from https://example.api.com/v2/apps/unauthorized/permissions.";
+        $"INFO {typeof(PermissionsProvider)}: Cloud Foundry returned status Unauthorized while obtaining permissions from https://example.api.com/v3/apps/unauthorized/permissions.";
 
     private static readonly string PermissionsCheckNotFoundLog =
-        $"INFO {typeof(PermissionsProvider)}: Cloud Foundry returned status NotFound while obtaining permissions from https://example.api.com/v2/apps/not-found/permissions.";
+        $"INFO {typeof(PermissionsProvider)}: Cloud Foundry returned status NotFound while obtaining permissions from https://example.api.com/v3/apps/not-found/permissions.";
 
     private static readonly string MiddlewareForbiddenLog =
         $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator security error with status Forbidden: '{Messages.AccessDenied}'.";

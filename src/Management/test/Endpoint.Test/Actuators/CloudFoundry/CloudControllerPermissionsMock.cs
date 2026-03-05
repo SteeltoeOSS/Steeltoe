@@ -14,34 +14,34 @@ internal static class CloudControllerPermissionsMock
     {
         var httpClientHandler = new DelegateToMockHttpClientHandler();
 
-        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/unavailable/permissions")
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v3/apps/unavailable/permissions")
             .Respond(HttpStatusCode.ServiceUnavailable, "application/json", "{}");
 
-        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/not-found/permissions")
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v3/apps/not-found/permissions")
             .Respond(HttpStatusCode.NotFound, "application/json", "{}");
 
-        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/unauthorized/permissions")
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v3/apps/unauthorized/permissions")
             .Respond(HttpStatusCode.Unauthorized, "application/json", "{}");
 
-        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/forbidden/permissions")
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v3/apps/forbidden/permissions")
             .Respond(HttpStatusCode.Forbidden, "application/json", "{}");
 
-        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/timeout/permissions")
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v3/apps/timeout/permissions")
             .Throw(new OperationCanceledException(null, new TimeoutException()));
 
-        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/exception/permissions")
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v3/apps/exception/permissions")
             .Throw(new HttpRequestException(HttpRequestError.NameResolutionError));
 
-        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/broken-response/permissions")
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v3/apps/broken-response/permissions")
             .Respond(HttpStatusCode.OK, "application/json", "{");
 
-        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/no-permissions/permissions").Respond(HttpStatusCode.OK, "application/json",
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v3/apps/no-permissions/permissions").Respond(HttpStatusCode.OK, "application/json",
             """{"read_sensitive_data": false, "read_basic_data": false}""");
 
-        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/restricted-permissions/permissions").Respond(HttpStatusCode.OK,
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v3/apps/restricted-permissions/permissions").Respond(HttpStatusCode.OK,
             "application/json", """{"read_sensitive_data": false, "read_basic_data": true}""");
 
-        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/full-permissions/permissions").Respond(HttpStatusCode.OK,
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v3/apps/full-permissions/permissions").Respond(HttpStatusCode.OK,
             "application/json", """{"read_sensitive_data": true, "read_basic_data": true}""");
 
         return httpClientHandler;
