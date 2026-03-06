@@ -8,6 +8,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 
 public sealed class Link
 {
+    [JsonPropertyName("href")]
     public string Href { get; set; }
 
     [JsonPropertyName("templated")]

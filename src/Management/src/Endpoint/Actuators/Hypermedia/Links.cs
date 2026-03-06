@@ -14,6 +14,7 @@ public sealed class Links
     /// <summary>
     /// Gets or sets the type of links contained in this collection.
     /// </summary>
+    [JsonPropertyName("type")]
     public string Type { get; set; } = "steeltoe";
 
     /// <summary>

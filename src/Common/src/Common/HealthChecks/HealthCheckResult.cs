@@ -19,6 +19,7 @@ public sealed class HealthCheckResult
     /// <remarks>
     /// Used by the health middleware to determine the HTTP Status code.
     /// </remarks>
+    [JsonPropertyName("status")]
     [JsonConverter(typeof(SnakeCaseAllCapsEnumMemberJsonConverter))]
     public HealthStatus Status { get; set; } = HealthStatus.Unknown;
 
@@ -28,11 +29,13 @@ public sealed class HealthCheckResult
     /// <remarks>
     /// Currently only used on check failures.
     /// </remarks>
+    [JsonPropertyName("description")]
     public string? Description { get; set; }
 
     /// <summary>
     /// Gets details of the health check.
     /// </summary>
+    [JsonPropertyName("details")]
     [JsonIgnoreEmptyCollection]
     public IDictionary<string, object> Details { get; } = new Dictionary<string, object>();
 }
