@@ -180,7 +180,7 @@ public sealed class CorsPolicyTest
 
         DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().Setup(mock =>
         {
-            mock.Expect(HttpMethod.Get, "https://api.cloud.com/v3/apps/798c2495-fe75-49b1-88da-b81197f2bf06/permissions")
+            mock.Expect(HttpMethod.Get, "https://api.cloud.com/v2/apps/798c2495-fe75-49b1-88da-b81197f2bf06/permissions")
                 .WithHeaders("Authorization", $"bearer {token}").Respond("application/json", """
                     {
                         "read_basic_data": true,
