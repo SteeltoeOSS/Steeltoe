@@ -34,7 +34,12 @@ public sealed class ContentNegotiationTest
 
         using HttpClient client = host.GetTestClient();
         MediaTypeHeaderValue contentType = MediaTypeHeaderValue.Parse("APPLICATION/vnd.Spring-Boot.Actuator.v3+JSON");
-        HttpContent requestContent = new StringContent("{}", contentType);
+
+        HttpContent requestContent = new StringContent("""
+            {
+              "configuredLevel": null
+            }
+            """, contentType);
 
         HttpResponseMessage response =
             await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), requestContent, TestContext.Current.CancellationToken);
@@ -54,7 +59,12 @@ public sealed class ContentNegotiationTest
 
         using HttpClient client = host.GetTestClient();
         MediaTypeHeaderValue contentType = MediaTypeHeaderValue.Parse("application/vnd.spring-boot.actuator.v3+json; charset=utf-8");
-        HttpContent requestContent = new StringContent("{}", contentType);
+
+        HttpContent requestContent = new StringContent("""
+            {
+              "configuredLevel": null
+            }
+            """, contentType);
 
         HttpResponseMessage response =
             await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), requestContent, TestContext.Current.CancellationToken);
@@ -74,7 +84,12 @@ public sealed class ContentNegotiationTest
 
         using HttpClient client = host.GetTestClient();
         MediaTypeHeaderValue contentType = MediaTypeHeaderValue.Parse("application/xhtml+xml");
-        HttpContent requestContent = new StringContent("{}", contentType);
+
+        HttpContent requestContent = new StringContent("""
+            {
+              "configuredLevel": null
+            }
+            """, contentType);
 
         HttpResponseMessage response =
             await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), requestContent, TestContext.Current.CancellationToken);

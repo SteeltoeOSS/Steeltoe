@@ -31,23 +31,24 @@ internal sealed partial class LoggersEndpointMiddleware(
 
             if (httpContext.Request.Path.StartsWithSegments(path, out PathString remaining) && remaining.HasValue)
             {
-                string loggerName = remaining.Value!.TrimStart('/');
+                string loggerName = remaining.Value.TrimStart('/');
 
-                Dictionary<string, string> change = await DeserializeRequestAsync(httpContext.Request.Body, cancellationToken);
+                Dictionary<string, string?> changes = await DeserializeRequestAsync(httpContext.Request.Body, cancellationToken);
 
-                change.TryGetValue("configuredLevel", out string? level);
-
-                LogChangeRequest(loggerName, level ?? "RESET");
-
-                if (!string.IsNullOrEmpty(loggerName))
+                if (changes.TryGetValue("configuredLevel", out string? level))
                 {
-                    if (!string.IsNullOrEmpty(level) && LoggerLevels.StringToLogLevel(level) == null)
-                    {
-                        LogInvalidLevel(level);
-                        return null;
-                    }
+                    LogChangeRequest(loggerName, level ?? "RESET");
 
-                    return new LoggersRequest(loggerName, level);
+                    if (!string.IsNullOrEmpty(loggerName))
+                    {
+                        if (!string.IsNullOrEmpty(level) && LoggerLevels.StringToLogLevel(level) == null)
+                        {
+                            LogInvalidLevel(level);
+                            return null;
+                        }
+
+                        return new LoggersRequest(loggerName, level);
+                    }
                 }
             }
         }
@@ -55,11 +56,12 @@ internal sealed partial class LoggersEndpointMiddleware(
         return new LoggersRequest();
     }
 
-    private async Task<Dictionary<string, string>> DeserializeRequestAsync(Stream stream, CancellationToken cancellationToken)
+    private async Task<Dictionary<string, string?>> DeserializeRequestAsync(Stream stream, CancellationToken cancellationToken)
     {
         try
         {
-            var dictionary = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(stream, cancellationToken: cancellationToken);
+            JsonSerializerOptions options = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
+            var dictionary = await JsonSerializer.DeserializeAsync<Dictionary<string, string?>>(stream, options, cancellationToken);
 
             if (dictionary != null)
             {
