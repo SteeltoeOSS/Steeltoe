@@ -289,11 +289,8 @@ public sealed class LoggersActuatorTest
             }
             """);
 
-        HttpResponseMessage resetResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake.Category"), new StringContent("""
-            {
-                "configuredLevel": null
-            }
-            """, RequestContentType), TestContext.Current.CancellationToken);
+        HttpResponseMessage resetResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake.Category"),
+            new StringContent("{}", RequestContentType), TestContext.Current.CancellationToken);
 
         resetResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         (await resetResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Should().BeEmpty();

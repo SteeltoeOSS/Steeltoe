@@ -35,20 +35,20 @@ internal sealed partial class LoggersEndpointMiddleware(
 
                 Dictionary<string, string?> changes = await DeserializeRequestAsync(httpContext.Request.Body, cancellationToken);
 
-                if (changes.TryGetValue("configuredLevel", out string? level))
+                // Client sends an empty JSON object to reset the level.
+                _ = changes.TryGetValue("configuredLevel", out string? level);
+
+                LogChangeRequest(loggerName, level ?? "RESET");
+
+                if (!string.IsNullOrEmpty(loggerName))
                 {
-                    LogChangeRequest(loggerName, level ?? "RESET");
-
-                    if (!string.IsNullOrEmpty(loggerName))
+                    if (!string.IsNullOrEmpty(level) && LoggerLevels.StringToLogLevel(level) == null)
                     {
-                        if (!string.IsNullOrEmpty(level) && LoggerLevels.StringToLogLevel(level) == null)
-                        {
-                            LogInvalidLevel(level);
-                            return null;
-                        }
-
-                        return new LoggersRequest(loggerName, level);
+                        LogInvalidLevel(level);
+                        return null;
                     }
+
+                    return new LoggersRequest(loggerName, level);
                 }
             }
         }
