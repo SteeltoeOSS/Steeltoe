@@ -28,9 +28,7 @@ internal sealed class SpringBootAdminApiClient
         using HttpClient httpClient = CreateHttpClient(options.ConnectionTimeout);
 
         string requestUri = $"{options.Url}/instances";
-
-        HttpResponseMessage response = await httpClient.PostAsJsonAsync(requestUri, application,
-            SpringBootAdminJsonSerializerContext.OptionsWithReflectionFallback, cancellationToken);
+        HttpResponseMessage response = await httpClient.PostAsJsonAsync(requestUri, application, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -38,9 +36,7 @@ internal sealed class SpringBootAdminApiClient
             throw new HttpRequestException($"Error response from HTTP POST request at {requestUri}: {errorResponse}");
         }
 
-        RegistrationResult? registrationResult =
-            await response.Content.ReadFromJsonAsync(SpringBootAdminJsonSerializerContext.Default.RegistrationResult, cancellationToken);
-
+        var registrationResult = await response.Content.ReadFromJsonAsync<RegistrationResult>(cancellationToken);
         return registrationResult?.Id;
     }
 

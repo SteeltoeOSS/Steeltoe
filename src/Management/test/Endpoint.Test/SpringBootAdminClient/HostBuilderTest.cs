@@ -43,7 +43,7 @@ public sealed class HostBuilderTest
 
         handler.Mock.Expect(HttpMethod.Post, "http://sba-server.com/instances").With(message =>
         {
-            requestApplication = message.Content?.ReadFromJsonAsync(SpringBootAdminJsonSerializerContext.Default.Application).GetAwaiter().GetResult();
+            requestApplication = message.Content?.ReadFromJsonAsync<Application>().GetAwaiter().GetResult();
             return true;
         }).Respond("application/json", """{"Id":"1"}""");
 
@@ -79,7 +79,7 @@ public sealed class HostBuilderTest
 
         handler.Mock.Expect(HttpMethod.Post, "http://sba-server.com/instances").With(message =>
         {
-            requestApplication = message.Content?.ReadFromJsonAsync(SpringBootAdminJsonSerializerContext.Default.Application).GetAwaiter().GetResult();
+            requestApplication = message.Content?.ReadFromJsonAsync<Application>().GetAwaiter().GetResult();
             return true;
         }).Respond("application/json", """{"Id":"1"}""");
 
