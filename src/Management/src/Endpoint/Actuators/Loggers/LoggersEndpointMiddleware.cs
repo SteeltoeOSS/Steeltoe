@@ -35,7 +35,7 @@ internal sealed partial class LoggersEndpointMiddleware(
 
                 Dictionary<string, string?> changes = await DeserializeRequestAsync(httpContext.Request.Body, cancellationToken);
 
-                // Client sends an empty JSON object to reset the level.
+                // Spring Boot Admin sends {} to reset the level, while Apps Manager sends {"configuredLevel":null}
                 _ = changes.TryGetValue("configuredLevel", out string? level);
 
                 LogChangeRequest(loggerName, level ?? "RESET");
