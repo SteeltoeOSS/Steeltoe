@@ -61,6 +61,8 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         instanceOptions.AutoScalingGroupName.Should().BeNull();
         instanceOptions.DataCenterInfo.Name.Should().Be(DataCenterName.MyOwn);
         instanceOptions.UseNetworkInterfaces.Should().BeFalse();
+
+        true.Should().BeFalse();
     }
 
     [Fact]
