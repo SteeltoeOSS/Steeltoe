@@ -13,10 +13,10 @@ internal sealed class JsonApplicationConverter : JsonConverter<IList<JsonApplica
     {
         if (reader.TokenType == JsonTokenType.StartArray)
         {
-            return JsonSerializer.Deserialize<List<JsonApplication?>>(ref reader, options)!;
+            return JsonSerializer.Deserialize(ref reader, EurekaJsonSerializerContext.Default.ListJsonApplication)!;
         }
 
-        var application = JsonSerializer.Deserialize<JsonApplication>(ref reader, options);
+        JsonApplication? application = JsonSerializer.Deserialize(ref reader, EurekaJsonSerializerContext.Default.JsonApplication);
         return application != null ? [application] : [];
     }
 

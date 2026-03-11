@@ -4,7 +4,7 @@
 
 using System.Net;
 using System.Text;
-using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RichardSzalay.MockHttp;
@@ -327,7 +327,7 @@ public sealed class EurekaClientTest
     {
         using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
 
-        using JsonDocument requestDocument = JsonDocument.Parse("""
+        string jsonRequest = JsonNode.Parse("""
             {
               "instance": {
                 "instanceId": "some",
@@ -354,9 +354,7 @@ public sealed class EurekaClientTest
                 "lastDirtyTimestamp": "1708427732823"
               }
             }
-            """);
-
-        string jsonRequest = JsonSerializer.Serialize(requestDocument);
+            """)!.ToJsonString();
 
         var services = new ServiceCollection();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));

@@ -327,7 +327,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["vcap:application:application_id"] = "success",
+            ["vcap:application:application_id"] = "full-permissions",
             ["vcap:application:cf_api"] = "https://example.api.com"
         };
 
@@ -379,26 +379,26 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using var client = new HttpClient();
-        var testAuthenticationRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost:5000/cloudfoundryapplication"));
-        testAuthenticationRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken);
-        var testAuthorizationRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost:5000/cloudfoundryapplication/info"));
-        testAuthorizationRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken);
+        var authenticationRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost:5000/cloudfoundryapplication"));
+        authenticationRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken);
+        var authorizationRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost:5000/cloudfoundryapplication/info"));
+        authorizationRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken);
 
-        HttpResponseMessage response = await client.SendAsync(testAuthenticationRequestMessage, TestContext.Current.CancellationToken);
-        response.StatusCode.Should().Be(steeltoeStatusCode);
+        HttpResponseMessage authenticationResponse = await client.SendAsync(authenticationRequest, TestContext.Current.CancellationToken);
+        authenticationResponse.StatusCode.Should().Be(steeltoeStatusCode);
 
         if (errorMessage != null)
         {
             string jsonErrorValue = JsonValue.Create(errorMessage).ToJsonString();
-            string errorText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            string errorText = await authenticationResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
             errorText.Should().Be(steeltoeStatusCode == HttpStatusCode.InternalServerError ? errorMessage : $$"""{"security_error":{{jsonErrorValue}}}""");
         }
         else
         {
-            string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            string authenticationResponseBody = await authenticationResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
-            responseBody.Should().BeJson("""
+            authenticationResponseBody.Should().BeJson("""
                 {
                     "type":"steeltoe",
                     "_links":{
@@ -415,8 +415,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
                 """);
         }
 
-        HttpResponseMessage fullPermissionResponse = await client.SendAsync(testAuthorizationRequestMessage, TestContext.Current.CancellationToken);
-        fullPermissionResponse.StatusCode.Should().Be(scenario == "no_sensitive_data" ? HttpStatusCode.Forbidden : steeltoeStatusCode);
+        HttpResponseMessage authorizationResponse = await client.SendAsync(authorizationRequest, TestContext.Current.CancellationToken);
+        authorizationResponse.StatusCode.Should().Be(scenario == "restricted-permissions" ? HttpStatusCode.Forbidden : steeltoeStatusCode);
 
         string logLines = loggerProvider.GetAsText();
         logLines.Should().ContainAll(expectedLogs);

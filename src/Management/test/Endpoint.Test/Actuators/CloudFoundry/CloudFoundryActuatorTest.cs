@@ -27,7 +27,7 @@ public sealed class CloudFoundryActuatorTest
     private const string VcapApplicationForMock = """
         {
             "cf_api": "https://example.api.com",
-            "application_id": "success"
+            "application_id": "full-permissions"
         }
         """;
 

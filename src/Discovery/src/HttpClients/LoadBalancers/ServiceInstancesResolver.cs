@@ -116,7 +116,8 @@ public sealed partial class ServiceInstancesResolver
     {
         if (cacheValue is { Length: > 0 })
         {
-            var serializableInstances = JsonSerializer.Deserialize<List<JsonSerializableServiceInstance>>(cacheValue);
+            JsonSerializableServiceInstance[]? serializableInstances =
+                JsonSerializer.Deserialize(cacheValue, ServiceInstancesJsonSerializerContext.Default.JsonSerializableServiceInstanceArray);
 
             if (serializableInstances != null)
             {
@@ -127,10 +128,10 @@ public sealed partial class ServiceInstancesResolver
         return null;
     }
 
-    private static byte[] ToCacheValue(IEnumerable<IServiceInstance> instances)
+    private static byte[] ToCacheValue(List<IServiceInstance> instances)
     {
         JsonSerializableServiceInstance[] serializableInstances = instances.Select(JsonSerializableServiceInstance.CopyFrom).ToArray();
-        return JsonSerializer.SerializeToUtf8Bytes(serializableInstances);
+        return JsonSerializer.SerializeToUtf8Bytes(serializableInstances, ServiceInstancesJsonSerializerContext.Default.JsonSerializableServiceInstanceArray);
     }
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "No discovery clients are registered.")]
@@ -142,7 +143,7 @@ public sealed partial class ServiceInstancesResolver
     [LoggerMessage(Level = LogLevel.Error, Message = "Failed to get instances from {DiscoveryClient}.")]
     private partial void LogFailedToGetInstances(Exception exception, Type discoveryClient);
 
-    private sealed class JsonSerializableServiceInstance : IServiceInstance
+    internal sealed class JsonSerializableServiceInstance : IServiceInstance
     {
         // Trust that deserialized instances meet the IServiceInstance contract, so suppress nullability warnings.
 

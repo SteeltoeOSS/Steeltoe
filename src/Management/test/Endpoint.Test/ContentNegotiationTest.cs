@@ -34,6 +34,7 @@ public sealed class ContentNegotiationTest
 
         using HttpClient client = host.GetTestClient();
         MediaTypeHeaderValue contentType = MediaTypeHeaderValue.Parse("APPLICATION/vnd.Spring-Boot.Actuator.v3+JSON");
+
         HttpContent requestContent = new StringContent("{}", contentType);
 
         HttpResponseMessage response =
@@ -54,6 +55,7 @@ public sealed class ContentNegotiationTest
 
         using HttpClient client = host.GetTestClient();
         MediaTypeHeaderValue contentType = MediaTypeHeaderValue.Parse("application/vnd.spring-boot.actuator.v3+json; charset=utf-8");
+
         HttpContent requestContent = new StringContent("{}", contentType);
 
         HttpResponseMessage response =
@@ -74,6 +76,7 @@ public sealed class ContentNegotiationTest
 
         using HttpClient client = host.GetTestClient();
         MediaTypeHeaderValue contentType = MediaTypeHeaderValue.Parse("application/xhtml+xml");
+
         HttpContent requestContent = new StringContent("{}", contentType);
 
         HttpResponseMessage response =

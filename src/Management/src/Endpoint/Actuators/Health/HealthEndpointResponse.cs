@@ -14,17 +14,20 @@ public sealed class HealthEndpointResponse
     /// <summary>
     /// Gets the status of the health check.
     /// </summary>
+    [JsonPropertyName("status")]
     [JsonConverter(typeof(SnakeCaseAllCapsEnumMemberJsonConverter))]
     public HealthStatus Status { get; init; }
 
     /// <summary>
     /// Gets a description of the health check result.
     /// </summary>
+    [JsonPropertyName("description")]
     public string? Description { get; init; }
 
     /// <summary>
     /// Gets the individual health check components, including their details.
     /// </summary>
+    [JsonPropertyName("components")]
     [JsonIgnoreEmptyCollection]
     public IDictionary<string, HealthCheckResult> Components { get; } = new Dictionary<string, HealthCheckResult>();
 
@@ -32,6 +35,7 @@ public sealed class HealthEndpointResponse
     /// Gets the list of available health groups.
     /// </summary>
     [JsonIgnoreEmptyCollection]
+    [JsonPropertyName("groups")]
     public IList<string> Groups { get; } = new List<string>();
 
     /// <summary>

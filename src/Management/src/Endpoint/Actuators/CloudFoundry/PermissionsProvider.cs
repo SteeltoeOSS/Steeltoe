@@ -4,8 +4,8 @@
 
 using System.Net;
 using System.Net.Http.Headers;
-using System.Security;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -19,7 +19,6 @@ namespace Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
 internal sealed partial class PermissionsProvider
 {
-    private const string ReadSensitiveDataJsonPropertyName = "read_sensitive_data";
     public const string HttpClientName = "CloudFoundrySecurity";
     private static readonly TimeSpan GetPermissionsTimeout = TimeSpan.FromMilliseconds(5_000);
 
@@ -77,8 +76,11 @@ internal sealed partial class PermissionsProvider
                     : new SecurityResult(HttpStatusCode.ServiceUnavailable, Messages.CloudFoundryNotReachable);
             }
 
-            EndpointPermissions permissions = await ParsePermissionsResponseAsync(response, cancellationToken);
-            return new SecurityResult(permissions);
+            EndpointPermissions? permissions = await ParsePermissionsResponseAsync(response, cancellationToken);
+
+            return permissions != null
+                ? new SecurityResult(permissions.Value)
+                : new SecurityResult(HttpStatusCode.BadGateway, Messages.CloudFoundryBrokenResponse);
         }
         catch (HttpRequestException exception)
         {
@@ -91,34 +93,31 @@ internal sealed partial class PermissionsProvider
         }
     }
 
-    public async Task<EndpointPermissions> ParsePermissionsResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+    public async Task<EndpointPermissions?> ParsePermissionsResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(response);
 
-        string json = string.Empty;
-        var permissions = EndpointPermissions.None;
-
         try
         {
-            json = await response.Content.ReadAsStringAsync(cancellationToken);
-
+            string json = await response.Content.ReadAsStringAsync(cancellationToken);
             LogResponseJson(SecurityUtilities.SanitizeInput(json));
 
-            var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
+            PermissionsResponse? result = JsonSerializer.Deserialize(json, CloudFoundryJsonSerializerContext.Default.PermissionsResponse);
 
-            if (result != null && result.TryGetValue(ReadSensitiveDataJsonPropertyName, out JsonElement permissionElement))
+            EndpointPermissions permissions = result switch
             {
-                bool enabled = JsonSerializer.Deserialize<bool>(permissionElement.GetRawText());
-                permissions = enabled ? EndpointPermissions.Full : EndpointPermissions.Restricted;
-            }
+                { ReadBasicData: true, ReadSensitiveData: true } => EndpointPermissions.Full,
+                { ReadBasicData: true, ReadSensitiveData: false } => EndpointPermissions.Restricted,
+                _ => EndpointPermissions.None
+            };
+
+            LogPermissions(permissions);
+            return permissions;
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            throw new SecurityException($"Exception extracting permissions from json: {SecurityUtilities.SanitizeInput(json)}", exception);
+            return null;
         }
-
-        LogPermissions(permissions);
-        return permissions;
     }
 
     private HttpClient CreateHttpClient()
@@ -140,6 +139,15 @@ internal sealed partial class PermissionsProvider
     [LoggerMessage(Level = LogLevel.Debug, Message = "Resolved permissions to {Permissions}.")]
     private partial void LogPermissions(EndpointPermissions permissions);
 
+    internal sealed class PermissionsResponse
+    {
+        [JsonPropertyName("read_basic_data")]
+        public bool ReadBasicData { get; set; }
+
+        [JsonPropertyName("read_sensitive_data")]
+        public bool ReadSensitiveData { get; set; }
+    }
+
     internal static class Messages
     {
         public const string AccessDenied = "Access denied";
@@ -148,6 +156,7 @@ internal sealed partial class PermissionsProvider
         public const string CloudFoundryApiMissing = "Cloud controller URL is not available";
         public const string CloudFoundryNotReachable = "Cloud controller not reachable";
         public const string CloudFoundryTimeout = "Cloud controller request timed out";
+        public const string CloudFoundryBrokenResponse = "Failed to parse Cloud controller response";
         public const string InvalidToken = "Invalid token";
     }
 }

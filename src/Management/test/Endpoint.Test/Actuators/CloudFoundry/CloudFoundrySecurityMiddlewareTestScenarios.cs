@@ -10,8 +10,8 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
 
 internal sealed class CloudFoundrySecurityMiddlewareTestScenarios : TheoryData<string, HttpStatusCode?, string?, string[], bool>
 {
-    private const string SuccessLog =
-        "INFO System.Net.Http.HttpClient.CloudFoundrySecurity.ClientHandler: Sending HTTP request GET https://example.api.com/v2/apps/success/permissions";
+    private const string FullPermissionsLog =
+        "INFO System.Net.Http.HttpClient.CloudFoundrySecurity.ClientHandler: Sending HTTP request GET https://example.api.com/v2/apps/full-permissions/permissions";
 
     private static readonly string PermissionsCheckForbiddenLog =
         $"INFO {typeof(PermissionsProvider)}: Cloud Foundry returned status Forbidden while obtaining permissions from https://example.api.com/v2/apps/forbidden/permissions.";
@@ -24,6 +24,9 @@ internal sealed class CloudFoundrySecurityMiddlewareTestScenarios : TheoryData<s
 
     private static readonly string MiddlewareForbiddenLog =
         $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator security error with status Forbidden: '{Messages.AccessDenied}'.";
+
+    private static readonly string MiddlewareBrokenResponseLog =
+        $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator security error with status BadGateway: '{Messages.CloudFoundryBrokenResponse}'.";
 
     private static readonly string MiddlewareExceptionLog =
         $"FAIL {typeof(CloudFoundrySecurityMiddleware)}: Actuator security error with status ServiceUnavailable: " +
@@ -58,7 +61,17 @@ internal sealed class CloudFoundrySecurityMiddlewareTestScenarios : TheoryData<s
             MiddlewareForbiddenLog
         ], false);
 
-        Add("no_sensitive_data", HttpStatusCode.OK, null, [MiddlewareForbiddenLog], true);
+        Add("broken-response", HttpStatusCode.BadGateway, Messages.CloudFoundryBrokenResponse, [MiddlewareBrokenResponseLog], true);
+
+        Add("broken-response", HttpStatusCode.OK, Messages.CloudFoundryBrokenResponse, [MiddlewareBrokenResponseLog], false);
+
+        Add("no-permissions", HttpStatusCode.Forbidden, Messages.AccessDenied, [MiddlewareForbiddenLog], true);
+
+        Add("no-permissions", HttpStatusCode.Forbidden, Messages.AccessDenied, [MiddlewareForbiddenLog], false);
+
+        Add("restricted-permissions", HttpStatusCode.OK, null, [MiddlewareForbiddenLog], true);
+
+        Add("full-permissions", HttpStatusCode.OK, null, [FullPermissionsLog], true);
 
         Add("not-found", HttpStatusCode.Unauthorized, Messages.InvalidToken, [
             PermissionsCheckNotFoundLog,
@@ -69,8 +82,6 @@ internal sealed class CloudFoundrySecurityMiddlewareTestScenarios : TheoryData<s
             PermissionsCheckNotFoundLog,
             MiddlewareUnauthorizedLog
         ], false);
-
-        Add("success", HttpStatusCode.OK, null, [SuccessLog], true);
 
         Add("timeout", HttpStatusCode.ServiceUnavailable, Messages.CloudFoundryTimeout, [MiddlewareTimeoutLog], true);
 

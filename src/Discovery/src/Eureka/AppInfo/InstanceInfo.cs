@@ -268,7 +268,7 @@ public sealed class InstanceInfo
     /// <inheritdoc />
     public override string ToString()
     {
-        return JsonSerializer.Serialize(this, DebugSerializerOptions.Instance);
+        return JsonSerializer.Serialize(this, DebugJsonSerializerContext.Default.InstanceInfo);
     }
 
     internal static InstanceInfo FromConfiguration(EurekaInstanceOptions options, TimeProvider timeProvider)

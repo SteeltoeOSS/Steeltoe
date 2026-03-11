@@ -3,8 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
+using FluentAssertions.Extensions;
 using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
+using Steeltoe.Discovery.Eureka.Util;
 
 namespace Steeltoe.Discovery.Eureka.Test.AppInfo;
 
@@ -796,5 +799,128 @@ public sealed class ApplicationInfoCollectionTest
         app.Should().NotBeNull();
         app.Name.Should().Be("myApp");
         app.Instances.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ToString_ReturnsExpected()
+    {
+        var apps = new ApplicationInfoCollection([
+            new ApplicationInfo("ServiceA", [
+                new InstanceInfo("full-instance-001", "ServiceA", "prod-server-01.example.com", "10.20.30.40", new DataCenterInfo
+                {
+                    Name = DataCenterName.Amazon
+                }, TimeProvider.System)
+                {
+                    AppGroupName = "ServiceGroup",
+                    Status = InstanceStatus.Up,
+                    OverriddenStatus = InstanceStatus.OutOfService,
+                    VipAddress = "service-a-vip",
+                    SecureVipAddress = "service-a-secure-vip",
+                    NonSecurePort = 8080,
+                    IsNonSecurePortEnabled = true,
+                    SecurePort = 8443,
+                    IsSecurePortEnabled = true,
+                    HomePageUrl = "http://prod-server-01.example.com:8080/",
+                    StatusPageUrl = "http://prod-server-01.example.com:8080/actuator/info",
+                    HealthCheckUrl = "http://prod-server-01.example.com:8080/actuator/health",
+                    SecureHealthCheckUrl = "https://prod-server-01.example.com:8443/actuator/health",
+                    LeaseInfo = LeaseInfo.FromJson(new JsonLeaseInfo
+                    {
+                        RenewalIntervalInSeconds = 30,
+                        DurationInSeconds = 90,
+                        RegistrationTimestamp = DateTimeConversions.ToJavaMilliseconds(15.June(2024).At(14, 30, 55, 123).AsUtc()),
+                        LastRenewalTimestamp = DateTimeConversions.ToJavaMilliseconds(18.June(2024).At(23, 1, 27, 789).AsUtc()),
+                        EvictionTimestamp = DateTimeConversions.ToJavaMilliseconds(19.June(2024).At(1, 1, 27, 789).AsUtc()),
+                        ServiceUpTimestamp = DateTimeConversions.ToJavaMilliseconds(15.June(2024).At(14, 31, 2, 456).AsUtc())
+                    }),
+                    ActionType = ActionType.Added,
+                    Metadata = new Dictionary<string, string?>
+                    {
+                        ["datacenter"] = "us-east-1",
+                        ["availability-zone"] = "us-east-1a",
+                        ["version"] = "3.2.1",
+                        ["environment"] = "production",
+                        ["deployment"] = "blue",
+                        ["team"] = "platform"
+                    }
+                },
+                new InstanceInfo("minimal-instance-001", "ServiceA", "prod-server-02.local", "10.20.30.41", new DataCenterInfo
+                {
+                    Name = DataCenterName.Netflix
+                }, TimeProvider.System)
+            ]),
+            new ApplicationInfo("EmptyService")
+        ]);
+
+        apps.ToString().Should().Be("""
+            [
+              {
+                "Name": "EmptyService",
+                "Instances": []
+              },
+              {
+                "Name": "ServiceA",
+                "Instances": [
+                  {
+                    "InstanceId": "full-instance-001",
+                    "AppName": "ServiceA",
+                    "AppGroupName": "ServiceGroup",
+                    "HostName": "prod-server-01.example.com",
+                    "IPAddress": "10.20.30.40",
+                    "DataCenterInfo": {
+                      "Name": "Amazon"
+                    },
+                    "VipAddress": "service-a-vip",
+                    "SecureVipAddress": "service-a-secure-vip",
+                    "NonSecurePort": 8080,
+                    "IsNonSecurePortEnabled": true,
+                    "SecurePort": 8443,
+                    "IsSecurePortEnabled": true,
+                    "Status": "UP",
+                    "OverriddenStatus": "OUT_OF_SERVICE",
+                    "EffectiveStatus": "OUT_OF_SERVICE",
+                    "HomePageUrl": "http://prod-server-01.example.com:8080/",
+                    "StatusPageUrl": "http://prod-server-01.example.com:8080/actuator/info",
+                    "HealthCheckUrl": "http://prod-server-01.example.com:8080/actuator/health",
+                    "SecureHealthCheckUrl": "https://prod-server-01.example.com:8443/actuator/health",
+                    "LeaseInfo": {
+                      "RenewalInterval": "00:00:30",
+                      "Duration": "00:01:30",
+                      "RegistrationTimeUtc": "2024-06-15T14:30:55.123Z",
+                      "LastRenewalTimeUtc": "2024-06-18T23:01:27.789Z",
+                      "EvictionTimeUtc": "2024-06-19T01:01:27.789Z",
+                      "ServiceUpTimeUtc": "2024-06-15T14:31:02.456Z"
+                    },
+                    "Metadata": {
+                      "datacenter": "us-east-1",
+                      "availability-zone": "us-east-1a",
+                      "version": "3.2.1",
+                      "environment": "production",
+                      "deployment": "blue",
+                      "team": "platform"
+                    },
+                    "ActionType": "ADDED",
+                    "IsDirty": false
+                  },
+                  {
+                    "InstanceId": "minimal-instance-001",
+                    "AppName": "ServiceA",
+                    "HostName": "prod-server-02.local",
+                    "IPAddress": "10.20.30.41",
+                    "DataCenterInfo": {
+                      "Name": "Netflix"
+                    },
+                    "NonSecurePort": 0,
+                    "IsNonSecurePortEnabled": false,
+                    "SecurePort": 0,
+                    "IsSecurePortEnabled": false,
+                    "EffectiveStatus": "UNKNOWN",
+                    "Metadata": {},
+                    "IsDirty": false
+                  }
+                ]
+              }
+            ]
+            """);
     }
 }

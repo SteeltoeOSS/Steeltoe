@@ -31,11 +31,12 @@ internal sealed partial class LoggersEndpointMiddleware(
 
             if (httpContext.Request.Path.StartsWithSegments(path, out PathString remaining) && remaining.HasValue)
             {
-                string loggerName = remaining.Value!.TrimStart('/');
+                string loggerName = remaining.Value.TrimStart('/');
 
-                Dictionary<string, string> change = await DeserializeRequestAsync(httpContext.Request.Body, cancellationToken);
+                Dictionary<string, string?> changes = await DeserializeRequestAsync(httpContext.Request.Body, cancellationToken);
 
-                change.TryGetValue("configuredLevel", out string? level);
+                // Spring Boot Admin sends {} to reset the level, while Apps Manager sends {"configuredLevel":null}
+                _ = changes.TryGetValue("configuredLevel", out string? level);
 
                 LogChangeRequest(loggerName, level ?? "RESET");
 
@@ -55,11 +56,12 @@ internal sealed partial class LoggersEndpointMiddleware(
         return new LoggersRequest();
     }
 
-    private async Task<Dictionary<string, string>> DeserializeRequestAsync(Stream stream, CancellationToken cancellationToken)
+    private async Task<Dictionary<string, string?>> DeserializeRequestAsync(Stream stream, CancellationToken cancellationToken)
     {
         try
         {
-            var dictionary = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(stream, cancellationToken: cancellationToken);
+            JsonSerializerOptions options = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
+            var dictionary = await JsonSerializer.DeserializeAsync<Dictionary<string, string?>>(stream, options, cancellationToken);
 
             if (dictionary != null)
             {

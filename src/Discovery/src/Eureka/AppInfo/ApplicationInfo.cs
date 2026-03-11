@@ -53,7 +53,7 @@ public sealed class ApplicationInfo
     /// <inheritdoc />
     public override string ToString()
     {
-        return JsonSerializer.Serialize(this, DebugSerializerOptions.Instance);
+        return JsonSerializer.Serialize(this, DebugJsonSerializerContext.Default.ApplicationInfo);
     }
 
     internal void Add(InstanceInfo instance)

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Json;
 
@@ -9,8 +10,10 @@ namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
 public sealed class HttpExchangeResponse
 {
+    [JsonPropertyName("status")]
     public int Status { get; }
 
+    [JsonPropertyName("headers")]
     [JsonIgnoreEmptyCollection]
     public IDictionary<string, StringValues> Headers { get; }
 
