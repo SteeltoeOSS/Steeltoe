@@ -329,7 +329,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
 
         instanceOptions.InstanceId.Should().NotBeNull();
-        string[] parts = instanceOptions.InstanceId.Split(':');
+        string[] parts = instanceOptions.InstanceId!.Split(':');
         parts.Should().HaveCount(3);
 
         int.TryParse(parts[2], CultureInfo.InvariantCulture, out int number).Should().BeTrue();
