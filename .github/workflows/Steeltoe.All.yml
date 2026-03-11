@@ -113,7 +113,7 @@ jobs:
       with:
         name: ${{ matrix.os }} test results
         reporter: dotnet-trx
-        path: '**/*.trx'
+        path: '**/*.notfound'
         fail-on-empty: 'true'
         fail-on-error: 'false'
 
