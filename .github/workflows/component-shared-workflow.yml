@@ -81,14 +81,16 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
 
     - name: Test
+      id: test
       run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
 
     - name: Test (memory dumps)
+      id: test-memory-dumps
       if: ${{ inputs.component == 'Management' }}
       run: dotnet test src/Management/test/Endpoint.Test --filter "Category=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
 
     - name: Upload crash/hang dumps (on failure)
-      if: ${{ failure() }}
+      if: ${{ !cancelled() && (steps.test.outcome == 'failure' || steps.test-memory-dumps.outcome == 'failure') }}
       uses: actions/upload-artifact@v5
       with:
         name: FailedTestOutput-${{ inputs.OS }}-latest
@@ -98,7 +100,7 @@ jobs:
         if-no-files-found: ignore
 
     - name: Report test results
-      if: ${{ !cancelled() }}
+      if: ${{ !cancelled() && (steps.test.outcome != 'skipped' || steps.test-memory-dumps.outcome != 'skipped') }}
       uses: dorny/test-reporter@v2
       with:
         name: ${{ inputs.OS }}-latest test results

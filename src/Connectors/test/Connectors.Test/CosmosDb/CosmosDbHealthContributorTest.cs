@@ -105,7 +105,7 @@ public sealed class CosmosDbHealthContributorTest
         cosmosClientMock.Setup(client => client.ReadAccountAsync()).Returns(async () =>
         {
             await Task.Delay(3.Seconds(), TestContext.Current.CancellationToken);
-            return null!;
+            return null;
         });
 
         await using ServiceProvider serviceProvider = CreateServiceProvider(serviceName, connectionString, cosmosClientMock.Object);
