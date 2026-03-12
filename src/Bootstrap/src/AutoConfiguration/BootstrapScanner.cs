@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
@@ -44,6 +45,7 @@ internal sealed partial class BootstrapScanner
     private readonly AssemblyLoader _loader;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger _logger;
+    private bool _isSerilogLoaded;
 
     public BootstrapScanner(HostBuilderWrapper wrapper, IReadOnlySet<string> assemblyNamesToExclude, ILoggerFactory loggerFactory)
     {
@@ -76,7 +78,9 @@ internal sealed partial class BootstrapScanner
         WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblyNames.ConfigurationPlaceholder);
         WireIfLoaded(WireConnectors, SteeltoeAssemblyNames.Connectors);
 
-        if (!WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblyNames.LoggingDynamicSerilog))
+        _isSerilogLoaded = WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblyNames.LoggingDynamicSerilog);
+
+        if (!_isSerilogLoaded)
         {
             WireIfLoaded(WireDynamicConsole, SteeltoeAssemblyNames.LoggingDynamicConsole);
         }
@@ -244,7 +248,20 @@ internal sealed partial class BootstrapScanner
 
     private void WireAllActuators()
     {
-        _wrapper.ConfigureServices(services => services.AddAllActuators());
+        if (_isSerilogLoaded)
+        {
+            _wrapper.ConfigureServices(services =>
+            {
+#pragma warning disable S4792 // Configuring loggers is security-sensitive
+                services.AddLogging(loggingBuilder => loggingBuilder.AddDynamicSerilog());
+#pragma warning restore S4792 // Configuring loggers is security-sensitive
+                services.AddAllActuators();
+            });
+        }
+        else
+        {
+            _wrapper.ConfigureServices(services => services.AddAllActuators());
+        }
 
         LogActuatorsConfigured();
     }
@@ -258,7 +275,20 @@ internal sealed partial class BootstrapScanner
 
     private void WireDistributedTracingLogProcessor()
     {
-        _wrapper.ConfigureServices(services => services.AddTracingLogProcessor());
+        if (_isSerilogLoaded)
+        {
+            _wrapper.ConfigureServices(services =>
+            {
+#pragma warning disable S4792 // Configuring loggers is security-sensitive
+                services.AddLogging(loggingBuilder => loggingBuilder.AddDynamicSerilog());
+#pragma warning restore S4792 // Configuring loggers is security-sensitive
+                services.AddTracingLogProcessor();
+            });
+        }
+        else
+        {
+            _wrapper.ConfigureServices(services => services.AddTracingLogProcessor());
+        }
 
         LogDistributedTracingConfigured();
     }

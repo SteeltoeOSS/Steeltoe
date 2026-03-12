@@ -169,6 +169,25 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
     [InlineData(HostBuilderType.HostApplication)]
+    public async Task DynamicSerilog_WinsOverActuatorFallback(HostBuilderType hostBuilderType)
+    {
+        var assembliesToInclude = new HashSet<string>
+        {
+            SteeltoeAssemblyNames.LoggingDynamicSerilog,
+            SteeltoeAssemblyNames.ManagementEndpoint
+        };
+
+        await using HostWrapper hostWrapper =
+            HostWrapperFactory.GetExcluding(SteeltoeAssemblyNames.All.Except(assembliesToInclude).ToHashSet(), hostBuilderType);
+
+        AssertDynamicSerilogIsAutowired(hostWrapper);
+    }
+
+    [Theory]
+    [InlineData(HostBuilderType.Host)]
+    [InlineData(HostBuilderType.WebHost)]
+    [InlineData(HostBuilderType.WebApplication)]
+    [InlineData(HostBuilderType.HostApplication)]
     public async Task DynamicConsoleLogger_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.LoggingDynamicConsole, hostBuilderType);
