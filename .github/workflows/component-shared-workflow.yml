@@ -105,6 +105,6 @@ jobs:
       with:
         name: ${{ inputs.OS }}-latest test results
         reporter: dotnet-trx
-        path: '**/*.notfound'
+        path: '**/*.trx'
         fail-on-empty: 'true'
         fail-on-error: 'false'
