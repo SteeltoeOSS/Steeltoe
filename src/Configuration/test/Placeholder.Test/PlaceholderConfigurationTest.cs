@@ -205,7 +205,8 @@ public sealed class PlaceholderConfigurationTest : IDisposable
             ["key2"] = "${key1?not-found}",
             ["key3"] = "${no-key?not-found}",
             ["key4"] = "${no-key}",
-            ["key5"] = string.Empty
+            ["key5"] = string.Empty,
+            ["key6"] = null
         };
 
         var builder = new ConfigurationBuilder();
@@ -219,6 +220,8 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         configuration["key3"].Should().Be("not-found");
         configuration["key4"].Should().Be("${no-key}");
         configuration["key5"].Should().BeEmpty();
+        configuration["key6"].Should().BeNull();
+        configuration["key7"].Should().BeNull();
 
         configuration["no-key"] = "new-key-value";
 
@@ -406,6 +409,26 @@ public sealed class PlaceholderConfigurationTest : IDisposable
                 }
             }
         }
+    }
+
+    [Fact]
+    public void Binding_property_against_null_overwrites_default_value()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Root:TestOptions:Value"] = null
+        };
+
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(appSettings);
+        builder.AddPlaceholderResolver();
+        IConfigurationRoot configuration = builder.Build();
+
+        IConfigurationSection section = configuration.GetSection("Root:TestOptions");
+        var options = section.Get<TestOptions>();
+
+        options.Should().NotBeNull();
+        options.Value.Should().BeNull();
     }
 
     public void Dispose()

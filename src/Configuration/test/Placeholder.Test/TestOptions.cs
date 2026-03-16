@@ -6,5 +6,5 @@ namespace Steeltoe.Configuration.Placeholder.Test;
 
 internal sealed class TestOptions
 {
-    public string? Value { get; set; }
+    public string? Value { get; set; } = "DefaultValue";
 }

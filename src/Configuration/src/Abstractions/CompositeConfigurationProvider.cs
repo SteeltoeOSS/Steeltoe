@@ -84,8 +84,13 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
 
         LogTryGet(GetType().Name, key);
 
-        value = ConfigurationRoot?.GetValue<string>(key);
-        bool found = value != null;
+        if (ConfigurationRoot == null)
+        {
+            value = null;
+            return false;
+        }
+
+        bool found = InnerTryGet(ConfigurationRoot, key, out value);
 
         if (found)
         {
@@ -93,6 +98,31 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
         }
 
         return found;
+    }
+
+    private static bool InnerTryGet(IConfigurationRoot root, string key, out string? value)
+    {
+        IList<IConfigurationProvider> providers = root.Providers as IList<IConfigurationProvider> ?? root.Providers.ToList();
+
+        for (int index = providers.Count - 1; index >= 0; index--)
+        {
+            IConfigurationProvider provider = providers[index];
+
+            try
+            {
+                if (provider.TryGet(key, out value))
+                {
+                    return true;
+                }
+            }
+            catch (ObjectDisposedException)
+            {
+                // Skip disposed providers to avoid exceptions during access.
+            }
+        }
+
+        value = null;
+        return false;
     }
 
     public void Set(string key, string? value)
