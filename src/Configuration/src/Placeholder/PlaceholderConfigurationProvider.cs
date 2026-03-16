@@ -36,7 +36,7 @@ internal sealed partial class PlaceholderConfigurationProvider : CompositeConfig
             }
         }
 
-        return value != null;
+        return found;
     }
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Replaced value '{OriginalValue}' at key '{Key}' with '{ReplacementValue}'.")]

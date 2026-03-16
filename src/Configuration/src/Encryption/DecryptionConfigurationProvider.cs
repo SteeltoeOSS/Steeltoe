@@ -46,7 +46,7 @@ internal sealed partial class DecryptionConfigurationProvider(
             }
         }
 
-        return value != null;
+        return found;
     }
 
     private ITextDecryptor EnsureDecryptor(IConfigurationRoot configurationRoot)
