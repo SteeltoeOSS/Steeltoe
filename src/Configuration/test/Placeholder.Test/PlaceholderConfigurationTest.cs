@@ -431,6 +431,26 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         options.Value.Should().BeNull();
     }
 
+    [Fact]
+    public void Binding_property_against_empty_string_overwrites_default_value()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Root:TestOptions:Value"] = string.Empty
+        };
+
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(appSettings);
+        builder.AddPlaceholderResolver();
+        IConfigurationRoot configuration = builder.Build();
+
+        IConfigurationSection section = configuration.GetSection("Root:TestOptions");
+        var options = section.Get<TestOptions>();
+
+        options.Should().NotBeNull();
+        options.Value.Should().BeEmpty();
+    }
+
     public void Dispose()
     {
         _loggerFactory.Dispose();
