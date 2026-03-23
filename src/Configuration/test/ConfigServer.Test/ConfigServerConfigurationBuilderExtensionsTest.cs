@@ -204,34 +204,47 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddConfigServer_PaysAttentionToSettings()
+    public void AddConfigServer_ConfigurationOverridesOptionsFromCode()
     {
         var options = new ConfigServerClientOptions
         {
-            Name = "testConfigName",
-            Label = "testConfigLabel",
-            Environment = "testEnv",
-            Username = "testUser",
-            Password = "testPassword",
+            Name = "nameInOptions",
+            Label = "labelInOptions",
+            Environment = "environmentInOptions",
+            Username = "usernameInOptions",
+            Password = "passwordInOptions",
             Timeout = 10,
             Retry =
             {
-                Enabled = false
+                InitialInterval = 5,
+                MaxInterval = 15
             }
         };
 
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Spring:Cloud:Config:Name"] = "nameInAppSettings",
+            ["Spring:Cloud:Config:Label"] = "labelInAppSettings",
+            ["Spring:Cloud:Config:Timeout"] = "50",
+            ["Spring:Cloud:Config:Retry:MaxInterval"] = "100"
+        };
+
         var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appSettings);
         configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         provider.Should().NotBeNull();
-        provider.ClientOptions.Label.Should().Be("testConfigLabel");
-        provider.ClientOptions.Name.Should().Be("testConfigName");
-        provider.ClientOptions.Environment.Should().Be("testEnv");
-        provider.ClientOptions.Username.Should().Be("testUser");
-        provider.ClientOptions.Password.Should().Be("testPassword");
+        provider.ClientOptions.Name.Should().Be("nameInAppSettings");
+        provider.ClientOptions.Label.Should().Be("labelInAppSettings");
+        provider.ClientOptions.Environment.Should().Be("environmentInOptions");
+        provider.ClientOptions.Username.Should().Be("usernameInOptions");
+        provider.ClientOptions.Password.Should().Be("passwordInOptions");
+        provider.ClientOptions.Timeout.Should().Be(50);
+        provider.ClientOptions.Retry.InitialInterval.Should().Be(5);
+        provider.ClientOptions.Retry.MaxInterval.Should().Be(100);
     }
 
     [Fact]
