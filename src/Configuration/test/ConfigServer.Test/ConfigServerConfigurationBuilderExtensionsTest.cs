@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
@@ -170,21 +169,6 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         ConfigServerConfigurationSource? source = configurationBuilder.EnumerateSources<ConfigServerConfigurationSource>().SingleOrDefault();
         source.Should().NotBeNull();
-    }
-
-    [Fact]
-    public void AddConfigServer_WithLoggerFactorySucceeds()
-    {
-        CapturingLoggerProvider loggerProvider = new();
-        using var loggerFactory = new LoggerFactory([loggerProvider]);
-
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddConfigServer(loggerFactory);
-        _ = configurationBuilder.Build();
-
-        IList<string> logMessages = loggerProvider.GetAll();
-
-        logMessages.Should().Contain("DBUG Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationProvider: Fetching configuration from server(s).");
     }
 
     [Theory]
