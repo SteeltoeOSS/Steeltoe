@@ -336,16 +336,16 @@ public sealed class PlaceholderConfigurationTest : IDisposable
     {
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "TestRoot": {
-            "Value": "valueA"
-          }
-        }
-        """);
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "TestRoot": {
+                "Value": "valueA"
+              }
+            }
+            """);
 
         var builder = new ConfigurationBuilder();
-        builder.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.AddInMemoryAppSettingsJsonFile(fileProvider);
 
 #pragma warning disable SA1312 // Variable names should begin with lower-case letter
         foreach (int _ in Enumerable.Repeat(0, placeholderCount))
@@ -375,13 +375,13 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         _ = optionsMonitor.CurrentValue;
         configurer.ConfigureCount.Should().Be(1);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "TestRoot": {
-            "Value": "valueB"
-          }
-        }
-        """);
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "TestRoot": {
+                "Value": "valueB"
+              }
+            }
+            """);
 
         fileProvider.NotifyChanged();
 

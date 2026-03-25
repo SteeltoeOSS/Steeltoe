@@ -198,24 +198,22 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
     {
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Serilog": {
-            "MinimumLevel": {
-              "Override": {
-                "A": "Warning"
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Serilog": {
+                "MinimumLevel": {
+                  "Override": {
+                    "A": "Warning"
+                  }
+                },
+                "WriteTo": {
+                  "Name": "Console"
+                }
               }
-            },
-            "WriteTo": {
-              "Name": "Console"
             }
-          }
-        }
-        """);
+            """);
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder =>
-            configurationBuilder.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true));
-
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider));
         DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
 
         testContext.Parent.AssertMinLevel(LogLevel.Warning);
@@ -229,19 +227,19 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
         testContext.Self.AssertMinLevel(LogLevel.Error, LogLevel.Warning);
         testContext.Child.AssertMinLevel(LogLevel.Error);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Serilog": {
-            "MinimumLevel": {
-              "Override": {
-                "A": "Verbose",
-                "A.B.C": "Debug"
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "Serilog": {
+                "MinimumLevel": {
+                  "Override": {
+                    "A": "Verbose",
+                    "A.B.C": "Debug"
+                  }
+                },
+                "WriteTo": "Console"
               }
-            },
-            "WriteTo": "Console"
-          }
-        }
-        """);
+            }
+            """);
 
         fileProvider.NotifyChanged();
         testContext.Refresh();

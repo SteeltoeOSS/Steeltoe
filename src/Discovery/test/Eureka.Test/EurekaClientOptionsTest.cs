@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Common.TestResources.IO;
 using Steeltoe.Discovery.Eureka.Configuration;
 
 namespace Steeltoe.Discovery.Eureka.Test;
@@ -98,14 +97,11 @@ public sealed class EurekaClientOptionsTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
-        configurationBuilder.AddJsonFile(fileName);
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         IConfiguration configuration = configurationBuilder.Build();
 
         IConfigurationSection clientSection = configuration.GetSection(EurekaClientOptions.ConfigurationPrefix);

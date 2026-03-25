@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Common.TestResources.IO;
 using Steeltoe.Configuration.Placeholder;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
@@ -81,14 +80,11 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-        configurationBuilder.AddJsonFile(fileName);
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
@@ -135,14 +131,11 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-        configurationBuilder.AddJsonFile(fileName);
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
@@ -169,14 +162,11 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-        configurationBuilder.AddJsonFile(fileName);
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
@@ -208,14 +198,11 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             </settings>
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.xml", appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsXmlFile(appSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-        configurationBuilder.AddXmlFile(fileName);
+        configurationBuilder.AddInMemoryAppSettingsXmlFile(fileProvider);
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
@@ -250,14 +237,11 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
                 password=myPassword
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.ini", appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsIniFile(appSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-        configurationBuilder.AddIniFile(fileName);
+        configurationBuilder.AddInMemoryAppSettingsIniFile(fileProvider);
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
@@ -347,15 +331,11 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-        configurationBuilder.AddJsonFile(fileName);
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddPlaceholderResolver();
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
@@ -442,21 +422,15 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string appSettingsPath = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string appSettingsFileName = Path.GetFileName(appSettingsPath);
-
-        string vcapAppPath = sandbox.CreateFile("vcapapp.json", vcapApplication);
-        string vcapAppFileName = Path.GetFileName(vcapAppPath);
-
-        string vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcapServices);
-        string vcapServicesFileName = Path.GetFileName(vcapServicesPath);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
+        fileProvider.IncludeFile("vcapapp.json", vcapApplication);
+        fileProvider.IncludeFile("vcapservices.json", vcapServices);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(sandbox.FullPath);
-        configurationBuilder.AddJsonFile(appSettingsFileName);
-        configurationBuilder.AddJsonFile(vcapAppFileName);
-        configurationBuilder.AddJsonFile(vcapServicesFileName);
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
+        configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapapp.json");
+        configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapservices.json");
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
@@ -550,21 +524,15 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string appSettingsPath = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string appSettingsFileName = Path.GetFileName(appSettingsPath);
-
-        string vcapAppPath = sandbox.CreateFile("vcapapp.json", vcapApplication);
-        string vcapAppFileName = Path.GetFileName(vcapAppPath);
-
-        string vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcapServices);
-        string vcapServicesFileName = Path.GetFileName(vcapServicesPath);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
+        fileProvider.IncludeFile("vcapapp.json", vcapApplication);
+        fileProvider.IncludeFile("vcapservices.json", vcapServices);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(sandbox.FullPath);
-        configurationBuilder.AddJsonFile(appSettingsFileName);
-        configurationBuilder.AddJsonFile(vcapAppFileName);
-        configurationBuilder.AddJsonFile(vcapServicesFileName);
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
+        configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapapp.json");
+        configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapservices.json");
         configurationBuilder.AddConfigServer();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 

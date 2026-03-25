@@ -148,7 +148,7 @@ public sealed class ConfigureCertificateOptionsTest
         string secondPrivateKeyContent = await File.ReadAllTextAsync("secondInstance.key", TestContext.Current.CancellationToken);
         using var secondX509 = X509Certificate2.CreateFromPemFile("secondInstance.crt", "secondInstance.key");
         string appSettings = BuildAppSettingsJson(certificateName, certificateFilePath, privateKeyFilePath);
-        string appSettingsPath = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
+        string appSettingsPath = sandbox.CreateFile("appsettings.json", appSettings);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddJsonFile(appSettingsPath, false, true);
         IConfiguration configuration = configurationBuilder.Build();
@@ -185,7 +185,7 @@ public sealed class ConfigureCertificateOptionsTest
         string firstPrivateKeyFilePath = sandbox.CreateFile(Guid.NewGuid() + ".key", firstPrivateKeyContent);
         using var secondX509 = X509Certificate2.CreateFromPemFile("secondInstance.crt", "secondInstance.key");
         string appSettings = BuildAppSettingsJson(certificateName, firstCertificateFilePath, firstPrivateKeyFilePath);
-        string appSettingsPath = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
+        string appSettingsPath = sandbox.CreateFile("appsettings.json", appSettings);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddJsonFile(appSettingsPath, false, true);
         IConfiguration configuration = configurationBuilder.Build();

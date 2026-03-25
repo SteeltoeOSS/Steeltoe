@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
@@ -69,13 +68,11 @@ public sealed class ConfigServerClientOptionsTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
+
         var builder = new ConfigurationBuilder();
-        builder.SetBasePath(directory);
-        builder.AddJsonFile(fileName);
+        builder.AddInMemoryAppSettingsJsonFile(fileProvider);
         IConfiguration configuration = builder.Build();
         services.AddSingleton(configuration);
 

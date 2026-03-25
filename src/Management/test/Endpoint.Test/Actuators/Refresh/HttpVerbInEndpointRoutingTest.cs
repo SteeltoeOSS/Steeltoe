@@ -186,22 +186,22 @@ public sealed class HttpVerbInEndpointRoutingTest
     {
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Management": {
-            "Endpoints": {
-              "Actuator": {
-                "Exposure": {
-                  "Include": ["refresh"]
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Management": {
+                "Endpoints": {
+                  "Actuator": {
+                    "Exposure": {
+                      "Include": ["refresh"]
+                    }
+                  }
                 }
               }
             }
-          }
-        }
-        """);
+            """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddControllersWithViews();
         builder.Services.AddRefreshActuator();
 
@@ -218,22 +218,22 @@ public sealed class HttpVerbInEndpointRoutingTest
         HttpResponseMessage postResponse = await httpClient.PostAsync(requestUri, null, TestContext.Current.CancellationToken);
         postResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Management": {
-            "Endpoints": {
-              "Actuator": {
-                "Exposure": {
-                  "Include": ["refresh"]
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "Management": {
+                "Endpoints": {
+                  "Actuator": {
+                    "Exposure": {
+                      "Include": ["refresh"]
+                    }
+                  },
+                  "Refresh": {
+                    "AllowedVerbs": ["GET"]
+                  }
                 }
-              },
-              "Refresh": {
-                "AllowedVerbs": ["GET"]
               }
             }
-          }
-        }
-        """);
+            """);
 
         fileProvider.NotifyChanged();
 

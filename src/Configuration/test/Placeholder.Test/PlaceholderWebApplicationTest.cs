@@ -2,14 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Configuration.Placeholder.Test;
 
@@ -26,16 +24,15 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
     [Fact]
     public async Task Reloads_options_on_change()
     {
-        const string appSettings = """
+        var fileProvider = new MemoryFileProvider();
+
+        fileProvider.IncludeAppSettingsJsonFile("""
             {
               "TestRoot": {
                 "AppName": "AppOne"
               }
             }
-            """;
-
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
+            """);
 
         var memorySettings = new Dictionary<string, string?>
         {
@@ -44,9 +41,8 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddSingleton<ILoggerFactory>(_loggerFactory);
-        builder.Configuration.SetBasePath(sandbox.FullPath);
         builder.Configuration.AddInMemoryCollection(memorySettings);
-        builder.Configuration.AddJsonFile(MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Configuration.AddPlaceholderResolver(_loggerFactory);
         builder.Services.Configure<TestOptions>(builder.Configuration.GetSection("TestRoot"));
         builder.Services.AddSingleton<IConfigureOptions<TestOptions>, ConfigureTestOptions>();
@@ -55,27 +51,27 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<TestOptions>>();
         optionsMonitor.CurrentValue.Value.Should().Be("AppOne");
 
-        await File.WriteAllTextAsync(path, """
-        {
-          "TestRoot": {
-            "AppName": "AppTwo"
-          }
-        }
-        """, TestContext.Current.CancellationToken);
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "TestRoot": {
+                "AppName": "AppTwo"
+              }
+            }
+            """);
 
-        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+        fileProvider.NotifyChanged();
 
         optionsMonitor.CurrentValue.Value.Should().Be("AppTwo");
 
-        await File.WriteAllTextAsync(path, """
-        {
-          "TestRoot": {
-            "AppName": "AppThree"
-          }
-        }
-        """, TestContext.Current.CancellationToken);
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "TestRoot": {
+                "AppName": "AppThree"
+              }
+            }
+            """);
 
-        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+        fileProvider.NotifyChanged();
 
         optionsMonitor.CurrentValue.Value.Should().Be("AppThree");
     }
@@ -121,11 +117,9 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
     [Fact]
     public async Task Can_substitute_across_multiple_sources()
     {
-        const string appSettingsJsonFileName = "appsettings.json";
-        const string appSettingsXmlFileName = "appsettings.xml";
-        const string appSettingsIniFileName = "appsettings.ini";
+        var fileProvider = new MemoryFileProvider();
 
-        const string appSettingsJsonContent = """
+        fileProvider.IncludeAppSettingsJsonFile("""
             {
               "JsonTestRoot": {
                 "JsonSubLevel": {
@@ -134,9 +128,9 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
                 }
               }
             }
-            """;
+            """);
 
-        const string appSettingsXmlContent = """
+        fileProvider.IncludeAppSettingsXmlFile("""
             <settings>
             	<XmlTestRoot>
             		<XmlSubLevel>
@@ -145,13 +139,13 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
             		</XmlSubLevel>
             	</XmlTestRoot>
             </settings>
-            """;
+            """);
 
-        const string appSettingsIniContent = """
+        fileProvider.IncludeAppSettingsIniFile("""
             [IniTestRoot:IniSubLevel]
             IniKey=IniValue
             CmdSource=IniTo${CmdTestRoot:CmdSubLevel:CmdKey}
-            """;
+            """);
 
         string[] appSettingsCommandLine =
         [
@@ -159,16 +153,10 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
             "--CmdTestRoot:CmdSubLevel:JsonSource=CmdTo${JsonTestRoot:JsonSubLevel:JsonKey}"
         ];
 
-        using var sandbox = new Sandbox();
-        sandbox.CreateFile(appSettingsJsonFileName, appSettingsJsonContent);
-        sandbox.CreateFile(appSettingsXmlFileName, appSettingsXmlContent);
-        sandbox.CreateFile(appSettingsIniFileName, appSettingsIniContent);
-
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.SetBasePath(sandbox.FullPath);
-        builder.Configuration.AddJsonFile(appSettingsJsonFileName);
-        builder.Configuration.AddXmlFile(appSettingsXmlFileName);
-        builder.Configuration.AddIniFile(appSettingsIniFileName);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
+        builder.Configuration.AddInMemoryAppSettingsXmlFile(fileProvider);
+        builder.Configuration.AddInMemoryAppSettingsIniFile(fileProvider);
         builder.Configuration.AddCommandLine(appSettingsCommandLine);
         builder.Configuration.AddPlaceholderResolver(_loggerFactory);
 

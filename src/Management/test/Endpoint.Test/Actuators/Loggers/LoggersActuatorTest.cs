@@ -588,21 +588,21 @@ public sealed class LoggersActuatorTest
     {
         var fileProvider = new MemoryFileProvider();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Logging": {
-            "LogLevel": {
-              "Default": "Error",
-              "Fake": "Warning",
-              "Fake.Category.AtDebugLevel": "Debug"
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Logging": {
+                "LogLevel": {
+                  "Default": "Error",
+                  "Fake": "Warning",
+                  "Fake.Category.AtDebugLevel": "Debug"
+                }
+              }
             }
-          }
-        }
-        """);
+            """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         EnsureLoggingConfigurationIsBound(builder.Logging, builder.Configuration);
         builder.Services.AddSingleton<ILoggerFactory, OnlyTrackFakeCategoryLoggerFactory>();
         builder.Services.AddLoggersActuator();
@@ -656,17 +656,17 @@ public sealed class LoggersActuatorTest
             }
             """);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Logging": {
-            "LogLevel": {
-              "Default": "Information",
-              "Fake.Some": "Error",
-              "Fake.Category": "Warning"
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "Logging": {
+                "LogLevel": {
+                  "Default": "Information",
+                  "Fake.Some": "Error",
+                  "Fake.Category": "Warning"
+                }
+              }
             }
-          }
-        }
-        """);
+            """);
 
         fileProvider.NotifyChanged();
 

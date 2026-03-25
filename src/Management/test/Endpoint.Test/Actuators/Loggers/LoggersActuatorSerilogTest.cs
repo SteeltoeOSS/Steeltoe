@@ -272,23 +272,23 @@ public sealed class LoggersActuatorSerilogTest
     {
         var fileProvider = new MemoryFileProvider();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Serilog": {
-            "MinimumLevel": {
-              "Default": "Error",
-              "Override": {
-                "Fake": "Warning",
-                "Fake.Category.AtDebugLevel": "Debug"
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Serilog": {
+                "MinimumLevel": {
+                  "Default": "Error",
+                  "Override": {
+                    "Fake": "Warning",
+                    "Fake.Category.AtDebugLevel": "Debug"
+                  }
+                }
               }
             }
-          }
-        }
-        """);
+            """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddSingleton<ILoggerFactory, OnlyTrackFakeCategoryLoggerFactory>();
         builder.Logging.AddDynamicSerilog();
         builder.Services.AddLoggersActuator();
@@ -342,19 +342,19 @@ public sealed class LoggersActuatorSerilogTest
             }
             """);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Serilog": {
-            "MinimumLevel": {
-              "Default": "Information",
-              "Override": {
-                "Fake.Some": "Error",
-                "Fake.Category": "Warning"
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "Serilog": {
+                "MinimumLevel": {
+                  "Default": "Information",
+                  "Override": {
+                    "Fake.Some": "Error",
+                    "Fake.Category": "Warning"
+                  }
+                }
               }
             }
-          }
-        }
-        """);
+            """);
 
         fileProvider.NotifyChanged();
 

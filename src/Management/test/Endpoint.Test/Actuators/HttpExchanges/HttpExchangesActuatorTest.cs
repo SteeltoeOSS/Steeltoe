@@ -422,17 +422,17 @@ public sealed class HttpExchangesActuatorTest
     {
         var fileProvider = new MemoryFileProvider();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Management": {
-            "Endpoints": {
-              "HttpExchanges": {
-                "IncludeQueryString": false
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Management": {
+                "Endpoints": {
+                  "HttpExchanges": {
+                    "IncludeQueryString": false
+                  }
+                }
               }
             }
-          }
-        }
-        """);
+            """);
 
         DateTime currentTime = 19.September(2024);
 
@@ -446,7 +446,7 @@ public sealed class HttpExchangesActuatorTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddSingleton<IHttpExchangeRecorder>(new FakeHttpExchangeRecorder(httpExchanges));
         builder.Services.AddHttpExchangesActuator();
         await using WebApplication host = builder.Build();
@@ -487,17 +487,17 @@ public sealed class HttpExchangesActuatorTest
             }
             """);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Management": {
-            "Endpoints": {
-              "HttpExchanges": {
-                "Reverse": false
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "Management": {
+                "Endpoints": {
+                  "HttpExchanges": {
+                    "Reverse": false
+                  }
+                }
               }
             }
-          }
-        }
-        """);
+            """);
 
         fileProvider.NotifyChanged();
 

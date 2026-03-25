@@ -323,34 +323,34 @@ public sealed class EnvironmentActuatorTest
     {
         var fileProvider = new MemoryFileProvider();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Management": {
-            "Endpoints": {
-              "Actuator": {
-                "Exposure": {
-                  "Include": [
-                    "env"
-                  ]
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Management": {
+                "Endpoints": {
+                  "Actuator": {
+                    "Exposure": {
+                      "Include": [
+                        "env"
+                      ]
+                    }
+                  },
+                  "Env": {
+                    "KeysToSanitize": [
+                      "Password"
+                    ]
+                  }
                 }
               },
-              "Env": {
-                "KeysToSanitize": [
-                  "Password"
-                ]
+              "TestSettings": {
+                "Password": "secret-password",
+                "AccessToken": "secret-token"
               }
             }
-          },
-          "TestSettings": {
-            "Password": "secret-password",
-            "AccessToken": "secret-token"
-          }
-        }
-        """);
+            """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.Sources.Clear();
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddEnvironmentActuator();
         await using WebApplication host = builder.Build();
 
@@ -390,30 +390,30 @@ public sealed class EnvironmentActuatorTest
             }
             """);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Management": {
-            "Endpoints": {
-              "Actuator": {
-                "Exposure": {
-                  "Include": [
-                    "env"
-                  ]
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "Management": {
+                "Endpoints": {
+                  "Actuator": {
+                    "Exposure": {
+                      "Include": [
+                        "env"
+                      ]
+                    }
+                  },
+                  "Env": {
+                    "KeysToSanitize": [
+                      "AccessToken"
+                    ]
+                  }
                 }
               },
-              "Env": {
-                "KeysToSanitize": [
-                  "AccessToken"
-                ]
+              "TestSettings": {
+                "Password": "secret-password",
+                "AccessToken": "secret-token"
               }
             }
-          },
-          "TestSettings": {
-            "Password": "secret-password",
-            "AccessToken": "secret-token"
-          }
-        }
-        """);
+            """);
 
         fileProvider.NotifyChanged();
 
