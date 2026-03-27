@@ -65,6 +65,12 @@ public static class ConfigServerConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder builder, ConfigServerClientOptions options, ILoggerFactory loggerFactory)
     {
+        return AddConfigServer(builder, options, null, loggerFactory);
+    }
+
+    internal static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder builder, ConfigServerClientOptions options,
+        HttpClientHandler? httpClientHandler, ILoggerFactory loggerFactory)
+    {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(loggerFactory);
@@ -75,8 +81,8 @@ public static class ConfigServerConfigurationBuilderExtensions
             builder.AddKubernetesServiceBindings();
 
             ConfigServerConfigurationSource source = builder is IConfiguration configuration
-                ? new ConfigServerConfigurationSource(options, configuration, loggerFactory)
-                : new ConfigServerConfigurationSource(options, builder.Sources, builder.Properties, loggerFactory);
+                ? new ConfigServerConfigurationSource(options, configuration, httpClientHandler, loggerFactory)
+                : new ConfigServerConfigurationSource(options, builder.Sources, builder.Properties, httpClientHandler, loggerFactory);
 
             builder.Add(source);
         }

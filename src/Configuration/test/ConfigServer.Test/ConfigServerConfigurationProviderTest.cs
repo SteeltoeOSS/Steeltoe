@@ -67,7 +67,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var options = new ConfigServerClientOptions();
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        string[] result = provider.GetLabels();
+        string[] result = provider.GetLabels(provider.ClientOptions);
         result.Should().ContainSingle().Which.Should().BeEmpty();
     }
 
@@ -81,7 +81,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        string[] result = provider.GetLabels();
+        string[] result = provider.GetLabels(provider.ClientOptions);
         result.Should().ContainSingle().Which.Should().BeEmpty();
     }
 
@@ -95,7 +95,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        string[] result = provider.GetLabels();
+        string[] result = provider.GetLabels(provider.ClientOptions);
         result.Should().ContainSingle().Which.Should().Be("foobar");
     }
 
@@ -109,7 +109,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        string[] result = provider.GetLabels();
+        string[] result = provider.GetLabels(provider.ClientOptions);
         result.Should().HaveCount(3);
         result.Should().HaveElementAt(0, "1");
         result.Should().HaveElementAt(1, "2");
@@ -126,7 +126,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        string[] result = provider.GetLabels();
+        string[] result = provider.GetLabels(provider.ClientOptions);
         result.Should().HaveCount(3);
         result.Should().HaveElementAt(0, "1");
         result.Should().HaveElementAt(1, "2");
@@ -145,8 +145,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        Uri requestUri = provider.BuildConfigServerUri(new Uri(options.Uri), null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
+        Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);
         request.RequestUri.Should().Be(requestUri);
@@ -169,8 +169,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        Uri requestUri = provider.BuildConfigServerUri(new Uri(options.Uri), null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
+        Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);
         request.RequestUri.Should().Be(requestUri);
@@ -193,8 +193,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        Uri requestUri = provider.BuildConfigServerUri(new Uri(options.Uri), null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
+        Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);
         request.RequestUri.Should().Be(requestUri);
@@ -215,8 +215,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        Uri requestUri = provider.BuildConfigServerUri(new Uri(options.Uri!), null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
+        Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), null);
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);
         request.RequestUri.Should().Be(requestUri);
@@ -241,7 +241,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             .WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
 
         using var provider = new ConfigServerConfigurationProvider(options, null, handler, NullLoggerFactory.Instance);
-        await provider.RefreshVaultTokenAsync(TestContext.Current.CancellationToken);
+        await provider.RefreshVaultTokenAsync(provider.ClientOptions, TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -268,7 +268,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             .WithHeaders("Authorization", "Bearer secret").WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
 
         using var provider = new ConfigServerConfigurationProvider(options, null, handler, NullLoggerFactory.Instance);
-        await provider.RefreshVaultTokenAsync(TestContext.Current.CancellationToken);
+        await provider.RefreshVaultTokenAsync(provider.ClientOptions, TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -288,7 +288,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
-        using HttpClient httpClient = provider.CreateHttpClient(options);
+        using HttpClient httpClient = provider.CreateHttpClient(provider.ClientOptions);
 
         httpClient.Should().NotBeNull();
         httpClient.DefaultRequestHeaders.GetValues("foo").SingleOrDefault().Should().Be("bar");
@@ -310,7 +310,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using (var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance))
         {
-            provider.IsDiscoveryFirstEnabled().Should().BeTrue();
+            provider.ClientOptions.Discovery.Enabled.Should().BeTrue();
         }
 
         var values = new Dictionary<string, string?>
@@ -326,11 +326,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "development"
         };
 
-        var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
+        var source = new ConfigServerConfigurationSource(options, configuration, null, NullLoggerFactory.Instance);
 
         using (var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance))
         {
-            provider.IsDiscoveryFirstEnabled().Should().BeTrue();
+            provider.ClientOptions.Discovery.Enabled.Should().BeTrue();
         }
     }
 
@@ -344,20 +344,22 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
 
-        var options = new ConfigServerClientOptions
+        var initialOptions = new ConfigServerClientOptions
         {
             Uri = "http://localhost:8888/",
             Name = "foo",
             Environment = "development"
         };
 
-        var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
+        var source = new ConfigServerConfigurationSource(initialOptions, configuration, null, NullLoggerFactory.Instance);
         using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
-        provider.UpdateSettingsFromDiscovery(new List<IServiceInstance>(), options);
-        options.Username.Should().BeNull();
-        options.Password.Should().BeNull();
-        options.Uri.Should().Be("http://localhost:8888/");
+        ConfigServerClientOptions optionsSnapshot = provider.ClientOptions;
+        provider.SetLastDiscoveryLookupResult(new List<IServiceInstance>());
+        provider.ApplyLastDiscoveryLookupResultToClientOptions(optionsSnapshot);
+        optionsSnapshot.Username.Should().BeNull();
+        optionsSnapshot.Password.Should().BeNull();
+        optionsSnapshot.Uri.Should().Be("http://localhost:8888/");
 
         var metadata1 = new Dictionary<string, string?>
         {
@@ -377,10 +379,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
             new TestServiceInstance("s", "i2", new Uri("https://foo.bar.baz:9999/"), metadata2)
         ];
 
-        provider.UpdateSettingsFromDiscovery(instances, options);
-        options.Username.Should().Be("secondUser");
-        options.Password.Should().Be("secondPassword");
-        options.Uri.Should().Be("https://foo.bar:8888/,https://foo.bar.baz:9999/configPath");
+        optionsSnapshot = provider.ClientOptions;
+        provider.SetLastDiscoveryLookupResult(instances);
+        provider.ApplyLastDiscoveryLookupResultToClientOptions(optionsSnapshot);
+        optionsSnapshot.Username.Should().Be("secondUser");
+        optionsSnapshot.Password.Should().Be("secondPassword");
+        optionsSnapshot.Uri.Should().Be("https://foo.bar:8888/,https://foo.bar.baz:9999/configPath");
     }
 
     [Fact]
@@ -402,7 +406,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Timeout = 10
         };
 
-        var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
+        var source = new ConfigServerConfigurationSource(options, configuration, null, NullLoggerFactory.Instance);
         using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
@@ -414,18 +418,5 @@ public sealed partial class ConfigServerConfigurationProviderTest
     private static string GetEncodedUserPassword(string user, string password)
     {
         return Convert.ToBase64String(Encoding.ASCII.GetBytes($"{user}:{password}"));
-    }
-
-    private sealed class TestServiceInstance(string serviceId, string instanceId, Uri uri, IReadOnlyDictionary<string, string?> metadata) : IServiceInstance
-    {
-        public string ServiceId { get; } = serviceId;
-        public string InstanceId { get; } = instanceId;
-        public string Host { get; } = uri.Host;
-        public int Port { get; } = uri.Port;
-        public bool IsSecure { get; } = uri.Scheme == Uri.UriSchemeHttps;
-        public Uri Uri { get; } = uri;
-        public Uri? NonSecureUri => IsSecure ? null : Uri;
-        public Uri? SecureUri => IsSecure ? Uri : null;
-        public IReadOnlyDictionary<string, string?> Metadata { get; } = metadata;
     }
 }

@@ -31,6 +31,9 @@ public static class ConfigServerServiceCollectionExtensions
         services.AddOptions();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ConfigServerClientOptions>, ConfigureConfigServerClientOptions>());
 
+        services.TryAddEnumerable(ServiceDescriptor
+            .Singleton<IOptionsChangeTokenSource<ConfigServerClientOptions>, ConfigurationChangeTokenSource<ConfigServerClientOptions>>());
+
         return services;
     }
 

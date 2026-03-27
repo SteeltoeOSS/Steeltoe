@@ -2,11 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using RichardSzalay.MockHttp;
 using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
@@ -26,7 +28,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         List<Uri> requestUris = [new("http://localhost:9999/app/profile")];
 
         // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.RemoteLoadAsync(requestUris, null, TestContext.Current.CancellationToken);
+        Func<Task> action = async () => await provider.RemoteLoadAsync(provider.ClientOptions, requestUris, null, TestContext.Current.CancellationToken);
 
         (await action.Should().ThrowExactlyAsync<TaskCanceledException>()).WithInnerExceptionExactly<TimeoutException>();
     }
@@ -49,7 +51,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken);
+        Func<Task> action = async () => await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<HttpRequestException>();
 
@@ -74,7 +76,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        ConfigEnvironment? result = await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken);
+        ConfigEnvironment? result = await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
 
         startup.LastRequest.Should().NotBeNull();
         startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
@@ -230,6 +232,70 @@ public sealed partial class ConfigServerConfigurationProviderTest
         startup.WaitForFirstRequest(2.Seconds()).Should().BeFalse();
     }
 
+    [Theory]
+    [InlineData(false, "00:00:01")]
+    [InlineData(true, "00:00:00")]
+    public void OnSettingsChanged_stops_timer_when_polling_becomes_ineffective(bool enabled, string pollingInterval)
+    {
+        const string configServerResponseJson = """
+            {
+              "name": "myName",
+              "profiles": [ "Production" ],
+              "label": "test-label",
+              "version": "test-version",
+              "propertySources": []
+            }
+            """;
+
+        var fileProvider = new MemoryFileProvider();
+
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "spring": {
+                "cloud": {
+                  "config": {
+                    "name": "myName",
+                    "enabled": true,
+                    "pollingInterval": "00:00:01"
+                  }
+                }
+              }
+            }
+            """);
+
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", configServerResponseJson);
+
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), handler, NullLoggerFactory.Instance);
+        IConfigurationRoot configuration = configurationBuilder.Build();
+
+        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        FieldInfo refreshTimerField = typeof(ConfigServerConfigurationProvider).GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+        refreshTimerField.GetValue(provider).Should().NotBeNull();
+
+        fileProvider.ReplaceAppSettingsJsonFile($$"""
+            {
+              "spring": {
+                "cloud": {
+                  "config": {
+                    "name": "myName",
+                    "enabled": {{(enabled ? "true" : "false")}},
+                    "pollingInterval": "{{pollingInterval}}"
+                  }
+                }
+              }
+            }
+            """);
+
+        fileProvider.NotifyChanged();
+
+        refreshTimerField.GetValue(provider).Should().BeNull();
+    }
+
     [Fact]
     public async Task DoLoad_MultipleLabels_ChecksAllLabels()
     {
@@ -277,7 +343,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await provider.DoLoadAsync(true, TestContext.Current.CancellationToken);
+        await provider.DoLoadAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
         startup.LastRequest.Should().NotBeNull();
         startup.RequestCount.Should().Be(2);
@@ -321,7 +387,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        ConfigEnvironment? env = await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken);
+        ConfigEnvironment? env = await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
 
         startup.LastRequest.Should().NotBeNull();
         startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
@@ -429,7 +495,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         startup.LastRequest.Should().NotBeNull();
         startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
-        provider.Properties.Should().HaveCount(27);
+        provider.InnerData.Should().BeEmpty();
     }
 
     [Fact]
@@ -754,35 +820,29 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void AddConfigServerClientSettings_ChangesDataDictionary()
+    public void DataDictionary_DoesNotContainRedundantClientSettings()
     {
         var options = new ConfigServerClientOptions
         {
             Enabled = false,
             FailFast = true,
             Environment = "environment",
-            Label = "label",
+            Label = "main",
             Name = "name",
             Uri = "https://foo.bar/",
-            Username = "username",
-            Password = "password",
-            Token = "vaultToken",
+            Username = "user",
+            Password = "pass",
+            Token = "vault-token",
             Timeout = 75_000,
-            PollingInterval = 35.5.Seconds(),
+            PollingInterval = TimeSpan.FromSeconds(30),
             ValidateCertificates = false,
-            AccessTokenUri = "https://token.server.com/",
-            ClientSecret = "client_secret",
-            ClientId = "client_id",
-            TokenTtl = 2,
-            TokenRenewRate = 1,
-            DisableTokenRenewal = true,
             Retry =
             {
                 Enabled = true,
-                InitialInterval = 8,
-                MaxInterval = 16,
-                Multiplier = 1.1,
-                MaxAttempts = 7
+                InitialInterval = 500,
+                MaxInterval = 5000,
+                Multiplier = 2.0,
+                MaxAttempts = 10
             },
             Discovery =
             {
@@ -792,53 +852,56 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Health =
             {
                 Enabled = false,
-                TimeToLive = 9
+                TimeToLive = 999
             },
+            AccessTokenUri = "https://uaa.example.com/oauth/token",
+            ClientSecret = "secret",
+            ClientId = "client-id",
+            TokenTtl = 600_000,
+            TokenRenewRate = 120_000,
+            DisableTokenRenewal = true,
             Headers =
             {
-                ["headerName1"] = "headerValue1",
-                ["headerName2"] = "headerValue2"
+                ["X-Custom"] = "value"
             }
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
-        provider.AddConfigServerClientOptions();
 
-        AssertDataValue("spring:cloud:config:enabled", "False");
-        AssertDataValue("spring:cloud:config:failFast", "True");
-        AssertDataValue("spring:cloud:config:env", "environment");
-        AssertDataValue("spring:cloud:config:label", "label");
-        AssertDataValue("spring:cloud:config:name", "name");
-        AssertDataValue("spring:cloud:config:uri", "https://foo.bar/");
-        AssertDataValue("spring:cloud:config:username", "username");
-        AssertDataValue("spring:cloud:config:password", "password");
-        AssertDataValue("spring:cloud:config:token", "vaultToken");
-        AssertDataValue("spring:cloud:config:timeout", "75000");
-        AssertDataValue("spring:cloud:config:pollingInterval", "00:00:35.5000000");
-        AssertDataValue("spring:cloud:config:validateCertificates", "False");
-        AssertDataValue("spring:cloud:config:accessTokenUri", "https://token.server.com/");
-        AssertDataValue("spring:cloud:config:clientSecret", "client_secret");
-        AssertDataValue("spring:cloud:config:clientId", "client_id");
-        AssertDataValue("spring:cloud:config:tokenTtl", "2");
-        AssertDataValue("spring:cloud:config:tokenRenewRate", "1");
-        AssertDataValue("spring:cloud:config:disableTokenRenewal", "True");
-        AssertDataValue("spring:cloud:config:retry:enabled", "True");
-        AssertDataValue("spring:cloud:config:retry:initialInterval", "8");
-        AssertDataValue("spring:cloud:config:retry:maxInterval", "16");
-        AssertDataValue("spring:cloud:config:retry:multiplier", "1.1");
-        AssertDataValue("spring:cloud:config:retry:maxAttempts", "7");
-        AssertDataValue("spring:cloud:config:discovery:enabled", "True");
-        AssertDataValue("spring:cloud:config:discovery:serviceId", "my-config-server");
-        AssertDataValue("spring:cloud:config:health:enabled", "False");
-        AssertDataValue("spring:cloud:config:health:timeToLive", "9");
-        AssertDataValue("spring:cloud:config:headers:headerName1", "headerValue1");
-        AssertDataValue("spring:cloud:config:headers:headerName2", "headerValue2");
+        provider.TryGet("spring:cloud:config:enabled", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:failFast", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:env", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:label", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:name", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:uri", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:username", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:password", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:token", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:timeout", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:pollingInterval", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:validateCertificates", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:validate_Certificates", out _).Should().BeFalse();
 
-        void AssertDataValue(string key, string expected)
-        {
-            provider.TryGet(key, out string? value).Should().BeTrue();
-            value.Should().Be(expected);
-        }
+        provider.TryGet("spring:cloud:config:retry:enabled", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:retry:initialInterval", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:retry:maxInterval", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:retry:multiplier", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:retry:maxAttempts", out _).Should().BeFalse();
+
+        provider.TryGet("spring:cloud:config:discovery:enabled", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:discovery:serviceId", out _).Should().BeFalse();
+
+        provider.TryGet("spring:cloud:config:health:enabled", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:health:timeToLive", out _).Should().BeFalse();
+
+        provider.TryGet("spring:cloud:config:accessTokenUri", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:clientSecret", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:clientId", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:tokenTtl", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:tokenRenewRate", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:disableTokenRenewal", out _).Should().BeFalse();
+
+        provider.TryGet("spring:cloud:config:headers:X-Custom", out _).Should().BeFalse();
     }
 
     [Fact]

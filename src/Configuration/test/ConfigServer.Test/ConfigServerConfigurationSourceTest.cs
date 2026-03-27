@@ -21,7 +21,7 @@ public sealed class ConfigServerConfigurationSourceTest
         var source = new ConfigServerConfigurationSource(options, sources, new Dictionary<string, object>
         {
             ["foo"] = "bar"
-        }, NullLoggerFactory.Instance);
+        }, null, NullLoggerFactory.Instance);
 
         source.DefaultOptions.Should().Be(options);
         source.Configuration.Should().BeNull();
@@ -31,7 +31,7 @@ public sealed class ConfigServerConfigurationSourceTest
         source.Properties.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        source = new ConfigServerConfigurationSource(options, configurationRoot, NullLoggerFactory.Instance);
+        source = new ConfigServerConfigurationSource(options, configurationRoot, null, NullLoggerFactory.Instance);
         source.DefaultOptions.Should().Be(options);
 
         ConfigurationRoot? root = source.Configuration.Should().BeOfType<ConfigurationRoot>().Subject;
@@ -46,7 +46,7 @@ public sealed class ConfigServerConfigurationSourceTest
         var memSource = new MemoryConfigurationSource();
         List<IConfigurationSource> sources = [memSource];
 
-        var source = new ConfigServerConfigurationSource(options, sources, null, NullLoggerFactory.Instance);
+        var source = new ConfigServerConfigurationSource(options, sources, null, null, NullLoggerFactory.Instance);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
 
         provider.Should().BeOfType<ConfigServerConfigurationProvider>();

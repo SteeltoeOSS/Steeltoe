@@ -105,7 +105,7 @@ internal sealed partial class ConfigServerDiscoveryService
         return discoveryClients;
     }
 
-    internal async Task<IEnumerable<IServiceInstance>> GetConfigServerInstancesAsync(CancellationToken cancellationToken)
+    internal async Task<List<IServiceInstance>> GetConfigServerInstancesAsync(CancellationToken cancellationToken)
     {
         int attempts = 0;
         int backOff = _options.Retry.InitialInterval;

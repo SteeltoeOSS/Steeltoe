@@ -17,9 +17,13 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     private const char CommaDelimiter = ',';
     internal const string ConfigurationPrefix = "spring:cloud:config";
 
-    internal CertificateOptions ClientCertificate { get; } = new();
     internal TimeSpan HttpTimeout => TimeSpan.FromMilliseconds(Timeout);
     internal bool IsMultiServerConfiguration => Uri != null && Uri.Contains(CommaDelimiter);
+
+    /// <summary>
+    /// Gets the client certificate used for mutual TLS authentication with the Config Server.
+    /// </summary>
+    internal CertificateOptions ClientCertificate { get; private set; } = new();
 
     /// <summary>
     /// Gets or sets a value indicating whether the Config Server provider is enabled. Default value: true.
@@ -96,17 +100,17 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     /// <summary>
     /// Gets retry settings.
     /// </summary>
-    public ConfigServerRetryOptions Retry { get; } = new();
+    public ConfigServerRetryOptions Retry { get; private set; } = new();
 
     /// <summary>
     /// Gets service discovery settings.
     /// </summary>
-    public ConfigServerDiscoveryOptions Discovery { get; } = new();
+    public ConfigServerDiscoveryOptions Discovery { get; private set; } = new();
 
     /// <summary>
     /// Gets health check settings.
     /// </summary>
-    public ConfigServerHealthOptions Health { get; } = new();
+    public ConfigServerHealthOptions Health { get; private set; } = new();
 
     /// <summary>
     /// Gets or sets the address used by the provider to obtain a OAuth Access Token.
@@ -141,7 +145,55 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     /// <summary>
     /// Gets headers that will be added to the Config Server request.
     /// </summary>
-    public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
+    public IDictionary<string, string> Headers { get; private set; } = new Dictionary<string, string>();
+
+    internal ConfigServerClientOptions Clone()
+    {
+        return new ConfigServerClientOptions
+        {
+            ClientCertificate = new CertificateOptions
+            {
+                Certificate = ClientCertificate.Certificate
+            },
+            Enabled = Enabled,
+            FailFast = FailFast,
+            Environment = Environment,
+            Label = Label,
+            Name = Name,
+            Uri = Uri,
+            Username = Username,
+            Password = Password,
+            Token = Token,
+            Timeout = Timeout,
+            PollingInterval = PollingInterval,
+            ValidateCertificates = ValidateCertificates,
+            Retry = new ConfigServerRetryOptions
+            {
+                Enabled = Retry.Enabled,
+                InitialInterval = Retry.InitialInterval,
+                MaxInterval = Retry.MaxInterval,
+                Multiplier = Retry.Multiplier,
+                MaxAttempts = Retry.MaxAttempts
+            },
+            Discovery = new ConfigServerDiscoveryOptions
+            {
+                Enabled = Discovery.Enabled,
+                ServiceId = Discovery.ServiceId
+            },
+            Health = new ConfigServerHealthOptions
+            {
+                Enabled = Health.Enabled,
+                TimeToLive = Health.TimeToLive
+            },
+            AccessTokenUri = AccessTokenUri,
+            ClientSecret = ClientSecret,
+            ClientId = ClientId,
+            TokenTtl = TokenTtl,
+            TokenRenewRate = TokenRenewRate,
+            DisableTokenRenewal = DisableTokenRenewal,
+            Headers = new Dictionary<string, string>(Headers)
+        };
+    }
 
     internal List<Uri> GetUris()
     {

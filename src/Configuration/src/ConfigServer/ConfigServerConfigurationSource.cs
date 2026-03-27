@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common.Certificates;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -22,6 +21,11 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     internal ConfigServerClientOptions DefaultOptions { get; }
 
     /// <summary>
+    /// Gets an optional handler to mock HTTP requests to Config Server.
+    /// </summary>
+    internal HttpClientHandler? HttpClientHandler { get; }
+
+    /// <summary>
     /// Gets the configuration the Config Server client uses to contact the Config Server. Values returned override the default values provided in
     /// <see cref="DefaultOptions" />.
     /// </summary>
@@ -36,17 +40,22 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// <param name="configuration">
     /// configuration used by the Config Server client. Values will override those found in default settings.
     /// </param>
+    /// <param name="httpClientHandler">
+    /// An optional handler to mock HTTP requests to Config Server.
+    /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
-    public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IConfiguration configuration, ILoggerFactory loggerFactory)
+    public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IConfiguration configuration, HttpClientHandler? httpClientHandler,
+        ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(defaultOptions);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        Configuration = configuration;
         DefaultOptions = defaultOptions;
+        HttpClientHandler = httpClientHandler;
+        Configuration = configuration;
         _loggerFactory = loggerFactory;
     }
 
@@ -63,11 +72,14 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// <param name="properties">
     /// properties to be used when sources are built.
     /// </param>
+    /// <param name="httpClientHandler">
+    /// An optional handler to mock HTTP requests to Config Server.
+    /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IList<IConfigurationSource> sources,
-        IDictionary<string, object>? properties, ILoggerFactory loggerFactory)
+        IDictionary<string, object>? properties, HttpClientHandler? httpClientHandler, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(defaultOptions);
         ArgumentNullException.ThrowIfNull(sources);
@@ -81,6 +93,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
         }
 
         DefaultOptions = defaultOptions;
+        HttpClientHandler = httpClientHandler;
         _loggerFactory = loggerFactory;
     }
 
@@ -113,17 +126,6 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
 
             // Create configuration
             Configuration = configurationBuilder.Build();
-        }
-
-        string? clientCertificatePath = Configuration.GetValue<string>($"{CertificateOptions.ConfigurationKeyPrefix}:ConfigServer:CertificateFilePath");
-
-        if (!string.IsNullOrEmpty(clientCertificatePath) && DefaultOptions.ClientCertificate.Certificate == null)
-        {
-            var certificateConfigurer = new ConfigureCertificateOptions(Configuration);
-
-            var options = new CertificateOptions();
-            certificateConfigurer.Configure("ConfigServer", options);
-            DefaultOptions.ClientCertificate.Certificate = options.Certificate;
         }
 
         return new ConfigServerConfigurationProvider(this, _loggerFactory);
