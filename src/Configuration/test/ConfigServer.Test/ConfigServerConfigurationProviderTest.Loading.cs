@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net.Sockets;
 using System.Reflection;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -294,6 +295,154 @@ public sealed partial class ConfigServerConfigurationProviderTest
         fileProvider.NotifyChanged();
 
         refreshTimerField.GetValue(provider).Should().BeNull();
+    }
+
+    [Fact]
+    public void OnSettingsChanged_reschedules_timer_when_polling_interval_changes()
+    {
+        const string configServerResponseJson = """
+            {
+              "name": "myName",
+              "profiles": [ "Production" ],
+              "label": "test-label",
+              "version": "test-version",
+              "propertySources": []
+            }
+            """;
+
+        var fileProvider = new MemoryFileProvider();
+
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "spring": {
+                "cloud": {
+                  "config": {
+                    "name": "myName",
+                    "enabled": true,
+                    "pollingInterval": "00:00:05"
+                  }
+                }
+              }
+            }
+            """);
+
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", configServerResponseJson);
+
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), handler, NullLoggerFactory.Instance);
+        IConfigurationRoot configuration = configurationBuilder.Build();
+
+        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        FieldInfo refreshTimerField = typeof(ConfigServerConfigurationProvider).GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+        refreshTimerField.GetValue(provider).Should().NotBeNull();
+
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "spring": {
+                "cloud": {
+                  "config": {
+                    "name": "myName",
+                    "enabled": true,
+                    "pollingInterval": "00:00:10"
+                  }
+                }
+              }
+            }
+            """);
+
+        fileProvider.NotifyChanged();
+
+        refreshTimerField.GetValue(provider).Should().NotBeNull("timer should be rescheduled, not stopped");
+    }
+
+    [Fact]
+    public async Task Load_MultipleConfigServers_SocketError_FallsBackToNextServer()
+    {
+        const string environment = """
+            {
+              "name": "test-name",
+              "profiles": [ "Production" ],
+              "label": "test-label",
+              "version": "test-version",
+              "propertySources": [
+                {
+                  "name": "source",
+                  "source": {
+                    "key1": "value1"
+                  }
+                }
+              ]
+            }
+            """;
+
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        handler.Mock.When(HttpMethod.Get, "http://server1:8888/myName/Production")
+            .Throw(new HttpRequestException("Connection refused", new SocketException((int)SocketError.ConnectionRefused)));
+
+        handler.Mock.When(HttpMethod.Get, "http://server2:8888/myName/Production").Respond("application/json", environment);
+
+        var options = new ConfigServerClientOptions
+        {
+            Name = "myName",
+            Uri = "http://server1:8888, http://server2:8888"
+        };
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, handler, NullLoggerFactory.Instance);
+
+        await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+
+        provider.TryGet("key1", out string? value).Should().BeTrue();
+        value.Should().Be("value1");
+    }
+
+    [Fact]
+    public async Task DoLoad_IdenticalData_DoesNotTriggerReload()
+    {
+        const string environment = """
+            {
+              "name": "test-name",
+              "profiles": [ "Production" ],
+              "label": "test-label",
+              "version": "test-version",
+              "propertySources": [
+                {
+                  "name": "source",
+                  "source": {
+                    "key1": "value1"
+                  }
+                }
+              ]
+            }
+            """;
+
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", environment);
+
+        var options = new ConfigServerClientOptions
+        {
+            Name = "myName"
+        };
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, handler, NullLoggerFactory.Instance);
+
+        await provider.DoLoadAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
+        provider.TryGet("key1", out string? value).Should().BeTrue();
+        value.Should().Be("value1");
+
+        bool reloadFired = false;
+        provider.GetReloadToken().RegisterChangeCallback(_ => reloadFired = true, null);
+
+        await provider.DoLoadAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
+
+        reloadFired.Should().BeFalse("identical data should not trigger OnReload");
+        provider.TryGet("key1", out value).Should().BeTrue();
+        value.Should().Be("value1");
     }
 
     [Fact]
@@ -701,6 +850,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
               ],
               "label": "test-label",
               "version": "test-version",
+              "state": "test-state",
               "propertySources": [
                 {
                   "name": "source",
@@ -736,6 +886,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
         value.Should().Be("value1");
         provider.TryGet("key2", out value).Should().BeTrue();
         value.Should().Be("10");
+
+        provider.TryGet("spring:cloud:config:client:version", out value).Should().BeTrue();
+        value.Should().Be("test-version");
+        provider.TryGet("spring:cloud:config:client:state", out value).Should().BeTrue();
+        value.Should().Be("test-state");
     }
 
     [Fact]

@@ -226,6 +226,40 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
+    public async Task GetRequestMessage_AddsBearerToken_WhenAccessTokenUriIsSet()
+    {
+        var options = new ConfigServerClientOptions
+        {
+            Uri = "http://localhost:8888/",
+            Name = "foo",
+            Environment = "development",
+            AccessTokenUri = "https://auth.server.com",
+            ClientId = "test-client-id",
+            ClientSecret = "test-client-secret"
+        };
+
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        handler.Mock.Expect(HttpMethod.Post, "https://auth.server.com/").WithHeaders("Authorization", "Basic dGVzdC1jbGllbnQtaWQ6dGVzdC1jbGllbnQtc2VjcmV0")
+            .WithFormData("grant_type=client_credentials").Respond("application/json", """
+                {
+                  "access_token": "my-bearer-token"
+                }
+                """);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, handler, NullLoggerFactory.Instance);
+
+        Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+
+        request.Headers.Authorization.Should().NotBeNull();
+        request.Headers.Authorization.Scheme.Should().Be("Bearer");
+        request.Headers.Authorization.Parameter.Should().Be("my-bearer-token");
+    }
+
+    [Fact]
     public async Task RefreshVaultToken_Succeeds()
     {
         var options = new ConfigServerClientOptions
