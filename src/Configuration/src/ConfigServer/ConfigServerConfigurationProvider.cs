@@ -202,7 +202,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     }
 
     /// <summary>
-    /// Loads configuration data from the Spring Cloud Configuration Server as specified by the <see cref="ClientOptions" />.
+    /// Loads configuration data from the Spring Cloud Config Server as specified by the <see cref="ClientOptions" />.
     /// </summary>
     public override void Load()
     {
@@ -481,7 +481,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     }
 
     /// <summary>
-    /// Creates the <see cref="HttpRequestMessage" /> that will be used in accessing the Spring Cloud Configuration server.
+    /// Creates the <see cref="HttpRequestMessage" /> that will be used in accessing the Spring Cloud Config server.
     /// </summary>
     /// <param name="optionsSnapshot">
     /// A snapshot of the client options to use for this request.
@@ -781,7 +781,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     }
 
     /// <summary>
-    /// Creates an appropriately configured HttpClient that can be used in communicating with the Spring Cloud Configuration Server.
+    /// Creates an appropriately configured HttpClient that can be used in communicating with the Spring Cloud Config Server.
     /// </summary>
     /// <param name="clientOptions">
     /// The settings used to configure the HttpClient.
