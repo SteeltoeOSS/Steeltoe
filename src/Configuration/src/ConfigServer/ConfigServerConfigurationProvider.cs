@@ -134,10 +134,10 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             TimeSpan previousPollingInterval = _clientOptions.PollingInterval;
             int previousTokenRenewRate = _clientOptions.TokenRenewRate;
 
+            _clientOptions = newOptions;
+
             UpdateConfigurationReloadTimer(newOptions, previousPollingInterval);
             UpdateVaultRenewTimer(newOptions, previousTokenRenewRate);
-
-            _clientOptions = newOptions;
         }
     }
 
