@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.Sockets;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -700,7 +701,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
         if (error != null)
         {
-            throw error;
+            ExceptionDispatchInfo.Capture(error).Throw();
         }
 
         return null;
