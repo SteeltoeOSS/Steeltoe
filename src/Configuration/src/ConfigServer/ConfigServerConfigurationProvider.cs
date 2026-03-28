@@ -51,9 +51,9 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     private readonly LockPrimitive _lifecycleLock = new();
     private readonly LockPrimitive _configurationReloadTickLock = new();
     private readonly LockPrimitive _vaultRenewTickLock = new();
+    private readonly ConfigServerDiscoveryService _configServerDiscoveryService;
 
     private volatile HttpClientHandler? _httpClientHandler;
-    private volatile ConfigServerDiscoveryService? _configServerDiscoveryService;
     private Timer? _configurationReloadTimer;
     private Timer? _vaultRenewTimer;
     private volatile DiscoveryLookupResult? _lastDiscoveryLookupResult;
@@ -110,6 +110,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
 
         _configurer = new ConfigureConfigServerClientOptions(_configuration);
+        _configServerDiscoveryService = new ConfigServerDiscoveryService(_configuration, _loggerFactory);
 
         _initialOptions = clientOptions.Clone();
         _clientOptions = _initialOptions;
@@ -214,10 +215,12 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             }
 
             LogConfigurationReloadLockObtained();
+            ConfigServerClientOptions optionsSnapshot = ClientOptions;
 
 #pragma warning disable S4462 // Calls to "async" methods should not be blocking
             // Justification: Configuration sources and providers don't support async.
-            DoLoadAsync(ClientOptions, true, CancellationToken.None).GetAwaiter().GetResult();
+            UpdateDiscoveryAsync(optionsSnapshot, false, CancellationToken.None).GetAwaiter().GetResult();
+            DoLoadAsync(optionsSnapshot, true, CancellationToken.None).GetAwaiter().GetResult();
 #pragma warning restore S4462 // Calls to "async" methods should not be blocking
 
             LogConfigurationReloadCycleCompleted();
@@ -327,15 +330,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             return null;
         }
 
-        if (!optionsSnapshot.Discovery.Enabled)
-        {
-            SetLastDiscoveryLookupResult([]);
-        }
-        else
-        {
-            _configServerDiscoveryService ??= new ConfigServerDiscoveryService(_configuration, _loggerFactory);
-            await DiscoverServerInstancesAsync(_configServerDiscoveryService, optionsSnapshot, cancellationToken);
-        }
+        await UpdateDiscoveryAsync(optionsSnapshot, optionsSnapshot.FailFast, cancellationToken);
 
         if (optionsSnapshot is { Retry.Enabled: true, FailFast: true })
         {
@@ -513,22 +508,22 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         return optionsSnapshot.Label.Split(CommaDelimiter, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
     }
 
-    private async Task DiscoverServerInstancesAsync(ConfigServerDiscoveryService configServerDiscoveryService, ConfigServerClientOptions optionsSnapshot,
-        CancellationToken cancellationToken)
+    private async Task UpdateDiscoveryAsync(ConfigServerClientOptions optionsSnapshot, bool failFast, CancellationToken cancellationToken)
     {
-        List<IServiceInstance> instances = await configServerDiscoveryService.GetConfigServerInstancesAsync(optionsSnapshot, cancellationToken);
-
-        if (instances.Count == 0)
+        if (optionsSnapshot.Discovery.Enabled)
         {
-            if (optionsSnapshot.FailFast)
+            List<IServiceInstance> instances = await _configServerDiscoveryService.GetConfigServerInstancesAsync(optionsSnapshot, cancellationToken);
+            SetLastDiscoveryLookupResult(instances);
+
+            if (instances.Count == 0 && failFast)
             {
                 throw new ConfigServerException("Could not locate Config Server via discovery, are you missing a Discovery service assembly?");
             }
-
-            return;
         }
-
-        SetLastDiscoveryLookupResult(instances);
+        else
+        {
+            SetLastDiscoveryLookupResult([]);
+        }
     }
 
     internal void SetLastDiscoveryLookupResult(IEnumerable<IServiceInstance> instances)
@@ -575,18 +570,12 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
     internal async Task ProvideRuntimeReplacementsAsync(ICollection<IDiscoveryClient> discoveryClientsFromServiceProvider, CancellationToken cancellationToken)
     {
-        if (_configServerDiscoveryService is not null)
-        {
-            await _configServerDiscoveryService.ProvideRuntimeReplacementsAsync(discoveryClientsFromServiceProvider, cancellationToken);
-        }
+        await _configServerDiscoveryService.ProvideRuntimeReplacementsAsync(discoveryClientsFromServiceProvider, cancellationToken);
     }
 
     internal async Task ShutdownAsync(CancellationToken cancellationToken)
     {
-        if (_configServerDiscoveryService is not null)
-        {
-            await _configServerDiscoveryService.ShutdownAsync(cancellationToken);
-        }
+        await _configServerDiscoveryService.ShutdownAsync(cancellationToken);
     }
 
     /// <summary>

@@ -12,6 +12,13 @@ using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
+using LockPrimitive =
+#if NET10_0_OR_GREATER
+    System.Threading.Lock
+#else
+    object
+#endif
+    ;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -19,10 +26,12 @@ internal sealed partial class ConfigServerDiscoveryService
 {
     private static readonly AssemblyLoader AssemblyLoader = new();
     private readonly IConfiguration _configuration;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger _logger;
+    private readonly LockPrimitive _initLock = new();
     private ServiceProvider? _temporaryServiceProviderForDiscoveryClients;
 
-    internal ICollection<IDiscoveryClient> DiscoveryClients { get; private set; }
+    internal ICollection<IDiscoveryClient>? DiscoveryClients { get; private set; }
 
     public ConfigServerDiscoveryService(IConfiguration configuration, ILoggerFactory loggerFactory)
     {
@@ -30,15 +39,27 @@ internal sealed partial class ConfigServerDiscoveryService
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _configuration = configuration;
+        _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<ConfigServerDiscoveryService>();
-        DiscoveryClients = SetupDiscoveryClients(loggerFactory);
     }
 
-    // Create discovery clients to be used (hopefully only) during startup
-    private IDiscoveryClient[] SetupDiscoveryClients(ILoggerFactory loggerFactory)
+    private void EnsureInitialized()
+    {
+        if (DiscoveryClients != null)
+        {
+            return;
+        }
+
+        lock (_initLock)
+        {
+            DiscoveryClients ??= SetupDiscoveryClients();
+        }
+    }
+
+    private IDiscoveryClient[] SetupDiscoveryClients()
     {
         var tempServices = new ServiceCollection();
-        tempServices.AddSingleton(loggerFactory);
+        tempServices.AddSingleton(_loggerFactory);
         tempServices.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
         // force settings to make sure we don't register the app here
@@ -102,10 +123,11 @@ internal sealed partial class ConfigServerDiscoveryService
         return discoveryClients;
     }
 
-    internal async Task<List<IServiceInstance>> GetConfigServerInstancesAsync(ConfigServerClientOptions optionsSnapshot,
-        CancellationToken cancellationToken)
+    internal async Task<List<IServiceInstance>> GetConfigServerInstancesAsync(ConfigServerClientOptions optionsSnapshot, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(optionsSnapshot);
+
+        EnsureInitialized();
 
         int attempts = 0;
         int backOff = optionsSnapshot.Retry.InitialInterval;
@@ -115,7 +137,7 @@ internal sealed partial class ConfigServerDiscoveryService
         {
             LogLocatingConfigServer(optionsSnapshot.Discovery.ServiceId);
 
-            if (optionsSnapshot.Discovery.ServiceId != null)
+            if (optionsSnapshot.Discovery.ServiceId != null && DiscoveryClients != null)
             {
                 foreach (IDiscoveryClient discoveryClient in DiscoveryClients)
                 {
@@ -171,7 +193,7 @@ internal sealed partial class ConfigServerDiscoveryService
     {
         if (_temporaryServiceProviderForDiscoveryClients != null)
         {
-            foreach (IDiscoveryClient discoveryClient in DiscoveryClients)
+            foreach (IDiscoveryClient discoveryClient in DiscoveryClients ?? [])
             {
                 await discoveryClient.ShutdownAsync(cancellationToken);
             }

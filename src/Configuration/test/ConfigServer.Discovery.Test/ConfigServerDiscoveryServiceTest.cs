@@ -15,11 +15,12 @@ namespace Steeltoe.Configuration.ConfigServer.Discovery.Test;
 public sealed class ConfigServerDiscoveryServiceTest
 {
     [Fact]
-    public void ConfigServerDiscoveryService_FindsDiscoveryClients()
+    public async Task ConfigServerDiscoveryService_FindsDiscoveryClients()
     {
         IConfiguration configuration = new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery).Build();
 
         var service = new ConfigServerDiscoveryService(configuration, NullLoggerFactory.Instance);
+        await service.GetConfigServerInstancesAsync(new ConfigServerClientOptions(), TestContext.Current.CancellationToken);
 
         service.DiscoveryClients.Should().HaveCount(3);
         service.DiscoveryClients.OfType<ConfigurationDiscoveryClient>().Should().ContainSingle();
