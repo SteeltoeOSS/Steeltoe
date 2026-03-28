@@ -19,6 +19,13 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Http.HttpClientPooling;
+using LockPrimitive =
+#if NET10_0_OR_GREATER
+    System.Threading.Lock
+#else
+    object
+#endif
+    ;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -40,13 +47,17 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     private readonly bool _ownsHttpClientHandler;
     private readonly ConfigureConfigServerClientOptions _configurer;
     private readonly ConfigServerClientOptions _initialOptions;
+    private readonly LockPrimitive _lifecycleLock = new();
+    private readonly LockPrimitive _configurationReloadTickLock = new();
+    private readonly LockPrimitive _vaultRenewTickLock = new();
 
     private HttpClientHandler? _httpClientHandler;
     private ConfigServerDiscoveryService? _configServerDiscoveryService;
-    private Timer? _refreshTimer;
-    private SemaphoreSlim? _timerTickLock = new(1, 1);
+    private Timer? _configurationReloadTimer;
+    private Timer? _vaultRenewTimer;
     private volatile DiscoveryLookupResult? _lastDiscoveryLookupResult;
     private volatile ConfigServerClientOptions _clientOptions;
+    private volatile bool _isDisposed;
 
     internal static JsonSerializerOptions SerializerOptions { get; } = new()
     {
@@ -99,8 +110,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
         _configurer = new ConfigureConfigServerClientOptions(_configuration);
 
-        _initialOptions = clientOptions;
-        _clientOptions = clientOptions;
+        _initialOptions = clientOptions.Clone();
+        _clientOptions = _initialOptions;
 
         if (httpClientHandler == null)
         {
@@ -125,91 +136,185 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             _configuration.GetReloadToken().RegisterChangeCallback(_ => OnSettingsChanged(), null);
         }
 
-        TimeSpan previousPollingInterval = _clientOptions.PollingInterval;
-        _clientOptions = newOptions;
+        lock (_lifecycleLock)
+        {
+            if (_isDisposed)
+            {
+                // Prevent creating new timers after Dispose has already torn them down.
+                return;
+            }
 
-        if (newOptions.PollingInterval == TimeSpan.Zero || !newOptions.Enabled)
-        {
-            _refreshTimer?.Dispose();
-            _refreshTimer = null;
+            TimeSpan previousPollingInterval = _clientOptions.PollingInterval;
+            int previousTokenRenewRate = _clientOptions.TokenRenewRate;
+
+            ConfigureHttpClientHandler(newOptions);
+            UpdateConfigurationReloadTimer(newOptions, previousPollingInterval);
+            UpdateVaultRenewTimer(newOptions, previousTokenRenewRate);
+
+            _clientOptions = newOptions;
         }
-        else
+    }
+
+    private void UpdateConfigurationReloadTimer(ConfigServerClientOptions optionsSnapshot, TimeSpan previousPollingInterval)
+    {
+        if (optionsSnapshot.PollingInterval == TimeSpan.Zero || !optionsSnapshot.Enabled)
         {
-            if (_refreshTimer == null)
-            {
-                _refreshTimer = new Timer(_ => RefreshTimerTick(), null, TimeSpan.Zero, newOptions.PollingInterval);
-            }
-            else if (previousPollingInterval != newOptions.PollingInterval)
-            {
-                _refreshTimer.Change(TimeSpan.Zero, newOptions.PollingInterval);
-            }
+            _configurationReloadTimer?.Dispose();
+            _configurationReloadTimer = null;
+        }
+        else if (_configurationReloadTimer == null)
+        {
+            _configurationReloadTimer = new Timer(_ => ConfigurationReloadTimerTick(), null, TimeSpan.Zero, optionsSnapshot.PollingInterval);
+        }
+        else if (previousPollingInterval != optionsSnapshot.PollingInterval)
+        {
+            _configurationReloadTimer.Change(TimeSpan.Zero, optionsSnapshot.PollingInterval);
+        }
+    }
+
+    private void UpdateVaultRenewTimer(ConfigServerClientOptions optionsSnapshot, int previousTokenRenewRate)
+    {
+        if (string.IsNullOrEmpty(optionsSnapshot.Token) || optionsSnapshot.DisableTokenRenewal ||
+            optionsSnapshot is not { Uri: not null, IsMultiServerConfiguration: false })
+        {
+            _vaultRenewTimer?.Dispose();
+            _vaultRenewTimer = null;
+        }
+        else if (_vaultRenewTimer == null)
+        {
+            _vaultRenewTimer = new Timer(_ => VaultRenewTimerTick(), null, TimeSpan.FromMilliseconds(optionsSnapshot.TokenRenewRate),
+                TimeSpan.FromMilliseconds(optionsSnapshot.TokenRenewRate));
+        }
+        else if (previousTokenRenewRate != optionsSnapshot.TokenRenewRate)
+        {
+            _vaultRenewTimer.Change(TimeSpan.FromMilliseconds(optionsSnapshot.TokenRenewRate), TimeSpan.FromMilliseconds(optionsSnapshot.TokenRenewRate));
         }
     }
 
     /// <remarks>
-    /// RefreshTimerTick is called by a Timer callback, so must catch all exceptions.
+    /// ConfigurationReloadTimerTick is called by a Timer callback, so must catch all exceptions.
     /// </remarks>
-    private void RefreshTimerTick()
+    private void ConfigurationReloadTimerTick()
     {
-        LogEnteringTimerCycle();
-        bool lockTaken = false;
+        LogEnteringConfigurationReloadCycle();
+
+#if NET10_0_OR_GREATER
+        bool lockTaken = _configurationReloadTickLock.TryEnter();
+#else
+        bool lockTaken = Monitor.TryEnter(_configurationReloadTickLock);
+#endif
 
         try
         {
-            lockTaken = _timerTickLock != null && _timerTickLock.Wait(0);
-        }
-        catch (ObjectDisposedException)
-        {
-            // Ignore exception originating from potential race condition.
-        }
-
-        try
-        {
-            if (lockTaken)
+            if (!lockTaken || _isDisposed)
             {
-                LogExclusiveLockObtained();
+                LogSkippingConfigurationReloadCycle();
+                return;
+            }
+
+            LogConfigurationReloadLockObtained();
 
 #pragma warning disable S4462 // Calls to "async" methods should not be blocking
-                // Justification: Configuration sources and providers don't support async.
-                DoLoadAsync(ClientOptions, true, CancellationToken.None).GetAwaiter().GetResult();
+            // Justification: Configuration sources and providers don't support async.
+            DoLoadAsync(ClientOptions, true, CancellationToken.None).GetAwaiter().GetResult();
 #pragma warning restore S4462 // Calls to "async" methods should not be blocking
-            }
-            else
-            {
-                LogSkippingCycle();
-            }
+
+            LogConfigurationReloadCycleCompleted();
         }
         catch (Exception exception)
         {
-            LogCouldNotReloadDuringPolling(exception);
+            if (exception is ObjectDisposedException && _isDisposed)
+            {
+                // Disposal can race with the timer callback because _isDisposed is read without locking.
+            }
+            else
+            {
+                LogFailedToReloadConfiguration(exception);
+            }
         }
         finally
         {
             if (lockTaken)
             {
-                LogTimerCycleCompleted();
+#if NET10_0_OR_GREATER
+                _configurationReloadTickLock.Exit();
+#else
+                Monitor.Exit(_configurationReloadTickLock);
+#endif
+            }
+        }
+    }
 
-                try
-                {
-                    _timerTickLock?.Release();
-                }
-                catch (ObjectDisposedException)
-                {
-                    // Ignore exception originating from potential race condition.
-                }
+    /// <remarks>
+    /// VaultRenewTimerTick is called by a Timer callback, so must catch all exceptions.
+    /// </remarks>
+    private void VaultRenewTimerTick()
+    {
+        LogEnteringVaultRenewCycle();
+
+#if NET10_0_OR_GREATER
+        bool lockTaken = _vaultRenewTickLock.TryEnter();
+#else
+        bool lockTaken = Monitor.TryEnter(_vaultRenewTickLock);
+#endif
+
+        try
+        {
+            if (!lockTaken || _isDisposed)
+            {
+                LogSkippingVaultRenewCycle();
+                return;
+            }
+
+            LogVaultRenewLockObtained();
+
+#pragma warning disable S4462 // Calls to "async" methods should not be blocking
+            // Justification: Configuration sources and providers don't support async.
+            RefreshVaultTokenAsync(ClientOptions, CancellationToken.None).GetAwaiter().GetResult();
+#pragma warning restore S4462 // Calls to "async" methods should not be blocking
+
+            LogVaultRenewCycleCompleted();
+        }
+        catch (Exception exception)
+        {
+            if (exception is ObjectDisposedException && _isDisposed)
+            {
+                // Disposal can race with the timer callback because _isDisposed is read without locking.
+            }
+            else
+            {
+                LogFailedToRenewVaultToken(exception);
+            }
+        }
+        finally
+        {
+            if (lockTaken)
+            {
+#if NET10_0_OR_GREATER
+                _vaultRenewTickLock.Exit();
+#else
+                Monitor.Exit(_vaultRenewTickLock);
+#endif
             }
         }
     }
 
     /// <summary>
-    /// Loads configuration data from the Spring Cloud Config Server as specified by the <see cref="ClientOptions" />.
+    /// Loads configuration data from the Spring Cloud Config Server as specified by the <see cref="ConfigServerClientOptions" />.
     /// </summary>
     public override void Load()
     {
+        try
+        {
 #pragma warning disable S4462 // Calls to "async" methods should not be blocking
-        // Justification: Configuration sources and providers don't support async.
-        LoadInternalAsync(true, CancellationToken.None).GetAwaiter().GetResult();
+            // Justification: Configuration sources and providers don't support async.
+            LoadInternalAsync(true, CancellationToken.None).GetAwaiter().GetResult();
 #pragma warning restore S4462 // Calls to "async" methods should not be blocking
+        }
+        catch (ObjectDisposedException) when (_isDisposed)
+        {
+            // Expected during disposal; silently ignore.
+        }
     }
 
     internal async Task<ConfigEnvironment?> LoadInternalAsync(bool updateDictionary, CancellationToken cancellationToken)
@@ -525,11 +630,6 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
         if (!string.IsNullOrEmpty(optionsSnapshot.Token) && optionsSnapshot is { Uri: not null, IsMultiServerConfiguration: false })
         {
-            if (!optionsSnapshot.DisableTokenRenewal)
-            {
-                RenewToken(optionsSnapshot);
-            }
-
             requestMessage.Headers.Add(TokenHeader, optionsSnapshot.Token);
         }
 
@@ -698,16 +798,10 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         return Convert.ToString(value, CultureInfo.InvariantCulture);
     }
 
-    private void RenewToken(ConfigServerClientOptions optionsSnapshot)
-    {
-#pragma warning disable S4462 // Calls to "async" methods should not be blocking
-        // Justification: Configuration sources and providers don't support async.
-        _ = new Timer(_ => RefreshVaultTokenAsync(optionsSnapshot, CancellationToken.None).GetAwaiter().GetResult(), null,
-            TimeSpan.FromMilliseconds(optionsSnapshot.TokenRenewRate), TimeSpan.FromMilliseconds(optionsSnapshot.TokenRenewRate));
-#pragma warning restore S4462 // Calls to "async" methods should not be blocking
-    }
-
-    // fire and forget
+    /// <summary>
+    /// Extends the lease of the current HashiCorp Vault token; it does not generate a new token. A new token is only picked up when the configuration
+    /// changes and <see cref="OnSettingsChanged" /> reconfigures the timer.
+    /// </summary>
     internal async Task RefreshVaultTokenAsync(ConfigServerClientOptions optionsSnapshot, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(optionsSnapshot.Token))
@@ -794,14 +888,6 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         ArgumentNullException.ThrowIfNull(clientOptions);
         ObjectDisposedException.ThrowIf(_httpClientHandler == null, this);
 
-        var clientCertificateConfigurer = new ClientCertificateHttpClientHandlerConfigurer(OptionsMonitorWrapper.Create(clientOptions.ClientCertificate));
-        clientCertificateConfigurer.Configure("ConfigServer", _httpClientHandler);
-
-        var validateCertificatesHandler =
-            new ValidateCertificatesHttpClientHandlerConfigurer<ConfigServerClientOptions>(OptionsMonitorWrapper.Create(clientOptions));
-
-        validateCertificatesHandler.Configure(Options.DefaultName, _httpClientHandler);
-
         var httpClient = new HttpClient(_httpClientHandler, false);
         httpClient.ConfigureForSteeltoe(clientOptions.HttpTimeout);
 
@@ -813,6 +899,24 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         return httpClient;
     }
 
+    private void ConfigureHttpClientHandler(ConfigServerClientOptions optionsSnapshot)
+    {
+        if (_httpClientHandler == null)
+        {
+            return;
+        }
+
+        _httpClientHandler.ClientCertificates.Clear();
+
+        var clientCertificateConfigurer = new ClientCertificateHttpClientHandlerConfigurer(OptionsMonitorWrapper.Create(optionsSnapshot.ClientCertificate));
+        clientCertificateConfigurer.Configure("ConfigServer", _httpClientHandler);
+
+        var validateCertificatesHandler =
+            new ValidateCertificatesHttpClientHandlerConfigurer<ConfigServerClientOptions>(OptionsMonitorWrapper.Create(optionsSnapshot));
+
+        validateCertificatesHandler.Configure(Options.DefaultName, _httpClientHandler);
+    }
+
     private static bool IsSocketError(Exception exception)
     {
         return exception is HttpRequestException && exception.InnerException is SocketException;
@@ -820,11 +924,21 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
     public void Dispose()
     {
-        _refreshTimer?.Dispose();
-        _refreshTimer = null;
+        lock (_lifecycleLock)
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
 
-        _timerTickLock?.Dispose();
-        _timerTickLock = null;
+            _isDisposed = true;
+
+            _configurationReloadTimer?.Dispose();
+            _configurationReloadTimer = null;
+
+            _vaultRenewTimer?.Dispose();
+            _vaultRenewTimer = null;
+        }
 
         if (_ownsHttpClientHandler)
         {
@@ -834,20 +948,35 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         _httpClientHandler = null;
     }
 
-    [LoggerMessage(Level = LogLevel.Trace, Message = "Entering timer cycle.")]
-    private partial void LogEnteringTimerCycle();
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Entering polling configuration reload cycle.")]
+    private partial void LogEnteringConfigurationReloadCycle();
 
-    [LoggerMessage(Level = LogLevel.Trace, Message = "Exclusive lock obtained.")]
-    private partial void LogExclusiveLockObtained();
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Polling configuration reload lock obtained.")]
+    private partial void LogConfigurationReloadLockObtained();
 
-    [LoggerMessage(Level = LogLevel.Trace, Message = "Previous cycle is still running, or already disposed; skipping this cycle.")]
-    private partial void LogSkippingCycle();
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Previous polling configuration reload cycle is still running, or already disposed; skipping this cycle.")]
+    private partial void LogSkippingConfigurationReloadCycle();
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Could not reload configuration during polling.")]
-    private partial void LogCouldNotReloadDuringPolling(Exception exception);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to reload configuration during polling.")]
+    private partial void LogFailedToReloadConfiguration(Exception exception);
 
-    [LoggerMessage(Level = LogLevel.Trace, Message = "Timer cycle completed, releasing exclusive lock.")]
-    private partial void LogTimerCycleCompleted();
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Polling configuration reload cycle completed, releasing lock.")]
+    private partial void LogConfigurationReloadCycleCompleted();
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Entering Vault token renewal cycle.")]
+    private partial void LogEnteringVaultRenewCycle();
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Vault token renewal lock obtained.")]
+    private partial void LogVaultRenewLockObtained();
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Previous Vault token renewal cycle is still running, or already disposed; skipping this cycle.")]
+    private partial void LogSkippingVaultRenewCycle();
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to renew Vault token.")]
+    private partial void LogFailedToRenewVaultToken(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Vault token renewal cycle completed, releasing lock.")]
+    private partial void LogVaultRenewCycleCompleted();
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Config Server client disabled, not fetching configuration.")]
     private partial void LogConfigServerClientDisabled();

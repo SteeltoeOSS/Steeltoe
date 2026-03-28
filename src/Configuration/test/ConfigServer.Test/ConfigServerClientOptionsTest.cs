@@ -119,12 +119,17 @@ public sealed class ConfigServerClientOptionsTest
     public void Clone_preserves_all_properties_and_produces_independent_nested_objects()
     {
         using var certificate = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
+        using var issuerCertificate = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
 
         var original = new ConfigServerClientOptions
         {
             ClientCertificate =
             {
-                Certificate = certificate
+                Certificate = certificate,
+                IssuerChain =
+                {
+                    issuerCertificate
+                }
             },
             Enabled = false,
             FailFast = true,
@@ -172,6 +177,11 @@ public sealed class ConfigServerClientOptionsTest
 
         clone.ClientCertificate.Should().NotBeSameAs(original.ClientCertificate);
         clone.ClientCertificate.Certificate.Should().BeSameAs(original.ClientCertificate.Certificate);
+        clone.ClientCertificate.IssuerChain.Should().NotBeSameAs(original.ClientCertificate.IssuerChain);
+        clone.ClientCertificate.IssuerChain.Should().ContainSingle().Which.Should().BeSameAs(issuerCertificate);
+
+        original.ClientCertificate.IssuerChain.Clear();
+        clone.ClientCertificate.IssuerChain.Should().ContainSingle();
 
         clone.Enabled.Should().Be(original.Enabled);
         clone.FailFast.Should().Be(original.FailFast);

@@ -102,8 +102,8 @@ public sealed class ConfigServerHostBuilderExtensionsTest
             provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
         }
 
-        FieldInfo refreshTimerField = provider.GetType().GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        refreshTimerField.GetValue(provider).Should().BeNull();
+        FieldInfo reloadTimerField = provider.GetType().GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        reloadTimerField.GetValue(provider).Should().BeNull();
     }
 
     [Fact]
@@ -126,8 +126,8 @@ public sealed class ConfigServerHostBuilderExtensionsTest
             provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
         }
 
-        FieldInfo refreshTimerField = provider.GetType().GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        refreshTimerField.GetValue(provider).Should().BeNull();
+        FieldInfo reloadTimerField = provider.GetType().GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        reloadTimerField.GetValue(provider).Should().BeNull();
     }
 
     [Fact]
@@ -150,8 +150,8 @@ public sealed class ConfigServerHostBuilderExtensionsTest
             _ = host.Services.GetRequiredService<IConfiguration>();
         }
 
-        FieldInfo refreshTimerField = provider.GetType().GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        refreshTimerField.GetValue(provider).Should().BeNull();
+        FieldInfo reloadTimerField = provider.GetType().GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        reloadTimerField.GetValue(provider).Should().BeNull();
     }
 
     [Fact]
@@ -174,8 +174,8 @@ public sealed class ConfigServerHostBuilderExtensionsTest
             _ = host.Services.GetRequiredService<IConfiguration>();
         }
 
-        FieldInfo refreshTimerField = provider.GetType().GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        refreshTimerField.GetValue(provider).Should().BeNull();
+        FieldInfo reloadTimerField = provider.GetType().GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        reloadTimerField.GetValue(provider).Should().BeNull();
     }
 
     [Fact]

@@ -21,9 +21,9 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     internal bool IsMultiServerConfiguration => Uri != null && Uri.Contains(CommaDelimiter);
 
     /// <summary>
-    /// Gets the client certificate used for mutual TLS authentication with the Config Server.
+    /// Gets or sets the client certificate used for mutual TLS authentication with the Config Server.
     /// </summary>
-    internal CertificateOptions ClientCertificate { get; private set; } = new();
+    internal CertificateOptions ClientCertificate { get; set; } = new();
 
     /// <summary>
     /// Gets or sets a value indicating whether the Config Server provider is enabled. Default value: true.
@@ -151,10 +151,7 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     {
         return new ConfigServerClientOptions
         {
-            ClientCertificate = new CertificateOptions
-            {
-                Certificate = ClientCertificate.Certificate
-            },
+            ClientCertificate = ClientCertificate.Clone(),
             Enabled = Enabled,
             FailFast = FailFast,
             Environment = Environment,

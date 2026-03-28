@@ -66,7 +66,7 @@ internal sealed class ConfigureConfigServerClientOptions : IConfigureOptions<Con
             certificateConfigurer.Configure(certificateOptions);
         }
 
-        options.ClientCertificate.Certificate = certificateOptions.Certificate;
+        options.ClientCertificate = certificateOptions.Clone();
     }
 
     private string? GetApplicationName()

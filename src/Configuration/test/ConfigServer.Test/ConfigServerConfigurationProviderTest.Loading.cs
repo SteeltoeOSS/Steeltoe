@@ -85,7 +85,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public async Task Create_WithPollingTimer()
+    public async Task Create_WithConfigurationReloadTimer()
     {
         await TestFailureTracer.CaptureAsync(async tracer =>
         {
@@ -137,7 +137,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public async Task Create_FailFastEnabledAndExceptionThrownDuringPolling_DoesNotCrash()
+    public async Task Create_FailFastEnabledAndExceptionThrownDuringPolledConfigurationReload_DoesNotCrash()
     {
         await TestFailureTracer.CaptureAsync(async tracer =>
         {
@@ -192,7 +192,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public async Task Create_WithNonZeroPollingIntervalAndClientDisabled_PollingDisabled()
+    public async Task Create_WithNonZeroPollingIntervalAndClientDisabled_PollingConfigurationReloadDisabled()
     {
         const string environment = """
             {
@@ -236,7 +236,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Theory]
     [InlineData(false, "00:00:01")]
     [InlineData(true, "00:00:00")]
-    public void OnSettingsChanged_stops_timer_when_polling_becomes_ineffective(bool enabled, string pollingInterval)
+    public void OnSettingsChanged_stops_reload_timer_when_polling_becomes_ineffective(bool enabled, string pollingInterval)
     {
         const string configServerResponseJson = """
             {
@@ -274,9 +274,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
         IConfigurationRoot configuration = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
-        FieldInfo refreshTimerField = typeof(ConfigServerConfigurationProvider).GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
 
-        refreshTimerField.GetValue(provider).Should().NotBeNull();
+        FieldInfo reloadTimerField =
+            typeof(ConfigServerConfigurationProvider).GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+        reloadTimerField.GetValue(provider).Should().NotBeNull();
 
         fileProvider.ReplaceAppSettingsJsonFile($$"""
             {
@@ -294,11 +296,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         fileProvider.NotifyChanged();
 
-        refreshTimerField.GetValue(provider).Should().BeNull();
+        reloadTimerField.GetValue(provider).Should().BeNull();
     }
 
     [Fact]
-    public void OnSettingsChanged_reschedules_timer_when_polling_interval_changes()
+    public void OnSettingsChanged_reschedules_reload_timer_when_polling_interval_changes()
     {
         const string configServerResponseJson = """
             {
@@ -336,9 +338,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
         IConfigurationRoot configuration = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
-        FieldInfo refreshTimerField = typeof(ConfigServerConfigurationProvider).GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
 
-        refreshTimerField.GetValue(provider).Should().NotBeNull();
+        FieldInfo reloadTimerField =
+            typeof(ConfigServerConfigurationProvider).GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+        reloadTimerField.GetValue(provider).Should().NotBeNull();
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -356,7 +360,70 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         fileProvider.NotifyChanged();
 
-        refreshTimerField.GetValue(provider).Should().NotBeNull("timer should be rescheduled, not stopped");
+        reloadTimerField.GetValue(provider).Should().NotBeNull("timer should be rescheduled, not stopped");
+    }
+
+    [Fact]
+    public void OnSettingsChanged_stops_vault_renew_timer_when_renewal_becomes_disabled()
+    {
+        const string configServerResponseJson = """
+            {
+              "name": "myName",
+              "profiles": [ "Production" ],
+              "label": "test-label",
+              "version": "test-version",
+              "propertySources": []
+            }
+            """;
+
+        var fileProvider = new MemoryFileProvider();
+
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "spring": {
+                "cloud": {
+                  "config": {
+                    "name": "myName",
+                    "token": "MyVaultToken",
+                    "pollingInterval": "00:00:00"
+                  }
+                }
+              }
+            }
+            """);
+
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", configServerResponseJson);
+
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), handler, NullLoggerFactory.Instance);
+        IConfigurationRoot configuration = configurationBuilder.Build();
+
+        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        FieldInfo vaultTimerField = typeof(ConfigServerConfigurationProvider).GetField("_vaultRenewTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+        vaultTimerField.GetValue(provider).Should().NotBeNull();
+
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "spring": {
+                "cloud": {
+                  "config": {
+                    "name": "myName",
+                    "token": "MyVaultToken",
+                    "pollingInterval": "00:00:00",
+                    "disableTokenRenewal": true
+                  }
+                }
+              }
+            }
+            """);
+
+        fileProvider.NotifyChanged();
+
+        vaultTimerField.GetValue(provider).Should().BeNull();
     }
 
     [Fact]
