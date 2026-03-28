@@ -30,8 +30,13 @@ internal sealed partial class ConfigServerDiscoveryService
     private readonly ILogger _logger;
     private readonly LockPrimitive _initLock = new();
     private ServiceProvider? _temporaryServiceProviderForDiscoveryClients;
+    private volatile ICollection<IDiscoveryClient>? _discoveryClients;
 
-    internal ICollection<IDiscoveryClient>? DiscoveryClients { get; private set; }
+    internal ICollection<IDiscoveryClient>? DiscoveryClients
+    {
+        get => _discoveryClients;
+        private set => _discoveryClients = value;
+    }
 
     public ConfigServerDiscoveryService(IConfiguration configuration, ILoggerFactory loggerFactory)
     {
@@ -45,18 +50,19 @@ internal sealed partial class ConfigServerDiscoveryService
 
     private void EnsureInitialized()
     {
-        if (DiscoveryClients != null)
+        if (_discoveryClients == null)
         {
-            return;
-        }
-
-        lock (_initLock)
-        {
-            DiscoveryClients ??= SetupDiscoveryClients();
+            lock (_initLock)
+            {
+                if (_discoveryClients == null)
+                {
+                    SetupDiscoveryClients();
+                }
+            }
         }
     }
 
-    private IDiscoveryClient[] SetupDiscoveryClients()
+    private void SetupDiscoveryClients()
     {
         var tempServices = new ServiceCollection();
         tempServices.AddSingleton(_loggerFactory);
@@ -88,7 +94,7 @@ internal sealed partial class ConfigServerDiscoveryService
             WireEurekaDiscoveryClient(tempServices);
         }
 
-        return GetDiscoveryClientsFromServiceCollection(tempServices);
+        _discoveryClients = GetDiscoveryClientsFromServiceCollection(tempServices);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -137,9 +143,9 @@ internal sealed partial class ConfigServerDiscoveryService
         {
             LogLocatingConfigServer(optionsSnapshot.Discovery.ServiceId);
 
-            if (optionsSnapshot.Discovery.ServiceId != null && DiscoveryClients != null)
+            if (optionsSnapshot.Discovery.ServiceId != null)
             {
-                foreach (IDiscoveryClient discoveryClient in DiscoveryClients)
+                foreach (IDiscoveryClient discoveryClient in _discoveryClients ?? [])
                 {
                     try
                     {
@@ -193,7 +199,7 @@ internal sealed partial class ConfigServerDiscoveryService
     {
         if (_temporaryServiceProviderForDiscoveryClients != null)
         {
-            foreach (IDiscoveryClient discoveryClient in DiscoveryClients ?? [])
+            foreach (IDiscoveryClient discoveryClient in _discoveryClients ?? [])
             {
                 await discoveryClient.ShutdownAsync(cancellationToken);
             }
