@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
@@ -41,10 +42,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     internal const string TokenHeader = "X-Config-Token";
     private static readonly string[] EmptyLabels = [string.Empty];
 
-    private readonly ILoggerFactory _loggerFactory;
-    private readonly ILogger _logger;
-    private readonly IConfiguration _configuration;
-    private readonly bool _hasConfiguration;
+    private readonly ILogger<ConfigServerConfigurationProvider> _logger;
     private readonly bool _ownsHttpClientHandler;
     private readonly ConfigureConfigServerClientOptions _configurer;
     private readonly ConfigServerClientOptions _initialOptions;
@@ -52,6 +50,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     private readonly LockPrimitive _configurationReloadTickLock = new();
     private readonly LockPrimitive _vaultRenewTickLock = new();
     private readonly ConfigServerDiscoveryService _configServerDiscoveryService;
+    private readonly IDisposable _changeTokenRegistration;
 
     private volatile HttpClientHandler? _httpClientHandler;
     private Timer? _configurationReloadTimer;
@@ -95,22 +94,10 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         ArgumentNullException.ThrowIfNull(clientOptions);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        _loggerFactory = loggerFactory;
-        _logger = _loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
-
-        if (configuration != null)
-        {
-            _configuration = configuration;
-            _hasConfiguration = true;
-        }
-        else
-        {
-            _configuration = new ConfigurationBuilder().Build();
-            _hasConfiguration = false;
-        }
-
-        _configurer = new ConfigureConfigServerClientOptions(_configuration);
-        _configServerDiscoveryService = new ConfigServerDiscoveryService(_configuration, _loggerFactory);
+        _logger = loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
+        IConfiguration effectiveConfiguration = configuration ?? new ConfigurationBuilder().Build();
+        _configurer = new ConfigureConfigServerClientOptions(effectiveConfiguration);
+        _configServerDiscoveryService = new ConfigServerDiscoveryService(effectiveConfiguration, loggerFactory);
 
         _initialOptions = clientOptions.Clone();
         _clientOptions = _initialOptions;
@@ -126,17 +113,13 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
 
         OnSettingsChanged();
+        _changeTokenRegistration = ChangeToken.OnChange(effectiveConfiguration.GetReloadToken, OnSettingsChanged);
     }
 
     private void OnSettingsChanged()
     {
         ConfigServerClientOptions newOptions = _initialOptions.Clone();
         _configurer.Configure(newOptions);
-
-        if (_hasConfiguration)
-        {
-            _configuration.GetReloadToken().RegisterChangeCallback(_ => OnSettingsChanged(), null);
-        }
 
         lock (_lifecycleLock)
         {
@@ -928,6 +911,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             }
 
             _isDisposed = true;
+
+            _changeTokenRegistration.Dispose();
 
             _configurationReloadTimer?.Dispose();
             _configurationReloadTimer = null;
