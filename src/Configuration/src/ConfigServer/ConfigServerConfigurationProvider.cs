@@ -328,7 +328,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
                     if (attempts < optionsSnapshot.Retry.MaxAttempts)
                     {
-                        Thread.CurrentThread.Join(backOff);
+                        await Task.Delay(backOff, cancellationToken);
                         int nextBackOff = (int)(backOff * optionsSnapshot.Retry.Multiplier);
                         backOff = Math.Min(nextBackOff, optionsSnapshot.Retry.MaxInterval);
                     }

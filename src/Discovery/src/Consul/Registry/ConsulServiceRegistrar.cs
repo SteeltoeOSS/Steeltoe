@@ -136,7 +136,7 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
                 if (attempts < options.MaxAttempts)
                 {
                     LogStartingRetry(exception, attempts);
-                    Thread.CurrentThread.Join(backOff);
+                    await Task.Delay(backOff, cancellationToken);
                     int nextBackOff = (int)(backOff * options.Multiplier);
                     backOff = Math.Min(nextBackOff, options.MaxInterval);
                 }
