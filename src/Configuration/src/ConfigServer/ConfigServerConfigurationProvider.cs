@@ -333,8 +333,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
         else
         {
-            _configServerDiscoveryService ??= new ConfigServerDiscoveryService(_configuration, optionsSnapshot, _loggerFactory);
-            await DiscoverServerInstancesAsync(_configServerDiscoveryService, optionsSnapshot.FailFast, cancellationToken);
+            _configServerDiscoveryService ??= new ConfigServerDiscoveryService(_configuration, _loggerFactory);
+            await DiscoverServerInstancesAsync(_configServerDiscoveryService, optionsSnapshot, cancellationToken);
         }
 
         if (optionsSnapshot is { Retry.Enabled: true, FailFast: true })
@@ -509,14 +509,14 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         return optionsSnapshot.Label.Split(CommaDelimiter, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
     }
 
-    private async Task DiscoverServerInstancesAsync(ConfigServerDiscoveryService configServerDiscoveryService, bool failFast,
+    private async Task DiscoverServerInstancesAsync(ConfigServerDiscoveryService configServerDiscoveryService, ConfigServerClientOptions optionsSnapshot,
         CancellationToken cancellationToken)
     {
-        List<IServiceInstance> instances = await configServerDiscoveryService.GetConfigServerInstancesAsync(cancellationToken);
+        List<IServiceInstance> instances = await configServerDiscoveryService.GetConfigServerInstancesAsync(optionsSnapshot, cancellationToken);
 
         if (instances.Count == 0)
         {
-            if (failFast)
+            if (optionsSnapshot.FailFast)
             {
                 throw new ConfigServerException("Could not locate Config Server via discovery, are you missing a Discovery service assembly?");
             }

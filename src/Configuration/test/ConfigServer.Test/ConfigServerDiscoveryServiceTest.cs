@@ -14,9 +14,8 @@ public sealed class ConfigServerDiscoveryServiceTest
     public void ConfigServerDiscoveryService_FindsNoDiscoveryClients()
     {
         IConfiguration configuration = new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer).Build();
-        var options = new ConfigServerClientOptions();
 
-        var service = new ConfigServerDiscoveryService(configuration, options, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configuration, NullLoggerFactory.Instance);
 
         service.DiscoveryClients.Should().BeEmpty();
     }

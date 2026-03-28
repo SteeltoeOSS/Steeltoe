@@ -18,9 +18,8 @@ public sealed class ConfigServerDiscoveryServiceTest
     public void ConfigServerDiscoveryService_FindsDiscoveryClients()
     {
         IConfiguration configuration = new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery).Build();
-        var options = new ConfigServerClientOptions();
 
-        var service = new ConfigServerDiscoveryService(configuration, options, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configuration, NullLoggerFactory.Instance);
 
         service.DiscoveryClients.Should().HaveCount(3);
         service.DiscoveryClients.OfType<ConfigurationDiscoveryClient>().Should().ContainSingle();
@@ -41,8 +40,8 @@ public sealed class ConfigServerDiscoveryServiceTest
         IConfigurationRoot configurationRoot = builder.Build();
         var options = new ConfigServerClientOptions();
 
-        var service = new ConfigServerDiscoveryService(configurationRoot, options, NullLoggerFactory.Instance);
-        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(TestContext.Current.CancellationToken);
+        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
+        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(options, TestContext.Current.CancellationToken);
         result.Should().BeEmpty();
     }
 
@@ -66,8 +65,8 @@ public sealed class ConfigServerDiscoveryServiceTest
             Timeout = 10
         };
 
-        var service = new ConfigServerDiscoveryService(configurationRoot, options, NullLoggerFactory.Instance);
-        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(TestContext.Current.CancellationToken);
+        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
+        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(options, TestContext.Current.CancellationToken);
         result.Should().BeEmpty();
     }
 
@@ -92,8 +91,8 @@ public sealed class ConfigServerDiscoveryServiceTest
             Timeout = 10
         };
 
-        var service = new ConfigServerDiscoveryService(configurationRoot, options, NullLoggerFactory.Instance);
-        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(TestContext.Current.CancellationToken);
+        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
+        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(options, TestContext.Current.CancellationToken);
         result.Should().BeEmpty();
     }
 
@@ -103,7 +102,7 @@ public sealed class ConfigServerDiscoveryServiceTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery).Build();
 
         var testDiscoveryClient = new TestDiscoveryClient();
-        var service = new ConfigServerDiscoveryService(configurationRoot, new ConfigServerClientOptions(), NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
 
         await service.ProvideRuntimeReplacementsAsync([testDiscoveryClient], TestContext.Current.CancellationToken);
 

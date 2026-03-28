@@ -19,20 +19,17 @@ internal sealed partial class ConfigServerDiscoveryService
 {
     private static readonly AssemblyLoader AssemblyLoader = new();
     private readonly IConfiguration _configuration;
-    private readonly ConfigServerClientOptions _options;
     private readonly ILogger _logger;
     private ServiceProvider? _temporaryServiceProviderForDiscoveryClients;
 
     internal ICollection<IDiscoveryClient> DiscoveryClients { get; private set; }
 
-    public ConfigServerDiscoveryService(IConfiguration configuration, ConfigServerClientOptions options, ILoggerFactory loggerFactory)
+    public ConfigServerDiscoveryService(IConfiguration configuration, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(configuration);
-        ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _configuration = configuration;
-        _options = options;
         _logger = loggerFactory.CreateLogger<ConfigServerDiscoveryService>();
         DiscoveryClients = SetupDiscoveryClients(loggerFactory);
     }
@@ -105,23 +102,28 @@ internal sealed partial class ConfigServerDiscoveryService
         return discoveryClients;
     }
 
-    internal async Task<List<IServiceInstance>> GetConfigServerInstancesAsync(CancellationToken cancellationToken)
+    internal async Task<List<IServiceInstance>> GetConfigServerInstancesAsync(ConfigServerClientOptions optionsSnapshot,
+        CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(optionsSnapshot);
+
         int attempts = 0;
-        int backOff = _options.Retry.InitialInterval;
+        int backOff = optionsSnapshot.Retry.InitialInterval;
         List<IServiceInstance> instances = [];
 
         do
         {
-            LogLocatingConfigServer(_options.Discovery.ServiceId);
+            LogLocatingConfigServer(optionsSnapshot.Discovery.ServiceId);
 
-            if (_options.Discovery.ServiceId != null)
+            if (optionsSnapshot.Discovery.ServiceId != null)
             {
                 foreach (IDiscoveryClient discoveryClient in DiscoveryClients)
                 {
                     try
                     {
-                        IList<IServiceInstance> serviceInstances = await discoveryClient.GetInstancesAsync(_options.Discovery.ServiceId, cancellationToken);
+                        IList<IServiceInstance> serviceInstances =
+                            await discoveryClient.GetInstancesAsync(optionsSnapshot.Discovery.ServiceId, cancellationToken);
+
                         instances.AddRange(serviceInstances);
                     }
                     catch (Exception exception) when (!exception.IsCancellation())
@@ -131,18 +133,18 @@ internal sealed partial class ConfigServerDiscoveryService
                 }
             }
 
-            if (!_options.Retry.Enabled || instances.Count > 0)
+            if (!optionsSnapshot.Retry.Enabled || instances.Count > 0)
             {
                 break;
             }
 
             attempts++;
 
-            if (attempts <= _options.Retry.MaxAttempts)
+            if (attempts <= optionsSnapshot.Retry.MaxAttempts)
             {
                 Thread.CurrentThread.Join(backOff);
-                int nextBackOff = (int)(backOff * _options.Retry.Multiplier);
-                backOff = Math.Min(nextBackOff, _options.Retry.MaxInterval);
+                int nextBackOff = (int)(backOff * optionsSnapshot.Retry.Multiplier);
+                backOff = Math.Min(nextBackOff, optionsSnapshot.Retry.MaxInterval);
             }
             else
             {
