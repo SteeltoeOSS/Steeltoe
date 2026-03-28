@@ -21,9 +21,10 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     internal ConfigServerClientOptions DefaultOptions { get; }
 
     /// <summary>
-    /// Gets an optional handler to mock HTTP requests to Config Server.
+    /// Gets an optional factory to create the HTTP client handler, used to mock HTTP requests to Config Server in tests. When provided, the caller is
+    /// responsible for handler disposal.
     /// </summary>
-    internal HttpClientHandler? HttpClientHandler { get; }
+    internal Func<HttpClientHandler>? CreateHttpClientHandler { get; }
 
     /// <summary>
     /// Gets the configuration the Config Server client uses to contact the Config Server. Values returned override the default values provided in
@@ -40,21 +41,22 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// <param name="configuration">
     /// configuration used by the Config Server client. Values will override those found in default settings.
     /// </param>
-    /// <param name="httpClientHandler">
-    /// An optional handler to mock HTTP requests to Config Server.
+    /// <param name="createHttpClientHandler">
+    /// An optional factory to create the HTTP client handler, used to mock HTTP requests to Config Server in tests. When provided, the caller is responsible
+    /// for handler disposal.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
-    public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IConfiguration configuration, HttpClientHandler? httpClientHandler,
-        ILoggerFactory loggerFactory)
+    public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IConfiguration configuration,
+        Func<HttpClientHandler>? createHttpClientHandler, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(defaultOptions);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         DefaultOptions = defaultOptions;
-        HttpClientHandler = httpClientHandler;
+        CreateHttpClientHandler = createHttpClientHandler;
         Configuration = configuration;
         _loggerFactory = loggerFactory;
     }
@@ -72,14 +74,15 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// <param name="properties">
     /// properties to be used when sources are built.
     /// </param>
-    /// <param name="httpClientHandler">
-    /// An optional handler to mock HTTP requests to Config Server.
+    /// <param name="createHttpClientHandler">
+    /// An optional factory to create the HTTP client handler, used to mock HTTP requests to Config Server in tests. When provided, the caller is responsible
+    /// for handler disposal.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IList<IConfigurationSource> sources,
-        IDictionary<string, object>? properties, HttpClientHandler? httpClientHandler, ILoggerFactory loggerFactory)
+        IDictionary<string, object>? properties, Func<HttpClientHandler>? createHttpClientHandler, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(defaultOptions);
         ArgumentNullException.ThrowIfNull(sources);
@@ -93,7 +96,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
         }
 
         DefaultOptions = defaultOptions;
-        HttpClientHandler = httpClientHandler;
+        CreateHttpClientHandler = createHttpClientHandler;
         _loggerFactory = loggerFactory;
     }
 

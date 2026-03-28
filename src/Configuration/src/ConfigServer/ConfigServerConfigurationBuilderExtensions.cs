@@ -69,7 +69,7 @@ public static class ConfigServerConfigurationBuilderExtensions
     }
 
     internal static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder builder, ConfigServerClientOptions options,
-        HttpClientHandler? httpClientHandler, ILoggerFactory loggerFactory)
+        Func<HttpClientHandler>? createHttpClientHandler, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(options);
@@ -81,8 +81,8 @@ public static class ConfigServerConfigurationBuilderExtensions
             builder.AddKubernetesServiceBindings();
 
             ConfigServerConfigurationSource source = builder is IConfiguration configuration
-                ? new ConfigServerConfigurationSource(options, configuration, httpClientHandler, loggerFactory)
-                : new ConfigServerConfigurationSource(options, builder.Sources, builder.Properties, httpClientHandler, loggerFactory);
+                ? new ConfigServerConfigurationSource(options, configuration, createHttpClientHandler, loggerFactory)
+                : new ConfigServerConfigurationSource(options, builder.Sources, builder.Properties, createHttpClientHandler, loggerFactory);
 
             builder.Add(source);
         }

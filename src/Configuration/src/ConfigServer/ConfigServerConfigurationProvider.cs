@@ -43,7 +43,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     private static readonly string[] EmptyLabels = [string.Empty];
 
     private readonly ILogger<ConfigServerConfigurationProvider> _logger;
-    private readonly bool _ownsHttpClientHandler;
+    private readonly Func<HttpClientHandler> _createHttpClientHandler;
+    private readonly bool _disposeHttpClientHandler;
     private readonly ConfigureConfigServerClientOptions _configurer;
     private readonly ConfigServerClientOptions _initialOptions;
     private readonly LockPrimitive _lifecycleLock = new();
@@ -51,13 +52,13 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     private readonly LockPrimitive _vaultRenewTickLock = new();
     private readonly ConfigServerDiscoveryService _configServerDiscoveryService;
     private readonly IDisposable _changeTokenRegistration;
+    private readonly CancellationTokenSource _shutdownTokenSource = new();
+    private readonly CancellationToken _shutdownToken;
 
-    private volatile HttpClientHandler? _httpClientHandler;
     private Timer? _configurationReloadTimer;
     private Timer? _vaultRenewTimer;
     private volatile DiscoveryLookupResult? _lastDiscoveryLookupResult;
     private volatile ConfigServerClientOptions _clientOptions;
-    private volatile bool _isDisposed;
 
     internal static JsonSerializerOptions SerializerOptions { get; } = new()
     {
@@ -84,17 +85,18 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source, ILoggerFactory loggerFactory)
-        : this(source.DefaultOptions, source.Configuration, source.HttpClientHandler, loggerFactory)
+        : this(source.DefaultOptions, source.Configuration, source.CreateHttpClientHandler, loggerFactory)
     {
     }
 
-    internal ConfigServerConfigurationProvider(ConfigServerClientOptions clientOptions, IConfiguration? configuration, HttpClientHandler? httpClientHandler,
-        ILoggerFactory loggerFactory)
+    internal ConfigServerConfigurationProvider(ConfigServerClientOptions clientOptions, IConfiguration? configuration,
+        Func<HttpClientHandler>? createHttpClientHandler, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(clientOptions);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _logger = loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
+        _shutdownToken = _shutdownTokenSource.Token;
         IConfiguration effectiveConfiguration = configuration ?? new ConfigurationBuilder().Build();
         _configurer = new ConfigureConfigServerClientOptions(effectiveConfiguration);
         _configServerDiscoveryService = new ConfigServerDiscoveryService(effectiveConfiguration, loggerFactory);
@@ -102,14 +104,15 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         _initialOptions = clientOptions.Clone();
         _clientOptions = _initialOptions;
 
-        if (httpClientHandler == null)
+        if (createHttpClientHandler != null)
         {
-            _httpClientHandler = new HttpClientHandler();
-            _ownsHttpClientHandler = true;
+            _createHttpClientHandler = createHttpClientHandler;
+            _disposeHttpClientHandler = false;
         }
         else
         {
-            _httpClientHandler = httpClientHandler;
+            _createHttpClientHandler = static () => new HttpClientHandler();
+            _disposeHttpClientHandler = true;
         }
 
         OnSettingsChanged();
@@ -123,16 +126,14 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
         lock (_lifecycleLock)
         {
-            if (_isDisposed)
+            if (_shutdownToken.IsCancellationRequested)
             {
-                // Prevent creating new timers after Dispose has already torn them down.
                 return;
             }
 
             TimeSpan previousPollingInterval = _clientOptions.PollingInterval;
             int previousTokenRenewRate = _clientOptions.TokenRenewRate;
 
-            ConfigureHttpClientHandler(newOptions);
             UpdateConfigurationReloadTimer(newOptions, previousPollingInterval);
             UpdateVaultRenewTimer(newOptions, previousTokenRenewRate);
 
@@ -191,7 +192,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
         try
         {
-            if (!lockTaken || _isDisposed)
+            if (!lockTaken || _shutdownToken.IsCancellationRequested)
             {
                 LogSkippingConfigurationReloadCycle();
                 return;
@@ -202,19 +203,15 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
 #pragma warning disable S4462 // Calls to "async" methods should not be blocking
             // Justification: Configuration sources and providers don't support async.
-            UpdateDiscoveryAsync(optionsSnapshot, false, CancellationToken.None).GetAwaiter().GetResult();
-            DoLoadAsync(optionsSnapshot, true, CancellationToken.None).GetAwaiter().GetResult();
+            UpdateDiscoveryAsync(optionsSnapshot, false, _shutdownToken).GetAwaiter().GetResult();
+            DoLoadAsync(optionsSnapshot, true, _shutdownToken).GetAwaiter().GetResult();
 #pragma warning restore S4462 // Calls to "async" methods should not be blocking
 
             LogConfigurationReloadCycleCompleted();
         }
         catch (Exception exception)
         {
-            if (exception is ObjectDisposedException && _isDisposed)
-            {
-                // Disposal can race with the timer callback because _isDisposed is read without locking.
-            }
-            else
+            if (!exception.IsCancellation())
             {
                 LogFailedToReloadConfiguration(exception);
             }
@@ -247,7 +244,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
         try
         {
-            if (!lockTaken || _isDisposed)
+            if (!lockTaken || _shutdownToken.IsCancellationRequested)
             {
                 LogSkippingVaultRenewCycle();
                 return;
@@ -257,18 +254,14 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
 #pragma warning disable S4462 // Calls to "async" methods should not be blocking
             // Justification: Configuration sources and providers don't support async.
-            RefreshVaultTokenAsync(ClientOptions, CancellationToken.None).GetAwaiter().GetResult();
+            RefreshVaultTokenAsync(ClientOptions, _shutdownToken).GetAwaiter().GetResult();
 #pragma warning restore S4462 // Calls to "async" methods should not be blocking
 
             LogVaultRenewCycleCompleted();
         }
         catch (Exception exception)
         {
-            if (exception is ObjectDisposedException && _isDisposed)
-            {
-                // Disposal can race with the timer callback because _isDisposed is read without locking.
-            }
-            else
+            if (!exception.IsCancellation())
             {
                 LogFailedToRenewVaultToken(exception);
             }
@@ -295,10 +288,10 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         {
 #pragma warning disable S4462 // Calls to "async" methods should not be blocking
             // Justification: Configuration sources and providers don't support async.
-            LoadInternalAsync(ClientOptions, true, CancellationToken.None).GetAwaiter().GetResult();
+            LoadInternalAsync(ClientOptions, true, _shutdownToken).GetAwaiter().GetResult();
 #pragma warning restore S4462 // Calls to "async" methods should not be blocking
         }
-        catch (ObjectDisposedException) when (_isDisposed)
+        catch (OperationCanceledException) when (_shutdownToken.IsCancellationRequested)
         {
             // Expected during disposal; silently ignore.
         }
@@ -862,10 +855,11 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     internal HttpClient CreateHttpClient(ConfigServerClientOptions clientOptions)
     {
         ArgumentNullException.ThrowIfNull(clientOptions);
-        HttpClientHandler? handler = _httpClientHandler;
-        ObjectDisposedException.ThrowIf(handler == null, this);
 
-        var httpClient = new HttpClient(handler, false);
+        HttpClientHandler handler = _createHttpClientHandler();
+        ConfigureHttpClientHandler(handler, clientOptions);
+
+        var httpClient = new HttpClient(handler, _disposeHttpClientHandler);
         httpClient.ConfigureForSteeltoe(clientOptions.HttpTimeout);
 
         foreach ((string headerName, string headerValue) in clientOptions.Headers)
@@ -876,15 +870,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         return httpClient;
     }
 
-    private void ConfigureHttpClientHandler(ConfigServerClientOptions optionsSnapshot)
+    private static void ConfigureHttpClientHandler(HttpClientHandler httpClientHandler, ConfigServerClientOptions optionsSnapshot)
     {
-        HttpClientHandler? httpClientHandler = _httpClientHandler;
-
-        if (httpClientHandler == null)
-        {
-            return;
-        }
-
         httpClientHandler.ClientCertificates.Clear();
 
         var clientCertificateConfigurer = new ClientCertificateHttpClientHandlerConfigurer(OptionsMonitorWrapper.Create(optionsSnapshot.ClientCertificate));
@@ -905,28 +892,40 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     {
         lock (_lifecycleLock)
         {
-            if (_isDisposed)
+            if (_shutdownToken.IsCancellationRequested)
             {
                 return;
             }
 
-            _isDisposed = true;
-
+            _shutdownTokenSource.Cancel();
             _changeTokenRegistration.Dispose();
-
-            _configurationReloadTimer?.Dispose();
-            _configurationReloadTimer = null;
-
-            _vaultRenewTimer?.Dispose();
-            _vaultRenewTimer = null;
+            ShutdownTimers();
+            _shutdownTokenSource.Dispose();
         }
+    }
 
-        if (_ownsHttpClientHandler)
+    private void ShutdownTimers()
+    {
+        using var reloadTimerStopped = new ManualResetEvent(false);
+        using var vaultTimerStopped = new ManualResetEvent(false);
+
+        if (_configurationReloadTimer == null || !_configurationReloadTimer.Dispose(reloadTimerStopped))
         {
-            _httpClientHandler?.Dispose();
+            reloadTimerStopped.Set();
         }
 
-        _httpClientHandler = null;
+        if (_vaultRenewTimer == null || !_vaultRenewTimer.Dispose(vaultTimerStopped))
+        {
+            vaultTimerStopped.Set();
+        }
+
+        WaitHandle.WaitAll([
+            reloadTimerStopped,
+            vaultTimerStopped
+        ]);
+
+        _configurationReloadTimer = null;
+        _vaultRenewTimer = null;
     }
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Entering polling configuration reload cycle.")]

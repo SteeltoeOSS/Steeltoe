@@ -88,7 +88,7 @@ public sealed class ConfigServerClientOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), handler, NullLoggerFactory.Instance);
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
         handler.Mock.VerifyNoOutstandingExpectation();
@@ -295,7 +295,7 @@ public sealed class ConfigServerClientOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), handler, NullLoggerFactory.Instance);
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
         handler.Mock.VerifyNoOutstandingExpectation();

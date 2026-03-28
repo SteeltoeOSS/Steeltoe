@@ -25,7 +25,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         var httpClientHandler = new SlowHttpClientHandler(1.Seconds(), new HttpResponseMessage());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
         List<Uri> requestUris = [new("http://localhost:9999/app/profile")];
 
         // ReSharper disable once AccessToDisposedClosure
@@ -49,7 +49,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
@@ -75,7 +75,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         ConfigEnvironment? result = await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
 
@@ -121,7 +121,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             };
 
             using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-            using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, tracer.LoggerFactory);
+            using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, tracer.LoggerFactory);
 
             bool firstRequestCompleted = startup.WaitForFirstRequest(2.Seconds());
             firstRequestCompleted.Should().BeTrue();
@@ -176,7 +176,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             };
 
             using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-            using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, tracer.LoggerFactory);
+            using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, tracer.LoggerFactory);
 
             bool firstRequestCompleted = startup.WaitForFirstRequest(2.Seconds());
             firstRequestCompleted.Should().BeTrue();
@@ -228,7 +228,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         startup.WaitForFirstRequest(2.Seconds()).Should().BeFalse();
     }
@@ -270,7 +270,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), handler, NullLoggerFactory.Instance);
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
@@ -334,7 +334,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), handler, NullLoggerFactory.Instance);
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
@@ -398,7 +398,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), handler, NullLoggerFactory.Instance);
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
@@ -459,7 +459,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Uri = "http://server1:8888, http://server2:8888"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => handler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
@@ -496,7 +496,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Name = "myName"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => handler, NullLoggerFactory.Instance);
 
         await provider.DoLoadAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
         provider.TryGet("key1", out string? value).Should().BeTrue();
@@ -557,7 +557,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         options.Label = "label,test-label";
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         await provider.DoLoadAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
@@ -601,7 +601,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         ConfigEnvironment? env = await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
 
@@ -642,7 +642,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         ConfigServerClientOptions options = GetCommonOptions();
         options.Uri = "http://localhost:8888, http://localhost:8888";
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
@@ -677,7 +677,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         options.Uri = "http://localhost:8888, http://localhost:8888";
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
@@ -705,7 +705,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
@@ -731,7 +731,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         options.FailFast = true;
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
@@ -756,7 +756,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         options.Uri = "http://localhost:8888,http://localhost:8888";
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         startup.Reset();
 
@@ -795,7 +795,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         options.FailFast = true;
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
@@ -820,7 +820,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         options.FailFast = true;
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
@@ -852,7 +852,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         options.Uri = "http://localhost:8888, http://localhost:8888, http://localhost:8888";
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
@@ -893,7 +893,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             };
 
             using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-            using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, tracer.LoggerFactory);
+            using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, tracer.LoggerFactory);
 
             // ReSharper disable once AccessToDisposedClosure
             Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
@@ -942,7 +942,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
@@ -997,7 +997,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         provider.Load();
 
@@ -1161,7 +1161,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         server.BaseAddress = new Uri(clientOptions.Uri!);
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(clientOptions, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(clientOptions, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.Add(new TestConfigServerConfigurationSource(provider));
