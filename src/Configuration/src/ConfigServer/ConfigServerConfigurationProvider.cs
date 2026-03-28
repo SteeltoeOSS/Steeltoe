@@ -458,36 +458,40 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
     internal void ApplyLastDiscoveryLookupResultToClientOptions(ConfigServerClientOptions optionsSnapshot)
     {
-        if (_lastDiscoveryLookupResult != null && optionsSnapshot.Discovery.Enabled)
-        {
-            optionsSnapshot.Uri = _lastDiscoveryLookupResult.ConfigServerUri;
+        DiscoveryLookupResult? lastResult = _lastDiscoveryLookupResult;
 
-            if (_lastDiscoveryLookupResult.Username != null)
+        if (lastResult != null && optionsSnapshot.Discovery.Enabled)
+        {
+            optionsSnapshot.Uri = lastResult.ConfigServerUri;
+
+            if (lastResult.Username != null)
             {
-                optionsSnapshot.Username = _lastDiscoveryLookupResult.Username;
+                optionsSnapshot.Username = lastResult.Username;
             }
 
-            if (_lastDiscoveryLookupResult.Password != null)
+            if (lastResult.Password != null)
             {
-                optionsSnapshot.Password = _lastDiscoveryLookupResult.Password;
+                optionsSnapshot.Password = lastResult.Password;
             }
         }
     }
 
     private void CopyLastDiscoveryLookupResultToData(Dictionary<string, string?> data, bool isDiscoveryEnabled)
     {
-        if (_lastDiscoveryLookupResult != null && isDiscoveryEnabled)
-        {
-            data["spring:cloud:config:uri"] = _lastDiscoveryLookupResult.ConfigServerUri;
+        DiscoveryLookupResult? lastResult = _lastDiscoveryLookupResult;
 
-            if (_lastDiscoveryLookupResult.Username != null)
+        if (lastResult != null && isDiscoveryEnabled)
+        {
+            data["spring:cloud:config:uri"] = lastResult.ConfigServerUri;
+
+            if (lastResult.Username != null)
             {
-                data["spring:cloud:config:username"] = _lastDiscoveryLookupResult.Username;
+                data["spring:cloud:config:username"] = lastResult.Username;
             }
 
-            if (_lastDiscoveryLookupResult.Password != null)
+            if (lastResult.Password != null)
             {
-                data["spring:cloud:config:password"] = _lastDiscoveryLookupResult.Password;
+                data["spring:cloud:config:password"] = lastResult.Password;
             }
         }
     }
