@@ -461,7 +461,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, handler, NullLoggerFactory.Instance);
 
-        await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
         provider.TryGet("key1", out string? value).Should().BeTrue();
         value.Should().Be("value1");
@@ -644,7 +644,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
         startup.LastRequest.Should().NotBeNull();
         startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
@@ -679,7 +679,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
         startup.LastRequest.Should().NotBeNull();
         startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
@@ -707,7 +707,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
         startup.LastRequest.Should().NotBeNull();
         startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
@@ -734,7 +734,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>();
     }
@@ -767,7 +767,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         ];
 
         // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>();
         startup.RequestCount.Should().Be(1);
@@ -798,7 +798,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>().WithMessage("One or more Config Server URIs in configuration are invalid.");
     }
@@ -823,7 +823,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>();
     }
@@ -855,7 +855,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>();
         startup.RequestCount.Should().Be(1);
@@ -896,7 +896,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, tracer.LoggerFactory);
 
             // ReSharper disable once AccessToDisposedClosure
-            Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+            Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
             await action.Should().ThrowExactlyAsync<ConfigServerException>();
 
@@ -944,7 +944,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
         using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
         startup.LastRequest.Should().NotBeNull();
         startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");

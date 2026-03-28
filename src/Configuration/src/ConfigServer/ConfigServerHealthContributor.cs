@@ -46,12 +46,14 @@ internal sealed partial class ConfigServerHealthContributor : IHealthContributor
             return health;
         }
 
-        if (!IsEnabled())
+        ConfigServerClientOptions optionsSnapshot = Provider.ClientOptions;
+
+        if (!optionsSnapshot.Health.Enabled)
         {
             return null;
         }
 
-        IList<PropertySource>? sources = await GetPropertySourcesAsync(Provider, cancellationToken);
+        IList<PropertySource>? sources = await GetPropertySourcesAsync(Provider, optionsSnapshot, cancellationToken);
 
         if (sources == null || sources.Count == 0)
         {
@@ -81,38 +83,29 @@ internal sealed partial class ConfigServerHealthContributor : IHealthContributor
         health.Details.Add("propertySources", names);
     }
 
-    internal async Task<IList<PropertySource>?> GetPropertySourcesAsync(ConfigServerConfigurationProvider provider, CancellationToken cancellationToken)
+    internal async Task<IList<PropertySource>?> GetPropertySourcesAsync(ConfigServerConfigurationProvider provider, ConfigServerClientOptions optionsSnapshot,
+        CancellationToken cancellationToken)
     {
         long currentTime = _timeProvider.GetUtcNow().ToUnixTimeMilliseconds();
 
-        if (IsCacheStale(currentTime))
+        if (IsCacheStale(currentTime, optionsSnapshot))
         {
             LastAccess = currentTime;
             LogCacheStale();
-            Cached = await provider.LoadInternalAsync(false, cancellationToken);
+            Cached = await provider.LoadInternalAsync(optionsSnapshot, false, cancellationToken);
         }
 
         return Cached?.PropertySources;
     }
 
-    internal bool IsCacheStale(long accessTime)
+    internal bool IsCacheStale(long accessTime, ConfigServerClientOptions optionsSnapshot)
     {
         if (Cached == null)
         {
             return true;
         }
 
-        return accessTime - LastAccess >= GetTimeToLive();
-    }
-
-    internal bool IsEnabled()
-    {
-        return Provider is { ClientOptions.Health.Enabled: true };
-    }
-
-    internal long GetTimeToLive()
-    {
-        return Provider != null ? Provider.ClientOptions.Health.TimeToLive : long.MaxValue;
+        return accessTime - LastAccess >= optionsSnapshot.Health.TimeToLive;
     }
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "No Config Server provider found, health check disabled.")]

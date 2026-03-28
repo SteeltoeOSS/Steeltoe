@@ -444,7 +444,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>().WithMessage("Could not locate Config Server via discovery*");
     }

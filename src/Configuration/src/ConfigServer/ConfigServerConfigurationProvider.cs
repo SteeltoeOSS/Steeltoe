@@ -309,7 +309,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         {
 #pragma warning disable S4462 // Calls to "async" methods should not be blocking
             // Justification: Configuration sources and providers don't support async.
-            LoadInternalAsync(true, CancellationToken.None).GetAwaiter().GetResult();
+            LoadInternalAsync(ClientOptions, true, CancellationToken.None).GetAwaiter().GetResult();
 #pragma warning restore S4462 // Calls to "async" methods should not be blocking
         }
         catch (ObjectDisposedException) when (_isDisposed)
@@ -318,10 +318,9 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
     }
 
-    internal async Task<ConfigEnvironment?> LoadInternalAsync(bool updateDictionary, CancellationToken cancellationToken)
+    internal async Task<ConfigEnvironment?> LoadInternalAsync(ConfigServerClientOptions optionsSnapshot, bool updateDictionary,
+        CancellationToken cancellationToken)
     {
-        ConfigServerClientOptions optionsSnapshot = ClientOptions;
-
         if (!optionsSnapshot.Enabled)
         {
             LogConfigServerClientDisabled();
