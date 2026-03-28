@@ -52,8 +52,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     private readonly LockPrimitive _configurationReloadTickLock = new();
     private readonly LockPrimitive _vaultRenewTickLock = new();
 
-    private HttpClientHandler? _httpClientHandler;
-    private ConfigServerDiscoveryService? _configServerDiscoveryService;
+    private volatile HttpClientHandler? _httpClientHandler;
+    private volatile ConfigServerDiscoveryService? _configServerDiscoveryService;
     private Timer? _configurationReloadTimer;
     private Timer? _vaultRenewTimer;
     private volatile DiscoveryLookupResult? _lastDiscoveryLookupResult;
@@ -890,9 +890,10 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     internal HttpClient CreateHttpClient(ConfigServerClientOptions clientOptions)
     {
         ArgumentNullException.ThrowIfNull(clientOptions);
-        ObjectDisposedException.ThrowIf(_httpClientHandler == null, this);
+        HttpClientHandler? handler = _httpClientHandler;
+        ObjectDisposedException.ThrowIf(handler == null, this);
 
-        var httpClient = new HttpClient(_httpClientHandler, false);
+        var httpClient = new HttpClient(handler, false);
         httpClient.ConfigureForSteeltoe(clientOptions.HttpTimeout);
 
         foreach ((string headerName, string headerValue) in clientOptions.Headers)
@@ -905,20 +906,22 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
     private void ConfigureHttpClientHandler(ConfigServerClientOptions optionsSnapshot)
     {
-        if (_httpClientHandler == null)
+        HttpClientHandler? httpClientHandler = _httpClientHandler;
+
+        if (httpClientHandler == null)
         {
             return;
         }
 
-        _httpClientHandler.ClientCertificates.Clear();
+        httpClientHandler.ClientCertificates.Clear();
 
         var clientCertificateConfigurer = new ClientCertificateHttpClientHandlerConfigurer(OptionsMonitorWrapper.Create(optionsSnapshot.ClientCertificate));
-        clientCertificateConfigurer.Configure("ConfigServer", _httpClientHandler);
+        clientCertificateConfigurer.Configure("ConfigServer", httpClientHandler);
 
         var validateCertificatesHandler =
             new ValidateCertificatesHttpClientHandlerConfigurer<ConfigServerClientOptions>(OptionsMonitorWrapper.Create(optionsSnapshot));
 
-        validateCertificatesHandler.Configure(Options.DefaultName, _httpClientHandler);
+        validateCertificatesHandler.Configure(Options.DefaultName, httpClientHandler);
     }
 
     private static bool IsSocketError(Exception exception)
