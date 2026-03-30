@@ -38,4 +38,80 @@ public sealed class DynamicPortAssignmentTest
         infoManager.Instance.IsSecurePortEnabled.Should().BeTrue();
         infoManager.Instance.SecurePort.Should().BePositive();
     }
+
+    [Fact]
+    public async Task Does_not_override_explicitly_configured_secure_port()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Instance:SecurePort"] = "443",
+            ["Eureka:Instance:SecurePortEnabled"] = "true"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
+        builder.WebHost.UseSetting("urls", "http://*:0");
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddEurekaDiscoveryClient();
+
+        await using WebApplication app = builder.Build();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+
+        var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();
+
+        infoManager.Instance.IsSecurePortEnabled.Should().BeTrue();
+        infoManager.Instance.SecurePort.Should().Be(443);
+    }
+
+    [Fact]
+    public async Task Does_not_override_explicitly_configured_non_secure_port()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Instance:Port"] = "80",
+            ["Eureka:Instance:NonSecurePortEnabled"] = "true"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
+        builder.WebHost.UseSetting("urls", "http://*:0");
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddEurekaDiscoveryClient();
+
+        await using WebApplication app = builder.Build();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+
+        var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();
+
+        infoManager.Instance.IsNonSecurePortEnabled.Should().BeTrue();
+        infoManager.Instance.NonSecurePort.Should().Be(80);
+    }
+
+    [Fact]
+    public async Task Does_not_apply_dynamic_ports_when_UseAspNetCoreUrls_is_false()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Instance:UseAspNetCoreUrls"] = "false"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
+        builder.WebHost.UseSetting("urls", "http://*:0");
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddEurekaDiscoveryClient();
+
+        await using WebApplication app = builder.Build();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+
+        var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();
+
+        infoManager.Instance.IsNonSecurePortEnabled.Should().BeFalse();
+        infoManager.Instance.NonSecurePort.Should().Be(0);
+        infoManager.Instance.IsSecurePortEnabled.Should().BeFalse();
+        infoManager.Instance.SecurePort.Should().Be(0);
+    }
 }

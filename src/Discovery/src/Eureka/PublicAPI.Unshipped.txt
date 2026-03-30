@@ -1,1 +1,3 @@
 #nullable enable
+Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.UseAspNetCoreUrls.get -> bool
+Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.UseAspNetCoreUrls.set -> void

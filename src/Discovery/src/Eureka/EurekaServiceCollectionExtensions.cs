@@ -81,7 +81,24 @@ public static class EurekaServiceCollectionExtensions
 
     private static void ConfigureEurekaInstanceOptions(IServiceCollection services)
     {
-        services.AddOptions<EurekaInstanceOptions>().BindConfiguration(EurekaInstanceOptions.ConfigurationPrefix);
+        OptionsBuilder<EurekaInstanceOptions> optionsBuilder = services.AddOptions<EurekaInstanceOptions>();
+        optionsBuilder.BindConfiguration(EurekaInstanceOptions.ConfigurationPrefix);
+
+        optionsBuilder.Configure<IConfiguration>((options, configuration) =>
+        {
+            IConfigurationSection instanceSection = configuration.GetSection(EurekaInstanceOptions.ConfigurationPrefix);
+
+            if (instanceSection.GetSection("Port").Exists())
+            {
+                options.IsNonSecurePortConfigured = true;
+            }
+
+            if (instanceSection.GetSection("SecurePort").Exists())
+            {
+                options.IsSecurePortConfigured = true;
+            }
+        });
+
         services.AddOptions<InetOptions>().BindConfiguration(InetOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<EurekaInstanceOptions>, PostConfigureEurekaInstanceOptions>();
 

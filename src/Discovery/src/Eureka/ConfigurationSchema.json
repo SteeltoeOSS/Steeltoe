@@ -258,6 +258,10 @@
               "type": "string",
               "description": "Gets or sets the relative path to the status page for the instance. The status page URL is then constructed out of the 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.HostName' and the type of communication - secure or non-secure, as specified in 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.SecurePort' and 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.NonSecurePort'. It is normally used for informational purposes for other services to find out about the status of the instance. Users can provide a simple HTML page indicating what the current status of the instance is. Default value: /info."
             },
+            "UseAspNetCoreUrls": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether to register with the port number ASP.NET Core is listening on. Default value: true."
+            },
             "UseNetworkInterfaces": {
               "type": "boolean",
               "description": "Gets or sets a value indicating whether 'System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces' is used to determine 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.IPAddress' and 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.HostName'. Default value: false."
