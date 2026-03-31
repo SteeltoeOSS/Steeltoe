@@ -16,30 +16,37 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     internal Dictionary<string, object> Properties { get; } = [];
 
     /// <summary>
-    /// Gets the default settings the Config Server client uses to contact the Config Server.
+    /// Gets the initial options the client uses to contact Config Server.
     /// </summary>
-    internal ConfigServerClientOptions DefaultOptions { get; }
+    public ConfigServerClientOptions DefaultOptions { get; }
+
+    /// <summary>
+    /// Gets the configuration the client uses to contact Config Server. Entries overrule <see cref="DefaultOptions" />.
+    /// </summary>
+    public IConfiguration? Configuration { get; private set; }
+
+    /// <summary>
+    /// Gets an optional delegate that further configures options from code, after settings from <see cref="Configuration" /> have been applied.
+    /// </summary>
+    public Action<ConfigServerClientOptions>? Configure { get; }
 
     /// <summary>
     /// Gets an optional factory to create the HTTP client handler, used to mock HTTP requests to Config Server in tests. When provided, the caller is
     /// responsible for handler disposal.
     /// </summary>
-    internal Func<HttpClientHandler>? CreateHttpClientHandler { get; }
-
-    /// <summary>
-    /// Gets the configuration the Config Server client uses to contact the Config Server. Values returned override the default values provided in
-    /// <see cref="DefaultOptions" />.
-    /// </summary>
-    internal IConfiguration? Configuration { get; private set; }
+    public Func<HttpClientHandler>? CreateHttpClientHandler { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
     /// </summary>
     /// <param name="defaultOptions">
-    /// the default settings used by the Config Server client.
+    /// The initial options the client uses to contact Config Server.
     /// </param>
     /// <param name="configuration">
-    /// configuration used by the Config Server client. Values will override those found in default settings.
+    /// The configuration the client uses to contact Config Server. Entries overrule <paramref name="defaultOptions" />.
+    /// </param>
+    /// <param name="configure">
+    /// An optional delegate that further configures options from code, after settings from <paramref name="configuration" /> have been applied.
     /// </param>
     /// <param name="createHttpClientHandler">
     /// An optional factory to create the HTTP client handler, used to mock HTTP requests to Config Server in tests. When provided, the caller is responsible
@@ -48,14 +55,15 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
-    public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IConfiguration configuration,
+    public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IConfiguration configuration, Action<ConfigServerClientOptions>? configure,
         Func<HttpClientHandler>? createHttpClientHandler, ILoggerFactory loggerFactory)
     {
-        ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(defaultOptions);
+        ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         DefaultOptions = defaultOptions;
+        Configure = configure;
         CreateHttpClientHandler = createHttpClientHandler;
         Configuration = configuration;
         _loggerFactory = loggerFactory;
@@ -65,14 +73,18 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
     /// </summary>
     /// <param name="defaultOptions">
-    /// the default settings used by the Config Server client.
+    /// The initial options the client uses to contact Config Server.
     /// </param>
     /// <param name="sources">
-    /// configuration sources used by the Config Server client. The <see cref="Configuration" /> will be built from these sources and the values will
-    /// override those found in <see cref="DefaultOptions" />.
+    /// Configuration sources the client uses to contact Config Server. The <see cref="Configuration" /> will be built from these, whose entries overrule
+    /// <paramref name="defaultOptions" />.
     /// </param>
     /// <param name="properties">
-    /// properties to be used when sources are built.
+    /// Configuration properties the client uses to contact Config Server. The <see cref="Configuration" /> will be built from these, whose entries overrule
+    /// <paramref name="defaultOptions" />.
+    /// </param>
+    /// <param name="configure">
+    /// An optional delegate that further configures options from code, after settings from the built <see cref="Configuration" /> have been applied.
     /// </param>
     /// <param name="createHttpClientHandler">
     /// An optional factory to create the HTTP client handler, used to mock HTTP requests to Config Server in tests. When provided, the caller is responsible
@@ -82,7 +94,8 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IList<IConfigurationSource> sources,
-        IDictionary<string, object>? properties, Func<HttpClientHandler>? createHttpClientHandler, ILoggerFactory loggerFactory)
+        IDictionary<string, object>? properties, Action<ConfigServerClientOptions>? configure, Func<HttpClientHandler>? createHttpClientHandler,
+        ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(defaultOptions);
         ArgumentNullException.ThrowIfNull(sources);
@@ -96,6 +109,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
         }
 
         DefaultOptions = defaultOptions;
+        Configure = configure;
         CreateHttpClientHandler = createHttpClientHandler;
         _loggerFactory = loggerFactory;
     }

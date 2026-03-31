@@ -85,12 +85,12 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source, ILoggerFactory loggerFactory)
-        : this(source.DefaultOptions, source.Configuration, source.CreateHttpClientHandler, loggerFactory)
+        : this(source.DefaultOptions, source.Configuration, source.Configure, source.CreateHttpClientHandler, loggerFactory)
     {
     }
 
     internal ConfigServerConfigurationProvider(ConfigServerClientOptions clientOptions, IConfiguration? configuration,
-        Func<HttpClientHandler>? createHttpClientHandler, ILoggerFactory loggerFactory)
+        Action<ConfigServerClientOptions>? configure, Func<HttpClientHandler>? createHttpClientHandler, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(clientOptions);
         ArgumentNullException.ThrowIfNull(loggerFactory);
@@ -98,7 +98,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         _logger = loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
         _shutdownToken = _shutdownTokenSource.Token;
         IConfiguration effectiveConfiguration = configuration ?? new ConfigurationBuilder().Build();
-        _configurer = new ConfigureConfigServerClientOptions(effectiveConfiguration);
+        _configurer = new ConfigureConfigServerClientOptions(effectiveConfiguration, configure);
         _configServerDiscoveryService = new ConfigServerDiscoveryService(effectiveConfiguration, loggerFactory);
 
         _initialOptions = clientOptions.Clone();

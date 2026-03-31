@@ -91,7 +91,7 @@ internal sealed partial class BootstrapScanner
 
     private void WireConfigServer()
     {
-        _wrapper.AddConfigServer(_loggerFactory);
+        _wrapper.AddConfigServer(null, _loggerFactory);
 
         LogConfigServerConfigured();
     }

@@ -20,7 +20,7 @@ public sealed class ConfigServerClientOptionsTest
     {
         var options = new ConfigServerClientOptions();
 
-        TestHelper.VerifyDefaults(options, null);
+        TestHelper.VerifyDefaults(options, null, null);
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public sealed class ConfigServerClientOptionsTest
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
 
         string? expectedAppName = Assembly.GetEntryAssembly()!.GetName().Name;
-        TestHelper.VerifyDefaults(optionsMonitor.CurrentValue, expectedAppName);
+        TestHelper.VerifyDefaults(optionsMonitor.CurrentValue, expectedAppName, "Production");
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public sealed class ConfigServerClientOptionsTest
         IConfiguration configuration = builder.Build();
         services.AddSingleton(configuration);
 
-        services.ConfigureConfigServerClientOptions();
+        services.ConfigureConfigServerClientOptions(options => options.Environment = "staging");
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var service = serviceProvider.GetRequiredService<IOptions<ConfigServerClientOptions>>();
 
@@ -88,7 +88,7 @@ public sealed class ConfigServerClientOptionsTest
         options.Enabled.Should().BeTrue();
         options.FailFast.Should().BeTrue();
         options.Uri.Should().Be("http://localhost:8888");
-        options.Environment.Should().Be("development");
+        options.Environment.Should().Be("staging");
         options.AccessTokenUri.Should().BeNull();
         options.ClientId.Should().BeNull();
         options.ClientSecret.Should().BeNull();
@@ -262,7 +262,8 @@ public sealed class ConfigServerClientOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), () => handler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
         handler.Mock.VerifyNoOutstandingExpectation();
@@ -356,9 +357,12 @@ public sealed class ConfigServerClientOptionsTest
             Label = "example-label" // used, but missing in IConfiguration and injected options
         };
 
+        Action<ConfigServerClientOptions> configureOptions = options => options.FailFast = true;
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        configurationBuilder.AddConfigServer(initialOptions, () => handler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        configurationBuilder.AddConfigServer(initialOptions, configureOptions, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
         handler.Mock.VerifyNoOutstandingExpectation();
@@ -368,7 +372,7 @@ public sealed class ConfigServerClientOptionsTest
 
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(configuration);
-        services.ConfigureConfigServerClientOptions();
+        services.ConfigureConfigServerClientOptions(configureOptions);
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
@@ -378,12 +382,14 @@ public sealed class ConfigServerClientOptionsTest
         provider.ClientOptions.Environment.Should().Be("example-profile");
         provider.ClientOptions.Timeout.Should().Be(30_000);
         provider.ClientOptions.Label.Should().Be("example-label");
+        provider.ClientOptions.FailFast.Should().BeTrue();
 
         optionsMonitor.CurrentValue.Uri.Should().Be(provider.ClientOptions.Uri);
         optionsMonitor.CurrentValue.Name.Should().Be(provider.ClientOptions.Name);
         optionsMonitor.CurrentValue.Environment.Should().Be(provider.ClientOptions.Environment);
         optionsMonitor.CurrentValue.Timeout.Should().Be(provider.ClientOptions.Timeout);
         optionsMonitor.CurrentValue.Label.Should().BeNull();
+        optionsMonitor.CurrentValue.FailFast.Should().BeTrue();
 
         configuration["example-server-key"].Should().Be("example-server-value");
 
@@ -422,12 +428,14 @@ public sealed class ConfigServerClientOptionsTest
             provider.ClientOptions.Environment.Should().Be("example-profile");
             provider.ClientOptions.Timeout.Should().Be(15_000);
             provider.ClientOptions.Label.Should().Be("alternate-label");
+            provider.ClientOptions.FailFast.Should().BeTrue();
 
             optionsMonitor.CurrentValue.Uri.Should().Be(provider.ClientOptions.Uri);
             optionsMonitor.CurrentValue.Name.Should().Be(provider.ClientOptions.Name);
             optionsMonitor.CurrentValue.Environment.Should().Be(provider.ClientOptions.Environment);
             optionsMonitor.CurrentValue.Timeout.Should().Be(provider.ClientOptions.Timeout);
             optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
+            optionsMonitor.CurrentValue.FailFast.Should().BeTrue();
 
             configuration["example-server-key"].Should().Be("example-server-value");
         }

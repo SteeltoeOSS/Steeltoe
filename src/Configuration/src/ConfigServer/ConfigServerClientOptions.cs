@@ -39,7 +39,7 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     /// Gets or sets a comma-separated list of environments used when accessing configuration data. Default value: "Production".
     /// </summary>
     [ConfigurationKeyName("Env")]
-    public string? Environment { get; set; } = "Production";
+    public string? Environment { get; set; }
 
     /// <summary>
     /// Gets or sets a comma-separated list of labels to request from the server.

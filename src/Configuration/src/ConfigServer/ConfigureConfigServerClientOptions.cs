@@ -17,12 +17,14 @@ internal sealed class ConfigureConfigServerClientOptions : IConfigureOptions<Con
     private const string VcapServicesConfigServerCredentialsAltPrefix = "vcap:services:config-server:0:credentials";
 
     private readonly IConfiguration _configuration;
+    private readonly Action<ConfigServerClientOptions>? _configure;
 
-    public ConfigureConfigServerClientOptions(IConfiguration configuration)
+    public ConfigureConfigServerClientOptions(IConfiguration configuration, Action<ConfigServerClientOptions>? configure)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
         _configuration = configuration;
+        _configure = configure;
     }
 
     public void Configure(ConfigServerClientOptions options)
@@ -30,10 +32,13 @@ internal sealed class ConfigureConfigServerClientOptions : IConfigureOptions<Con
         ArgumentNullException.ThrowIfNull(options);
 
         _configuration.GetSection(ConfigServerClientOptions.ConfigurationPrefix).Bind(options);
+        _configure?.Invoke(options);
+
         OverrideFromVcapServicesCredentials(options);
         ConfigureClientCertificate(options);
 
         options.Name ??= GetApplicationName();
+        options.Environment ??= "Production";
     }
 
     private void OverrideFromVcapServicesCredentials(ConfigServerClientOptions options)

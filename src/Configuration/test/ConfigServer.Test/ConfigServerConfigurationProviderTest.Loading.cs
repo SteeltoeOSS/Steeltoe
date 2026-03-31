@@ -25,11 +25,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         var httpClientHandler = new SlowHttpClientHandler(1.Seconds(), new HttpResponseMessage());
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
         List<Uri> requestUris = [new("http://localhost:9999/app/profile")];
 
-        // ReSharper disable once AccessToDisposedClosure
+        // ReSharper disable AccessToDisposedClosure
         Func<Task> action = async () => await provider.RemoteLoadAsync(provider.ClientOptions, requestUris, null, TestContext.Current.CancellationToken);
+        // ReSharper restore AccessToDisposedClosure
 
         (await action.Should().ThrowExactlyAsync<TaskCanceledException>()).WithInnerExceptionExactly<TimeoutException>();
     }
@@ -49,10 +50,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
-
         // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+
+        // ReSharper disable AccessToDisposedClosure
         Func<Task> action = async () => await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
+        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<HttpRequestException>();
 
@@ -75,7 +78,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         ConfigEnvironment? result = await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
 
@@ -121,7 +125,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
             };
 
             using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-            using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, tracer.LoggerFactory);
+            // ReSharper disable once AccessToDisposedClosure
+            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, tracer.LoggerFactory);
 
             bool firstRequestCompleted = startup.WaitForFirstRequest(2.Seconds());
             firstRequestCompleted.Should().BeTrue();
@@ -176,7 +181,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
             };
 
             using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-            using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, tracer.LoggerFactory);
+            // ReSharper disable once AccessToDisposedClosure
+            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, tracer.LoggerFactory);
 
             bool firstRequestCompleted = startup.WaitForFirstRequest(2.Seconds());
             firstRequestCompleted.Should().BeTrue();
@@ -228,7 +234,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         startup.WaitForFirstRequest(2.Seconds()).Should().BeFalse();
     }
@@ -270,7 +277,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), () => handler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
@@ -334,7 +342,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), () => handler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
@@ -398,7 +407,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), () => handler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
@@ -459,7 +469,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Uri = "http://server1:8888, http://server2:8888"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => handler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
@@ -496,7 +507,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Name = "myName"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => handler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
         await provider.DoLoadAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
         provider.TryGet("key1", out string? value).Should().BeTrue();
@@ -557,7 +569,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         options.Label = "label,test-label";
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         await provider.DoLoadAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
@@ -601,7 +614,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         ConfigEnvironment? env = await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
 
@@ -642,7 +656,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         ConfigServerClientOptions options = GetCommonOptions();
         options.Uri = "http://localhost:8888, http://localhost:8888";
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
@@ -677,7 +692,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         options.Uri = "http://localhost:8888, http://localhost:8888";
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
@@ -705,7 +721,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
@@ -731,10 +748,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
         options.FailFast = true;
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
-
         // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+
+        // ReSharper disable AccessToDisposedClosure
         Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
+        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>();
     }
@@ -756,7 +775,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         options.Uri = "http://localhost:8888,http://localhost:8888";
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         startup.Reset();
 
@@ -766,8 +786,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
             200
         ];
 
-        // ReSharper disable once AccessToDisposedClosure
+        // ReSharper disable AccessToDisposedClosure
         Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
+        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>();
         startup.RequestCount.Should().Be(1);
@@ -795,10 +816,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
         options.FailFast = true;
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
-
         // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+
+        // ReSharper disable AccessToDisposedClosure
         Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
+        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>().WithMessage("One or more Config Server URIs in configuration are invalid.");
     }
@@ -820,10 +843,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
         options.FailFast = true;
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
-
         // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+
+        // ReSharper disable AccessToDisposedClosure
         Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
+        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>();
     }
@@ -852,10 +877,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
         options.Uri = "http://localhost:8888, http://localhost:8888, http://localhost:8888";
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
-
         // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+
+        // ReSharper disable AccessToDisposedClosure
         Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
+        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>();
         startup.RequestCount.Should().Be(1);
@@ -893,10 +920,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
             };
 
             using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-            using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, tracer.LoggerFactory);
-
             // ReSharper disable once AccessToDisposedClosure
+            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, tracer.LoggerFactory);
+
+            // ReSharper disable AccessToDisposedClosure
             Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
+            // ReSharper restore AccessToDisposedClosure
 
             await action.Should().ThrowExactlyAsync<ConfigServerException>();
 
@@ -942,7 +971,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
@@ -997,7 +1027,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigServerClientOptions options = GetCommonOptions();
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         provider.Load();
 
@@ -1088,7 +1119,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
 
         provider.TryGet("spring:cloud:config:enabled", out _).Should().BeFalse();
         provider.TryGet("spring:cloud:config:failFast", out _).Should().BeFalse();
@@ -1161,7 +1192,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         server.BaseAddress = new Uri(clientOptions.Uri!);
 
         using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(clientOptions, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(clientOptions, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.Add(new TestConfigServerConfigurationSource(provider));
@@ -1193,7 +1225,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         return new ConfigServerClientOptions
         {
-            Name = "myName"
+            Name = "myName",
+            Environment = "Staging"
         };
     }
 

@@ -86,9 +86,12 @@ public sealed class ConfigServerClientOptionsTest
         handler.Mock.Expect(HttpMethod.Get, "https://discovered-server.com:9999/internal/example-app-name/example-profile/example-label")
             .Respond("application/json", configServerResponseJson);
 
+        Action<ConfigServerClientOptions> configureOptions = options => options.ValidateCertificates = false;
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), () => handler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), configureOptions, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
         handler.Mock.VerifyNoOutstandingExpectation();
@@ -97,7 +100,7 @@ public sealed class ConfigServerClientOptionsTest
 
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(configuration);
-        services.ConfigureConfigServerClientOptions();
+        services.ConfigureConfigServerClientOptions(configureOptions);
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
@@ -109,6 +112,7 @@ public sealed class ConfigServerClientOptionsTest
         provider.ClientOptions.Environment.Should().Be("example-profile");
         provider.ClientOptions.Timeout.Should().Be(30_000);
         provider.ClientOptions.Label.Should().Be("example-label");
+        provider.ClientOptions.ValidateCertificates.Should().BeFalse();
 
         optionsMonitor.CurrentValue.Uri.Should().Be("https://discovered-server.com:9999/internal");
         optionsMonitor.CurrentValue.Username.Should().Be("example-user");
@@ -117,6 +121,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Environment.Should().Be(provider.ClientOptions.Environment);
         optionsMonitor.CurrentValue.Timeout.Should().Be(provider.ClientOptions.Timeout);
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
+        optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
         configuration["example-server-key"].Should().Be("example-server-value");
 
@@ -173,6 +178,7 @@ public sealed class ConfigServerClientOptionsTest
         provider.ClientOptions.Environment.Should().Be("example-profile");
         provider.ClientOptions.Timeout.Should().Be(15_000);
         provider.ClientOptions.Label.Should().Be("example-label");
+        provider.ClientOptions.ValidateCertificates.Should().BeFalse();
 
         // Discovery changes don't propagate until the provider reloads.
         optionsMonitor.CurrentValue.Uri.Should().Be("https://discovered-server.com:9999/internal");
@@ -182,6 +188,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Environment.Should().Be(provider.ClientOptions.Environment);
         optionsMonitor.CurrentValue.Timeout.Should().Be(provider.ClientOptions.Timeout);
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
+        optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
         configuration["example-server-key"].Should().Be("example-server-value");
 
@@ -210,6 +217,7 @@ public sealed class ConfigServerClientOptionsTest
         provider.ClientOptions.Environment.Should().Be("example-profile");
         provider.ClientOptions.Timeout.Should().Be(10_000);
         provider.ClientOptions.Label.Should().BeNull();
+        provider.ClientOptions.ValidateCertificates.Should().BeFalse();
 
         // Discovery changes don't propagate until the provider reloads.
         optionsMonitor.CurrentValue.Uri.Should().Be("https://discovered-server.com:9999/internal");
@@ -217,6 +225,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Environment.Should().Be(provider.ClientOptions.Environment);
         optionsMonitor.CurrentValue.Timeout.Should().Be(provider.ClientOptions.Timeout);
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
+        optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
         configuration["example-server-key"].Should().Be("example-server-value");
     }
@@ -293,9 +302,12 @@ public sealed class ConfigServerClientOptionsTest
         handler.Mock.Expect(HttpMethod.Get, "https://discovered-server.com:9999/internal/example-app-name/example-profile/example-label")
             .Respond("application/json", configServerResponseJson);
 
+        Action<ConfigServerClientOptions> configureOptions = options => options.ValidateCertificates = false;
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), () => handler, NullLoggerFactory.Instance);
+        // ReSharper disable once AccessToDisposedClosure
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), configureOptions, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
         handler.Mock.VerifyNoOutstandingExpectation();
@@ -305,7 +317,7 @@ public sealed class ConfigServerClientOptionsTest
 
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(configuration);
-        services.ConfigureConfigServerClientOptions();
+        services.ConfigureConfigServerClientOptions(configureOptions);
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
@@ -316,6 +328,7 @@ public sealed class ConfigServerClientOptionsTest
         provider.ClientOptions.Name.Should().Be("example-app-name");
         provider.ClientOptions.Environment.Should().Be("example-profile");
         provider.ClientOptions.Label.Should().Be("example-label");
+        provider.ClientOptions.ValidateCertificates.Should().BeFalse();
 
         optionsMonitor.CurrentValue.Uri.Should().Be("https://discovered-server.com:9999/internal");
         optionsMonitor.CurrentValue.Username.Should().Be("example-user");
@@ -323,6 +336,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Name.Should().Be(provider.ClientOptions.Name);
         optionsMonitor.CurrentValue.Environment.Should().Be(provider.ClientOptions.Environment);
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
+        optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
         configuration["example-server-key"].Should().Be("example-server-value");
 
@@ -377,6 +391,7 @@ public sealed class ConfigServerClientOptionsTest
         provider.ClientOptions.Name.Should().Be("alternate-name");
         provider.ClientOptions.Environment.Should().Be("alternate-profile");
         provider.ClientOptions.Label.Should().Be("alternate-label");
+        provider.ClientOptions.ValidateCertificates.Should().BeFalse();
 
         optionsMonitor.CurrentValue.Uri.Should().Be("https://discovered-server.com:9999/internal");
         optionsMonitor.CurrentValue.Username.Should().Be("example-user");
@@ -384,6 +399,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Name.Should().Be(provider.ClientOptions.Name);
         optionsMonitor.CurrentValue.Environment.Should().Be(provider.ClientOptions.Environment);
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
+        optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
         configuration["example-server-key"].Should().Be("example-server-value");
 
@@ -399,6 +415,7 @@ public sealed class ConfigServerClientOptionsTest
         provider.ClientOptions.Name.Should().Be("alternate-name");
         provider.ClientOptions.Environment.Should().Be("alternate-profile");
         provider.ClientOptions.Label.Should().Be("alternate-label");
+        provider.ClientOptions.ValidateCertificates.Should().BeFalse();
 
         optionsMonitor.CurrentValue.Uri.Should().Be("https://alternate-discovered-server.com:7777/internal");
         optionsMonitor.CurrentValue.Username.Should().Be("alternate-user");
@@ -406,6 +423,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Name.Should().Be(provider.ClientOptions.Name);
         optionsMonitor.CurrentValue.Environment.Should().Be(provider.ClientOptions.Environment);
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
+        optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
         configuration["example-server-key"].Should().Be("example-server-value");
     }

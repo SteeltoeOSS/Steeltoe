@@ -15,10 +15,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
     public void DefaultConstructor_InitializedWithDefaultSettings()
     {
         var options = new ConfigServerClientOptions();
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
 
         string? expectedAppName = Assembly.GetEntryAssembly()!.GetName().Name;
-        TestHelper.VerifyDefaults(provider.ClientOptions, expectedAppName);
+        TestHelper.VerifyDefaults(provider.ClientOptions, expectedAppName, "Production");
     }
 
     [Fact]
@@ -26,11 +26,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
         var options = new ConfigServerClientOptions();
-        var source = new ConfigServerConfigurationSource(options, configuration, null, NullLoggerFactory.Instance);
+        var source = new ConfigServerConfigurationSource(options, configuration, null, null, NullLoggerFactory.Instance);
         using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
         string? expectedAppName = Assembly.GetEntryAssembly()!.GetName().Name;
-        TestHelper.VerifyDefaults(provider.ClientOptions, expectedAppName);
+        TestHelper.VerifyDefaults(provider.ClientOptions, expectedAppName, "Production");
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var options = new ConfigServerClientOptions();
-        var source = new ConfigServerConfigurationSource(options, configuration, null, NullLoggerFactory.Instance);
+        var source = new ConfigServerConfigurationSource(options, configuration, null, null, NullLoggerFactory.Instance);
         using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
         using HttpClient httpClient = provider.CreateHttpClient(provider.ClientOptions);
 
@@ -61,10 +61,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
 
-        // ReSharper disable once AccessToDisposedClosure
+        // ReSharper disable AccessToDisposedClosure
         Action action = () => provider.BuildConfigServerUri(provider.ClientOptions, null!, null);
+        // ReSharper restore AccessToDisposedClosure
 
         action.Should().ThrowExactly<ArgumentNullException>();
     }
@@ -78,7 +79,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), null).ToString();
 
         uri.Should().Be($"{options.Uri}/{options.Name}/{options.Environment}");
@@ -94,7 +95,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "myLabel"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), options.Label).ToString();
 
         uri.Should().Be($"{options.Uri}/{options.Name}/{options.Environment}/{options.Label}");
@@ -110,7 +111,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "myLabel/version"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), options.Label).ToString();
 
         uri.Should().Be($"{options.Uri}/{options.Name}/{options.Environment}/myLabel(_)version");
@@ -126,7 +127,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null).ToString();
 
         uri.Should().Be($"http://localhost:9999/myPath/path/{options.Name}/{options.Environment}");
@@ -142,7 +143,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null).ToString();
 
         uri.Should().Be($"http://localhost:9999/myPath/path/{options.Name}/{options.Environment}");
@@ -158,7 +159,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null).ToString();
 
         uri.Should().Be($"http://localhost:9999/{options.Name}/{options.Environment}");
@@ -174,7 +175,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null).ToString();
 
         uri.Should().Be($"http://localhost:9999/{options.Name}/{options.Environment}");
@@ -190,7 +191,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "demo"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), options.Label).ToString();
 
         uri.Should().Be("http://localhost:8888/myName/one%2Ctwo/demo");
@@ -208,7 +209,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Password = "#&:$<>'/so,\"me"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), options.Label).ToString();
 
         uri.Should().Be(

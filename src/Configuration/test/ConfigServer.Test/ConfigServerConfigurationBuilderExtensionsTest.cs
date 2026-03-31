@@ -129,7 +129,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
+        configurationBuilder.AddConfigServer(options);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
@@ -152,7 +152,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
+        configurationBuilder.AddConfigServer(options);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
@@ -205,7 +205,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddConfigServer_ConfigurationOverridesInitialOptionsFromCode()
+    public void AddConfigServer_CallbackOverridesConfigurationOverridesInitialOptions()
     {
         var options = new ConfigServerClientOptions
         {
@@ -218,7 +218,8 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             Retry =
             {
                 InitialInterval = 5,
-                MaxInterval = 15
+                MaxInterval = 15,
+                MaxAttempts = 12
             }
         };
 
@@ -233,7 +234,8 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
                     "Label": "labelInAppSettings",
                     "Timeout": 50,
                     "Retry": {
-                      "MaxInterval": 100
+                      "MaxInterval": 100,
+                      "MaxAttempts": 9
                     }
                   }
                 }
@@ -241,9 +243,11 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             }
             """);
 
+        Action<ConfigServerClientOptions> configureOptions = clientOptions => clientOptions.Retry.MaxAttempts = 2;
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
+        configurationBuilder.AddConfigServer(options, configureOptions, null, NullLoggerFactory.Instance);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().FirstOrDefault();
@@ -257,6 +261,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         provider.ClientOptions.Timeout.Should().Be(50);
         provider.ClientOptions.Retry.InitialInterval.Should().Be(5);
         provider.ClientOptions.Retry.MaxInterval.Should().Be(100);
+        provider.ClientOptions.Retry.MaxAttempts.Should().Be(2);
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -281,6 +286,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         provider.ClientOptions.Timeout.Should().Be(10);
         provider.ClientOptions.Retry.InitialInterval.Should().Be(5);
         provider.ClientOptions.Retry.MaxInterval.Should().Be(15);
+        provider.ClientOptions.Retry.MaxAttempts.Should().Be(2);
     }
 
     [Fact]
