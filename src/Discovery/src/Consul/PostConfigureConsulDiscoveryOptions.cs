@@ -62,7 +62,7 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
             options.HostName = options.IPAddress;
         }
 
-        if (options.Port == 0)
+        if (options is { UseAspNetCoreUrls: true, Port: 0, Scheme: null, UseNetworkInterfaces: false })
         {
             ICollection<string> addresses = _configuration.GetListenAddresses();
             SetSchemeWithPortFromListenAddresses(options, addresses);
@@ -79,37 +79,32 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
 
     private void SetSchemeWithPortFromListenAddresses(ConsulDiscoveryOptions options, IEnumerable<string> listenOnAddresses)
     {
-        // Try to pull some values out of server configuration to override defaults, but only if not using NetUtils.
-        // If NetUtils are configured, the user probably wants to define their own behavior.
-        if (options is { UseAspNetCoreUrls: true, Port: 0, Scheme: null })
+        int? listenHttpPort = null;
+        int? listenHttpsPort = null;
+
+        foreach (string address in listenOnAddresses)
         {
-            int? listenHttpPort = null;
-            int? listenHttpsPort = null;
+            BindingAddress bindingAddress = BindingAddress.Parse(address);
 
-            foreach (string address in listenOnAddresses)
+            if (bindingAddress is { Scheme: "http", Port: > 0 } && listenHttpPort == null)
             {
-                BindingAddress bindingAddress = BindingAddress.Parse(address);
+                listenHttpPort = bindingAddress.Port;
+            }
+            else if (bindingAddress is { Scheme: "https", Port: > 0 } && listenHttpsPort == null)
+            {
+                listenHttpsPort = bindingAddress.Port;
+            }
+        }
 
-                if (bindingAddress is { Scheme: "http", Port: > 0 } && listenHttpPort == null)
-                {
-                    listenHttpPort = bindingAddress.Port;
-                }
-                else if (bindingAddress is { Scheme: "https", Port: > 0 } && listenHttpsPort == null)
-                {
-                    listenHttpsPort = bindingAddress.Port;
-                }
-            }
-
-            if (listenHttpsPort != null)
-            {
-                options.Port = listenHttpsPort.Value;
-                options.Scheme = "https";
-            }
-            else if (listenHttpPort != null)
-            {
-                options.Port = listenHttpPort.Value;
-                options.Scheme = "http";
-            }
+        if (listenHttpsPort != null)
+        {
+            options.Port = listenHttpsPort.Value;
+            options.Scheme = "https";
+        }
+        else if (listenHttpPort != null)
+        {
+            options.Port = listenHttpPort.Value;
+            options.Scheme = "http";
         }
     }
 

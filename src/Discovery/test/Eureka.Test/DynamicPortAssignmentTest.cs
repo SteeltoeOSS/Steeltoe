@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Discovery.Eureka.Configuration;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
@@ -87,6 +88,35 @@ public sealed class DynamicPortAssignmentTest
 
         infoManager.Instance.IsNonSecurePortEnabled.Should().BeTrue();
         infoManager.Instance.NonSecurePort.Should().Be(80);
+    }
+
+    [Fact]
+    public async Task Does_not_override_ports_configured_via_code()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
+        builder.WebHost.UseSetting("urls", "http://*:0");
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddEurekaDiscoveryClient();
+
+        builder.Services.Configure<EurekaInstanceOptions>(options =>
+        {
+            options.SecurePort = 8443;
+            options.IsSecurePortEnabled = true;
+        });
+
+        await using WebApplication app = builder.Build();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+
+        var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();
+
+        infoManager.Instance.IsSecurePortEnabled.Should().BeTrue();
+        infoManager.Instance.SecurePort.Should().Be(8443);
     }
 
     [Fact]

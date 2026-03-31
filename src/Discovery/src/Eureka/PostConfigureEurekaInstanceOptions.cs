@@ -140,7 +140,12 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
             options.IsSecurePortEnabled = true;
         }
 
-        if (options.NonSecurePort == null && options.SecurePort == null)
+        if (options.NonSecurePort != null || options.SecurePort != null)
+        {
+            options.IsPortConfigured = true;
+        }
+
+        if (!options.IsPortConfigured)
         {
             var optionsLogger = _serviceProvider.GetRequiredService<ILogger<EurekaInstanceOptions>>();
             ICollection<string> addresses = _configuration.GetListenAddresses();
