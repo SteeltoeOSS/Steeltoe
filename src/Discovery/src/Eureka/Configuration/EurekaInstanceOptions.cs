@@ -20,14 +20,13 @@ public sealed partial class EurekaInstanceOptions
     internal const string DefaultStatusPageUrlPath = "/info";
     internal const string DefaultHealthCheckUrlPath = "/health";
 
-#pragma warning disable S1067 // Expressions should not be too complex
-    internal bool ShouldSetPortsFromListenAddresses =>
-        UseAspNetCoreUrls && (!Platform.IsCloudFoundry || IsContainerToContainerMethod() || IsForceHostNameMethod()) &&
-        (!IsNonSecurePortEnabled || NonSecurePort == null) && (!IsSecurePortEnabled || SecurePort == null);
-#pragma warning restore S1067 // Expressions should not be too complex
+    private bool IsSuitableRegistrationMethod => !Platform.IsCloudFoundry || IsContainerToContainerMethod() || IsForceHostNameMethod();
+    internal bool ShouldSetPortsFromListenAddresses => UseAspNetCoreUrls && IsSuitableRegistrationMethod && !IsPortConfigured;
 
     internal TimeSpan LeaseRenewalInterval => TimeSpan.FromSeconds(LeaseRenewalIntervalInSeconds);
     internal TimeSpan LeaseExpirationDuration => TimeSpan.FromSeconds(LeaseExpirationDurationInSeconds);
+
+    internal bool IsPortConfigured { get; set; }
 
     /// <summary>
     /// Gets or sets the unique ID (within the scope of the app name) of the instance to be registered with Eureka.
@@ -211,10 +210,9 @@ public sealed partial class EurekaInstanceOptions
 
     /// <summary>
     /// Gets or sets a value indicating whether to register with the port number(s) ASP.NET Core is listening on. Default value: true.
-    /// </summary>
-    /// <remarks>
+    /// <para />
     /// This property is ignored when <see cref="NonSecurePort" /> or <see cref="SecurePort" /> is explicitly configured.
-    /// </remarks>
+    /// </summary>
     public bool UseAspNetCoreUrls { get; set; } = true;
 
     /// <summary>
@@ -243,72 +241,69 @@ public sealed partial class EurekaInstanceOptions
 
     internal void SetPortsFromListenAddresses(IEnumerable<string> listenOnAddresses, string source, ILogger<EurekaInstanceOptions> logger)
     {
-        if (ShouldSetPortsFromListenAddresses)
+        int? listenHttpPort = null;
+        int? listenHttpsPort = null;
+
+        foreach (string address in listenOnAddresses)
         {
-            int? listenHttpPort = null;
-            int? listenHttpsPort = null;
+            BindingAddress bindingAddress = BindingAddress.Parse(address);
 
-            foreach (string address in listenOnAddresses)
+            if (bindingAddress is { Scheme: "http", Port: > 0 } && listenHttpPort == null)
             {
-                BindingAddress bindingAddress = BindingAddress.Parse(address);
-
-                if (bindingAddress is { Scheme: "http", Port: > 0 } && listenHttpPort == null)
-                {
-                    listenHttpPort = bindingAddress.Port;
-                }
-                else if (bindingAddress is { Scheme: "https", Port: > 0 } && listenHttpsPort == null)
-                {
-                    listenHttpsPort = bindingAddress.Port;
-                }
+                listenHttpPort = bindingAddress.Port;
             }
-
-            int? nonSecurePort = IsNonSecurePortEnabled ? NonSecurePort : null;
-            int? securePort = IsSecurePortEnabled ? SecurePort : null;
-
-            if (nonSecurePort != listenHttpPort)
+            else if (bindingAddress is { Scheme: "https", Port: > 0 } && listenHttpsPort == null)
             {
-                if (listenHttpPort != null)
-                {
-                    if (nonSecurePort == null)
-                    {
-                        LogActivatingNonSecurePort(logger, listenHttpPort, source);
-                    }
-                    else
-                    {
-                        LogChangingNonSecurePort(logger, listenHttpPort, source);
-                    }
-
-                    NonSecurePort = listenHttpPort.Value;
-                    IsNonSecurePortEnabled = true;
-                }
-                else if (nonSecurePort != null)
-                {
-                    LogDeactivatingNonSecurePort(logger, source);
-                    IsNonSecurePortEnabled = false;
-                }
+                listenHttpsPort = bindingAddress.Port;
             }
+        }
 
-            if (securePort != listenHttpsPort)
+        int? nonSecurePort = IsNonSecurePortEnabled ? NonSecurePort : null;
+        int? securePort = IsSecurePortEnabled ? SecurePort : null;
+
+        if (nonSecurePort != listenHttpPort)
+        {
+            if (listenHttpPort != null)
             {
-                if (listenHttpsPort != null)
+                if (nonSecurePort == null)
                 {
-                    if (securePort == null)
-                    {
-                        LogActivatingSecurePort(logger, listenHttpsPort, source);
-                    }
-                    else
-                    {
-                        LogChangingSecurePort(logger, listenHttpsPort, source);
-                    }
+                    LogActivatingNonSecurePort(logger, listenHttpPort, source);
+                }
+                else
+                {
+                    LogChangingNonSecurePort(logger, listenHttpPort, source);
+                }
 
-                    SecurePort = listenHttpsPort.Value;
-                    IsSecurePortEnabled = true;
-                }
-                else if (securePort != null)
+                NonSecurePort = listenHttpPort.Value;
+                IsNonSecurePortEnabled = true;
+            }
+            else if (nonSecurePort != null)
+            {
+                LogDeactivatingNonSecurePort(logger, source);
+                IsNonSecurePortEnabled = false;
+            }
+        }
+
+        if (securePort != listenHttpsPort)
+        {
+            if (listenHttpsPort != null)
+            {
+                if (securePort == null)
                 {
-                    LogDeactivatingSecurePort(logger, source);
-                    IsSecurePortEnabled = false;
+                    LogActivatingSecurePort(logger, listenHttpsPort, source);
                 }
+                else
+                {
+                    LogChangingSecurePort(logger, listenHttpsPort, source);
+                }
+
+                SecurePort = listenHttpsPort.Value;
+                IsSecurePortEnabled = true;
+            }
+            else if (securePort != null)
+            {
+                LogDeactivatingSecurePort(logger, source);
+                IsSecurePortEnabled = false;
             }
         }
     }

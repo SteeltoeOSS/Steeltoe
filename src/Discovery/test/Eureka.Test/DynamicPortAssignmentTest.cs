@@ -4,6 +4,7 @@
 
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
@@ -41,6 +42,36 @@ public sealed class DynamicPortAssignmentTest
     }
 
     [Fact]
+    public async Task Applies_dynamically_assigned_ports_when_kestrel_overrides_urls_config()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["urls"] = "http://*:5000"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
+        builder.Configuration.AddInMemoryCollection(appSettings);
+
+        builder.WebHost.ConfigureKestrel(options =>
+        {
+            options.ListenAnyIP(0);
+        });
+
+        builder.Services.AddEurekaDiscoveryClient();
+
+        await using WebApplication app = builder.Build();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+
+        var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();
+
+        infoManager.Instance.IsNonSecurePortEnabled.Should().BeTrue();
+        infoManager.Instance.NonSecurePort.Should().NotBe(5000);
+        infoManager.Instance.NonSecurePort.Should().BePositive();
+    }
+
+    [Fact]
     public async Task Does_not_override_explicitly_configured_secure_port()
     {
         var appSettings = new Dictionary<string, string?>
@@ -64,6 +95,7 @@ public sealed class DynamicPortAssignmentTest
         infoManager.Instance.IsSecurePortEnabled.Should().BeTrue();
         infoManager.Instance.SecurePort.Should().Be(443);
         infoManager.Instance.IsNonSecurePortEnabled.Should().BeFalse();
+        infoManager.Instance.NonSecurePort.Should().Be(0);
     }
 
     [Fact]
@@ -90,6 +122,7 @@ public sealed class DynamicPortAssignmentTest
         infoManager.Instance.IsNonSecurePortEnabled.Should().BeTrue();
         infoManager.Instance.NonSecurePort.Should().Be(80);
         infoManager.Instance.IsSecurePortEnabled.Should().BeFalse();
+        infoManager.Instance.SecurePort.Should().Be(0);
     }
 
     [Fact]
@@ -120,6 +153,7 @@ public sealed class DynamicPortAssignmentTest
         infoManager.Instance.IsSecurePortEnabled.Should().BeTrue();
         infoManager.Instance.SecurePort.Should().Be(8443);
         infoManager.Instance.IsNonSecurePortEnabled.Should().BeFalse();
+        infoManager.Instance.NonSecurePort.Should().Be(0);
     }
 
     [Fact]

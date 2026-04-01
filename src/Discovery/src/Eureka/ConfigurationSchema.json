@@ -260,7 +260,7 @@
             },
             "UseAspNetCoreUrls": {
               "type": "boolean",
-              "description": "Gets or sets a value indicating whether to register with the port number(s) ASP.NET Core is listening on. Default value: true."
+              "description": "Gets or sets a value indicating whether to register with the port number(s) ASP.NET Core is listening on. Default value: true.\n\nThis property is ignored when 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.NonSecurePort' or 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.SecurePort' is explicitly configured."
             },
             "UseNetworkInterfaces": {
               "type": "boolean",
