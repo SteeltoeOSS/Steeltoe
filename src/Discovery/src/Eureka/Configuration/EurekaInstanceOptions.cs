@@ -20,12 +20,14 @@ public sealed partial class EurekaInstanceOptions
     internal const string DefaultStatusPageUrlPath = "/info";
     internal const string DefaultHealthCheckUrlPath = "/health";
 
-    private bool ShouldUseAspNetCoreUrls => UseAspNetCoreUrls && (!Platform.IsCloudFoundry || IsContainerToContainerMethod() || IsForceHostNameMethod());
+#pragma warning disable S1067 // Expressions should not be too complex
+    internal bool ShouldSetPortsFromListenAddresses =>
+        UseAspNetCoreUrls && (!Platform.IsCloudFoundry || IsContainerToContainerMethod() || IsForceHostNameMethod()) &&
+        (!IsNonSecurePortEnabled || NonSecurePort == null) && (!IsSecurePortEnabled || SecurePort == null);
+#pragma warning restore S1067 // Expressions should not be too complex
 
     internal TimeSpan LeaseRenewalInterval => TimeSpan.FromSeconds(LeaseRenewalIntervalInSeconds);
     internal TimeSpan LeaseExpirationDuration => TimeSpan.FromSeconds(LeaseExpirationDurationInSeconds);
-
-    internal bool IsPortConfigured { get; set; }
 
     /// <summary>
     /// Gets or sets the unique ID (within the scope of the app name) of the instance to be registered with Eureka.
@@ -210,6 +212,9 @@ public sealed partial class EurekaInstanceOptions
     /// <summary>
     /// Gets or sets a value indicating whether to register with the port number(s) ASP.NET Core is listening on. Default value: true.
     /// </summary>
+    /// <remarks>
+    /// This property is ignored when <see cref="NonSecurePort" /> or <see cref="SecurePort" /> is explicitly configured.
+    /// </remarks>
     public bool UseAspNetCoreUrls { get; set; } = true;
 
     /// <summary>
@@ -238,7 +243,7 @@ public sealed partial class EurekaInstanceOptions
 
     internal void SetPortsFromListenAddresses(IEnumerable<string> listenOnAddresses, string source, ILogger<EurekaInstanceOptions> logger)
     {
-        if (ShouldUseAspNetCoreUrls && !IsPortConfigured)
+        if (ShouldSetPortsFromListenAddresses)
         {
             int? listenHttpPort = null;
             int? listenHttpsPort = null;

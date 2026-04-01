@@ -63,6 +63,7 @@ public sealed class DynamicPortAssignmentTest
 
         infoManager.Instance.IsSecurePortEnabled.Should().BeTrue();
         infoManager.Instance.SecurePort.Should().Be(443);
+        infoManager.Instance.IsNonSecurePortEnabled.Should().BeFalse();
     }
 
     [Fact]
@@ -88,6 +89,7 @@ public sealed class DynamicPortAssignmentTest
 
         infoManager.Instance.IsNonSecurePortEnabled.Should().BeTrue();
         infoManager.Instance.NonSecurePort.Should().Be(80);
+        infoManager.Instance.IsSecurePortEnabled.Should().BeFalse();
     }
 
     [Fact]
@@ -117,6 +119,7 @@ public sealed class DynamicPortAssignmentTest
 
         infoManager.Instance.IsSecurePortEnabled.Should().BeTrue();
         infoManager.Instance.SecurePort.Should().Be(8443);
+        infoManager.Instance.IsNonSecurePortEnabled.Should().BeFalse();
     }
 
     [Fact]
