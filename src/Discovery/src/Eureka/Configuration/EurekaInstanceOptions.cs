@@ -20,13 +20,14 @@ public sealed partial class EurekaInstanceOptions
     internal const string DefaultStatusPageUrlPath = "/info";
     internal const string DefaultHealthCheckUrlPath = "/health";
 
+    private bool IsAnyPortConfigured =>
+        this is { IsNonSecurePortEnabled: true, NonSecurePort: not null } or { IsSecurePortEnabled: true, SecurePort: not null };
+
     private bool IsSuitableRegistrationMethod => !Platform.IsCloudFoundry || IsContainerToContainerMethod() || IsForceHostNameMethod();
-    internal bool ShouldSetPortsFromListenAddresses => UseAspNetCoreUrls && IsSuitableRegistrationMethod && !IsPortConfigured;
+    internal bool ShouldSetPortsFromListenAddresses => UseAspNetCoreUrls && IsSuitableRegistrationMethod && !IsAnyPortConfigured;
 
     internal TimeSpan LeaseRenewalInterval => TimeSpan.FromSeconds(LeaseRenewalIntervalInSeconds);
     internal TimeSpan LeaseExpirationDuration => TimeSpan.FromSeconds(LeaseExpirationDurationInSeconds);
-
-    internal bool IsPortConfigured { get; set; }
 
     /// <summary>
     /// Gets or sets the unique ID (within the scope of the app name) of the instance to be registered with Eureka.
@@ -244,17 +245,16 @@ public sealed partial class EurekaInstanceOptions
         int? listenHttpPort = null;
         int? listenHttpsPort = null;
 
-        foreach (string address in listenOnAddresses)
+        foreach (BindingAddress bindingAddress in listenOnAddresses.Select(BindingAddress.Parse))
         {
-            BindingAddress bindingAddress = BindingAddress.Parse(address);
-
-            if (bindingAddress is { Scheme: "http", Port: > 0 } && listenHttpPort == null)
+            switch (bindingAddress)
             {
-                listenHttpPort = bindingAddress.Port;
-            }
-            else if (bindingAddress is { Scheme: "https", Port: > 0 } && listenHttpsPort == null)
-            {
-                listenHttpsPort = bindingAddress.Port;
+                case { Scheme: "http", Port: > 0 } when listenHttpPort == null:
+                    listenHttpPort = bindingAddress.Port;
+                    break;
+                case { Scheme: "https", Port: > 0 } when listenHttpsPort == null:
+                    listenHttpsPort = bindingAddress.Port;
+                    break;
             }
         }
 
@@ -284,27 +284,29 @@ public sealed partial class EurekaInstanceOptions
             }
         }
 
-        if (securePort != listenHttpsPort)
+        if (securePort == listenHttpsPort)
         {
-            if (listenHttpsPort != null)
-            {
-                if (securePort == null)
-                {
-                    LogActivatingSecurePort(logger, listenHttpsPort, source);
-                }
-                else
-                {
-                    LogChangingSecurePort(logger, listenHttpsPort, source);
-                }
+            return;
+        }
 
-                SecurePort = listenHttpsPort.Value;
-                IsSecurePortEnabled = true;
-            }
-            else if (securePort != null)
+        if (listenHttpsPort != null)
+        {
+            if (securePort == null)
             {
-                LogDeactivatingSecurePort(logger, source);
-                IsSecurePortEnabled = false;
+                LogActivatingSecurePort(logger, listenHttpsPort, source);
             }
+            else
+            {
+                LogChangingSecurePort(logger, listenHttpsPort, source);
+            }
+
+            SecurePort = listenHttpsPort.Value;
+            IsSecurePortEnabled = true;
+        }
+        else if (securePort != null)
+        {
+            LogDeactivatingSecurePort(logger, source);
+            IsSecurePortEnabled = false;
         }
     }
 
