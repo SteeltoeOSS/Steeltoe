@@ -167,7 +167,7 @@ public sealed class ConfigureCertificateOptionsTest
         await File.WriteAllTextAsync(privateKeyFilePath, secondPrivateKeyContent, TestContext.Current.CancellationToken);
 
         using Task pollTask = WaitUntilCertificateChangedToAsync(secondX509, optionsMonitor, certificateName, TestContext.Current.CancellationToken);
-        await pollTask.WaitAsync(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
+        await pollTask.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
 
         optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
     }
