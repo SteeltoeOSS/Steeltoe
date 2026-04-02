@@ -2,15 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Text;
 using FluentAssertions.Extensions;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.TestResources;
+
+// ReSharper disable AccessToDisposedClosure
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
@@ -28,9 +30,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
         List<Uri> requestUris = [new("http://localhost:9999/app/profile")];
 
-        // ReSharper disable AccessToDisposedClosure
         Func<Task> action = async () => await provider.RemoteLoadAsync(provider.ClientOptions, requestUris, null, TestContext.Current.CancellationToken);
-        // ReSharper restore AccessToDisposedClosure
 
         (await action.Should().ThrowExactlyAsync<TaskCanceledException>()).WithInnerExceptionExactly<TimeoutException>();
     }
@@ -38,53 +38,33 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task RemoteLoadAsync_ConfigServerReturnsGreaterThanEqualBadRequest()
     {
-        using var startup = new TestConfigServerStartup();
-        startup.ReturnStatus = [500];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
 
-        // ReSharper disable AccessToDisposedClosure
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond(HttpStatusCode.InternalServerError);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+
         Func<Task> action = async () => await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
-        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<HttpRequestException>();
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
+        handler.Mock.VerifyNoOutstandingExpectation();
     }
 
     [Fact]
     public async Task RemoteLoadAsync_ConfigServerReturnsLessThanBadRequest()
     {
-        using var startup = new TestConfigServerStartup();
-        startup.ReturnStatus = [204];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond(HttpStatusCode.NoContent);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
         ConfigEnvironment? result = await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
+        handler.Mock.VerifyNoOutstandingExpectation();
         result.Should().BeNull();
     }
 
@@ -93,7 +73,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         await TestFailureTracer.CaptureAsync(async tracer =>
         {
-            const string environment = """
+            const string responseJson = """
                 {
                   "name": "test-name",
                   "profiles": [
@@ -105,18 +85,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
                 }
                 """;
 
-            using var startup = new TestConfigServerStartup();
-            startup.Response = environment;
-            startup.ReturnStatus = [.. Enumerable.Repeat(200, 100)];
-            startup.Label = "test-label";
-
-            await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-            startup.Configure(app);
-            await app.StartAsync(TestContext.Current.CancellationToken);
-
-            using TestServer server = app.GetTestServer();
-            server.BaseAddress = new Uri("http://localhost:8888");
-
             var options = new ConfigServerClientOptions
             {
                 Name = "myName",
@@ -124,19 +92,34 @@ public sealed partial class ConfigServerConfigurationProviderTest
                 Label = "label,test-label"
             };
 
-            using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-            // ReSharper disable once AccessToDisposedClosure
-            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, tracer.LoggerFactory);
+            using var handler = new DelegateToMockHttpClientHandler();
+            handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production/label").Respond(HttpStatusCode.NotFound);
 
-            bool firstRequestCompleted = startup.WaitForFirstRequest(2.Seconds());
+            using var firstRequestCountdownEvent = new CountdownEvent(1);
+
+            MockedRequest testLabelRequest = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production/test-label").Respond(_ =>
+            {
+                if (!firstRequestCountdownEvent.IsSet)
+                {
+                    firstRequestCountdownEvent.Signal();
+                }
+
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(responseJson, Encoding.UTF8, "application/json")
+                };
+            });
+
+            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, tracer.LoggerFactory);
+
+            bool firstRequestCompleted = firstRequestCountdownEvent.Wait(2.Seconds(), TestContext.Current.CancellationToken);
             firstRequestCompleted.Should().BeTrue();
 
-            startup.RequestCount.Should().BeGreaterThanOrEqualTo(1);
-            startup.LastRequest.Should().NotBeNull();
+            handler.Mock.GetMatchCount(testLabelRequest).Should().BeGreaterThanOrEqualTo(1);
 
             await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-            startup.RequestCount.Should().BeGreaterThanOrEqualTo(2);
+            handler.Mock.GetMatchCount(testLabelRequest).Should().BeGreaterThanOrEqualTo(2);
             provider.GetReloadToken().HasChanged.Should().BeFalse();
         });
     }
@@ -146,7 +129,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         await TestFailureTracer.CaptureAsync(async tracer =>
         {
-            const string environment = """
+            const string responseJson = """
                 {
                   "name": "test-name",
                   "profiles": [
@@ -158,20 +141,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
                 }
                 """;
 
-            using var startup = new TestConfigServerStartup();
-            startup.Response = environment;
-
-            // Initial requests succeed, but later requests return 400 status code so that an exception is thrown during polling
-            startup.ReturnStatus = [.. Enumerable.Repeat(200, 2).Concat(Enumerable.Repeat(400, 100))];
-            startup.Label = "test-label";
-
-            await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-            startup.Configure(app);
-            await app.StartAsync(TestContext.Current.CancellationToken);
-
-            using TestServer server = app.GetTestServer();
-            server.BaseAddress = new Uri("http://localhost:8888");
-
             var options = new ConfigServerClientOptions
             {
                 Name = "myName",
@@ -180,19 +149,40 @@ public sealed partial class ConfigServerConfigurationProviderTest
                 Label = "test-label"
             };
 
-            using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-            // ReSharper disable once AccessToDisposedClosure
-            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, tracer.LoggerFactory);
+            using var handler = new DelegateToMockHttpClientHandler();
+            using var firstRequestCountdownEvent = new CountdownEvent(1);
+            int requestCount = 0;
 
-            bool firstRequestCompleted = startup.WaitForFirstRequest(2.Seconds());
+            MockedRequest testLabelRequest = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production/test-label").Respond(_ =>
+            {
+                int currentCount = Interlocked.Increment(ref requestCount);
+
+                if (!firstRequestCountdownEvent.IsSet)
+                {
+                    firstRequestCountdownEvent.Signal();
+                }
+
+                if (currentCount <= 2)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(responseJson, Encoding.UTF8, "application/json")
+                    };
+                }
+
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            });
+
+            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, tracer.LoggerFactory);
+
+            bool firstRequestCompleted = firstRequestCountdownEvent.Wait(2.Seconds(), TestContext.Current.CancellationToken);
             firstRequestCompleted.Should().BeTrue();
 
-            startup.RequestCount.Should().BeGreaterThanOrEqualTo(1);
-            startup.LastRequest.Should().NotBeNull();
+            handler.Mock.GetMatchCount(testLabelRequest).Should().BeGreaterThanOrEqualTo(1);
 
             await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-            startup.RequestCount.Should().BeGreaterThanOrEqualTo(2);
+            handler.Mock.GetMatchCount(testLabelRequest).Should().BeGreaterThanOrEqualTo(2);
             provider.GetReloadToken().HasChanged.Should().BeFalse();
         });
     }
@@ -200,30 +190,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Create_WithNonZeroPollingIntervalAndClientDisabled_PollingConfigurationReloadDisabled()
     {
-        const string environment = """
-            {
-              "name": "test-name",
-              "profiles": [
-                "Production"
-              ],
-              "label": "test-label",
-              "version": "test-version",
-              "propertySources": []
-            }
-            """;
-
-        using var startup = new TestConfigServerStartup();
-        startup.Response = environment;
-        startup.ReturnStatus = [.. Enumerable.Repeat(200, 100)];
-        startup.Label = "test-label";
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         var options = new ConfigServerClientOptions
         {
             Name = "myName",
@@ -232,12 +198,13 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "label,test-label"
         };
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
+        using var handler = new DelegateToMockHttpClientHandler();
+        MockedRequest request = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production/label").Respond(HttpStatusCode.OK);
 
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
-        startup.WaitForFirstRequest(2.Seconds()).Should().BeFalse();
+        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+        handler.Mock.GetMatchCount(request).Should().Be(0);
     }
 
     [Theory]
@@ -245,7 +212,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [InlineData(true, "00:00:00")]
     public void OnSettingsChanged_stops_reload_timer_when_polling_becomes_ineffective(bool enabled, string pollingInterval)
     {
-        const string configServerResponseJson = """
+        const string responseJson = """
             {
               "name": "myName",
               "profiles": [ "Production" ],
@@ -272,12 +239,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
             """);
 
         using var handler = new DelegateToMockHttpClientHandler();
-
-        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", configServerResponseJson);
+        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", responseJson);
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
@@ -310,7 +275,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public void OnSettingsChanged_reschedules_reload_timer_when_polling_interval_changes()
     {
-        const string configServerResponseJson = """
+        const string responseJson = """
             {
               "name": "myName",
               "profiles": [ "Production" ],
@@ -337,12 +302,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
             """);
 
         using var handler = new DelegateToMockHttpClientHandler();
-
-        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", configServerResponseJson);
+        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", responseJson);
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
@@ -375,7 +338,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public void OnSettingsChanged_stops_vault_renew_timer_when_renewal_becomes_disabled()
     {
-        const string configServerResponseJson = """
+        const string responseJson = """
             {
               "name": "myName",
               "profiles": [ "Production" ],
@@ -402,12 +365,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
             """);
 
         using var handler = new DelegateToMockHttpClientHandler();
-
-        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", configServerResponseJson);
+        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", responseJson);
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
@@ -439,7 +400,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_MultipleConfigServers_SocketError_FallsBackToNextServer()
     {
-        const string environment = """
+        const string responseJson = """
             {
               "name": "test-name",
               "profiles": [ "Production" ],
@@ -461,7 +422,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         handler.Mock.When(HttpMethod.Get, "http://server1:8888/myName/Production")
             .Throw(new HttpRequestException("Connection refused", new SocketException((int)SocketError.ConnectionRefused)));
 
-        handler.Mock.When(HttpMethod.Get, "http://server2:8888/myName/Production").Respond("application/json", environment);
+        handler.Mock.When(HttpMethod.Get, "http://server2:8888/myName/Production").Respond("application/json", responseJson);
 
         var options = new ConfigServerClientOptions
         {
@@ -469,7 +430,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Uri = "http://server1:8888, http://server2:8888"
         };
 
-        // ReSharper disable once AccessToDisposedClosure
         using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
@@ -481,7 +441,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task DoLoad_IdenticalData_DoesNotTriggerReload()
     {
-        const string environment = """
+        const string responseJson = """
             {
               "name": "test-name",
               "profiles": [ "Production" ],
@@ -499,15 +459,13 @@ public sealed partial class ConfigServerConfigurationProviderTest
             """;
 
         using var handler = new DelegateToMockHttpClientHandler();
-
-        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", environment);
+        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", responseJson);
 
         var options = new ConfigServerClientOptions
         {
             Name = "myName"
         };
 
-        // ReSharper disable once AccessToDisposedClosure
         using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
         await provider.DoLoadAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
@@ -527,7 +485,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task DoLoad_MultipleLabels_ChecksAllLabels()
     {
-        const string environment = """
+        const string responseJson = """
             {
               "name": "test-name",
               "profiles": [
@@ -547,42 +505,24 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
             """;
 
-        using var startup = new TestConfigServerStartup();
-        startup.Response = environment;
-
-        startup.ReturnStatus =
-        [
-            404,
-            200
-        ];
-
-        startup.Label = "test-label";
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.Label = "label,test-label";
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}/label").Respond(HttpStatusCode.NotFound);
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}/test-label").Respond("application/json", responseJson);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
         await provider.DoLoadAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.RequestCount.Should().Be(2);
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}/test-label");
+        handler.Mock.VerifyNoOutstandingExpectation();
     }
 
     [Fact]
     public async Task RemoteLoadAsync_ConfigServerReturnsGood()
     {
-        const string environment = """
+        const string responseJson = """
             {
               "name": "test-name",
               "profiles": [
@@ -602,25 +542,16 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
             """;
 
-        using var startup = new TestConfigServerStartup();
-        startup.Response = environment;
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond("application/json", responseJson);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
         ConfigEnvironment? env = await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
+        handler.Mock.VerifyNoOutstandingExpectation();
 
         env.Should().NotBeNull();
         env.Name.Should().Be("test-name");
@@ -638,258 +569,159 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsGreaterThanEqualBadRequest_StopsChecking()
     {
-        using var startup = new TestConfigServerStartup();
-
-        startup.ReturnStatus =
-        [
-            500,
-            200
-        ];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.Uri = "http://localhost:8888, http://localhost:8888";
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        MockedRequest request = handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}")
+            .Respond(HttpStatusCode.InternalServerError);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
-        startup.RequestCount.Should().Be(1);
+        handler.Mock.GetMatchCount(request).Should().Be(1);
 
         await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-        startup.RequestCount.Should().Be(1);
+        handler.Mock.GetMatchCount(request).Should().Be(1);
     }
 
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsNotFoundStatus_DoesNotContinueChecking()
     {
-        using var startup = new TestConfigServerStartup();
-
-        startup.ReturnStatus =
-        [
-            404,
-            200
-        ];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.Uri = "http://localhost:8888, http://localhost:8888";
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        MockedRequest request = handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}")
+            .Respond(HttpStatusCode.NotFound);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
-        startup.RequestCount.Should().Be(1);
+        handler.Mock.GetMatchCount(request).Should().Be(1);
 
         await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-        startup.RequestCount.Should().Be(1);
+        handler.Mock.GetMatchCount(request).Should().Be(1);
     }
 
     [Fact]
     public async Task Load_ConfigServerReturnsNotFoundStatus()
     {
-        using var startup = new TestConfigServerStartup();
-        startup.ReturnStatus = [404];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond(HttpStatusCode.NotFound);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
+        handler.Mock.VerifyNoOutstandingExpectation();
         provider.InnerData.Should().BeEmpty();
     }
 
     [Fact]
     public async Task Load_ConfigServerReturnsNotFoundStatus_FailFastEnabled()
     {
-        using var startup = new TestConfigServerStartup();
-        startup.ReturnStatus = [404];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond(HttpStatusCode.NotFound);
 
-        // ReSharper disable AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+
         Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
-        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>();
+        handler.Mock.VerifyNoOutstandingExpectation();
     }
 
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsNotFoundStatus__DoesNotContinueChecking_FailFastEnabled()
     {
-        using var startup = new TestConfigServerStartup();
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
         options.Uri = "http://localhost:8888,http://localhost:8888";
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
 
-        startup.Reset();
+        MockedRequest request = handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}")
+            .Respond(HttpStatusCode.NotFound);
 
-        startup.ReturnStatus =
-        [
-            404,
-            200
-        ];
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
-        // ReSharper disable AccessToDisposedClosure
         Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
-        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>();
-        startup.RequestCount.Should().Be(1);
+        handler.Mock.GetMatchCount(request).Should().Be(1);
 
         await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-        startup.RequestCount.Should().Be(1);
+        handler.Mock.GetMatchCount(request).Should().Be(1);
     }
 
     [Fact]
     public async Task Load_UriInvalid_FailFastEnabled()
     {
-        using var startup = new TestConfigServerStartup();
-        startup.ReturnStatus = [500];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.Uri = "http://username:p@ssword@localhost:8888";
         options.FailFast = true;
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
-        // ReSharper disable AccessToDisposedClosure
         Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
-        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>().WithMessage("One or more Config Server URIs in configuration are invalid.");
+        handler.Mock.VerifyNoOutstandingExpectation();
     }
 
     [Fact]
     public async Task Load_ConfigServerReturnsBadStatus_FailFastEnabled()
     {
-        using var startup = new TestConfigServerStartup();
-        startup.ReturnStatus = [500];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond(HttpStatusCode.InternalServerError);
 
-        // ReSharper disable AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+
         Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
-        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>();
+        handler.Mock.VerifyNoOutstandingExpectation();
     }
 
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsBadStatus_StopsChecking_FailFastEnabled()
     {
-        using var startup = new TestConfigServerStartup();
-
-        startup.ReturnStatus =
-        [
-            500,
-            500,
-            500
-        ];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
         options.Uri = "http://localhost:8888, http://localhost:8888, http://localhost:8888";
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
 
-        // ReSharper disable AccessToDisposedClosure
+        MockedRequest request = handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}")
+            .Respond(HttpStatusCode.InternalServerError);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+
         Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
-        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<ConfigServerException>();
-        startup.RequestCount.Should().Be(1);
+        handler.Mock.GetMatchCount(request).Should().Be(1);
 
         await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-        startup.RequestCount.Should().Be(1);
+        handler.Mock.GetMatchCount(request).Should().Be(1);
     }
 
     [Fact]
@@ -897,16 +729,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         await TestFailureTracer.CaptureAsync(async tracer =>
         {
-            using var startup = new TestConfigServerStartup();
-            startup.ReturnStatus = [.. Enumerable.Repeat(500, 100)];
-
-            await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-            startup.Configure(app);
-            await app.StartAsync(TestContext.Current.CancellationToken);
-
-            using TestServer server = app.GetTestServer();
-            server.BaseAddress = new Uri("http://localhost:8888");
-
             var options = new ConfigServerClientOptions
             {
                 Name = "myName",
@@ -919,26 +741,25 @@ public sealed partial class ConfigServerConfigurationProviderTest
                 Timeout = 1000
             };
 
-            using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-            // ReSharper disable once AccessToDisposedClosure
-            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, tracer.LoggerFactory);
+            using var handler = new DelegateToMockHttpClientHandler();
+            MockedRequest request = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond(HttpStatusCode.InternalServerError);
 
-            // ReSharper disable AccessToDisposedClosure
+            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, tracer.LoggerFactory);
+
             Func<Task> action = async () => await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
-            // ReSharper restore AccessToDisposedClosure
 
             await action.Should().ThrowExactlyAsync<ConfigServerException>();
 
             await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-            startup.RequestCount.Should().BeGreaterThan(3);
+            handler.Mock.GetMatchCount(request).Should().BeGreaterThan(3);
         });
     }
 
     [Fact]
     public async Task Load_ChangesDataDictionary()
     {
-        const string environment = """
+        const string responseJson = """
             {
               "name": "test-name",
               "profiles": [
@@ -959,25 +780,16 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
             """;
 
-        using var startup = new TestConfigServerStartup();
-        startup.Response = environment;
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond("application/json", responseJson);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(provider.ClientOptions, true, TestContext.Current.CancellationToken);
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
+        handler.Mock.VerifyNoOutstandingExpectation();
 
         provider.TryGet("key1", out string? value).Should().BeTrue();
         value.Should().Be("value1");
@@ -991,9 +803,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public async Task ReLoad_DataDictionary_With_New_Configurations()
+    public void ReLoad_DataDictionary_With_New_Configurations()
     {
-        const string environment = """
+        const string responseJson = """
             {
               "name": "test-name",
               "profiles": [
@@ -1015,24 +827,16 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
             """;
 
-        using var startup = new TestConfigServerStartup();
-        startup.Response = environment;
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond("application/json", responseJson);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
         provider.Load();
 
-        startup.LastRequest.Should().NotBeNull();
+        handler.Mock.VerifyNoOutstandingExpectation();
         provider.TryGet("featureToggles:ShowModule:0", out string? value).Should().BeTrue();
         value.Should().Be("FT1");
         provider.TryGet("featureToggles:ShowModule:1", out value).Should().BeTrue();
@@ -1042,28 +846,32 @@ public sealed partial class ConfigServerConfigurationProviderTest
         provider.TryGet("enableSettings", out value).Should().BeTrue();
         value.Should().Be("true");
 
-        startup.Reset();
+        handler.Mock.Clear();
 
-        startup.Response = """
-        {
-          "name": "test-name",
-          "profiles": [
-            "Production"
-          ],
-          "label": "test-label",
-          "version": "test-version",
-          "propertySources": [
+        const string newResponseJson = """
             {
-              "name": "source",
-              "source": {
-                "featureToggles.ShowModule[0]": "none"
-              }
+              "name": "test-name",
+              "profiles": [
+                "Production"
+              ],
+              "label": "test-label",
+              "version": "test-version",
+              "propertySources": [
+                {
+                  "name": "source",
+                  "source": {
+                    "featureToggles.ShowModule[0]": "none"
+                  }
+                }
+              ]
             }
-          ]
-        }
-        """;
+            """;
+
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond("application/json", newResponseJson);
 
         provider.Load();
+
+        handler.Mock.VerifyNoOutstandingExpectation();
 
         provider.TryGet("featureToggles:ShowModule:0", out value).Should().BeTrue();
         value.Should().Be("none");
@@ -1158,9 +966,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public async Task Reload_And_Bind_Without_Throwing_Exception()
+    public void Reload_And_Bind_Without_Throwing_Exception()
     {
-        const string environment = """
+        const string responseJson = """
             {
               "name": "test-name",
               "profiles": [
@@ -1180,20 +988,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
             """;
 
-        using var startup = new TestConfigServerStartup();
-        startup.Response = environment;
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
         ConfigServerClientOptions clientOptions = GetCommonOptions();
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri(clientOptions.Uri!);
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(clientOptions, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{clientOptions.Name}/{clientOptions.Environment}").Respond("application/json", responseJson);
+
+        using var provider = new ConfigServerConfigurationProvider(clientOptions, null, null, () => handler, NullLoggerFactory.Instance);
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.Add(new TestConfigServerConfigurationSource(provider));
@@ -1204,7 +1004,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         _ = Task.Run(() =>
         {
-            // ReSharper disable once AccessToDisposedClosure
             while (!tokenSource.IsCancellationRequested)
             {
                 configurationRoot.Reload();
