@@ -69,6 +69,8 @@ public sealed class DynamicPortAssignmentTest
         infoManager.Instance.IsNonSecurePortEnabled.Should().BeTrue();
         infoManager.Instance.NonSecurePort.Should().NotBe(5000);
         infoManager.Instance.NonSecurePort.Should().BePositive();
+        infoManager.Instance.IsSecurePortEnabled.Should().BeFalse();
+        infoManager.Instance.SecurePort.Should().Be(0);
     }
 
     [Fact]
