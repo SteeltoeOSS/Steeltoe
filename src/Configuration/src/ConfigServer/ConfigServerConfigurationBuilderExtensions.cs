@@ -133,10 +133,7 @@ public static class ConfigServerConfigurationBuilderExtensions
             builder.AddCloudFoundry();
             builder.AddKubernetesServiceBindings();
 
-            ConfigServerConfigurationSource source = builder is IConfiguration configuration
-                ? new ConfigServerConfigurationSource(options, configuration, configure, createHttpClientHandler, loggerFactory)
-                : new ConfigServerConfigurationSource(options, builder.Sources, builder.Properties, configure, createHttpClientHandler, loggerFactory);
-
+            var source = new ConfigServerConfigurationSource(options, builder.Sources, builder.Properties, configure, createHttpClientHandler, loggerFactory);
             builder.Add(source);
         }
 

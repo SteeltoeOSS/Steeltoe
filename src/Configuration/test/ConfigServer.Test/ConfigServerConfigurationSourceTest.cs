@@ -29,14 +29,6 @@ public sealed class ConfigServerConfigurationSourceTest
         source.Sources.Should().ContainSingle().Which.Should().Be(memSource);
         source.Properties.Should().ContainSingle();
         source.Properties.Should().ContainKey("foo").WhoseValue.Should().Be("bar");
-
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        source = new ConfigServerConfigurationSource(options, configurationRoot, null, null, NullLoggerFactory.Instance);
-        source.DefaultOptions.Should().Be(options);
-
-        ConfigurationRoot? root = source.Configuration.Should().BeOfType<ConfigurationRoot>().Subject;
-
-        root.Should().BeSameAs(configurationRoot);
     }
 
     [Fact]

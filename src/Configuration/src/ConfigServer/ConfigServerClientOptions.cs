@@ -133,7 +133,7 @@ public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
     public int TokenTtl { get; set; } = 300_000;
 
     /// <summary>
-    /// Gets or sets the vault token renew rate (in milliseconds). Default value: 60_000 (1 minute).
+    /// Gets or sets the Vault token renew rate (in milliseconds). Default value: 60_000 (1 minute).
     /// </summary>
     public int TokenRenewRate { get; set; } = 60_000;
 

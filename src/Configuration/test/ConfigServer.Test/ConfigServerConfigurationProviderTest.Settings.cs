@@ -16,6 +16,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         var options = new ConfigServerClientOptions();
         using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
 
         string? expectedAppName = Assembly.GetEntryAssembly()!.GetName().Name;
         TestHelper.VerifyDefaults(provider.ClientOptions, expectedAppName, "Production");
@@ -24,10 +25,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public void SourceConstructor_WithDefaults_InitializesWithDefaultSettings()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
         var options = new ConfigServerClientOptions();
-        var source = new ConfigServerConfigurationSource(options, configuration, null, null, NullLoggerFactory.Instance);
+        var source = new ConfigServerConfigurationSource(options, [], null, null, null, NullLoggerFactory.Instance);
         using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
+        provider.Load();
 
         string? expectedAppName = Assembly.GetEntryAssembly()!.GetName().Name;
         TestHelper.VerifyDefaults(provider.ClientOptions, expectedAppName, "Production");
@@ -41,11 +42,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
             ["spring:cloud:config:timeout"] = "30000"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(appSettings);
+        builder.AddConfigServer();
+        IConfigurationRoot configuration = builder.Build();
 
-        var options = new ConfigServerClientOptions();
-        var source = new ConfigServerConfigurationSource(options, configuration, null, null, NullLoggerFactory.Instance);
-        using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
+        ConfigServerConfigurationProvider provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
         using HttpClient httpClient = provider.CreateHttpClient(provider.ClientOptions);
 
         httpClient.Should().NotBeNull();
@@ -80,6 +82,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
+
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), null).ToString();
 
         uri.Should().Be($"{options.Uri}/{options.Name}/{options.Environment}");
@@ -96,6 +100,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
+
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), options.Label).ToString();
 
         uri.Should().Be($"{options.Uri}/{options.Name}/{options.Environment}/{options.Label}");
@@ -112,6 +118,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
+
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), options.Label).ToString();
 
         uri.Should().Be($"{options.Uri}/{options.Name}/{options.Environment}/myLabel(_)version");
@@ -128,6 +136,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
+
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null).ToString();
 
         uri.Should().Be($"http://localhost:9999/myPath/path/{options.Name}/{options.Environment}");
@@ -144,6 +154,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
+
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null).ToString();
 
         uri.Should().Be($"http://localhost:9999/myPath/path/{options.Name}/{options.Environment}");
@@ -160,6 +172,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
+
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null).ToString();
 
         uri.Should().Be($"http://localhost:9999/{options.Name}/{options.Environment}");
@@ -176,6 +190,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
+
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null).ToString();
 
         uri.Should().Be($"http://localhost:9999/{options.Name}/{options.Environment}");
@@ -192,6 +208,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
+
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), options.Label).ToString();
 
         uri.Should().Be("http://localhost:8888/myName/one%2Ctwo/demo");
@@ -210,6 +228,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
+
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), options.Label).ToString();
 
         uri.Should().Be(

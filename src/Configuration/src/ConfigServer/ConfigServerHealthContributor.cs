@@ -76,10 +76,10 @@ internal sealed partial class ConfigServerHealthContributor : IHealthContributor
 
         foreach (PropertySource source in sources)
         {
-            LogReturningPropertySource(source.Name);
             names.Add(source.Name);
         }
 
+        LogReturningPropertySources(string.Join(", ", names));
         health.Details.Add("propertySources", names);
     }
 
@@ -92,7 +92,17 @@ internal sealed partial class ConfigServerHealthContributor : IHealthContributor
         {
             LastAccess = currentTime;
             LogCacheStale();
-            Cached = await provider.LoadInternalAsync(optionsSnapshot, false, cancellationToken);
+
+            try
+            {
+                Cached = await provider.LoadInternalAsync(optionsSnapshot, false, cancellationToken);
+            }
+            catch (ConfigServerException exception)
+            {
+                LogFetchFailed(exception);
+                Cached = null;
+                return null;
+            }
         }
 
         return Cached?.PropertySources;
@@ -114,14 +124,17 @@ internal sealed partial class ConfigServerHealthContributor : IHealthContributor
     [LoggerMessage(Level = LogLevel.Debug, Message = "No Config Server provider found.")]
     private partial void LogNoProviderFound();
 
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Failed fetching remote configuration from server(s).")]
+    private partial void LogFetchFailed(Exception exception);
+
     [LoggerMessage(Level = LogLevel.Debug, Message = "No property sources found.")]
     private partial void LogNoPropertySourcesFound();
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Config Server health check returning UP.")]
     private partial void LogHealthCheckReturningUp();
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Returning property source {PropertySource}.")]
-    private partial void LogReturningPropertySource(string? propertySource);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Returning property sources: {PropertySources}.")]
+    private partial void LogReturningPropertySources(string propertySources);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Cache stale, fetching config server health.")]
     private partial void LogCacheStale();

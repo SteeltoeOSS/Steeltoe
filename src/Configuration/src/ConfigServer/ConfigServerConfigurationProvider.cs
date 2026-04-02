@@ -59,6 +59,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     private Timer? _vaultRenewTimer;
     private volatile DiscoveryLookupResult? _lastDiscoveryLookupResult;
     private volatile ConfigServerClientOptions _clientOptions;
+    private long _isReload;
 
     internal static JsonSerializerOptions SerializerOptions { get; } = new()
     {
@@ -96,7 +97,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _logger = loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
-        _shutdownToken = _shutdownTokenSource.Token;
+        _shutdownToken = _shutdownTokenSource.Token; // Don't inline: the token survives disposal, while the source does not.
         IConfiguration effectiveConfiguration = configuration ?? new ConfigurationBuilder().Build();
         _configurer = new ConfigureConfigServerClientOptions(effectiveConfiguration, configure);
         _configServerDiscoveryService = new ConfigServerDiscoveryService(effectiveConfiguration, loggerFactory);
@@ -115,14 +116,24 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             _disposeHttpClientHandler = true;
         }
 
-        OnSettingsChanged();
-        _changeTokenRegistration = ChangeToken.OnChange(effectiveConfiguration.GetReloadToken, OnSettingsChanged);
+        _changeTokenRegistration = ChangeToken.OnChange(effectiveConfiguration.GetReloadToken, () => OnSettingsChanged(true));
     }
 
-    private void OnSettingsChanged()
+    private void OnSettingsChanged(bool skipTimerDueTime)
     {
+        LogEnteringOnSettingsChanged();
+
         ConfigServerClientOptions newOptions = _initialOptions.Clone();
-        _configurer.Configure(newOptions);
+
+        try
+        {
+            _configurer.Configure(newOptions);
+        }
+        catch (Exception exception)
+        {
+            LogBindSettingsFailed(exception);
+            throw;
+        }
 
         lock (_lifecycleLock)
         {
@@ -136,12 +147,12 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
             _clientOptions = newOptions;
 
-            UpdateConfigurationReloadTimer(newOptions, previousPollingInterval);
-            UpdateVaultRenewTimer(newOptions, previousTokenRenewRate);
+            UpdateConfigurationReloadTimer(newOptions, previousPollingInterval, skipTimerDueTime);
+            UpdateVaultRenewTimer(newOptions, previousTokenRenewRate, skipTimerDueTime);
         }
     }
 
-    private void UpdateConfigurationReloadTimer(ConfigServerClientOptions optionsSnapshot, TimeSpan previousPollingInterval)
+    private void UpdateConfigurationReloadTimer(ConfigServerClientOptions optionsSnapshot, TimeSpan previousPollingInterval, bool skipDueTime)
     {
         if (optionsSnapshot.PollingInterval == TimeSpan.Zero || !optionsSnapshot.Enabled)
         {
@@ -150,15 +161,16 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
         else if (_configurationReloadTimer == null)
         {
-            _configurationReloadTimer = new Timer(_ => ConfigurationReloadTimerTick(), null, TimeSpan.Zero, optionsSnapshot.PollingInterval);
+            _configurationReloadTimer = new Timer(_ => ConfigurationReloadTimerTick(), null, skipDueTime ? TimeSpan.Zero : optionsSnapshot.PollingInterval,
+                optionsSnapshot.PollingInterval);
         }
         else if (previousPollingInterval != optionsSnapshot.PollingInterval)
         {
-            _configurationReloadTimer.Change(TimeSpan.Zero, optionsSnapshot.PollingInterval);
+            _configurationReloadTimer.Change(skipDueTime ? TimeSpan.Zero : optionsSnapshot.PollingInterval, optionsSnapshot.PollingInterval);
         }
     }
 
-    private void UpdateVaultRenewTimer(ConfigServerClientOptions optionsSnapshot, int previousTokenRenewRate)
+    private void UpdateVaultRenewTimer(ConfigServerClientOptions optionsSnapshot, int previousTokenRenewRate, bool skipDueTime)
     {
         if (string.IsNullOrEmpty(optionsSnapshot.Token) || optionsSnapshot.DisableTokenRenewal ||
             optionsSnapshot is not { Uri: not null, IsMultiServerConfiguration: false })
@@ -168,12 +180,13 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
         else if (_vaultRenewTimer == null)
         {
-            _vaultRenewTimer = new Timer(_ => VaultRenewTimerTick(), null, TimeSpan.FromMilliseconds(optionsSnapshot.TokenRenewRate),
-                TimeSpan.FromMilliseconds(optionsSnapshot.TokenRenewRate));
+            TimeSpan refreshInterval = TimeSpan.FromMilliseconds(optionsSnapshot.TokenRenewRate);
+            _vaultRenewTimer = new Timer(_ => VaultRenewTimerTick(), null, skipDueTime ? TimeSpan.Zero : refreshInterval, refreshInterval);
         }
         else if (previousTokenRenewRate != optionsSnapshot.TokenRenewRate)
         {
-            _vaultRenewTimer.Change(TimeSpan.FromMilliseconds(optionsSnapshot.TokenRenewRate), TimeSpan.FromMilliseconds(optionsSnapshot.TokenRenewRate));
+            TimeSpan refreshInterval = TimeSpan.FromMilliseconds(optionsSnapshot.TokenRenewRate);
+            _vaultRenewTimer.Change(skipDueTime ? TimeSpan.Zero : refreshInterval, refreshInterval);
         }
     }
 
@@ -198,7 +211,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
                 return;
             }
 
-            LogConfigurationReloadLockObtained();
+            LogConfigurationReloadCycleLockObtained();
             ConfigServerClientOptions optionsSnapshot = ClientOptions;
 
 #pragma warning disable S4462 // Calls to "async" methods should not be blocking
@@ -211,9 +224,9 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
         catch (Exception exception)
         {
-            if (!exception.IsCancellation())
+            if (!_shutdownToken.IsCancellationRequested)
             {
-                LogFailedToReloadConfiguration(exception);
+                LogConfigurationReloadCycleFailed(exception);
             }
         }
         finally
@@ -250,7 +263,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
                 return;
             }
 
-            LogVaultRenewLockObtained();
+            LogVaultRenewCycleLockObtained();
 
 #pragma warning disable S4462 // Calls to "async" methods should not be blocking
             // Justification: Configuration sources and providers don't support async.
@@ -261,9 +274,9 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
         catch (Exception exception)
         {
-            if (!exception.IsCancellation())
+            if (!_shutdownToken.IsCancellationRequested)
             {
-                LogFailedToRenewVaultToken(exception);
+                LogVaultRenewCycleFailed(exception);
             }
         }
         finally
@@ -284,16 +297,34 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     /// </summary>
     public override void Load()
     {
+        long previousIsReload = Interlocked.CompareExchange(ref _isReload, 1, 0);
+
+        if (previousIsReload == 0)
+        {
+            OnSettingsChanged(false);
+        }
+
+        ConfigServerClientOptions optionsSnapshot = ClientOptions;
+
         try
         {
 #pragma warning disable S4462 // Calls to "async" methods should not be blocking
             // Justification: Configuration sources and providers don't support async.
-            LoadInternalAsync(ClientOptions, true, _shutdownToken).GetAwaiter().GetResult();
+            LoadInternalAsync(optionsSnapshot, true, _shutdownToken).GetAwaiter().GetResult();
 #pragma warning restore S4462 // Calls to "async" methods should not be blocking
         }
         catch (OperationCanceledException) when (_shutdownToken.IsCancellationRequested)
         {
             // Expected during disposal; silently ignore.
+        }
+        catch (ConfigServerException exception)
+        {
+            if (optionsSnapshot.FailFast)
+            {
+                throw;
+            }
+
+            LogFetchingRemoteConfigurationFailed(exception);
         }
     }
 
@@ -312,18 +343,17 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         {
             int attempts = 0;
             int backOff = optionsSnapshot.Retry.InitialInterval;
+            List<Exception> errors = [];
 
             do
             {
-                LogFetchingConfiguration();
-
                 try
                 {
                     return await DoLoadAsync(optionsSnapshot, updateDictionary, cancellationToken);
                 }
                 catch (ConfigServerException exception)
                 {
-                    LogFailedFetchingConfiguration(exception);
+                    errors.Add(exception);
                     attempts++;
 
                     if (attempts < optionsSnapshot.Retry.MaxAttempts)
@@ -334,19 +364,21 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
                     }
                     else
                     {
-                        throw;
+                        throw new ConfigServerException($"Failed fetching remote configuration from server(s) after {attempts} attempts.",
+                            new AggregateException(null, errors));
                     }
                 }
             }
             while (true);
         }
 
-        LogFetchingConfiguration();
         return await DoLoadAsync(optionsSnapshot, updateDictionary, cancellationToken);
     }
 
     internal async Task<ConfigEnvironment?> DoLoadAsync(ConfigServerClientOptions optionsSnapshot, bool updateDictionary, CancellationToken cancellationToken)
     {
+        LogFetchingRemoteConfiguration();
+
         ApplyLastDiscoveryLookupResultToClientOptions(optionsSnapshot);
 
         Exception? error = null;
@@ -416,15 +448,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             error = exception;
         }
 
-        LogCouldNotLocatePropertySource(error);
-
-        if (optionsSnapshot.FailFast)
-        {
-            LogFailFastEnabled(error);
-            throw new ConfigServerException("Could not locate PropertySource, fail fast property is set, failing", error);
-        }
-
-        return null;
+        throw new ConfigServerException("Failed fetching remote configuration from server(s).", error);
     }
 
     internal void ApplyLastDiscoveryLookupResultToClientOptions(ConfigServerClientOptions optionsSnapshot)
@@ -897,6 +921,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
                 return;
             }
 
+            LogDisposing();
             _shutdownTokenSource.Cancel();
             _changeTokenRegistration.Dispose();
             ShutdownTimers();
@@ -906,6 +931,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
     private void ShutdownTimers()
     {
+        // This is fast because in-flight timer callbacks terminate quickly: outstanding HTTP requests are canceled via shutdown token.
+
         using var reloadTimerStopped = new ManualResetEvent(false);
         using var vaultTimerStopped = new ManualResetEvent(false);
 
@@ -928,66 +955,66 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         _vaultRenewTimer = null;
     }
 
-    [LoggerMessage(Level = LogLevel.Trace, Message = "Entering polling configuration reload cycle.")]
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Rebinding options after outer configuration change.")]
+    private partial void LogEnteringOnSettingsChanged();
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to bind Config Server options from configuration.")]
+    private partial void LogBindSettingsFailed(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Entering remote configuration reload polling cycle.")]
     private partial void LogEnteringConfigurationReloadCycle();
 
-    [LoggerMessage(Level = LogLevel.Trace, Message = "Polling configuration reload lock obtained.")]
-    private partial void LogConfigurationReloadLockObtained();
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Remote configuration reload polling lock obtained.")]
+    private partial void LogConfigurationReloadCycleLockObtained();
 
-    [LoggerMessage(Level = LogLevel.Trace, Message = "Previous polling configuration reload cycle is still running, or already disposed; skipping this cycle.")]
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Previous remote configuration reload cycle is still running, or already disposed; skipping this cycle.")]
     private partial void LogSkippingConfigurationReloadCycle();
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to reload configuration during polling.")]
-    private partial void LogFailedToReloadConfiguration(Exception exception);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to reload remote configuration during polling.")]
+    private partial void LogConfigurationReloadCycleFailed(Exception exception);
 
-    [LoggerMessage(Level = LogLevel.Trace, Message = "Polling configuration reload cycle completed, releasing lock.")]
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Remote configuration reload polling cycle completed, releasing lock.")]
     private partial void LogConfigurationReloadCycleCompleted();
 
-    [LoggerMessage(Level = LogLevel.Trace, Message = "Entering Vault token renewal cycle.")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Entering Vault token renewal cycle.")]
     private partial void LogEnteringVaultRenewCycle();
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Vault token renewal lock obtained.")]
-    private partial void LogVaultRenewLockObtained();
+    private partial void LogVaultRenewCycleLockObtained();
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Previous Vault token renewal cycle is still running, or already disposed; skipping this cycle.")]
     private partial void LogSkippingVaultRenewCycle();
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to renew Vault token.")]
-    private partial void LogFailedToRenewVaultToken(Exception exception);
+    private partial void LogVaultRenewCycleFailed(Exception exception);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Vault token renewal cycle completed, releasing lock.")]
     private partial void LogVaultRenewCycleCompleted();
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Config Server client disabled, not fetching configuration.")]
+    [LoggerMessage(Level = LogLevel.Information, Message = "Config Server client disabled, not fetching remote configuration.")]
     private partial void LogConfigServerClientDisabled();
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Fetching configuration from server(s).")]
-    private partial void LogFetchingConfiguration();
-
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed fetching configuration from server(s).")]
-    private partial void LogFailedFetchingConfiguration(Exception exception);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Fetching remote configuration from server(s).")]
+    private partial void LogFetchingRemoteConfiguration();
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Processing label '{Label}'.")]
     private partial void LogProcessingLabel(string? label);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Multiple Config Server Uris listed.")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Multiple Config Server uris listed.")]
     private partial void LogMultipleConfigServerUris();
 
     [LoggerMessage(Level = LogLevel.Debug,
         Message = "Located environment with name {Name}, profiles {Profiles}, label {Label}, version {Version} and state {State}.")]
     private partial void LogEnvironmentLocated(string? name, string profiles, string? label, string? version, string? state);
 
-    [LoggerMessage(Level = LogLevel.Trace, Message = "Data has changed, raising configuration reload.")]
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Remote data has changed, raising configuration reload.")]
     private partial void LogDataChanged();
 
-    [LoggerMessage(Level = LogLevel.Trace, Message = "Data has not changed.")]
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Remote data has not changed.")]
     private partial void LogDataNotChanged();
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Could not locate property source.")]
-    private partial void LogCouldNotLocatePropertySource(Exception? error);
-
-    [LoggerMessage(Level = LogLevel.Trace, Message = "Failure with FailFast enabled, throwing ConfigServerException.")]
-    private partial void LogFailFastEnabled(Exception? error);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed fetching remote configuration from server(s).")]
+    private partial void LogFetchingRemoteConfigurationFailed(Exception? error);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Adding credentials from '{RequestUri}' to Authorization header.")]
     private partial void LogAddingCredentials(string requestUri);
@@ -1027,6 +1054,9 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Unable to renew Vault token {Token}. The token is likely invalid or has expired.")]
     private partial void LogUnableToRenewVaultToken(Exception exception, string token);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Disposing Config Server configuration provider.")]
+    private partial void LogDisposing();
 
     private sealed record DiscoveryLookupResult(string ConfigServerUri, string? Username, string? Password);
 }

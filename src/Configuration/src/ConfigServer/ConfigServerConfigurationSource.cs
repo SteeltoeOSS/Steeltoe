@@ -12,8 +12,8 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
 {
     private readonly ILoggerFactory _loggerFactory;
 
-    internal List<IConfigurationSource> Sources { get; } = [];
-    internal Dictionary<string, object> Properties { get; } = [];
+    internal List<IConfigurationSource> Sources { get; }
+    internal Dictionary<string, object> Properties { get; }
 
     /// <summary>
     /// Gets the initial options the client uses to contact Config Server.
@@ -35,39 +35,6 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// responsible for handler disposal.
     /// </summary>
     public Func<HttpClientHandler>? CreateHttpClientHandler { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
-    /// </summary>
-    /// <param name="defaultOptions">
-    /// The initial options the client uses to contact Config Server.
-    /// </param>
-    /// <param name="configuration">
-    /// The configuration the client uses to contact Config Server. Entries overrule <paramref name="defaultOptions" />.
-    /// </param>
-    /// <param name="configure">
-    /// An optional delegate that further configures options from code, after settings from <paramref name="configuration" /> have been applied.
-    /// </param>
-    /// <param name="createHttpClientHandler">
-    /// An optional factory to create the HTTP client handler, used to mock HTTP requests to Config Server in tests. When provided, the caller is responsible
-    /// for handler disposal.
-    /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
-    public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IConfiguration configuration, Action<ConfigServerClientOptions>? configure,
-        Func<HttpClientHandler>? createHttpClientHandler, ILoggerFactory loggerFactory)
-    {
-        ArgumentNullException.ThrowIfNull(defaultOptions);
-        ArgumentNullException.ThrowIfNull(configuration);
-        ArgumentNullException.ThrowIfNull(loggerFactory);
-
-        DefaultOptions = defaultOptions;
-        Configure = configure;
-        CreateHttpClientHandler = createHttpClientHandler;
-        Configuration = configuration;
-        _loggerFactory = loggerFactory;
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
@@ -102,11 +69,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         Sources = sources.ToList();
-
-        if (properties != null)
-        {
-            Properties = new Dictionary<string, object>(properties);
-        }
+        Properties = properties != null ? new Dictionary<string, object>(properties) : [];
 
         DefaultOptions = defaultOptions;
         Configure = configure;
@@ -125,26 +88,19 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// </returns>
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        if (Configuration == null)
+        var configurationBuilder = new ConfigurationBuilder();
+
+        foreach (IConfigurationSource source in Sources)
         {
-            // Create our own builder to build sources
-            var configurationBuilder = new ConfigurationBuilder();
-
-            foreach (IConfigurationSource source in Sources)
-            {
-                configurationBuilder.Add(source);
-            }
-
-            // Use properties provided
-            foreach (KeyValuePair<string, object> pair in Properties)
-            {
-                configurationBuilder.Properties.Add(pair);
-            }
-
-            // Create configuration
-            Configuration = configurationBuilder.Build();
+            configurationBuilder.Add(source);
         }
 
+        foreach (KeyValuePair<string, object> pair in Properties)
+        {
+            configurationBuilder.Properties.Add(pair);
+        }
+
+        Configuration = configurationBuilder.Build();
         return new ConfigServerConfigurationProvider(this, _loggerFactory);
     }
 }

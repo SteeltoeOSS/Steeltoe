@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Configuration.Placeholder;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
@@ -333,12 +334,15 @@ public sealed class ConfigServerClientOptionsTest
 
         fileProvider.IncludeAppSettingsJsonFile("""
             {
+              "custom": {
+                "profileName": "example-profile"
+              },
               "spring": {
                 "cloud": {
                   "config": {
                     "uri": "https://config.server.com:9999",
                     "name": "example-app-name",
-                    "env": "example-profile",
+                    "env": "${custom:profileName}",
                     "timeout": 30000
                   }
                 }
@@ -361,6 +365,7 @@ public sealed class ConfigServerClientOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
+        configurationBuilder.AddPlaceholderResolver();
         // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(initialOptions, configureOptions, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
@@ -395,12 +400,15 @@ public sealed class ConfigServerClientOptionsTest
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
-              "spring": {
+              "custom": {
+              "profileName": "example-profile"
+            },
+            "spring": {
                 "cloud": {
                   "config": {
                     "uri": "https://alternate-config.server.com:7777",
                     "name": "alternate-name",
-                    "env": "example-profile",
+                    "env": "${custom:profileName}",
                     "timeout": 15000,
                     "label": "alternate-label"
                   }
