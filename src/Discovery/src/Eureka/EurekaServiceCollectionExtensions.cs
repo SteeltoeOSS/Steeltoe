@@ -81,11 +81,11 @@ public static class EurekaServiceCollectionExtensions
 
     private static void ConfigureEurekaInstanceOptions(IServiceCollection services)
     {
+        DynamicPortAssignmentHostedService.Wire(services);
+
         services.AddOptions<EurekaInstanceOptions>().BindConfiguration(EurekaInstanceOptions.ConfigurationPrefix);
         services.AddOptions<InetOptions>().BindConfiguration(InetOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<EurekaInstanceOptions>, PostConfigureEurekaInstanceOptions>();
-
-        DynamicPortAssignmentHostedService.Wire(services);
     }
 
     private static void AddEurekaServices(IServiceCollection services)

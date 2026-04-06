@@ -136,7 +136,7 @@ internal sealed class DynamicPortAssignmentHostedService : IHostedLifecycleServi
         {
             ArgumentNullException.ThrowIfNull(options);
 
-            if (_listenState.ListenOnAddresses != null)
+            if (_listenState.ListenOnAddresses != null && options.ShouldSetPortsFromListenAddresses)
             {
                 options.SetPortsFromListenAddresses(_listenState.ListenOnAddresses, "address features", _optionsLogger);
             }

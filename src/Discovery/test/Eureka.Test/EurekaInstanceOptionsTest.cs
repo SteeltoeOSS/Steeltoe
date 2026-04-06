@@ -43,6 +43,7 @@ public sealed class EurekaInstanceOptionsTest
         instanceOptions.SecureHealthCheckUrl.Should().BeNull();
         instanceOptions.AutoScalingGroupName.Should().BeNull();
         instanceOptions.DataCenterInfo.Name.Should().Be(DataCenterName.MyOwn);
+        instanceOptions.UseAspNetCoreUrls.Should().BeTrue();
         instanceOptions.UseNetworkInterfaces.Should().BeFalse();
     }
 
