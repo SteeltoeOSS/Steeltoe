@@ -6,12 +6,12 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 
 internal static class TestHelper
 {
-    public static void VerifyDefaults(ConfigServerClientOptions options, string? expectedAppName)
+    public static void VerifyDefaults(ConfigServerClientOptions options, string? expectedAppName, string? expectedEnvironment)
     {
         options.Enabled.Should().BeTrue();
         options.FailFast.Should().BeFalse();
         options.Uri.Should().Be("http://localhost:8888");
-        options.Environment.Should().Be("Production");
+        options.Environment.Should().Be(expectedEnvironment);
         options.AccessTokenUri.Should().BeNull();
         options.ClientId.Should().BeNull();
         options.ClientSecret.Should().BeNull();

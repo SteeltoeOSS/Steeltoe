@@ -10,36 +10,37 @@ namespace Steeltoe.Configuration.ConfigServer;
 
 internal static class HostBuilderWrapperExtensions
 {
-    public static HostBuilderWrapper AddConfigServer(this HostBuilderWrapper wrapper, ILoggerFactory loggerFactory)
+    public static HostBuilderWrapper AddConfigServer(this HostBuilderWrapper wrapper, Action<ConfigServerClientOptions>? configure,
+        ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(wrapper);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         wrapper.ConfigureAppConfiguration((context, builder) =>
         {
-            ConfigServerClientOptions options = CreateOptions(context.HostEnvironment);
-            builder.AddConfigServer(options, loggerFactory);
+            Action<ConfigServerClientOptions> configureOptions = CreateOptionsConfigurer(configure, context.HostEnvironment);
+            builder.AddConfigServer(configureOptions, loggerFactory);
         });
 
-        wrapper.ConfigureServices(services => services.AddConfigServerServices());
+        wrapper.ConfigureServices((context, services) =>
+        {
+            Action<ConfigServerClientOptions> configureOptions = CreateOptionsConfigurer(configure, context.HostEnvironment);
+            services.AddConfigServerServices(configureOptions);
+        });
 
         return wrapper;
     }
 
-    private static ConfigServerClientOptions CreateOptions(IHostEnvironment hostEnvironment)
+    private static Action<ConfigServerClientOptions> CreateOptionsConfigurer(Action<ConfigServerClientOptions>? configure, IHostEnvironment hostEnvironment)
     {
-        var options = new ConfigServerClientOptions();
-
-        if (!string.IsNullOrEmpty(hostEnvironment.EnvironmentName) && hostEnvironment.EnvironmentName != "Production")
+        return options =>
         {
-            // Only take IHostEnvironment.EnvironmentName when it was explicitly set (it defaults to "Production").
-            // In the default case, we want the various other ways of setting the environment name to kick in.
-            options.Environment = hostEnvironment.EnvironmentName;
-        }
+            configure?.Invoke(options);
 
-        // Intentionally NOT taking hostEnvironment.ApplicationName here, because that would disable the various other ways of setting the application name.
-        // Ultimately, its value ends up in configuration key "applicationName", whose value is used if nothing else is configured.
-
-        return options;
+            if (!string.IsNullOrEmpty(hostEnvironment.EnvironmentName))
+            {
+                options.Environment ??= hostEnvironment.EnvironmentName;
+            }
+        };
     }
 }

@@ -102,8 +102,8 @@ public sealed class ConfigServerHostBuilderExtensionsTest
             provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
         }
 
-        FieldInfo refreshTimerField = provider.GetType().GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        refreshTimerField.GetValue(provider).Should().BeNull();
+        FieldInfo reloadTimerField = provider.GetType().GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        reloadTimerField.GetValue(provider).Should().BeNull();
     }
 
     [Fact]
@@ -114,20 +114,20 @@ public sealed class ConfigServerHostBuilderExtensionsTest
             ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString()
         };
 
-        WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-        builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        builder.AddConfigServer();
+        WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
+        hostBuilder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        hostBuilder.AddConfigServer();
 
         ConfigServerConfigurationProvider provider;
 
-        using (IWebHost webHost = builder.Build())
+        using (IWebHost webHost = hostBuilder.Build())
         {
             var configurationRoot = (IConfigurationRoot)webHost.Services.GetRequiredService<IConfiguration>();
             provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
         }
 
-        FieldInfo refreshTimerField = provider.GetType().GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        refreshTimerField.GetValue(provider).Should().BeNull();
+        FieldInfo reloadTimerField = provider.GetType().GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        reloadTimerField.GetValue(provider).Should().BeNull();
     }
 
     [Fact]
@@ -150,8 +150,8 @@ public sealed class ConfigServerHostBuilderExtensionsTest
             _ = host.Services.GetRequiredService<IConfiguration>();
         }
 
-        FieldInfo refreshTimerField = provider.GetType().GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        refreshTimerField.GetValue(provider).Should().BeNull();
+        FieldInfo reloadTimerField = provider.GetType().GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        reloadTimerField.GetValue(provider).Should().BeNull();
     }
 
     [Fact]
@@ -174,8 +174,8 @@ public sealed class ConfigServerHostBuilderExtensionsTest
             _ = host.Services.GetRequiredService<IConfiguration>();
         }
 
-        FieldInfo refreshTimerField = provider.GetType().GetField("_refreshTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        refreshTimerField.GetValue(provider).Should().BeNull();
+        FieldInfo reloadTimerField = provider.GetType().GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        reloadTimerField.GetValue(provider).Should().BeNull();
     }
 
     [Fact]

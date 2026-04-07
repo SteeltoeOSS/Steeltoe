@@ -12,7 +12,7 @@ builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
 {
     // This project intentionally does NOT include appsettings*.json files, because they get copied to test projects
     // that reference this project, and that affects test outcomes. For example, setting the minimum log level
-    // to Trace on WebApplicationBuilder wouldn't work, because these files overrule log levels.
+    // to Trace on WebApplicationBuilder wouldn't work, because these files override log levels.
 
     ["DetailedErrors"] = builder.Environment.IsDevelopment() ? "true" : "false",
     ["Logging:LogLevel:Default"] = "Information",

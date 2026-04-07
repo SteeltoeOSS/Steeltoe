@@ -5,23 +5,26 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.Certificates;
 using Steeltoe.Configuration.CloudFoundry;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
 internal sealed class ConfigureConfigServerClientOptions : IConfigureOptions<ConfigServerClientOptions>
 {
-    private const string VcapServicesConfigServerCredentialsPrefix = "vcap:services:p-config-server:0:credentials";
-    private const string VcapServicesConfigServer30CredentialsPrefix = "vcap:services:p.config-server:0:credentials";
+    private const string VcapServicesConfigServerVersion2CredentialsPrefix = "vcap:services:p-config-server:0:credentials";
+    private const string VcapServicesConfigServerVersion3CredentialsPrefix = "vcap:services:p.config-server:0:credentials";
     private const string VcapServicesConfigServerCredentialsAltPrefix = "vcap:services:config-server:0:credentials";
 
     private readonly IConfiguration _configuration;
+    private readonly Action<ConfigServerClientOptions>? _configure;
 
-    public ConfigureConfigServerClientOptions(IConfiguration configuration)
+    public ConfigureConfigServerClientOptions(IConfiguration configuration, Action<ConfigServerClientOptions>? configure)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
         _configuration = configuration;
+        _configure = configure;
     }
 
     public void Configure(ConfigServerClientOptions options)
@@ -29,22 +32,46 @@ internal sealed class ConfigureConfigServerClientOptions : IConfigureOptions<Con
         ArgumentNullException.ThrowIfNull(options);
 
         _configuration.GetSection(ConfigServerClientOptions.ConfigurationPrefix).Bind(options);
+        _configure?.Invoke(options);
+
         OverrideFromVcapServicesCredentials(options);
+        ConfigureClientCertificate(options);
 
         options.Name ??= GetApplicationName();
+        options.Environment ??= "Production";
     }
 
     private void OverrideFromVcapServicesCredentials(ConfigServerClientOptions options)
     {
         VcapServicesConfigServerCredentialsOptions credentialsOptions = new();
         _configuration.GetSection(VcapServicesConfigServerCredentialsAltPrefix).Bind(credentialsOptions);
-        _configuration.GetSection(VcapServicesConfigServer30CredentialsPrefix).Bind(credentialsOptions);
-        _configuration.GetSection(VcapServicesConfigServerCredentialsPrefix).Bind(credentialsOptions);
+        _configuration.GetSection(VcapServicesConfigServerVersion2CredentialsPrefix).Bind(credentialsOptions);
+        _configuration.GetSection(VcapServicesConfigServerVersion3CredentialsPrefix).Bind(credentialsOptions);
 
         options.Uri = credentialsOptions.Uri ?? options.Uri;
         options.ClientId = credentialsOptions.ClientId ?? options.ClientId;
         options.ClientSecret = credentialsOptions.ClientSecret ?? options.ClientSecret;
         options.AccessTokenUri = credentialsOptions.AccessTokenUri ?? options.AccessTokenUri;
+    }
+
+    private void ConfigureClientCertificate(ConfigServerClientOptions options)
+    {
+        if (options.ClientCertificate.Certificate != null)
+        {
+            return;
+        }
+
+        var certificateConfigurer = new ConfigureCertificateOptions(_configuration);
+
+        var certificateOptions = new CertificateOptions();
+        certificateConfigurer.Configure("ConfigServer", certificateOptions);
+
+        if (certificateOptions.Certificate == null)
+        {
+            certificateConfigurer.Configure(certificateOptions);
+        }
+
+        options.ClientCertificate = certificateOptions.Clone();
     }
 
     private string? GetApplicationName()

@@ -400,19 +400,17 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
     {
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Logging": {
-            "LogLevel": {
-              "A": "Warning"
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Logging": {
+                "LogLevel": {
+                  "A": "Warning"
+                }
+              }
             }
-          }
-        }
-        """);
+            """);
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder =>
-            configurationBuilder.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true));
-
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider));
         DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Warning);
@@ -426,16 +424,16 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
         await testContext.Self.AssertMinLevelAsync(LogLevel.Error, LogLevel.Warning);
         await testContext.Child.AssertMinLevelAsync(LogLevel.Error);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Logging": {
-            "LogLevel": {
-              "A": "Trace",
-              "A.B.C": "Debug"
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "Logging": {
+                "LogLevel": {
+                  "A": "Trace",
+                  "A.B.C": "Debug"
+                }
+              }
             }
-          }
-        }
-        """);
+            """);
 
         fileProvider.NotifyChanged();
         testContext.Refresh();

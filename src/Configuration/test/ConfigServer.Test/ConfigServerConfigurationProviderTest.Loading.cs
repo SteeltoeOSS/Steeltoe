@@ -2,12 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
+using System.Net.Sockets;
+using System.Reflection;
+using System.Text;
 using FluentAssertions.Extensions;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using RichardSzalay.MockHttp;
 using Steeltoe.Common.TestResources;
+
+// ReSharper disable AccessToDisposedClosure
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
@@ -22,11 +27,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         var httpClientHandler = new SlowHttpClientHandler(1.Seconds(), new HttpResponseMessage());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        provider.Load();
+
         List<Uri> requestUris = [new("http://localhost:9999/app/profile")];
 
-        // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.RemoteLoadAsync(requestUris, null, TestContext.Current.CancellationToken);
+        Func<Task> action = async () => await provider.RemoteLoadAsync(provider.ClientOptions, requestUris, null, TestContext.Current.CancellationToken);
 
         (await action.Should().ThrowExactlyAsync<TaskCanceledException>()).WithInnerExceptionExactly<TimeoutException>();
     }
@@ -34,59 +40,42 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task RemoteLoadAsync_ConfigServerReturnsGreaterThanEqualBadRequest()
     {
-        using var startup = new TestConfigServerStartup();
-        startup.ReturnStatus = [500];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond(HttpStatusCode.InternalServerError);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+
+        Func<Task> action = async () => await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<HttpRequestException>();
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
+        handler.Mock.VerifyNoOutstandingExpectation();
     }
 
     [Fact]
     public async Task RemoteLoadAsync_ConfigServerReturnsLessThanBadRequest()
     {
-        using var startup = new TestConfigServerStartup();
-        startup.ReturnStatus = [204];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        ConfigEnvironment? result = await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond(HttpStatusCode.NoContent);
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+
+        ConfigEnvironment? result = await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
         result.Should().BeNull();
     }
 
     [Fact]
-    public async Task Create_WithPollingTimer()
+    public async Task Create_WithConfigurationReloadTimer()
     {
         await TestFailureTracer.CaptureAsync(async tracer =>
         {
-            const string environment = """
+            const string responseJson = """
                 {
                   "name": "test-name",
                   "profiles": [
@@ -97,18 +86,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
                   "propertySources": []
                 }
                 """;
-
-            using var startup = new TestConfigServerStartup();
-            startup.Response = environment;
-            startup.ReturnStatus = [.. Enumerable.Repeat(200, 100)];
-            startup.Label = "test-label";
-
-            await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-            startup.Configure(app);
-            await app.StartAsync(TestContext.Current.CancellationToken);
-
-            using TestServer server = app.GetTestServer();
-            server.BaseAddress = new Uri("http://localhost:8888");
 
             var options = new ConfigServerClientOptions
             {
@@ -117,28 +94,45 @@ public sealed partial class ConfigServerConfigurationProviderTest
                 Label = "label,test-label"
             };
 
-            using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-            using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, tracer.LoggerFactory);
+            using var handler = new DelegateToMockHttpClientHandler();
+            handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production/label").Respond(HttpStatusCode.NotFound);
 
-            bool firstRequestCompleted = startup.WaitForFirstRequest(2.Seconds());
+            using var firstRequestCountdownEvent = new CountdownEvent(1);
+
+            MockedRequest testLabelRequest = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production/test-label").Respond(_ =>
+            {
+                if (!firstRequestCountdownEvent.IsSet)
+                {
+                    firstRequestCountdownEvent.Signal();
+                }
+
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(responseJson, Encoding.UTF8, "application/json")
+                };
+            });
+
+            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, tracer.LoggerFactory);
+            provider.Load();
+
+            bool firstRequestCompleted = firstRequestCountdownEvent.Wait(2.Seconds(), TestContext.Current.CancellationToken);
             firstRequestCompleted.Should().BeTrue();
 
-            startup.RequestCount.Should().BeGreaterThanOrEqualTo(1);
-            startup.LastRequest.Should().NotBeNull();
+            handler.Mock.GetMatchCount(testLabelRequest).Should().BeGreaterThanOrEqualTo(1);
 
             await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-            startup.RequestCount.Should().BeGreaterThanOrEqualTo(2);
+            handler.Mock.GetMatchCount(testLabelRequest).Should().BeGreaterThanOrEqualTo(2);
             provider.GetReloadToken().HasChanged.Should().BeFalse();
         });
     }
 
     [Fact]
-    public async Task Create_FailFastEnabledAndExceptionThrownDuringPolling_DoesNotCrash()
+    public async Task Create_FailFastEnabledAndExceptionThrownDuringPolledConfigurationReload_DoesNotCrash()
     {
         await TestFailureTracer.CaptureAsync(async tracer =>
         {
-            const string environment = """
+            const string responseJson = """
                 {
                   "name": "test-name",
                   "profiles": [
@@ -149,20 +143,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
                   "propertySources": []
                 }
                 """;
-
-            using var startup = new TestConfigServerStartup();
-            startup.Response = environment;
-
-            // Initial requests succeed, but later requests return 400 status code so that an exception is thrown during polling
-            startup.ReturnStatus = [.. Enumerable.Repeat(200, 2).Concat(Enumerable.Repeat(400, 100))];
-            startup.Label = "test-label";
-
-            await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-            startup.Configure(app);
-            await app.StartAsync(TestContext.Current.CancellationToken);
-
-            using TestServer server = app.GetTestServer();
-            server.BaseAddress = new Uri("http://localhost:8888");
 
             var options = new ConfigServerClientOptions
             {
@@ -172,28 +152,74 @@ public sealed partial class ConfigServerConfigurationProviderTest
                 Label = "test-label"
             };
 
-            using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-            using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, tracer.LoggerFactory);
+            using var handler = new DelegateToMockHttpClientHandler();
+            using var firstRequestCountdownEvent = new CountdownEvent(1);
+            int requestCount = 0;
 
-            bool firstRequestCompleted = startup.WaitForFirstRequest(2.Seconds());
+            MockedRequest testLabelRequest = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production/test-label").Respond(_ =>
+            {
+                int currentCount = Interlocked.Increment(ref requestCount);
+
+                if (!firstRequestCountdownEvent.IsSet)
+                {
+                    firstRequestCountdownEvent.Signal();
+                }
+
+                if (currentCount <= 2)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(responseJson, Encoding.UTF8, "application/json")
+                    };
+                }
+
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            });
+
+            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, tracer.LoggerFactory);
+            provider.Load();
+
+            bool firstRequestCompleted = firstRequestCountdownEvent.Wait(2.Seconds(), TestContext.Current.CancellationToken);
             firstRequestCompleted.Should().BeTrue();
 
-            startup.RequestCount.Should().BeGreaterThanOrEqualTo(1);
-            startup.LastRequest.Should().NotBeNull();
+            handler.Mock.GetMatchCount(testLabelRequest).Should().BeGreaterThanOrEqualTo(1);
 
             await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-            startup.RequestCount.Should().BeGreaterThanOrEqualTo(2);
+            handler.Mock.GetMatchCount(testLabelRequest).Should().BeGreaterThanOrEqualTo(2);
             provider.GetReloadToken().HasChanged.Should().BeFalse();
         });
     }
 
     [Fact]
-    public async Task Create_WithNonZeroPollingIntervalAndClientDisabled_PollingDisabled()
+    public async Task Create_WithNonZeroPollingIntervalAndClientDisabled_PollingConfigurationReloadDisabled()
     {
-        const string environment = """
+        var options = new ConfigServerClientOptions
+        {
+            Name = "myName",
+            Enabled = false,
+            PollingInterval = 300.Milliseconds(),
+            Label = "label,test-label"
+        };
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        MockedRequest request = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production/label").Respond(HttpStatusCode.OK);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        provider.Load();
+
+        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+        handler.Mock.GetMatchCount(request).Should().Be(0);
+    }
+
+    [Theory]
+    [InlineData(false, "00:00:01")]
+    [InlineData(true, "00:00:00")]
+    public void OnSettingsChanged_stops_reload_timer_when_polling_no_longer_enabled(bool enabled, string pollingInterval)
+    {
+        const string responseJson = """
             {
-              "name": "test-name",
+              "name": "myName",
               "profiles": [
                 "Production"
               ],
@@ -203,37 +229,275 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
             """;
 
-        using var startup = new TestConfigServerStartup();
-        startup.Response = environment;
-        startup.ReturnStatus = [.. Enumerable.Repeat(200, 100)];
-        startup.Label = "test-label";
+        var fileProvider = new MemoryFileProvider();
 
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "spring": {
+                "cloud": {
+                  "config": {
+                    "name": "myName",
+                    "enabled": true,
+                    "pollingInterval": "00:00:01"
+                  }
+                }
+              }
+            }
+            """);
 
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", responseJson);
+
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
+        IConfigurationRoot configuration = configurationBuilder.Build();
+
+        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+
+        FieldInfo reloadTimerField =
+            typeof(ConfigServerConfigurationProvider).GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+        reloadTimerField.GetValue(provider).Should().NotBeNull();
+
+        fileProvider.ReplaceAppSettingsJsonFile($$"""
+            {
+              "spring": {
+                "cloud": {
+                  "config": {
+                    "name": "myName",
+                    "enabled": {{(enabled ? "true" : "false")}},
+                    "pollingInterval": "{{pollingInterval}}"
+                  }
+                }
+              }
+            }
+            """);
+
+        fileProvider.NotifyChanged();
+
+        reloadTimerField.GetValue(provider).Should().BeNull();
+    }
+
+    [Fact]
+    public void OnSettingsChanged_reschedules_reload_timer_when_polling_interval_changes()
+    {
+        const string responseJson = """
+            {
+              "name": "myName",
+              "profiles": [
+                "Production"
+              ],
+              "label": "test-label",
+              "version": "test-version",
+              "propertySources": []
+            }
+            """;
+
+        var fileProvider = new MemoryFileProvider();
+
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "spring": {
+                "cloud": {
+                  "config": {
+                    "name": "myName",
+                    "enabled": true,
+                    "pollingInterval": "00:00:05"
+                  }
+                }
+              }
+            }
+            """);
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", responseJson);
+
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
+        IConfigurationRoot configuration = configurationBuilder.Build();
+
+        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+
+        FieldInfo reloadTimerField =
+            typeof(ConfigServerConfigurationProvider).GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+        reloadTimerField.GetValue(provider).Should().NotBeNull();
+
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "spring": {
+                "cloud": {
+                  "config": {
+                    "name": "myName",
+                    "enabled": true,
+                    "pollingInterval": "00:00:10"
+                  }
+                }
+              }
+            }
+            """);
+
+        fileProvider.NotifyChanged();
+
+        reloadTimerField.GetValue(provider).Should().NotBeNull("timer should be rescheduled, not stopped");
+    }
+
+    [Fact]
+    public void OnSettingsChanged_stops_vault_renew_timer_when_renewal_becomes_disabled()
+    {
+        const string responseJson = """
+            {
+              "name": "myName",
+              "profiles": [
+                "Production"
+              ],
+              "label": "test-label",
+              "version": "test-version",
+              "propertySources": []
+            }
+            """;
+
+        var fileProvider = new MemoryFileProvider();
+
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "spring": {
+                "cloud": {
+                  "config": {
+                    "name": "myName",
+                    "token": "MyVaultToken"
+                  }
+                }
+              }
+            }
+            """);
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", responseJson);
+
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
+        IConfigurationRoot configuration = configurationBuilder.Build();
+
+        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        FieldInfo vaultTimerField = typeof(ConfigServerConfigurationProvider).GetField("_vaultRenewTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+        vaultTimerField.GetValue(provider).Should().NotBeNull();
+
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "spring": {
+                "cloud": {
+                  "config": {
+                    "name": "myName",
+                    "token": "MyVaultToken",
+                    "disableTokenRenewal": true
+                  }
+                }
+              }
+            }
+            """);
+
+        fileProvider.NotifyChanged();
+
+        vaultTimerField.GetValue(provider).Should().BeNull();
+    }
+
+    [Fact]
+    public void Load_MultipleConfigServers_SocketError_FallsBackToNextServer()
+    {
+        const string responseJson = """
+            {
+              "name": "test-name",
+              "profiles": [
+                "Production"
+              ],
+              "label": "test-label",
+              "version": "test-version",
+              "propertySources": [
+                {
+                  "name": "source",
+                  "source": {
+                    "key1": "value1"
+                  }
+                }
+              ]
+            }
+            """;
+
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        handler.Mock.When(HttpMethod.Get, "http://server1:8888/myName/Production")
+            .Throw(new HttpRequestException("Connection refused", new SocketException((int)SocketError.ConnectionRefused)));
+
+        handler.Mock.When(HttpMethod.Get, "http://server2:8888/myName/Production").Respond("application/json", responseJson);
 
         var options = new ConfigServerClientOptions
         {
             Name = "myName",
-            Enabled = false,
-            PollingInterval = 300.Milliseconds(),
-            Label = "label,test-label"
+            Uri = "http://server1:8888, http://server2:8888"
         };
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        provider.Load();
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
-
-        startup.WaitForFirstRequest(2.Seconds()).Should().BeFalse();
+        provider.TryGet("key1", out string? value).Should().BeTrue();
+        value.Should().Be("value1");
     }
 
     [Fact]
-    public async Task DoLoad_MultipleLabels_ChecksAllLabels()
+    public void Load_IdenticalData_DoesNotTriggerReload()
     {
-        const string environment = """
+        const string responseJson = """
+            {
+              "name": "test-name",
+              "profiles": [
+                "Production"
+              ],
+              "label": "test-label",
+              "version": "test-version",
+              "propertySources": [
+                {
+                  "name": "source",
+                  "source": {
+                    "key1": "value1"
+                  }
+                }
+              ]
+            }
+            """;
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", responseJson);
+
+        var options = new ConfigServerClientOptions
+        {
+            Name = "myName"
+        };
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        provider.Load();
+
+        provider.TryGet("key1", out string? value).Should().BeTrue();
+        value.Should().Be("value1");
+
+        bool reloadFired = false;
+        provider.GetReloadToken().RegisterChangeCallback(_ => reloadFired = true, null);
+
+        provider.Load();
+
+        reloadFired.Should().BeFalse("identical data should not trigger OnReload");
+        provider.TryGet("key1", out value).Should().BeTrue();
+        value.Should().Be("value1");
+    }
+
+    [Fact]
+    public void Load_MultipleLabels_ChecksAllLabels()
+    {
+        const string responseJson = """
             {
               "name": "test-name",
               "profiles": [
@@ -253,41 +517,23 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
             """;
 
-        using var startup = new TestConfigServerStartup();
-        startup.Response = environment;
-
-        startup.ReturnStatus =
-        [
-            404,
-            200
-        ];
-
-        startup.Label = "test-label";
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.Label = "label,test-label";
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}/label").Respond(HttpStatusCode.NotFound);
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}/test-label").Respond("application/json", responseJson);
 
-        await provider.DoLoadAsync(true, TestContext.Current.CancellationToken);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        provider.Load();
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.RequestCount.Should().Be(2);
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}/test-label");
+        handler.Mock.VerifyNoOutstandingExpectation();
     }
 
     [Fact]
     public async Task RemoteLoadAsync_ConfigServerReturnsGood()
     {
-        const string environment = """
+        const string responseJson = """
             {
               "name": "test-name",
               "profiles": [
@@ -307,24 +553,16 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
             """;
 
-        using var startup = new TestConfigServerStartup();
-        startup.Response = environment;
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        ConfigEnvironment? env = await provider.RemoteLoadAsync(options.GetUris(), null, TestContext.Current.CancellationToken);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond("application/json", responseJson);
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+
+        ConfigEnvironment? env = await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
 
         env.Should().NotBeNull();
         env.Name.Should().Be("test-name");
@@ -342,245 +580,156 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsGreaterThanEqualBadRequest_StopsChecking()
     {
-        using var startup = new TestConfigServerStartup();
-
-        startup.ReturnStatus =
-        [
-            500,
-            200
-        ];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.Uri = "http://localhost:8888, http://localhost:8888";
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        using var handler = new DelegateToMockHttpClientHandler();
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
-        startup.RequestCount.Should().Be(1);
+        MockedRequest request = handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}")
+            .Respond(HttpStatusCode.InternalServerError);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        provider.Load();
+
+        handler.Mock.GetMatchCount(request).Should().Be(1);
 
         await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-        startup.RequestCount.Should().Be(1);
+        handler.Mock.GetMatchCount(request).Should().Be(1);
     }
 
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsNotFoundStatus_DoesNotContinueChecking()
     {
-        using var startup = new TestConfigServerStartup();
-
-        startup.ReturnStatus =
-        [
-            404,
-            200
-        ];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.Uri = "http://localhost:8888, http://localhost:8888";
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
 
-        await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        MockedRequest request = handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}")
+            .Respond(HttpStatusCode.NotFound);
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
-        startup.RequestCount.Should().Be(1);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        provider.Load();
+
+        handler.Mock.GetMatchCount(request).Should().Be(1);
 
         await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-        startup.RequestCount.Should().Be(1);
+        handler.Mock.GetMatchCount(request).Should().Be(1);
     }
 
     [Fact]
-    public async Task Load_ConfigServerReturnsNotFoundStatus()
+    public void Load_ConfigServerReturnsNotFoundStatus()
     {
-        using var startup = new TestConfigServerStartup();
-        startup.ReturnStatus = [404];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond(HttpStatusCode.NotFound);
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
-        provider.Properties.Should().HaveCount(27);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        provider.Load();
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+        provider.InnerData.Should().BeEmpty();
     }
 
     [Fact]
-    public async Task Load_ConfigServerReturnsNotFoundStatus_FailFastEnabled()
+    public void Load_ConfigServerReturnsNotFoundStatus_FailFastEnabled()
     {
-        using var startup = new TestConfigServerStartup();
-        startup.ReturnStatus = [404];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond(HttpStatusCode.NotFound);
 
-        // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
-        await action.Should().ThrowExactlyAsync<ConfigServerException>();
+        Action action = provider.Load;
+
+        action.Should().ThrowExactly<ConfigServerException>();
+        handler.Mock.VerifyNoOutstandingExpectation();
     }
 
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsNotFoundStatus__DoesNotContinueChecking_FailFastEnabled()
     {
-        using var startup = new TestConfigServerStartup();
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
         options.Uri = "http://localhost:8888,http://localhost:8888";
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
 
-        startup.Reset();
+        MockedRequest request = handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}")
+            .Respond(HttpStatusCode.NotFound);
 
-        startup.ReturnStatus =
-        [
-            404,
-            200
-        ];
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
-        // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        Action action = provider.Load;
 
-        await action.Should().ThrowExactlyAsync<ConfigServerException>();
-        startup.RequestCount.Should().Be(1);
+        action.Should().ThrowExactly<ConfigServerException>();
+        handler.Mock.GetMatchCount(request).Should().Be(1);
 
         await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-        startup.RequestCount.Should().Be(1);
+        handler.Mock.GetMatchCount(request).Should().Be(1);
     }
 
     [Fact]
-    public async Task Load_UriInvalid_FailFastEnabled()
+    public void Load_UriInvalid_FailFastEnabled()
     {
-        using var startup = new TestConfigServerStartup();
-        startup.ReturnStatus = [500];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.Uri = "http://username:p@ssword@localhost:8888";
         options.FailFast = true;
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
-        // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        Action action = provider.Load;
 
-        await action.Should().ThrowExactlyAsync<ConfigServerException>().WithMessage("One or more Config Server URIs in configuration are invalid.");
+        action.Should().ThrowExactly<ConfigServerException>().WithMessage("One or more Config Server URIs in configuration are invalid.");
+        handler.Mock.VerifyNoOutstandingExpectation();
     }
 
     [Fact]
-    public async Task Load_ConfigServerReturnsBadStatus_FailFastEnabled()
+    public void Load_ConfigServerReturnsBadStatus_FailFastEnabled()
     {
-        using var startup = new TestConfigServerStartup();
-        startup.ReturnStatus = [500];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond(HttpStatusCode.InternalServerError);
 
-        // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
-        await action.Should().ThrowExactlyAsync<ConfigServerException>();
+        Action action = provider.Load;
+
+        action.Should().ThrowExactly<ConfigServerException>();
+        handler.Mock.VerifyNoOutstandingExpectation();
     }
 
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsBadStatus_StopsChecking_FailFastEnabled()
     {
-        using var startup = new TestConfigServerStartup();
-
-        startup.ReturnStatus =
-        [
-            500,
-            500,
-            500
-        ];
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
         options.Uri = "http://localhost:8888, http://localhost:8888, http://localhost:8888";
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
 
-        // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        MockedRequest request = handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}")
+            .Respond(HttpStatusCode.InternalServerError);
 
-        await action.Should().ThrowExactlyAsync<ConfigServerException>();
-        startup.RequestCount.Should().Be(1);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+
+        Action action = provider.Load;
+
+        action.Should().ThrowExactly<ConfigServerException>();
+        handler.Mock.GetMatchCount(request).Should().Be(1);
 
         await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-        startup.RequestCount.Should().Be(1);
+        handler.Mock.GetMatchCount(request).Should().Be(1);
     }
 
     [Fact]
@@ -588,16 +737,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         await TestFailureTracer.CaptureAsync(async tracer =>
         {
-            using var startup = new TestConfigServerStartup();
-            startup.ReturnStatus = [.. Enumerable.Repeat(500, 100)];
-
-            await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-            startup.Configure(app);
-            await app.StartAsync(TestContext.Current.CancellationToken);
-
-            using TestServer server = app.GetTestServer();
-            server.BaseAddress = new Uri("http://localhost:8888");
-
             var options = new ConfigServerClientOptions
             {
                 Name = "myName",
@@ -610,24 +749,25 @@ public sealed partial class ConfigServerConfigurationProviderTest
                 Timeout = 1000
             };
 
-            using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-            using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, tracer.LoggerFactory);
+            using var handler = new DelegateToMockHttpClientHandler();
+            MockedRequest request = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond(HttpStatusCode.InternalServerError);
 
-            // ReSharper disable once AccessToDisposedClosure
-            Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, tracer.LoggerFactory);
 
-            await action.Should().ThrowExactlyAsync<ConfigServerException>();
+            Action action = () => provider.Load();
+
+            action.Should().ThrowExactly<ConfigServerException>();
 
             await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
 
-            startup.RequestCount.Should().BeGreaterThan(3);
+            handler.Mock.GetMatchCount(request).Should().BeGreaterThan(3);
         });
     }
 
     [Fact]
-    public async Task Load_ChangesDataDictionary()
+    public void Load_ChangesDataDictionary()
     {
-        const string environment = """
+        const string responseJson = """
             {
               "name": "test-name",
               "profiles": [
@@ -635,6 +775,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
               ],
               "label": "test-label",
               "version": "test-version",
+              "state": "test-state",
               "propertySources": [
                 {
                   "name": "source",
@@ -647,35 +788,30 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
             """;
 
-        using var startup = new TestConfigServerStartup();
-        startup.Response = environment;
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
-        await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond("application/json", responseJson);
 
-        startup.LastRequest.Should().NotBeNull();
-        startup.LastRequest.Path.Value.Should().Be($"/{options.Name}/{options.Environment}");
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        provider.Load();
+        handler.Mock.VerifyNoOutstandingExpectation();
 
         provider.TryGet("key1", out string? value).Should().BeTrue();
         value.Should().Be("value1");
         provider.TryGet("key2", out value).Should().BeTrue();
         value.Should().Be("10");
+
+        provider.TryGet("spring:cloud:config:client:version", out value).Should().BeTrue();
+        value.Should().Be("test-version");
+        provider.TryGet("spring:cloud:config:client:state", out value).Should().BeTrue();
+        value.Should().Be("test-state");
     }
 
     [Fact]
-    public async Task ReLoad_DataDictionary_With_New_Configurations()
+    public void ReLoad_DataDictionary_With_New_Configurations()
     {
-        const string environment = """
+        const string responseJson = """
             {
               "name": "test-name",
               "profiles": [
@@ -697,23 +833,15 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
             """;
 
-        using var startup = new TestConfigServerStartup();
-        startup.Response = environment;
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri("http://localhost:8888");
-
         ConfigServerClientOptions options = GetCommonOptions();
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(options, null, httpClientHandler, NullLoggerFactory.Instance);
 
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond("application/json", responseJson);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
         provider.Load();
+        handler.Mock.VerifyNoOutstandingExpectation();
 
-        startup.LastRequest.Should().NotBeNull();
         provider.TryGet("featureToggles:ShowModule:0", out string? value).Should().BeTrue();
         value.Should().Be("FT1");
         provider.TryGet("featureToggles:ShowModule:1", out value).Should().BeTrue();
@@ -723,28 +851,30 @@ public sealed partial class ConfigServerConfigurationProviderTest
         provider.TryGet("enableSettings", out value).Should().BeTrue();
         value.Should().Be("true");
 
-        startup.Reset();
+        handler.Mock.Clear();
 
-        startup.Response = """
-        {
-          "name": "test-name",
-          "profiles": [
-            "Production"
-          ],
-          "label": "test-label",
-          "version": "test-version",
-          "propertySources": [
+        const string newResponseJson = """
             {
-              "name": "source",
-              "source": {
-                "featureToggles.ShowModule[0]": "none"
-              }
+              "name": "test-name",
+              "profiles": [
+                "Production"
+              ],
+              "label": "test-label",
+              "version": "test-version",
+              "propertySources": [
+                {
+                  "name": "source",
+                  "source": {
+                    "featureToggles.ShowModule[0]": "none"
+                  }
+                }
+              ]
             }
-          ]
-        }
-        """;
+            """;
 
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond("application/json", newResponseJson);
         provider.Load();
+        handler.Mock.VerifyNoOutstandingExpectation();
 
         provider.TryGet("featureToggles:ShowModule:0", out value).Should().BeTrue();
         value.Should().Be("none");
@@ -754,35 +884,29 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void AddConfigServerClientSettings_ChangesDataDictionary()
+    public void DataDictionary_DoesNotContainRedundantClientSettings()
     {
         var options = new ConfigServerClientOptions
         {
             Enabled = false,
             FailFast = true,
             Environment = "environment",
-            Label = "label",
+            Label = "main",
             Name = "name",
             Uri = "https://foo.bar/",
-            Username = "username",
-            Password = "password",
-            Token = "vaultToken",
+            Username = "user",
+            Password = "pass",
+            Token = "vault-token",
             Timeout = 75_000,
-            PollingInterval = 35.5.Seconds(),
+            PollingInterval = TimeSpan.FromSeconds(30),
             ValidateCertificates = false,
-            AccessTokenUri = "https://token.server.com/",
-            ClientSecret = "client_secret",
-            ClientId = "client_id",
-            TokenTtl = 2,
-            TokenRenewRate = 1,
-            DisableTokenRenewal = true,
             Retry =
             {
                 Enabled = true,
-                InitialInterval = 8,
-                MaxInterval = 16,
-                Multiplier = 1.1,
-                MaxAttempts = 7
+                InitialInterval = 500,
+                MaxInterval = 5000,
+                Multiplier = 2.0,
+                MaxAttempts = 10
             },
             Discovery =
             {
@@ -792,59 +916,63 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Health =
             {
                 Enabled = false,
-                TimeToLive = 9
+                TimeToLive = 999
             },
+            AccessTokenUri = "https://uaa.example.com/oauth/token",
+            ClientSecret = "secret",
+            ClientId = "client-id",
+            TokenTtl = 600_000,
+            TokenRenewRate = 120_000,
+            DisableTokenRenewal = true,
             Headers =
             {
-                ["headerName1"] = "headerValue1",
-                ["headerName2"] = "headerValue2"
+                ["X-Custom"] = "value"
             }
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
-        provider.AddConfigServerClientOptions();
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
 
-        AssertDataValue("spring:cloud:config:enabled", "False");
-        AssertDataValue("spring:cloud:config:failFast", "True");
-        AssertDataValue("spring:cloud:config:env", "environment");
-        AssertDataValue("spring:cloud:config:label", "label");
-        AssertDataValue("spring:cloud:config:name", "name");
-        AssertDataValue("spring:cloud:config:uri", "https://foo.bar/");
-        AssertDataValue("spring:cloud:config:username", "username");
-        AssertDataValue("spring:cloud:config:password", "password");
-        AssertDataValue("spring:cloud:config:token", "vaultToken");
-        AssertDataValue("spring:cloud:config:timeout", "75000");
-        AssertDataValue("spring:cloud:config:pollingInterval", "00:00:35.5000000");
-        AssertDataValue("spring:cloud:config:validateCertificates", "False");
-        AssertDataValue("spring:cloud:config:accessTokenUri", "https://token.server.com/");
-        AssertDataValue("spring:cloud:config:clientSecret", "client_secret");
-        AssertDataValue("spring:cloud:config:clientId", "client_id");
-        AssertDataValue("spring:cloud:config:tokenTtl", "2");
-        AssertDataValue("spring:cloud:config:tokenRenewRate", "1");
-        AssertDataValue("spring:cloud:config:disableTokenRenewal", "True");
-        AssertDataValue("spring:cloud:config:retry:enabled", "True");
-        AssertDataValue("spring:cloud:config:retry:initialInterval", "8");
-        AssertDataValue("spring:cloud:config:retry:maxInterval", "16");
-        AssertDataValue("spring:cloud:config:retry:multiplier", "1.1");
-        AssertDataValue("spring:cloud:config:retry:maxAttempts", "7");
-        AssertDataValue("spring:cloud:config:discovery:enabled", "True");
-        AssertDataValue("spring:cloud:config:discovery:serviceId", "my-config-server");
-        AssertDataValue("spring:cloud:config:health:enabled", "False");
-        AssertDataValue("spring:cloud:config:health:timeToLive", "9");
-        AssertDataValue("spring:cloud:config:headers:headerName1", "headerValue1");
-        AssertDataValue("spring:cloud:config:headers:headerName2", "headerValue2");
+        provider.TryGet("spring:cloud:config:enabled", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:failFast", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:env", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:label", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:name", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:uri", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:username", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:password", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:token", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:timeout", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:pollingInterval", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:validateCertificates", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:validate_Certificates", out _).Should().BeFalse();
 
-        void AssertDataValue(string key, string expected)
-        {
-            provider.TryGet(key, out string? value).Should().BeTrue();
-            value.Should().Be(expected);
-        }
+        provider.TryGet("spring:cloud:config:retry:enabled", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:retry:initialInterval", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:retry:maxInterval", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:retry:multiplier", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:retry:maxAttempts", out _).Should().BeFalse();
+
+        provider.TryGet("spring:cloud:config:discovery:enabled", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:discovery:serviceId", out _).Should().BeFalse();
+
+        provider.TryGet("spring:cloud:config:health:enabled", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:health:timeToLive", out _).Should().BeFalse();
+
+        provider.TryGet("spring:cloud:config:accessTokenUri", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:clientSecret", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:clientId", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:tokenTtl", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:tokenRenewRate", out _).Should().BeFalse();
+        provider.TryGet("spring:cloud:config:disableTokenRenewal", out _).Should().BeFalse();
+
+        provider.TryGet("spring:cloud:config:headers:X-Custom", out _).Should().BeFalse();
     }
 
     [Fact]
-    public async Task Reload_And_Bind_Without_Throwing_Exception()
+    public void Reload_And_Bind_Without_Throwing_Exception()
     {
-        const string environment = """
+        const string responseJson = """
             {
               "name": "test-name",
               "profiles": [
@@ -864,30 +992,22 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
             """;
 
-        using var startup = new TestConfigServerStartup();
-        startup.Response = environment;
-
-        await using WebApplication app = TestWebApplicationBuilderFactory.Create().Build();
-        startup.Configure(app);
-        await app.StartAsync(TestContext.Current.CancellationToken);
-
         ConfigServerClientOptions clientOptions = GetCommonOptions();
-        using TestServer server = app.GetTestServer();
-        server.BaseAddress = new Uri(clientOptions.Uri!);
 
-        using var httpClientHandler = new ForwardingHttpClientHandler(server.CreateHandler());
-        using var provider = new ConfigServerConfigurationProvider(clientOptions, null, httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{clientOptions.Name}/{clientOptions.Environment}").Respond("application/json", responseJson);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.Add(new TestConfigServerConfigurationSource(provider));
+        configurationBuilder.AddConfigServer(clientOptions, null, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
+
+        using ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
 
         TestOptions? testOptions = null;
         using var tokenSource = new CancellationTokenSource(250.Milliseconds());
 
         _ = Task.Run(() =>
         {
-            // ReSharper disable once AccessToDisposedClosure
             while (!tokenSource.IsCancellationRequested)
             {
                 configurationRoot.Reload();
@@ -908,7 +1028,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         return new ConfigServerClientOptions
         {
-            Name = "myName"
+            Name = "myName",
+            Environment = "Staging"
         };
     }
 

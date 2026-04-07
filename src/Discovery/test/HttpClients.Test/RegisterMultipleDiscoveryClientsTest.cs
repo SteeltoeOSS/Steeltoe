@@ -15,7 +15,6 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Common.TestResources.IO;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
@@ -57,14 +56,11 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-        configurationBuilder.AddJsonFile(fileName);
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         IConfiguration configuration = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
@@ -656,14 +652,11 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-        configurationBuilder.AddJsonFile(fileName);
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         IConfiguration configuration = configurationBuilder.Build();
 
         var services = new ServiceCollection();
@@ -829,10 +822,12 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
-        IConfiguration configuration = new ConfigurationBuilder().SetBasePath(Path.GetDirectoryName(path)!).AddJsonFile(Path.GetFileName(path)).Build();
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
+        IConfiguration configuration = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddOptions();

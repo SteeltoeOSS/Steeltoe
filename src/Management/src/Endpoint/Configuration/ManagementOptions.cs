@@ -55,7 +55,7 @@ public sealed class ManagementOptions
     public bool SslEnabled { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the HTTP response status code is based on the health status. This setting can be overruled by sending an
+    /// Gets or sets a value indicating whether the HTTP response status code is based on the health status. This setting can be overridden by sending an
     /// X-Use-Status-Code-From-Response HTTP header. Default value: true.
     /// </summary>
     public bool UseStatusCodeFromResponse { get; set; } = true;

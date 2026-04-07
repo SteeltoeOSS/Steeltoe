@@ -810,7 +810,7 @@
             },
             "UseStatusCodeFromResponse": {
               "type": "boolean",
-              "description": "Gets or sets a value indicating whether the HTTP response status code is based on the health status. This setting can be overruled by sending an X-Use-Status-Code-From-Response HTTP header. Default value: true."
+              "description": "Gets or sets a value indicating whether the HTTP response status code is based on the health status. This setting can be overridden by sending an X-Use-Status-Code-From-Response HTTP header. Default value: true."
             },
             "Web": {
               "type": "object",

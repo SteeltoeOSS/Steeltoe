@@ -53,10 +53,9 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
 
     public IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string? parentPath)
     {
+        ArgumentNullException.ThrowIfNull(earlierKeys);
+
         string[] earlierKeysArray = earlierKeys as string[] ?? earlierKeys.ToArray();
-#pragma warning disable S3236 // Caller information arguments should not be provided explicitly
-        ArgumentNullException.ThrowIfNull(earlierKeysArray, nameof(earlierKeys));
-#pragma warning restore S3236 // Caller information arguments should not be provided explicitly
 
         if (_logger.IsEnabled(LogLevel.Trace))
         {

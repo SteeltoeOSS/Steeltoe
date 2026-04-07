@@ -154,7 +154,7 @@ public sealed class HostBuilderTest
     {
         var fileProvider = new MemoryFileProvider();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, $$"""
+        fileProvider.IncludeAppSettingsJsonFile($$"""
             {
               "Spring": {
                 "Boot": {
@@ -171,7 +171,7 @@ public sealed class HostBuilderTest
             """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
@@ -186,7 +186,7 @@ public sealed class HostBuilderTest
 
         handler.Mock.GetMatchCount(registerMock).Should().Be(1);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, $$"""
+        fileProvider.ReplaceAppSettingsJsonFile($$"""
             {
               "Spring": {
                 "Boot": {
@@ -213,7 +213,7 @@ public sealed class HostBuilderTest
     {
         var fileProvider = new MemoryFileProvider();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, $$"""
+        fileProvider.IncludeAppSettingsJsonFile($$"""
             {
               "Spring": {
                 "Boot": {
@@ -230,7 +230,7 @@ public sealed class HostBuilderTest
             """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
@@ -246,7 +246,7 @@ public sealed class HostBuilderTest
 
         handler.Mock.GetMatchCount(registerMock).Should().BeGreaterThan(1);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, $$"""
+        fileProvider.ReplaceAppSettingsJsonFile($$"""
             {
               "Spring": {
                 "Boot": {
@@ -370,7 +370,7 @@ public sealed class HostBuilderTest
     {
         var fileProvider = new MemoryFileProvider();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, $$"""
+        fileProvider.IncludeAppSettingsJsonFile($$"""
             {
               "Spring": {
                 "Boot": {
@@ -387,7 +387,7 @@ public sealed class HostBuilderTest
             """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
@@ -405,7 +405,7 @@ public sealed class HostBuilderTest
 
         handler.Mock.GetMatchCount(registerMock1).Should().BeGreaterThan(1);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, $$"""
+        fileProvider.ReplaceAppSettingsJsonFile($$"""
             {
               "Spring": {
                 "Boot": {
@@ -434,7 +434,7 @@ public sealed class HostBuilderTest
     {
         var fileProvider = new MemoryFileProvider();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, $$"""
+        fileProvider.IncludeAppSettingsJsonFile($$"""
             {
               "Spring": {
                 "Boot": {
@@ -451,7 +451,7 @@ public sealed class HostBuilderTest
             """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddSpringBootAdminClient();
 
@@ -470,7 +470,7 @@ public sealed class HostBuilderTest
 
             handler.Mock.GetMatchCount(registerMock1).Should().BeGreaterThan(1);
 
-            fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, $$"""
+            fileProvider.ReplaceAppSettingsJsonFile($$"""
                 {
                   "Spring": {
                     "Boot": {

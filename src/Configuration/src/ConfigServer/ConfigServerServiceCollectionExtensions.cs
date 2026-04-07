@@ -26,10 +26,39 @@ public static class ConfigServerServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection ConfigureConfigServerClientOptions(this IServiceCollection services)
     {
+        return ConfigureConfigServerClientOptions(services, null);
+    }
+
+    /// <summary>
+    /// Adds <see cref="ConfigServerClientOptions" /> for use with the options pattern.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configure">
+    /// An optional delegate that further configures options from code, after settings from <see cref="IConfiguration" /> have been applied.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection ConfigureConfigServerClientOptions(this IServiceCollection services, Action<ConfigServerClientOptions>? configure)
+    {
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddOptions();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ConfigServerClientOptions>, ConfigureConfigServerClientOptions>());
+
+        services.AddSingleton(serviceProvider =>
+        {
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            return new ConfigureConfigServerClientOptions(configuration, configure);
+        });
+
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<IConfigureOptions<ConfigServerClientOptions>, ConfigureConfigServerClientOptions>(serviceProvider =>
+                serviceProvider.GetRequiredService<ConfigureConfigServerClientOptions>()));
+
+        services.TryAddEnumerable(ServiceDescriptor
+            .Singleton<IOptionsChangeTokenSource<ConfigServerClientOptions>, ConfigurationChangeTokenSource<ConfigServerClientOptions>>());
 
         return services;
     }
@@ -65,9 +94,27 @@ public static class ConfigServerServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddConfigServerServices(this IServiceCollection services)
     {
+        return AddConfigServerServices(services, null);
+    }
+
+    /// <summary>
+    /// Configures <see cref="ConfigServerClientOptions" />, hosted service and health contributor, and ensures <see cref="IConfigurationRoot" /> is
+    /// available.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configure">
+    /// An optional delegate that further configures options from code, after settings from <see cref="IConfiguration" /> have been applied.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddConfigServerServices(this IServiceCollection services, Action<ConfigServerClientOptions>? configure)
+    {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.ConfigureConfigServerClientOptions();
+        services.ConfigureConfigServerClientOptions(configure);
         services.TryAddSingleton(serviceProvider => (IConfigurationRoot)serviceProvider.GetRequiredService<IConfiguration>());
         services.AddHostedService<ConfigServerHostedService>();
         services.AddConfigServerHealthContributor();

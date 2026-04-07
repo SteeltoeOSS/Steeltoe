@@ -522,21 +522,21 @@ public sealed class CloudFoundryActuatorTest
 
         var fileProvider = new MemoryFileProvider();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Management": {
-            "Endpoints": {
-              "Info": {
-                "Enabled": false
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Management": {
+                "Endpoints": {
+                  "Info": {
+                    "Enabled": false
+                  }
+                }
               }
             }
-          }
-        }
-        """);
+            """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundry();
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddCloudFoundryActuator();
         builder.Services.AddInfoActuator();
         builder.Services.AddHealthActuator();
@@ -568,17 +568,17 @@ public sealed class CloudFoundryActuatorTest
             }
             """);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Management": {
-            "Endpoints": {
-              "Health": {
-                "Enabled": false
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "Management": {
+                "Endpoints": {
+                  "Health": {
+                    "Enabled": false
+                  }
+                }
               }
             }
-          }
-        }
-        """);
+            """);
 
         fileProvider.NotifyChanged();
 

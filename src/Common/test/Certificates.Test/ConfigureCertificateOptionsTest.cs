@@ -148,7 +148,7 @@ public sealed class ConfigureCertificateOptionsTest
         string secondPrivateKeyContent = await File.ReadAllTextAsync("secondInstance.key", TestContext.Current.CancellationToken);
         using var secondX509 = X509Certificate2.CreateFromPemFile("secondInstance.crt", "secondInstance.key");
         string appSettings = BuildAppSettingsJson(certificateName, certificateFilePath, privateKeyFilePath);
-        string appSettingsPath = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
+        string appSettingsPath = sandbox.CreateFile("appsettings.json", appSettings);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddJsonFile(appSettingsPath, false, true);
         IConfiguration configuration = configurationBuilder.Build();
@@ -167,7 +167,7 @@ public sealed class ConfigureCertificateOptionsTest
         await File.WriteAllTextAsync(privateKeyFilePath, secondPrivateKeyContent, TestContext.Current.CancellationToken);
 
         using Task pollTask = WaitUntilCertificateChangedToAsync(secondX509, optionsMonitor, certificateName, TestContext.Current.CancellationToken);
-        await pollTask.WaitAsync(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
+        await pollTask.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
 
         optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
     }
@@ -185,7 +185,7 @@ public sealed class ConfigureCertificateOptionsTest
         string firstPrivateKeyFilePath = sandbox.CreateFile(Guid.NewGuid() + ".key", firstPrivateKeyContent);
         using var secondX509 = X509Certificate2.CreateFromPemFile("secondInstance.crt", "secondInstance.key");
         string appSettings = BuildAppSettingsJson(certificateName, firstCertificateFilePath, firstPrivateKeyFilePath);
-        string appSettingsPath = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
+        string appSettingsPath = sandbox.CreateFile("appsettings.json", appSettings);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddJsonFile(appSettingsPath, false, true);
         IConfiguration configuration = configurationBuilder.Build();

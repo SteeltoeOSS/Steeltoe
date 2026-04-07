@@ -65,9 +65,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
     public void GetLabels_Null()
     {
         var options = new ConfigServerClientOptions();
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
 
-        string[] result = provider.GetLabels();
+        string[] result = provider.GetLabels(provider.ClientOptions);
         result.Should().ContainSingle().Which.Should().BeEmpty();
     }
 
@@ -79,9 +80,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = string.Empty
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
 
-        string[] result = provider.GetLabels();
+        string[] result = provider.GetLabels(provider.ClientOptions);
         result.Should().ContainSingle().Which.Should().BeEmpty();
     }
 
@@ -93,9 +95,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "foobar"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
 
-        string[] result = provider.GetLabels();
+        string[] result = provider.GetLabels(provider.ClientOptions);
         result.Should().ContainSingle().Which.Should().Be("foobar");
     }
 
@@ -107,9 +110,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "1,2,3,"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
 
-        string[] result = provider.GetLabels();
+        string[] result = provider.GetLabels(provider.ClientOptions);
         result.Should().HaveCount(3);
         result.Should().HaveElementAt(0, "1");
         result.Should().HaveElementAt(1, "2");
@@ -124,9 +128,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "1,,2,3,"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
 
-        string[] result = provider.GetLabels();
+        string[] result = provider.GetLabels(provider.ClientOptions);
         result.Should().HaveCount(3);
         result.Should().HaveElementAt(0, "1");
         result.Should().HaveElementAt(1, "2");
@@ -143,10 +148,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "development"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
 
-        Uri requestUri = provider.BuildConfigServerUri(new Uri(options.Uri), null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
+        Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);
         request.RequestUri.Should().Be(requestUri);
@@ -167,10 +173,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Password = "password"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
 
-        Uri requestUri = provider.BuildConfigServerUri(new Uri(options.Uri), null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
+        Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);
         request.RequestUri.Should().Be(requestUri);
@@ -191,10 +198,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Password = "password"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
 
-        Uri requestUri = provider.BuildConfigServerUri(new Uri(options.Uri), null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
+        Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);
         request.RequestUri.Should().Be(requestUri);
@@ -213,16 +221,52 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Token = "MyVaultToken"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
 
-        Uri requestUri = provider.BuildConfigServerUri(new Uri(options.Uri!), null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, TestContext.Current.CancellationToken);
+        Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), null);
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);
         request.RequestUri.Should().Be(requestUri);
         request.Headers.Contains(ConfigServerConfigurationProvider.TokenHeader).Should().BeTrue();
         IEnumerable<string> headerValues = request.Headers.GetValues(ConfigServerConfigurationProvider.TokenHeader);
         headerValues.Should().Contain("MyVaultToken");
+    }
+
+    [Fact]
+    public async Task GetRequestMessage_AddsBearerToken_WhenAccessTokenUriIsSet()
+    {
+        var options = new ConfigServerClientOptions
+        {
+            Uri = "http://localhost:8888/",
+            Name = "foo",
+            Environment = "development",
+            AccessTokenUri = "https://auth.server.com",
+            ClientId = "test-client-id",
+            ClientSecret = "test-client-secret"
+        };
+
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        handler.Mock.Expect(HttpMethod.Post, "https://auth.server.com/").WithHeaders("Authorization", "Basic dGVzdC1jbGllbnQtaWQ6dGVzdC1jbGllbnQtc2VjcmV0")
+            .WithFormData("grant_type=client_credentials").Respond("application/json", """
+                {
+                  "access_token": "my-bearer-token"
+                }
+                """);
+
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+
+        Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+
+        request.Headers.Authorization.Should().NotBeNull();
+        request.Headers.Authorization.Scheme.Should().Be("Bearer");
+        request.Headers.Authorization.Parameter.Should().Be("my-bearer-token");
     }
 
     [Fact]
@@ -240,8 +284,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8888/vault/v1/auth/token/renew-self").WithHeaders("X-Vault-Token", "MyVaultToken")
             .WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, handler, NullLoggerFactory.Instance);
-        await provider.RefreshVaultTokenAsync(TestContext.Current.CancellationToken);
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        provider.Load();
+
+        await provider.RefreshVaultTokenAsync(provider.ClientOptions, TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -267,8 +314,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8888/vault/v1/auth/token/renew-self").WithHeaders("X-Vault-Token", "MyVaultToken")
             .WithHeaders("Authorization", "Bearer secret").WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, handler, NullLoggerFactory.Instance);
-        await provider.RefreshVaultTokenAsync(TestContext.Current.CancellationToken);
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+
+        await provider.RefreshVaultTokenAsync(provider.ClientOptions, TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -287,8 +336,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
-        using HttpClient httpClient = provider.CreateHttpClient(options);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        provider.Load();
+
+        using HttpClient httpClient = provider.CreateHttpClient(provider.ClientOptions);
 
         httpClient.Should().NotBeNull();
         httpClient.DefaultRequestHeaders.GetValues("foo").SingleOrDefault().Should().Be("bar");
@@ -308,17 +359,16 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
         };
 
-        using (var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance))
+        using (var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance))
         {
-            provider.IsDiscoveryFirstEnabled().Should().BeTrue();
+            provider.Load();
+            provider.ClientOptions.Discovery.Enabled.Should().BeTrue();
         }
 
-        var values = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:config:discovery:enabled"] = "True"
         };
-
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
 
         options = new ConfigServerClientOptions
         {
@@ -326,23 +376,24 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "development"
         };
 
-        var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appSettings);
+        configurationBuilder.AddConfigServer(options);
+        IConfigurationRoot configuration = configurationBuilder.Build();
 
-        using (var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance))
+        using (ConfigServerConfigurationProvider provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().Single())
         {
-            provider.IsDiscoveryFirstEnabled().Should().BeTrue();
+            provider.ClientOptions.Discovery.Enabled.Should().BeTrue();
         }
     }
 
     [Fact]
     public void UpdateSettingsFromDiscovery_UpdatesSettingsCorrectly()
     {
-        var values = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:config:discovery:enabled"] = "True"
         };
-
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
 
         var options = new ConfigServerClientOptions
         {
@@ -351,13 +402,19 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "development"
         };
 
-        var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
-        using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appSettings);
+        configurationBuilder.AddConfigServer(options);
+        IConfigurationRoot configuration = configurationBuilder.Build();
 
-        provider.UpdateSettingsFromDiscovery(new List<IServiceInstance>(), options);
-        options.Username.Should().BeNull();
-        options.Password.Should().BeNull();
-        options.Uri.Should().Be("http://localhost:8888/");
+        using ConfigServerConfigurationProvider provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
+
+        ConfigServerClientOptions optionsSnapshot = provider.ClientOptions;
+        provider.SetLastDiscoveryLookupResult(new List<IServiceInstance>());
+        provider.ApplyLastDiscoveryLookupResultToClientOptions(optionsSnapshot);
+        optionsSnapshot.Username.Should().BeNull();
+        optionsSnapshot.Password.Should().BeNull();
+        optionsSnapshot.Uri.Should().Be("http://localhost:8888/");
 
         var metadata1 = new Dictionary<string, string?>
         {
@@ -377,23 +434,23 @@ public sealed partial class ConfigServerConfigurationProviderTest
             new TestServiceInstance("s", "i2", new Uri("https://foo.bar.baz:9999/"), metadata2)
         ];
 
-        provider.UpdateSettingsFromDiscovery(instances, options);
-        options.Username.Should().Be("secondUser");
-        options.Password.Should().Be("secondPassword");
-        options.Uri.Should().Be("https://foo.bar:8888/,https://foo.bar.baz:9999/configPath");
+        optionsSnapshot = provider.ClientOptions;
+        provider.SetLastDiscoveryLookupResult(instances);
+        provider.ApplyLastDiscoveryLookupResultToClientOptions(optionsSnapshot);
+        optionsSnapshot.Username.Should().Be("secondUser");
+        optionsSnapshot.Password.Should().Be("secondPassword");
+        optionsSnapshot.Uri.Should().Be("https://foo.bar:8888/,https://foo.bar.baz:9999/configPath");
     }
 
     [Fact]
-    public async Task DiscoverServerInstances_FailsFast()
+    public void DiscoverServerInstances_FailsFast()
     {
-        var values = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:config:discovery:enabled"] = "True",
             ["spring:cloud:config:failFast"] = "True",
             ["eureka:client:eurekaServer:retryCount"] = "0"
         };
-
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
 
         var options = new ConfigServerClientOptions
         {
@@ -402,30 +459,17 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Timeout = 10
         };
 
-        var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
-        using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appSettings);
+        configurationBuilder.AddConfigServer(options);
 
-        // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await provider.LoadInternalAsync(true, TestContext.Current.CancellationToken);
+        Action action = () => _ = configurationBuilder.Build();
 
-        await action.Should().ThrowExactlyAsync<ConfigServerException>().WithMessage("Could not locate Config Server via discovery*");
+        action.Should().ThrowExactly<ConfigServerException>().WithMessage("Could not locate Config Server via discovery*");
     }
 
     private static string GetEncodedUserPassword(string user, string password)
     {
         return Convert.ToBase64String(Encoding.ASCII.GetBytes($"{user}:{password}"));
-    }
-
-    private sealed class TestServiceInstance(string serviceId, string instanceId, Uri uri, IReadOnlyDictionary<string, string?> metadata) : IServiceInstance
-    {
-        public string ServiceId { get; } = serviceId;
-        public string InstanceId { get; } = instanceId;
-        public string Host { get; } = uri.Host;
-        public int Port { get; } = uri.Port;
-        public bool IsSecure { get; } = uri.Scheme == Uri.UriSchemeHttps;
-        public Uri Uri { get; } = uri;
-        public Uri? NonSecureUri => IsSecure ? null : Uri;
-        public Uri? SecureUri => IsSecure ? Uri : null;
-        public IReadOnlyDictionary<string, string?> Metadata { get; } = metadata;
     }
 }

@@ -26,7 +26,7 @@ public static class ConfigServerConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder builder)
     {
-        return AddConfigServer(builder, NullLoggerFactory.Instance);
+        return AddConfigServer(builder, new ConfigServerClientOptions(), null, null, NullLoggerFactory.Instance);
     }
 
     /// <summary>
@@ -43,9 +43,7 @@ public static class ConfigServerConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder builder, ILoggerFactory loggerFactory)
     {
-        var options = new ConfigServerClientOptions();
-
-        return AddConfigServer(builder, options, loggerFactory);
+        return AddConfigServer(builder, new ConfigServerClientOptions(), null, null, loggerFactory);
     }
 
     /// <summary>
@@ -55,7 +53,24 @@ public static class ConfigServerConfigurationBuilderExtensions
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="options">
-    /// Enables configuring Config Server from code.
+    /// The default options, whose values are overridden from <see cref="IConfiguration" />.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder builder, ConfigServerClientOptions options)
+    {
+        return AddConfigServer(builder, options, null, null, NullLoggerFactory.Instance);
+    }
+
+    /// <summary>
+    /// Adds a configuration source for Config Server to the <see cref="ConfigurationBuilder" />.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
+    /// </param>
+    /// <param name="options">
+    /// The default options, whose values are overridden from <see cref="IConfiguration" />.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
@@ -64,6 +79,50 @@ public static class ConfigServerConfigurationBuilderExtensions
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder builder, ConfigServerClientOptions options, ILoggerFactory loggerFactory)
+    {
+        return AddConfigServer(builder, options, null, null, loggerFactory);
+    }
+
+    /// <summary>
+    /// Adds a configuration source for Config Server to the <see cref="ConfigurationBuilder" />.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
+    /// </param>
+    /// <param name="configure">
+    /// An optional delegate that further configures options from code, after settings from <see cref="IConfiguration" /> have been applied.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder builder, Action<ConfigServerClientOptions>? configure)
+    {
+        return AddConfigServer(builder, new ConfigServerClientOptions(), configure, null, NullLoggerFactory.Instance);
+    }
+
+    /// <summary>
+    /// Adds a configuration source for Config Server to the <see cref="ConfigurationBuilder" />.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
+    /// </param>
+    /// <param name="configure">
+    /// An optional delegate that further configures options from code, after settings from <see cref="IConfiguration" /> have been applied.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder builder, Action<ConfigServerClientOptions>? configure,
+        ILoggerFactory loggerFactory)
+    {
+        return AddConfigServer(builder, new ConfigServerClientOptions(), configure, null, loggerFactory);
+    }
+
+    internal static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder builder, ConfigServerClientOptions options,
+        Action<ConfigServerClientOptions>? configure, Func<HttpClientHandler>? createHttpClientHandler, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(options);
@@ -74,10 +133,7 @@ public static class ConfigServerConfigurationBuilderExtensions
             builder.AddCloudFoundry();
             builder.AddKubernetesServiceBindings();
 
-            ConfigServerConfigurationSource source = builder is IConfiguration configuration
-                ? new ConfigServerConfigurationSource(options, configuration, loggerFactory)
-                : new ConfigServerConfigurationSource(options, builder.Sources, builder.Properties, loggerFactory);
-
+            var source = new ConfigServerConfigurationSource(options, builder.Sources, builder.Properties, configure, createHttpClientHandler, loggerFactory);
             builder.Add(source);
         }
 

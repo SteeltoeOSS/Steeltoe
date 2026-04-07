@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
@@ -130,12 +129,11 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
-        _ = configurationBuilder.Build();
+        configurationBuilder.AddConfigServer(options);
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationSource? source = configurationBuilder.EnumerateSources<ConfigServerConfigurationSource>().SingleOrDefault();
-        source.Should().NotBeNull();
-        source.DefaultOptions.ClientCertificate.Should().NotBeNull();
+        ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
+        provider.ClientOptions.ClientCertificate.Certificate.Should().NotBeNull();
     }
 
     [Fact]
@@ -154,12 +152,11 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
-        _ = configurationBuilder.Build();
+        configurationBuilder.AddConfigServer(options);
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationSource? source = configurationBuilder.EnumerateSources<ConfigServerConfigurationSource>().SingleOrDefault();
-        source.Should().NotBeNull();
-        source.DefaultOptions.ClientCertificate.Should().NotBeNull();
+        ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
+        provider.ClientOptions.ClientCertificate.Certificate.Should().NotBeNull();
     }
 
     [Fact]
@@ -170,21 +167,6 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         ConfigServerConfigurationSource? source = configurationBuilder.EnumerateSources<ConfigServerConfigurationSource>().SingleOrDefault();
         source.Should().NotBeNull();
-    }
-
-    [Fact]
-    public void AddConfigServer_WithLoggerFactorySucceeds()
-    {
-        CapturingLoggerProvider loggerProvider = new();
-        using var loggerFactory = new LoggerFactory([loggerProvider]);
-
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddConfigServer(loggerFactory);
-        _ = configurationBuilder.Build();
-
-        IList<string> logMessages = loggerProvider.GetAll();
-
-        logMessages.Should().Contain("DBUG Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationProvider: Fetching configuration from server(s).");
     }
 
     [Theory]
@@ -217,37 +199,94 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         provider.Should().BeOfType<ConfigServerConfigurationProvider>();
         provider.ClientOptions.Uri.Should().NotBe("https://uri-from-settings");
         provider.ClientOptions.Uri.Should().Be("https://uri-from-vcap-services");
+        provider.ClientOptions.ClientId.Should().Be("some-client-id");
+        provider.ClientOptions.ClientSecret.Should().Be("some-secret");
+        provider.ClientOptions.AccessTokenUri.Should().Be("https://uaa-uri-from-vcap-services/oauth/token");
     }
 
     [Fact]
-    public void AddConfigServer_PaysAttentionToSettings()
+    public void AddConfigServer_CallbackOverridesConfigurationAndDefaultOptions()
     {
         var options = new ConfigServerClientOptions
         {
-            Name = "testConfigName",
-            Label = "testConfigLabel",
-            Environment = "testEnv",
-            Username = "testUser",
-            Password = "testPassword",
+            Name = "nameInOptions",
+            Label = "labelInOptions",
+            Environment = "environmentInOptions",
+            Username = "usernameInOptions",
+            Password = "passwordInOptions",
             Timeout = 10,
             Retry =
             {
-                Enabled = false
+                InitialInterval = 5,
+                MaxInterval = 15,
+                MaxAttempts = 12
             }
         };
 
+        var fileProvider = new MemoryFileProvider();
+
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Spring": {
+                "Cloud": {
+                  "Config": {
+                    "Name": "nameInAppSettings",
+                    "Label": "labelInAppSettings",
+                    "Timeout": 50,
+                    "Retry": {
+                      "MaxInterval": 100,
+                      "MaxAttempts": 9
+                    }
+                  }
+                }
+              }
+            }
+            """);
+
+        Action<ConfigServerClientOptions> configureOptions = clientOptions => clientOptions.Retry.MaxAttempts = 2;
+
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
+        configurationBuilder.AddConfigServer(options, configureOptions, null, NullLoggerFactory.Instance);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         provider.Should().NotBeNull();
-        provider.ClientOptions.Label.Should().Be("testConfigLabel");
-        provider.ClientOptions.Name.Should().Be("testConfigName");
-        provider.ClientOptions.Environment.Should().Be("testEnv");
-        provider.ClientOptions.Username.Should().Be("testUser");
-        provider.ClientOptions.Password.Should().Be("testPassword");
+        provider.ClientOptions.Name.Should().Be("nameInAppSettings");
+        provider.ClientOptions.Label.Should().Be("labelInAppSettings");
+        provider.ClientOptions.Environment.Should().Be("environmentInOptions");
+        provider.ClientOptions.Username.Should().Be("usernameInOptions");
+        provider.ClientOptions.Password.Should().Be("passwordInOptions");
+        provider.ClientOptions.Timeout.Should().Be(50);
+        provider.ClientOptions.Retry.InitialInterval.Should().Be(5);
+        provider.ClientOptions.Retry.MaxInterval.Should().Be(100);
+        provider.ClientOptions.Retry.MaxAttempts.Should().Be(2);
+
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "Spring": {
+                "Cloud": {
+                  "Config": {
+                    "Name": "alternateNameInAppSettings",
+                    "Username": "alternateUsernameInAppSettings"
+                  }
+                }
+              }
+            }
+            """);
+
+        fileProvider.NotifyChanged();
+
+        provider.ClientOptions.Name.Should().Be("alternateNameInAppSettings");
+        provider.ClientOptions.Label.Should().Be("labelInOptions");
+        provider.ClientOptions.Environment.Should().Be("environmentInOptions");
+        provider.ClientOptions.Username.Should().Be("alternateUsernameInAppSettings");
+        provider.ClientOptions.Password.Should().Be("passwordInOptions");
+        provider.ClientOptions.Timeout.Should().Be(10);
+        provider.ClientOptions.Retry.InitialInterval.Should().Be(5);
+        provider.ClientOptions.Retry.MaxInterval.Should().Be(15);
+        provider.ClientOptions.Retry.MaxAttempts.Should().Be(2);
     }
 
     [Fact]

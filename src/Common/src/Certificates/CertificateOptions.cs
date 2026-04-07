@@ -14,6 +14,20 @@ public sealed class CertificateOptions
     internal const string ConfigurationKeyPrefix = "Certificates";
 
     public X509Certificate2? Certificate { get; set; }
-
     public IList<X509Certificate2> IssuerChain { get; } = [];
+
+    internal CertificateOptions Clone()
+    {
+        var clone = new CertificateOptions
+        {
+            Certificate = Certificate
+        };
+
+        foreach (X509Certificate2 issuer in IssuerChain)
+        {
+            clone.IssuerChain.Add(issuer);
+        }
+
+        return clone;
+    }
 }

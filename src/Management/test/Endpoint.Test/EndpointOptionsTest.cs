@@ -86,14 +86,14 @@ public sealed class EndpointOptionsTest
     {
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-            "Management:Endpoints:Actuator:Exposure:Include:0": "env"
-        }
-        """);
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+                "Management:Endpoints:Actuator:Exposure:Include:0": "env"
+            }
+            """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
@@ -103,12 +103,12 @@ public sealed class EndpointOptionsTest
         HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-            "Management:Endpoints:Actuator:Exposure:Include:0": "env",
-            "Management:Endpoints:Actuator:Exposure:Exclude:0": "*"
-        }
-        """);
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+                "Management:Endpoints:Actuator:Exposure:Include:0": "env",
+                "Management:Endpoints:Actuator:Exposure:Exclude:0": "*"
+            }
+            """);
 
         fileProvider.NotifyChanged();
 
@@ -121,15 +121,15 @@ public sealed class EndpointOptionsTest
     {
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-            "Management:Endpoints:Actuator:Exposure:Include:0": "env",
-            "Management:Endpoints:Actuator:Exposure:Exclude:0": "*"
-        }
-        """);
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+                "Management:Endpoints:Actuator:Exposure:Include:0": "env",
+                "Management:Endpoints:Actuator:Exposure:Exclude:0": "*"
+            }
+            """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
@@ -139,11 +139,11 @@ public sealed class EndpointOptionsTest
         HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-            "Management:Endpoints:Actuator:Exposure:Include:0": "env"
-        }
-        """);
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+                "Management:Endpoints:Actuator:Exposure:Include:0": "env"
+            }
+            """);
 
         fileProvider.NotifyChanged();
 
@@ -156,15 +156,15 @@ public sealed class EndpointOptionsTest
     {
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-            "Management:Endpoints:Actuator:Exposure:Include:0": "env",
-            "Management:Endpoints:Env:Enabled": "true"
-        }
-        """);
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+                "Management:Endpoints:Actuator:Exposure:Include:0": "env",
+                "Management:Endpoints:Env:Enabled": "true"
+            }
+            """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
@@ -174,12 +174,12 @@ public sealed class EndpointOptionsTest
         HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-            "Management:Endpoints:Actuator:Exposure:Include:0": "env",
-            "Management:Endpoints:Env:Enabled": "false"
-        }
-        """);
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+                "Management:Endpoints:Actuator:Exposure:Include:0": "env",
+                "Management:Endpoints:Env:Enabled": "false"
+            }
+            """);
 
         fileProvider.NotifyChanged();
 
@@ -192,15 +192,15 @@ public sealed class EndpointOptionsTest
     {
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-            "Management:Endpoints:Actuator:Exposure:Include:0": "env",
-            "Management:Endpoints:Env:Enabled": "false"
-        }
-        """);
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+                "Management:Endpoints:Actuator:Exposure:Include:0": "env",
+                "Management:Endpoints:Env:Enabled": "false"
+            }
+            """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddAllActuators();
 
         await using WebApplication app = builder.Build();
@@ -210,12 +210,12 @@ public sealed class EndpointOptionsTest
         HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-            "Management:Endpoints:Actuator:Exposure:Include:0": "env",
-            "Management:Endpoints:Env:Enabled": "true"
-        }
-        """);
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+                "Management:Endpoints:Actuator:Exposure:Include:0": "env",
+                "Management:Endpoints:Env:Enabled": "true"
+            }
+            """);
 
         fileProvider.NotifyChanged();
 
