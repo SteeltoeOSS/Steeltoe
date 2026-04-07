@@ -72,14 +72,7 @@ public sealed class ConfigServerHealthContributorTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
-
-        var optionsSnapshot = new ConfigServerClientOptions
-        {
-            Health =
-            {
-                TimeToLive = 1
-            }
-        };
+        ConfigServerClientOptions optionsSnapshot = contributor.Provider!.ClientOptions;
 
         contributor.IsCacheStale(0, optionsSnapshot).Should().BeTrue(); // No cache established yet
         contributor.Cached = new ConfigEnvironment();
@@ -112,18 +105,10 @@ public sealed class ConfigServerHealthContributorTest
             Cached = new ConfigEnvironment()
         };
 
-        var optionsSnapshot = new ConfigServerClientOptions
-        {
-            Health =
-            {
-                TimeToLive = 1
-            }
-        };
-
         long lastAccess = contributor.LastAccess = DateTimeOffset.Now.ToUnixTimeMilliseconds() - 100;
 
         IList<PropertySource>? sources =
-            await contributor.GetPropertySourcesAsync(contributor.Provider!, optionsSnapshot, TestContext.Current.CancellationToken);
+            await contributor.GetPropertySourcesAsync(contributor.Provider!, contributor.Provider!.ClientOptions, TestContext.Current.CancellationToken);
 
         contributor.LastAccess.Should().NotBe(lastAccess);
         sources.Should().BeNull();
