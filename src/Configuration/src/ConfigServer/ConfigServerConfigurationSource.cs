@@ -21,7 +21,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     public ConfigServerClientOptions DefaultOptions { get; }
 
     /// <summary>
-    /// Gets the configuration the client uses to contact Config Server. Entries overrule <see cref="DefaultOptions" />.
+    /// Gets the configuration the client uses to contact Config Server. Entries override <see cref="DefaultOptions" />.
     /// </summary>
     public IConfiguration? Configuration { get; private set; }
 
@@ -43,11 +43,11 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// The initial options the client uses to contact Config Server.
     /// </param>
     /// <param name="sources">
-    /// Configuration sources the client uses to contact Config Server. The <see cref="Configuration" /> will be built from these, whose entries overrule
+    /// Configuration sources the client uses to contact Config Server. The <see cref="Configuration" /> will be built from these, whose entries override
     /// <paramref name="defaultOptions" />.
     /// </param>
     /// <param name="properties">
-    /// Configuration properties the client uses to contact Config Server. The <see cref="Configuration" /> will be built from these, whose entries overrule
+    /// Configuration properties the client uses to contact Config Server. The <see cref="Configuration" /> will be built from these, whose entries override
     /// <paramref name="defaultOptions" />.
     /// </param>
     /// <param name="configure">

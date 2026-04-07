@@ -31,7 +31,7 @@ public sealed partial class EurekaApplicationInfoManager : IDisposable
     // Readers must never be blocked, as it may delay the periodic heartbeat.
     // Updates from user code must be synchronized with configuration changes.
     // After update, the readonly snapshot is replaced. Volatile prevents reading stale data.
-    // Once metadata has been set from user code, it overrules what's in configuration.
+    // Once metadata has been set from user code, it overrides what's in configuration.
     private volatile InstanceInfo _instance;
     private IReadOnlyDictionary<string, string?>? _explicitMetadata;
 
@@ -125,7 +125,7 @@ public sealed partial class EurekaApplicationInfoManager : IDisposable
                 newInstance = previousInstance;
             }
 
-            // Status in configuration is the initial startup status. New or previous instance status always overrules it.
+            // Status in configuration is the initial startup status. New or previous instance status always overrides it.
             newInstance.ReplaceStatus(newStatus ?? previousInstance.Status);
 
             if (newOverriddenStatus != null)

@@ -357,7 +357,7 @@ public sealed class ConfigServerClientOptionsTest
 
         var initialOptions = new ConfigServerClientOptions
         {
-            Name = "ignored-because-overruled-from-appsettings",
+            Name = "ignored-because-overridden-from-appsettings",
             Label = "example-label" // used, but missing in IConfiguration and injected options
         };
 

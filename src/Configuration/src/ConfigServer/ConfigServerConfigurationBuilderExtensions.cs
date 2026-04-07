@@ -53,7 +53,7 @@ public static class ConfigServerConfigurationBuilderExtensions
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="options">
-    /// The initial options, whose values are overruled from <see cref="IConfiguration" />.
+    /// The initial options, whose values are overridden from <see cref="IConfiguration" />.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
@@ -70,7 +70,7 @@ public static class ConfigServerConfigurationBuilderExtensions
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="options">
-    /// The initial options, whose values are overruled from <see cref="IConfiguration" />.
+    /// The initial options, whose values are overridden from <see cref="IConfiguration" />.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.

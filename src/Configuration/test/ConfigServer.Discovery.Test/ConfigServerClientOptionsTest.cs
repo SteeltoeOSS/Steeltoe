@@ -45,7 +45,7 @@ public sealed class ConfigServerClientOptionsTest
                     "discovery": {
                       "enabled": true
                     },
-                    "uri": "http://overruled-by-discovery",
+                    "uri": "http://overridden-by-discovery",
                     "name": "example-app-name",
                     "env": "example-profile",
                     "timeout": 30000,
@@ -105,7 +105,7 @@ public sealed class ConfigServerClientOptionsTest
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
 
-        provider.ClientOptions.Uri.Should().Be("http://overruled-by-discovery");
+        provider.ClientOptions.Uri.Should().Be("http://overridden-by-discovery");
         provider.ClientOptions.Username.Should().BeNull();
         provider.ClientOptions.Password.Should().BeNull();
         provider.ClientOptions.Name.Should().Be("example-app-name");
@@ -133,7 +133,7 @@ public sealed class ConfigServerClientOptionsTest
                     "discovery": {
                       "enabled": true
                     },
-                    "uri": "http://overruled-by-discovery",
+                    "uri": "http://overridden-by-discovery",
                     "name": "alternate-name-1",
                     "env": "example-profile",
                     "timeout": 15000,
@@ -171,7 +171,7 @@ public sealed class ConfigServerClientOptionsTest
 
         fileProvider.NotifyChanged();
 
-        provider.ClientOptions.Uri.Should().Be("http://overruled-by-discovery");
+        provider.ClientOptions.Uri.Should().Be("http://overridden-by-discovery");
         provider.ClientOptions.Username.Should().BeNull();
         provider.ClientOptions.Password.Should().BeNull();
         provider.ClientOptions.Name.Should().Be("alternate-name-1");
@@ -262,7 +262,7 @@ public sealed class ConfigServerClientOptionsTest
                     "discovery": {
                       "enabled": true
                     },
-                    "uri": "http://overruled-by-discovery",
+                    "uri": "http://overridden-by-discovery",
                     "name": "example-app-name",
                     "env": "example-profile",
                     "label": "example-label"
@@ -322,7 +322,7 @@ public sealed class ConfigServerClientOptionsTest
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
 
-        provider.ClientOptions.Uri.Should().Be("http://overruled-by-discovery");
+        provider.ClientOptions.Uri.Should().Be("http://overridden-by-discovery");
         provider.ClientOptions.Username.Should().BeNull();
         provider.ClientOptions.Password.Should().BeNull();
         provider.ClientOptions.Name.Should().Be("example-app-name");
@@ -348,7 +348,7 @@ public sealed class ConfigServerClientOptionsTest
                     "discovery": {
                       "enabled": true
                     },
-                    "uri": "http://overruled-again-by-discovery",
+                    "uri": "http://overridden-again-by-discovery",
                     "name": "alternate-name",
                     "env": "alternate-profile",
                     "label": "alternate-label"
@@ -385,7 +385,7 @@ public sealed class ConfigServerClientOptionsTest
 
         fileProvider.NotifyChanged();
 
-        provider.ClientOptions.Uri.Should().Be("http://overruled-again-by-discovery");
+        provider.ClientOptions.Uri.Should().Be("http://overridden-again-by-discovery");
         provider.ClientOptions.Username.Should().BeNull();
         provider.ClientOptions.Password.Should().BeNull();
         provider.ClientOptions.Name.Should().Be("alternate-name");
@@ -409,7 +409,7 @@ public sealed class ConfigServerClientOptionsTest
         provider.Load();
         handler.Mock.VerifyNoOutstandingExpectation();
 
-        provider.ClientOptions.Uri.Should().Be("http://overruled-again-by-discovery");
+        provider.ClientOptions.Uri.Should().Be("http://overridden-again-by-discovery");
         provider.ClientOptions.Username.Should().BeNull();
         provider.ClientOptions.Password.Should().BeNull();
         provider.ClientOptions.Name.Should().Be("alternate-name");
