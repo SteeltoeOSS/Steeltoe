@@ -229,7 +229,9 @@ public sealed class ConfigServerClientOptionsTest
         const string configServerResponseJson = """
             {
               "name": "myName",
-              "profiles": [ "Production" ],
+              "profiles": [
+                "Production"
+              ],
               "label": "test-label",
               "version": "test-version",
               "propertySources": []
@@ -401,9 +403,9 @@ public sealed class ConfigServerClientOptionsTest
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
               "custom": {
-              "profileName": "example-profile"
-            },
-            "spring": {
+                "profileName": "example-profile"
+              },
+              "spring": {
                 "cloud": {
                   "config": {
                     "uri": "https://alternate-config.server.com:7777",

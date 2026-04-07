@@ -220,7 +220,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         const string responseJson = """
             {
               "name": "myName",
-              "profiles": [ "Production" ],
+              "profiles": [
+                "Production"
+              ],
               "label": "test-label",
               "version": "test-version",
               "propertySources": []
@@ -283,7 +285,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         const string responseJson = """
             {
               "name": "myName",
-              "profiles": [ "Production" ],
+              "profiles": [
+                "Production"
+              ],
               "label": "test-label",
               "version": "test-version",
               "propertySources": []
@@ -346,7 +350,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         const string responseJson = """
             {
               "name": "myName",
-              "profiles": [ "Production" ],
+              "profiles": [
+                "Production"
+              ],
               "label": "test-label",
               "version": "test-version",
               "propertySources": []
@@ -406,7 +412,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         const string responseJson = """
             {
               "name": "test-name",
-              "profiles": [ "Production" ],
+              "profiles": [
+                "Production"
+              ],
               "label": "test-label",
               "version": "test-version",
               "propertySources": [
@@ -446,7 +454,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         const string responseJson = """
             {
               "name": "test-name",
-              "profiles": [ "Production" ],
+              "profiles": [
+                "Production"
+              ],
               "label": "test-label",
               "version": "test-version",
               "propertySources": [
