@@ -205,7 +205,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddConfigServer_CallbackOverridesConfigurationOverridesDefaultOptions()
+    public void AddConfigServer_CallbackOverridesConfigurationAndDefaultOptions()
     {
         var options = new ConfigServerClientOptions
         {
