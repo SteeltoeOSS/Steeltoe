@@ -355,7 +355,7 @@ public sealed class ConfigServerClientOptionsTest
         handler.Mock.Expect(HttpMethod.Get, "https://config.server.com:9999/example-app-name/example-profile/example-label")
             .Respond("application/json", configServerResponseJson);
 
-        var initialOptions = new ConfigServerClientOptions
+        var defaultOptions = new ConfigServerClientOptions
         {
             Name = "ignored-because-overridden-from-appsettings",
             Label = "example-label" // used, but missing in IConfiguration and injected options
@@ -367,7 +367,7 @@ public sealed class ConfigServerClientOptionsTest
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddPlaceholderResolver();
         // ReSharper disable once AccessToDisposedClosure
-        configurationBuilder.AddConfigServer(initialOptions, configureOptions, () => handler, NullLoggerFactory.Instance);
+        configurationBuilder.AddConfigServer(defaultOptions, configureOptions, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
         handler.Mock.VerifyNoOutstandingExpectation();

@@ -16,7 +16,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     internal Dictionary<string, object> Properties { get; }
 
     /// <summary>
-    /// Gets the initial options the client uses to contact Config Server.
+    /// Gets the default options the client uses to contact Config Server.
     /// </summary>
     public ConfigServerClientOptions DefaultOptions { get; }
 
@@ -40,7 +40,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
     /// </summary>
     /// <param name="defaultOptions">
-    /// The initial options the client uses to contact Config Server.
+    /// The default options the client uses to contact Config Server.
     /// </param>
     /// <param name="sources">
     /// Configuration sources the client uses to contact Config Server. The <see cref="Configuration" /> will be built from these, whose entries override

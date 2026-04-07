@@ -46,7 +46,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     private readonly Func<HttpClientHandler> _createHttpClientHandler;
     private readonly bool _disposeHttpClientHandler;
     private readonly ConfigureConfigServerClientOptions _configurer;
-    private readonly ConfigServerClientOptions _initialOptions;
+    private readonly ConfigServerClientOptions _defaultOptions;
     private readonly LockPrimitive _lifecycleLock = new();
     private readonly LockPrimitive _configurationReloadTickLock = new();
     private readonly LockPrimitive _vaultRenewTickLock = new();
@@ -102,8 +102,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         _configurer = new ConfigureConfigServerClientOptions(effectiveConfiguration, configure);
         _configServerDiscoveryService = new ConfigServerDiscoveryService(effectiveConfiguration, loggerFactory);
 
-        _initialOptions = clientOptions.Clone();
-        _clientOptions = _initialOptions;
+        _defaultOptions = clientOptions.Clone();
+        _clientOptions = _defaultOptions;
 
         if (createHttpClientHandler != null)
         {
@@ -123,7 +123,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     {
         LogEnteringOnSettingsChanged();
 
-        ConfigServerClientOptions newOptions = _initialOptions.Clone();
+        ConfigServerClientOptions newOptions = _defaultOptions.Clone();
 
         try
         {
