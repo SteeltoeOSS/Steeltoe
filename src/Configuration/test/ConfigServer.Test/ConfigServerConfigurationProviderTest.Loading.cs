@@ -361,8 +361,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
                 "cloud": {
                   "config": {
                     "name": "myName",
-                    "token": "MyVaultToken",
-                    "pollingInterval": "00:00:00"
+                    "token": "MyVaultToken"
                   }
                 }
               }
@@ -389,7 +388,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
                   "config": {
                     "name": "myName",
                     "token": "MyVaultToken",
-                    "pollingInterval": "00:00:00",
                     "disableTokenRenewal": true
                   }
                 }
