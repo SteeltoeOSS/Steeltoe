@@ -215,7 +215,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Theory]
     [InlineData(false, "00:00:01")]
     [InlineData(true, "00:00:00")]
-    public void OnSettingsChanged_stops_reload_timer_when_polling_becomes_ineffective(bool enabled, string pollingInterval)
+    public void OnSettingsChanged_stops_reload_timer_when_polling_no_longer_enabled(bool enabled, string pollingInterval)
     {
         const string responseJson = """
             {
