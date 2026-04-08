@@ -123,7 +123,7 @@ jobs:
       run: dotnet pack ${{ env.SOLUTION_FILE }} --no-build --configuration Release --output ${{ github.workspace }}/packages /p:VersionSuffix=${{ env.PACKAGE_VERSION_SUFFIX }}
 
     - name: Upload unsigned packages
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v7
       with:
         if-no-files-found: error
         name: unsigned-packages
@@ -141,7 +141,7 @@ jobs:
 
     steps:
     - name: Download unsigned packages
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: unsigned-packages
         path: packages
@@ -155,7 +155,7 @@ jobs:
       run: dotnet tool install --global sign --prerelease
 
     - name: Azure login
-      uses: azure/login@v2
+      uses: azure/login@v3
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -174,7 +174,7 @@ jobs:
         --description-url 'https://steeltoe.io/'
 
     - name: Upload signed packages
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v7
       with:
         if-no-files-found: error
         name: signed-packages
@@ -194,14 +194,14 @@ jobs:
 
     steps:
     - name: Azure login
-      uses: azure/login@v2
+      uses: azure/login@v3
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Download signed packages
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: signed-packages
         path: packages
@@ -243,7 +243,7 @@ jobs:
         dotnet-version: 8.0.*
 
     - name: Download signed packages
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: signed-packages
         path: packages

@@ -91,7 +91,7 @@ jobs:
 
     - name: Upload crash/hang dumps (on failure)
       if: ${{ !cancelled() && (steps.test.outcome == 'failure' || steps.test-memory-dumps.outcome == 'failure') }}
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v7
       with:
         name: FailedTestOutput-${{ inputs.OS }}-latest
         path: |
@@ -101,7 +101,7 @@ jobs:
 
     - name: Report test results
       if: ${{ !cancelled() && (steps.test.outcome != 'skipped' || steps.test-memory-dumps.outcome != 'skipped') }}
-      uses: dorny/test-reporter@v2
+      uses: dorny/test-reporter@v3
       with:
         name: ${{ inputs.OS }}-latest test results
         reporter: dotnet-trx
