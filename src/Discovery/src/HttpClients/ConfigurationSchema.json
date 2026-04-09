@@ -1,0 +1,17 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Discovery": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Discovery.HttpClients": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  }
+}

@@ -3,5 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.CompilerServices;
+using Aspire;
+
+[assembly: LoggingCategories("Steeltoe", "Steeltoe.Common", "Steeltoe.Common.Net")]
 
 [assembly: InternalsVisibleTo("Steeltoe.Common.Net.Test")]
