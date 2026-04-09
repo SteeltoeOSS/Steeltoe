@@ -3,5 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.CompilerServices;
+using Aspire;
+
+[assembly: LoggingCategories("Steeltoe", "Steeltoe.Logging", "Steeltoe.Logging.Abstractions")]
 
 [assembly: InternalsVisibleTo("Steeltoe.Logging.DynamicSerilog.Test")]

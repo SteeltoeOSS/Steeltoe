@@ -3,5 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.CompilerServices;
+using Aspire;
+
+[assembly: LoggingCategories("Steeltoe", "Steeltoe.Connectors", "Steeltoe.Connectors.EntityFrameworkCore")]
 
 [assembly: InternalsVisibleTo("Steeltoe.Connectors.EntityFrameworkCore.Test")]

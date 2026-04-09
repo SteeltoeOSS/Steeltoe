@@ -3,5 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.CompilerServices;
+using Aspire;
+
+[assembly: LoggingCategories("Steeltoe", "Steeltoe.Security", "Steeltoe.Security.Authentication", "Steeltoe.Security.Authentication.OpenIdConnect")]
 
 [assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.OpenIdConnect.Test")]
