@@ -6,13 +6,13 @@
     -->
 
     <AspNetCoreHealthChecksVersion>9.0.*</AspNetCoreHealthChecksVersion>
-    <CoverletVersion>6.0.*</CoverletVersion>
+    <CoverletVersion>8.0.*</CoverletVersion>
     <FluentAssertionsVersion>7.2.*</FluentAssertionsVersion>
-    <MicrosoftAzureCosmosVersion>3.57.*</MicrosoftAzureCosmosVersion>
+    <MicrosoftAzureCosmosVersion>3.58.*</MicrosoftAzureCosmosVersion>
     <MicrosoftCodeAnalysisVersion>5.0.*</MicrosoftCodeAnalysisVersion>
-    <MicrosoftSqlClientVersion>6.1.*</MicrosoftSqlClientVersion>
+    <MicrosoftSqlClientVersion>7.0.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>7.0.*</MockHttpVersion>
-    <MongoDbDriverVersion>3.6.*</MongoDbDriverVersion>
+    <MongoDbDriverVersion>3.7.*</MongoDbDriverVersion>
     <MoqVersion>4.20.69</MoqVersion>
     <MySqlConnectorVersion>2.5.*</MySqlConnectorVersion>
     <MySqlDataVersion>9.6.*</MySqlDataVersion>
@@ -26,7 +26,7 @@
     <SystemCommandLineVersion>2.0.*</SystemCommandLineVersion>
     <SystemIdentityModelVersion>8.15.*</SystemIdentityModelVersion>
     <SystemSqlClientVersion>4.9.*</SystemSqlClientVersion>
-    <TestSdkVersion>18.0.*</TestSdkVersion>
+    <TestSdkVersion>18.4.*</TestSdkVersion>
     <XunitVersion>3.2.*</XunitVersion>
     <XunitVisualStudioVersion>3.1.*</XunitVisualStudioVersion>
   </PropertyGroup>
