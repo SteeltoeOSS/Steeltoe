@@ -131,7 +131,7 @@ jobs:
 
   sign:
     name: Sign
-    if: ${{ github.event_name != 'pull_request' }}
+    #if: ${{ github.event_name != 'pull_request' }}
     timeout-minutes: 15
     needs: build
     runs-on: windows-latest
