@@ -62,7 +62,7 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
             options.HostName = options.IPAddress;
         }
 
-        if (options is { UseAspNetCoreUrls: true, Port: 0, Scheme: null, UseNetworkInterfaces: false })
+        if (options is { UseAspNetCoreUrls: true, Port: 0, Scheme: null })
         {
             ICollection<string> addresses = _configuration.GetListenAddresses();
             SetSchemeWithPortFromListenAddresses(options, addresses);

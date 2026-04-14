@@ -176,8 +176,7 @@ public sealed class ConsulDiscoveryOptions
     /// <summary>
     /// Gets or sets a value indicating whether to register with the port number ASP.NET Core is listening on. Default value: true.
     /// <para />
-    /// This property is ignored when <see cref="Port" /> or <see cref="Scheme" /> is explicitly configured, or when <see cref="UseNetworkInterfaces" /> is
-    /// <c>true</c>.
+    /// This property is ignored when <see cref="Port" /> or <see cref="Scheme" /> is explicitly configured.
     /// </summary>
     public bool UseAspNetCoreUrls { get; set; } = true;
 }
