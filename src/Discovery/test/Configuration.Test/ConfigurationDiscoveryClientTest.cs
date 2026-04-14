@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions.Extensions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -187,5 +189,89 @@ public sealed class ConfigurationDiscoveryClientTest
         services.AddConfigurationDiscoveryClient();
 
         services.Count.Should().Be(beforeServiceCount);
+    }
+
+    [Fact]
+    public async Task InstancesFetched_event_is_raised_after_configuration_change()
+    {
+        var fileProvider = new MemoryFileProvider();
+
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Discovery": {
+                "Services": [
+                  {
+                    "ServiceId": "serviceA",
+                    "host": "instanceA1",
+                    "port": 443,
+                    "isSecure": true
+                  },
+                  {
+                    "ServiceId": "serviceA",
+                    "host": "instanceA2",
+                    "port": 443,
+                    "isSecure": true
+                  },
+                  {
+                    "ServiceId": "serviceB",
+                    "host": "instanceB1",
+                    "port": 443,
+                    "isSecure": true
+                  }
+                ]
+              }
+            }
+            """);
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
+        builder.Services.AddConfigurationDiscoveryClient();
+        await using WebApplication webApplication = builder.Build();
+
+        ConfigurationDiscoveryClient discoveryClient = webApplication.Services.GetServices<IDiscoveryClient>().OfType<ConfigurationDiscoveryClient>().Single();
+        int eventCount = 0;
+        DiscoveryInstancesFetchedEventArgs? eventArgs = null;
+
+        discoveryClient.InstancesFetched += (_, args) =>
+        {
+            eventCount++;
+            eventArgs = args;
+        };
+
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "Discovery": {
+                "Services": [
+                  {
+                    "ServiceId": "serviceA",
+                    "host": "instanceA1",
+                    "port": 443,
+                    "isSecure": true
+                  },
+                  {
+                    "ServiceId": "serviceB",
+                    "host": "instanceB1",
+                    "port": 443,
+                    "isSecure": true
+                  },
+                  {
+                    "ServiceId": "serviceB",
+                    "host": "instanceB2",
+                    "port": 443,
+                    "isSecure": true
+                  }
+                ]
+              }
+            }
+            """);
+
+        fileProvider.NotifyChanged();
+
+        SpinWait.SpinUntil(() => eventCount == 1, 5.Seconds()).Should().BeTrue();
+
+        eventArgs.Should().NotBeNull();
+        eventArgs.InstancesByServiceId.Should().HaveCount(2);
+        eventArgs.InstancesByServiceId.Should().ContainKey("serviceA").WhoseValue.Should().HaveCount(1);
+        eventArgs.InstancesByServiceId.Should().ContainKey("serviceB").WhoseValue.Should().HaveCount(2);
     }
 }

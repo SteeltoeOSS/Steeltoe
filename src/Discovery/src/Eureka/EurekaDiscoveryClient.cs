@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.ObjectModel;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -68,6 +69,9 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
     /// Occurs after applications have been fetched from Eureka.
     /// </summary>
     public event EventHandler<ApplicationsFetchedEventArgs>? ApplicationsFetched;
+
+    /// <inheritdoc />
+    public event EventHandler<DiscoveryInstancesFetchedEventArgs>? InstancesFetched;
 
     public EurekaDiscoveryClient(EurekaApplicationInfoManager appInfoManager, EurekaClient eurekaClient,
         IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, HealthCheckHandlerProvider healthCheckHandlerProvider, TimeProvider timeProvider,
@@ -326,7 +330,8 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
 
         await _registryFetchAsyncLock.WaitAsync(cancellationToken);
 
-        ApplicationsFetchedEventArgs eventArgs;
+        ApplicationsFetchedEventArgs? applicationsEventArgs = null;
+        DiscoveryInstancesFetchedEventArgs? instancesEventArgs = null;
 
         try
         {
@@ -344,33 +349,75 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
 
             UpdateLastRemoteInstanceStatusFromCache();
 
-            eventArgs = new ApplicationsFetchedEventArgs(_remoteApps);
+            if (ApplicationsFetched != null)
+            {
+                applicationsEventArgs = new ApplicationsFetchedEventArgs(_remoteApps);
+            }
+
+            if (InstancesFetched != null)
+            {
+                ReadOnlyDictionary<string, IReadOnlyList<IServiceInstance>> instancesByServiceId = ToServiceInstanceMap(_remoteApps);
+                instancesEventArgs = new DiscoveryInstancesFetchedEventArgs(instancesByServiceId);
+            }
         }
         finally
         {
             _registryFetchAsyncLock.Release();
         }
 
-        OnApplicationsFetched(eventArgs);
+        if (applicationsEventArgs != null || instancesEventArgs != null)
+        {
+            RaiseFetchEvents(applicationsEventArgs, instancesEventArgs);
+        }
     }
 
-    private void OnApplicationsFetched(ApplicationsFetchedEventArgs? args)
+    private static ReadOnlyDictionary<string, IReadOnlyList<IServiceInstance>> ToServiceInstanceMap(ApplicationInfoCollection apps)
     {
-        if (args != null)
+        // @formatter:wrap_chained_method_calls chop_always
+        // @formatter:wrap_before_first_method_call true
+
+        return apps
+            .SelectMany(app => app.Instances)
+            .GroupBy(instance => instance.AppName, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(grouping => grouping.Key, grouping => (IReadOnlyList<IServiceInstance>)grouping
+                .Select(instance => instance.ToServiceInstance())
+                .ToList()
+                .AsReadOnly())
+            .AsReadOnly();
+
+        // @formatter:wrap_before_first_method_call restore
+        // @formatter:wrap_chained_method_calls restore
+    }
+
+    private void RaiseFetchEvents(ApplicationsFetchedEventArgs? applicationsEventArgs, DiscoveryInstancesFetchedEventArgs? instancesEventArgs)
+    {
+        // Execute on separate thread, so we won't block the periodic refresh in case the handler logic is expensive.
+        ThreadPool.QueueUserWorkItem(_ =>
         {
-            // Execute on separate thread, so we won't block the periodic refresh in case the handler logic is expensive.
-            ThreadPool.QueueUserWorkItem(_ =>
+            try
             {
-                try
+                if (applicationsEventArgs != null)
                 {
-                    ApplicationsFetched?.Invoke(this, args);
+                    ApplicationsFetched?.Invoke(this, applicationsEventArgs);
                 }
-                catch (Exception exception)
+            }
+            catch (Exception exception)
+            {
+                LogFailedToHandleEvent(exception, nameof(ApplicationsFetched));
+            }
+
+            try
+            {
+                if (instancesEventArgs != null)
                 {
-                    LogFailedToHandleEvent(exception, nameof(ApplicationsFetched));
+                    InstancesFetched?.Invoke(this, instancesEventArgs);
                 }
-            });
-        }
+            }
+            catch (Exception exception)
+            {
+                LogFailedToHandleEvent(exception, nameof(InstancesFetched));
+            }
+        });
     }
 
     internal async Task<ApplicationInfoCollection> FetchFullRegistryAsync(CancellationToken cancellationToken)
