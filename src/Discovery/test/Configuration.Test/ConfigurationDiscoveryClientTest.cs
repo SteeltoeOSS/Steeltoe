@@ -271,7 +271,7 @@ public sealed class ConfigurationDiscoveryClientTest
 
         eventArgs.Should().NotBeNull();
         eventArgs.InstancesByServiceId.Should().HaveCount(2);
-        eventArgs.InstancesByServiceId.Should().ContainKey("serviceA").WhoseValue.Should().HaveCount(1);
-        eventArgs.InstancesByServiceId.Should().ContainKey("serviceB").WhoseValue.Should().HaveCount(2);
+        eventArgs.InstancesByServiceId.Should().ContainKey("ServiceA").WhoseValue.Should().HaveCount(1);
+        eventArgs.InstancesByServiceId.Should().ContainKey("ServiceB").WhoseValue.Should().HaveCount(2);
     }
 }

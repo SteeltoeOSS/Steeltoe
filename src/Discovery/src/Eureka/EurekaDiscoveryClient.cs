@@ -382,7 +382,7 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
             .ToDictionary(grouping => grouping.Key, grouping => (IReadOnlyList<IServiceInstance>)grouping
                 .Select(instance => instance.ToServiceInstance())
                 .ToList()
-                .AsReadOnly())
+                .AsReadOnly(), StringComparer.OrdinalIgnoreCase)
             .AsReadOnly();
 
         // @formatter:wrap_before_first_method_call restore

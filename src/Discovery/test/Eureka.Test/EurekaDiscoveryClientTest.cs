@@ -685,7 +685,7 @@ public sealed class EurekaDiscoveryClientTest
         newInstanceInfo.ActionType.Should().Be(ActionType.Modified);
 
         instancesEventArgs.Should().NotBeNull();
-        IServiceInstance newServiceInstance = instancesEventArgs.InstancesByServiceId.Should().ContainKey("FOO").WhoseValue.Should().ContainSingle().Which;
+        IServiceInstance newServiceInstance = instancesEventArgs.InstancesByServiceId.Should().ContainKey("foo").WhoseValue.Should().ContainSingle().Which;
         newServiceInstance.Uri.ToString().Should().Be("http://modified-host:8080/");
     }
 

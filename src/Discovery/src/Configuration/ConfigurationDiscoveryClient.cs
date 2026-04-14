@@ -50,9 +50,9 @@ public sealed class ConfigurationDiscoveryClient : IDiscoveryClient, IDisposable
             .Where(service => service.ServiceId != null)
             .GroupBy(service => service.ServiceId!, StringComparer.OrdinalIgnoreCase)
             .ToDictionary(grouping => grouping.Key, grouping => (IReadOnlyList<IServiceInstance>)grouping
-                .Select(instance => (IServiceInstance)instance)
+                .Cast<IServiceInstance>()
                 .ToList()
-                .AsReadOnly())
+                .AsReadOnly(), StringComparer.OrdinalIgnoreCase)
             .AsReadOnly();
 
         // @formatter:wrap_before_first_method_call restore
