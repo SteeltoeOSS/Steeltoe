@@ -88,7 +88,7 @@ public sealed class EurekaDiscoveryClientTest
                 "instance": [
                   {
                     "instanceId": "localhost:foo",
-                    "hostName": "localhost",
+                    "hostName": "modified-host",
                     "app": "FOO",
                     "ipAddr": "192.168.56.1",
                     "status": "UP",
@@ -635,7 +635,7 @@ public sealed class EurekaDiscoveryClientTest
     }
 
     [Fact]
-    public async Task ApplicationEventsFireOnChangeDuringFetch()
+    public async Task ApplicationEventsFireAfterFetch()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -655,17 +655,38 @@ public sealed class EurekaDiscoveryClientTest
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-        int eventCount = 0;
+        int applicationsEventCount = 0;
+        ApplicationsFetchedEventArgs? applicationsEventArgs = null;
+        int instancesEventCount = 0;
+        DiscoveryInstancesFetchedEventArgs? instancesEventArgs = null;
 
-        discoveryClient.ApplicationsFetched += (_, _) => eventCount++;
+        discoveryClient.ApplicationsFetched += (_, args) =>
+        {
+            applicationsEventCount++;
+            applicationsEventArgs = args;
+        };
+
+        discoveryClient.InstancesFetched += (_, args) =>
+        {
+            instancesEventCount++;
+            instancesEventArgs = args;
+        };
 
         await discoveryClient.FetchRegistryAsync(true, TestContext.Current.CancellationToken);
-        SpinWait.SpinUntil(() => eventCount == 1, 5.Seconds()).Should().BeTrue();
+        SpinWait.SpinUntil(() => applicationsEventCount == 1 && instancesEventCount == 1, 5.Seconds()).Should().BeTrue();
 
         await discoveryClient.FetchRegistryAsync(false, TestContext.Current.CancellationToken);
-        SpinWait.SpinUntil(() => eventCount == 2, 5.Seconds()).Should().BeTrue();
+        SpinWait.SpinUntil(() => applicationsEventCount == 2 && instancesEventCount == 2, 5.Seconds()).Should().BeTrue();
 
         handler.Mock.VerifyNoOutstandingExpectation();
+
+        applicationsEventArgs.Should().NotBeNull();
+        InstanceInfo newInstanceInfo = applicationsEventArgs.Applications.Should().ContainSingle().Which.Instances.Should().ContainSingle().Which;
+        newInstanceInfo.ActionType.Should().Be(ActionType.Modified);
+
+        instancesEventArgs.Should().NotBeNull();
+        IServiceInstance newServiceInstance = instancesEventArgs.InstancesByServiceId.Should().ContainKey("foo").WhoseValue.Should().ContainSingle().Which;
+        newServiceInstance.Uri.ToString().Should().Be("http://modified-host:8080/");
     }
 
     private sealed class ExtraRequestHeadersDelegatingHandler : DelegatingHandler

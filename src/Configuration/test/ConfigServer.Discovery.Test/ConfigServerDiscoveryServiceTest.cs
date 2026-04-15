@@ -114,6 +114,10 @@ public sealed class ConfigServerDiscoveryServiceTest
     {
         public string Description => throw new NotImplementedException();
 
+#pragma warning disable CS0067 // The event is never used
+        public event EventHandler<DiscoveryInstancesFetchedEventArgs>? InstancesFetched;
+#pragma warning restore CS0067 // The event is never used
+
         public Task<ISet<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();

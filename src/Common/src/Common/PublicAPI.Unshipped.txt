@@ -1,1 +1,5 @@
 #nullable enable
+Steeltoe.Common.Discovery.DiscoveryInstancesFetchedEventArgs
+Steeltoe.Common.Discovery.DiscoveryInstancesFetchedEventArgs.DiscoveryInstancesFetchedEventArgs(System.Collections.Generic.IReadOnlyDictionary<string!, System.Collections.Generic.IReadOnlyList<Steeltoe.Common.Discovery.IServiceInstance!>!>! instancesByServiceId) -> void
+Steeltoe.Common.Discovery.DiscoveryInstancesFetchedEventArgs.InstancesByServiceId.get -> System.Collections.Generic.IReadOnlyDictionary<string!, System.Collections.Generic.IReadOnlyList<Steeltoe.Common.Discovery.IServiceInstance!>!>!
+Steeltoe.Common.Discovery.IDiscoveryClient.InstancesFetched -> System.EventHandler<Steeltoe.Common.Discovery.DiscoveryInstancesFetchedEventArgs!>!
