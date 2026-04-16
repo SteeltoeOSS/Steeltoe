@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Logging;
@@ -57,11 +58,15 @@ public sealed class HostBuilderTest
     public async Task CanUseThirdPartyDynamicLoggerProvider()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddSingleton<IDynamicLoggerProvider, OtherDynamicLoggerProvider>();
+        builder.Services.AddSingleton<OtherDynamicLoggerProvider>();
+        builder.Services.AddSingleton<ILoggerProvider>(serviceProvider => serviceProvider.GetRequiredService<OtherDynamicLoggerProvider>());
+        builder.Services.AddSingleton<IDynamicLoggerProvider>(serviceProvider => serviceProvider.GetRequiredService<OtherDynamicLoggerProvider>());
         builder.Logging.AddDynamicConsole();
         await using WebApplication host = builder.Build();
 
         host.Services.GetService<IDynamicLoggerProvider>().Should().BeOfType<OtherDynamicLoggerProvider>();
+        host.Services.GetServices<ILoggerProvider>().OfType<OtherDynamicLoggerProvider>().Should().ContainSingle();
+        host.Services.GetServices<ILoggerProvider>().Should().NotContain(provider => provider is DynamicConsoleLoggerProvider);
     }
 
     [Fact]
@@ -230,7 +235,7 @@ public sealed class HostBuilderTest
     {
         public ILogger CreateLogger(string categoryName)
         {
-            throw new NotSupportedException();
+            return NullLogger.Instance;
         }
 
         public ICollection<DynamicLoggerState> GetLogLevels()
