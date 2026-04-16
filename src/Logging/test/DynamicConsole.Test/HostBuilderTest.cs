@@ -203,6 +203,18 @@ public sealed class HostBuilderTest
         action.Should().NotThrow();
     }
 
+    [Fact]
+    public async Task DoesNotCrashWhenLoggingProvidersAreCleared()
+    {
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Logging.AddDynamicConsole();
+        builder.Services.AddLogging(loggingBuilder => loggingBuilder.ClearProviders());
+        await using WebApplication host = builder.Build();
+
+        host.Services.GetService<IDynamicLoggerProvider>().Should().BeOfType<DynamicConsoleLoggerProvider>();
+        host.Services.GetServices<ILoggerProvider>().OfType<DynamicConsoleLoggerProvider>().Should().BeEmpty();
+    }
+
     private sealed class OtherDynamicLoggerProvider : IDynamicLoggerProvider
     {
         public ILogger CreateLogger(string categoryName)

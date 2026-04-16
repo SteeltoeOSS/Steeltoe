@@ -33,8 +33,9 @@ public static class LoggingBuilderExtensions
             UpdateConsoleLoggerProviderRegistration(builder.Services);
 
             builder.AddFilter<DynamicConsoleLoggerProvider>(null, LogLevel.Trace);
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicConsoleLoggerProvider>());
-            builder.Services.AddSingleton(provider => provider.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().Single());
+            builder.Services.TryAddSingleton<DynamicConsoleLoggerProvider>();
+            builder.Services.AddSingleton<ILoggerProvider>(serviceProvider => serviceProvider.GetRequiredService<DynamicConsoleLoggerProvider>());
+            builder.Services.AddSingleton<IDynamicLoggerProvider>(serviceProvider => serviceProvider.GetRequiredService<DynamicConsoleLoggerProvider>());
 
             DisableConsoleColorsOnCloudPlatform(builder);
         }

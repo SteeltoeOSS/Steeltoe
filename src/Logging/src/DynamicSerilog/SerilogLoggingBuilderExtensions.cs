@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog;
-using Steeltoe.Common;
 
 namespace Steeltoe.Logging.DynamicSerilog;
 
@@ -94,8 +93,9 @@ public static class SerilogLoggingBuilderExtensions
 
             ConfigureSerilogOptions(builder, serilogConfiguration);
 
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicSerilogLoggerProvider>());
-            builder.Services.AddSingleton(provider => provider.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().Single());
+            builder.Services.TryAddSingleton<DynamicSerilogLoggerProvider>();
+            builder.Services.AddSingleton<ILoggerProvider>(serviceProvider => serviceProvider.GetRequiredService<DynamicSerilogLoggerProvider>());
+            builder.Services.AddSingleton<IDynamicLoggerProvider>(serviceProvider => serviceProvider.GetRequiredService<DynamicSerilogLoggerProvider>());
         }
 
         return builder;
@@ -103,8 +103,7 @@ public static class SerilogLoggingBuilderExtensions
 
     private static bool IsSerilogDynamicLoggerProviderAlreadyRegistered(ILoggingBuilder builder)
     {
-        return builder.Services.Any(descriptor =>
-            descriptor.SafeGetImplementationType() == typeof(DynamicSerilogLoggerProvider) && descriptor.ServiceType == typeof(ILoggerProvider));
+        return builder.Services.Any(descriptor => descriptor.ServiceType == typeof(DynamicSerilogLoggerProvider));
     }
 
     private static void AssertNoDynamicLoggerProviderRegistered(ILoggingBuilder builder)

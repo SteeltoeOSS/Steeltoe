@@ -403,6 +403,18 @@ public sealed class HostBuilderTest : IDisposable
         action.Should().NotThrow();
     }
 
+    [Fact]
+    public async Task DoesNotCrashWhenLoggingProvidersAreCleared()
+    {
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Logging.AddDynamicSerilog();
+        builder.Services.AddLogging(loggingBuilder => loggingBuilder.ClearProviders());
+        await using WebApplication host = builder.Build();
+
+        host.Services.GetService<IDynamicLoggerProvider>().Should().BeOfType<DynamicSerilogLoggerProvider>();
+        host.Services.GetServices<ILoggerProvider>().OfType<DynamicSerilogLoggerProvider>().Should().BeEmpty();
+    }
+
     public void Dispose()
     {
         _consoleOutput.Dispose();
