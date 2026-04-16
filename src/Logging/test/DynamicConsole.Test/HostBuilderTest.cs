@@ -54,6 +54,17 @@ public sealed class HostBuilderTest
     }
 
     [Fact]
+    public async Task CanUseThirdPartyDynamicLoggerProvider()
+    {
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Services.AddSingleton<IDynamicLoggerProvider, OtherDynamicLoggerProvider>();
+        builder.Logging.AddDynamicConsole();
+        await using WebApplication host = builder.Build();
+
+        host.Services.GetService<IDynamicLoggerProvider>().Should().BeOfType<OtherDynamicLoggerProvider>();
+    }
+
+    [Fact]
     public async Task CanChangeMinimumLogLevels()
     {
         var appSettings = new Dictionary<string, string?>
