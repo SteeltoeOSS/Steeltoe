@@ -113,6 +113,67 @@ public sealed class RoundRobinLoadBalancerTest
     }
 
     [Fact]
+    public async Task ResolveServiceInstanceAsync_RemovesDuplicates_CaseInsensitive()
+    {
+        var client = new TestDiscoveryClient([
+            new TestServiceInstance(new Uri("HTTPS://CASE-HOST:1234/")),
+            new TestServiceInstance(new Uri("https://case-host:1234/"))
+        ], "svc");
+
+        var resolver = new ServiceInstancesResolver([client], NullLogger<ServiceInstancesResolver>.Instance);
+        var loadBalancer = new RoundRobinLoadBalancer(resolver, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
+
+        Uri first = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://svc/api"), TestContext.Current.CancellationToken);
+        Uri second = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://svc/api"), TestContext.Current.CancellationToken);
+
+        first.Should().Be(second);
+    }
+
+    [Fact]
+    public async Task ResolveServiceInstanceAsync_RemovesDuplicates_CaseInsensitive_MultipleDiscoveryClients()
+    {
+        var targetUri = new Uri("https://merged:1/");
+        var clientA = new TestDiscoveryClient([new TestServiceInstance(targetUri)], "svc");
+        var clientB = new TestDiscoveryClient([new TestServiceInstance(targetUri)], "svc");
+
+        var resolver = new ServiceInstancesResolver([
+            clientA,
+            clientB
+        ], NullLogger<ServiceInstancesResolver>.Instance);
+
+        var loadBalancer = new RoundRobinLoadBalancer(resolver, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
+
+        Uri first = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://svc/api"), TestContext.Current.CancellationToken);
+        Uri second = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://svc/api"), TestContext.Current.CancellationToken);
+
+        first.Should().Be(second);
+    }
+
+    [Fact]
+    public async Task ResolveServiceInstanceAsync_RemovesDuplicates_Rotates()
+    {
+        var shared = new Uri("https://shared:100/");
+        var other = new Uri("https://other:100/");
+
+        var client = new TestDiscoveryClient([
+            new TestServiceInstance(shared),
+            new TestServiceInstance(shared),
+            new TestServiceInstance(other)
+        ], "svc");
+
+        var resolver = new ServiceInstancesResolver([client], NullLogger<ServiceInstancesResolver>.Instance);
+        var loadBalancer = new RoundRobinLoadBalancer(resolver, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
+
+        Uri first = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://svc/api"), TestContext.Current.CancellationToken);
+        Uri second = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://svc/api"), TestContext.Current.CancellationToken);
+        Uri third = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://svc/api"), TestContext.Current.CancellationToken);
+
+        first.Should().Be(new Uri(shared, "api"));
+        second.Should().Be(new Uri(other, "api"));
+        third.Should().Be(first);
+    }
+
+    [Fact]
     public async Task ResolveServiceInstanceAsync_SkipsOverThrowingDiscoveryClients()
     {
         ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
@@ -134,15 +195,28 @@ public sealed class RoundRobinLoadBalancerTest
     [Fact]
     public async Task ResolveServiceInstanceAsync_CachesInstances()
     {
-        ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
+        var options = new ConfigurationDiscoveryOptions
+        {
+            Services =
+            {
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruit-service",
+                    Host = "before-reload",
+                    Port = 8000,
+                    IsSecure = true
+                }
+            }
+        };
+
         TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var client = new ConfigurationDiscoveryClient(optionsMonitor);
         IDistributedCache distributedCache = GetCache();
         var resolver = new ServiceInstancesResolver([client], distributedCache, null, NullLogger<ServiceInstancesResolver>.Instance);
         var loadBalancer = new RoundRobinLoadBalancer(resolver, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
 
-        Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruit-service/api"), TestContext.Current.CancellationToken);
-        fruitUri.Should().Be("https://fruit-ball:8000/api");
+        Uri first = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruit-service/api"), TestContext.Current.CancellationToken);
+        first.Should().Be("https://before-reload:8000/api");
 
         optionsMonitor.Change(new ConfigurationDiscoveryOptions
         {
@@ -151,15 +225,15 @@ public sealed class RoundRobinLoadBalancerTest
                 new ConfigurationServiceInstance
                 {
                     ServiceId = "fruit-service",
-                    Host = "CHANGED",
+                    Host = "after-reload",
                     Port = 8000,
                     IsSecure = true
                 }
             }
         });
 
-        fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruit-service/api"), TestContext.Current.CancellationToken);
-        fruitUri.Should().Be("https://fruit-ball:8000/api");
+        Uri second = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruit-service/api"), TestContext.Current.CancellationToken);
+        second.Should().Be(first);
     }
 
     private static ConfigurationDiscoveryOptions CreateTestServiceInstances()
@@ -251,9 +325,10 @@ public sealed class RoundRobinLoadBalancerTest
         public IReadOnlyDictionary<string, string?> Metadata => throw new NotImplementedException();
     }
 
-    private sealed class TestDiscoveryClient(IServiceInstance? instance = null) : IDiscoveryClient
+    private sealed class TestDiscoveryClient(IList<IServiceInstance> instances, string? serviceId = null) : IDiscoveryClient
     {
-        private readonly IServiceInstance? _instance = instance;
+        private readonly IList<IServiceInstance> _instances = instances;
+        private readonly string? _serviceId = serviceId;
 
         public string Description => throw new NotImplementedException();
 
@@ -261,31 +336,34 @@ public sealed class RoundRobinLoadBalancerTest
         public event EventHandler<DiscoveryInstancesFetchedEventArgs>? InstancesFetched;
 #pragma warning restore CS0067 // The event is never used
 
+        public TestDiscoveryClient()
+            : this([])
+        {
+        }
+
+        public TestDiscoveryClient(IServiceInstance instance, string? serviceId = null)
+            : this([instance], serviceId)
+        {
+        }
+
         public Task<ISet<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
         {
-            IList<IServiceInstance> instances = [];
-
-            if (_instance != null)
-            {
-                instances.Add(_instance);
-            }
-
-            return Task.FromResult(instances);
+            return Task.FromResult(_serviceId == null || serviceId == _serviceId ? _instances : []);
         }
 
-        public IServiceInstance GetLocalServiceInstance()
+        public IServiceInstance? GetLocalServiceInstance()
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public Task ShutdownAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
     }
 
