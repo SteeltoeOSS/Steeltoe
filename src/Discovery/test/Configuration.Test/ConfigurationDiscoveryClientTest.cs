@@ -229,13 +229,13 @@ public sealed class ConfigurationDiscoveryClientTest
         await using WebApplication webApplication = builder.Build();
 
         ConfigurationDiscoveryClient discoveryClient = webApplication.Services.GetServices<IDiscoveryClient>().OfType<ConfigurationDiscoveryClient>().Single();
-        int eventCount = 0;
         DiscoveryInstancesFetchedEventArgs? eventArgs = null;
+        int eventCount = 0;
 
         discoveryClient.InstancesFetched += (_, args) =>
         {
-            eventCount++;
             eventArgs = args;
+            Interlocked.Increment(ref eventCount);
         };
 
         fileProvider.ReplaceAppSettingsJsonFile("""

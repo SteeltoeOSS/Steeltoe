@@ -83,6 +83,7 @@ public sealed partial class ServiceInstancesResolver
 
             if (instancesFromCache != null)
             {
+                instancesFromCache = RemoveDuplicatesByUri(instancesFromCache);
                 LogReturningInstancesFromCache(instancesFromCache.Count);
                 return instancesFromCache;
             }
@@ -103,6 +104,8 @@ public sealed partial class ServiceInstancesResolver
             }
         }
 
+        instances = RemoveDuplicatesByUri(instances);
+
         if (_distributedCache != null)
         {
             byte[] cacheValue = ToCacheValue(instances);
@@ -110,6 +113,22 @@ public sealed partial class ServiceInstancesResolver
         }
 
         return instances;
+    }
+
+    private static List<IServiceInstance> RemoveDuplicatesByUri(List<IServiceInstance> instances)
+    {
+        var seenUris = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var result = new List<IServiceInstance>();
+
+        foreach (IServiceInstance instance in instances)
+        {
+            if (seenUris.Add(instance.Uri.AbsoluteUri))
+            {
+                result.Add(instance);
+            }
+        }
+
+        return result;
     }
 
     private static List<IServiceInstance>? FromCacheValue(byte[]? cacheValue)

@@ -373,20 +373,19 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
 
     private static ReadOnlyDictionary<string, IReadOnlyList<IServiceInstance>> ToServiceInstanceMap(ApplicationInfoCollection apps)
     {
-        // @formatter:wrap_chained_method_calls chop_always
-        // @formatter:wrap_before_first_method_call true
+        var dictionary = new Dictionary<string, IReadOnlyList<IServiceInstance>>(StringComparer.OrdinalIgnoreCase);
 
-        return apps
-            .SelectMany(app => app.Instances)
-            .GroupBy(instance => instance.AppName, StringComparer.OrdinalIgnoreCase)
-            .ToDictionary(grouping => grouping.Key, grouping => (IReadOnlyList<IServiceInstance>)grouping
-                .Select(instance => instance.ToServiceInstance())
-                .ToList()
-                .AsReadOnly(), StringComparer.OrdinalIgnoreCase)
-            .AsReadOnly();
+        foreach (string vipAddress in apps.VipInstanceMap.Keys.ToArray())
+        {
+            ReadOnlyCollection<InstanceInfo> instancesByVipAddress = apps.GetInstancesByVipAddress(vipAddress);
 
-        // @formatter:wrap_before_first_method_call restore
-        // @formatter:wrap_chained_method_calls restore
+            if (instancesByVipAddress.Count > 0)
+            {
+                dictionary[vipAddress] = instancesByVipAddress.Select(instance => instance.ToServiceInstance()).ToList().AsReadOnly();
+            }
+        }
+
+        return new ReadOnlyDictionary<string, IReadOnlyList<IServiceInstance>>(dictionary);
     }
 
     private void RaiseFetchEvents(ApplicationsFetchedEventArgs? applicationsEventArgs, DiscoveryInstancesFetchedEventArgs? instancesEventArgs)
