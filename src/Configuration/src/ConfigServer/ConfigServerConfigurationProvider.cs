@@ -593,7 +593,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     /// <returns>
     /// The HttpRequestMessage built from the path.
     /// </returns>
-    internal async Task<HttpRequestMessage> GetRequestMessageAsync(ConfigServerClientOptions optionsSnapshot, Uri requestUri,
+    internal async Task<HttpRequestMessage> GetConfigServerRequestMessageAsync(ConfigServerClientOptions optionsSnapshot, Uri requestUri,
         CancellationToken cancellationToken)
     {
         var uriWithoutUserInfo = new Uri(requestUri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.UriEscaped));
@@ -641,18 +641,34 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
         foreach (Uri requestUri in requestUris)
         {
-            // Make Config Server URI from settings
-            Uri uri = BuildConfigServerUri(optionsSnapshot, requestUri, label);
-
-            LogTryingToConnect(uri.ToMaskedString());
-
-            // Get the request message
-            LogBuildingHttpRequest();
-            HttpRequestMessage request = await GetRequestMessageAsync(optionsSnapshot, uri, cancellationToken);
-
-            // Invoke Config Server
             try
             {
+                // Make Config Server URI from settings
+                Uri uri = BuildConfigServerUri(optionsSnapshot, requestUri, label);
+
+                LogTryingToConnect(uri.ToMaskedString());
+                HttpRequestMessage request;
+
+                try
+                {
+                    // Get the request message (potentially fetches access token)
+                    LogBuildingHttpRequest();
+                    request = await GetConfigServerRequestMessageAsync(optionsSnapshot, uri, cancellationToken);
+                }
+                catch (Exception exception) when (!exception.IsCancellation())
+                {
+                    if (!string.IsNullOrEmpty(optionsSnapshot.AccessTokenUri))
+                    {
+                        var accessTokenUri = new Uri(optionsSnapshot.AccessTokenUri);
+                        LogFailedToFetchAccessToken(exception, accessTokenUri.ToMaskedString());
+
+                        continue;
+                    }
+
+                    throw;
+                }
+
+                // Invoke Config Server
                 LogSendingHttpRequest();
                 using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
@@ -808,7 +824,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         {
             using HttpClient httpClient = CreateHttpClient(optionsSnapshot);
 
-            Uri uri = GetVaultRenewUri(optionsSnapshot);
+            Uri uri = BuildVaultRenewUri(optionsSnapshot);
             HttpRequestMessage message = await GetVaultRenewRequestMessageAsync(optionsSnapshot, uri, cancellationToken);
 
             LogRenewingVaultToken(obscuredToken, optionsSnapshot.TokenTtl, uri.ToMaskedString());
@@ -825,7 +841,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
     }
 
-    private static Uri GetVaultRenewUri(ConfigServerClientOptions optionsSnapshot)
+    private static Uri BuildVaultRenewUri(ConfigServerClientOptions optionsSnapshot)
     {
         string baseUri = optionsSnapshot.Uri!.Split(',')[0].Trim();
 
@@ -1021,6 +1037,9 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Fetched access token from {AccessTokenUri}.")]
     private partial void LogAccessTokenFetched(string accessTokenUri);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to fetch access token from '{AccessTokenUri}'.")]
+    private partial void LogFailedToFetchAccessToken(Exception exception, string accessTokenUri);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Entered {Method}.")]
     private partial void LogRemoteLoadEntered(string method);

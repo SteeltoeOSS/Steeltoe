@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using FluentAssertions.Extensions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.TestResources;
@@ -446,6 +447,38 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         provider.TryGet("key1", out string? value).Should().BeTrue();
         value.Should().Be("value1");
+    }
+
+    [Fact]
+    public void Load_MultipleConfigServers_SocketErrorFromAccessTokenUri_LogsWarnings()
+    {
+        using var loggerProvider = new CapturingLoggerProvider((_, level) => level == LogLevel.Warning);
+        using var loggerFactory = new LoggerFactory([loggerProvider]);
+
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        handler.Mock.When(HttpMethod.Get, "http://auth-server.com")
+            .Throw(new HttpRequestException("Connection refused", new SocketException((int)SocketError.ConnectionRefused)));
+
+        var options = new ConfigServerClientOptions
+        {
+            Name = "myName",
+            AccessTokenUri = "http://auth-server.com",
+            Uri = "http://config-server1:8888,http://config-server2:8888"
+        };
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, loggerFactory);
+        provider.Load();
+
+        IList<string> logMessages = loggerProvider.GetAll();
+
+        logMessages.Should().BeEquivalentTo([
+            $"WARN {typeof(ConfigServerConfigurationProvider)}: Failed to fetch access token from 'http://auth-server.com/'.",
+            $"WARN {typeof(ConfigServerConfigurationProvider)}: Failed to fetch access token from 'http://auth-server.com/'.",
+            $"WARN {typeof(ConfigServerConfigurationProvider)}: Failed fetching remote configuration from server(s)."
+        ], assertionOptions => assertionOptions.WithStrictOrdering());
+
+        provider.InnerData.Should().BeEmpty();
     }
 
     [Fact]

@@ -195,6 +195,42 @@ public sealed class EurekaClientTest
     }
 
     [Fact]
+    public async Task RegisterAsync_ThrowsOnUnreachableAccessTokenServer()
+    {
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
+
+        var services = new ServiceCollection();
+        services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
+        services.AddOptions<EurekaClientOptions>().Configure(options => options.AccessTokenUri = "http://host-that-does-not-exist.net:9999/");
+        services.AddSingleton<IHttpClientFactory>(new TestHttpClientFactory());
+        services.AddSingleton<EurekaServiceUriStateManager>();
+        services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var client = serviceProvider.GetRequiredService<EurekaClient>();
+
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo(), TimeProvider.System)
+        {
+            NonSecurePort = 8080,
+            IsNonSecurePortEnabled = true,
+            SecurePort = 9090,
+            IsSecurePortEnabled = false,
+            LastUpdatedTimeUtc = new DateTime(638_440_245_328_236_418, DateTimeKind.Utc),
+            LastDirtyTimeUtc = new DateTime(638_440_245_328_236_418, DateTimeKind.Utc)
+        };
+
+        Func<Task> asyncAction = async () => await client.RegisterAsync(instance, TestContext.Current.CancellationToken);
+
+        await asyncAction.Should().ThrowExactlyAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
+
+        IList<string> logMessages = capturingLoggerProvider.GetAll();
+
+        logMessages.Should().BeEquivalentTo(
+            $"WARN {typeof(EurekaClient)}: Failed to fetch access token from 'http://host-that-does-not-exist.net:9999/' in attempt 1.");
+    }
+
+    [Fact]
     public async Task RegisterAsync_ThrowsOnErrorResponse()
     {
         using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
