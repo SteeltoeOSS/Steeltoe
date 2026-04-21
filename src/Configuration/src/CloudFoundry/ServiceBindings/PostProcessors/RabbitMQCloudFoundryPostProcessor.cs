@@ -16,7 +16,7 @@ internal sealed class RabbitMQCloudFoundryPostProcessor : CloudFoundryPostProces
 
             // Mapping from CloudFoundry service binding credentials to driver-specific connection string parameters.
             // The available credentials are documented at:
-            // - Tanzu Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/data-solutions/tanzu-rabbitmq-on-cloud-foundry/10-0/tanzu-rabbitmq-cloud-foundry/reference.html
+            // - Tanzu Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/tanzu-rabbitmq-tanzu-platform/10-0/rabbitmq-tp/use.html#call
 
             string? useTlsValue = mapper.MapFromTo("credentials:ssl", "useTls");
             string fromProtocol = bool.TryParse(useTlsValue, out bool useTls) && useTls ? "amqp+ssl" : "amqp";
