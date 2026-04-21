@@ -20,8 +20,11 @@ internal static class ConnectorConfigurer
             var optionsBuilder = new ConnectorConfigureOptionsBuilder();
             configureAction?.Invoke(optionsBuilder);
 
-            builder.AddCloudFoundryServiceBindings();
-            builder.AddKubernetesServiceBindings();
+            if (!optionsBuilder.SkipDefaultServiceBindings)
+            {
+                builder.AddCloudFoundryServiceBindings();
+                builder.AddKubernetesServiceBindings();
+            }
 
             RegisterPostProcessor(connectionStringPostProcessor, builder, optionsBuilder.DetectConfigurationChanges);
         }
