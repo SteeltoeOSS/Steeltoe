@@ -161,7 +161,7 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
         return Applications.GetRegisteredApplication(appName);
     }
 
-    internal IReadOnlyList<InstanceInfo> GetInstancesByVipAddress(string vipAddress)
+    private IReadOnlyList<InstanceInfo> GetInstancesByVipAddress(string vipAddress)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(vipAddress);
 
