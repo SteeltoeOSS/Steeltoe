@@ -787,7 +787,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
             using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, tracer.LoggerFactory);
 
-            Action action = () => provider.Load();
+            Action action = provider.Load;
 
             action.Should().ThrowExactly<ConfigServerException>();
 
