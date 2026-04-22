@@ -29,6 +29,7 @@ using Xunit;
 
 namespace ConfigurationSchemaGenerator.Tests;
 
+/// <summary/>
 public partial class GeneratorTests
 {
     private static readonly SyntaxTree s_implicitUsingsSyntaxTree = SyntaxFactory.ParseSyntaxTree(SourceText.From(

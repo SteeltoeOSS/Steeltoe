@@ -39,6 +39,7 @@ internal sealed class ComplexDetailsContributor : IHealthContributor
 
     private sealed class TestHealthDetails
     {
+        // ReSharper disable UnusedAutoPropertyAccessor.Local
         [JsonPropertyName("testString")]
         public string TestString { get; set; } = "test-string";
 
@@ -69,5 +70,6 @@ internal sealed class ComplexDetailsContributor : IHealthContributor
             ["Two"] = 2,
             ["Three"] = 3
         };
+        // ReSharper restore UnusedAutoPropertyAccessor.Local
     }
 }

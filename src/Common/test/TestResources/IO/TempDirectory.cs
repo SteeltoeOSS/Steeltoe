@@ -12,18 +12,10 @@ public class TempDirectory : TempPath
     /// <summary>
     /// Initializes a new instance of the <see cref="TempDirectory" /> class.
     /// </summary>
-    public TempDirectory()
-        : base(string.Empty)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TempDirectory" /> class.
-    /// </summary>
     /// <param name="prefix">
     /// Directory name prefix.
     /// </param>
-    public TempDirectory(string prefix)
+    protected TempDirectory(string prefix)
         : base(prefix)
     {
     }

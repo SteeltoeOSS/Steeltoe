@@ -375,7 +375,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         return await DoLoadAsync(optionsSnapshot, updateDictionary, cancellationToken);
     }
 
-    internal async Task<ConfigEnvironment?> DoLoadAsync(ConfigServerClientOptions optionsSnapshot, bool updateDictionary, CancellationToken cancellationToken)
+    private async Task<ConfigEnvironment?> DoLoadAsync(ConfigServerClientOptions optionsSnapshot, bool updateDictionary, CancellationToken cancellationToken)
     {
         LogFetchingRemoteConfiguration();
 

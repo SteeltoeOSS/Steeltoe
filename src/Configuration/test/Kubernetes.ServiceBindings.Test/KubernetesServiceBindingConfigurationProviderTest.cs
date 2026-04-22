@@ -123,7 +123,7 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
 
     private sealed class TestPostProcessor : IConfigurationPostProcessor
     {
-        public bool PostProcessorCalled { get; set; }
+        public bool PostProcessorCalled { get; private set; }
 
         public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
         {

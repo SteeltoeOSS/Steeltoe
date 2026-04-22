@@ -161,7 +161,7 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
         return Applications.GetRegisteredApplication(appName);
     }
 
-    internal IReadOnlyList<InstanceInfo> GetInstancesByVipAddress(string vipAddress)
+    private ReadOnlyCollection<InstanceInfo> GetInstancesByVipAddress(string vipAddress)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(vipAddress);
 
@@ -576,7 +576,7 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(serviceId);
 
-        IReadOnlyList<InstanceInfo> instances = GetInstancesByVipAddress(serviceId);
+        ReadOnlyCollection<InstanceInfo> instances = GetInstancesByVipAddress(serviceId);
         IServiceInstance[] serviceInstances = instances.Select(instance => new EurekaServiceInstance(instance)).Cast<IServiceInstance>().ToArray();
 
         if (_logger.IsEnabled(LogLevel.Debug))

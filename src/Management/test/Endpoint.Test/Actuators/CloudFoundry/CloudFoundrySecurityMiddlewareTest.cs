@@ -337,6 +337,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Configuration.AddCloudFoundry();
+        // ReSharper disable once AccessToDisposedClosure
         builder.Services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
         builder.Services.AddCloudFoundryActuator();
         await using WebApplication app = builder.Build();
@@ -378,7 +379,9 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
+        // ReSharper disable once ShortLivedHttpClient
         using var client = new HttpClient();
+
         var authenticationRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost:5000/cloudfoundryapplication"));
         authenticationRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken);
         var authorizationRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost:5000/cloudfoundryapplication/info"));
