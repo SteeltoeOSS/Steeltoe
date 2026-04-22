@@ -13,8 +13,6 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 
-// ReSharper disable AccessToDisposedClosure
-
 namespace Steeltoe.Discovery.Eureka.Test.Transport;
 
 public sealed class EurekaClientTest

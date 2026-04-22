@@ -515,7 +515,6 @@ public sealed class HostBuilderTest
         bool isServerOnline = false;
         using var handler = new DelegateToMockHttpClientHandler();
 
-        // ReSharper disable once AccessToModifiedClosure
         MockedRequest registerMock = handler.Mock.When(HttpMethod.Post, "http://sba-server.com/instances").Respond(_ => isServerOnline
             ? new HttpResponseMessage(HttpStatusCode.OK)
             {

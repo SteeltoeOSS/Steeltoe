@@ -7,6 +7,8 @@ using FluentAssertions.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 
+// ReSharper disable AccessToDisposedClosure
+
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed partial class ConfigServerConfigurationProviderTest
@@ -65,9 +67,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
 
-        // ReSharper disable AccessToDisposedClosure
         Action action = () => provider.BuildConfigServerUri(provider.ClientOptions, null!, null);
-        // ReSharper restore AccessToDisposedClosure
 
         action.Should().ThrowExactly<ArgumentNullException>();
     }

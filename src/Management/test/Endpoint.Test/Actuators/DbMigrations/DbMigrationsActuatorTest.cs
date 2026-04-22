@@ -30,7 +30,6 @@ public sealed class DbMigrationsActuatorTest
         services.AddDbMigrationsActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        // ReSharper disable once AccessToDisposedClosure
         Action action = () => serviceProvider.GetRequiredService<DbMigrationsEndpointMiddleware>();
 
         action.Should().NotThrow();

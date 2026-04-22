@@ -30,7 +30,6 @@ public sealed class HypermediaActuatorTest
         services.AddHypermediaActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        // ReSharper disable once AccessToDisposedClosure
         Action action = () => serviceProvider.GetRequiredService<HypermediaEndpointMiddleware>();
 
         action.Should().NotThrow();

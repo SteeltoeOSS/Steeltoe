@@ -265,7 +265,6 @@ public sealed class ConfigServerClientOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
@@ -368,7 +367,6 @@ public sealed class ConfigServerClientOptionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddPlaceholderResolver();
-        // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(defaultOptions, configureOptions, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configuration = configurationBuilder.Build();
 

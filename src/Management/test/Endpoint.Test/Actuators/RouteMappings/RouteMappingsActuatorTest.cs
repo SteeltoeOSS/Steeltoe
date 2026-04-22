@@ -39,7 +39,6 @@ public sealed partial class RouteMappingsActuatorTest
         services.AddRouteMappingsActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        // ReSharper disable once AccessToDisposedClosure
         Action action = () => serviceProvider.GetRequiredService<RouteMappingsEndpointMiddleware>();
 
         action.Should().NotThrow();

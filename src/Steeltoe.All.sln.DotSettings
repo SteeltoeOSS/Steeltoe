@@ -600,7 +600,6 @@
 	<s:String x:Key="/Default/CodeStyle/CSharpVarKeywordUsage/ForSimpleTypes/@EntryValue">UseVarWhenEvident</s:String>
 	<s:Boolean x:Key="/Default/CodeStyle/CSharpVarKeywordUsage/UseRoslynLogicForEvidentTypes/@EntryValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/CodeStyle/EditorConfig/EnableClangFormatSupport/@EntryValue">False</s:Boolean>
-	<s:Boolean x:Key="/Default/CodeStyle/EditorConfig/EnableEditorConfigSupport/@EntryValue">False</s:Boolean>
 	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue">Licensed to the .NET Foundation under one or more agreements.&#xD;
 The .NET Foundation licenses this file to you under the Apache 2.0 License.&#xD;
 See the LICENSE file in the project root for more information.&#xD;

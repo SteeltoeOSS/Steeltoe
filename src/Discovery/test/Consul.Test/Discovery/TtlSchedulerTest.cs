@@ -20,7 +20,6 @@ public sealed class TtlSchedulerTest
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
 
-        // ReSharper disable once AccessToDisposedClosure
         Action action = () => scheduler.Add(string.Empty);
 
         action.Should().ThrowExactly<ArgumentException>();
@@ -97,7 +96,6 @@ public sealed class TtlSchedulerTest
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
 
-        // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await scheduler.RemoveAsync(string.Empty);
 
         await action.Should().ThrowExactlyAsync<ArgumentException>();
