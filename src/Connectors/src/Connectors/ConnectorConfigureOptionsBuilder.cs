@@ -19,39 +19,43 @@ public sealed class ConnectorConfigureOptionsBuilder
     /// <c>true</c> when using custom logic to convert platform-based credentials to driver-specific configuration keys.
     /// <para>
     /// <example>
-    /// For example, to use a third-party Cloud Foundry service broker, the following code can be used to map the PostgreSQL credentials to the format that
+    /// For example, to use a third-party Cloud Foundry service broker that sets the
+    /// <c>
+    /// VCAP_SERVICES
+    /// </c>
+    /// environment variable to:
+    /// <code>
+    /// {
+    ///   "custom-postgres-broker": [
+    ///     {
+    ///       "name": "products-db",
+    ///       "credentials": {
+    ///         "custom-hostname-key": "example.cloud.com",
+    ///         "custom-port-key": 2345,
+    ///         "custom-username-key": "products-user",
+    ///         "custom-password-key": "products-secret",
+    ///         "custom-database-name-key": "product-database"
+    ///       }
+    ///     },
+    ///     {
+    ///       "name": "orders-db",
+    ///       "credentials": {
+    ///         "custom-hostname-key": "example.cloud.com",
+    ///         "custom-port-key": 2345,
+    ///         "custom-username-key": "orders-user",
+    ///         "custom-password-key": "orders-secret",
+    ///         "custom-database-name-key": "order-database"
+    ///       }
+    ///     }
+    ///   ]
+    /// }
+    /// </code>
+    /// The following code can be used to map the PostgreSQL credentials to the format that
     /// <see href="https://www.npgsql.org/doc/api/Npgsql.NpgsqlConnectionStringBuilder.html">
     /// NpgsqlConnectionStringBuilder
     /// </see>
     /// expects:
     /// <code><![CDATA[
-    /// Environment.SetEnvironmentVariable("VCAP_SERVICES", """
-    ///     {
-    ///       "custom-postgres-broker": [
-    ///         {
-    ///           "name": "products-db",
-    ///           "credentials": {
-    ///             "custom-hostname-key": "example.cloud.com",
-    ///             "custom-port-key": 2345,
-    ///             "custom-username-key": "products-user",
-    ///             "custom-password-key": "products-secret",
-    ///             "custom-database-name-key": "product-database"
-    ///           }
-    ///         },
-    ///         {
-    ///           "name": "orders-db",
-    ///           "credentials": {
-    ///             "custom-hostname-key": "example.cloud.com",
-    ///             "custom-port-key": 2345,
-    ///             "custom-username-key": "orders-user",
-    ///             "custom-password-key": "orders-secret",
-    ///             "custom-database-name-key": "order-database"
-    ///           }
-    ///         },
-    ///       ]
-    ///     }
-    ///     """);
-    /// 
     /// var builder = WebApplication.CreateBuilder();
     /// builder.AddCloudFoundryConfiguration();
     /// MapCustomServiceBindings("custom-postgres-broker");
