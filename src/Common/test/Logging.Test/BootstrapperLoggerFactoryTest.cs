@@ -20,6 +20,7 @@ public sealed class BootstrapperLoggerFactoryTest
         var bootstrapLoggerFactory = BootstrapLoggerFactory.CreateEmpty(loggingBuilder =>
         {
             loggingBuilder.SetMinimumLevel(LogLevel.Trace);
+            // ReSharper disable once AccessToDisposedClosure
             loggingBuilder.AddProvider(capturingLoggerProvider);
         });
 
