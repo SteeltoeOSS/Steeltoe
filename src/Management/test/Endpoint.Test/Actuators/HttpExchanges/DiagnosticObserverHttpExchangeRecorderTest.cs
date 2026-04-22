@@ -52,6 +52,7 @@ public sealed class DiagnosticObserverHttpExchangeRecorderTest
         host.MapGet("/hello", () => "Hello World!");
         await host.StartAsync(TestContext.Current.CancellationToken);
 
+        // ReSharper disable once ShortLivedHttpClient
         using var httpClient = new HttpClient();
 
         HttpResponseMessage helloResponse =
