@@ -236,7 +236,24 @@ public sealed partial class EurekaClient
             Uri requestUri = GetRequestUri(serviceUri, path, queryString);
 
             HttpContent? requestContent = requestBody != null ? new StringContent(requestBody, Encoding.UTF8, MediaType) : null;
-            HttpRequestMessage request = await GetRequestMessageAsync(method, requestUri, requestContent, cancellationToken);
+            HttpRequestMessage request;
+
+            try
+            {
+                request = await GetRequestMessageAsync(clientOptions, method, requestUri, requestContent, cancellationToken);
+            }
+            catch (Exception exception) when (!exception.IsCancellation())
+            {
+                if (!string.IsNullOrEmpty(clientOptions.AccessTokenUri))
+                {
+                    var accessTokenUri = new Uri(clientOptions.AccessTokenUri);
+                    LogFailedToFetchAccessToken(exception, accessTokenUri.ToMaskedString(), attempt);
+
+                    continue;
+                }
+
+                throw;
+            }
 
             if (!string.IsNullOrEmpty(requestBody))
             {
@@ -306,7 +323,8 @@ public sealed partial class EurekaClient
         return requestUri;
     }
 
-    private async Task<HttpRequestMessage> GetRequestMessageAsync(HttpMethod method, Uri requestUri, HttpContent? content, CancellationToken cancellationToken)
+    private async Task<HttpRequestMessage> GetRequestMessageAsync(EurekaClientOptions optionsSnapshot, HttpMethod method, Uri requestUri, HttpContent? content,
+        CancellationToken cancellationToken)
     {
         var uriWithoutUserInfo = new Uri(requestUri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.UriEscaped));
         var requestMessage = new HttpRequestMessage(method, uriWithoutUserInfo);
@@ -320,15 +338,13 @@ public sealed partial class EurekaClient
         }
         else
         {
-            EurekaClientOptions clientOptions = _optionsMonitor.CurrentValue;
-
-            if (!string.IsNullOrEmpty(clientOptions.AccessTokenUri))
+            if (!string.IsNullOrEmpty(optionsSnapshot.AccessTokenUri))
             {
                 using HttpClient httpClient = CreateHttpClient("AccessTokenForEureka", GetAccessTokenTimeout);
-                var accessTokenUri = new Uri(clientOptions.AccessTokenUri);
+                var accessTokenUri = new Uri(optionsSnapshot.AccessTokenUri);
 
-                string accessToken = await httpClient.GetAccessTokenAsync(accessTokenUri, clientOptions.ClientId,
-                    clientOptions.ClientSecret, cancellationToken);
+                string accessToken =
+                    await httpClient.GetAccessTokenAsync(accessTokenUri, optionsSnapshot.ClientId, optionsSnapshot.ClientSecret, cancellationToken);
 
                 LogAccessTokenFetched(accessTokenUri.ToMaskedString());
                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
@@ -371,4 +387,7 @@ public sealed partial class EurekaClient
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Fetched access token from '{AccessTokenUri}'.")]
     private partial void LogAccessTokenFetched(string accessTokenUri);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to fetch access token from '{AccessTokenUri}' in attempt {Attempt}.")]
+    private partial void LogFailedToFetchAccessToken(Exception exception, string accessTokenUri, int attempt);
 }

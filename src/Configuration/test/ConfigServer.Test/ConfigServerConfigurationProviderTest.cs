@@ -152,7 +152,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         provider.Load();
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
+
+        HttpRequestMessage request =
+            await provider.GetConfigServerRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);
         request.RequestUri.Should().Be(requestUri);
@@ -177,7 +179,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         provider.Load();
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
+
+        HttpRequestMessage request =
+            await provider.GetConfigServerRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);
         request.RequestUri.Should().Be(requestUri);
@@ -202,7 +206,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         provider.Load();
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
+
+        HttpRequestMessage request =
+            await provider.GetConfigServerRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);
         request.RequestUri.Should().Be(requestUri);
@@ -225,7 +231,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         provider.Load();
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
+
+        HttpRequestMessage request =
+            await provider.GetConfigServerRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
 
         request.Method.Should().Be(HttpMethod.Get);
         request.RequestUri.Should().Be(requestUri);
@@ -260,7 +268,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
-        HttpRequestMessage request = await provider.GetRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
+
+        HttpRequestMessage request =
+            await provider.GetConfigServerRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
