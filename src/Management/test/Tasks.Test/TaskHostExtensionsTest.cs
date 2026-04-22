@@ -339,6 +339,7 @@ public sealed class TaskHostExtensionsTest
         }
     }
 
+    // ReSharper disable once ClassNeverInstantiated.Local
     private sealed class ThrowingApplicationTask : IApplicationTask
     {
         public Task RunAsync(CancellationToken cancellationToken)
