@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MySql;
@@ -20,7 +22,7 @@ public static class MySqlConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder ConfigureMySql(this IConfigurationBuilder builder)
     {
-        return ConfigureMySql(builder, MySqlPackageResolver.Default);
+        return ConfigureMySql(builder, null);
     }
 
     /// <summary>
@@ -37,16 +39,24 @@ public static class MySqlConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder ConfigureMySql(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
-        return ConfigureMySql(builder, MySqlPackageResolver.Default, configureAction);
+        return ConfigureMySql(builder, MySqlPackageResolver.Default, configureAction, null);
     }
 
     internal static IConfigurationBuilder ConfigureMySql(this IConfigurationBuilder builder, MySqlPackageResolver packageResolver,
-        Action<ConnectorConfigureOptionsBuilder>? configureAction = null)
+        Action<ConnectorConfigureOptionsBuilder>? configureAction, IServiceBindingsReader? serviceBindingsReader)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(packageResolver);
 
-        ConnectorConfigurer.Configure(builder, configureAction, new MySqlConnectionStringPostProcessor(packageResolver));
+        Action<ConnectorConfigureOptionsBuilder> overrideConfigureAction = options =>
+        {
+            configureAction?.Invoke(options);
+            options.CloudFoundryBrokerTypes = options.SkipDefaultServiceBindings ? CloudFoundryServiceBrokerTypes.None : CloudFoundryServiceBrokerTypes.MySql;
+        };
+
+        ConnectorConfigurer.Configure(builder, overrideConfigureAction, new MySqlConnectionStringPostProcessor(packageResolver), serviceBindingsReader,
+            NullLoggerFactory.Instance);
+
         return builder;
     }
 }

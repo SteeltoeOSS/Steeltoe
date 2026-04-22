@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MySql;
@@ -21,7 +22,7 @@ public static class MySqlHostApplicationBuilderExtensions
     /// </returns>
     public static IHostApplicationBuilder AddMySql(this IHostApplicationBuilder builder)
     {
-        return AddMySql(builder, MySqlPackageResolver.Default);
+        return AddMySql(builder, null, null);
     }
 
     /// <summary>
@@ -43,16 +44,16 @@ public static class MySqlHostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddMySql(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         Action<ConnectorAddOptionsBuilder>? addAction)
     {
-        return AddMySql(builder, MySqlPackageResolver.Default, configureAction, addAction);
+        return AddMySql(builder, MySqlPackageResolver.Default, configureAction, addAction, null);
     }
 
     internal static IHostApplicationBuilder AddMySql(this IHostApplicationBuilder builder, MySqlPackageResolver packageResolver,
-        Action<ConnectorConfigureOptionsBuilder>? configureAction = null, Action<ConnectorAddOptionsBuilder>? addAction = null)
+        Action<ConnectorConfigureOptionsBuilder>? configureAction, Action<ConnectorAddOptionsBuilder>? addAction, IServiceBindingsReader? serviceBindingsReader)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(packageResolver);
 
-        builder.Configuration.ConfigureMySql(packageResolver, configureAction);
+        builder.Configuration.ConfigureMySql(packageResolver, configureAction, serviceBindingsReader);
         builder.Services.AddMySql(builder.Configuration, packageResolver, addAction);
         return builder;
     }

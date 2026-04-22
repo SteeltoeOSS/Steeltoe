@@ -63,7 +63,7 @@ public sealed class PostConfigureJwtBearerOptionsTest
             """;
 
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
-        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings().Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Identity).Build();
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddAuthentication().AddJwtBearer().ConfigureJwtBearerForCloudFoundry();
@@ -111,7 +111,7 @@ public sealed class PostConfigureJwtBearerOptionsTest
 
         using var applicationScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
-        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings().Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Identity).Build();
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddAuthentication().AddJwtBearer().ConfigureJwtBearerForCloudFoundry();

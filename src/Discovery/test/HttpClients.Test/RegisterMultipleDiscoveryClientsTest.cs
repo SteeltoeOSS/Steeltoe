@@ -231,7 +231,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         builder.AddCloudFoundry();
-        builder.AddCloudFoundryServiceBindings();
+        builder.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
         IConfiguration configuration = builder.Build();
 
         IServiceCollection services = new ServiceCollection();
@@ -328,7 +328,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         builder.AddCloudFoundry();
-        builder.AddCloudFoundryServiceBindings();
+        builder.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
         IConfiguration configuration = builder.Build();
 
         IServiceCollection services = new ServiceCollection();
@@ -424,7 +424,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         using var loggerFactory = new LoggerFactory([capturingLoggerProvider]);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddCloudFoundryServiceBindings(_ => false, new EnvironmentServiceBindingsReader(), loggerFactory);
+
+        configurationBuilder.AddCloudFoundryServiceBindings(_ => false, new EnvironmentServiceBindingsReader(), CloudFoundryServiceBrokerTypes.Eureka,
+            loggerFactory);
+
         _ = configurationBuilder.Build();
 
         IList<string> logMessages = capturingLoggerProvider.GetAll();
@@ -536,7 +539,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundry();
-        builder.Configuration.AddCloudFoundryServiceBindings();
+        builder.Configuration.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 

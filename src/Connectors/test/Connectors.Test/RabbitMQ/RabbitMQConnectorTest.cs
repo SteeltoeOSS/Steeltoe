@@ -218,9 +218,8 @@ public sealed class RabbitMQConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddRabbitMQ();
+        builder.AddRabbitMQ(null, null, new StringServiceBindingsReader(MultiVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
@@ -371,7 +370,6 @@ public sealed class RabbitMQConnectorTest
     public async Task Registers_default_connection_string_when_only_single_server_binding_found()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
         builder.AddRabbitMQ(null, addOptions =>
         {
@@ -382,7 +380,7 @@ public sealed class RabbitMQConnectorTest
 
                 return new FakeConnection(options.ConnectionString);
             };
-        });
+        }, new StringServiceBindingsReader(SingleVcapServicesJson));
 
         await using WebApplication app = builder.Build();
 

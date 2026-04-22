@@ -29,7 +29,24 @@ public static class ConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddCloudFoundryServiceBindings(this IConfigurationBuilder builder)
     {
-        return builder.AddCloudFoundryServiceBindings(DefaultIgnoreKeyPredicate, DefaultReader, NullLoggerFactory.Instance);
+        return builder.AddCloudFoundryServiceBindings(DefaultIgnoreKeyPredicate, null, CloudFoundryServiceBrokerTypes.All, NullLoggerFactory.Instance);
+    }
+
+    /// <summary>
+    /// Adds CloudFoundry service bindings from the JSON provided by the specified reader.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
+    /// </param>
+    /// <param name="brokerTypes">
+    /// The set of broker types to read service bindings for.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IConfigurationBuilder AddCloudFoundryServiceBindings(this IConfigurationBuilder builder, CloudFoundryServiceBrokerTypes brokerTypes)
+    {
+        return builder.AddCloudFoundryServiceBindings(DefaultIgnoreKeyPredicate, null, brokerTypes, NullLoggerFactory.Instance);
     }
 
     /// <summary>
@@ -46,7 +63,8 @@ public static class ConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddCloudFoundryServiceBindings(this IConfigurationBuilder builder, IServiceBindingsReader serviceBindingsReader)
     {
-        return builder.AddCloudFoundryServiceBindings(DefaultIgnoreKeyPredicate, serviceBindingsReader, NullLoggerFactory.Instance);
+        return builder.AddCloudFoundryServiceBindings(DefaultIgnoreKeyPredicate, serviceBindingsReader, CloudFoundryServiceBrokerTypes.All,
+            NullLoggerFactory.Instance);
     }
 
     /// <summary>
@@ -56,7 +74,7 @@ public static class ConfigurationBuilderExtensions
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="ignoreKeyPredicate">
-    /// A predicate which is called before adding a key to the configuration. If it returns false, the key will be ignored.
+    /// A predicate that is called before adding a key to the configuration. If it returns false, the key will be ignored.
     /// </param>
     /// <param name="serviceBindingsReader">
     /// The source to read JSON service bindings from.
@@ -70,14 +88,40 @@ public static class ConfigurationBuilderExtensions
     public static IConfigurationBuilder AddCloudFoundryServiceBindings(this IConfigurationBuilder builder, Predicate<string> ignoreKeyPredicate,
         IServiceBindingsReader serviceBindingsReader, ILoggerFactory loggerFactory)
     {
+        return AddCloudFoundryServiceBindings(builder, ignoreKeyPredicate, serviceBindingsReader, CloudFoundryServiceBrokerTypes.All, loggerFactory);
+    }
+
+    /// <summary>
+    /// Adds CloudFoundry service bindings from the JSON provided by the specified reader.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
+    /// </param>
+    /// <param name="ignoreKeyPredicate">
+    /// A predicate that is called before adding a key to the configuration. If it returns false, the key will be ignored.
+    /// </param>
+    /// <param name="serviceBindingsReader">
+    /// The source to read JSON service bindings from.
+    /// </param>
+    /// <param name="brokerTypes">
+    /// The set of broker types to read service bindings for.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IConfigurationBuilder AddCloudFoundryServiceBindings(this IConfigurationBuilder builder, Predicate<string> ignoreKeyPredicate,
+        IServiceBindingsReader? serviceBindingsReader, CloudFoundryServiceBrokerTypes brokerTypes, ILoggerFactory loggerFactory)
+    {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(ignoreKeyPredicate);
-        ArgumentNullException.ThrowIfNull(serviceBindingsReader);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        if (!builder.EnumerateSources<CloudFoundryServiceBindingConfigurationSource>().Any())
+        if (brokerTypes != CloudFoundryServiceBrokerTypes.None)
         {
-            var source = new CloudFoundryServiceBindingConfigurationSource(serviceBindingsReader)
+            var source = new CloudFoundryServiceBindingConfigurationSource(serviceBindingsReader ?? DefaultReader, brokerTypes)
             {
                 IgnoreKeyPredicate = ignoreKeyPredicate
             };
@@ -86,25 +130,56 @@ public static class ConfigurationBuilderExtensions
             // WebApplicationBuilder immediately builds the configuration provider and loads it, which executes the post-processors.
             // Therefore, adding post-processors afterward is a no-op.
 
-            RegisterPostProcessors(source, loggerFactory);
+            RegisterPostProcessors(source, brokerTypes, loggerFactory);
             builder.Add(source);
         }
 
         return builder;
     }
 
-    private static void RegisterPostProcessors(CloudFoundryServiceBindingConfigurationSource source, ILoggerFactory loggerFactory)
+    private static void RegisterPostProcessors(CloudFoundryServiceBindingConfigurationSource source, CloudFoundryServiceBrokerTypes brokerTypes,
+        ILoggerFactory loggerFactory)
     {
-        ILogger<EurekaCloudFoundryPostProcessor> eurekaLogger = loggerFactory.CreateLogger<EurekaCloudFoundryPostProcessor>();
-        ILogger<IdentityCloudFoundryPostProcessor> identityLogger = loggerFactory.CreateLogger<IdentityCloudFoundryPostProcessor>();
+        if (brokerTypes.HasFlag(CloudFoundryServiceBrokerTypes.Eureka))
+        {
+            ILogger<EurekaCloudFoundryPostProcessor> eurekaLogger = loggerFactory.CreateLogger<EurekaCloudFoundryPostProcessor>();
+            source.RegisterPostProcessor(new EurekaCloudFoundryPostProcessor(eurekaLogger));
+        }
 
-        source.RegisterPostProcessor(new EurekaCloudFoundryPostProcessor(eurekaLogger));
-        source.RegisterPostProcessor(new IdentityCloudFoundryPostProcessor(identityLogger));
-        source.RegisterPostProcessor(new MongoDbCloudFoundryPostProcessor());
-        source.RegisterPostProcessor(new MySqlCloudFoundryPostProcessor());
-        source.RegisterPostProcessor(new PostgreSqlCloudFoundryPostProcessor());
-        source.RegisterPostProcessor(new RabbitMQCloudFoundryPostProcessor());
-        source.RegisterPostProcessor(new RedisCloudFoundryPostProcessor());
-        source.RegisterPostProcessor(new SqlServerCloudFoundryPostProcessor());
+        if (brokerTypes.HasFlag(CloudFoundryServiceBrokerTypes.Identity))
+        {
+            ILogger<IdentityCloudFoundryPostProcessor> identityLogger = loggerFactory.CreateLogger<IdentityCloudFoundryPostProcessor>();
+            source.RegisterPostProcessor(new IdentityCloudFoundryPostProcessor(identityLogger));
+        }
+
+        if (brokerTypes.HasFlag(CloudFoundryServiceBrokerTypes.MongoDb))
+        {
+            source.RegisterPostProcessor(new MongoDbCloudFoundryPostProcessor());
+        }
+
+        if (brokerTypes.HasFlag(CloudFoundryServiceBrokerTypes.MySql))
+        {
+            source.RegisterPostProcessor(new MySqlCloudFoundryPostProcessor());
+        }
+
+        if (brokerTypes.HasFlag(CloudFoundryServiceBrokerTypes.PostgreSql))
+        {
+            source.RegisterPostProcessor(new PostgreSqlCloudFoundryPostProcessor());
+        }
+
+        if (brokerTypes.HasFlag(CloudFoundryServiceBrokerTypes.RabbitMQ))
+        {
+            source.RegisterPostProcessor(new RabbitMQCloudFoundryPostProcessor());
+        }
+
+        if (brokerTypes.HasFlag(CloudFoundryServiceBrokerTypes.Redis))
+        {
+            source.RegisterPostProcessor(new RedisCloudFoundryPostProcessor());
+        }
+
+        if (brokerTypes.HasFlag(CloudFoundryServiceBrokerTypes.SqlServer))
+        {
+            source.RegisterPostProcessor(new SqlServerCloudFoundryPostProcessor());
+        }
     }
 }

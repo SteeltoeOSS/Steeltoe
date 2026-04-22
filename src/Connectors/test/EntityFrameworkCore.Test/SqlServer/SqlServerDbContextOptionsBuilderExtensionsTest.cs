@@ -25,7 +25,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly, null, null, null);
         builder.Services.Configure<SqlServerOptions>(options => options.ConnectionString += ";Encrypt=false");
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseSqlServer(serviceProvider));
         await using WebApplication app = builder.Build();
@@ -47,7 +47,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly, null, null, null);
         builder.Services.Configure<SqlServerOptions>("mySqlServerService", options => options.ConnectionString += ";Encrypt=false");
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseSqlServer(serviceProvider, "mySqlServerService"));
         await using WebApplication app = builder.Build();

@@ -58,6 +58,17 @@ public sealed class ConfigurationBuilderExtensionsTest
     }
 
     [Fact]
+    public void AddCloudFoundryServiceBindings_RegistersSubsetOfProcessors()
+    {
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.PostgreSql | CloudFoundryServiceBrokerTypes.MySql);
+
+        builder.Sources.Should().ContainSingle();
+        CloudFoundryServiceBindingConfigurationSource source = builder.Sources[0].Should().BeOfType<CloudFoundryServiceBindingConfigurationSource>().Subject;
+        source.PostProcessors.Should().HaveCount(2);
+    }
+
+    [Fact]
     public void AddCloudFoundryServiceBindings_EnvironmentVariableSet_LoadsServiceBindings()
     {
         using var scope = new EnvironmentVariableScope("VCAP_SERVICES", VcapServicesJson);

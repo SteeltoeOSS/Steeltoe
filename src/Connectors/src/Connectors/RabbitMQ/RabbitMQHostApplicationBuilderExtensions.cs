@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
 namespace Steeltoe.Connectors.RabbitMQ;
 
@@ -42,9 +43,15 @@ public static class RabbitMQHostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddRabbitMQ(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         Action<ConnectorAddOptionsBuilder>? addAction)
     {
+        return AddRabbitMQ(builder, configureAction, addAction, null);
+    }
+
+    internal static IHostApplicationBuilder AddRabbitMQ(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+        Action<ConnectorAddOptionsBuilder>? addAction, IServiceBindingsReader? serviceBindingsReader)
+    {
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.Configuration.ConfigureRabbitMQ(configureAction);
+        builder.Configuration.ConfigureRabbitMQ(configureAction, serviceBindingsReader);
         builder.Services.AddRabbitMQ(builder.Configuration, addAction);
         return builder;
     }

@@ -118,7 +118,7 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
         var postProcessor = new TestPostProcessor();
 
         var reader = new StringServiceBindingsReader(VcapServicesJson);
-        var source = new CloudFoundryServiceBindingConfigurationSource(reader);
+        var source = new CloudFoundryServiceBindingConfigurationSource(reader, CloudFoundryServiceBrokerTypes.All);
         source.RegisterPostProcessor(postProcessor);
 
         var builder = new ConfigurationBuilder();
@@ -137,7 +137,7 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
         };
 
         var reader = new StringServiceBindingsReader(string.Empty);
-        var source = new CloudFoundryServiceBindingConfigurationSource(reader);
+        var source = new CloudFoundryServiceBindingConfigurationSource(reader, CloudFoundryServiceBrokerTypes.All);
 
         var builder = new ConfigurationBuilder();
         builder.Add(source);
@@ -153,7 +153,7 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
     public void Build_LoadsServiceBindings()
     {
         var reader = new StringServiceBindingsReader(VcapServicesJson);
-        var source = new CloudFoundryServiceBindingConfigurationSource(reader);
+        var source = new CloudFoundryServiceBindingConfigurationSource(reader, CloudFoundryServiceBrokerTypes.All);
 
         var builder = new ConfigurationBuilder();
         builder.Add(source);

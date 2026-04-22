@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Npgsql;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Configuration.Kubernetes.ServiceBindings;
 using Steeltoe.Connectors.PostgreSql;
@@ -233,9 +232,8 @@ public sealed class PostgreSqlConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(MultiVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
@@ -396,97 +394,6 @@ public sealed class PostgreSqlConnectorTest
     }
 
     [Fact]
-    public async Task Binds_options_with_third_party_service_bindings()
-    {
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["Steeltoe:Client:PostgreSql:products-db:ConnectionString"] = "Include Error Detail=true;host=localhost",
-            ["Steeltoe:Client:PostgreSql:orders-db:ConnectionString"] = "Log Parameters=true;port=9999"
-        };
-
-        var reader = new CloudFoundryMemorySettingsReader
-        {
-            ServicesJson = """
-                {
-                  "custom-postgres-broker": [
-                    {
-                      "name": "products-db",
-                      "credentials": {
-                        "custom-hostname-key": "example.cloud.com",
-                        "custom-port-key": 2345,
-                        "custom-username-key": "products-user",
-                        "custom-password-key": "products-secret",
-                        "custom-database-name-key": "product-database"
-                      }
-                    },
-                    {
-                      "name": "orders-db",
-                      "credentials": {
-                        "custom-hostname-key": "example.cloud.com",
-                        "custom-port-key": 2345,
-                        "custom-username-key": "orders-user",
-                        "custom-password-key": "orders-secret",
-                        "custom-database-name-key": "order-database"
-                      }
-                    },
-                  ]
-                }
-                """
-        };
-
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Configuration.AddCloudFoundry(reader);
-        MapCustomServiceBindings("custom-postgres-broker");
-        builder.AddPostgreSql(options => options.SkipDefaultServiceBindings = true, null);
-        await using WebApplication app = builder.Build();
-
-        var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
-
-        PostgreSqlOptions productsDbOptions = optionsMonitor.Get("products-db");
-
-        ExtractConnectionStringParameters(productsDbOptions.ConnectionString).Should().BeEquivalentTo(new List<string>
-        {
-            "Include Error Detail=True",
-            "Host=example.cloud.com",
-            "Port=2345",
-            "Database=product-database",
-            "Username=products-user",
-            "Password=products-secret"
-        }, options => options.WithoutStrictOrdering());
-
-        PostgreSqlOptions ordersDbOptions = optionsMonitor.Get("orders-db");
-
-        ExtractConnectionStringParameters(ordersDbOptions.ConnectionString).Should().BeEquivalentTo(new List<string>
-        {
-            "Log Parameters=True",
-            "Host=example.cloud.com",
-            "Port=2345",
-            "Database=order-database",
-            "Username=orders-user",
-            "Password=orders-secret"
-        }, options => options.WithoutStrictOrdering());
-
-        void MapCustomServiceBindings(string brokerName)
-        {
-            var options = builder.Configuration.GetSection("vcap").Get<CloudFoundryServicesOptions>();
-
-            foreach (CloudFoundryService service in options?.Services.Where(pair => pair.Key == brokerName).SelectMany(pair => pair.Value) ?? [])
-            {
-                builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    // Map credentials into the property names expected by NpgsqlConnectionStringBuilder.
-                    [$"steeltoe:service-bindings:postgresql:{service.Name}:host"] = service.Credentials["custom-hostname-key"].Value,
-                    [$"steeltoe:service-bindings:postgresql:{service.Name}:port"] = service.Credentials["custom-port-key"].Value,
-                    [$"steeltoe:service-bindings:postgresql:{service.Name}:username"] = service.Credentials["custom-username-key"].Value,
-                    [$"steeltoe:service-bindings:postgresql:{service.Name}:password"] = service.Credentials["custom-password-key"].Value,
-                    [$"steeltoe:service-bindings:postgresql:{service.Name}:database"] = service.Credentials["custom-database-name-key"].Value
-                });
-            }
-        }
-    }
-
-    [Fact]
     public async Task Registers_ConnectorFactory()
     {
         var appSettings = new Dictionary<string, string?>
@@ -553,7 +460,7 @@ public sealed class PostgreSqlConnectorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddHealthChecks();
-        builder.AddPostgreSql(null, null);
+        builder.AddPostgreSql();
         await using WebApplication app = builder.Build();
 
         app.Services.GetServices<IHealthContributor>().Should().BeEmpty();
@@ -585,9 +492,8 @@ public sealed class PostgreSqlConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(SingleVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -618,8 +524,7 @@ public sealed class PostgreSqlConnectorTest
     public async Task Registers_default_connection_string_when_only_single_server_binding_found()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(SingleVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -716,9 +621,8 @@ public sealed class PostgreSqlConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(MultiVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -744,9 +648,8 @@ public sealed class PostgreSqlConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(SingleVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -769,9 +672,8 @@ public sealed class PostgreSqlConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(SingleVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();

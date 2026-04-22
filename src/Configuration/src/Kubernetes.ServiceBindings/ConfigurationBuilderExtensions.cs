@@ -68,7 +68,7 @@ public static class ConfigurationBuilderExtensions
     /// Whether the configuration should be reloaded if the files are changed, added or removed.
     /// </param>
     /// <param name="ignoreKeyPredicate">
-    /// A predicate which is called before adding a key to the configuration. If it returns false, the key will be ignored.
+    /// A predicate that is called before adding a key to the configuration. If it returns false, the key will be ignored.
     /// </param>
     /// <param name="serviceBindingsReader">
     /// The source to read Kubernetes secret files on disk from.

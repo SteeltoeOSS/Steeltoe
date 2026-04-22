@@ -26,7 +26,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddMySql(MySqlPackageResolver.OracleOnly);
+        builder.AddMySql(MySqlPackageResolver.OracleOnly, null, null, null);
         builder.Services.Configure<MySqlOptions>(options => options.ConnectionString += ";Use Compression=false");
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
@@ -51,7 +51,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddMySql(MySqlPackageResolver.OracleOnly);
+        builder.AddMySql(MySqlPackageResolver.OracleOnly, null, null, null);
         builder.Services.Configure<MySqlOptions>("myMySqlService", options => options.ConnectionString += ";Use Compression=false");
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
