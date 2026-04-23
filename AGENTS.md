@@ -41,8 +41,8 @@ dotnet test
 
 For final validation before committing changes:
 ```bash
-dotnet build src/Steeltoe.All.sln --configuration Release
-dotnet test src/Steeltoe.All.sln --configuration Release
+dotnet build src/Steeltoe.All.slnx --configuration Release
+dotnet test src/Steeltoe.All.slnx --configuration Release
 ```
 
 ### Run Tests

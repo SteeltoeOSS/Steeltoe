@@ -9,7 +9,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
-$solutionFile = 'src/Steeltoe.All.sln'
+$solutionFile = 'src/Steeltoe.All.slnx'
 
 dotnet tool restore
 dotnet restore $solutionFile /p:NuGetAudit=false

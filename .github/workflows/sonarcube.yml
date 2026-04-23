@@ -21,7 +21,7 @@ env:
   STEELTOE_MACOS_DIAGNOSE_HOSTNAME_LOOKUP: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_NOLOGO: true
-  SOLUTION_FILE: 'src/Steeltoe.All.sln'
+  SOLUTION_FILE: 'src/Steeltoe.All.slnx'
   SONAR_TEST_ARGS: >-
     --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/TestOutput
     --settings coverlet.runsettings -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.UseSourceLink=false
