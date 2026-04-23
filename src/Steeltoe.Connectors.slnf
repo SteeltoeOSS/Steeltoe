@@ -1,6 +1,6 @@
 {
   "solution": {
-    "path": "Steeltoe.All.sln",
+    "path": "Steeltoe.All.slnx",
     "projects": [
       "Common\\src\\Common\\Steeltoe.Common.csproj",
       "Common\\src\\Hosting\\Steeltoe.Common.Hosting.csproj",
