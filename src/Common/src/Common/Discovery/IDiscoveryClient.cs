@@ -17,7 +17,7 @@ public interface IDiscoveryClient
     /// <summary>
     /// Occurs when service instances have been fetched from the discovery server.
     /// </summary>
-    public event EventHandler<DiscoveryInstancesFetchedEventArgs> InstancesFetched;
+    event EventHandler<DiscoveryInstancesFetchedEventArgs> InstancesFetched;
 
     /// <summary>
     /// Gets information used to register the local service instance (this app) to the discovery server.

@@ -40,7 +40,6 @@ public sealed class HealthActuatorTest
         services.AddHealthActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        // ReSharper disable once AccessToDisposedClosure
         Action action = () => serviceProvider.GetRequiredService<HealthEndpointMiddleware>();
 
         action.Should().NotThrow();

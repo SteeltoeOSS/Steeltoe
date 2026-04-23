@@ -29,7 +29,6 @@ public sealed class HostBuilderWrapperTest
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());
         wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        // ReSharper disable once AccessToDisposedClosure
         wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddProvider(capturingLoggerProvider));
         wrapper.ConfigureWebHost(hostBuilder => hostBuilder.UseUrls("http://*:8888"));
         wrapper.ConfigureServices((contextWrapper, _) => contextWrapper.HostEnvironment.ApplicationName = "TestApp");
@@ -65,7 +64,6 @@ public sealed class HostBuilderWrapperTest
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());
         wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        // ReSharper disable once AccessToDisposedClosure
         wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddProvider(capturingLoggerProvider));
         wrapper.ConfigureServices((contextWrapper, _) => contextWrapper.HostEnvironment.ApplicationName = "TestApp");
 
@@ -100,7 +98,6 @@ public sealed class HostBuilderWrapperTest
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());
         wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        // ReSharper disable once AccessToDisposedClosure
         wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddProvider(capturingLoggerProvider));
         wrapper.ConfigureWebHost(hostBuilder => hostBuilder.UseUrls("http://*:8888"));
         wrapper.ConfigureServices((contextWrapper, _) => contextWrapper.HostEnvironment.ApplicationName = "TestApp");
@@ -138,7 +135,6 @@ public sealed class HostBuilderWrapperTest
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());
         wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        // ReSharper disable once AccessToDisposedClosure
         wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddProvider(capturingLoggerProvider));
         wrapper.ConfigureWebHost(hostBuilder => hostBuilder.UseUrls("http://*:8888"));
         wrapper.ConfigureServices((contextWrapper, _) => contextWrapper.HostEnvironment.ApplicationName = "TestApp");

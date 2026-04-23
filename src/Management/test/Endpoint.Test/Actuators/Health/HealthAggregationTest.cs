@@ -450,9 +450,7 @@ public sealed class HealthAggregationTest
         using var source = new CancellationTokenSource();
         source.CancelAfter(1.Seconds());
 
-        // ReSharper disable AccessToDisposedClosure
         Func<Task> action = async () => await aggregator.AggregateAsync(contributors, [], emptyServiceProvider, source.Token);
-        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<TaskCanceledException>();
     }
@@ -574,7 +572,6 @@ public sealed class HealthAggregationTest
         builder.Services.AddHealthActuator();
         await using WebApplication host = builder.Build();
 
-        // ReSharper disable once AccessToDisposedClosure
         Action action = () => host.Services.GetRequiredService<TestDbContext>();
         action.Should().ThrowExactly<InvalidOperationException>();
 

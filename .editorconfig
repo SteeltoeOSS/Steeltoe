@@ -162,3 +162,7 @@ dotnet_diagnostic.JSON002.severity = silent
 
 # CA1848: Use the LoggerMessage delegates (depends on https://github.com/SteeltoeOSS/Steeltoe/issues/969)
 dotnet_diagnostic.CA1848.severity = silent
+
+[*Test.cs]
+resharper_access_to_disposed_closure_highlighting = none
+resharper_access_to_modified_closure_highlighting = none

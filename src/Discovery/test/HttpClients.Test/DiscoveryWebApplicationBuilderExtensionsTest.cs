@@ -73,7 +73,6 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
 
         await using WebApplication host = builder.Build();
 
-        // ReSharper disable once AccessToDisposedClosure
         Task<EurekaDiscoveryClient> resolveTask = Task.Run(() => _ = host.Services.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>().Single());
 
         Func<Task> action = async () => await resolveTask.WaitAsync(5.Seconds(), TestContext.Current.CancellationToken);

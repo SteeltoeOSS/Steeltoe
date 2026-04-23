@@ -62,7 +62,6 @@ public sealed class AllActuatorsTest
 
         foreach (Type middlewareType in middlewareTypes)
         {
-            // ReSharper disable once AccessToDisposedClosure
             Action action = () => serviceProvider.GetRequiredService(middlewareType);
 
             action.Should().NotThrow();
@@ -72,10 +71,8 @@ public sealed class AllActuatorsTest
         {
             Action action = () =>
             {
-                // ReSharper disable AccessToDisposedClosure
                 _ = serviceProvider.GetRequiredService<CloudFoundryEndpointMiddleware>();
                 _ = serviceProvider.GetRequiredService<PermissionsProvider>();
-                // ReSharper restore AccessToDisposedClosure
             };
 
             action.Should().NotThrow();

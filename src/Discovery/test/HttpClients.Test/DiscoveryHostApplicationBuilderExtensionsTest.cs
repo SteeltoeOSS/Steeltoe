@@ -51,7 +51,6 @@ public sealed class DiscoveryHostApplicationBuilderExtensionsTest
 
         using IHost host = hostBuilder.Build();
 
-        // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await host.StartAsync(TestContext.Current.CancellationToken);
 
         await action.Should().NotThrowAsync();

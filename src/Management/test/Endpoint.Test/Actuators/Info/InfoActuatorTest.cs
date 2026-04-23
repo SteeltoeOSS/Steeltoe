@@ -50,7 +50,6 @@ public sealed class InfoActuatorTest
         services.AddInfoActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        // ReSharper disable once AccessToDisposedClosure
         Action action = () => serviceProvider.GetRequiredService<InfoEndpointMiddleware>();
 
         action.Should().NotThrow();

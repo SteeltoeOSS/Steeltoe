@@ -216,7 +216,6 @@ public sealed class CloudFoundryConfigurationProviderTest
 
         _ = Task.Run(() =>
         {
-            // ReSharper disable once AccessToDisposedClosure
             while (!tokenSource.IsCancellationRequested)
             {
                 configurationRoot.Reload();
