@@ -22,7 +22,7 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
     public string ConnectionString
     {
         get => ToConnectionString();
-        set => FromConnectionString(value, false);
+        set => FromConnectionString(value);
     }
 
     /// <inheritdoc />
@@ -37,14 +37,8 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
                 return ConnectionString;
             }
 
-            // Allow getting unknown keyword, if it was set earlier. We don't pretend to know all valid query string parameters.
-            if (_settings.TryGetValue(keyword, out string? value))
-            {
-                return value;
-            }
-
-            AssertIsKnownKeyword(keyword);
-            return null;
+            // Allow getting unknown keyword. We don't pretend to know all valid query string parameters.
+            return _settings.GetValueOrDefault(keyword);
         }
         set
         {
@@ -52,7 +46,7 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
 
             if (string.Equals(keyword, KnownKeywords.Url, StringComparison.OrdinalIgnoreCase))
             {
-                FromConnectionString(value?.ToString(), true);
+                ConnectionString = value?.ToString();
             }
             else
             {
@@ -106,9 +100,9 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
 
         var queryString = default(QueryString);
 
-        foreach ((string keyword, string value) in _settings.Where(pair => !KnownKeywords.Exists(pair.Key)))
+        foreach ((string name, string value) in _settings.Where(pair => !KnownKeywords.Exists(pair.Key)))
         {
-            queryString = queryString.Add(keyword, value);
+            queryString = queryString.Add(name, value);
         }
 
         builder.Query = queryString.Value;
@@ -116,19 +110,9 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
         return builder.Uri.AbsoluteUri;
     }
 
-    private void FromConnectionString(string? connectionString, bool preserveUnknownSettings)
+    private void FromConnectionString(string? connectionString)
     {
-        if (preserveUnknownSettings)
-        {
-            foreach (string keywordToRemove in _settings.Keys.Where(KnownKeywords.Exists).ToArray())
-            {
-                _settings.Remove(keywordToRemove);
-            }
-        }
-        else
-        {
-            _settings.Clear();
-        }
+        _settings.Clear();
 
         if (!string.IsNullOrEmpty(connectionString))
         {
@@ -140,7 +124,7 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
 #pragma warning restore S3717 // Track use of "NotImplementedException"
             }
 
-            // MongoDB allows semicolon as separator for query string parameters, to provide backwards compatibility.
+            // MongoDB allows semicolon as separator between query string parameters for backward compatibility.
             connectionString = connectionString.Replace(';', '&');
 
             var uri = new Uri(connectionString);
@@ -169,28 +153,17 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
                 _settings[KnownKeywords.AuthenticationDatabase] = Uri.UnescapeDataString(uri.AbsolutePath[1..]);
             }
 
-            NameValueCollection queryCollection = HttpUtility.ParseQueryString(uri.Query);
+            NameValueCollection queryString = HttpUtility.ParseQueryString(uri.Query);
 
-            foreach (string? key in queryCollection.AllKeys)
+            foreach (string remainingKeyword in queryString.AllKeys.Where(key => key != null && !KnownKeywords.Exists(key)).Cast<string>())
             {
-                if (key != null)
-                {
-                    string? value = queryCollection.Get(key);
+                string? value = queryString.Get(remainingKeyword);
 
-                    if (value != null)
-                    {
-                        _settings[key] = value;
-                    }
+                if (value != null)
+                {
+                    _settings[remainingKeyword] = value;
                 }
             }
-        }
-    }
-
-    private static void AssertIsKnownKeyword(string keyword)
-    {
-        if (!KnownKeywords.Exists(keyword))
-        {
-            throw new ArgumentException($"Keyword not supported: '{keyword}'.", nameof(keyword));
         }
     }
 

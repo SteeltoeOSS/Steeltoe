@@ -29,14 +29,8 @@ internal sealed class RedisConnectionStringBuilder : IConnectionStringBuilder
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(keyword);
 
-            // Allow getting unknown keyword, if it was set earlier. We don't pretend to know all valid keywords.
-            if (_settings.TryGetValue(keyword, out string? value))
-            {
-                return value;
-            }
-
-            AssertIsKnownKeyword(keyword);
-            return null;
+            // Allow getting unknown keyword. We don't pretend to know all valid query string parameters.
+            return _settings.GetValueOrDefault(keyword);
         }
         set
         {
@@ -50,7 +44,7 @@ internal sealed class RedisConnectionStringBuilder : IConnectionStringBuilder
             }
             else
             {
-                // Allow setting unknown keyword. We don't pretend to know all valid keywords.
+                // Allow setting unknown keyword. We don't pretend to know all valid query string parameters.
                 _settings[keyword] = stringValue;
             }
         }
@@ -117,14 +111,6 @@ internal sealed class RedisConnectionStringBuilder : IConnectionStringBuilder
                     }
                 }
             }
-        }
-    }
-
-    private static void AssertIsKnownKeyword(string keyword)
-    {
-        if (!KnownKeywords.Exists(keyword))
-        {
-            throw new ArgumentException($"Keyword not supported: '{keyword}'.", nameof(keyword));
         }
     }
 
