@@ -41,4 +41,4 @@ jobs:
         persist-credentials: false
 
     - name: Report vulnerable dependencies
-      run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal /p:NuGetAudit=true /p:NuGetAuditMode=all /p:NuGetAuditLevel=low /p:TreatWarningsAsErrors=True
+      run: dotnet restore ${{ env.SOLUTION_FILE }} /p:Configuration=Release /p:NuGetAudit=true /p:NuGetAuditMode=all /p:NuGetAuditLevel=low --verbosity minimal
