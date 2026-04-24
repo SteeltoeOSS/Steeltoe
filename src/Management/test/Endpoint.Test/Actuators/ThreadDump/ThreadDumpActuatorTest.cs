@@ -27,6 +27,7 @@ public sealed class ThreadDumpActuatorTest
         services.AddThreadDumpActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
+        // ReSharper disable once AccessToDisposedClosure
         Action action = () => serviceProvider.GetRequiredService<ThreadDumpEndpointMiddleware>();
 
         action.Should().NotThrow();

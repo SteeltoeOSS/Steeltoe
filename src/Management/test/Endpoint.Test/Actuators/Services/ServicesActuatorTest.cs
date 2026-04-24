@@ -35,6 +35,7 @@ public sealed class ServicesActuatorTest
         services.AddServicesActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
+        // ReSharper disable once AccessToDisposedClosure
         Action action = () => serviceProvider.GetRequiredService<ServicesEndpointMiddleware>();
 
         action.Should().NotThrow();

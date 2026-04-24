@@ -87,6 +87,7 @@ public sealed class ConsulServiceRegistryTest
 
         await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
+        // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await registry.SetStatusAsync(registration, string.Empty, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<ArgumentException>();

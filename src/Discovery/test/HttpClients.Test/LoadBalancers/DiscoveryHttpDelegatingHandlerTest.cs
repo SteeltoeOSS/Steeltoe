@@ -55,6 +55,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
 
         using var invoker = new HttpMessageInvoker(handler);
 
+        // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<OperationCanceledException>();
@@ -79,6 +80,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
 
         using var invoker = new HttpMessageInvoker(handler);
 
+        // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<DataException>();

@@ -43,9 +43,11 @@ public sealed class CloudFoundryActuatorTest
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
+        // ReSharper disable once AccessToDisposedClosure
         Action middlewareAction = () => serviceProvider.GetRequiredService<CloudFoundryEndpointMiddleware>();
         middlewareAction.Should().NotThrow();
 
+        // ReSharper disable once AccessToDisposedClosure
         Action providerAction = () => serviceProvider.GetRequiredService<PermissionsProvider>();
         providerAction.Should().NotThrow();
     }

@@ -255,6 +255,7 @@ public sealed class HttpVerbInConventionalRoutingTest
         builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
         await using WebApplication host = builder.Build();
 
+        // ReSharper disable once AccessToDisposedClosure
         Action action = () => host.UseActuatorEndpoints(configureEndpointsCallback);
 
         action.Should().ThrowExactly<NotSupportedException>().WithMessage("Customizing endpoints is only supported when using endpoint routing.");

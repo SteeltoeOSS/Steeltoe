@@ -264,6 +264,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
                 }
                 """);
 
+        // ReSharper disable once AccessToDisposedClosure
         using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
@@ -293,6 +294,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8888/vault/v1/auth/token/renew-self").WithHeaders("X-Vault-Token", "MyVaultToken")
             .WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
 
+        // ReSharper disable once AccessToDisposedClosure
         using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
         provider.Load();
 
@@ -322,6 +324,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8888/vault/v1/auth/token/renew-self").WithHeaders("X-Vault-Token", "MyVaultToken")
             .WithHeaders("Authorization", "Bearer secret").WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
 
+        // ReSharper disable once AccessToDisposedClosure
         using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
 
         await provider.RefreshVaultTokenAsync(provider.ClientOptions, TestContext.Current.CancellationToken);

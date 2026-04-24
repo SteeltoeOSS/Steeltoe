@@ -316,6 +316,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         await using WebApplication app = builder.Build();
 
+        // ReSharper disable once AccessToDisposedClosure
         Action action = () => app.UseCloudFoundrySecurity();
 
         action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Please call IServiceCollection.AddCloudFoundryActuator first.");
@@ -336,6 +337,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Configuration.AddCloudFoundry();
+        // ReSharper disable once AccessToDisposedClosure
         builder.Services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
         builder.Services.AddCloudFoundryActuator();
         await using WebApplication app = builder.Build();

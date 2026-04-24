@@ -88,6 +88,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         await using WebApplication app = builder.Build();
         await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
 
+        // ReSharper disable once AccessToDisposedClosure
         Action action = () => _ = scope.ServiceProvider.GetRequiredService<GoodDbContext>();
 
         action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Server version must be specified when no connection string is provided.");
