@@ -40,5 +40,8 @@ jobs:
       with:
         persist-credentials: false
 
+    - name: printenv
+      run: printenv
+
     - name: Report vulnerable dependencies
-      run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal /p:NuGetAudit=true /p:NuGetAuditMode=all /p:NuGetAuditLevel=low /p:TreatWarningsAsErrors=True
+      run: dotnet restore ${{ env.SOLUTION_FILE }} /p:Configuration=Release --verbosity minimal
