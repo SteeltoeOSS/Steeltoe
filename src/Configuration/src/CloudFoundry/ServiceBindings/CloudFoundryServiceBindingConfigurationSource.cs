@@ -11,14 +11,15 @@ namespace Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 internal sealed class CloudFoundryServiceBindingConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
 {
     private readonly IServiceBindingsReader _serviceBindingsReader;
-    private readonly CloudFoundryServiceBrokerTypes _brokerTypes;
+
+    public CloudFoundryServiceBrokerTypes BrokerTypes { get; }
 
     public CloudFoundryServiceBindingConfigurationSource(IServiceBindingsReader serviceBindingsReader, CloudFoundryServiceBrokerTypes brokerTypes)
     {
         ArgumentNullException.ThrowIfNull(serviceBindingsReader);
 
         _serviceBindingsReader = serviceBindingsReader;
-        _brokerTypes = brokerTypes;
+        BrokerTypes = brokerTypes;
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
@@ -31,6 +32,6 @@ internal sealed class CloudFoundryServiceBindingConfigurationSource : PostProces
 
     private string DebuggerToString()
     {
-        return $"{GetType().FullName} ({_brokerTypes})";
+        return $"{GetType().FullName} ({BrokerTypes})";
     }
 }

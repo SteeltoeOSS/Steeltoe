@@ -69,6 +69,24 @@ public sealed class ConfigurationBuilderExtensionsTest
     }
 
     [Fact]
+    public void AddCloudFoundryServiceBindings_DoesNotAddMultipleSourcesForSamePostProcessor()
+    {
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.None);
+        builder.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.PostgreSql | CloudFoundryServiceBrokerTypes.MySql);
+        builder.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.PostgreSql | CloudFoundryServiceBrokerTypes.SqlServer);
+        builder.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.MySql | CloudFoundryServiceBrokerTypes.RabbitMQ);
+        builder.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.SqlServer | CloudFoundryServiceBrokerTypes.RabbitMQ);
+
+        CloudFoundryServiceBindingConfigurationSource[] sources = [.. builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>()];
+
+        sources.Should().HaveCount(3);
+        sources[0].BrokerTypes.Should().Be(CloudFoundryServiceBrokerTypes.PostgreSql | CloudFoundryServiceBrokerTypes.MySql);
+        sources[1].BrokerTypes.Should().Be(CloudFoundryServiceBrokerTypes.SqlServer);
+        sources[2].BrokerTypes.Should().Be(CloudFoundryServiceBrokerTypes.RabbitMQ);
+    }
+
+    [Fact]
     public void AddCloudFoundryServiceBindings_EnvironmentVariableSet_LoadsServiceBindings()
     {
         using var scope = new EnvironmentVariableScope("VCAP_SERVICES", VcapServicesJson);

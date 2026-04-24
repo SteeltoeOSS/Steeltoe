@@ -119,9 +119,11 @@ public static class ConfigurationBuilderExtensions
         ArgumentNullException.ThrowIfNull(ignoreKeyPredicate);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        if (brokerTypes != CloudFoundryServiceBrokerTypes.None)
+        CloudFoundryServiceBrokerTypes missingBrokerTypes = GetMissingBrokerTypes(builder, brokerTypes);
+
+        if (missingBrokerTypes != CloudFoundryServiceBrokerTypes.None)
         {
-            var source = new CloudFoundryServiceBindingConfigurationSource(serviceBindingsReader ?? DefaultReader, brokerTypes)
+            var source = new CloudFoundryServiceBindingConfigurationSource(serviceBindingsReader ?? DefaultReader, missingBrokerTypes)
             {
                 IgnoreKeyPredicate = ignoreKeyPredicate
             };
@@ -130,11 +132,26 @@ public static class ConfigurationBuilderExtensions
             // WebApplicationBuilder immediately builds the configuration provider and loads it, which executes the post-processors.
             // Therefore, adding post-processors afterward is a no-op.
 
-            RegisterPostProcessors(source, brokerTypes, loggerFactory);
+            RegisterPostProcessors(source, missingBrokerTypes, loggerFactory);
             builder.Add(source);
         }
 
         return builder;
+    }
+
+    private static CloudFoundryServiceBrokerTypes GetMissingBrokerTypes(IConfigurationBuilder builder, CloudFoundryServiceBrokerTypes brokerTypesRequested)
+    {
+        CloudFoundryServiceBrokerTypes missingBrokerTypes = brokerTypesRequested;
+
+        if (brokerTypesRequested != CloudFoundryServiceBrokerTypes.None)
+        {
+            foreach (CloudFoundryServiceBindingConfigurationSource existingSource in builder.EnumerateSources<CloudFoundryServiceBindingConfigurationSource>())
+            {
+                missingBrokerTypes &= ~existingSource.BrokerTypes;
+            }
+        }
+
+        return missingBrokerTypes;
     }
 
     private static void RegisterPostProcessors(CloudFoundryServiceBindingConfigurationSource source, CloudFoundryServiceBrokerTypes brokerTypes,
