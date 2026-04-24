@@ -67,7 +67,7 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
             """;
 
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
-        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings().Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Identity).Build();
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
 

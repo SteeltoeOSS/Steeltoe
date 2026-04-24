@@ -232,9 +232,8 @@ public sealed class PostgreSqlConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(MultiVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
@@ -461,7 +460,7 @@ public sealed class PostgreSqlConnectorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddHealthChecks();
-        builder.AddPostgreSql(null, null);
+        builder.AddPostgreSql();
         await using WebApplication app = builder.Build();
 
         app.Services.GetServices<IHealthContributor>().Should().BeEmpty();
@@ -493,9 +492,8 @@ public sealed class PostgreSqlConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(SingleVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -526,8 +524,7 @@ public sealed class PostgreSqlConnectorTest
     public async Task Registers_default_connection_string_when_only_single_server_binding_found()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(SingleVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -624,9 +621,8 @@ public sealed class PostgreSqlConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(MultiVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -652,9 +648,8 @@ public sealed class PostgreSqlConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(SingleVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -677,9 +672,8 @@ public sealed class PostgreSqlConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(SingleVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();

@@ -75,7 +75,7 @@ public sealed class CloudFoundryTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
-        builder.Configuration.AddCloudFoundryServiceBindings();
+        builder.Configuration.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
         builder.Services.AddEurekaDiscoveryClient();
 
         await using WebApplication app = builder.Build();
@@ -269,7 +269,7 @@ public sealed class CloudFoundryTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
-        builder.Configuration.AddCloudFoundryServiceBindings();
+        builder.Configuration.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
         builder.Services.AddEurekaDiscoveryClient();
 
         await using WebApplication app = builder.Build();
@@ -464,7 +464,7 @@ public sealed class CloudFoundryTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
-        builder.Configuration.AddCloudFoundryServiceBindings();
+        builder.Configuration.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
         builder.Services.AddEurekaDiscoveryClient();
 
         await using WebApplication app = builder.Build();
@@ -661,7 +661,7 @@ public sealed class CloudFoundryTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
-        builder.Configuration.AddCloudFoundryServiceBindings();
+        builder.Configuration.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
         builder.Services.AddEurekaDiscoveryClient();
 
         await using WebApplication app = builder.Build();
@@ -760,7 +760,7 @@ public sealed class CloudFoundryTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.AddCloudFoundryConfiguration();
-        builder.Configuration.AddCloudFoundryServiceBindings();
+        builder.Configuration.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
         builder.Services.AddEurekaDiscoveryClient();
 
         await using WebApplication app = builder.Build();

@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
 namespace Steeltoe.Connectors.MongoDb;
 
@@ -36,9 +38,23 @@ public static class MongoDbConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder ConfigureMongoDb(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
+        return ConfigureMongoDb(builder, configureAction, null);
+    }
+
+    internal static IConfigurationBuilder ConfigureMongoDb(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+        IServiceBindingsReader? serviceBindingsReader)
+    {
         ArgumentNullException.ThrowIfNull(builder);
 
-        ConnectorConfigurer.Configure(builder, configureAction, new MongoDbConnectionStringPostProcessor());
+        Action<ConnectorConfigureOptionsBuilder> overrideConfigureAction = options =>
+        {
+            configureAction?.Invoke(options);
+            options.CloudFoundryBrokerTypes = options.SkipDefaultServiceBindings ? CloudFoundryServiceBrokerTypes.None : CloudFoundryServiceBrokerTypes.MongoDb;
+        };
+
+        ConnectorConfigurer.Configure(builder, overrideConfigureAction, new MongoDbConnectionStringPostProcessor(), serviceBindingsReader,
+            NullLoggerFactory.Instance);
+
         return builder;
     }
 }

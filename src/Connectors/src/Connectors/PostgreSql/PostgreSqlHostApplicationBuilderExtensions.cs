@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
+using Steeltoe.Connectors.PostgreSql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.PostgreSql;
 
@@ -42,9 +44,15 @@ public static class PostgreSqlHostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddPostgreSql(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         Action<ConnectorAddOptionsBuilder>? addAction)
     {
+        return AddPostgreSql(builder, configureAction, addAction, null);
+    }
+
+    internal static IHostApplicationBuilder AddPostgreSql(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+        Action<ConnectorAddOptionsBuilder>? addAction, IServiceBindingsReader? serviceBindingsReader)
+    {
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.Configuration.ConfigurePostgreSql(configureAction);
+        builder.Configuration.ConfigurePostgreSql(PostgreSqlPackageResolver.Default, configureAction, serviceBindingsReader);
         builder.Services.AddPostgreSql(builder.Configuration, addAction);
         return builder;
     }

@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Connectors.PostgreSql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.PostgreSql;
@@ -20,7 +22,7 @@ public static class PostgreSqlConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder)
     {
-        return ConfigurePostgreSql(builder, PostgreSqlPackageResolver.Default);
+        return ConfigurePostgreSql(builder, null);
     }
 
     /// <summary>
@@ -37,16 +39,26 @@ public static class PostgreSqlConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
-        return ConfigurePostgreSql(builder, PostgreSqlPackageResolver.Default, configureAction);
+        return ConfigurePostgreSql(builder, PostgreSqlPackageResolver.Default, configureAction, null);
     }
 
-    private static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder, PostgreSqlPackageResolver packageResolver,
-        Action<ConnectorConfigureOptionsBuilder>? configureAction = null)
+    internal static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder, PostgreSqlPackageResolver packageResolver,
+        Action<ConnectorConfigureOptionsBuilder>? configureAction, IServiceBindingsReader? serviceBindingsReader)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(packageResolver);
 
-        ConnectorConfigurer.Configure(builder, configureAction, new PostgreSqlConnectionStringPostProcessor(packageResolver));
+        Action<ConnectorConfigureOptionsBuilder> overrideConfigureAction = options =>
+        {
+            configureAction?.Invoke(options);
+
+            options.CloudFoundryBrokerTypes =
+                options.SkipDefaultServiceBindings ? CloudFoundryServiceBrokerTypes.None : CloudFoundryServiceBrokerTypes.PostgreSql;
+        };
+
+        ConnectorConfigurer.Configure(builder, overrideConfigureAction, new PostgreSqlConnectionStringPostProcessor(packageResolver), serviceBindingsReader,
+            NullLoggerFactory.Instance);
+
         return builder;
     }
 }

@@ -3,25 +3,32 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Configuration;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Configuration.Kubernetes.ServiceBindings;
+using IServiceBindingsReader = Steeltoe.Configuration.CloudFoundry.ServiceBindings.IServiceBindingsReader;
 
 namespace Steeltoe.Connectors;
 
 internal static class ConnectorConfigurer
 {
-    public static void Configure<TPostProcessor>(IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
-        TPostProcessor connectionStringPostProcessor)
+    private static readonly Predicate<string> DefaultIgnoreKeyPredicate = _ => false;
+
+    public static void Configure<TPostProcessor>(IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder> configureAction,
+        TPostProcessor connectionStringPostProcessor, IServiceBindingsReader? serviceBindingsReader, ILoggerFactory loggerFactory)
         where TPostProcessor : ConnectionStringPostProcessor
     {
         if (!IsConfigured<TPostProcessor>(builder))
         {
             var optionsBuilder = new ConnectorConfigureOptionsBuilder();
-            configureAction?.Invoke(optionsBuilder);
+            configureAction.Invoke(optionsBuilder);
 
-            builder.AddCloudFoundryServiceBindings();
-            builder.AddKubernetesServiceBindings();
+            if (!optionsBuilder.SkipDefaultServiceBindings)
+            {
+                builder.AddCloudFoundryServiceBindings(DefaultIgnoreKeyPredicate, serviceBindingsReader, optionsBuilder.CloudFoundryBrokerTypes, loggerFactory);
+                builder.AddKubernetesServiceBindings();
+            }
 
             RegisterPostProcessor(connectionStringPostProcessor, builder, optionsBuilder.DetectConfigurationChanges);
         }

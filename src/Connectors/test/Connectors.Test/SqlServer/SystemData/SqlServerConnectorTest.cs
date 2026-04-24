@@ -149,7 +149,7 @@ public sealed class SqlServerConnectorTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly, null, null, null);
         builder.Services.Configure<SqlServerOptions>("mySqlServerServiceOne", options => options.ConnectionString += ";Encrypt=false");
         await using WebApplication app = builder.Build();
 
@@ -187,9 +187,8 @@ public sealed class SqlServerConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly, null, null, new StringServiceBindingsReader(MultiVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<SqlServerOptions>>();
@@ -227,7 +226,7 @@ public sealed class SqlServerConnectorTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly, null, null, null);
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<SqlServerOptions, SqlConnection>>();
@@ -254,7 +253,7 @@ public sealed class SqlServerConnectorTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly, null, null, null);
         await using WebApplication app = builder.Build();
 
         RelationalDatabaseHealthContributor[] contributors =
@@ -275,8 +274,7 @@ public sealed class SqlServerConnectorTest
     public async Task Registers_default_connection_string_when_only_single_server_binding_found()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
-        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly, null, null, new StringServiceBindingsReader(SingleVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<SqlServerOptions, SqlConnection>>();
@@ -304,7 +302,7 @@ public sealed class SqlServerConnectorTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly, null, null, null);
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<SqlServerOptions, SqlConnection>>();

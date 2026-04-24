@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.SqlServer;
@@ -21,7 +22,7 @@ public static class SqlServerHostApplicationBuilderExtensions
     /// </returns>
     public static IHostApplicationBuilder AddSqlServer(this IHostApplicationBuilder builder)
     {
-        return AddSqlServer(builder, SqlServerPackageResolver.Default);
+        return AddSqlServer(builder, null, null);
     }
 
     /// <summary>
@@ -43,16 +44,16 @@ public static class SqlServerHostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddSqlServer(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         Action<ConnectorAddOptionsBuilder>? addAction)
     {
-        return AddSqlServer(builder, SqlServerPackageResolver.Default, configureAction, addAction);
+        return AddSqlServer(builder, SqlServerPackageResolver.Default, configureAction, addAction, null);
     }
 
     internal static IHostApplicationBuilder AddSqlServer(this IHostApplicationBuilder builder, SqlServerPackageResolver packageResolver,
-        Action<ConnectorConfigureOptionsBuilder>? configureAction = null, Action<ConnectorAddOptionsBuilder>? addAction = null)
+        Action<ConnectorConfigureOptionsBuilder>? configureAction, Action<ConnectorAddOptionsBuilder>? addAction, IServiceBindingsReader? serviceBindingsReader)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(packageResolver);
 
-        builder.Configuration.ConfigureSqlServer(packageResolver, configureAction);
+        builder.Configuration.ConfigureSqlServer(packageResolver, configureAction, serviceBindingsReader);
         builder.Services.AddSqlServer(builder.Configuration, packageResolver, addAction);
         return builder;
     }

@@ -46,13 +46,13 @@ public sealed class RedisConnectionStringBuilderTest
     }
 
     [Fact]
-    public void Throws_when_getting_unknown_keyword()
+    public void Returns_null_when_getting_unknown_keyword()
     {
         var builder = new RedisConnectionStringBuilder();
 
-        Action action = () => _ = builder["bad"];
+        object? some = builder["some"];
 
-        action.Should().ThrowExactly<ArgumentException>().WithMessage("Keyword not supported: 'bad'.*");
+        some.Should().BeNull();
     }
 
     [Fact]
