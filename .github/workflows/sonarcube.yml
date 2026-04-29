@@ -22,6 +22,7 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_NOLOGO: true
   SOLUTION_FILE: 'src/Steeltoe.All.slnx'
+  NUGET_VULNERABLE_PACKAGE_WARNINGS: '"NU1901;NU1902;NU1903;NU1904"'
   SONAR_TEST_ARGS: >-
     --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/TestOutput
     --settings coverlet.runsettings -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.UseSourceLink=false
@@ -66,9 +67,6 @@ jobs:
         # Sonar: Shallow clones should be disabled for a better relevancy of analysis.
         fetch-depth: 0
 
-    - name: Restore packages
-      run: dotnet restore ${{ env.SOLUTION_FILE }} /p:Configuration=Release /p:NuGetAudit=false --verbosity minimal
-
     - name: Begin Sonar .NET scanner
       id: sonar_begin
       env:
@@ -77,8 +75,11 @@ jobs:
         dotnet sonarscanner begin /k:"SteeltoeOSS_steeltoe" /o:"steeltoeoss" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
         /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=**/coverage.opencover.xml
 
+    - name: Restore packages
+      run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal /p:Configuration=Release /p:NuGetAuditLevel=low /p:WarningsNotAsErrors='${{ env.NUGET_VULNERABLE_PACKAGE_WARNINGS }}'
+
     - name: Build solution
-      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
+      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal /p:NuGetAuditLevel=low /p:WarningsNotAsErrors='${{ env.NUGET_VULNERABLE_PACKAGE_WARNINGS }}'
 
     - name: Test
       run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" ${{ env.SONAR_TEST_ARGS }}
