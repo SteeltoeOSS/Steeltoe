@@ -1,3 +1,0 @@
-#nullable enable
-Steeltoe.Connectors.ConnectorConfigureOptionsBuilder.SkipDefaultServiceBindings.get -> bool
-Steeltoe.Connectors.ConnectorConfigureOptionsBuilder.SkipDefaultServiceBindings.set -> void

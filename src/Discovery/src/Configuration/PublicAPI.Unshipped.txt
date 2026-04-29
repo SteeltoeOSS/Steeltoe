@@ -1,3 +1,0 @@
-#nullable enable
-Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient.Dispose() -> void
-Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient.InstancesFetched -> System.EventHandler<Steeltoe.Common.Discovery.DiscoveryInstancesFetchedEventArgs!>?

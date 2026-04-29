@@ -1,5 +1,0 @@
-#nullable enable
-Steeltoe.Common.Http.HttpClientPooling.HttpClientHandlerFactory
-Steeltoe.Common.Http.HttpClientPooling.HttpClientHandlerFactory.Create() -> System.Net.Http.HttpClientHandler!
-Steeltoe.Common.Http.HttpClientPooling.HttpClientHandlerFactory.HttpClientHandlerFactory() -> void
-Steeltoe.Common.Http.HttpClientPooling.HttpClientHandlerFactory.Using(System.Net.Http.HttpClientHandler! handler) -> Steeltoe.Common.Http.HttpClientPooling.HttpClientHandlerFactory!

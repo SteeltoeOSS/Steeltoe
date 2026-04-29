@@ -1,2 +1,0 @@
-#nullable enable
-Steeltoe.Discovery.Consul.ConsulDiscoveryClient.InstancesFetched -> System.EventHandler<Steeltoe.Common.Discovery.DiscoveryInstancesFetchedEventArgs!>?
