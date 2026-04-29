@@ -1,24 +1,26 @@
 # Steeltoe Supported Versions
 
-This document lists all versions of Steeltoe and their corresponding support lifecycles.
+This page lists published Steeltoe versions, the support policy (4.0+ is the default below), a table of release and end-of-life dates, and .NET runtimes we validated.
 
-## Support Policy
+## For Steeltoe 4.0 and newer
 
-Steeltoe follows the [VMware Tanzu OSS support policy](https://docs.broadcom.com/doc/tanzu-support-oss) for critical bugs and security issues.
+This section is the support policy for **4.x and later** (current and future work).
 
-* Major versions will be supported for up to 3 years from the release date.
-* Minor versions will be supported for at least 12 months from the release date.
+**How long a major is supported** — A **major** line (for example, all 4.x) is supported for at least **three years** from the **date that major was first released**, and for at least **one year** after the **date the next major** is released. That major **ends** no **earlier** than the **later** of those two dates.
 
-### Go-live Releases
+**Security and serious-bug fixes** — We add these only in **new patch** releases of the **newest** **minor** in a **supported** **major** (for example, 4.2.x when 4.2 is the newest 4.x minor, not 4.0.x or 4.1.x). You must use the **latest patch** of that **newest** minor. We do **not** add new **security** patches to **older** minors. **Upgrade** the **minor** to the current line, then to the **latest patch**, to receive these fixes.
 
-Go-live releases are supported by the Steeltoe team in production. These are typically our release candidate builds, just before the generally available (GA) release.
+**Pre-release and go-live** — Go-live releases that we support in production are often **release-candidate** builds just before **GA**. Pre-GA and go-live **packages** are not in the same **security** patch **policy** as this section unless we **announce** that they are.
 
-## Released Versions
+**Compatibility** — We try to keep compatibility across minors and patch releases within a major. Breaking changes are normally reserved for a new major. A rare break in a minor is possible; we will explain it. Security and serious-bug fixes follow the “Security and serious-bug fixes” section above, not a promise of matching patches on every older minor.
 
-When new versions of Steeltoe are released, they are tested with the latest supported versions of .NET.
-It is recommended to run the latest patch version for the targeted Steeltoe release.
+## For Steeltoe 3.x and older
 
-### Release Support Matrix
+The [For Steeltoe 4.0 and newer](#for-steeltoe-40-and-newer) section applies only to 4.0 and later. It does not change or replace the end-of-life dates in the [Release support matrix](#release-support-matrix) for 3.x, 2.x, 1.x, or any earlier line. For those versions, the matrix is what we have published. Use the dates and .NET runtime columns in the table for older rows; the 4.0+ policy does not override them.
+
+## Release support matrix
+
+When we release a version, we test it with the .NET runtimes in good standing at the time. Prefer the latest supported Steeltoe and .NET patch versions, consistent with the 4.0+ policy and [.NET runtime support](#net-runtime-support) below.
 
 | Steeltoe Version | Release Date       | End of Life Date | .NET Runtime Version  |
 | ---------------- | ------------       | ---------------- | --------------------  |
@@ -45,15 +47,7 @@ It is recommended to run the latest patch version for the targeted Steeltoe rele
 > If newer .NET versions emerge before the end-of-life date, we don't list them here.
 > That doesn't mean they won't work or won't be supported, only that they aren't automatically guaranteed.
 
-## Release Compatibility
-
-The Steeltoe team is aware of the need for stability and backward compatibility between releases.
-Our goal is to keep backward compatibility across all minor and maintenance releases (for example: 3.1.3 should work with 3.1.2, 3.1.1, 3.1.0).
-Major releases are utilized to remove all deprecated code and make breaking changes when necessary for code optimization, enhancements, architecture changes, and redesign.
-We strive to keep all compatibility changes/breakages to major releases only.
-There is a rare chance that we might be forced to break compatibility in a minor release, but we will be sure to be clear of our reasons for doing so.
-
-## .NET Runtime Support
+## .NET runtime support
 
 Steeltoe libraries depend on .NET runtimes, so we follow the [.NET and .NET Core Support Policy](https://dotnet.microsoft.com/platform/support/policy/dotnet-core).
 Once a runtime is out of support, Steeltoe will also discontinue support for running our libraries on those runtime versions.
