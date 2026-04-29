@@ -4,19 +4,25 @@ This document lists all versions of Steeltoe and their corresponding support lif
 
 ## Support Policy
 
-Steeltoe follows the [VMware Tanzu OSS support policy](https://docs.broadcom.com/doc/tanzu-support-oss) for critical bugs and security issues.
+**For Steeltoe 4.0 and newer:** The policy below applies to these versions. It does not change the dates already shown for **older** rows in the table below. For **3.x and below**, use the table as written.
 
-* Major versions will be supported for up to 3 years from the release date.
-* Minor versions will be supported for at least 12 months from the release date.
+Steeltoe is *informed by* the [VMware Tanzu OSS support policy](https://docs.broadcom.com/doc/tanzu-support-oss) for how we think about support. The rules in this section are the Steeltoe project rules. They apply to **Steeltoe 4.0 and newer**.
+
+* **How long is a major supported?** A **major** is supported for **at least three years** from the **date that major was released**. It is also supported for **at least one year** after the **date the next major is released**. Support ends on the **later** of these two dates.
+* **Where do fixes go?** **Security** fixes and fixes for **serious** bugs are provided only in **new patch** releases of the **newest** **minor** in a supported **major** (for example, only 4.2.x if 4.2 is the newest minor, not 4.0.x or 4.1.x). You need the **latest patch** of that **newest** minor. We do **not** add new **security** patches to **older** minors. **Upgrade** to the newest **minor** and the **latest patch** to get those fixes.
 
 ### Go-live Releases
 
 Go-live releases are supported by the Steeltoe team in production. These are typically our release candidate builds, just before the generally available (GA) release.
 
+Pre-GA and go-live packages are not in scope for the same security patch policy unless explicitly announced.
+
 ## Released Versions
 
 When new versions of Steeltoe are released, they are tested with the latest supported versions of .NET.
 It is recommended to run the latest patch version for the targeted Steeltoe release.
+
+For **4.0 and newer**, use the **newest** **minor** in your **major** and the **latest patch** to get **security** fixes (see **Support Policy** above). The table below is unchanged for older versions: see the **Scope** note in **Support Policy** above.
 
 ### Release Support Matrix
 
@@ -39,6 +45,8 @@ It is recommended to run the latest patch version for the targeted Steeltoe rele
 
 \* Integration, Messaging and Stream are supported on .NET 6 only.
 
+**Note (4.0+):** End of support for a **major** is no **earlier** than: (1) **three years** after that major’s first release, or (2) **one year** after the next major releases—**whichever date is later**. The dates in the table for **3.x and older** are not changed by this policy.
+
 > [!NOTE]
 > For each release, we list the original release date, along with the .NET versions supported at that moment in time.
 > These are the combinations that were confirmed to work when the release was created.
@@ -52,6 +60,8 @@ Our goal is to keep backward compatibility across all minor and maintenance rele
 Major releases are utilized to remove all deprecated code and make breaking changes when necessary for code optimization, enhancements, architecture changes, and redesign.
 We strive to keep all compatibility changes/breakages to major releases only.
 There is a rare chance that we might be forced to break compatibility in a minor release, but we will be sure to be clear of our reasons for doing so.
+
+**Security** fixes and fixes for **serious** bugs do not go to every **minor** in a **major** at the same time. For **4.0 and newer**, use the **newest** **minor** and the **latest patch** (see **Support Policy** above). Moving up between **minors** should still be in line with our **compatibility** goals within a **major** as described above.
 
 ## .NET Runtime Support
 
