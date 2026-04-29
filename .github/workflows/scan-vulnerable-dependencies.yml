@@ -41,4 +41,19 @@ jobs:
         persist-credentials: false
 
     - name: Report vulnerable dependencies
-      run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal /p:NuGetAudit=true /p:NuGetAuditMode=all /p:NuGetAuditLevel=low /p:TreatWarningsAsErrors=True
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = 'Stop'
+        $PSNativeCommandUseErrorActionPreference = $true
+
+        $output = dotnet list ${{ env.SOLUTION_FILE }} package --vulnerable --include-transitive --format json --output-version 1 2>&1
+        $text = ($output | Out-String).TrimEnd()
+        $json = $text | ConvertFrom-Json
+
+        foreach ($project in $json.projects) {
+          if ($project.frameworks) {
+            Write-Host 'Vulnerable package references were found.'
+            dotnet list ${{ env.SOLUTION_FILE }} package --vulnerable --include-transitive
+            exit 1
+          }
+        }
