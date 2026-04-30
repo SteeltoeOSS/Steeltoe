@@ -302,7 +302,7 @@ public class HostBuilderExtensionsTest
         Assert.NotNull(host.Services.GetService<IDynamicMessageProcessor>());
 
         // confirm instrumentation(s) were added as expected
-        var instrumentations = tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tracerProvider) as List<object>;
+        var instrumentations = OpenTelemetrySdkReflection.GetTracerProviderInstrumentations(tracerProvider);
         Assert.NotNull(instrumentations);
         Assert.Single(instrumentations);
         Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
@@ -325,7 +325,7 @@ public class HostBuilderExtensionsTest
         Assert.NotNull(host.Services.GetService<IDynamicMessageProcessor>());
 
         // confirm instrumentation(s) were added as expected
-        var instrumentations = tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tracerProvider) as List<object>;
+        var instrumentations = OpenTelemetrySdkReflection.GetTracerProviderInstrumentations(tracerProvider);
         Assert.NotNull(instrumentations);
         Assert.Equal(2, instrumentations.Count);
         Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));

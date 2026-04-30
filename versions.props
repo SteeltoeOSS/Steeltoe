@@ -22,7 +22,9 @@
     <HttpExtensionsVersion>3.1.0</HttpExtensionsVersion>
     <DiagnosticsExtensionsVersion>2.2.5</DiagnosticsExtensionsVersion>
     <JsonNetVersion>13.0.1</JsonNetVersion>
-    <OpenTelemetryVersion>1.8.1</OpenTelemetryVersion>
+    <OpenTelemetryVersion>1.15.3</OpenTelemetryVersion>
+    <OpenTelemetryInstrumentationHttpVersion>1.15.1</OpenTelemetryInstrumentationHttpVersion>
+    <OpenTelemetryInstrumentationAspNetCoreVersion>1.15.2</OpenTelemetryInstrumentationAspNetCoreVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
     <RabbitClientVersion>5.1.2</RabbitClientVersion>
     <RabbitClientMaxVersion>6.0.0</RabbitClientMaxVersion>
@@ -100,7 +102,7 @@
     <AspNetCoreVersion>8.0.0</AspNetCoreVersion>
     <EFCoreVersion>8.0.0</EFCoreVersion>
     <SystemNetHttpJsonVersion>8.0.0</SystemNetHttpJsonVersion>
-    
+
     <!-- Non-exposed dependencies, only referenced from test projects, build infrastructure and internal tools. -->
     <EFCoreTestVersion>8.0.0</EFCoreTestVersion>
     <MySqlEFCoreVersion>8.0.0</MySqlEFCoreVersion>

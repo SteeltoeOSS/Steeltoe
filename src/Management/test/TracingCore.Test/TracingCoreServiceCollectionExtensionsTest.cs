@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -7,9 +7,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Trace;
-using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
-using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -42,7 +39,7 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     {
         var services = new ServiceCollection().AddSingleton(GetConfiguration());
 
-        var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+        var serviceProvider = services.AddDistributedTracing().BuildServiceProvider();
         var hst = serviceProvider.GetService<IHostedService>();
         Assert.NotNull(hst);
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
@@ -61,7 +58,7 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
                 { "management:metrics:export:wavefront:apiToken", "fakeSecret" }
             }));
 
-        var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+        var serviceProvider = services.AddDistributedTracing().BuildServiceProvider();
 
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
         Assert.NotNull(tracerProvider);
