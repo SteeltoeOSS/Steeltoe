@@ -95,23 +95,6 @@
     <KubernetesClientVersion>5.0.13</KubernetesClientVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <!-- Exposed dependencies, observable by Steeltoe library consumers. Only update when vulnerable. -->
-    <AspNetCoreVersion>6.0.0</AspNetCoreVersion>
-    <EFCoreVersion>6.0.0</EFCoreVersion>
-    <SystemNetHttpJsonVersion>6.0.0</SystemNetHttpJsonVersion>
-
-    <!-- Non-exposed dependencies, only referenced from test projects, build infrastructure and internal tools. -->
-    <EFCoreTestVersion>6.0.0</EFCoreTestVersion>
-    <MySqlEFCoreVersion>6.0.0</MySqlEFCoreVersion>
-    <NpgsqlVersion>6.0.11</NpgsqlVersion>
-    <NpgsqlEFCoreVersion>6.0.0</NpgsqlEFCoreVersion>
-    <OracleManagedDataAccessCoreVersion>3.21.90</OracleManagedDataAccessCoreVersion>
-    <OracleEFCoreVersion>6.21.5</OracleEFCoreVersion>
-    <PomeloEFCoreVersion>6.0.0</PomeloEFCoreVersion>
-    <MicrosoftExtensionsRedisVersion>6.0.0</MicrosoftExtensionsRedisVersion>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <!-- Exposed dependencies, observable by Steeltoe library consumers. Only update when vulnerable. -->
     <AspNetCoreVersion>8.0.0</AspNetCoreVersion>

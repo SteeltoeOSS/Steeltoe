@@ -3,19 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-#if NET8_0_OR_GREATER
-using MySql.Data.MySqlClient;
-#else
-using MySqlConnector;
-#endif
 using Steeltoe.Connector.EFCore.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using Xunit;
+using OracleMySqlConnection = MySql.Data.MySqlClient.MySqlConnection;
+using PomeloMySqlConnection = MySqlConnector.MySqlConnection;
 
 namespace Steeltoe.Connector.MySql.EFCore.Test;
 
@@ -83,22 +79,37 @@ public class MySqlDbContextOptionsExtensionsTest
     }
 
     [Fact]
-    public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection()
+    public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection_OracleDriver()
     {
+        using var assemblyScope = CreateOracleAssemblyScope();
+
         IServiceCollection services = new ServiceCollection();
         var config = new ConfigurationBuilder().Build();
 
-#if NET8_0_OR_GREATER
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
-#else
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
-#endif
 
         var service = services.BuildServiceProvider().GetService<GoodDbContext>();
         Assert.NotNull(service);
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
-        Assert.True(con is MySqlConnection);
+        Assert.True(con is OracleMySqlConnection);
+    }
+
+    [Fact]
+    public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection_PomeloDriver()
+    {
+        using var assemblyScope = CreatePomeloAssemblyScope();
+
+        IServiceCollection services = new ServiceCollection();
+        var config = new ConfigurationBuilder().Build();
+
+        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+
+        var service = services.BuildServiceProvider().GetService<GoodDbContext>();
+        Assert.NotNull(service);
+        var con = service.Database.GetDbConnection();
+        Assert.NotNull(con);
+        Assert.True(con is PomeloMySqlConnection);
     }
 
     // Run a MySQL server with Docker to match creds below with this command
@@ -106,6 +117,8 @@ public class MySqlDbContextOptionsExtensionsTest
     [Fact(Skip = "Requires a running MySQL server to support AutoDetect")]
     public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection_AutodetectOn5_0()
     {
+        using var assemblyScope = CreateOracleAssemblyScope();
+
         IServiceCollection services = new ServiceCollection();
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "mysql:client:database", "steeltoe2" }, { "mysql:client:username", "root" }, { "mysql:client:password", "steeltoe" } }).Build();
 
@@ -115,7 +128,7 @@ public class MySqlDbContextOptionsExtensionsTest
         Assert.NotNull(service);
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
-        Assert.NotNull(con as MySqlConnection);
+        Assert.NotNull(con as OracleMySqlConnection);
     }
 
     [Fact]
@@ -149,8 +162,10 @@ public class MySqlDbContextOptionsExtensionsTest
     }
 
     [Fact]
-    public void AddDbContext_MultipleMySqlServices_AddWithName_Adds()
+    public void AddDbContext_MultipleMySqlServices_AddWithName_Adds_OracleDriver()
     {
+        using var assemblyScope = CreateOracleAssemblyScope();
+
         IServiceCollection services = new ServiceCollection();
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -160,11 +175,7 @@ public class MySqlDbContextOptionsExtensionsTest
         builder.AddCloudFoundry();
         var config = builder.Build();
 
-#if NET8_0_OR_GREATER
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2"));
-#else
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2", serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
-#endif
 
         var built = services.BuildServiceProvider();
         var service = built.GetService<GoodDbContext>();
@@ -172,7 +183,7 @@ public class MySqlDbContextOptionsExtensionsTest
 
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
-        Assert.IsType<MySqlConnection>(con);
+        Assert.IsType<OracleMySqlConnection>(con);
 
         var connString = con.ConnectionString;
         Assert.NotNull(connString);
@@ -184,8 +195,43 @@ public class MySqlDbContextOptionsExtensionsTest
     }
 
     [Fact]
-    public void AddDbContexts_WithVCAPs_AddsDbContexts()
+    public void AddDbContext_MultipleMySqlServices_AddWithName_Adds_PomeloDriver()
     {
+        using var assemblyScope = CreatePomeloAssemblyScope();
+
+        IServiceCollection services = new ServiceCollection();
+
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVCAP);
+
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundry();
+        var config = builder.Build();
+
+        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2", serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+
+        var built = services.BuildServiceProvider();
+        var service = built.GetService<GoodDbContext>();
+        Assert.NotNull(service);
+
+        var con = service.Database.GetDbConnection();
+        Assert.NotNull(con);
+        Assert.IsType<PomeloMySqlConnection>(con);
+
+        var connString = con.ConnectionString;
+        Assert.NotNull(connString);
+        Assert.Contains("Server=192.168.0.91", connString, StringComparison.InvariantCultureIgnoreCase);
+        Assert.Contains("Port=3306", connString, StringComparison.InvariantCultureIgnoreCase);
+        Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd0407903550", connString, StringComparison.InvariantCultureIgnoreCase);
+        Assert.Contains("User Id=Dd6O1BPXUHdrmzbP0", connString, StringComparison.InvariantCultureIgnoreCase);
+        Assert.Contains("Password=7E1LxXnlH2hhlPVt0", connString, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    [Fact]
+    public void AddDbContexts_WithVCAPs_AddsDbContexts_OracleDriver()
+    {
+        using var assemblyScope = CreateOracleAssemblyScope();
+
         IServiceCollection services = new ServiceCollection();
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVCAP);
@@ -194,11 +240,7 @@ public class MySqlDbContextOptionsExtensionsTest
         builder.AddCloudFoundry();
         var config = builder.Build();
 
-#if NET8_0_OR_GREATER
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
-#else
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
-#endif
 
         var built = services.BuildServiceProvider();
         var service = built.GetService<GoodDbContext>();
@@ -206,7 +248,7 @@ public class MySqlDbContextOptionsExtensionsTest
 
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
-        Assert.IsType<MySqlConnection>(con);
+        Assert.IsType<OracleMySqlConnection>(con);
 
         var connString = con.ConnectionString;
         Assert.NotNull(connString);
@@ -215,5 +257,47 @@ public class MySqlDbContextOptionsExtensionsTest
         Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString, StringComparison.InvariantCultureIgnoreCase);
         Assert.Contains("User Id=Dd6O1BPXUHdrmzbP", connString, StringComparison.InvariantCultureIgnoreCase);
         Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    [Fact]
+    public void AddDbContexts_WithVCAPs_AddsDbContexts_PomeloDriver()
+    {
+        using var assemblyScope = CreatePomeloAssemblyScope();
+
+        IServiceCollection services = new ServiceCollection();
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVCAP);
+
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundry();
+        var config = builder.Build();
+
+        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+
+        var built = services.BuildServiceProvider();
+        var service = built.GetService<GoodDbContext>();
+        Assert.NotNull(service);
+
+        var con = service.Database.GetDbConnection();
+        Assert.NotNull(con);
+        Assert.IsType<PomeloMySqlConnection>(con);
+
+        var connString = con.ConnectionString;
+        Assert.NotNull(connString);
+        Assert.Contains("Server=192.168.0.90", connString, StringComparison.InvariantCultureIgnoreCase);
+        Assert.Contains("Port=3306", connString, StringComparison.InvariantCultureIgnoreCase);
+        Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString, StringComparison.InvariantCultureIgnoreCase);
+        Assert.Contains("User Id=Dd6O1BPXUHdrmzbP", connString, StringComparison.InvariantCultureIgnoreCase);
+        Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    private static MySqlEntityFrameworkCoreAssemblyScope CreateOracleAssemblyScope()
+    {
+        return new MySqlEntityFrameworkCoreAssemblyScope(new[] { "MySql.EntityFrameworkCore" });
+    }
+
+    private static MySqlEntityFrameworkCoreAssemblyScope CreatePomeloAssemblyScope()
+    {
+        return new MySqlEntityFrameworkCoreAssemblyScope(new[] { "Pomelo.EntityFrameworkCore.MySql" });
     }
 }

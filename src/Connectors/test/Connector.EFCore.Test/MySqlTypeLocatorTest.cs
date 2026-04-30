@@ -23,7 +23,6 @@ public class MySqlTypeLocatorTest
         Assert.NotNull(type);
     }
 
-#if NET8_0_OR_GREATER
     [Fact]
     public void Driver_Found_In_MySqlData_Assembly()
     {
@@ -36,7 +35,7 @@ public class MySqlTypeLocatorTest
         Assert.NotNull(type);
         MySqlTypeLocator.Assemblies = types;
     }
-#else
+
     [Fact]
     public void Driver_Found_In_MySqlConnector_Assembly()
     {
@@ -49,5 +48,4 @@ public class MySqlTypeLocatorTest
         Assert.NotNull(type);
         MySqlTypeLocator.Assemblies = types;
     }
-#endif
 }

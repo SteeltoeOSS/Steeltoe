@@ -40,11 +40,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
 {
     public class WebApplicationBuilderExtensionsTest
     {
-#if NET8_0_OR_GREATER
         private const int ConfigurationProviderCountDelta = 2;
-#else
-        private const int ConfigurationProviderCountDelta = 0;
-#endif
 
         [Fact]
         public void ConfigServerConfiguration_IsAutowired()
