@@ -12,15 +12,14 @@
     <JwtTokensVersion>7.7.1</JwtTokensVersion>
     <SymReaderVersion>1.2.0</SymReaderVersion>
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
-    <SystemDiagnosticsVersion>8.0.0</SystemDiagnosticsVersion>
-    <SystemJsonVersion>8.0.5</SystemJsonVersion>
-    <SystemNetHttpJsonVersion>3.2.1</SystemNetHttpJsonVersion>
-    <SystemReflectionVersion>4.6.0</SystemReflectionVersion>
+    <SystemVersion>8.0.0</SystemVersion>
+    <SystemJsonVersion>
+      <!-- Earliest non-vulnerable version in 8.x release line -->
+      8.0.5
+    </SystemJsonVersion>
     <BouncyCastleVersion>1.8.4</BouncyCastleVersion>
     <ConsulVersion>1.6.10.3</ConsulVersion>
     <HdrHistogramVersion>2.0.0</HdrHistogramVersion>
-    <HttpExtensionsVersion>3.1.0</HttpExtensionsVersion>
-    <DiagnosticsExtensionsVersion>2.2.5</DiagnosticsExtensionsVersion>
     <JsonNetVersion>13.0.1</JsonNetVersion>
     <OpenTelemetryVersion>1.15.3</OpenTelemetryVersion>
     <OpenTelemetryInstrumentationHttpVersion>1.15.1</OpenTelemetryInstrumentationHttpVersion>
@@ -34,15 +33,19 @@
     <CastleCoreVersion>4.4.0</CastleCoreVersion>
     <RuntimeLoaderVersion>4.3.0</RuntimeLoaderVersion>
     <ExtensionsVersion>8.0.0</ExtensionsVersion>
-    <ExtensionsCachingMemoryVersion>8.0.1</ExtensionsCachingMemoryVersion>
-    <HealthChecksVersion>3.1.0</HealthChecksVersion>
-    <LoggingVersion>3.1.0</LoggingVersion>
+    <ExtensionsCachingMemoryVersion>
+      <!-- Earliest non-vulnerable version in 8.x release line -->
+      8.0.1
+    </ExtensionsCachingMemoryVersion>
     <LightweightEmitVersion>4.7.0</LightweightEmitVersion>
     <DiagnosticsNETCoreClientVersion>0.2.236902</DiagnosticsNETCoreClientVersion>
     <DiagnosticsTracingTraceEventVersion>2.0.64</DiagnosticsTracingTraceEventVersion>
     <SerilogSinksConsoleVersion>3.1.1</SerilogSinksConsoleVersion>
     <SerilogVersion>3.0.1</SerilogVersion>
-    <SystemFormatsAsn1Version>8.0.1</SystemFormatsAsn1Version>
+    <SystemFormatsAsn1Version>
+      <!-- Earliest non-vulnerable version in 8.x release line -->
+      8.0.1
+    </SystemFormatsAsn1Version>
     <SystemTextRegularExpressionsVersion>4.3.1</SystemTextRegularExpressionsVersion>
     <SystemNetHttpVersion>4.3.4</SystemNetHttpVersion>
 
@@ -66,7 +69,7 @@
     <MockHttpVersion>6.0.0</MockHttpVersion>
     <MoqVersion>4.13.1</MoqVersion>
     <NSubstituteVersion>4.2.0</NSubstituteVersion>
-    <TestSdkVersion>17.0.0</TestSdkVersion>
+    <TestSdkVersion>18.3.0</TestSdkVersion>
     <XunitVersion>2.4.1</XunitVersion>
     <XunitAbstractionsVersion>2.0.3</XunitAbstractionsVersion>
     <XunitStudioVersion>2.4.3</XunitStudioVersion>
@@ -101,7 +104,6 @@
     <!-- Exposed dependencies, observable by Steeltoe library consumers. Only update when vulnerable. -->
     <AspNetCoreVersion>8.0.0</AspNetCoreVersion>
     <EFCoreVersion>8.0.0</EFCoreVersion>
-    <SystemNetHttpJsonVersion>8.0.0</SystemNetHttpJsonVersion>
 
     <!-- Non-exposed dependencies, only referenced from test projects, build infrastructure and internal tools. -->
     <EFCoreTestVersion>8.0.0</EFCoreTestVersion>
