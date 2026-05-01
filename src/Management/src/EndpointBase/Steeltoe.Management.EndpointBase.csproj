@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Management.Endpoint</RootNamespace>
     <Description>Steeltoe management endpoints</Description>
     <PackageTags>actuator;management;monitoring;Spring Cloud;</PackageTags>
@@ -20,7 +20,7 @@
     <PackageReference Include="Microsoft.DiaSymReader.PortablePdb" Version="$(SymReaderPortableVersion)" />
     <PackageReference Include="System.IO.FileSystem.DriveInfo" Version="$(DriveInfoVersion)" />
     <PackageReference Include="System.Net.Http" Version="$(SystemNetHttpVersion)" />
-    <PackageReference Include="System.Net.Http.Json" Version="$(SystemNetHttpJsonVersion)" />
+    <PackageReference Include="System.Net.Http.Json" Version="$(SystemVersion)" />
     <PackageReference Include="System.Text.RegularExpressions" Version="$(SystemTextRegularExpressionsVersion)" />
   </ItemGroup>
 

@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using k8s;
+using k8s.Autorest;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest;
 using Steeltoe.Common.Kubernetes;
 using System;
 using System.Collections.Generic;
@@ -31,8 +31,8 @@ internal class KubernetesSecretProvider : KubernetesProviderBase, IDisposable
     {
         try
         {
-            var secretResponse = K8sClient.ReadNamespacedSecretWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
-            ProcessData(secretResponse.Body);
+            var secret = K8sClient.CoreV1.ReadNamespacedSecret(Settings.Name, Settings.Namespace);
+            ProcessData(secret);
             EnableReloading();
         }
         catch (HttpOperationException e)
@@ -82,9 +82,9 @@ internal class KubernetesSecretProvider : KubernetesProviderBase, IDisposable
             switch (Settings.ReloadSettings.Mode)
             {
                 case ReloadMethods.Event:
-                    SecretWatcher = K8sClient.WatchNamespacedSecretAsync(
-                        Settings.Name,
-                        Settings.Namespace,
+                    SecretWatcher = K8sClient.CoreV1.WatchListNamespacedSecret(
+                        namespaceParameter: Settings.Namespace,
+                        fieldSelector: $"metadata.name={Settings.Name}",
                         onEvent: (eventType, item) =>
                         {
                             Logger?.LogInformation("Receved {eventType} event for Secret {secretName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
@@ -104,7 +104,7 @@ internal class KubernetesSecretProvider : KubernetesProviderBase, IDisposable
                         {
                             Logger?.LogCritical(exception, "Secret watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name);
                         },
-                        onClosed: () => { Logger?.LogInformation("Secret watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name); }).GetAwaiter().GetResult();
+                        onClosed: () => { Logger?.LogInformation("Secret watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name); });
                     break;
                 case ReloadMethods.Polling:
                     if (!Polling)

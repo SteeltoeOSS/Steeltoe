@@ -40,11 +40,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
 {
     public class WebApplicationBuilderExtensionsTest
     {
-#if NET8_0_OR_GREATER
         private const int ConfigurationProviderCountDelta = 2;
-#else
-        private const int ConfigurationProviderCountDelta = 0;
-#endif
 
         [Fact]
         public void ConfigServerConfiguration_IsAutowired()
@@ -230,7 +226,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             Assert.NotNull(host.Services.GetService<IDynamicMessageProcessor>());
 
             // confirm instrumentation(s) were added as expected
-            var instrumentations = tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tracerProvider) as List<object>;
+            var instrumentations = OpenTelemetrySdkReflection.GetTracerProviderInstrumentations(tracerProvider);
             Assert.NotNull(instrumentations);
             Assert.Single(instrumentations);
             Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
@@ -249,7 +245,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             Assert.NotNull(host.Services.GetService<IDynamicMessageProcessor>());
 
             // confirm instrumentation(s) were added as expected
-            var instrumentations = tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tracerProvider) as List<object>;
+            var instrumentations = OpenTelemetrySdkReflection.GetTracerProviderInstrumentations(tracerProvider);
             Assert.NotNull(instrumentations);
             Assert.Equal(2, instrumentations.Count);
             Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));

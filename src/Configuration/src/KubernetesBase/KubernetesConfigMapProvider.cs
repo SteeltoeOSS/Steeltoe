@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using k8s;
+using k8s.Autorest;
 using k8s.Models;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest;
 using Steeltoe.Common.Kubernetes;
 using System;
 using System.Collections.Generic;
@@ -35,8 +35,8 @@ internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
     {
         try
         {
-            var configMapResponse = K8sClient.ReadNamespacedConfigMapWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
-            ProcessData(configMapResponse.Body);
+            var configMap = K8sClient.CoreV1.ReadNamespacedConfigMap(Settings.Name, Settings.Namespace);
+            ProcessData(configMap);
             EnableReloading();
         }
         catch (HttpOperationException e)
@@ -89,9 +89,9 @@ internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
             switch (Settings.ReloadSettings.Mode)
             {
                 case ReloadMethods.Event:
-                    ConfigMapWatcher = K8sClient.WatchNamespacedConfigMapAsync(
-                        Settings.Name,
-                        Settings.Namespace,
+                    ConfigMapWatcher = K8sClient.CoreV1.WatchListNamespacedConfigMap(
+                        namespaceParameter: Settings.Namespace,
+                        fieldSelector: $"metadata.name={Settings.Name}",
                         onEvent: (eventType, item) =>
                         {
                             Logger?.LogInformation("Recieved {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
@@ -111,7 +111,7 @@ internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
                         {
                             Logger?.LogCritical(exception, "ConfigMap watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name);
                         },
-                        onClosed: () => { Logger?.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name); }).GetAwaiter().GetResult();
+                        onClosed: () => { Logger?.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name); });
                     break;
                 case ReloadMethods.Polling:
                     StartPolling(Settings.ReloadSettings.Period);

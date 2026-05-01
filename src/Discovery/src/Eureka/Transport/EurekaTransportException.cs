@@ -25,7 +25,9 @@ public class EurekaTransportException : Exception
     }
 
     protected EurekaTransportException(SerializationInfo info, StreamingContext context)
+#pragma warning disable SYSLIB0051 // Type or member is obsolete
         : base(info, context)
+#pragma warning restore SYSLIB0051 // Type or member is obsolete
     {
     }
 }

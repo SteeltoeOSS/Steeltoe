@@ -17,33 +17,25 @@ public class EntityFrameworkCoreTypeLocatorTest
         Assert.NotNull(type);
     }
 
-#if NET8_0_OR_GREATER
     [Fact]
     public void Options_Found_In_MySql_Assembly()
     {
-        // arrange ~ narrow the assembly list to one specific nuget package
-        var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new string[] { "MySql.EntityFrameworkCore" };
+        using var assemblyScope = new MySqlEntityFrameworkCoreAssemblyScope(new[] { "MySql.EntityFrameworkCore" });
 
         var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
         Assert.NotNull(type);
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = types;
     }
-#else
+
     [Fact]
     public void Options_Found_In_Pomelo_Assembly()
     {
-        // arrange ~ narrow the assembly list to one specific nuget package
-        var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new string[] { "Pomelo.EntityFrameworkCore.MySql" };
+        using var assemblyScope = new MySqlEntityFrameworkCoreAssemblyScope(new[] { "Pomelo.EntityFrameworkCore.MySql" });
 
         var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
         Assert.NotNull(type);
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = types;
     }
-#endif
 
     [Fact]
     public void Property_Can_Locate_PostgreSqlDbContextOptionsType()

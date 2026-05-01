@@ -42,8 +42,8 @@ public class StandardPodUtilities : IPodUtilities
         try
         {
             var hostname = Environment.GetEnvironmentVariable("HOSTNAME");
-            var rsp = await _kubernetes.ListNamespacedPodWithHttpMessagesAsync(_applicationOptions.NameSpace);
-            pod = rsp.Body.Items?.FirstOrDefault(p => p.Metadata.Name.Equals(hostname));
+            var list = await _kubernetes.CoreV1.ListNamespacedPodAsync(_applicationOptions.NameSpace).ConfigureAwait(false);
+            pod = list.Items?.FirstOrDefault(p => p.Metadata.Name.Equals(hostname));
         }
         catch (Exception e)
         {

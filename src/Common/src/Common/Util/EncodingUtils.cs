@@ -11,7 +11,9 @@ public static class EncodingUtils
 {
     public static readonly Encoding Utf16 = new UnicodeEncoding(false, false);
     public static readonly Encoding Utf16be = new UnicodeEncoding(true, false);
+#pragma warning disable SYSLIB0001 // Type or member is obsolete
     public static readonly Encoding Utf7 = new UTF7Encoding(true);
+#pragma warning restore SYSLIB0001 // Type or member is obsolete
     public static readonly Encoding Utf8 = new UTF8Encoding(false);
     public static readonly Encoding Utf32 = new UTF32Encoding(false, false);
     public static readonly Encoding Utf32be = new UTF32Encoding(true, false);

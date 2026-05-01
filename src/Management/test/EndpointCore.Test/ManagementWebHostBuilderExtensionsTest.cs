@@ -639,7 +639,8 @@ public class ManagementWebHostBuilderExtensionsTest
             Assert.Contains("OpenTelemetry for Steeltoe", output);
 
             // Assert Otel configuration is respected
-            Assert.Contains("Metric Name: TestCounter, Meter: TestMeter", output);
+            Assert.Contains("Metric Name: TestCounter", output);
+            Assert.Contains("Name: TestMeter", output);
         }
     }
 
@@ -679,7 +680,8 @@ public class ManagementWebHostBuilderExtensionsTest
             Assert.Contains("OpenTelemetry for Steeltoe", output);
 
             // Assert Otel configuration is respected
-            Assert.Contains("Metric Name: TestCounter, Meter: TestMeter", output);
+            Assert.Contains("Metric Name: TestCounter", output);
+            Assert.Contains("Name: TestMeter", output);
 
             // Assert Steeltoe configuration is respected
             Assert.Contains("Metric Name: clr.process.uptime", output);
@@ -722,7 +724,8 @@ public class ManagementWebHostBuilderExtensionsTest
             Assert.DoesNotContain("OpenTelemetry for Steeltoe", output);
 
             // Assert Otel configuration is respected
-            Assert.Contains("Metric Name: TestCounter, Meter: TestMeter", output);
+            Assert.Contains("Metric Name: TestCounter", output);
+            Assert.Contains("Name: TestMeter", output);
         }
     }
 

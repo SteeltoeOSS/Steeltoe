@@ -4,6 +4,7 @@
 
 using Steeltoe.Common.Reflection;
 using System;
+using System.Linq;
 
 namespace Steeltoe.Connector.EFCore;
 
@@ -37,7 +38,7 @@ public static class EntityFrameworkCoreTypeLocator
     /// <summary>
     /// Gets the ServerVersion base type used to identify MySQL Server versions (introduced in v5.0)
     /// </summary>
-    public static Type MySqlVersionType => ReflectionHelpers.FindType(new[] { "Pomelo.EntityFrameworkCore.MySql" }, new[] { "Microsoft.EntityFrameworkCore.ServerVersion" });
+    public static Type MySqlVersionType => MySqlEntityAssemblies.Contains("Pomelo.EntityFrameworkCore.MySql") ? ReflectionHelpers.FindType(new[] { "Pomelo.EntityFrameworkCore.MySql" }, new[] { "Microsoft.EntityFrameworkCore.ServerVersion" }) : null;
 
     /// <summary>
     /// Gets a list of supported PostgreSQL Entity Framework Core Assemblies

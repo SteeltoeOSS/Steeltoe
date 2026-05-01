@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -9,6 +9,7 @@ using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Trace;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry.Trace;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Xunit;
@@ -38,10 +39,7 @@ public class TestBase
         return span.Context.IsValid ? span : null;
     }
 
-    protected object GetPrivateField(object baseObject, string fieldName)
-        => baseObject.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(baseObject);
-
-    protected void ValidateServiceCollectionCommon(ServiceProvider serviceProvider)
+    protected void ValidateServiceCollectionCommon(IServiceProvider serviceProvider)
     {
         // confirm Steeltoe types were registered
         Assert.NotNull(serviceProvider.GetService<ITracingOptions>());
@@ -54,32 +52,51 @@ public class TestBase
         Assert.NotNull(hst);
     }
 
-    protected void ValidateServiceCollectionBase(ServiceProvider serviceProvider)
+    protected void ValidateServiceCollectionBase(IServiceProvider serviceProvider)
     {
         // confirm instrumentation(s) were added as expected
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
-        var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;
+        var instrumentations = GetNonPublicTracerProviderInstrumentations(tracerProvider);
         Assert.NotNull(instrumentations);
         Assert.Single(instrumentations);
         Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
 
         Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
         var comp = Propagators.DefaultTextMapPropagator as CompositeTextMapPropagator;
-        var props = GetPrivateField(comp, "propagators") as List<TextMapPropagator>;
+        var props = GetNonPublicCompositePropagators(comp);
+        Assert.NotNull(props);
         Assert.Equal(2, props.Count);
         Assert.Contains(props, p => p is B3Propagator);
         Assert.Contains(props, p => p is BaggagePropagator);
     }
 
-    protected void ValidateServiceContainerCore(ServiceProvider serviceProvider)
+    protected void ValidateServiceContainerCore(IServiceProvider serviceProvider)
     {
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
 
         // confirm instrumentation(s) were added as expected
-        var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;
+        var instrumentations = GetNonPublicTracerProviderInstrumentations(tracerProvider);
         Assert.NotNull(instrumentations);
         Assert.Equal(2, instrumentations.Count);
         Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
         Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore"));
+    }
+
+    private static List<object> GetNonPublicTracerProviderInstrumentations(TracerProvider tracerProvider)
+    {
+        var property = tracerProvider?.GetType().GetProperty(
+            "Instrumentations",
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+        return property?.GetValue(tracerProvider) as List<object>;
+    }
+
+    private static List<TextMapPropagator> GetNonPublicCompositePropagators(CompositeTextMapPropagator composite)
+    {
+        var field = composite?.GetType().GetField(
+            "propagators",
+            BindingFlags.NonPublic | BindingFlags.Instance);
+
+        return field?.GetValue(composite) as List<TextMapPropagator>;
     }
 }

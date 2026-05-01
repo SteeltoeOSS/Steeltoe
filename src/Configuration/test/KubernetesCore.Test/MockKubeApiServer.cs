@@ -31,12 +31,15 @@ internal class MockKubeApiServer : IDisposable
             {
                 if (await shouldNext(httpContext))
                 {
-                    if (httpContext.Request.Path.Equals("/api/v1/namespaces/default/configmaps"))
+                    var path = httpContext.Request.Path.Value ?? string.Empty;
+                    if (path.StartsWith("/api/v1/namespaces/default/configmaps/", StringComparison.Ordinal))
                     {
+                        httpContext.Response.ContentType = "application/json";
                         await httpContext.Response.WriteAsync(configMapResponse);
                     }
-                    else if (httpContext.Request.Path.Equals("/api/v1/namespaces/default/secrets"))
+                    else if (path.StartsWith("/api/v1/namespaces/default/secrets/", StringComparison.Ordinal))
                     {
+                        httpContext.Response.ContentType = "application/json";
                         await httpContext.Response.WriteAsync(secretResponse);
                     }
                 }

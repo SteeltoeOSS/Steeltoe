@@ -60,7 +60,6 @@ public static class DynamicLoggingBuilder
         {
         }
 
-#if !NET6_0_OR_GREATER
         public override void Configure(ConsoleLoggerOptions options)
         {
             if (Platform.IsCloudFoundry)
@@ -72,6 +71,5 @@ public static class DynamicLoggingBuilder
 
             base.Configure(options);
         }
-#endif
     }
 }

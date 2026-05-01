@@ -31,17 +31,19 @@ jobs:
 
     steps:
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: |
-          6.0.*
           8.0.*
+          10.0.*
 
     - name: Git checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
+      with:
+        persist-credentials: false
 
     - name: Restore packages
-      run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal
+      run: dotnet restore ${{ env.SOLUTION_FILE }} /p:Configuration=Release /p:NuGetAudit=false --verbosity minimal
 
     - name: Calculate package version (for release)
       if: ${{ github.event_name == 'release' }}
@@ -108,7 +110,7 @@ jobs:
       run: dotnet pack ${{ env.SOLUTION_FILE }} --no-build --configuration Release --output ${{ github.workspace }}/packages /p:VersionSuffix=${{ env.PACKAGE_VERSION_SUFFIX }}
 
     - name: Upload unsigned packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         if-no-files-found: error
         name: unsigned-packages
@@ -126,13 +128,13 @@ jobs:
 
     steps:
     - name: Download unsigned packages
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: unsigned-packages
         path: packages
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 8.0.*
 
@@ -140,7 +142,7 @@ jobs:
       run: dotnet tool install --global sign --prerelease
 
     - name: Azure login
-      uses: azure/login@v2
+      uses: azure/login@v3
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -159,7 +161,7 @@ jobs:
         --description-url 'https://steeltoe.io/'
 
     - name: Upload signed packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         if-no-files-found: error
         name: signed-packages
@@ -179,22 +181,22 @@ jobs:
 
     steps:
     - name: Azure login
-      uses: azure/login@v2
+      uses: azure/login@v3
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Download signed packages
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: signed-packages
         path: packages
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 8.0.*
         source-url: ${{ vars.AZURE_ARTIFACTS_FEED_URL }}
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -223,12 +225,12 @@ jobs:
 
     steps:
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 8.0.*
 
     - name: Download signed packages
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: signed-packages
         path: packages
@@ -248,7 +250,9 @@ jobs:
 
     steps:
     - name: Git checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
+      with:
+        persist-credentials: true
 
     - name: Calculate next package version
       shell: pwsh

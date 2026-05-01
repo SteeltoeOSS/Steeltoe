@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Extensions.Configuration.ConfigServer</RootNamespace>
     <Description>Configuration provider for reading from Spring Cloud Config Server</Description>
     <PackageTags>configuration;Spring Cloud;Spring Cloud Config Server</PackageTags>
@@ -10,7 +10,7 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="System.Net.Http.Json" Version="$(SystemNetHttpJsonVersion)" />
+    <PackageReference Include="System.Net.Http.Json" Version="$(SystemVersion)" />
   </ItemGroup>
   
   <ItemGroup>

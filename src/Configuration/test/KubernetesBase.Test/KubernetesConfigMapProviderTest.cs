@@ -3,11 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using k8s;
+using k8s.Autorest;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest;
 using Moq;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.Kubernetes;
+using Steeltoe.Common.TestResources;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -22,7 +23,7 @@ public class KubernetesConfigMapProviderTest
     [Fact]
     public void KubernetesConfigMapProvider_ThrowsOnNulls()
     {
-        var client = new Mock<k8s.Kubernetes>();
+        var client = new Mock<IKubernetes>();
         var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings());
 
         var ex1 = Assert.Throws<ArgumentNullException>(() => new KubernetesConfigMapProvider(null, settings));
@@ -38,7 +39,7 @@ public class KubernetesConfigMapProviderTest
         var mockHttpMessageHandler = new MockHttpMessageHandler();
         mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(HttpStatusCode.Forbidden);
 
-        using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
+        using var client = KubernetesTestClientFactory.Create(new KubernetesClientConfiguration { Host = "http://localhost" }, mockHttpMessageHandler);
         var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings());
         var provider = new KubernetesConfigMapProvider(client, settings);
 
@@ -53,7 +54,7 @@ public class KubernetesConfigMapProviderTest
         var mockHttpMessageHandler = new MockHttpMessageHandler();
         mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(HttpStatusCode.NotFound);
 
-        using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
+        using var client = KubernetesTestClientFactory.Create(new KubernetesClientConfiguration { Host = "http://localhost" }, mockHttpMessageHandler);
         var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings() { ConfigMaps = true, Period = 0 });
         var provider = new KubernetesConfigMapProvider(client, settings);
 
@@ -71,7 +72,7 @@ public class KubernetesConfigMapProviderTest
             .Expect(HttpMethod.Get, "*")
             .Respond(new StringContent("{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\\n\"}},\"data\":{\"TestKey\":\"TestValue\"}}\n"));
 
-        using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
+        using var client = KubernetesTestClientFactory.Create(new KubernetesClientConfiguration { Host = "http://localhost" }, mockHttpMessageHandler);
         var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
         var provider = new KubernetesConfigMapProvider(client, settings);
 
@@ -89,7 +90,7 @@ public class KubernetesConfigMapProviderTest
             .Expect(HttpMethod.Get, "*")
             .Respond(new StringContent("{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\\n\"}},\"data\":{\"several__layers__deep__TestKey\":\"TestValue\"}}\n"));
 
-        using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
+        using var client = KubernetesTestClientFactory.Create(new KubernetesClientConfiguration { Host = "http://localhost" }, mockHttpMessageHandler);
         var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
         var provider = new KubernetesConfigMapProvider(client, settings);
 
@@ -114,7 +115,7 @@ public class KubernetesConfigMapProviderTest
             .Expect(HttpMethod.Get, "*")
             .Respond(new StringContent("{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\\n\"}},\"data\":{\"TestKey3\":\"UpdatedAgain\"}}\n"));
 
-        using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
+        using var client = KubernetesTestClientFactory.Create(new KubernetesClientConfiguration { Host = "http://localhost" }, mockHttpMessageHandler);
         var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings() { Period = 1, ConfigMaps = true });
         var provider = new KubernetesConfigMapProvider(client, settings, new CancellationTokenSource(20000).Token);
 
@@ -155,10 +156,10 @@ public class KubernetesConfigMapProviderTest
         mockHttpMessageHandler
             .Expect(HttpMethod.Get, "*")
             .Respond(new StringContent("{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\\n\"}},\"data\":{" +
-                                       "\"appsettings.json\": \"{\n  \\\"Test0\\\": \\\"Value0\\\",\n  \\\"Test1\\\": [\n    {\n      \\\"Test2\\\": \\\"Value1\\\"\n    }\n  ]\n}\"" +
+                                       "\"appsettings.json\": \"{\\\"Test0\\\": \\\"Value0\\\",\\\"Test1\\\": [{\\\"Test2\\\": \\\"Value1\\\"}]}\"" +
                                        "}\n}\n"));
 
-        using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
+        using var client = KubernetesTestClientFactory.Create(new KubernetesClientConfiguration { Host = "http://localhost" }, mockHttpMessageHandler);
         var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
         var provider = new KubernetesConfigMapProvider(client, settings);
 
@@ -178,10 +179,10 @@ public class KubernetesConfigMapProviderTest
         mockHttpMessageHandler
             .Expect(HttpMethod.Get, "*")
             .Respond(new StringContent("{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\\n\"}},\"data\":{" +
-                                       "\"appsettings.demo.json\": \"{\n  \\\"Test0\\\": \\\"Value0\\\",\n  \\\"Test1\\\": [\n    {\n      \\\"Test2\\\": \\\"Value1\\\"\n    }\n  ]\n}\"" +
+                                       "\"appsettings.demo.json\": \"{\\\"Test0\\\": \\\"Value0\\\",\\\"Test1\\\": [{\\\"Test2\\\": \\\"Value1\\\"}]}\"" +
                                        "}\n}\n"));
 
-        using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
+        using var client = KubernetesTestClientFactory.Create(new KubernetesClientConfiguration { Host = "http://localhost" }, mockHttpMessageHandler);
         var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
         var provider = new KubernetesConfigMapProvider(client, settings);
 
@@ -198,7 +199,7 @@ public class KubernetesConfigMapProviderTest
     public void KubernetesProviderGetsNewLoggerFactory()
     {
         // arrange
-        using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, new HttpClient());
+        using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" });
         var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
         var provider = new KubernetesConfigMapProvider(client, settings);
         var originalLoggerFactory = settings.LoggerFactory;
@@ -213,7 +214,7 @@ public class KubernetesConfigMapProviderTest
     public void KubernetesProviderGetsNewLogger()
     {
         // arrange
-        using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, new HttpClient());
+        using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" });
         var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
         var provider = new KubernetesConfigMapProvider(client, settings);
         settings.LoggerFactory ??= new LoggerFactory();

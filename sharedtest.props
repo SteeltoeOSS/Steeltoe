@@ -37,9 +37,4 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
-  <ItemGroup>
-    <!-- All versions of Microsoft.Rest.ClientRuntime are vulnerable, but all higher versions of KubernetesClient without breaking changes depend on it. -->
-    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-whph-446h-6m9v" />
-  </ItemGroup>
 </Project>

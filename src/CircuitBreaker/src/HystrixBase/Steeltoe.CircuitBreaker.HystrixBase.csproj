@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
     <RootNamespace>Steeltoe.CircuitBreaker.Hystrix</RootNamespace>
     <Description>Steeltoe's implementation of Netflix's Hystrix, for .NET</Description>
     <PackageTags>Spring Cloud;Netflix;Hystrix Client;Circuit Breaker</PackageTags>
@@ -12,6 +12,8 @@
   <ItemGroup>
     <PackageReference Include="HdrHistogram" Version="$(HdrHistogramVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
+    <PackageReference Include="System.Net.Http" Version="$(SystemNetHttpVersion)" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="$(SystemTextRegularExpressionsVersion)" />
   </ItemGroup>
 
   <ItemGroup>
