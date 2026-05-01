@@ -13,5 +13,6 @@
     <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="$(ExtensionsVersion)" />
     <PackageReference Include="System.Formats.Asn1" Version="$(SystemFormatsAsn1Version)" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="$(SystemSecurityCryptographyXmlVersion)" />
   </ItemGroup>
 </Project>
