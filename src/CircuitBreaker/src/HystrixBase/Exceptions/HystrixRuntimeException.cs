@@ -52,7 +52,9 @@ public class HystrixRuntimeException : Exception
 
     public Type ImplementingClass { get; }
 
+#pragma warning disable CS0672 // Member overrides obsolete member
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
+#pragma warning restore CS0672 // Member overrides obsolete member
     {
         base.GetObjectData(info, context);
     }

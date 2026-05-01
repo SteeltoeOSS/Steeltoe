@@ -60,7 +60,7 @@ public class ApplicationInfoManager
                         }
                         catch (Exception e)
                         {
-                            _logger?.LogError("StatusChangedEvent Exception:", e);
+                            _logger?.LogError(e, "StatusChangedEvent Exception:");
                         }
                     }
                 }
