@@ -62,13 +62,13 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
                     null;
             if (_discoveryOptions.CurrentValue.AllNamespaces)
             {
-                return KubernetesClient.ListServiceForAllNamespaces(
+                return KubernetesClient.CoreV1.ListServiceForAllNamespaces(
                         labelSelector: labelSelectorValue).Items
                     .Select(service => service.Metadata.Name).ToList();
             }
             else
             {
-                return KubernetesClient.ListNamespacedService(
+                return KubernetesClient.CoreV1.ListNamespacedService(
                         namespaceParameter: _discoveryOptions.CurrentValue.Namespace,
                         labelSelector: labelSelectorValue).Items
                     .Select(service => service.Metadata.Name).ToList();
@@ -84,8 +84,8 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
         }
 
         var endpoints = _discoveryOptions.CurrentValue.AllNamespaces
-            ? KubernetesClient.ListEndpointsForAllNamespaces(fieldSelector: $"metadata.name={serviceId}").Items
-            : KubernetesClient.ListNamespacedEndpoints(
+            ? KubernetesClient.CoreV1.ListEndpointsForAllNamespaces(fieldSelector: $"metadata.name={serviceId}").Items
+            : KubernetesClient.CoreV1.ListNamespacedEndpoints(
                 _discoveryOptions.CurrentValue.Namespace ?? DefaultNamespace,
                 fieldSelector: $"metadata.name={serviceId}").Items;
 
@@ -130,7 +130,7 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
         var instances = new List<IServiceInstance>();
         if (subsets.Any())
         {
-            var service = KubernetesClient.ListNamespacedService(
+            var service = KubernetesClient.CoreV1.ListNamespacedService(
                 namespaceParameter: k8SNamespace,
                 fieldSelector: $"metadata.name={serviceId}").Items.FirstOrDefault();
             var serviceMetadata = GetServiceMetadata(service);
@@ -236,7 +236,7 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
             return es;
         }
 
-        es.Namespace = endpoints.Metadata.NamespaceProperty;
+        es.Namespace = endpoints.Metadata.Namespace();
         es.EndpointSubsets = endpoints.Subsets;
 
         return es;

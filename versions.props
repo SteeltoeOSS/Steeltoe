@@ -90,18 +90,9 @@
     <StyleCopVersion>1.1.118</StyleCopVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <!-- Exposed dependencies, observable by Steeltoe library consumers. Only update when vulnerable. -->
-    <KubernetesClientVersion>2.0.16</KubernetesClientVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
-    <!-- Exposed dependencies, observable by Steeltoe library consumers. Only update when vulnerable. -->
-    <KubernetesClientVersion>5.0.13</KubernetesClientVersion>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <!-- Exposed dependencies, observable by Steeltoe library consumers. Only update when vulnerable. -->
+    <KubernetesClientVersion>19.0.2</KubernetesClientVersion>
     <AspNetCoreVersion>8.0.0</AspNetCoreVersion>
     <EFCoreVersion>8.0.0</EFCoreVersion>
 

@@ -3,8 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using k8s;
+using k8s.Models;
 using Microsoft.Extensions.Configuration;
 using RichardSzalay.MockHttp;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Extensions.Configuration.Kubernetes;
 using System;
 using System.Net;
@@ -29,7 +31,7 @@ public class StandardPodUtilitiesTest
         var mockHttpMessageHandler = new MockHttpMessageHandler();
         mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(HttpStatusCode.NotFound);
         var appOptions = new KubernetesApplicationOptions(new ConfigurationBuilder().Build());
-        using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
+        using var client = KubernetesTestClientFactory.Create(new KubernetesClientConfiguration { Host = "http://localhost" }, mockHttpMessageHandler);
         var utils = new StandardPodUtilities(appOptions, null, client);
 
         var getPodResult = await utils.GetCurrentPodAsync();
@@ -47,13 +49,13 @@ public class StandardPodUtilitiesTest
         mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(HttpStatusCode.OK, new StringContent(podListRsp));
 
         var appOptions = new KubernetesApplicationOptions(new ConfigurationBuilder().Build());
-        using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
+        using var client = KubernetesTestClientFactory.Create(new KubernetesClientConfiguration { Host = "http://localhost" }, mockHttpMessageHandler);
         var utils = new StandardPodUtilities(appOptions, null, client);
 
         var getPodResult = await utils.GetCurrentPodAsync();
 
         Assert.NotNull(getPodResult);
-        Assert.Equal("default", getPodResult.Metadata.NamespaceProperty);
+        Assert.Equal("default", getPodResult.Metadata.Namespace());
         Assert.Equal(hostname, getPodResult.Metadata.Name);
         Assert.Equal("10.244.1.128", getPodResult.Status.PodIP);
         Assert.Equal("default", getPodResult.Spec.ServiceAccountName);

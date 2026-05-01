@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using k8s.Models;
 using Steeltoe.Common.Kubernetes;
 using Steeltoe.Management.Info;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ public class KubernetesInfoContributor : IInfoContributor
         if (current != null)
         {
             details.Add("inside", true);
-            details.Add("namespace", current.Metadata.NamespaceProperty);
+            details.Add("namespace", current.Metadata.Namespace());
             details.Add("podName", current.Metadata.Name);
             details.Add("podIp", current.Status.PodIP);
             details.Add("serviceAccount", current.Spec.ServiceAccountName);
