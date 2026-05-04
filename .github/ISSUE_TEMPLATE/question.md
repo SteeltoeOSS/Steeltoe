@@ -1,6 +1,6 @@
 ---
 name: Question
-about: Select if you have a question or feedback - Also check out slack.steeltoe.io for assistance.
+about: Select if you have a question or feedback - Also check out https://github.com/SteeltoeOSS/Steeltoe/discussions for assistance.
 title: "[QUESTION] "
 labels: Type/question
 assignees: ''

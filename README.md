@@ -40,7 +40,7 @@ For more details, see [Supported Versions on the Wiki](https://github.com/Steelt
 
 ## Support and Feedback
 
-For community support, we recommend [Steeltoe OSS Slack](https://slack.steeltoe.io), [StackOverflow](https://stackoverflow.com/questions/tagged/steeltoe), or [open an issue](https://github.com/SteeltoeOSS/Steeltoe/issues/new/choose).
+For community support, we recommend [Discussions on GitHub](https://github.com/SteeltoeOSS/Steeltoe/discussions), [StackOverflow](https://stackoverflow.com/questions/tagged/steeltoe), or [open an issue](https://github.com/SteeltoeOSS/Steeltoe/issues/new/choose).
 
 For production support, we recommend that you contact [Broadcom Support](https://support.broadcom.com/).
 
