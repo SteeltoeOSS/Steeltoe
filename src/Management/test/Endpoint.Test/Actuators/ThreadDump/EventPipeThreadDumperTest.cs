@@ -16,19 +16,26 @@ public sealed class EventPipeThreadDumperTest
     public async Task Can_resolve_source_location_from_pdb()
     {
         using var backgroundCancellationSource = new CancellationTokenSource();
+        using var threadStarted = new ManualResetEventSlim(false);
 
         var backgroundThread = new Thread(NestedType.BackgroundThreadCallback)
         {
             IsBackground = true
         };
 
-        backgroundThread.Start(backgroundCancellationSource.Token);
+        backgroundThread.Start((backgroundCancellationSource.Token, threadStarted));
+        threadStarted.Wait(TestContext.Current.CancellationToken);
 
         using var loggerProvider = new CapturingLoggerProvider();
         using var loggerFactory = new LoggerFactory([loggerProvider]);
         ILogger<EventPipeThreadDumper> logger = loggerFactory.CreateLogger<EventPipeThreadDumper>();
 
-        var optionsMonitor = new TestOptionsMonitor<ThreadDumpEndpointOptions>();
+        // Use a longer collection window to provide enough sample opportunities on a loaded CI runner.
+        var optionsMonitor = TestOptionsMonitor.Create(new ThreadDumpEndpointOptions
+        {
+            Duration = 100
+        });
+
         var dumper = new EventPipeThreadDumper(optionsMonitor, logger);
 
         IList<ThreadInfo> threads = await dumper.DumpThreadsAsync(TestContext.Current.CancellationToken);
@@ -87,11 +94,16 @@ public sealed class EventPipeThreadDumperTest
     {
         public static void BackgroundThreadCallback(object? argument)
         {
-            var cancellationToken = (CancellationToken)argument!;
+            (CancellationToken cancellationToken, ManualResetEventSlim threadReady) = ((CancellationToken, ManualResetEventSlim))argument!;
+
+            threadReady.Set();
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                Thread.Sleep(TimeSpan.FromMilliseconds(50));
+                // Only actively-running threads are shown in the thread dump, so we need to make sure the CPU is in use.
+                // Thread.Sleep(0) yields to allow the EventPipe rundown thread to make progress on .NET 8.
+                Thread.SpinWait(250);
+                Thread.Sleep(0);
             }
         }
     }

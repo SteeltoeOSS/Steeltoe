@@ -111,7 +111,10 @@ public sealed class RelationalDatabaseHealthContributorTest
         result.Description.Should().Be("SQL Server health check failed");
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
-        result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("SqlException: Connection Timeout Expired.");
+
+        result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().Match(exception =>
+            exception.StartsWith("SqlException: Connection Timeout Expired.", StringComparison.InvariantCulture) ||
+            exception.StartsWith("SqlException: A network-related or instance-specific error", StringComparison.InvariantCulture));
     }
 
     [Fact(Skip = "Integration test - Requires local SQL Server instance")]

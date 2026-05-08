@@ -366,9 +366,9 @@ public sealed class HealthAggregationTest
     {
         List<IHealthContributor> contributors =
         [
-            new SlowContributor(1.Seconds()),
             new SlowContributor(2.Seconds()),
-            new SlowContributor(3.Seconds())
+            new SlowContributor(3.Seconds()),
+            new SlowContributor(4.Seconds())
         ];
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
@@ -408,7 +408,7 @@ public sealed class HealthAggregationTest
             }
             """);
 
-        stopwatch.Elapsed.Should().BeGreaterThan(500.Milliseconds()).And.BeLessThan(5.Seconds());
+        stopwatch.Elapsed.Should().BeGreaterThan(500.Milliseconds()).And.BeLessThan(6.Seconds());
     }
 
     [Fact]

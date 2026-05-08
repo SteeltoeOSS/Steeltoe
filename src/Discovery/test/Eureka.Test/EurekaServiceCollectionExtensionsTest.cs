@@ -62,7 +62,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
         var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:EurekaServer:ConnectTimeoutSeconds"] = "1",
-            ["Eureka:Client:EurekaServer:RetryCount"] = "1"
+            ["Eureka:Client:EurekaServer:RetryCount"] = "0"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
