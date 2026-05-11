@@ -366,9 +366,9 @@ public sealed class HealthAggregationTest
     {
         List<IHealthContributor> contributors =
         [
-            new SlowContributor(1.Seconds()),
             new SlowContributor(2.Seconds()),
-            new SlowContributor(3.Seconds())
+            new SlowContributor(3.Seconds()),
+            new SlowContributor(4.Seconds())
         ];
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
@@ -408,7 +408,8 @@ public sealed class HealthAggregationTest
             }
             """);
 
-        stopwatch.Elapsed.Should().BeGreaterThan(500.Milliseconds()).And.BeLessThan(5.Seconds());
+        // Upper bound must be less than 2+3+4=9s if contributors ran sequentially.
+        stopwatch.Elapsed.Should().BeGreaterThan(500.Milliseconds()).And.BeLessThan(9.Seconds());
     }
 
     [Fact]

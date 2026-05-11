@@ -16,19 +16,30 @@ public sealed class EventPipeThreadDumperTest
     public async Task Can_resolve_source_location_from_pdb()
     {
         using var backgroundCancellationSource = new CancellationTokenSource();
+        using var threadStarted = new ManualResetEventSlim(false);
 
         var backgroundThread = new Thread(NestedType.BackgroundThreadCallback)
         {
             IsBackground = true
         };
 
-        backgroundThread.Start(backgroundCancellationSource.Token);
+        backgroundThread.Start((backgroundCancellationSource.Token, threadStarted));
+        threadStarted.Wait(TestContext.Current.CancellationToken);
 
         using var loggerProvider = new CapturingLoggerProvider();
         using var loggerFactory = new LoggerFactory([loggerProvider]);
         ILogger<EventPipeThreadDumper> logger = loggerFactory.CreateLogger<EventPipeThreadDumper>();
 
+#if NET8_0
+        // Use a longer collection window on .NET 8 to compensate for the Sleep(0) yield.
+        var optionsMonitor = TestOptionsMonitor.Create(new ThreadDumpEndpointOptions
+        {
+            Duration = 100
+        });
+#else
         var optionsMonitor = new TestOptionsMonitor<ThreadDumpEndpointOptions>();
+#endif
+
         var dumper = new EventPipeThreadDumper(optionsMonitor, logger);
 
         IList<ThreadInfo> threads = await dumper.DumpThreadsAsync(TestContext.Current.CancellationToken);
@@ -87,11 +98,18 @@ public sealed class EventPipeThreadDumperTest
     {
         public static void BackgroundThreadCallback(object? argument)
         {
-            var cancellationToken = (CancellationToken)argument!;
+            (CancellationToken cancellationToken, ManualResetEventSlim threadStarted) = ((CancellationToken, ManualResetEventSlim))argument!;
+
+            threadStarted.Set();
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                Thread.Sleep(TimeSpan.FromMilliseconds(50));
+                // Only actively-running threads are shown in the thread dump, so we need to make sure the CPU is in use.
+                Thread.SpinWait(250);
+#if NET8_0
+                // Yield to allow the EventPipe rundown thread to make progress on .NET 8.
+                Thread.Sleep(0);
+#endif
             }
         }
     }
