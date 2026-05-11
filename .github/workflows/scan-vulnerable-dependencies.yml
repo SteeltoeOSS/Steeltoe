@@ -49,11 +49,36 @@ jobs:
         $output = dotnet list ${{ env.SOLUTION_FILE }} package --vulnerable --include-transitive --format json --output-version 1 2>&1
         $text = ($output | Out-String).TrimEnd()
         $json = $text | ConvertFrom-Json
+        $hasVulnerabilities = $false
 
         foreach ($project in $json.projects) {
-          if ($project.frameworks) {
-            Write-Host 'Vulnerable package references were found.'
-            dotnet list ${{ env.SOLUTION_FILE }} package --vulnerable --include-transitive
-            exit 1
+          if (-not $project.frameworks) {
+            continue
           }
+
+          $isTestProject = $project.path -like '*/test/*'
+
+          foreach ($framework in $project.frameworks) {
+            foreach ($package in $framework.topLevelPackages) {
+              $hasVulnerabilities = $true
+
+              foreach ($vulnerability in $package.vulnerabilities) {
+                Write-Host "$($project.path) ($($framework.framework)): top-level $($package.id) $($package.resolvedVersion) – $($vulnerability.severity): $($vulnerability.advisoryurl)"
+              }
+            }
+
+            if (-not $isTestProject) {
+              foreach ($package in $framework.transitivePackages) {
+                $hasVulnerabilities = $true
+
+                foreach ($vulnerability in $package.vulnerabilities) {
+                  Write-Host "$($project.path) ($($framework.framework)): transitive $($package.id) $($package.resolvedVersion) – $($vulnerability.severity): $($vulnerability.advisoryurl)"
+                }
+              }
+            }
+          }
+        }
+
+        if ($hasVulnerabilities) {
+          exit 1
         }
