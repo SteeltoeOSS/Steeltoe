@@ -30,11 +30,15 @@ public sealed class EventPipeThreadDumperTest
         using var loggerFactory = new LoggerFactory([loggerProvider]);
         ILogger<EventPipeThreadDumper> logger = loggerFactory.CreateLogger<EventPipeThreadDumper>();
 
-        // Use a longer collection window to provide enough sample opportunities on a loaded CI runner.
+#if NET8_0
+        // Use a longer collection window on .NET 8 to compensate for the Sleep(0) yield.
         var optionsMonitor = TestOptionsMonitor.Create(new ThreadDumpEndpointOptions
         {
             Duration = 100
         });
+#else
+        var optionsMonitor = new TestOptionsMonitor<ThreadDumpEndpointOptions>();
+#endif
 
         var dumper = new EventPipeThreadDumper(optionsMonitor, logger);
 
@@ -94,16 +98,18 @@ public sealed class EventPipeThreadDumperTest
     {
         public static void BackgroundThreadCallback(object? argument)
         {
-            (CancellationToken cancellationToken, ManualResetEventSlim threadReady) = ((CancellationToken, ManualResetEventSlim))argument!;
+            (CancellationToken cancellationToken, ManualResetEventSlim threadStarted) = ((CancellationToken, ManualResetEventSlim))argument!;
 
-            threadReady.Set();
+            threadStarted.Set();
 
             while (!cancellationToken.IsCancellationRequested)
             {
                 // Only actively-running threads are shown in the thread dump, so we need to make sure the CPU is in use.
-                // Thread.Sleep(0) yields to allow the EventPipe rundown thread to make progress on .NET 8.
                 Thread.SpinWait(250);
+#if NET8_0
+                // Yield to allow the EventPipe rundown thread to make progress on .NET 8.
                 Thread.Sleep(0);
+#endif
             }
         }
     }

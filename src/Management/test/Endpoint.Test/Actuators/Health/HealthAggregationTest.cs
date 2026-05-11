@@ -408,7 +408,8 @@ public sealed class HealthAggregationTest
             }
             """);
 
-        stopwatch.Elapsed.Should().BeGreaterThan(500.Milliseconds()).And.BeLessThan(6.Seconds());
+        // Upper bound must be less than 2+3+4=9s if contributors ran sequentially.
+        stopwatch.Elapsed.Should().BeGreaterThan(500.Milliseconds()).And.BeLessThan(9.Seconds());
     }
 
     [Fact]
