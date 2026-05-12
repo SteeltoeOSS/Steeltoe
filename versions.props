@@ -12,7 +12,7 @@
     <MicrosoftCodeAnalysisVersion>5.0.*</MicrosoftCodeAnalysisVersion>
     <MicrosoftSqlClientVersion>7.0.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>7.0.*</MockHttpVersion>
-    <MongoDbDriverVersion>3.7.*</MongoDbDriverVersion>
+    <MongoDbDriverVersion>3.8.*</MongoDbDriverVersion>
     <MoqVersion>4.20.69</MoqVersion>
     <MySqlConnectorVersion>2.5.*</MySqlConnectorVersion>
     <MySqlDataVersion>9.6.*</MySqlDataVersion>
