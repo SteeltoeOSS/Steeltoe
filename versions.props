@@ -15,7 +15,7 @@
     <MongoDbDriverVersion>3.8.*</MongoDbDriverVersion>
     <MoqVersion>4.20.69</MoqVersion>
     <MySqlConnectorVersion>2.5.*</MySqlConnectorVersion>
-    <MySqlDataVersion>9.6.*</MySqlDataVersion>
+    <MySqlDataVersion>9.7.*</MySqlDataVersion>
     <NewtonsoftJsonVersion>13.0.*</NewtonsoftJsonVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
     <RabbitClientTestVersion>7.2.*</RabbitClientTestVersion>
