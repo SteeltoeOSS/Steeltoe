@@ -100,7 +100,7 @@ internal sealed partial class PermissionsProvider
         try
         {
             string json = await response.Content.ReadAsStringAsync(cancellationToken);
-            LogResponseJson(SecurityUtilities.SanitizeInput(json));
+            ExpensiveLogResponseJson(json);
 
             PermissionsResponse? result = JsonSerializer.Deserialize(json, CloudFoundryJsonSerializerContext.Default.PermissionsResponse);
 
@@ -120,6 +120,15 @@ internal sealed partial class PermissionsProvider
         }
     }
 
+    private void ExpensiveLogResponseJson(string json)
+    {
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            string input = SecurityUtilities.SanitizeInput(json);
+            LogResponseJson(input);
+        }
+    }
+
     private HttpClient CreateHttpClient()
     {
         HttpClient httpClient = _httpClientFactory.CreateClient(HttpClientName);
@@ -133,7 +142,7 @@ internal sealed partial class PermissionsProvider
     [LoggerMessage(Level = LogLevel.Information, Message = "Cloud Foundry returned status {HttpStatus} while obtaining permissions from {PermissionsUri}.")]
     private partial void LogResponseStatus(HttpStatusCode httpStatus, string permissionsUri);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Permissions response returned JSON: {Json}")]
+    [LoggerMessage(Level = LogLevel.Debug, SkipEnabledCheck = true, Message = "Permissions response returned JSON: {Json}")]
     private partial void LogResponseJson(string json);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Resolved permissions to {Permissions}.")]

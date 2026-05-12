@@ -79,8 +79,17 @@ internal sealed partial class ConfigServerHealthContributor : IHealthContributor
             names.Add(source.Name);
         }
 
-        LogReturningPropertySources(string.Join(", ", names));
+        ExpensiveLogReturningPropertySources(names);
         health.Details.Add("propertySources", names);
+    }
+
+    private void ExpensiveLogReturningPropertySources(List<string?> names)
+    {
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            string propertySources = string.Join(", ", names);
+            LogReturningPropertySources(propertySources);
+        }
     }
 
     internal async Task<IList<PropertySource>?> GetPropertySourcesAsync(ConfigServerConfigurationProvider provider, ConfigServerClientOptions optionsSnapshot,
@@ -133,7 +142,7 @@ internal sealed partial class ConfigServerHealthContributor : IHealthContributor
     [LoggerMessage(Level = LogLevel.Debug, Message = "Config Server health check returning UP.")]
     private partial void LogHealthCheckReturningUp();
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Returning property sources: {PropertySources}.")]
+    [LoggerMessage(Level = LogLevel.Debug, SkipEnabledCheck = true, Message = "Returning property sources: {PropertySources}.")]
     private partial void LogReturningPropertySources(string propertySources);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Cache stale, fetching config server health.")]

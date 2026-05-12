@@ -56,12 +56,7 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
         ArgumentNullException.ThrowIfNull(earlierKeys);
 
         string[] earlierKeysArray = earlierKeys as string[] ?? earlierKeys.ToArray();
-
-        if (_logger.IsEnabled(LogLevel.Trace))
-        {
-            string earlierKeyNames = string.Join(", ", earlierKeysArray.Select(key => $"'{key}'"));
-            LogGetChildKeys(GetType().Name, earlierKeyNames, parentPath);
-        }
+        ExpensiveLogGetChildKeys(earlierKeysArray, parentPath);
 
         IConfiguration? section = parentPath == null ? ConfigurationRoot : ConfigurationRoot?.GetSection(parentPath);
 
@@ -75,6 +70,15 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
         keys.AddRange(earlierKeysArray);
         keys.Sort(ConfigurationKeyComparer.Instance);
         return keys;
+    }
+
+    private void ExpensiveLogGetChildKeys(string[] earlierKeysArray, string? parentPath)
+    {
+        if (_logger.IsEnabled(LogLevel.Trace))
+        {
+            string earlierKeyNames = string.Join(", ", earlierKeysArray.Select(key => $"'{key}'"));
+            LogGetChildKeys(GetType().Name, earlierKeyNames, parentPath);
+        }
     }
 
     public virtual bool TryGet(string key, out string? value)
