@@ -6,27 +6,27 @@
     -->
 
     <AspNetCoreHealthChecksVersion>9.0.*</AspNetCoreHealthChecksVersion>
-    <CoverletVersion>8.0.*</CoverletVersion>
+    <CoverletVersion>10.0.*</CoverletVersion>
     <FluentAssertionsVersion>7.2.*</FluentAssertionsVersion>
     <MicrosoftAzureCosmosVersion>3.58.*</MicrosoftAzureCosmosVersion>
     <MicrosoftCodeAnalysisVersion>5.0.*</MicrosoftCodeAnalysisVersion>
     <MicrosoftSqlClientVersion>7.0.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>7.0.*</MockHttpVersion>
-    <MongoDbDriverVersion>3.7.*</MongoDbDriverVersion>
+    <MongoDbDriverVersion>3.8.*</MongoDbDriverVersion>
     <MoqVersion>4.20.69</MoqVersion>
     <MySqlConnectorVersion>2.5.*</MySqlConnectorVersion>
-    <MySqlDataVersion>9.6.*</MySqlDataVersion>
+    <MySqlDataVersion>9.7.*</MySqlDataVersion>
     <NewtonsoftJsonVersion>13.0.*</NewtonsoftJsonVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
     <RabbitClientTestVersion>7.2.*</RabbitClientTestVersion>
     <SerilogEnrichersThreadVersion>4.0.*</SerilogEnrichersThreadVersion>
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
-    <SonarAnalyzerVersion>10.20.0.135146</SonarAnalyzerVersion>
+    <SonarAnalyzerVersion>10.25.0.139117</SonarAnalyzerVersion>
     <StyleCopVersion>1.2.0-beta.556</StyleCopVersion>
     <SystemCommandLineVersion>2.0.*</SystemCommandLineVersion>
     <SystemIdentityModelVersion>8.15.*</SystemIdentityModelVersion>
     <SystemSqlClientVersion>4.9.*</SystemSqlClientVersion>
-    <TestSdkVersion>18.4.*</TestSdkVersion>
+    <TestSdkVersion>18.5.*</TestSdkVersion>
     <XunitVersion>3.2.*</XunitVersion>
     <XunitVisualStudioVersion>3.1.*</XunitVisualStudioVersion>
   </PropertyGroup>
@@ -68,7 +68,7 @@
       -->
       10.0.*
     </FoundationalVersion>
-    <MicrosoftIdentityModelVersion>8.14.*</MicrosoftIdentityModelVersion>
+    <MicrosoftIdentityModelVersion>8.15.*</MicrosoftIdentityModelVersion>
     <MicrosoftDiagnosticsNETCoreClientVersion>0.2.652701</MicrosoftDiagnosticsNETCoreClientVersion>
     <MicrosoftDiagnosticsTracingTraceEventVersion>3.1.23</MicrosoftDiagnosticsTracingTraceEventVersion>
     <OpenTelemetryExporterPrometheusVersion>1.15.*-*</OpenTelemetryExporterPrometheusVersion>
