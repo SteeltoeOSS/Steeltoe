@@ -68,7 +68,7 @@
       -->
       10.0.*
     </FoundationalVersion>
-    <MicrosoftIdentityModelVersion>8.14.*</MicrosoftIdentityModelVersion>
+    <MicrosoftIdentityModelVersion>8.15.*</MicrosoftIdentityModelVersion>
     <MicrosoftDiagnosticsNETCoreClientVersion>0.2.652701</MicrosoftDiagnosticsNETCoreClientVersion>
     <MicrosoftDiagnosticsTracingTraceEventVersion>3.1.23</MicrosoftDiagnosticsTracingTraceEventVersion>
     <OpenTelemetryExporterPrometheusVersion>1.15.*-*</OpenTelemetryExporterPrometheusVersion>
