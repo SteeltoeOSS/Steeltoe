@@ -163,11 +163,11 @@ public sealed class ConfigureCertificateOptionsTest
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         optionsMonitor.Get(certificateName).Certificate.Should().BeEquivalentTo(firstX509);
 
-        await File.WriteAllTextAsync(certificateFilePath, secondCertificateContent, TestContext.Current.CancellationToken);
-        await File.WriteAllTextAsync(privateKeyFilePath, secondPrivateKeyContent, TestContext.Current.CancellationToken);
-
-        using Task pollTask = WaitUntilCertificateChangedToAsync(secondX509, optionsMonitor, certificateName, TestContext.Current.CancellationToken);
-        await pollTask.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+        await WaitUntilCertificateChangedToAsync(certificateName, secondX509, optionsMonitor, async () =>
+        {
+            await File.WriteAllTextAsync(certificateFilePath, secondCertificateContent, TestContext.Current.CancellationToken);
+            await File.WriteAllTextAsync(privateKeyFilePath, secondPrivateKeyContent, TestContext.Current.CancellationToken);
+        });
 
         optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
     }
@@ -200,11 +200,11 @@ public sealed class ConfigureCertificateOptionsTest
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         optionsMonitor.Get(certificateName).Certificate.Should().BeEquivalentTo(firstX509);
 
-        appSettings = BuildAppSettingsJson(certificateName, "secondInstance.crt", "secondInstance.key");
-        await File.WriteAllTextAsync(appSettingsPath, appSettings, TestContext.Current.CancellationToken);
-
-        using Task pollTask = WaitUntilCertificateChangedToAsync(secondX509, optionsMonitor, certificateName, TestContext.Current.CancellationToken);
-        await pollTask.WaitAsync(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
+        await WaitUntilCertificateChangedToAsync(certificateName, secondX509, optionsMonitor, async () =>
+        {
+            appSettings = BuildAppSettingsJson(certificateName, "secondInstance.crt", "secondInstance.key");
+            await File.WriteAllTextAsync(appSettingsPath, appSettings, TestContext.Current.CancellationToken);
+        });
 
         optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
     }
@@ -235,13 +235,21 @@ public sealed class ConfigureCertificateOptionsTest
             """;
     }
 
-    private static async Task WaitUntilCertificateChangedToAsync(X509Certificate2 expectedCertificate, IOptionsMonitor<CertificateOptions> optionsMonitor,
-        string certificateName, CancellationToken cancellationToken)
+    private static async Task WaitUntilCertificateChangedToAsync(string certificateName, X509Certificate2 expectedCertificate,
+        IOptionsMonitor<CertificateOptions> optionsMonitor, Func<Task> triggerAction)
     {
-        while (!Equals(optionsMonitor.Get(certificateName).Certificate, expectedCertificate))
+        var completionSource = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        using IDisposable? changeListener = optionsMonitor.OnChange((options, name) =>
         {
-            await Task.Delay(50, cancellationToken);
-        }
+            if (name == certificateName && Equals(options.Certificate, expectedCertificate))
+            {
+                completionSource.TrySetResult();
+            }
+        });
+
+        await triggerAction();
+        await completionSource.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
     }
 
     private static string GetConfigurationKey(string? optionName, string propertyName)
