@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -22,6 +23,27 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public class ManagementEndpointServedOnDifferentPort
 {
+    private class LocalPortStartupFilter : IStartupFilter
+    {
+        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+        {
+            return app =>
+            {
+                app.Use(async (context, nextMiddleware) =>
+                {
+                    if (context.Connection.LocalPort == 0)
+                    {
+                        context.Connection.LocalPort = context.Request.Host.Port ?? 80;
+                    }
+
+                    await nextMiddleware();
+                });
+
+                next(app);
+            };
+        }
+    }
+
     [Fact]
     public void AddAllActuators_WebApplication_MakeSureTheManagementPortIsSet()
     {
@@ -31,6 +53,7 @@ public class ManagementEndpointServedOnDifferentPort
         }.ToImmutableDictionary();
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
+        hostBuilder.Services.AddSingleton<IStartupFilter, LocalPortStartupFilter>();
         hostBuilder.Configuration.AddInMemoryCollection(config);
         hostBuilder.AddAllActuators();
         hostBuilder.WebHost.UseTestServer();
@@ -55,6 +78,7 @@ public class ManagementEndpointServedOnDifferentPort
         }.ToImmutableDictionary();
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
+        hostBuilder.Services.AddSingleton<IStartupFilter, LocalPortStartupFilter>();
         hostBuilder.Configuration.AddInMemoryCollection(config);
         hostBuilder.UseCloudHosting(5100);
         hostBuilder.AddAllActuators();
@@ -84,6 +108,7 @@ public class ManagementEndpointServedOnDifferentPort
         }.ToImmutableDictionary();
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
+        hostBuilder.Services.AddSingleton<IStartupFilter, LocalPortStartupFilter>();
         hostBuilder.Configuration.AddInMemoryCollection(config);
         hostBuilder.AddAllActuators();
         hostBuilder.WebHost.UseTestServer();
@@ -111,6 +136,7 @@ public class ManagementEndpointServedOnDifferentPort
         IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(settings)).ConfigureWebHost(
             webhostBuilder =>
             {
+                webhostBuilder.ConfigureServices(svc => svc.AddSingleton<IStartupFilter, LocalPortStartupFilter>());
                 webhostBuilder.Configure(app => app.UseRouting());
                 webhostBuilder.ConfigureServices(svc => svc.AddRouting());
                 webhostBuilder.UseSetting("management:endpoints:port", "9090");
@@ -135,6 +161,7 @@ public class ManagementEndpointServedOnDifferentPort
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(webhostBuilder =>
         {
+            webhostBuilder.ConfigureServices(svc => svc.AddSingleton<IStartupFilter, LocalPortStartupFilter>());
             webhostBuilder.Configure(app => app.UseRouting().Run(async context => await context.Response.WriteAsync("Response from Run Middleware")));
             webhostBuilder.ConfigureServices(svc => svc.AddRouting());
             webhostBuilder.UseSetting("management:endpoints:port", "9090");
@@ -153,5 +180,42 @@ public class ManagementEndpointServedOnDifferentPort
 
         response = await httpClient.GetAsync("http://localhost:8080/actuator");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task AddAllActuators_WebApplication_IgnoresSpoofedHostHeader()
+    {
+        var appSettings = new Dictionary<string, string>
+        {
+            ["URLS"] = "http://localhost:5000", ["management:endpoints:port"] = "9090",
+        };
+
+        var hostBuilder = WebApplication.CreateBuilder();
+        hostBuilder.Configuration.AddInMemoryCollection(appSettings);
+        hostBuilder.AddAllActuators();
+        hostBuilder.WebHost.UseKestrel();
+
+        await using var app = hostBuilder.Build();
+        app.MapGet("/", () => "Hello World!");
+        await app.StartAsync();
+
+        // ReSharper disable once ShortLivedHttpClient
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("http://localhost:5000");
+
+        var helloResponse = await httpClient.GetAsync("/");
+        helloResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var goodActuatorResponse = await httpClient.GetAsync("http://localhost:9090/actuator");
+        goodActuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var badActuatorResponse = await httpClient.GetAsync("/actuator");
+        badActuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        var spoofRequest = new HttpRequestMessage(HttpMethod.Get, "/actuator");
+        spoofRequest.Headers.Host = $"anything:{9090}";
+
+        var spoofResponse = await httpClient.SendAsync(spoofRequest);
+        spoofResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 }

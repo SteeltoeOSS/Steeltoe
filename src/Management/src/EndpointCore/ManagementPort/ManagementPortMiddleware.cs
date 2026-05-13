@@ -32,8 +32,8 @@ namespace Steeltoe.Management.Endpoint.ManagementPort
             bool isManagementPath = context.Request.Path.ToString().StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);
 
             bool allowRequest = string.IsNullOrEmpty(_managementOptions.Port);
-            allowRequest = allowRequest || (context.Request.Host.Port.ToString() == _managementOptions.Port && isManagementPath);
-            allowRequest = allowRequest || (context.Request.Host.Port.ToString() != _managementOptions.Port && !isManagementPath);
+            allowRequest = allowRequest || (context.Connection.LocalPort.ToString() == _managementOptions.Port && isManagementPath);
+            allowRequest = allowRequest || (context.Connection.LocalPort.ToString() != _managementOptions.Port && !isManagementPath);
 
             if (!allowRequest)
             {
@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.ManagementPort
 
         private Task ReturnErrorAsync(HttpContext context, string managementPort)
         {
-            string errorMessage = $"Access denied to {context.Request.Path} on port {context.Request.Host.Port} since Management Port is set to {managementPort} ";
+            string errorMessage = $"Access denied to {context.Request.Path} on port {context.Connection.LocalPort} since Management Port is set to {managementPort} ";
             _logger?.LogError("ManagementMiddleWare Error: {0}", errorMessage);
             context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
 
