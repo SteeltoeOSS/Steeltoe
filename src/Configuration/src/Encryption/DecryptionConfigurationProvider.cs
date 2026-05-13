@@ -56,5 +56,5 @@ internal sealed partial class DecryptionConfigurationProvider(
     }
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Decrypted value '{CipherValue}' at key '{Key}' to '{PlainTextValue}'.")]
-    private partial void LogDecrypt(string key, string? cipherValue, string? plainTextValue);
+    private partial void LogDecrypt(string key, string cipherValue, string plainTextValue);
 }

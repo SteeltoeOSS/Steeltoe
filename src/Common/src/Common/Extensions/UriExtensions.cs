@@ -9,39 +9,6 @@ namespace Steeltoe.Common.Extensions;
 
 internal static class UriExtensions
 {
-    public static string ToMaskedString(this Uri source)
-    {
-        ArgumentNullException.ThrowIfNull(source);
-
-        string uris = source.ToString();
-
-        if (uris.Contains(','))
-        {
-            return string.Join(',',
-                uris.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(uri => ToMaskedUri(new Uri(uri)).ToString()));
-        }
-
-        return ToMaskedUri(source).ToString();
-    }
-
-    private static Uri ToMaskedUri(Uri source)
-    {
-        if (string.IsNullOrEmpty(source.UserInfo))
-        {
-            return source;
-        }
-
-        var builder = new UriBuilder(source)
-        {
-            UserName = "****",
-#pragma warning disable S2068 // Hard-coded credentials are security-sensitive
-            Password = "****"
-#pragma warning restore S2068 // Hard-coded credentials are security-sensitive
-        };
-
-        return builder.Uri;
-    }
-
     public static bool TryGetUsernamePassword(this Uri uri, [NotNullWhen(true)] out string? username, [NotNullWhen(true)] out string? password)
     {
         ArgumentNullException.ThrowIfNull(uri);

@@ -51,8 +51,8 @@ internal sealed partial class PermissionsProvider
         }
 
         CloudFoundryEndpointOptions options = _optionsMonitor.CurrentValue;
-        string checkPermissionsUri = $"{options.Api}/v2/apps/{options.ApplicationId}/permissions";
-        var request = new HttpRequestMessage(HttpMethod.Get, new Uri(checkPermissionsUri, UriKind.RelativeOrAbsolute));
+        var checkPermissionsUri = new Uri($"{options.Api}/v2/apps/{options.ApplicationId}/permissions", UriKind.RelativeOrAbsolute);
+        var request = new HttpRequestMessage(HttpMethod.Get, checkPermissionsUri);
         var auth = new AuthenticationHeaderValue("bearer", accessToken);
         request.Headers.Authorization = auth;
 
@@ -64,7 +64,7 @@ internal sealed partial class PermissionsProvider
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                LogResponseStatus(response.StatusCode, checkPermissionsUri);
+                LogResponseStatus(checkPermissionsUri, response.StatusCode);
 
                 if (response.StatusCode is HttpStatusCode.Forbidden)
                 {
@@ -137,10 +137,10 @@ internal sealed partial class PermissionsProvider
     }
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Fetching permissions from {PermissionsUri}.")]
-    private partial void LogGetPermissions(string permissionsUri);
+    private partial void LogGetPermissions(MaskedUri permissionsUri);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Cloud Foundry returned status {HttpStatus} while obtaining permissions from {PermissionsUri}.")]
-    private partial void LogResponseStatus(HttpStatusCode httpStatus, string permissionsUri);
+    private partial void LogResponseStatus(MaskedUri permissionsUri, HttpStatusCode httpStatus);
 
     [LoggerMessage(Level = LogLevel.Debug, SkipEnabledCheck = true, Message = "Permissions response returned JSON: {Json}")]
     private partial void LogResponseJson(string json);

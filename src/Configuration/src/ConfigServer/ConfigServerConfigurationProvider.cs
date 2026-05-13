@@ -610,7 +610,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
         if (requestUri.TryGetUsernamePassword(out string? username, out string? password) && password.Length > 0)
         {
-            ExpensiveLogAddingCredentials(requestUri);
+            LogAddingCredentials(requestUri);
 
             requestMessage.Headers.Authorization =
                 new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}")));
@@ -625,7 +625,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
                 string accessToken =
                     await httpClient.GetAccessTokenAsync(accessTokenUri, optionsSnapshot.ClientId, optionsSnapshot.ClientSecret, cancellationToken);
 
-                ExpensiveLogAccessTokenFetched(accessTokenUri);
+                LogAccessTokenFetched(accessTokenUri);
                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             }
         }
@@ -636,24 +636,6 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
 
         return requestMessage;
-    }
-
-    private void ExpensiveLogAddingCredentials(Uri requestUri)
-    {
-        if (_logger.IsEnabled(LogLevel.Debug))
-        {
-            string uri = requestUri.ToMaskedString();
-            LogAddingCredentials(uri);
-        }
-    }
-
-    private void ExpensiveLogAccessTokenFetched(Uri accessTokenUri)
-    {
-        if (_logger.IsEnabled(LogLevel.Debug))
-        {
-            string uri = accessTokenUri.ToMaskedString();
-            LogAccessTokenFetched(uri);
-        }
     }
 
     internal async Task<ConfigEnvironment?> RemoteLoadAsync(ConfigServerClientOptions optionsSnapshot, List<Uri> requestUris, string? label,
@@ -673,7 +655,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
                 // Make Config Server URI from settings
                 Uri uri = BuildConfigServerUri(optionsSnapshot, requestUri, label);
 
-                ExpensiveLogTryingToConnect(uri);
+                LogTryingToConnect(uri);
                 HttpRequestMessage request;
 
                 try
@@ -687,7 +669,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
                     if (!string.IsNullOrEmpty(optionsSnapshot.AccessTokenUri))
                     {
                         var accessTokenUri = new Uri(optionsSnapshot.AccessTokenUri);
-                        LogFailedToFetchAccessToken(exception, accessTokenUri.ToMaskedString());
+                        LogFailedToFetchAccessToken(exception, accessTokenUri);
 
                         continue;
                     }
@@ -699,7 +681,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
                 LogSendingHttpRequest();
                 using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
-                ExpensiveLogConfigServerReturnedStatus(uri, response.StatusCode);
+                LogConfigServerReturnedStatus(uri, response.StatusCode);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -711,7 +693,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
                     // Throw if status >= 400
                     if (response.StatusCode >= HttpStatusCode.BadRequest)
                     {
-                        throw new HttpRequestException($"Config Server returned status: {response.StatusCode} invoking path: {uri.ToMaskedString()}");
+                        MaskedUri masked = uri;
+                        throw new HttpRequestException($"Config Server returned status: {response.StatusCode} invoking path: {masked}");
                     }
 
                     return null;
@@ -740,24 +723,6 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
 
         return null;
-    }
-
-    private void ExpensiveLogTryingToConnect(Uri requestUri)
-    {
-        if (_logger.IsEnabled(LogLevel.Debug))
-        {
-            string uri = requestUri.ToMaskedString();
-            LogTryingToConnect(uri);
-        }
-    }
-
-    private void ExpensiveLogConfigServerReturnedStatus(Uri requestUri, HttpStatusCode responseStatusCode)
-    {
-        if (_logger.IsEnabled(LogLevel.Debug))
-        {
-            string uri = requestUri.ToMaskedString();
-            LogConfigServerReturnedStatus(responseStatusCode, uri);
-        }
     }
 
     /// <summary>
@@ -872,7 +837,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             Uri uri = BuildVaultRenewUri(optionsSnapshot);
             HttpRequestMessage message = await GetVaultRenewRequestMessageAsync(optionsSnapshot, uri, cancellationToken);
 
-            ExpensiveLogRenewingVaultToken(obscuredToken, optionsSnapshot.TokenTtl, uri);
+            LogRenewingVaultToken(obscuredToken, optionsSnapshot.TokenTtl, uri);
             using HttpResponseMessage response = await httpClient.SendAsync(message, cancellationToken);
 
             if (response.StatusCode != HttpStatusCode.OK)
@@ -898,15 +863,6 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         return new Uri(baseUri + VaultRenewPath, UriKind.RelativeOrAbsolute);
     }
 
-    private void ExpensiveLogRenewingVaultToken(string obscuredToken, int tokenTtl, Uri requestUri)
-    {
-        if (_logger.IsEnabled(LogLevel.Debug))
-        {
-            string uri = requestUri.ToMaskedString();
-            LogRenewingVaultToken(obscuredToken, tokenTtl, uri);
-        }
-    }
-
     private async Task<HttpRequestMessage> GetVaultRenewRequestMessageAsync(ConfigServerClientOptions optionsSnapshot, Uri requestUri,
         CancellationToken cancellationToken)
     {
@@ -921,7 +877,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             string accessToken =
                 await httpClient.GetAccessTokenAsync(accessTokenUri, optionsSnapshot.ClientId, optionsSnapshot.ClientSecret, cancellationToken);
 
-            ExpensiveLogAccessTokenFetched(accessTokenUri);
+            LogAccessTokenFetched(accessTokenUri);
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
 
@@ -1084,22 +1040,22 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     private partial void LogDataNotChanged();
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Failed fetching remote configuration from server(s).")]
-    private partial void LogFetchingRemoteConfigurationFailed(Exception? error);
+    private partial void LogFetchingRemoteConfigurationFailed(Exception error);
 
-    [LoggerMessage(Level = LogLevel.Debug, SkipEnabledCheck = true, Message = "Adding credentials from '{RequestUri}' to Authorization header.")]
-    private partial void LogAddingCredentials(string requestUri);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Adding credentials from '{RequestUri}' to Authorization header.")]
+    private partial void LogAddingCredentials(MaskedUri requestUri);
 
-    [LoggerMessage(Level = LogLevel.Debug, SkipEnabledCheck = true, Message = "Fetched access token from {AccessTokenUri}.")]
-    private partial void LogAccessTokenFetched(string accessTokenUri);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Fetched access token from {AccessTokenUri}.")]
+    private partial void LogAccessTokenFetched(MaskedUri accessTokenUri);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to fetch access token from '{AccessTokenUri}'.")]
-    private partial void LogFailedToFetchAccessToken(Exception exception, string accessTokenUri);
+    private partial void LogFailedToFetchAccessToken(Exception exception, MaskedUri accessTokenUri);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Entered {Method}.")]
     private partial void LogRemoteLoadEntered(string method);
 
-    [LoggerMessage(Level = LogLevel.Debug, SkipEnabledCheck = true, Message = "Trying to connect to Config Server at {RequestUri}.")]
-    private partial void LogTryingToConnect(string requestUri);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Trying to connect to Config Server at {RequestUri}.")]
+    private partial void LogTryingToConnect(MaskedUri requestUri);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Building HTTP request message.")]
     private partial void LogBuildingHttpRequest();
@@ -1107,8 +1063,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     [LoggerMessage(Level = LogLevel.Trace, Message = "Sending HTTP request.")]
     private partial void LogSendingHttpRequest();
 
-    [LoggerMessage(Level = LogLevel.Debug, SkipEnabledCheck = true, Message = "Config Server returned status {StatusCode} for path {RequestUri}.")]
-    private partial void LogConfigServerReturnedStatus(HttpStatusCode statusCode, string requestUri);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Config Server returned status {StatusCode} for path {RequestUri}.")]
+    private partial void LogConfigServerReturnedStatus(MaskedUri requestUri, HttpStatusCode statusCode);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Parsing JSON response.")]
     private partial void LogParsingJsonResponse();
@@ -1119,8 +1075,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     [LoggerMessage(Level = LogLevel.Error, Message = "Config Server exception for property {Key} of type {Type}.")]
     private partial void LogConfigServerPropertyException(Exception exception, string key, Type type);
 
-    [LoggerMessage(Level = LogLevel.Debug, SkipEnabledCheck = true, Message = "Renewing Vault token {Token} for {Ttl} milliseconds at Uri {Uri}.")]
-    private partial void LogRenewingVaultToken(string token, int ttl, string uri);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Renewing Vault token {Token} for {Ttl} milliseconds at Uri {Uri}.")]
+    private partial void LogRenewingVaultToken(string token, int ttl, MaskedUri uri);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Renewing Vault token {Token} returned status {Status}.")]
     private partial void LogVaultTokenRenewalStatus(string token, HttpStatusCode status);

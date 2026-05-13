@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Discovery.HttpClients.LoadBalancers;
 
@@ -72,5 +73,5 @@ public sealed partial class RandomLoadBalancer : ILoadBalancer
     private partial void LogNoServiceInstances(string serviceName);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Resolved '{ServiceName}' to '{ServiceInstance}'.")]
-    private partial void LogServiceInstanceResolved(string serviceName, Uri serviceInstance);
+    private partial void LogServiceInstanceResolved(string serviceName, MaskedUri serviceInstance);
 }
