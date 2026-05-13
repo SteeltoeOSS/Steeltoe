@@ -26,9 +26,13 @@ public class DataCenterInfo : IDataCenterInfo
         {
             return new DataCenterInfo(DataCenterName.Amazon);
         }
+        else if (DataCenterName.Netflix.ToString().Equals(jcenter.Name))
+        {
+            return new DataCenterInfo(DataCenterName.Netflix);
+        }
         else
         {
-            throw new ArgumentOutOfRangeException("Datacenter name");
+            return null;
         }
     }
 

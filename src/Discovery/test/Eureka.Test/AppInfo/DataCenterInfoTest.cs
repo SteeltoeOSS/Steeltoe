@@ -28,19 +28,23 @@ public class DataCenterInfoTest : AbstractBaseTest
         Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", json.ClassName);
     }
 
-    [Fact]
-    public void FromJson_Correct()
+    [Theory]
+    [InlineData("Netflix")]
+    [InlineData("Amazon")]
+    [InlineData("MyOwn")]
+    public void FromJson_Correct(string name)
     {
-        var jinfo = new JsonInstanceInfo.JsonDataCenterInfo("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", "MyOwn");
+        var jinfo = new JsonInstanceInfo.JsonDataCenterInfo("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", name);
+        var expected = Enum.Parse<DataCenterName>(name);
         var result = DataCenterInfo.FromJson(jinfo);
-        Assert.Equal(DataCenterName.MyOwn, result.Name);
+        Assert.Equal(expected, result.Name);
     }
 
     [Fact]
-    public void FromJson_Throws_Invalid()
+    public void FromJson_ReturnsNull_WhenInvalid()
     {
         var jinfo = new JsonInstanceInfo.JsonDataCenterInfo("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", "FooBar");
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => DataCenterInfo.FromJson(jinfo));
-        Assert.Contains("Datacenter", ex.Message);
+        var result = DataCenterInfo.FromJson(jinfo);
+        Assert.Null(result);
     }
 }
