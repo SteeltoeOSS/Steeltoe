@@ -1,1 +1,2 @@
 #nullable enable
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest.JsonUri.get -> string!

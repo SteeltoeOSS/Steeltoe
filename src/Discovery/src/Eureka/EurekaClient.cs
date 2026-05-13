@@ -247,7 +247,7 @@ public sealed partial class EurekaClient
                 if (!string.IsNullOrEmpty(clientOptions.AccessTokenUri))
                 {
                     var accessTokenUri = new Uri(clientOptions.AccessTokenUri);
-                    LogFailedToFetchAccessToken(exception, accessTokenUri.ToMaskedString(), attempt);
+                    LogFailedToFetchAccessToken(exception, accessTokenUri, attempt);
 
                     continue;
                 }
@@ -257,18 +257,18 @@ public sealed partial class EurekaClient
 
             if (!string.IsNullOrEmpty(requestBody))
             {
-                LogSendingRequestWithBody(request.Method, requestUri.ToMaskedString(), requestBody);
+                LogSendingRequestWithBody(request.Method, requestUri, requestBody);
             }
             else
             {
-                LogSendingRequestWithoutBody(request.Method, requestUri.ToMaskedString());
+                LogSendingRequestWithoutBody(request.Method, requestUri);
             }
 
             try
             {
                 using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
-                LogRequestReturnedStatus(request.Method, requestUri.ToMaskedString(), (int)response.StatusCode, attempt);
+                LogRequestReturnedStatus(request.Method, requestUri, (int)response.StatusCode, attempt);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -280,19 +280,19 @@ public sealed partial class EurekaClient
                     }
                     catch (JsonException exception) when (!exception.IsCancellation())
                     {
-                        LogFailedToDeserializeResponse(exception, request.Method, requestUri.ToMaskedString());
+                        LogFailedToDeserializeResponse(exception, request.Method, requestUri);
                     }
                 }
                 else
                 {
                     string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                    LogRequestFailed(request.Method, requestUri.ToMaskedString(), (int)response.StatusCode, responseBody);
+                    LogRequestFailed(request.Method, requestUri, (int)response.StatusCode, responseBody);
                 }
             }
             catch (Exception exception) when (!exception.IsCancellation())
             {
-                LogAttemptFailed(exception, request.Method, requestUri.ToMaskedString(), attempt);
+                LogAttemptFailed(exception, request.Method, requestUri, attempt);
             }
 
             _eurekaServiceUriStateManager.MarkFailingServiceUri(serviceUri);
@@ -331,7 +331,7 @@ public sealed partial class EurekaClient
 
         if (requestUri.TryGetUsernamePassword(out string? username, out string? password) && password.Length > 0)
         {
-            LogAddingCredentials(requestUri.ToMaskedString());
+            LogAddingCredentials(requestUri);
 
             requestMessage.Headers.Authorization =
                 new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}")));
@@ -346,7 +346,7 @@ public sealed partial class EurekaClient
                 string accessToken =
                     await httpClient.GetAccessTokenAsync(accessTokenUri, optionsSnapshot.ClientId, optionsSnapshot.ClientSecret, cancellationToken);
 
-                LogAccessTokenFetched(accessTokenUri.ToMaskedString());
+                LogAccessTokenFetched(accessTokenUri);
                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             }
         }
@@ -365,29 +365,29 @@ public sealed partial class EurekaClient
     private partial void LogHostNamePotentiallyInvalid();
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Sending {RequestMethod} request to '{RequestUri}' with body: '{RequestBody}'.")]
-    private partial void LogSendingRequestWithBody(HttpMethod requestMethod, string requestUri, string? requestBody);
+    private partial void LogSendingRequestWithBody(HttpMethod requestMethod, MaskedUri requestUri, string? requestBody);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Sending {RequestMethod} request to '{RequestUri}' without request body.")]
-    private partial void LogSendingRequestWithoutBody(HttpMethod requestMethod, string requestUri);
+    private partial void LogSendingRequestWithoutBody(HttpMethod requestMethod, MaskedUri requestUri);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "HTTP {RequestMethod} request to '{RequestUri}' returned status {StatusCode} in attempt {Attempt}.")]
-    private partial void LogRequestReturnedStatus(HttpMethod requestMethod, string requestUri, int statusCode, int attempt);
+    private partial void LogRequestReturnedStatus(HttpMethod requestMethod, MaskedUri requestUri, int statusCode, int attempt);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Failed to deserialize HTTP response from {RequestMethod} '{RequestUri}'.")]
-    private partial void LogFailedToDeserializeResponse(Exception exception, HttpMethod requestMethod, string requestUri);
+    private partial void LogFailedToDeserializeResponse(Exception exception, HttpMethod requestMethod, MaskedUri requestUri);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "HTTP {RequestMethod} request to '{RequestUri}' failed with status {StatusCode}: '{ResponseBody}'.")]
-    private partial void LogRequestFailed(HttpMethod requestMethod, string requestUri, int statusCode, string responseBody);
+    private partial void LogRequestFailed(HttpMethod requestMethod, MaskedUri requestUri, int statusCode, string responseBody);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to execute HTTP {RequestMethod} request to '{RequestUri}' in attempt {Attempt}.")]
-    private partial void LogAttemptFailed(Exception exception, HttpMethod requestMethod, string requestUri, int attempt);
+    private partial void LogAttemptFailed(Exception exception, HttpMethod requestMethod, MaskedUri requestUri, int attempt);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Adding credentials from '{RequestUri}' to Authorization header.")]
-    private partial void LogAddingCredentials(string requestUri);
+    private partial void LogAddingCredentials(MaskedUri requestUri);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Fetched access token from '{AccessTokenUri}'.")]
-    private partial void LogAccessTokenFetched(string accessTokenUri);
+    private partial void LogAccessTokenFetched(MaskedUri accessTokenUri);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to fetch access token from '{AccessTokenUri}' in attempt {Attempt}.")]
-    private partial void LogFailedToFetchAccessToken(Exception exception, string accessTokenUri, int attempt);
+    private partial void LogFailedToFetchAccessToken(Exception exception, MaskedUri accessTokenUri, int attempt);
 }

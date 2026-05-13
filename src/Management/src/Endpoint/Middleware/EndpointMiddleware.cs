@@ -7,6 +7,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Configuration;
@@ -68,7 +69,7 @@ public abstract partial class EndpointMiddleware<TRequest, TResponse> : IEndpoin
                 }
                 else if (!IsCompatibleAcceptHeader(context.Request))
                 {
-                    LogUnsupportedAcceptHeader(context.Request.Headers.Accept.ToString());
+                    LogUnsupportedAcceptHeader(context.Request.Headers.Accept);
                     context.Response.StatusCode = (int)HttpStatusCode.NotAcceptable;
                     await context.Response.WriteAsync($"Only the '{ContentType}' content type is supported.", context.RequestAborted);
                 }
@@ -154,7 +155,7 @@ public abstract partial class EndpointMiddleware<TRequest, TResponse> : IEndpoin
     private partial void LogUnsupportedContentType(string? requestContentType);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Accept header '{AcceptType}' is not supported for this request.")]
-    private partial void LogUnsupportedAcceptHeader(string acceptType);
+    private partial void LogUnsupportedAcceptHeader(StringValues acceptType);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Reading {Method} request at path {Path} using {MiddlewareType}.")]
     private partial void LogReadingRequest(string method, string? path, Type middlewareType);

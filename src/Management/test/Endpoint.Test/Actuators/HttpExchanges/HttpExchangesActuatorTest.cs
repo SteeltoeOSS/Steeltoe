@@ -183,7 +183,7 @@ public sealed class HttpExchangesActuatorTest
                   },
                   "request": {
                     "method": "GET",
-                    "uri": "http://api.test.com:8080/path/to/data?filter=A",
+                    "uri": "http://****:****@api.test.com:8080/path/to/data?filter=A",
                     "headers": {
                       "Accept": [
                         "application/json"
@@ -250,7 +250,7 @@ public sealed class HttpExchangesActuatorTest
                   "timestamp": "2025-01-01T21:18:43Z",
                   "request": {
                     "method": "GET",
-                    "uri": "http://api.test.com:8080/"
+                    "uri": "http://****:****@api.test.com:8080/"
                   },
                   "response": {
                     "status": 200
@@ -301,7 +301,7 @@ public sealed class HttpExchangesActuatorTest
                   "timestamp": "2025-01-01T21:18:43Z",
                   "request": {
                     "method": "POST",
-                    "uri": "http://localhost:80/",
+                    "uri": "http://localhost/",
                     "headers": {
                       "X-Whitelisted-Request-Header": [
                         "visible-request-header-value"
@@ -366,7 +366,7 @@ public sealed class HttpExchangesActuatorTest
                   "timestamp": "2024-09-19T00:00:25",
                   "request": {
                     "method": "GET",
-                    "uri": "http://localhost:80/id/25"
+                    "uri": "http://localhost/id/25"
                   },
                   "response": {
                     "status": 200
@@ -376,7 +376,7 @@ public sealed class HttpExchangesActuatorTest
                   "timestamp": "2024-09-19T00:00:24",
                   "request": {
                     "method": "GET",
-                    "uri": "http://localhost:80/id/24"
+                    "uri": "http://localhost/id/24"
                   },
                   "response": {
                     "status": 200
@@ -386,7 +386,7 @@ public sealed class HttpExchangesActuatorTest
                   "timestamp": "2024-09-19T00:00:23",
                   "request": {
                     "method": "GET",
-                    "uri": "http://localhost:80/id/23"
+                    "uri": "http://localhost/id/23"
                   },
                   "response": {
                     "status": 200
@@ -396,7 +396,7 @@ public sealed class HttpExchangesActuatorTest
                   "timestamp": "2024-09-19T00:00:22",
                   "request": {
                     "method": "GET",
-                    "uri": "http://localhost:80/id/22"
+                    "uri": "http://localhost/id/22"
                   },
                   "response": {
                     "status": 200
@@ -406,7 +406,7 @@ public sealed class HttpExchangesActuatorTest
                   "timestamp": "2024-09-19T00:00:21",
                   "request": {
                     "method": "GET",
-                    "uri": "http://localhost:80/id/21"
+                    "uri": "http://localhost/id/21"
                   },
                   "response": {
                     "status": 200
@@ -467,7 +467,7 @@ public sealed class HttpExchangesActuatorTest
                   "timestamp": "2024-09-19T00:00:02",
                   "request": {
                     "method": "GET",
-                    "uri": "http://localhost:80/id/2"
+                    "uri": "http://localhost/id/2"
                   },
                   "response": {
                     "status": 200
@@ -477,7 +477,7 @@ public sealed class HttpExchangesActuatorTest
                   "timestamp": "2024-09-19T00:00:01",
                   "request": {
                     "method": "GET",
-                    "uri": "http://localhost:80/id/1"
+                    "uri": "http://localhost/id/1"
                   },
                   "response": {
                     "status": 200
@@ -514,7 +514,7 @@ public sealed class HttpExchangesActuatorTest
                   "timestamp": "2024-09-19T00:00:01",
                   "request": {
                     "method": "GET",
-                    "uri": "http://localhost:80/id/1?q=test-query-string"
+                    "uri": "http://localhost/id/1?q=test-query-string"
                   },
                   "response": {
                     "status": 200
@@ -524,7 +524,7 @@ public sealed class HttpExchangesActuatorTest
                   "timestamp": "2024-09-19T00:00:02",
                   "request": {
                     "method": "GET",
-                    "uri": "http://localhost:80/id/2?q=test-query-string"
+                    "uri": "http://localhost/id/2?q=test-query-string"
                   },
                   "response": {
                     "status": 200
@@ -549,7 +549,7 @@ public sealed class HttpExchangesActuatorTest
             ["X-Redacted-Response-Header"] = "Redact-Me"
         };
 
-        var request = new HttpExchangeRequest("GET", new Uri("http://api.test.com:8080/path/to/data?filter=A"), requestHeaders, "192.168.0.1");
+        var request = new HttpExchangeRequest("GET", new Uri("http://johndoe:secret@api.test.com:8080/path/to/data?filter=A"), requestHeaders, "192.168.0.1");
         var response = new HttpExchangeResponse((int)HttpStatusCode.OK, responseHeaders);
 
         return new HttpExchange(request, response, 1.January(2025).At(21, 18, 43).AsUtc(), new HttpExchangePrincipal("test-user"),

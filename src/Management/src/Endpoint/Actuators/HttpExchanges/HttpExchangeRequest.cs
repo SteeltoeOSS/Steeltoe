@@ -4,6 +4,7 @@
 
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Json;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
@@ -13,8 +14,18 @@ public sealed class HttpExchangeRequest
     [JsonPropertyName("method")]
     public string Method { get; }
 
-    [JsonPropertyName("uri")]
+    [JsonIgnore]
     public Uri Uri { get; }
+
+    [JsonPropertyName("uri")]
+    public string JsonUri
+    {
+        get
+        {
+            MaskedUri masked = Uri;
+            return masked.ToString();
+        }
+    }
 
     [JsonPropertyName("headers")]
     [JsonIgnoreEmptyCollection]

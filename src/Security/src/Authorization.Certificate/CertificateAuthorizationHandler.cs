@@ -74,14 +74,23 @@ internal sealed partial class CertificateAuthorizationHandler : IAuthorizationHa
         }
         else
         {
-            LogClaimValueMismatch(claimValue, context.User.FindFirstValue(claimType));
+            ExpensiveLogClaimValueMismatch(context, claimType, claimValue);
+        }
+    }
+
+    private void ExpensiveLogClaimValueMismatch(AuthorizationHandlerContext context, string claimType, string claimValue)
+    {
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            string? actualClaimValue = context.User.FindFirstValue(claimType);
+            LogClaimValueMismatch(claimValue, actualClaimValue);
         }
     }
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Identity certificate did not match an expected pattern. Subject was '{CertificateSubject}'.")]
     private partial void LogIdentityCertificateMismatch(string certificateSubject);
 
-    [LoggerMessage(Level = LogLevel.Debug,
+    [LoggerMessage(Level = LogLevel.Debug, SkipEnabledCheck = true,
         Message = "User has the required claim, but the value doesn't match. Expected '{ExpectedClaimValue}' but got '{ActualClaimValue}'.")]
     private partial void LogClaimValueMismatch(string expectedClaimValue, string? actualClaimValue);
 }

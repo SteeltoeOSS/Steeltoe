@@ -48,7 +48,7 @@ internal sealed partial class LoggersEndpointHandler : ILoggersEndpointHandler
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        LogEntering(SecurityUtilities.SanitizeInput(request.ToString()));
+        ExpensiveLogEntering(request);
 
         LoggersResponse? response;
 
@@ -63,6 +63,15 @@ internal sealed partial class LoggersEndpointHandler : ILoggersEndpointHandler
         }
 
         return Task.FromResult(response);
+    }
+
+    private void ExpensiveLogEntering(LoggersRequest request)
+    {
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            string input = SecurityUtilities.SanitizeInput(request.ToString());
+            LogEntering(input);
+        }
     }
 
     private LoggersResponse GetLogLevels()
@@ -90,7 +99,7 @@ internal sealed partial class LoggersEndpointHandler : ILoggersEndpointHandler
         _dynamicLoggerProvider.SetLogLevel(categoryName, logLevel);
     }
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Invoking loggers endpoint handler with request {Request}.")]
+    [LoggerMessage(Level = LogLevel.Debug, SkipEnabledCheck = true, Message = "Invoking loggers endpoint handler with request {Request}.")]
     private partial void LogEntering(string request);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Adding state {LoggerState}.")]
