@@ -270,18 +270,23 @@ public class EnvEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Sanitized_ReturnsExpected()
+    public void Sanitized_ReturnsExpected_FullySanitized()
     {
         var appsettings = new Dictionary<string, string>()
         {
+            ["password"] = null,
+            ["password"] = string.Empty,
             ["password"] = "mysecret",
             ["secret"] = "mysecret",
             ["key"] = "mysecret",
             ["token"] = "mysecret",
-            ["my_credentials"] = "mysecret",
+            ["my_credentials"] = "jdbc:postgresql://:secret@127.0.0.1:5432/db",
             ["credentials_of"] = "mysecret",
-            ["my_credentialsof"] = "mysecret",
-            ["vcap_services"] = "mysecret"
+            ["my_credentialsof"] = "amqp://user1:pass1@host1,amqps://user2:pass2@host2",
+            ["vcap_services"] = "mysecret",
+            ["my_connectionstring"] = "mysecret",
+            ["connectionstring_of"] = "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Pwd=myPassword;",
+            ["ConnectionStrings:OrderDb"] = "Server=myServerAddress;Database=orders;User Id=myUsername;Password=myPassword;"
         };
 
         using (var tc = new TestContext(_output))
@@ -313,6 +318,39 @@ public class EnvEndpointTest : BaseTest
                 Assert.Null(props[key].Origin);
             }
         }
+    }
+
+    [Theory]
+    [InlineData("someKey", "host=localhost;password=secret;port=1", "host=localhost;password=******;port=1")]
+    [InlineData("someKey", "host=localhost;pwd=secret;port=1", "host=localhost;pwd=******;port=1")]
+    [InlineData("someKey", "password=secret;host=localhost;port=1", "password=******;host=localhost;port=1")]
+    [InlineData("someKey", "host=localhost;port=1;password=secret", "host=localhost;port=1;password=******")]
+    [InlineData("someKey", "host=localhost;notapassword=secret;port=1", "host=localhost;notapassword=secret;port=1")]
+    [InlineData("someKey", "PWD=secret;Password=other", "PWD=******;Password=******")]
+    [InlineData("someKey", "password=secret", "password=******")]
+    [InlineData("someKey", "host=1; password = abc ;port=2", "host=1; password = ******;port=2")]
+    [InlineData("someKey", null, null)]
+    [InlineData("someKey", "", "")]
+    [InlineData("someKey", "host=localhost;notapassword=secret;password=real;port=1", "host=localhost;notapassword=secret;password=******;port=1")]
+    [InlineData("someKey", "host=localhost;password=;port=1", "host=localhost;password=;port=1")]
+    [InlineData("someKey", "password=;host=localhost", "password=;host=localhost")]
+    [InlineData("someKey", "host=localhost;port=1;password=", "host=localhost;port=1;password=")]
+    [InlineData("someKey", "host=localhost;pwd=;password=;port=1", "host=localhost;pwd=;password=;port=1")]
+    [InlineData("someKey", "host=localhost;password=;password=secret;port=1", "host=localhost;password=;password=******;port=1")]
+    [InlineData("db_url", "jdbc:postgresql://user:secret@127.0.0.1:5432/db", "jdbc:postgresql://user:******@127.0.0.1:5432/db")]
+    [InlineData("db_url_empty_user", "jdbc:postgresql://:secret@127.0.0.1:5432/db", "jdbc:postgresql://:******@127.0.0.1:5432/db")]
+    [InlineData("db_url_multiple", "amqp://user1:pass1@host1,amqps://user2:pass2@host2", "amqp://user1:******@host1,amqps://user2:******@host2")]
+    [InlineData("db_connection", "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;", "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=******;")]
+    [InlineData("db_connection_pwd", "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Pwd=myPassword;", "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Pwd=******;")]
+    [InlineData("ConnectionStrings:OrderDb", "Server=myServerAddress;Database=orders;User Id=myUsername;Password=myPassword;", "******")]
+    [InlineData("normal_url", "https://localhost:8080/api/v1", "https://localhost:8080/api/v1")]
+    public void Sanitize_ReturnsExpected(string key, string input, string expected)
+    {
+        var sanitizer = new Sanitizer(new[] { "password", "secret", ".*connectionstring.*" });
+
+        var result = sanitizer.Sanitize(new KeyValuePair<string, string>(key, input));
+
+        Assert.Equal(expected, result.Value);
     }
 
     [Fact]

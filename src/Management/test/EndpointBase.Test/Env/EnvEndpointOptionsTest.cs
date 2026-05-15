@@ -17,7 +17,7 @@ public class EnvEndpointOptionsTest : BaseTest
         var opts = new EnvEndpointOptions();
         Assert.Equal("env", opts.Id);
 
-        Assert.Equal(new string[] { "password", "secret", "key", "token", ".*credentials.*", "vcap_services" }, opts.KeysToSanitize);
+        Assert.Equal(new string[] { "password", "secret", "key", "token", ".*credentials.*", "vcap_services", ".*connectionstring.*" }, opts.KeysToSanitize);
         Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
     }
 
