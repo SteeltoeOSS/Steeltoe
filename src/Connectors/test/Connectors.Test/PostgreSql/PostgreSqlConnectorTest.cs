@@ -488,7 +488,7 @@ public sealed class PostgreSqlConnectorTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass;Log Parameters=True"
+            ["Steeltoe:Client:PostgreSql:DEFAULT:ConnectionString"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass;Log Parameters=True"
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
