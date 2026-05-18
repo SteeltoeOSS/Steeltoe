@@ -51,6 +51,9 @@ internal sealed partial class DbMigrationsEndpointHandler : IDbMigrationsEndpoin
             Type[] knownDbContextTypes = _scanner.AssemblyToScan
                 .GetReferencedAssemblies()
                 .Select(Assembly.Load)
+                .Where(assembly => Array.Exists(assembly.GetReferencedAssemblies(), reference => reference.Name == "Microsoft.EntityFrameworkCore" && !assembly
+                    .GetName()
+                    .Name!.StartsWith("Microsoft.EntityFrameworkCore", StringComparison.Ordinal)))
                 .SelectMany(assembly => assembly.DefinedTypes)
                 .Union(_scanner.AssemblyToScan.DefinedTypes)
                 .Where(type => !type.IsAbstract && type.AsType() != dbContextType && dbContextType.GetTypeInfo()

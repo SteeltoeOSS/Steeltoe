@@ -141,8 +141,10 @@ public sealed class EurekaHealthCheckHandlerTest
         builder.Services.AddEurekaDiscoveryClient();
 
         var handler = new DelegateToMockHttpClientHandler();
-        handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NoContent);
-        handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond("application/json", "{}");
+        MockedRequest registerMock = handler.Mock.When(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NoContent);
+
+        MockedRequest heartbeatMock =
+            handler.Mock.When(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond("application/json", "{}");
 
         await using WebApplication app = builder.Build();
 
@@ -157,7 +159,8 @@ public sealed class EurekaHealthCheckHandlerTest
         var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();
         infoManager.Instance.Status.Should().Be(InstanceStatus.Up);
 
-        handler.Mock.VerifyNoOutstandingExpectation();
+        handler.Mock.GetMatchCount(registerMock).Should().Be(1);
+        handler.Mock.GetMatchCount(heartbeatMock).Should().BeGreaterThan(0);
     }
 
     private sealed class TestHealthContributor : IHealthContributor

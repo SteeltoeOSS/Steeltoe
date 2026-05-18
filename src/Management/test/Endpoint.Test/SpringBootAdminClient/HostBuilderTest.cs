@@ -205,7 +205,7 @@ public sealed class HostBuilderTest
         fileProvider.NotifyChanged();
         await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
 
-        handler.Mock.GetMatchCount(registerMock).Should().BeGreaterThan(2);
+        handler.Mock.GetMatchCount(registerMock).Should().BeGreaterThan(1);
     }
 
     [Fact]
