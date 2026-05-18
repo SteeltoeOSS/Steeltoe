@@ -15,7 +15,7 @@ public class EnvEndpointOptions : AbstractEndpointOptions, IEnvOptions
         : base()
     {
         Id = "env";
-        RequiredPermissions = Permissions.RESTRICTED;
+        RequiredPermissions = Permissions.FULL;
         KeysToSanitize = KEYS_TO_SANITIZE;
     }
 
@@ -29,7 +29,7 @@ public class EnvEndpointOptions : AbstractEndpointOptions, IEnvOptions
 
         if (RequiredPermissions == Permissions.UNDEFINED)
         {
-            RequiredPermissions = Permissions.RESTRICTED;
+            RequiredPermissions = Permissions.FULL;
         }
 
         if (KeysToSanitize == null)

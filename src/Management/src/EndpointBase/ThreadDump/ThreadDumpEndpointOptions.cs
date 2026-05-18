@@ -14,6 +14,7 @@ public class ThreadDumpEndpointOptions : AbstractEndpointOptions, IThreadDumpOpt
         : base()
     {
         Id = "dump";
+        RequiredPermissions = Permissions.FULL;
     }
 
     public ThreadDumpEndpointOptions(IConfiguration config)
@@ -22,6 +23,11 @@ public class ThreadDumpEndpointOptions : AbstractEndpointOptions, IThreadDumpOpt
         if (string.IsNullOrEmpty(Id))
         {
             Id = "dump";
+        }
+
+        if (RequiredPermissions == Permissions.UNDEFINED)
+        {
+            RequiredPermissions = Permissions.FULL;
         }
     }
 

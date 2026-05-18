@@ -19,6 +19,7 @@ public class ThreadDumpEndpointOptionsTest : BaseTest
         var opts = new ThreadDumpEndpointOptions();
         Assert.Null(opts.Enabled);
         Assert.Equal("dump", opts.Id);
+        Assert.Equal(Permissions.FULL, opts.RequiredPermissions);
     }
 
     [Fact]
@@ -57,5 +58,19 @@ public class ThreadDumpEndpointOptionsTest : BaseTest
         Assert.Equal("dump", opts.Path);
 
         Assert.True(ep.Enabled);
+    }
+
+    [Fact]
+    public void Constructor_BindsRequiredPermissions_FromConfig()
+    {
+        var appsettings = new Dictionary<string, string>()
+        {
+            ["management:endpoints:dump:requiredPermissions"] = "RESTRICTED"
+        };
+        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+
+        var opts = new ThreadDumpEndpointOptions(config);
+
+        Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
     }
 }

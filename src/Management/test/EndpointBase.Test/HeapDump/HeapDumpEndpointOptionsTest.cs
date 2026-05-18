@@ -19,6 +19,7 @@ public class HeapDumpEndpointOptionsTest : BaseTest
         var opts = new HeapDumpEndpointOptions();
         Assert.Null(opts.Enabled);
         Assert.Equal("heapdump", opts.Id);
+        Assert.Equal(Permissions.FULL, opts.RequiredPermissions);
     }
 
     [Fact]
@@ -56,5 +57,19 @@ public class HeapDumpEndpointOptionsTest : BaseTest
         Assert.True(opts.Enabled);
         Assert.Equal("heapdump", opts.Id);
         Assert.Equal("heapdump", opts.Path);
+    }
+
+    [Fact]
+    public void Constructor_BindsRequiredPermissions_FromConfig()
+    {
+        var appsettings = new Dictionary<string, string>()
+        {
+            ["management:endpoints:heapdump:requiredPermissions"] = "RESTRICTED"
+        };
+        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+
+        var opts = new HeapDumpEndpointOptions(config);
+
+        Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
     }
 }

@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Test;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Env.Test;
@@ -16,9 +17,8 @@ public class EnvEndpointOptionsTest : BaseTest
     {
         var opts = new EnvEndpointOptions();
         Assert.Equal("env", opts.Id);
-
         Assert.Equal(new string[] { "password", "secret", "key", "token", ".*credentials.*", "vcap_services", ".*connectionstring.*" }, opts.KeysToSanitize);
-        Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
+        Assert.Equal(Permissions.FULL, opts.RequiredPermissions);
     }
 
     [Fact]
@@ -26,5 +26,19 @@ public class EnvEndpointOptionsTest : BaseTest
     {
         IConfiguration config = null;
         Assert.Throws<ArgumentNullException>(() => new EnvEndpointOptions(config));
+    }
+
+    [Fact]
+    public void Constructor_BindsRequiredPermissions_FromConfig()
+    {
+        var appsettings = new Dictionary<string, string>()
+        {
+            ["management:endpoints:env:requiredPermissions"] = "RESTRICTED"
+        };
+        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+
+        var opts = new EnvEndpointOptions(config);
+
+        Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
     }
 }

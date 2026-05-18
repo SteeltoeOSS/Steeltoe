@@ -15,6 +15,7 @@ public class HeapDumpEndpointOptions : AbstractEndpointOptions, IHeapDumpOptions
         : base()
     {
         Id = "heapdump";
+        RequiredPermissions = Permissions.FULL;
     }
 
     public HeapDumpEndpointOptions(IConfiguration config)
@@ -23,6 +24,11 @@ public class HeapDumpEndpointOptions : AbstractEndpointOptions, IHeapDumpOptions
         if (string.IsNullOrEmpty(Id))
         {
             Id = "heapdump";
+        }
+
+        if (RequiredPermissions == Permissions.UNDEFINED)
+        {
+            RequiredPermissions = Permissions.FULL;
         }
     }
 
