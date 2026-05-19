@@ -30,7 +30,7 @@ internal static class ConnectorOptionsBinder
         {
             string bindingName = childSection.Key;
 
-            if (bindingName == ConnectionStringPostProcessor.DefaultBindingName)
+            if (ConnectionStringPostProcessor.IsDefaultBindingName(bindingName))
             {
                 services.Configure<TOptions>(childSection);
 
@@ -62,7 +62,7 @@ internal static class ConnectorOptionsBinder
             return false;
         }
 
-        if (sections is [{ Key: ConnectionStringPostProcessor.DefaultBindingName }])
+        if (sections is [{ } singleSection] && ConnectionStringPostProcessor.IsDefaultBindingName(singleSection.Key))
         {
             return false;
         }
@@ -81,6 +81,6 @@ internal static class ConnectorOptionsBinder
 
     private static HashSet<string> GetNamedOptions(IConfigurationSection[] childSections)
     {
-        return childSections.Select(section => section.Key == ConnectionStringPostProcessor.DefaultBindingName ? string.Empty : section.Key).ToHashSet();
+        return childSections.Select(section => ConnectionStringPostProcessor.IsDefaultBindingName(section.Key) ? string.Empty : section.Key).ToHashSet();
     }
 }

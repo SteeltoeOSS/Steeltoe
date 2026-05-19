@@ -15,7 +15,7 @@ namespace Steeltoe.Connectors;
 internal abstract class ConnectionStringPostProcessor : IConfigurationPostProcessor
 {
     private const string ConnectionStringName = "ConnectionString";
-    public const string DefaultBindingName = "Default";
+    private const string DefaultBindingName = "Default";
 
     private static readonly string ClientBindingsConfigurationKey = ConfigurationPath.Combine("Steeltoe", "Client");
     public static readonly string ServiceBindingsConfigurationKey = ConfigurationPath.Combine("steeltoe", "service-bindings");
@@ -37,7 +37,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
         {
             bindingsByName.TryGetValue(DefaultBindingName, out BindingInfo? defaultBinding);
 
-            string? alternateBindingName = bindingsByName.Keys.SingleOrDefault(bindingName => bindingName != DefaultBindingName);
+            string? alternateBindingName = bindingsByName.Keys.SingleOrDefault(bindingName => !IsDefaultBindingName(bindingName));
             BindingInfo? alternateBinding = alternateBindingName == null ? null : bindingsByName[alternateBindingName];
 
             var bindingInfo = new BindingInfo
@@ -55,11 +55,16 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
         }
         else
         {
-            foreach ((string bindingName, BindingInfo bindingInfo) in bindingsByName.Where(binding => binding.Key != DefaultBindingName))
+            foreach ((string bindingName, BindingInfo bindingInfo) in bindingsByName.Where(binding => !IsDefaultBindingName(binding.Key)))
             {
                 SetConnectionString(configurationData, bindingName, bindingInfo);
             }
         }
+    }
+
+    public static bool IsDefaultBindingName(string bindingName)
+    {
+        return string.Equals(bindingName, DefaultBindingName, StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool ShouldSetDefault(Dictionary<string, BindingInfo> bindingsByName)
@@ -68,7 +73,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
         {
             (string bindingName, BindingInfo binding) = bindingsByName.Single();
 
-            if (bindingName == DefaultBindingName && binding.IsClientOnly)
+            if (IsDefaultBindingName(bindingName) && binding.IsClientOnly)
             {
                 return true;
             }
@@ -78,7 +83,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
         if (bindingsByName.Count == 2 && bindingsByName.TryGetValue(DefaultBindingName, out BindingInfo? defaultBinding) && defaultBinding.IsClientOnly)
         {
-            BindingInfo alternateBinding = bindingsByName.Single(binding => binding.Key != DefaultBindingName).Value;
+            BindingInfo alternateBinding = bindingsByName.Single(binding => !IsDefaultBindingName(binding.Key)).Value;
 
             if (alternateBinding.IsServerOnly)
             {
@@ -91,7 +96,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
     private Dictionary<string, BindingInfo> GetBindingsByName(IConfiguration configuration)
     {
-        Dictionary<string, BindingInfo> bindingsByName = [];
+        var bindingsByName = new Dictionary<string, BindingInfo>(StringComparer.OrdinalIgnoreCase);
 
         foreach (IConfigurationSection clientBinding in GetBindingSections(configuration, ClientBindingsConfigurationKey))
         {
