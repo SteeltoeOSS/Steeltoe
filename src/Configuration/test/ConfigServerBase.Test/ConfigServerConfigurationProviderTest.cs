@@ -1,10 +1,15 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
@@ -21,7 +26,7 @@ using Xunit.Sdk;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-public class ConfigServerConfigurationProviderTest
+public partial class ConfigServerConfigurationProviderTest
 {
     private readonly ConfigServerClientSettings _commonSettings = new () { Name = "myName" };
 
@@ -1269,5 +1274,37 @@ public class ConfigServerConfigurationProviderTest
         public string Name { get; set; }
 
         public string Version { get; set; }
+    }
+
+    private sealed class CapturingLoggerProvider : ILoggerProvider
+    {
+        private readonly List<string> _messages;
+
+        public CapturingLoggerProvider(List<string> messages) => _messages = messages;
+
+        public ILogger CreateLogger(string categoryName) => new CapturingLogger(_messages);
+
+        public void Dispose()
+        {
+        }
+
+        private sealed class CapturingLogger : ILogger
+        {
+            private readonly List<string> _messages;
+
+            public CapturingLogger(List<string> messages) => _messages = messages;
+
+            public IDisposable BeginScope<TState>(TState state) => null;
+
+            public bool IsEnabled(LogLevel logLevel) => logLevel >= LogLevel.Warning;
+
+            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+            {
+                if (IsEnabled(logLevel))
+                {
+                    _messages.Add($"{logLevel}: {formatter(state, exception)}");
+                }
+            }
+        }
     }
 }

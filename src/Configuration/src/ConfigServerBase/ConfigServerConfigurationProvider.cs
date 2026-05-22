@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Logging;
 using Steeltoe.Discovery;
@@ -626,6 +627,12 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
                     }
                     else
                     {
+                        if ((int)response.StatusCode >= 300)
+                        {
+                            string location = response.Headers.Location?.ToString() ?? "(none)";
+                            _logger.LogWarning("Config Server returned a {statusCode} redirect to '{location}'. Redirects are not followed to prevent credential leaks. Update 'spring:cloud:config:uri' to point directly to the target.", (int)response.StatusCode, location);
+                        }
+
                         return null;
                     }
                 }
@@ -695,6 +702,12 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
                 }
                 else
                 {
+                    if ((int)response.StatusCode >= 300)
+                    {
+                        string location = response.Headers.Location?.ToString() ?? "(none)";
+                        _logger.LogWarning("Config Server returned a {statusCode} redirect to '{location}'. Redirects are not followed to prevent credential leaks. Update 'spring:cloud:config:uri' to point directly to the target.", (int)response.StatusCode, location);
+                    }
+
                     return null;
                 }
             }
@@ -899,7 +912,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             return null;
         }
 
-        return HttpClientHelper.GetAccessToken(
+        var token = HttpClientHelper.GetAccessToken(
             _settings.AccessTokenUri,
             _settings.ClientId,
             _settings.ClientSecret,
@@ -907,6 +920,13 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             _settings.ValidateCertificates,
             _httpClient,
             _logger).GetAwaiter().GetResult();
+
+        if (token == null)
+        {
+            _logger.LogWarning("Failed to fetch access token from '{0}'.", new Uri(_settings.AccessTokenUri).ToMaskedString());
+        }
+
+        return token;
     }
 
     // fire and forget
@@ -939,7 +959,15 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             using var response = await _httpClient.SendAsync(message).ConfigureAwait(false);
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                _logger.LogWarning("Renewing Vault token {0} returned status: {1}", obscuredToken, response.StatusCode);
+                if ((int)response.StatusCode >= 300 && (int)response.StatusCode < 400)
+                {
+                    var location = response.Headers.Location?.ToMaskedString() ?? "(none)";
+                    _logger.LogWarning("Renewing Vault token {0} returned a {1} redirect to '{2}'. Redirects are not followed to prevent credential leaks. Update 'spring:cloud:config:uri' to point directly to the target.", obscuredToken, (int)response.StatusCode, location);
+                }
+                else
+                {
+                    _logger.LogWarning("Renewing Vault token {0} returned status: {1}", obscuredToken, response.StatusCode);
+                }
             }
         }
         catch (Exception e)
@@ -1001,6 +1029,15 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     protected static HttpClient GetHttpClient(ConfigServerClientSettings settings)
     {
         var clientHandler = new HttpClientHandler();
+
+        if (!string.IsNullOrEmpty(settings.Token))
+        {
+            // Disable AutoRedirect to prevent credential leaks. HttpClientHandler strips the Authorization header
+            // on redirects but does not strip custom headers (X-Vault-Token, X-Config-Token), which this handler
+            // uses for Vault token renewal and Config Server fetches.
+            clientHandler.AllowAutoRedirect = false;
+        }
+
         if (settings.ClientCertificate != null)
         {
             clientHandler.ClientCertificates.Add(settings.ClientCertificate);
