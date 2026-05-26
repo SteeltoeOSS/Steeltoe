@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -16,7 +16,15 @@ namespace Steeltoe.Security.Authentication.CloudFoundry;
 
 public class CloudFoundryTokenKeyResolver
 {
-    internal static ConcurrentDictionary<string, SecurityKey> Resolved { get; set; } = new ConcurrentDictionary<string, SecurityKey>();
+#if NET8_0_OR_GREATER
+    private static readonly Random _randomShared = Random.Shared;
+#else
+    private static readonly Random _randomShared = new ();
+#endif
+
+    private static readonly TimeSpan _cacheTimeToLiveForKeyFound = TimeSpan.FromHours(12);
+    private static readonly TimeSpan _cacheMinTimeToLiveForKeyNotFound = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan _cacheMaxTimeToLiveForKeyNotFound = TimeSpan.FromSeconds(60);
 
     private readonly string _jwtKeyUrl;
     private readonly HttpMessageHandler _httpHandler;
@@ -24,11 +32,13 @@ public class CloudFoundryTokenKeyResolver
     private readonly int _httpClientTimeoutMillis;
     private HttpClient _httpClient;
 
+    internal static MemoryCache Cache { get; set; } = new (new MemoryCacheOptions());
+
     public CloudFoundryTokenKeyResolver(string jwtKeyUrl, HttpMessageHandler httpHandler, bool validateCertificates)
     {
         if (string.IsNullOrEmpty(jwtKeyUrl))
         {
-            throw new ArgumentException(nameof(jwtKeyUrl));
+            throw new ArgumentException("Value must not be null or empty.", nameof(jwtKeyUrl));
         }
 
         _jwtKeyUrl = jwtKeyUrl;
@@ -41,7 +51,7 @@ public class CloudFoundryTokenKeyResolver
     {
         if (string.IsNullOrEmpty(jwtKeyUrl))
         {
-            throw new ArgumentException(nameof(jwtKeyUrl));
+            throw new ArgumentException("Value must not be null or empty.", nameof(jwtKeyUrl));
         }
 
         _jwtKeyUrl = jwtKeyUrl;
@@ -52,27 +62,32 @@ public class CloudFoundryTokenKeyResolver
 
     public virtual IEnumerable<SecurityKey> ResolveSigningKey(string token, SecurityToken securityToken, string kid, TokenValidationParameters validationParameters)
     {
-        if (Resolved.TryGetValue(kid, out var resolved))
-        {
-            return new List<SecurityKey> { resolved };
-        }
+        var cacheKey = GetCacheKey(kid);
 
-        var keyset = FetchKeySet().GetAwaiter().GetResult();
-        if (keyset != null)
+        if (!Cache.TryGetValue(cacheKey, out SecurityKey matchingWebKey))
         {
-            foreach (var key in keyset.Keys)
+            var webKeySet = FetchKeySet().GetAwaiter().GetResult();
+
+            foreach (var nextWebKey in webKeySet?.Keys ?? Array.Empty<JsonWebKey>())
             {
-                FixupKey(key);
-                Resolved[key.Kid] = key;
+                FixupKey(nextWebKey);
+                var nextCacheKey = GetCacheKey(nextWebKey.Kid);
+                Cache.Set(nextCacheKey, nextWebKey, _cacheTimeToLiveForKeyFound);
+
+                if (nextWebKey.Kid == kid)
+                {
+                    matchingWebKey = nextWebKey;
+                }
+            }
+
+            if (matchingWebKey == null)
+            {
+                var timeToLive = GetTimeToLiveForNotFound();
+                Cache.Set<JsonWebKey>(cacheKey, null, timeToLive);
             }
         }
 
-        if (Resolved.TryGetValue(kid, out resolved))
-        {
-            return new List<SecurityKey> { resolved };
-        }
-
-        return null;
+        return matchingWebKey == null ? new List<SecurityKey>() : new List<SecurityKey> { matchingWebKey };
     }
 
     public JsonWebKey FixupKey(JsonWebKey key)
@@ -98,10 +113,14 @@ public class CloudFoundryTokenKeyResolver
             out var prevProtocols,
             out var prevValidator);
 
-        HttpResponseMessage response = null;
+        HttpResponseMessage response;
         try
         {
             response = await client.SendAsync(requestMessage).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException)
+        {
+            return null;
         }
         finally
         {
@@ -110,8 +129,15 @@ public class CloudFoundryTokenKeyResolver
 
         if (response.IsSuccessStatusCode)
         {
-            var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return GetJsonWebKeySet(result);
+            try
+            {
+                var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                return GetJsonWebKeySet(result);
+            }
+            catch (ArgumentException)
+            {
+                return null;
+            }
         }
 
         return null;
@@ -137,6 +163,17 @@ public class CloudFoundryTokenKeyResolver
         }
 
         return _httpClient;
+    }
+
+    private string GetCacheKey(string keyId)
+    {
+        return $"{_jwtKeyUrl}:{keyId}";
+    }
+
+    private TimeSpan GetTimeToLiveForNotFound()
+    {
+        var jitterSeconds = _randomShared.NextDouble() * (_cacheMaxTimeToLiveForKeyNotFound - _cacheMinTimeToLiveForKeyNotFound).TotalSeconds;
+        return _cacheMinTimeToLiveForKeyNotFound + TimeSpan.FromSeconds(jitterSeconds);
     }
 
     private void TrimKey(JsonWebKey key, byte[] existing)
