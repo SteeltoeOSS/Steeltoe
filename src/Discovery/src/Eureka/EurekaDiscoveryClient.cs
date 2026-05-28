@@ -37,6 +37,7 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
     private readonly Timer? _cacheRefreshTimer;
     private readonly SemaphoreSlim _registerUnregisterAsyncLock = new(1);
     private readonly SemaphoreSlim _registryFetchAsyncLock = new(1);
+    private volatile bool _hasRegistered;
     private volatile bool _hasFirstHeartbeatCompleted;
 
     private volatile ApplicationInfoCollection _remoteApps;
@@ -195,7 +196,7 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
 
         try
         {
-            if (!ReferenceEquals(_appInfoManager.Instance, InstanceInfo.Disabled))
+            if (_hasRegistered && !ReferenceEquals(_appInfoManager.Instance, InstanceInfo.Disabled))
             {
                 await DeregisterAsync(cancellationToken);
             }
@@ -268,6 +269,7 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
                 LogRegistrationSucceeded(snapshot.AppName, snapshot.InstanceId);
 
                 snapshot.IsDirty = false;
+                _hasRegistered = true;
             }
         }
         finally

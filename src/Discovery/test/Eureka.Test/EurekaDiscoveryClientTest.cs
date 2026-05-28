@@ -418,6 +418,63 @@ public sealed class EurekaDiscoveryClientTest
     }
 
     [Fact]
+    public async Task ShutdownAsync_Unregisters_WhenRegistered()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "true",
+            ["Eureka:Instance:AppName"] = "FOO",
+            ["Eureka:Instance:InstanceId"] = "localhost:foo"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddEurekaDiscoveryClient();
+
+        var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.OK);
+        handler.Mock.Expect(HttpMethod.Delete, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond(HttpStatusCode.OK);
+
+        await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+
+        await discoveryClient.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task ShutdownAsync_DoesNotUnregister_WhenNotRegistered()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "true",
+            ["Eureka:Instance:AppName"] = "FOO",
+            ["Eureka:Instance:InstanceId"] = "localhost:foo"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddEurekaDiscoveryClient();
+
+        var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NotFound);
+
+        await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+
+        await discoveryClient.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
     public async Task GetInstancesAsync_ReturnsExpected()
     {
         var appSettings = new Dictionary<string, string?>
