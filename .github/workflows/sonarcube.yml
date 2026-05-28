@@ -87,7 +87,7 @@ jobs:
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: >-
-        dotnet sonarscanner begin /k:"SteeltoeOSS_steeltoe" /o:"steeltoeoss" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        dotnet sonarscanner begin /k:"SteeltoeOSS_steeltoe" /o:"steeltoeoss" /d:sonar.token="$SONAR_TOKEN"
         /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=**/coverage.opencover.xml
 
     - name: Restore packages
@@ -106,4 +106,4 @@ jobs:
       if: ${{ !cancelled() && steps.sonar_begin.outcome == 'success' }}
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+      run: dotnet sonarscanner end /d:sonar.token="$SONAR_TOKEN"
