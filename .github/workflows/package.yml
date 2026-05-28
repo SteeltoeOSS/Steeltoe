@@ -162,13 +162,16 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Sign packages
+      env:
+        AZURE_KEY_VAULT_URL: ${{ secrets.AZURE_KEY_VAULT_URL }}
+        AZURE_SIGN_CERTIFICATE_ID: ${{ secrets.AZURE_SIGN_CERTIFICATE_ID }}
       run: >-
         sign code azure-key-vault '**/*.nupkg'
         --base-directory '${{ github.workspace }}/packages'
         --azure-key-vault-managed-identity true
         --azure-credential-type 'azure-cli'
-        --azure-key-vault-url '${{ secrets.AZURE_KEY_VAULT_URL }}'
-        --azure-key-vault-certificate '${{ secrets.AZURE_SIGN_CERTIFICATE_ID }}'
+        --azure-key-vault-url "$AZURE_KEY_VAULT_URL"
+        --azure-key-vault-certificate "$AZURE_SIGN_CERTIFICATE_ID"
         --publisher-name 'Steeltoe'
         --description 'Steeltoe'
         --description-url 'https://steeltoe.io/'
@@ -249,7 +252,9 @@ jobs:
         path: packages
 
     - name: Push packages to nuget.org
-      run: dotnet nuget push '${{ github.workspace }}/packages/*.nupkg' --skip-duplicate --api-key '${{ secrets.STEELTOE_NUGET_API_KEY }}' --source 'nuget.org'
+      env:
+        STEELTOE_NUGET_API_KEY: ${{ secrets.STEELTOE_NUGET_API_KEY }}
+      run: dotnet nuget push '${{ github.workspace }}/packages/*.nupkg' --skip-duplicate --api-key "$STEELTOE_NUGET_API_KEY" --source 'nuget.org'
 
   open_pr:
     name: Open pull request to bump Steeltoe version after stable release
