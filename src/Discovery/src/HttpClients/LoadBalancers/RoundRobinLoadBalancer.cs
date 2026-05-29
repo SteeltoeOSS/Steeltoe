@@ -7,13 +7,14 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Discovery.HttpClients.LoadBalancers;
 
 /// <summary>
 /// Returns service instances in round-robin fashion, optionally using distributed caching for determining the next instance.
 /// </summary>
-public sealed class RoundRobinLoadBalancer : ILoadBalancer
+public sealed partial class RoundRobinLoadBalancer : ILoadBalancer
 {
     private const string CacheKeyPrefix = "Steeltoe-LoadBalancerIndex-";
     private readonly ServiceInstancesResolver _serviceInstancesResolver;
@@ -69,20 +70,20 @@ public sealed class RoundRobinLoadBalancer : ILoadBalancer
         ArgumentNullException.ThrowIfNull(requestUri);
 
         string serviceName = requestUri.Host;
-        _logger.LogTrace("Resolving service instance for '{ServiceName}'.", serviceName);
+        LogResolvingServiceInstance(serviceName);
 
         IList<IServiceInstance> availableServiceInstances = await _serviceInstancesResolver.ResolveInstancesAsync(serviceName, cancellationToken);
 
         if (availableServiceInstances.Count == 0)
         {
-            _logger.LogWarning("No service instances are available for '{ServiceName}'.", serviceName);
+            LogNoServiceInstances(serviceName);
             return requestUri;
         }
 
         int instanceIndex = await GetNextInstanceIndexAsync(serviceName, availableServiceInstances.Count, cancellationToken);
         IServiceInstance serviceInstance = availableServiceInstances[instanceIndex];
 
-        _logger.LogDebug("Resolved '{ServiceName}' to '{ServiceInstance}'.", serviceName, serviceInstance.Uri);
+        LogServiceInstanceResolved(serviceName, serviceInstance.Uri);
         return new Uri(serviceInstance.Uri, requestUri.PathAndQuery);
     }
 
@@ -128,4 +129,13 @@ public sealed class RoundRobinLoadBalancer : ILoadBalancer
         cancellationToken.ThrowIfCancellationRequested();
         return Task.CompletedTask;
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Resolving service instance for '{ServiceName}'.")]
+    private partial void LogResolvingServiceInstance(string serviceName);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "No service instances are available for '{ServiceName}'.")]
+    private partial void LogNoServiceInstances(string serviceName);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Resolved '{ServiceName}' to '{ServiceInstance}'.")]
+    private partial void LogServiceInstanceResolved(string serviceName, MaskedUri serviceInstance);
 }

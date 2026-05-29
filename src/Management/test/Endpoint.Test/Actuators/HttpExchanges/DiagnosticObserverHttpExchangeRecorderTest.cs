@@ -17,6 +17,7 @@ using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.HttpExchanges;
 
+[Collection("TestsForMemoryDumpsMustRunSequentially")]
 [Trait("Category", "MemoryDumps")]
 public sealed class DiagnosticObserverHttpExchangeRecorderTest
 {
@@ -51,6 +52,7 @@ public sealed class DiagnosticObserverHttpExchangeRecorderTest
         host.MapGet("/hello", () => "Hello World!");
         await host.StartAsync(TestContext.Current.CancellationToken);
 
+        // ReSharper disable once ShortLivedHttpClient
         using var httpClient = new HttpClient();
 
         HttpResponseMessage helloResponse =

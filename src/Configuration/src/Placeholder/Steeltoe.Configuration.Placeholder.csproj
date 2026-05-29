@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
     <Description>Configuration provider for resolving property placeholders in configuration values.</Description>
     <PackageTags>configuration;ConfigurationProvider;placeholders;Spring;Boot</PackageTags>
     <IsPackable>true</IsPackable>

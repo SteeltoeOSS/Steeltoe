@@ -47,7 +47,7 @@ public sealed class ThreadDumpActuatorTest
         options.Enabled.Should().BeNull();
         options.Id.Should().Be("threaddump");
         options.Path.Should().Be("threaddump");
-        options.RequiredPermissions.Should().Be(EndpointPermissions.Restricted);
+        options.RequiredPermissions.Should().Be(EndpointPermissions.Full);
 
         options.GetSafeAllowedVerbs().Should().ContainSingle().Subject.Should().Be("GET");
         options.RequiresExactMatch().Should().BeTrue();

@@ -578,26 +578,26 @@ public sealed class HealthActuatorTest
     {
         var fileProvider = new MemoryFileProvider();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Management": {
-            "Endpoints": {
-              "Health": {
-                "Groups": {
-                  "ping-group": {
-                    "include": "ping",
-                    "ShowComponents": "Always"
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Management": {
+                "Endpoints": {
+                  "Health": {
+                    "Groups": {
+                      "ping-group": {
+                        "include": "ping",
+                        "ShowComponents": "Always"
+                      }
+                    }
                   }
                 }
               }
             }
-          }
-        }
-        """);
+            """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddHealthActuator();
         WebApplication host = builder.Build();
 
@@ -622,21 +622,21 @@ public sealed class HealthActuatorTest
             }
             """);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Management": {
-            "Endpoints": {
-              "Health": {
-                "Groups": {
-                  "ping-group": {
-                    "include": "ping"
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "Management": {
+                "Endpoints": {
+                  "Health": {
+                    "Groups": {
+                      "ping-group": {
+                        "include": "ping"
+                      }
+                    }
                   }
                 }
               }
             }
-          }
-        }
-        """);
+            """);
 
         fileProvider.NotifyChanged();
 

@@ -23,11 +23,13 @@ public sealed class AesTextDecryptorTest
         List<(string Salt, string Key, string Cipher, string PlainText)> data =
         [
             ("deadbeef", "12345678901234567890", "23f97efeed4ab62294432e8ef6b2905e336c245ecb1d5122b2c288c4deeae1b737952312e97e2cf013dd31a28fc60704",
-                "encrypt the world"), // from Spring Cloud Config documentation
+                "encrypt the world"),
             ("deadbeef", "foo", "682bc583f4641835fa2db009355293665d2647dade3375c0ee201de2a49f7bda", "mysecret"),
             ("deadbeef", "12345678901234567890", "e31b13ab248f96f3cc22be5942d9ebec19a6b50318b2f5d30ea515064971bdebff6974890197626f0dcd5b648950e96f",
                 "encrypt the world"),
             ("deadbeef", "12345678901234567890", "e401ca0578839c9e5207f52d0ae4dc836f8c6530cdc90f14b544180f6fdb9265b80d6ace9fbbab700c7af32141171358",
+                "encrypt the world"),
+            ("nohexsaltvalue", "12345678901234567890", "000102030405060708090a0b0c0d0e0f31fb8ea24a48e4ffed43352dfacfc9b89cd5ff630715fb4ffeb536c02111dd53",
                 "encrypt the world")
         ];
 

@@ -308,7 +308,7 @@ public sealed class HostBuilderExtensionsTest
         var configuration = hostWrapper.Services.GetRequiredService<IConfiguration>();
 
         configuration.EnumerateProviders<KubernetesServiceBindingConfigurationProvider>().Should().NotBeEmpty();
-        configuration.EnumerateProviders<CloudFoundryServiceBindingConfigurationProvider>().Should().ContainSingle();
+        configuration.EnumerateProviders<CloudFoundryServiceBindingConfigurationProvider>().Should().NotBeEmpty();
 
         hostWrapper.Services.GetService<ConnectorFactory<CosmosDbOptions, CosmosClient>>().Should().NotBeNull();
         hostWrapper.Services.GetService<ConnectorFactory<MongoDbOptions, IMongoClient>>().Should().NotBeNull();

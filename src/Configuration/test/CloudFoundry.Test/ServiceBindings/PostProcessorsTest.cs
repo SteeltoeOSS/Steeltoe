@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
 
@@ -12,65 +13,111 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     [Fact]
     public void Processes_MySql_configuration()
     {
-        var postProcessor = new MySqlCloudFoundryPostProcessor();
+        List<string> tempPaths = [];
 
-        Tuple<string, string>[] secrets =
-        [
-            Tuple.Create("credentials:hostname", "test-host"),
-            Tuple.Create("credentials:port", "test-port"),
-            Tuple.Create("credentials:name", "test-database"),
-            Tuple.Create("credentials:username", "test-username"),
-            Tuple.Create("credentials:password", "test-password")
-        ];
+        using (var postProcessor = new MySqlCloudFoundryPostProcessor())
+        {
+            Tuple<string, string>[] secrets =
+            [
+                Tuple.Create("credentials:hostname", "test-host"),
+                Tuple.Create("credentials:port", "test-port"),
+                Tuple.Create("credentials:name", "test-database"),
+                Tuple.Create("credentials:username", "test-username"),
+                Tuple.Create("credentials:password", "test-password"),
+                Tuple.Create("credentials:sslCert", "test-ssl-cert"),
+                Tuple.Create("credentials:sslKey", "test-ssl-key"),
+                Tuple.Create("credentials:sslrootcert", "test-ssl-root-cert") // tests case-insensitivity
+            ];
 
-        Dictionary<string, string?> configurationData =
-            GetConfigurationData(TestProviderName, TestBindingName, [MySqlCloudFoundryPostProcessor.BindingType], null, secrets);
+            Dictionary<string, string?> configurationData =
+                GetConfigurationData(TestProviderName, TestBindingName, [MySqlCloudFoundryPostProcessor.BindingType], null, secrets);
 
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+            PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
-        postProcessor.PostProcessConfiguration(provider, configurationData);
+            postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlCloudFoundryPostProcessor.BindingType);
-        configurationData.Should().ContainKey($"{keyPrefix}:host").WhoseValue.Should().Be("test-host");
-        configurationData.Should().ContainKey($"{keyPrefix}:port").WhoseValue.Should().Be("test-port");
-        configurationData.Should().ContainKey($"{keyPrefix}:database").WhoseValue.Should().Be("test-database");
-        configurationData.Should().ContainKey($"{keyPrefix}:username").WhoseValue.Should().Be("test-username");
-        configurationData.Should().ContainKey($"{keyPrefix}:password").WhoseValue.Should().Be("test-password");
+            string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlCloudFoundryPostProcessor.BindingType);
+            configurationData.Should().ContainKey($"{keyPrefix}:host").WhoseValue.Should().Be("test-host");
+            configurationData.Should().ContainKey($"{keyPrefix}:port").WhoseValue.Should().Be("test-port");
+            configurationData.Should().ContainKey($"{keyPrefix}:database").WhoseValue.Should().Be("test-database");
+            configurationData.Should().ContainKey($"{keyPrefix}:username").WhoseValue.Should().Be("test-username");
+            configurationData.Should().ContainKey($"{keyPrefix}:password").WhoseValue.Should().Be("test-password");
+
+            foreach ((string key, string expectedValue) in new Dictionary<string, string>
+            {
+                ["ssl-cert"] = "test-ssl-cert",
+                ["ssl-key"] = "test-ssl-key",
+                ["ssl-ca"] = "test-ssl-root-cert"
+            })
+            {
+                string? tempPath = configurationData.Should().ContainKey($"{keyPrefix}:{key}").WhoseValue;
+
+                AssertFileHasContent(tempPath, expectedValue);
+                AssertUnixFileModeIsUserOnly(tempPath);
+
+                tempPaths.Add(tempPath);
+            }
+        }
+
+        foreach (string tempPath in tempPaths)
+        {
+            File.Exists(tempPath).Should().BeFalse();
+        }
     }
 
     [Fact]
     public void Processes_PostgreSql_configuration()
     {
-        var postProcessor = new PostgreSqlCloudFoundryPostProcessor();
+        List<string> tempPaths = [];
 
-        Tuple<string, string>[] secrets =
-        [
-            Tuple.Create("credentials:hostname", "test-host"),
-            Tuple.Create("credentials:port", "test-port"),
-            Tuple.Create("credentials:name", "test-database"),
-            Tuple.Create("credentials:username", "test-username"),
-            Tuple.Create("credentials:password", "test-password"),
-            Tuple.Create("credentials:sslCert", "test-ssl-cert"),
-            Tuple.Create("credentials:sslKey", "test-ssl-key"),
-            Tuple.Create("credentials:sslrootcert", "test-ssl-root-cert") // tests case-insensitivity
-        ];
+        using (var postProcessor = new PostgreSqlCloudFoundryPostProcessor())
+        {
+            Tuple<string, string>[] secrets =
+            [
+                Tuple.Create("credentials:hostname", "test-host"),
+                Tuple.Create("credentials:port", "test-port"),
+                Tuple.Create("credentials:name", "test-database"),
+                Tuple.Create("credentials:username", "test-username"),
+                Tuple.Create("credentials:password", "test-password"),
+                Tuple.Create("credentials:sslCert", "test-ssl-cert"),
+                Tuple.Create("credentials:sslKey", "test-ssl-key"),
+                Tuple.Create("credentials:sslrootcert", "test-ssl-root-cert") // tests case-insensitivity
+            ];
 
-        Dictionary<string, string?> configurationData =
-            GetConfigurationData(TestProviderName, TestBindingName, [PostgreSqlCloudFoundryPostProcessor.BindingType], null, secrets);
+            Dictionary<string, string?> configurationData =
+                GetConfigurationData(TestProviderName, TestBindingName, [PostgreSqlCloudFoundryPostProcessor.BindingType], null, secrets);
 
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+            PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
-        postProcessor.PostProcessConfiguration(provider, configurationData);
+            postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlCloudFoundryPostProcessor.BindingType);
-        configurationData.Should().ContainKey($"{keyPrefix}:host").WhoseValue.Should().Be("test-host");
-        configurationData.Should().ContainKey($"{keyPrefix}:port").WhoseValue.Should().Be("test-port");
-        configurationData.Should().ContainKey($"{keyPrefix}:database").WhoseValue.Should().Be("test-database");
-        configurationData.Should().ContainKey($"{keyPrefix}:username").WhoseValue.Should().Be("test-username");
-        configurationData.Should().ContainKey($"{keyPrefix}:password").WhoseValue.Should().Be("test-password");
-        GetFileContentAtKey(configurationData, $"{keyPrefix}:SSL Certificate").Should().Be("test-ssl-cert");
-        GetFileContentAtKey(configurationData, $"{keyPrefix}:SSL Key").Should().Be("test-ssl-key");
-        GetFileContentAtKey(configurationData, $"{keyPrefix}:Root Certificate").Should().Be("test-ssl-root-cert");
+            string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlCloudFoundryPostProcessor.BindingType);
+            configurationData.Should().ContainKey($"{keyPrefix}:host").WhoseValue.Should().Be("test-host");
+            configurationData.Should().ContainKey($"{keyPrefix}:port").WhoseValue.Should().Be("test-port");
+            configurationData.Should().ContainKey($"{keyPrefix}:database").WhoseValue.Should().Be("test-database");
+            configurationData.Should().ContainKey($"{keyPrefix}:username").WhoseValue.Should().Be("test-username");
+            configurationData.Should().ContainKey($"{keyPrefix}:password").WhoseValue.Should().Be("test-password");
+
+            foreach ((string key, string expectedValue) in new Dictionary<string, string>
+            {
+                ["SSL Certificate"] = "test-ssl-cert",
+                ["SSL Key"] = "test-ssl-key",
+                ["Root Certificate"] = "test-ssl-root-cert"
+            })
+            {
+                string? tempPath = configurationData.Should().ContainKey($"{keyPrefix}:{key}").WhoseValue;
+
+                AssertFileHasContent(tempPath, expectedValue);
+                AssertUnixFileModeIsUserOnly(tempPath);
+
+                tempPaths.Add(tempPath);
+            }
+        }
+
+        foreach (string tempPath in tempPaths)
+        {
+            File.Exists(tempPath).Should().BeFalse();
+        }
     }
 
     [Fact]
@@ -286,6 +333,24 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             configurationData.Should().ContainKey($"{keyPrefix}:Authority").WhoseValue.Should().Be("test-domain");
             configurationData.Should().ContainKey($"{keyPrefix}:ClientId").WhoseValue.Should().Be("test-id");
             configurationData.Should().ContainKey($"{keyPrefix}:ClientSecret").WhoseValue.Should().Be("test-secret");
+        }
+    }
+
+    private static void AssertFileHasContent([NotNull] string? path, string expectedValue)
+    {
+        path.Should().NotBeNull();
+        File.Exists(path).Should().BeTrue();
+
+        string fileContent = File.ReadAllText(path);
+        fileContent.Should().Be(expectedValue);
+    }
+
+    private static void AssertUnixFileModeIsUserOnly(string path)
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            UnixFileMode fileMode = File.GetUnixFileMode(path);
+            fileMode.Should().Be(UnixFileMode.UserRead | UnixFileMode.UserWrite);
         }
     }
 }

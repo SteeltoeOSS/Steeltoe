@@ -63,14 +63,16 @@ public sealed class SpringBootEnvironmentVariableProviderTest
         value.Should().Be("q");
 
         provider.TryGet("r", out value).Should().BeTrue();
-        value.Should().BeEmpty();
+        value.Should().BeNull();
 
         provider.TryGet("s:t", out value).Should().BeTrue();
-        value.Should().BeEmpty();
+        value.Should().BeNull();
 
-        provider.TryGet("u", out _).Should().BeFalse();
+        provider.TryGet("u", out value).Should().BeTrue();
+        value.Should().BeNull();
 
-        provider.TryGet("v:w", out _).Should().BeFalse();
+        provider.TryGet("v:w", out value).Should().BeTrue();
+        value.Should().BeNull();
     }
 
     [Fact]
@@ -113,14 +115,16 @@ public sealed class SpringBootEnvironmentVariableProviderTest
         value.Should().Be("q");
 
         provider.TryGet("a:b:c:2:r", out value).Should().BeTrue();
-        value.Should().BeEmpty();
+        value.Should().BeNull();
 
         provider.TryGet("a:b:c:2:s:t", out value).Should().BeTrue();
-        value.Should().BeEmpty();
+        value.Should().BeNull();
 
-        provider.TryGet("a:b:c:2:u", out _).Should().BeFalse();
+        provider.TryGet("a:b:c:2:u", out value).Should().BeTrue();
+        value.Should().BeNull();
 
-        provider.TryGet("a:b:c:2:v:w", out _).Should().BeFalse();
+        provider.TryGet("a:b:c:2:v:w", out value).Should().BeTrue();
+        value.Should().BeNull();
     }
 
     [Fact]

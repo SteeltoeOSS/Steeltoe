@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.Configuration;
@@ -49,11 +50,19 @@ public static class ConfigurationServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddOptions<ConfigurationDiscoveryOptions>().BindConfiguration(ConfigurationDiscoveryOptions.ConfigurationPrefix);
+        if (!IsRegistered(services))
+        {
+            services.AddOptions<ConfigurationDiscoveryOptions>().BindConfiguration(ConfigurationDiscoveryOptions.ConfigurationPrefix);
 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiscoveryClient, ConfigurationDiscoveryClient>());
-        services.AddHostedService<DiscoveryClientHostedService>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiscoveryClient, ConfigurationDiscoveryClient>());
+            services.AddHostedService<DiscoveryClientHostedService>();
+        }
 
         return services;
+    }
+
+    private static bool IsRegistered(IServiceCollection services)
+    {
+        return services.Any(descriptor => descriptor.SafeGetImplementationType() == typeof(ConfigurationDiscoveryClient));
     }
 }

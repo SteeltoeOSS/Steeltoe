@@ -13,7 +13,7 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Loggers;
 
-internal sealed class LoggersEndpointMiddleware(
+internal sealed partial class LoggersEndpointMiddleware(
     ILoggersEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
     : EndpointMiddleware<LoggersRequest, LoggersResponse?>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
@@ -31,19 +31,20 @@ internal sealed class LoggersEndpointMiddleware(
 
             if (httpContext.Request.Path.StartsWithSegments(path, out PathString remaining) && remaining.HasValue)
             {
-                string loggerName = remaining.Value!.TrimStart('/');
+                string loggerName = remaining.Value.TrimStart('/');
 
-                Dictionary<string, string> change = await DeserializeRequestAsync(httpContext.Request.Body, cancellationToken);
+                Dictionary<string, string?> changes = await DeserializeRequestAsync(httpContext.Request.Body, cancellationToken);
 
-                change.TryGetValue("configuredLevel", out string? level);
+                // Spring Boot Admin sends {} to reset the level, while Apps Manager sends {"configuredLevel":null}
+                _ = changes.TryGetValue("configuredLevel", out string? level);
 
-                _logger.LogDebug("Change Request: {Name}, {Level}", loggerName, level ?? "RESET");
+                LogChangeRequest(loggerName, level ?? "RESET");
 
                 if (!string.IsNullOrEmpty(loggerName))
                 {
                     if (!string.IsNullOrEmpty(level) && LoggerLevels.StringToLogLevel(level) == null)
                     {
-                        _logger.LogDebug("Invalid LogLevel specified: {Level}", level);
+                        LogInvalidLevel(level);
                         return null;
                     }
 
@@ -55,11 +56,12 @@ internal sealed class LoggersEndpointMiddleware(
         return new LoggersRequest();
     }
 
-    private async Task<Dictionary<string, string>> DeserializeRequestAsync(Stream stream, CancellationToken cancellationToken)
+    private async Task<Dictionary<string, string?>> DeserializeRequestAsync(Stream stream, CancellationToken cancellationToken)
     {
         try
         {
-            var dictionary = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(stream, cancellationToken: cancellationToken);
+            JsonSerializerOptions options = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
+            var dictionary = await JsonSerializer.DeserializeAsync<Dictionary<string, string?>>(stream, options, cancellationToken);
 
             if (dictionary != null)
             {
@@ -68,7 +70,7 @@ internal sealed class LoggersEndpointMiddleware(
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            _logger.LogError(exception, "Exception deserializing loggers endpoint request.");
+            LogDeserializationFailed(exception);
         }
 
         return [];
@@ -99,4 +101,13 @@ internal sealed class LoggersEndpointMiddleware(
             await JsonSerializer.SerializeAsync(httpContext.Response.Body, response, options, cancellationToken);
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Received request to change logger '{Name}' to level {Level}.")]
+    private partial void LogChangeRequest(string name, string level);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Invalid log level {Level} specified.")]
+    private partial void LogInvalidLevel(string level);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to deserialize loggers endpoint request.")]
+    private partial void LogDeserializationFailed(Exception exception);
 }

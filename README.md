@@ -1,8 +1,8 @@
 # Steeltoe .NET Open Source Software
 
-[![Build Status](https://github.com/SteeltoeOSS/Steeltoe/actions/workflows/Steeltoe.All.yml/badge.svg?branch=main)](https://github.com/SteeltoeOSS/Steeltoe/actions/workflows/Steeltoe.All.yml?query=branch%3Amain)
-&nbsp;[![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=SteeltoeOSS_steeltoe&branch=main&metric=alert_status)](https://sonarcloud.io/component_measures?id=SteeltoeOSS_steeltoe&branch=main)
-&nbsp;[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=SteeltoeOSS_steeltoe&branch=main&metric=coverage)](https://sonarcloud.io/component_measures?id=SteeltoeOSS_steeltoe&branch=main&metric=coverage&view=list)
+[![Build Status](https://github.com/SteeltoeOSS/Steeltoe/actions/workflows/Steeltoe.All.yml/badge.svg?branch=4.x)](https://github.com/SteeltoeOSS/Steeltoe/actions/workflows/Steeltoe.All.yml?query=branch%3A4.x)
+&nbsp;[![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=SteeltoeOSS_steeltoe&branch=4.x&metric=alert_status)](https://sonarcloud.io/component_measures?id=SteeltoeOSS_steeltoe&branch=4.x)
+&nbsp;[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=SteeltoeOSS_steeltoe&branch=4.x&metric=coverage)](https://sonarcloud.io/component_measures?id=SteeltoeOSS_steeltoe&branch=4.x&metric=coverage&view=list)
 &nbsp;[![NuGet Version](https://img.shields.io/nuget/v/Steeltoe.Common.svg?style=flat)](https://www.nuget.org/profiles/SteeltoeOSS)
 &nbsp;[![GitHub License](https://img.shields.io/github/license/SteeltoeOSS/Steeltoe)](LICENSE)
 &nbsp;[![Stack Overflow](https://img.shields.io/badge/stack%20overflow-steeltoe-orange.svg)](http://stackoverflow.com/questions/tagged/steeltoe)
@@ -15,7 +15,7 @@ Key features include:
 
 - External (optionally encrypted) configuration using [Spring Cloud Config Server](https://docs.spring.io/spring-cloud-config/docs/current/reference/html/)
 - Service discovery with [Netflix Eureka](https://spring.io/projects/spring-cloud-netflix) and [HashiCorp Consul](https://www.consul.io/)
-- Management endpoints (compatible with [actuators](https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html)), providing system info (such as versions, configuration, service container contents, mapped routes and HTTP traffic), heap/thread dumps, health checks, exporting metrics to [Prometheus](https://prometheus.io/), and changing log levels at runtime.
+- Management endpoints (compatible with [actuators](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html)), providing system info (such as versions, configuration, service container contents, mapped routes and HTTP traffic), heap/thread dumps, health checks, exporting metrics to [Prometheus](https://prometheus.io/), and changing log levels at runtime.
 - Connectivity to databases (such as [SQL Server](https://www.microsoft.com/sql-server)/[Azure SQL](https://azure.microsoft.com/products/azure-sql), [Cosmos DB](https://azure.microsoft.com/products/cosmos-db/), [MongoDB](https://www.mongodb.com/), [Redis](https://redis.io/), [RabbitMQ](https://www.rabbitmq.com/), [PostgreSQL](https://www.postgresql.org/), and [MySQL](https://www.mysql.com/)), including support for [Entity Framework Core](https://learn.microsoft.com/ef/core/)
 - Single sign-on, JWT and Certificate auth with [Cloud Foundry](https://www.cloudfoundry.org/)
 
@@ -40,7 +40,7 @@ For more details, see [Supported Versions on the Wiki](https://github.com/Steelt
 
 ## Support and Feedback
 
-For community support, we recommend [Steeltoe OSS Slack](https://slack.steeltoe.io), [StackOverflow](https://stackoverflow.com/questions/tagged/steeltoe), or [open an issue](https://github.com/SteeltoeOSS/Steeltoe/issues/new/choose).
+For community support, we recommend [Discussions on GitHub](https://github.com/SteeltoeOSS/Steeltoe/discussions), [StackOverflow](https://stackoverflow.com/questions/tagged/steeltoe), or [open an issue](https://github.com/SteeltoeOSS/Steeltoe/issues/new/choose).
 
 For production support, we recommend that you contact [Broadcom Support](https://support.broadcom.com/).
 

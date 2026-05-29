@@ -6,18 +6,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Configuration.ConfigServer.Integration.Test;
 
-// NOTE: Some of the tests assume a running Spring Cloud Config Server is started
+// NOTE: These tests assume Spring Cloud Config Server (and sometimes Eureka Server) is running
 //       with repository data for application: foo, profile: development
 //
-//       The easiest way to get that to happen is clone the spring-cloud-config
-//       repo and run the config-server.
-//          e.g. git clone https://github.com/spring-cloud/spring-cloud-config.git
-//               cd spring-cloud-config\spring-cloud-config-server
-//               mvn spring-boot:run
+//       The easiest way to run the servers is with docker compose
+//       (see docker-compose.yml at the repo root)
 public sealed class ConfigServerConfigurationExtensionsIntegrationTest
 {
     [Fact]
@@ -41,15 +37,11 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
+
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-
-        configurationBuilder.AddJsonFile(fileName);
-
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer();
         IConfigurationRoot root = configurationBuilder.Build();
 
@@ -85,21 +77,13 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseEnvironment("development");
         builder.UseStartup<TestServerStartup>();
-
-        builder.ConfigureAppConfiguration(configurationBuilder =>
-        {
-            configurationBuilder.SetBasePath(directory);
-            configurationBuilder.AddJsonFile(fileName);
-        });
-
+        builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider));
         builder.AddConfigServer();
 
         using IWebHost host = builder.Build();
@@ -176,21 +160,13 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseEnvironment("development");
         builder.UseStartup<TestServerStartup>();
-
-        builder.ConfigureAppConfiguration(configurationBuilder =>
-        {
-            configurationBuilder.SetBasePath(directory);
-            configurationBuilder.AddJsonFile(fileName);
-        });
-
+        builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider));
         builder.AddConfigServer();
 
         using IWebHost host = builder.Build();
@@ -231,15 +207,12 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.Add(FastTestConfigurations.Discovery);
-        configurationBuilder.SetBasePath(directory);
-        configurationBuilder.AddJsonFile(fileName);
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer();
         IConfigurationRoot root = configurationBuilder.Build();
 
@@ -275,20 +248,12 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
         builder.UseStartup<TestServerStartup>();
-
-        builder.ConfigureAppConfiguration(configurationBuilder =>
-        {
-            configurationBuilder.SetBasePath(directory);
-            configurationBuilder.AddJsonFile(fileName);
-        });
-
+        builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider));
         builder.AddConfigServer();
 
         using IWebHost host = builder.Build();

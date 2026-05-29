@@ -20,7 +20,6 @@ namespace Steeltoe.Security.DataProtection.Redis.Test;
 public sealed partial class RedisDataProtectionBuilderExtensionsTest
 {
     [Fact]
-    [Trait("Category", "SkipOnMacOS")]
     public async Task Stores_session_state_in_Redis()
     {
         const string appName = "SHARED-APP-NAME";

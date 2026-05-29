@@ -54,6 +54,7 @@ public static class EndpointServiceCollectionExtensions
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, GitInfoContributor>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, AppSettingsInfoContributor>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, BuildInfoContributor>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, RuntimeInfoContributor>());
     }
 
     /// <summary>

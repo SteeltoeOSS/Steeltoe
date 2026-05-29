@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using Serilog.Context;
 using Steeltoe.Common.TestResources;
 
+#pragma warning disable CA1873 // Avoid potentially expensive logging
+
 namespace Steeltoe.Logging.DynamicSerilog.Test;
 
 public sealed class DynamicSerilogLoggerProviderTest : IDisposable
@@ -196,24 +198,22 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
     {
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Serilog": {
-            "MinimumLevel": {
-              "Override": {
-                "A": "Warning"
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Serilog": {
+                "MinimumLevel": {
+                  "Override": {
+                    "A": "Warning"
+                  }
+                },
+                "WriteTo": {
+                  "Name": "Console"
+                }
               }
-            },
-            "WriteTo": {
-              "Name": "Console"
             }
-          }
-        }
-        """);
+            """);
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder =>
-            configurationBuilder.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true));
-
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider));
         DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
 
         testContext.Parent.AssertMinLevel(LogLevel.Warning);
@@ -227,19 +227,19 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
         testContext.Self.AssertMinLevel(LogLevel.Error, LogLevel.Warning);
         testContext.Child.AssertMinLevel(LogLevel.Error);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Serilog": {
-            "MinimumLevel": {
-              "Override": {
-                "A": "Verbose",
-                "A.B.C": "Debug"
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "Serilog": {
+                "MinimumLevel": {
+                  "Override": {
+                    "A": "Verbose",
+                    "A.B.C": "Debug"
+                  }
+                },
+                "WriteTo": "Console"
               }
-            },
-            "WriteTo": "Console"
-          }
-        }
-        """);
+            }
+            """);
 
         fileProvider.NotifyChanged();
         testContext.Refresh();
@@ -285,7 +285,7 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             [INF] Fully.Qualified.Type: {InnerScopeKey="InnerScopeValue", Scope=["OuterScope", "InnerScope=InnerScopeValue"]}
               TestInfo
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -329,7 +329,7 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             [INF] Fully.Qualified.Type: {A=1}
               Carries property A = 1, again
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -358,7 +358,7 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
         logOutput.Should().Be("""
             [INF] Fully.Qualified.Type: Processing of {"RequestUrl": "https://www.example.com", "UserAgent": "Steeltoe"} started.
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -389,7 +389,7 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             [INF] {SourceContext="Test", Scope=["TwoOne"]}
               Three
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     private static IDynamicLoggerProvider CreateLoggerProvider(Action<ConfigurationBuilder>? configure = null)

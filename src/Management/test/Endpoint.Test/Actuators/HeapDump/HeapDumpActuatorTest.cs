@@ -50,7 +50,7 @@ public sealed class HeapDumpActuatorTest
         options.Enabled.Should().BeNull();
         options.Id.Should().Be("heapdump");
         options.Path.Should().Be("heapdump");
-        options.RequiredPermissions.Should().Be(EndpointPermissions.Restricted);
+        options.RequiredPermissions.Should().Be(EndpointPermissions.Full);
 
         options.GetSafeAllowedVerbs().Should().ContainSingle().Subject.Should().Be("GET");
         options.RequiresExactMatch().Should().BeTrue();

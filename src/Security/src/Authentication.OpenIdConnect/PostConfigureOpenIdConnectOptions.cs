@@ -7,15 +7,28 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Steeltoe.Security.Authentication.OpenIdConnect;
 
 internal sealed class PostConfigureOpenIdConnectOptions : IPostConfigureOptions<OpenIdConnectOptions>
 {
-    // The ClaimsIdentity is built off the id_token, but scopes are returned in the access_token.
-    // Identify scopes not already present as claims and add them to the ClaimsIdentity
+    private readonly TokenKeyResolver _tokenKeyResolver;
+
+    public PostConfigureOpenIdConnectOptions(TokenKeyResolver tokenKeyResolver)
+    {
+        ArgumentNullException.ThrowIfNull(tokenKeyResolver);
+
+        _tokenKeyResolver = tokenKeyResolver;
+    }
+
     private static Task MapScopesToClaimsAsync(TokenValidatedContext context)
     {
+        ArgumentNullException.ThrowIfNull(context);
+
+        // The ClaimsIdentity is built off the id_token, but scopes are returned in the access_token.
+        // Identify scopes not already present as claims and add them to the ClaimsIdentity.
+
         if (context.Principal?.Identity is not ClaimsIdentity claimsIdentity)
         {
             return Task.CompletedTask;
@@ -54,7 +67,10 @@ internal sealed class PostConfigureOpenIdConnectOptions : IPostConfigureOptions<
 
         options.TokenValidationParameters.ValidIssuer = $"{options.Authority}/oauth/token";
 
-        var keyResolver = new TokenKeyResolver(options.Authority, options.Backchannel);
-        options.TokenValidationParameters.IssuerSigningKeyResolver = (_, _, keyId, _) => keyResolver.ResolveSigningKey(keyId);
+        options.TokenValidationParameters.IssuerSigningKeyResolver = (_, _, keyId, _) =>
+        {
+            JsonWebKey? key = _tokenKeyResolver.ResolveSigningKey(options.Authority, keyId, options.Backchannel);
+            return key != null ? [key] : [];
+        };
     }
 }

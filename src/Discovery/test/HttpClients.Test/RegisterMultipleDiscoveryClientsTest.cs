@@ -15,7 +15,6 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Common.TestResources.IO;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
@@ -57,14 +56,11 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-        configurationBuilder.AddJsonFile(fileName);
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         IConfiguration configuration = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
@@ -235,7 +231,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         builder.AddCloudFoundry();
-        builder.AddCloudFoundryServiceBindings();
+        builder.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
         IConfiguration configuration = builder.Build();
 
         IServiceCollection services = new ServiceCollection();
@@ -332,7 +328,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         builder.AddCloudFoundry();
-        builder.AddCloudFoundryServiceBindings();
+        builder.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
         IConfiguration configuration = builder.Build();
 
         IServiceCollection services = new ServiceCollection();
@@ -424,17 +420,20 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", env1);
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", env2);
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
         using var loggerFactory = new LoggerFactory([capturingLoggerProvider]);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddCloudFoundryServiceBindings(_ => false, new EnvironmentServiceBindingsReader(), loggerFactory);
+
+        configurationBuilder.AddCloudFoundryServiceBindings(_ => false, new EnvironmentServiceBindingsReader(), CloudFoundryServiceBrokerTypes.Eureka,
+            loggerFactory);
+
         _ = configurationBuilder.Build();
 
         IList<string> logMessages = capturingLoggerProvider.GetAll();
 
         logMessages.Should().BeEquivalentTo(
-            $"WARN {typeof(EurekaCloudFoundryPostProcessor).FullName}: Multiple Eureka service bindings found, which is not supported. Using the first binding from VCAP_SERVICES.");
+            $"WARN {typeof(EurekaCloudFoundryPostProcessor)}: Multiple Eureka service bindings found, which is not supported. Using the first binding from VCAP_SERVICES.");
     }
 
     [Fact]
@@ -540,7 +539,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundry();
-        builder.Configuration.AddCloudFoundryServiceBindings();
+        builder.Configuration.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
@@ -656,14 +655,11 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
-        string directory = Path.GetDirectoryName(path)!;
-        string fileName = Path.GetFileName(path);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-        configurationBuilder.AddJsonFile(fileName);
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         IConfiguration configuration = configurationBuilder.Build();
 
         var services = new ServiceCollection();
@@ -829,10 +825,12 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             }
             """;
 
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
-        IConfiguration configuration = new ConfigurationBuilder().SetBasePath(Path.GetDirectoryName(path)!).AddJsonFile(Path.GetFileName(path)).Build();
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
+        IConfiguration configuration = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddOptions();
@@ -872,5 +870,21 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         serviceProvider.GetServices<IHealthContributor>().OfType<ConsulHealthContributor>().Should().ContainSingle();
         serviceProvider.GetServices<IHealthContributor>().OfType<EurekaServerHealthContributor>().Should().ContainSingle();
         serviceProvider.GetServices<IHealthContributor>().OfType<EurekaApplicationsHealthContributor>().Should().BeEmpty();
+    }
+
+    [Fact]
+    public void WithMultipleClients_DotNotRegisterMultipleTimes()
+    {
+        var services = new ServiceCollection();
+        services.AddConfigurationDiscoveryClient();
+        services.AddConsulDiscoveryClient();
+        services.AddEurekaDiscoveryClient();
+        int beforeServiceCount = services.Count;
+
+        services.AddConfigurationDiscoveryClient();
+        services.AddConsulDiscoveryClient();
+        services.AddEurekaDiscoveryClient();
+
+        services.Count.Should().Be(beforeServiceCount);
     }
 }

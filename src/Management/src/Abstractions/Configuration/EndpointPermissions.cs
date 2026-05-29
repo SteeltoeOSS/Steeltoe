@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Configuration;
 public enum EndpointPermissions
 {
     /// <summary>
-    /// Indicates no permission constraints.
+    /// Indicates no permissions.
     /// </summary>
     None,
 

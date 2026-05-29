@@ -36,23 +36,28 @@ public sealed class DataCenterInfoTest
         json.ClassName.Should().Be("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo");
     }
 
-    [Fact]
-    public void FromJson_Correct()
+    [Theory]
+    [InlineData("Netflix")]
+    [InlineData("Amazon")]
+    [InlineData("MyOwn")]
+    public void FromJson_Correct(string name)
     {
         var jsonInfo = new JsonDataCenterInfo
         {
             ClassName = "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
-            Name = "MyOwn"
+            Name = name
         };
+
+        var expected = Enum.Parse<DataCenterName>(name);
 
         DataCenterInfo? result = DataCenterInfo.FromJson(jsonInfo);
 
         result.Should().NotBeNull();
-        result.Name.Should().Be(DataCenterName.MyOwn);
+        result.Name.Should().Be(expected);
     }
 
     [Fact]
-    public void FromJson_Throws_Invalid()
+    public void FromJson_ReturnsNull_WhenInvalid()
     {
         var jsonInfo = new JsonDataCenterInfo
         {
@@ -60,8 +65,8 @@ public sealed class DataCenterInfoTest
             Name = "FooBar"
         };
 
-        Action action = () => DataCenterInfo.FromJson(jsonInfo);
+        DataCenterInfo? result = DataCenterInfo.FromJson(jsonInfo);
 
-        action.Should().ThrowExactly<ArgumentException>().WithMessage("Unsupported datacenter name*");
+        result.Should().BeNull();
     }
 }

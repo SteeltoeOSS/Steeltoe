@@ -40,7 +40,7 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
         return algorithm.ToUpperInvariant() switch
         {
             "DEFAULT" => CipherUtilities.GetCipher("RSA/NONE/PKCS1Padding"),
-            "OAEP" => CipherUtilities.GetCipher("RSA/ECB/PKCS1"),
+            "OAEP" => CipherUtilities.GetCipher("RSA/NONE/OAEPWithSHA1AndMGF1Padding"),
             _ => throw new ArgumentException("algorithm should be one of DEFAULT or OAEP")
         };
     }

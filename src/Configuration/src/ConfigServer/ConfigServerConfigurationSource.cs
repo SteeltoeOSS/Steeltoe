@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common.Certificates;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -13,74 +12,68 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
 {
     private readonly ILoggerFactory _loggerFactory;
 
-    internal List<IConfigurationSource> Sources { get; } = [];
-    internal Dictionary<string, object> Properties { get; } = [];
+    internal List<IConfigurationSource> Sources { get; }
+    internal Dictionary<string, object> Properties { get; }
 
     /// <summary>
-    /// Gets the default settings the Config Server client uses to contact the Config Server.
+    /// Gets the default options the client uses to contact Config Server.
     /// </summary>
-    internal ConfigServerClientOptions DefaultOptions { get; }
+    public ConfigServerClientOptions DefaultOptions { get; }
 
     /// <summary>
-    /// Gets the configuration the Config Server client uses to contact the Config Server. Values returned override the default values provided in
-    /// <see cref="DefaultOptions" />.
+    /// Gets the configuration the client uses to contact Config Server. Entries override <see cref="DefaultOptions" />.
     /// </summary>
-    internal IConfiguration? Configuration { get; private set; }
+    public IConfiguration? Configuration { get; private set; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
+    /// Gets an optional delegate that further configures options from code, after settings from <see cref="Configuration" /> have been applied.
     /// </summary>
-    /// <param name="defaultOptions">
-    /// the default settings used by the Config Server client.
-    /// </param>
-    /// <param name="configuration">
-    /// configuration used by the Config Server client. Values will override those found in default settings.
-    /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
-    public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IConfiguration configuration, ILoggerFactory loggerFactory)
-    {
-        ArgumentNullException.ThrowIfNull(configuration);
-        ArgumentNullException.ThrowIfNull(defaultOptions);
-        ArgumentNullException.ThrowIfNull(loggerFactory);
+    public Action<ConfigServerClientOptions>? Configure { get; }
 
-        Configuration = configuration;
-        DefaultOptions = defaultOptions;
-        _loggerFactory = loggerFactory;
-    }
+    /// <summary>
+    /// Gets an optional factory to create the HTTP client handler, used to mock HTTP requests to Config Server in tests. When provided, the caller is
+    /// responsible for handler disposal.
+    /// </summary>
+    public Func<HttpClientHandler>? CreateHttpClientHandler { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
     /// </summary>
     /// <param name="defaultOptions">
-    /// the default settings used by the Config Server client.
+    /// The default options the client uses to contact Config Server.
     /// </param>
     /// <param name="sources">
-    /// configuration sources used by the Config Server client. The <see cref="Configuration" /> will be built from these sources and the values will
-    /// override those found in <see cref="DefaultOptions" />.
+    /// Configuration sources the client uses to contact Config Server. The <see cref="Configuration" /> will be built from these, whose entries override
+    /// <paramref name="defaultOptions" />.
     /// </param>
     /// <param name="properties">
-    /// properties to be used when sources are built.
+    /// Configuration properties the client uses to contact Config Server. The <see cref="Configuration" /> will be built from these, whose entries override
+    /// <paramref name="defaultOptions" />.
+    /// </param>
+    /// <param name="configure">
+    /// An optional delegate that further configures options from code, after settings from the built <see cref="Configuration" /> have been applied.
+    /// </param>
+    /// <param name="createHttpClientHandler">
+    /// An optional factory to create the HTTP client handler, used to mock HTTP requests to Config Server in tests. When provided, the caller is responsible
+    /// for handler disposal.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IList<IConfigurationSource> sources,
-        IDictionary<string, object>? properties, ILoggerFactory loggerFactory)
+        IDictionary<string, object>? properties, Action<ConfigServerClientOptions>? configure, Func<HttpClientHandler>? createHttpClientHandler,
+        ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(defaultOptions);
         ArgumentNullException.ThrowIfNull(sources);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         Sources = sources.ToList();
-
-        if (properties != null)
-        {
-            Properties = new Dictionary<string, object>(properties);
-        }
+        Properties = properties != null ? new Dictionary<string, object>(properties) : [];
 
         DefaultOptions = defaultOptions;
+        Configure = configure;
+        CreateHttpClientHandler = createHttpClientHandler;
         _loggerFactory = loggerFactory;
     }
 
@@ -95,37 +88,19 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// </returns>
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        if (Configuration == null)
+        var configurationBuilder = new ConfigurationBuilder();
+
+        foreach (IConfigurationSource source in Sources)
         {
-            // Create our own builder to build sources
-            var configurationBuilder = new ConfigurationBuilder();
-
-            foreach (IConfigurationSource source in Sources)
-            {
-                configurationBuilder.Add(source);
-            }
-
-            // Use properties provided
-            foreach (KeyValuePair<string, object> pair in Properties)
-            {
-                configurationBuilder.Properties.Add(pair);
-            }
-
-            // Create configuration
-            Configuration = configurationBuilder.Build();
+            configurationBuilder.Add(source);
         }
 
-        string? clientCertificatePath = Configuration.GetValue<string>($"{CertificateOptions.ConfigurationKeyPrefix}:ConfigServer:CertificateFilePath");
-
-        if (!string.IsNullOrEmpty(clientCertificatePath) && DefaultOptions.ClientCertificate.Certificate == null)
+        foreach (KeyValuePair<string, object> pair in Properties)
         {
-            var certificateConfigurer = new ConfigureCertificateOptions(Configuration);
-
-            var options = new CertificateOptions();
-            certificateConfigurer.Configure("ConfigServer", options);
-            DefaultOptions.ClientCertificate.Certificate = options.Certificate;
+            configurationBuilder.Properties.Add(pair);
         }
 
+        Configuration = configurationBuilder.Build();
         return new ConfigServerConfigurationProvider(this, _loggerFactory);
     }
 }

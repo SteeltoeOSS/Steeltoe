@@ -10,7 +10,7 @@ using Steeltoe.Connectors.Redis.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.Redis;
 
-internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
+internal sealed partial class RedisHealthContributor : IHealthContributor, IDisposable
 {
     private readonly ILogger<RedisHealthContributor> _logger;
     private readonly string? _connectionString;
@@ -54,7 +54,7 @@ internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
 
     public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
-        _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
+        LogCheckingHealth(Id, Host);
 
         var result = new HealthCheckResult
         {
@@ -80,7 +80,7 @@ internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
             result.Status = HealthStatus.Up;
             result.Details.Add("ping", roundTripTime.TotalMilliseconds);
 
-            _logger.LogTrace("{DbConnection} at {Host} is up!", Id, Host);
+            LogHealthUp(Id, Host);
         }
         catch (Exception exception)
         {
@@ -91,7 +91,7 @@ internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
                 ExceptionDispatchInfo.Capture(exception).Throw();
             }
 
-            _logger.LogError(exception, "{DbConnection} at {Host} is down!", Id, Host);
+            LogHealthDown(exception, Id, Host);
 
             result.Status = HealthStatus.Down;
             result.Description = $"{Id} health check failed";
@@ -106,4 +106,13 @@ internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
         _connectionMultiplexerInterfaceShim?.Dispose();
         _connectionMultiplexerInterfaceShim = null;
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Checking {DbConnection} health at {Host}.")]
+    private partial void LogCheckingHealth(string dbConnection, string host);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "{DbConnection} at {Host} is up.")]
+    private partial void LogHealthUp(string dbConnection, string host);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "{DbConnection} at {Host} is down.")]
+    private partial void LogHealthDown(Exception exception, string dbConnection, string host);
 }

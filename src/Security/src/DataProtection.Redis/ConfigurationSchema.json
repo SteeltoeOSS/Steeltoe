@@ -1,0 +1,20 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Security": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Security.DataProtection": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Security.DataProtection.Redis": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  }
+}

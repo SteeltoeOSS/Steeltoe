@@ -14,7 +14,7 @@ namespace Steeltoe.Discovery.HttpClients.LoadBalancers;
 /// <summary>
 /// Queries all discovery clients for service instances, optionally caching the results using <see cref="IDistributedCache" />.
 /// </summary>
-public sealed class ServiceInstancesResolver
+public sealed partial class ServiceInstancesResolver
 {
     private readonly IDiscoveryClient[] _discoveryClients;
     private readonly IDistributedCache? _distributedCache;
@@ -66,7 +66,7 @@ public sealed class ServiceInstancesResolver
 
         if (_discoveryClients.Length == 0)
         {
-            _logger.LogWarning("No discovery clients are registered.");
+            LogNoDiscoveryClients();
         }
     }
 
@@ -83,7 +83,8 @@ public sealed class ServiceInstancesResolver
 
             if (instancesFromCache != null)
             {
-                _logger.LogDebug("Returning {Count} instances from cache.", instancesFromCache.Count);
+                instancesFromCache = RemoveDuplicatesByUri(instancesFromCache);
+                LogReturningInstancesFromCache(instancesFromCache.Count);
                 return instancesFromCache;
             }
         }
@@ -99,9 +100,11 @@ public sealed class ServiceInstancesResolver
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Failed to get instances from {DiscoveryClient}.", discoveryClient.GetType());
+                LogFailedToGetInstances(exception, discoveryClient.GetType());
             }
         }
+
+        instances = RemoveDuplicatesByUri(instances);
 
         if (_distributedCache != null)
         {
@@ -112,11 +115,28 @@ public sealed class ServiceInstancesResolver
         return instances;
     }
 
+    private static List<IServiceInstance> RemoveDuplicatesByUri(List<IServiceInstance> instances)
+    {
+        var seenUris = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var result = new List<IServiceInstance>();
+
+        foreach (IServiceInstance instance in instances)
+        {
+            if (seenUris.Add(instance.Uri.AbsoluteUri))
+            {
+                result.Add(instance);
+            }
+        }
+
+        return result;
+    }
+
     private static List<IServiceInstance>? FromCacheValue(byte[]? cacheValue)
     {
         if (cacheValue is { Length: > 0 })
         {
-            var serializableInstances = JsonSerializer.Deserialize<List<JsonSerializableServiceInstance>>(cacheValue);
+            JsonSerializableServiceInstance[]? serializableInstances =
+                JsonSerializer.Deserialize(cacheValue, ServiceInstancesJsonSerializerContext.Default.JsonSerializableServiceInstanceArray);
 
             if (serializableInstances != null)
             {
@@ -127,21 +147,33 @@ public sealed class ServiceInstancesResolver
         return null;
     }
 
-    private static byte[] ToCacheValue(IEnumerable<IServiceInstance> instances)
+    private static byte[] ToCacheValue(List<IServiceInstance> instances)
     {
         JsonSerializableServiceInstance[] serializableInstances = instances.Select(JsonSerializableServiceInstance.CopyFrom).ToArray();
-        return JsonSerializer.SerializeToUtf8Bytes(serializableInstances);
+        return JsonSerializer.SerializeToUtf8Bytes(serializableInstances, ServiceInstancesJsonSerializerContext.Default.JsonSerializableServiceInstanceArray);
     }
 
-    private sealed class JsonSerializableServiceInstance : IServiceInstance
+    [LoggerMessage(Level = LogLevel.Warning, Message = "No discovery clients are registered.")]
+    private partial void LogNoDiscoveryClients();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Returning {Count} instances from cache.")]
+    private partial void LogReturningInstancesFromCache(int count);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to get instances from {DiscoveryClient}.")]
+    private partial void LogFailedToGetInstances(Exception exception, Type discoveryClient);
+
+    internal sealed class JsonSerializableServiceInstance : IServiceInstance
     {
         // Trust that deserialized instances meet the IServiceInstance contract, so suppress nullability warnings.
 
         public string ServiceId { get; set; } = null!;
+        public string InstanceId { get; set; } = null!;
         public string Host { get; set; } = null!;
         public int Port { get; set; }
         public bool IsSecure { get; set; }
         public Uri Uri { get; set; } = null!;
+        public Uri? NonSecureUri { get; set; }
+        public Uri? SecureUri { get; set; }
         public IReadOnlyDictionary<string, string?> Metadata { get; set; } = null!;
 
         public static JsonSerializableServiceInstance CopyFrom(IServiceInstance instance)
@@ -151,10 +183,13 @@ public sealed class ServiceInstancesResolver
             return new JsonSerializableServiceInstance
             {
                 ServiceId = instance.ServiceId,
+                InstanceId = instance.InstanceId,
                 Host = instance.Host,
                 Port = instance.Port,
                 IsSecure = instance.IsSecure,
                 Uri = instance.Uri,
+                NonSecureUri = instance.NonSecureUri,
+                SecureUri = instance.SecureUri,
                 Metadata = instance.Metadata
             };
         }

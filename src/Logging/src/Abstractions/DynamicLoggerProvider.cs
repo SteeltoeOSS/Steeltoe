@@ -8,7 +8,7 @@ using Steeltoe.Common;
 namespace Steeltoe.Logging;
 
 /// <summary>
-/// Provides access to <see cref="ILogger" /> categories and their minimum log levels and enables to decorate log messages.
+/// Provides access to <see cref="ILogger" /> categories and their minimum log levels and enables decorating log messages.
 /// </summary>
 public abstract class DynamicLoggerProvider : IDynamicLoggerProvider
 {

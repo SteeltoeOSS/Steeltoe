@@ -8,7 +8,7 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
-internal sealed class HttpExchangesEndpointHandler : IHttpExchangesEndpointHandler
+internal sealed partial class HttpExchangesEndpointHandler : IHttpExchangesEndpointHandler
 {
     private readonly IOptionsMonitor<HttpExchangesEndpointOptions> _optionsMonitor;
     private readonly HttpExchangesRepository _httpExchangesRepository;
@@ -30,8 +30,11 @@ internal sealed class HttpExchangesEndpointHandler : IHttpExchangesEndpointHandl
 
     public Task<HttpExchangesResult> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
-        _logger.LogTrace("Fetching Http Exchanges");
+        LogFetchingHttpExchanges();
         HttpExchangesResult result = _httpExchangesRepository.GetHttpExchanges();
         return Task.FromResult(result);
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Fetching HTTP exchanges.")]
+    private partial void LogFetchingHttpExchanges();
 }

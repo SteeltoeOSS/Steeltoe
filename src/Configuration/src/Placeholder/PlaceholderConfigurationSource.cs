@@ -32,5 +32,5 @@ internal sealed partial class PlaceholderConfigurationSource : ICompositeConfigu
     }
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Build for {SourceCount} sources and {PropertyCount} properties.")]
-    private static partial void LogBuild(ILogger<PlaceholderConfigurationSource> logger, int sourceCount, int propertyCount);
+    private static partial void LogBuild(ILogger logger, int sourceCount, int propertyCount);
 }

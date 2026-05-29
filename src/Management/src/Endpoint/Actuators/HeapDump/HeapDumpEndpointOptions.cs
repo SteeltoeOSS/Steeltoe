@@ -9,6 +9,11 @@ namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 public sealed class HeapDumpEndpointOptions : EndpointOptions
 {
     /// <summary>
+    /// Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Full.
+    /// </summary>
+    public override EndpointPermissions RequiredPermissions { get; set; } = EndpointPermissions.Full;
+
+    /// <summary>
     /// Gets or sets the type of dump to create. Default value: Full (on macOS: GCDump).
     /// </summary>
     public HeapDumpType? HeapDumpType { get; set; }

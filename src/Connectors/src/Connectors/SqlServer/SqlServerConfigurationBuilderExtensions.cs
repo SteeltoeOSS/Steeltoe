@@ -3,7 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
+using IServiceBindingsReader = Steeltoe.Configuration.CloudFoundry.ServiceBindings.IServiceBindingsReader;
 
 namespace Steeltoe.Connectors.SqlServer;
 
@@ -20,7 +23,7 @@ public static class SqlServerConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder ConfigureSqlServer(this IConfigurationBuilder builder)
     {
-        return ConfigureSqlServer(builder, SqlServerPackageResolver.Default);
+        return ConfigureSqlServer(builder, null);
     }
 
     /// <summary>
@@ -37,16 +40,26 @@ public static class SqlServerConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder ConfigureSqlServer(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
-        return ConfigureSqlServer(builder, SqlServerPackageResolver.Default, configureAction);
+        return ConfigureSqlServer(builder, SqlServerPackageResolver.Default, configureAction, null);
     }
 
     internal static IConfigurationBuilder ConfigureSqlServer(this IConfigurationBuilder builder, SqlServerPackageResolver packageResolver,
-        Action<ConnectorConfigureOptionsBuilder>? configureAction = null)
+        Action<ConnectorConfigureOptionsBuilder>? configureAction, IServiceBindingsReader? serviceBindingsReader)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(packageResolver);
 
-        ConnectorConfigurer.Configure(builder, configureAction, new SqlServerConnectionStringPostProcessor(packageResolver));
+        Action<ConnectorConfigureOptionsBuilder> overrideConfigureAction = options =>
+        {
+            configureAction?.Invoke(options);
+
+            options.CloudFoundryBrokerTypes =
+                options.SkipDefaultServiceBindings ? CloudFoundryServiceBrokerTypes.None : CloudFoundryServiceBrokerTypes.SqlServer;
+        };
+
+        ConnectorConfigurer.Configure(builder, overrideConfigureAction, new SqlServerConnectionStringPostProcessor(packageResolver), serviceBindingsReader,
+            NullLoggerFactory.Instance);
+
         return builder;
     }
 }

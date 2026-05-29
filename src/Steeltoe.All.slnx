@@ -1,0 +1,116 @@
+<Solution>
+  <Folder Name="/Bootstrap/">
+    <Project Path="Bootstrap/src/AutoConfiguration/Steeltoe.Bootstrap.AutoConfiguration.csproj" />
+    <Project Path="Bootstrap/test/AutoConfiguration.Test/Steeltoe.Bootstrap.AutoConfiguration.Test.csproj" />
+    <Project Path="Bootstrap/test/EmptyAutoConfiguration.Test/Steeltoe.Bootstrap.EmptyAutoConfiguration.Test.csproj" />
+  </Folder>
+  <Folder Name="/Common/">
+    <File Path="Common/README.md" />
+    <Project Path="Common/src/Certificates/Steeltoe.Common.Certificates.csproj" />
+    <Project Path="Common/src/Common/Steeltoe.Common.csproj" />
+    <Project Path="Common/src/Hosting/Steeltoe.Common.Hosting.csproj" />
+    <Project Path="Common/src/Http/Steeltoe.Common.Http.csproj" />
+    <Project Path="Common/src/Logging/Steeltoe.Common.Logging.csproj" />
+    <Project Path="Common/src/Net/Steeltoe.Common.Net.csproj" />
+    <Project Path="Common/test/Certificates.Test/Steeltoe.Common.Certificates.Test.csproj" />
+    <Project Path="Common/test/Common.Test/Steeltoe.Common.Test.csproj" />
+    <Project Path="Common/test/Hosting.Test/Steeltoe.Common.Hosting.Test.csproj" />
+    <Project Path="Common/test/Http.Test/Steeltoe.Common.Http.Test.csproj" />
+    <Project Path="Common/test/Logging.Test/Steeltoe.Common.Logging.Test.csproj" />
+    <Project Path="Common/test/Net.Test/Steeltoe.Common.Net.Test.csproj" />
+    <Project Path="Common/test/TestResources/Steeltoe.Common.TestResources.csproj" />
+  </Folder>
+  <Folder Name="/Configuration/">
+    <File Path="Configuration/README.md" />
+    <Project Path="Configuration/src/Abstractions/Steeltoe.Configuration.Abstractions.csproj" />
+    <Project Path="Configuration/src/CloudFoundry/Steeltoe.Configuration.CloudFoundry.csproj" />
+    <Project Path="Configuration/src/ConfigServer/Steeltoe.Configuration.ConfigServer.csproj" />
+    <Project Path="Configuration/src/Encryption/Steeltoe.Configuration.Encryption.csproj" />
+    <Project Path="Configuration/src/Kubernetes.ServiceBindings/Steeltoe.Configuration.Kubernetes.ServiceBindings.csproj" />
+    <Project Path="Configuration/src/Placeholder/Steeltoe.Configuration.Placeholder.csproj" />
+    <Project Path="Configuration/src/RandomValue/Steeltoe.Configuration.RandomValue.csproj" />
+    <Project Path="Configuration/src/SpringBoot/Steeltoe.Configuration.SpringBoot.csproj" />
+    <Project Path="Configuration/test/CloudFoundry.Test/Steeltoe.Configuration.CloudFoundry.Test.csproj" />
+    <Project Path="Configuration/test/ConfigServer.Discovery.Test/Steeltoe.Configuration.ConfigServer.Discovery.Test.csproj" />
+    <Project Path="Configuration/test/ConfigServer.Integration.Test/Steeltoe.Configuration.ConfigServer.Integration.Test.csproj" />
+    <Project Path="Configuration/test/ConfigServer.Test/Steeltoe.Configuration.ConfigServer.Test.csproj" />
+    <Project Path="Configuration/test/Encryption.Test/Steeltoe.Configuration.Encryption.Test.csproj" />
+    <Project Path="Configuration/test/Kubernetes.ServiceBindings.Test/Steeltoe.Configuration.Kubernetes.ServiceBindings.Test.csproj" />
+    <Project Path="Configuration/test/Placeholder.Test/Steeltoe.Configuration.Placeholder.Test.csproj" />
+    <Project Path="Configuration/test/RandomValue.Test/Steeltoe.Configuration.RandomValue.Test.csproj" />
+    <Project Path="Configuration/test/SpringBoot.Test/Steeltoe.Configuration.SpringBoot.Test.csproj" />
+  </Folder>
+  <Folder Name="/Connectors/">
+    <File Path="Connectors/README.md" />
+    <Project Path="Connectors/src/Connectors/Steeltoe.Connectors.csproj" />
+    <Project Path="Connectors/src/EntityFrameworkCore/Steeltoe.Connectors.EntityFrameworkCore.csproj" />
+    <Project Path="Connectors/test/Connectors.Test/Steeltoe.Connectors.Test.csproj" />
+    <Project Path="Connectors/test/EntityFrameworkCore.Test/Steeltoe.Connectors.EntityFrameworkCore.Test.csproj" />
+  </Folder>
+  <Folder Name="/Discovery/">
+    <File Path="Discovery/README.md" />
+    <Project Path="Discovery/src/Configuration/Steeltoe.Discovery.Configuration.csproj" />
+    <Project Path="Discovery/src/Consul/Steeltoe.Discovery.Consul.csproj" />
+    <Project Path="Discovery/src/Eureka/Steeltoe.Discovery.Eureka.csproj" />
+    <Project Path="Discovery/src/HttpClients/Steeltoe.Discovery.HttpClients.csproj" />
+    <Project Path="Discovery/test/Configuration.Test/Steeltoe.Discovery.Configuration.Test.csproj" />
+    <Project Path="Discovery/test/Consul.Test/Steeltoe.Discovery.Consul.Test.csproj" />
+    <Project Path="Discovery/test/Eureka.Test/Steeltoe.Discovery.Eureka.Test.csproj" />
+    <Project Path="Discovery/test/HttpClients.Test/Steeltoe.Discovery.HttpClients.Test.csproj" />
+  </Folder>
+  <Folder Name="/Logging/">
+    <File Path="Logging/README.md" />
+    <Project Path="Logging/src/Abstractions/Steeltoe.Logging.Abstractions.csproj" />
+    <Project Path="Logging/src/DynamicConsole/Steeltoe.Logging.DynamicConsole.csproj" />
+    <Project Path="Logging/src/DynamicSerilog/Steeltoe.Logging.DynamicSerilog.csproj" />
+    <Project Path="Logging/test/DynamicConsole.Test/Steeltoe.Logging.DynamicConsole.Test.csproj" />
+    <Project Path="Logging/test/DynamicSerilog.Test/Steeltoe.Logging.DynamicSerilog.Test.csproj" />
+  </Folder>
+  <Folder Name="/Management/">
+    <File Path="Management/README.md" />
+    <Project Path="Management/src/Abstractions/Steeltoe.Management.Abstractions.csproj" />
+    <Project Path="Management/src/Endpoint/Steeltoe.Management.Endpoint.csproj" />
+    <Project Path="Management/src/Prometheus/Steeltoe.Management.Prometheus.csproj" />
+    <Project Path="Management/src/Tasks/Steeltoe.Management.Tasks.csproj" />
+    <Project Path="Management/src/Tracing/Steeltoe.Management.Tracing.csproj" />
+    <Project Path="Management/test/Endpoint.Test/Steeltoe.Management.Endpoint.Test.csproj" />
+    <Project Path="Management/test/Prometheus.Test/Steeltoe.Management.Prometheus.Test.csproj" />
+    <Project Path="Management/test/RazorPagesTestWebApp/Steeltoe.Management.Endpoint.RazorPagesTestWebApp.csproj" />
+    <Project Path="Management/test/Tasks.Test/Steeltoe.Management.Tasks.Test.csproj" />
+    <Project Path="Management/test/Tracing.Test/Steeltoe.Management.Tracing.Test.csproj" />
+  </Folder>
+  <Folder Name="/Security/">
+    <File Path="Security/README.md" />
+    <Project Path="Security/src/Authentication.JwtBearer/Steeltoe.Security.Authentication.JwtBearer.csproj" />
+    <Project Path="Security/src/Authentication.OpenIdConnect/Steeltoe.Security.Authentication.OpenIdConnect.csproj" />
+    <Project Path="Security/src/Authorization.Certificate/Steeltoe.Security.Authorization.Certificate.csproj" />
+    <Project Path="Security/src/DataProtection.Redis/Steeltoe.Security.DataProtection.Redis.csproj" />
+    <Project Path="Security/test/Authentication.JwtBearer.Test/Steeltoe.Security.Authentication.JwtBearer.Test.csproj" />
+    <Project Path="Security/test/Authentication.OpenIdConnect.Test/Steeltoe.Security.Authentication.OpenIdConnect.Test.csproj" />
+    <Project Path="Security/test/Authorization.Certificate.Test/Steeltoe.Security.Authorization.Certificate.Test.csproj" />
+    <Project Path="Security/test/DataProtection.Redis.Test/Steeltoe.Security.DataProtection.Redis.Test.csproj" />
+  </Folder>
+  <Folder Name="/_shared/">
+    <File Path="../.editorconfig" />
+    <File Path="../.gitattributes" />
+    <File Path="../.gitignore" />
+    <File Path="../cleanupcode.ps1" />
+    <File Path="../coverlet.runsettings" />
+    <File Path="../Directory.Build.targets" />
+    <File Path="../nuget.config" />
+    <File Path="../PackageReadme.md" />
+    <File Path="../shared-package.props" />
+    <File Path="../shared-project.props" />
+    <File Path="../shared-test.props" />
+    <File Path="../shared.props" />
+    <File Path="../Steeltoe.Debug.ruleset" />
+    <File Path="../Steeltoe.Release.ruleset" />
+    <File Path="../stylecop.json" />
+    <File Path="../versions.props" />
+  </Folder>
+  <Folder Name="/_tools/">
+    <File Path="Tools/src/package.targets" />
+    <Project Path="Tools/src/ConfigurationSchemaGenerator/ConfigurationSchemaGenerator.csproj" />
+    <Project Path="Tools/test/ConfigurationSchemaGenerator.Tests/ConfigurationSchemaGenerator.Tests.csproj" />
+  </Folder>
+</Solution>

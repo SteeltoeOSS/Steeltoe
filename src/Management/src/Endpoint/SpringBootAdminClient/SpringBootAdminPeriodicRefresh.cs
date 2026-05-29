@@ -8,7 +8,7 @@ using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
-internal sealed class SpringBootAdminPeriodicRefresh : IAsyncDisposable
+internal sealed partial class SpringBootAdminPeriodicRefresh : IAsyncDisposable
 {
     private readonly SpringBootAdminRefreshRunner _runner;
     private readonly ILogger<SpringBootAdminPeriodicRefresh> _logger;
@@ -39,29 +39,34 @@ internal sealed class SpringBootAdminPeriodicRefresh : IAsyncDisposable
     {
         try
         {
-            _logger.LogDebug("Starting periodic refresh loop with interval {Interval}.", interval);
+            LogStartingPeriodicRefreshLoop(interval);
+            bool isFirstTime = true;
 
             do
             {
-                _logger.LogDebug("Starting refresh cycle.");
+                // A tick queued just before periodic refresh was disabled would still be delivered here.
+                // Checking the period prevents executing a stale tick when refresh has been turned off.
+                if (isFirstTime || _periodicTimer.Period != Timeout.InfiniteTimeSpan)
+                {
+                    LogStartingRefreshCycle();
 
-                try
-                {
-                    await _runner.RunAsync(_timerTokenSource.Token);
+                    try
+                    {
+                        await _runner.RunAsync(isFirstTime, _timerTokenSource.Token);
+                    }
+                    catch (Exception exception) when (!exception.IsCancellation())
+                    {
+                        LogRefreshCycleFailed(exception);
+                    }
                 }
-                catch (Exception exception) when (!exception.IsCancellation())
-                {
-                    _logger.LogWarning(exception, "Refresh cycle failed.");
-                }
+
+                isFirstTime = false;
             }
             while (await _periodicTimer.WaitForNextTickAsync(_timerTokenSource.Token));
         }
         catch (OperationCanceledException)
         {
-#pragma warning disable S6667 // Logging in a catch clause should pass the caught exception as a parameter.
-            // Justification: The exception contains no useful information. Logging it suggests something crashed, while this is expected behavior.
-            _logger.LogDebug("Stopped periodic refresh loop.");
-#pragma warning restore S6667 // Logging in a catch clause should pass the caught exception as a parameter.
+            LogPeriodicRefreshLoopStopped();
         }
     }
 
@@ -72,7 +77,7 @@ internal sealed class SpringBootAdminPeriodicRefresh : IAsyncDisposable
         if (safeInterval != _periodicTimer.Period)
         {
             _periodicTimer.Period = safeInterval;
-            _logger.LogDebug("Refresh interval changed to {Interval}.", safeInterval);
+            LogRefreshIntervalChanged(safeInterval);
         }
     }
 
@@ -84,10 +89,10 @@ internal sealed class SpringBootAdminPeriodicRefresh : IAsyncDisposable
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Signaling to stop periodic refresh loop.");
+        LogSignalingStop();
         await DisposeAsync();
 
-        _logger.LogDebug("Starting cleanup.");
+        LogStartingCleanup();
         await _runner.CleanupAsync(cancellationToken);
     }
 
@@ -104,4 +109,25 @@ internal sealed class SpringBootAdminPeriodicRefresh : IAsyncDisposable
             _periodicTimer.Dispose();
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Starting periodic refresh loop with interval {Interval}.")]
+    private partial void LogStartingPeriodicRefreshLoop(TimeSpan interval);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Starting refresh cycle.")]
+    private partial void LogStartingRefreshCycle();
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Refresh cycle failed.")]
+    private partial void LogRefreshCycleFailed(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Stopped periodic refresh loop.")]
+    private partial void LogPeriodicRefreshLoopStopped();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Refresh interval changed to {Interval}.")]
+    private partial void LogRefreshIntervalChanged(TimeSpan interval);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Signaling to stop periodic refresh loop.")]
+    private partial void LogSignalingStop();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Starting cleanup.")]
+    private partial void LogStartingCleanup();
 }

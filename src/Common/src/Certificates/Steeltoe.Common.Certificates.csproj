@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
     <Description>Steeltoe shared library for working with certificates.</Description>
     <PackageTags>security;pem;certificate</PackageTags>
     <IsPackable>true</IsPackable>

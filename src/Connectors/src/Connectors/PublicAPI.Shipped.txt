@@ -63,6 +63,8 @@ Steeltoe.Connectors.ConnectorConfigureOptionsBuilder
 Steeltoe.Connectors.ConnectorConfigureOptionsBuilder.ConnectorConfigureOptionsBuilder() -> void
 Steeltoe.Connectors.ConnectorConfigureOptionsBuilder.DetectConfigurationChanges.get -> bool
 Steeltoe.Connectors.ConnectorConfigureOptionsBuilder.DetectConfigurationChanges.set -> void
+Steeltoe.Connectors.ConnectorConfigureOptionsBuilder.SkipDefaultServiceBindings.get -> bool
+Steeltoe.Connectors.ConnectorConfigureOptionsBuilder.SkipDefaultServiceBindings.set -> void
 Steeltoe.Connectors.ConnectorCreateConnection
 Steeltoe.Connectors.ConnectorCreateHealthContributor
 Steeltoe.Connectors.ConnectorFactory<TOptions, TConnection>
@@ -110,5 +112,3 @@ Steeltoe.Connectors.SqlServer.SqlServerHostApplicationBuilderExtensions
 Steeltoe.Connectors.SqlServer.SqlServerOptions
 Steeltoe.Connectors.SqlServer.SqlServerOptions.SqlServerOptions() -> void
 Steeltoe.Connectors.SqlServer.SqlServerServiceCollectionExtensions
-virtual Steeltoe.Connectors.ConnectorCreateConnection.Invoke(System.IServiceProvider! serviceProvider, string! serviceBindingName) -> object!
-virtual Steeltoe.Connectors.ConnectorCreateHealthContributor.Invoke(System.IServiceProvider! serviceProvider, string! serviceBindingName) -> Steeltoe.Common.HealthChecks.IHealthContributor!

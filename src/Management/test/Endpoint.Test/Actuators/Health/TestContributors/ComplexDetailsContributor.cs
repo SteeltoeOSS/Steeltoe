@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json.Serialization;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
@@ -38,12 +39,23 @@ internal sealed class ComplexDetailsContributor : IHealthContributor
 
     private sealed class TestHealthDetails
     {
+        // ReSharper disable UnusedAutoPropertyAccessor.Local
+        [JsonPropertyName("testString")]
         public string TestString { get; set; } = "test-string";
+
+        [JsonPropertyName("testInteger")]
         public int TestInteger { get; set; } = 123;
+
+        [JsonPropertyName("testFloatingPoint")]
         public double TestFloatingPoint { get; set; } = 1.23;
+
+        [JsonPropertyName("testBoolean")]
         public bool TestBoolean { get; set; } = true;
+
+        [JsonPropertyName("nestedComplexType")]
         public TestHealthDetails? NestedComplexType { get; set; }
 
+        [JsonPropertyName("testList")]
         public List<string> TestList { get; set; } =
         [
             "A",
@@ -51,11 +63,13 @@ internal sealed class ComplexDetailsContributor : IHealthContributor
             "C"
         ];
 
+        [JsonPropertyName("testDictionary")]
         public Dictionary<string, int> TestDictionary { get; set; } = new()
         {
             ["One"] = 1,
             ["Two"] = 2,
             ["Three"] = 3
         };
+        // ReSharper restore UnusedAutoPropertyAccessor.Local
     }
 }

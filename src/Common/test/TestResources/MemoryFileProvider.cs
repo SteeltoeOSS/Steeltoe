@@ -12,8 +12,6 @@ namespace Steeltoe.Common.TestResources;
 
 public sealed class MemoryFileProvider : IFileProvider
 {
-    public const string DefaultAppSettingsFileName = "appsettings.json";
-
     private static readonly char[] DirectorySeparators =
     [
         Path.DirectorySeparatorChar,

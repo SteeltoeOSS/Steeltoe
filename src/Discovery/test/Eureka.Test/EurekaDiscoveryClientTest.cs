@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Net;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -88,7 +89,7 @@ public sealed class EurekaDiscoveryClientTest
                 "instance": [
                   {
                     "instanceId": "localhost:foo",
-                    "hostName": "localhost",
+                    "hostName": "modified-host",
                     "app": "FOO",
                     "ipAddr": "192.168.56.1",
                     "status": "UP",
@@ -167,7 +168,10 @@ public sealed class EurekaDiscoveryClientTest
         thisService.Metadata.Should().BeEmpty();
         thisService.Port.Should().Be(5000);
         thisService.ServiceId.Should().Be("DEMO");
+        thisService.InstanceId.Should().Be($"{instanceOptions.HostName}:demo:5000");
         thisService.Uri.Should().Be(new Uri($"http://{instanceOptions.HostName}:5000"));
+        thisService.NonSecureUri.Should().Be(thisService.Uri);
+        thisService.SecureUri.Should().BeNull();
     }
 
     [Fact]
@@ -414,7 +418,64 @@ public sealed class EurekaDiscoveryClientTest
     }
 
     [Fact]
-    public async Task GetInstancesByVipAddress_ReturnsExpected()
+    public async Task ShutdownAsync_Unregisters_WhenRegistered()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "true",
+            ["Eureka:Instance:AppName"] = "FOO",
+            ["Eureka:Instance:InstanceId"] = "localhost:foo"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddEurekaDiscoveryClient();
+
+        var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.OK);
+        handler.Mock.Expect(HttpMethod.Delete, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond(HttpStatusCode.OK);
+
+        await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+
+        await discoveryClient.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task ShutdownAsync_DoesNotUnregister_WhenNotRegistered()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "true",
+            ["Eureka:Instance:AppName"] = "FOO",
+            ["Eureka:Instance:InstanceId"] = "localhost:foo"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddEurekaDiscoveryClient();
+
+        var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NotFound);
+
+        await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+
+        await discoveryClient.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task GetInstancesAsync_ReturnsExpected()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -432,13 +493,13 @@ public sealed class EurekaDiscoveryClientTest
 
         discoveryClient.Applications = new ApplicationInfoCollection([
             new ApplicationInfo("app1", [
-                new InstanceInfo("id1", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
+                new InstanceInfo("id11", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
                     VipAddress = "vapp1",
                     SecureVipAddress = "svapp1",
                     Status = InstanceStatus.Down
                 },
-                new InstanceInfo("id2", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
+                new InstanceInfo("id12", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
                     VipAddress = "vapp1",
                     SecureVipAddress = "svapp1",
@@ -461,18 +522,18 @@ public sealed class EurekaDiscoveryClientTest
             ])
         ]);
 
-        IReadOnlyList<InstanceInfo> result = discoveryClient.GetInstancesByVipAddress("vapp1", false);
+        IList<IServiceInstance> result = await discoveryClient.GetInstancesAsync("vapp1", TestContext.Current.CancellationToken);
 
         result.Should().HaveCount(2);
-        result.Should().ContainSingle(info => info.InstanceId == "id1");
-        result.Should().ContainSingle(info => info.InstanceId == "id2");
+        result.Should().ContainSingle(info => info.InstanceId == "id11");
+        result.Should().ContainSingle(info => info.InstanceId == "id12");
 
-        result = discoveryClient.GetInstancesByVipAddress("boohoo", false);
+        result = await discoveryClient.GetInstancesAsync("boohoo", TestContext.Current.CancellationToken);
 
         result.Should().BeEmpty();
 
         discoveryClient.Applications.ReturnUpInstancesOnly = true;
-        result = discoveryClient.GetInstancesByVipAddress("vapp1", false);
+        result = await discoveryClient.GetInstancesAsync("vapp1", TestContext.Current.CancellationToken);
 
         result.Should().BeEmpty();
     }
@@ -632,7 +693,7 @@ public sealed class EurekaDiscoveryClientTest
     }
 
     [Fact]
-    public async Task ApplicationEventsFireOnChangeDuringFetch()
+    public async Task ApplicationEventsFireAfterFetch()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -652,15 +713,125 @@ public sealed class EurekaDiscoveryClientTest
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-        int eventCount = 0;
+        ApplicationsFetchedEventArgs? applicationsEventArgs = null;
+        int applicationsEventCount = 0;
+        DiscoveryInstancesFetchedEventArgs? instancesEventArgs = null;
+        int instancesEventCount = 0;
 
-        discoveryClient.ApplicationsFetched += (_, _) => eventCount++;
+        discoveryClient.ApplicationsFetched += (_, args) =>
+        {
+            applicationsEventArgs = args;
+            Interlocked.Increment(ref applicationsEventCount);
+        };
+
+        discoveryClient.InstancesFetched += (_, args) =>
+        {
+            instancesEventArgs = args;
+            Interlocked.Increment(ref instancesEventCount);
+        };
 
         await discoveryClient.FetchRegistryAsync(true, TestContext.Current.CancellationToken);
-        SpinWait.SpinUntil(() => eventCount == 1, 5.Seconds()).Should().BeTrue();
+        SpinWait.SpinUntil(() => applicationsEventCount == 1 && instancesEventCount == 1, 5.Seconds()).Should().BeTrue();
+
+        applicationsEventArgs.Should().NotBeNull();
+        InstanceInfo oldInstanceFromAppEvent = applicationsEventArgs.Applications.Should().ContainSingle().Which.Instances.Should().ContainSingle().Which;
+        oldInstanceFromAppEvent.ActionType.Should().Be(ActionType.Added);
+
+        instancesEventArgs.Should().NotBeNull();
+        IServiceInstance oldInstanceFromEvent = instancesEventArgs.InstancesByServiceId.Should().ContainKey("foo").WhoseValue.Should().ContainSingle().Which;
+        oldInstanceFromEvent.Uri.ToString().Should().Be("http://localhost:8080/");
+
+        IList<IServiceInstance> oldInstancesFromGet = await discoveryClient.GetInstancesAsync("foo", TestContext.Current.CancellationToken);
+        oldInstancesFromGet.Should().ContainSingle().Which.Uri.Should().Be(oldInstanceFromEvent.Uri);
 
         await discoveryClient.FetchRegistryAsync(false, TestContext.Current.CancellationToken);
-        SpinWait.SpinUntil(() => eventCount == 2, 5.Seconds()).Should().BeTrue();
+        SpinWait.SpinUntil(() => applicationsEventCount == 2 && instancesEventCount == 2, 5.Seconds()).Should().BeTrue();
+
+        InstanceInfo newInstanceFromAppEvent = applicationsEventArgs.Applications.Should().ContainSingle().Which.Instances.Should().ContainSingle().Which;
+        newInstanceFromAppEvent.ActionType.Should().Be(ActionType.Modified);
+
+        IServiceInstance newInstanceFromEvent = instancesEventArgs.InstancesByServiceId.Should().ContainKey("foo").WhoseValue.Should().ContainSingle().Which;
+        newInstanceFromEvent.Uri.ToString().Should().Be("http://modified-host:8080/");
+
+        IList<IServiceInstance> newInstancesFromGet = await discoveryClient.GetInstancesAsync("foo", TestContext.Current.CancellationToken);
+        newInstancesFromGet.Should().ContainSingle().Which.Uri.Should().Be(newInstanceFromEvent.Uri);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task InstancesFetched_returns_same_data_as_GetInstancesAsync(bool filterOnlyUpInstances)
+    {
+        const string registryJson = """
+            {
+              "applications": {
+                "application": [
+                  {
+                    "name": "ignored",
+                    "instance": [
+                      {
+                        "instanceId": "id1",
+                        "hostName": "h1",
+                        "app": "app1",
+                        "ipAddr": "10.0.0.1",
+                        "status": "UP",
+                        "dataCenterInfo": {
+                          "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+                          "name": "MyOwn"
+                        },
+                        "vipAddress": "vapp1"
+                      },
+                      {
+                        "instanceId": "id2",
+                        "hostName": "h2",
+                        "app": "app1",
+                        "ipAddr": "10.0.0.2",
+                        "status": "DOWN",
+                        "dataCenterInfo": {
+                          "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+                          "name": "MyOwn"
+                        },
+                        "vipAddress": "vapp1"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+            """;
+
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Client:ShouldFilterOnlyUpInstances"] = filterOnlyUpInstances.ToString(CultureInfo.InvariantCulture)
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddEurekaDiscoveryClient();
+
+        var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", registryJson);
+
+        await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+        DiscoveryInstancesFetchedEventArgs? eventArgs = null;
+        discoveryClient.InstancesFetched += (_, args) => eventArgs = args;
+
+        await discoveryClient.FetchRegistryAsync(true, TestContext.Current.CancellationToken);
+        SpinWait.SpinUntil(() => eventArgs != null, 5.Seconds()).Should().BeTrue();
+
+        eventArgs.Should().NotBeNull();
+
+        IList<IServiceInstance> instancesFromGet = await discoveryClient.GetInstancesAsync("vapp1", TestContext.Current.CancellationToken);
+        IReadOnlyList<IServiceInstance> instancesFromEvent = eventArgs.InstancesByServiceId.Should().ContainKey("vapp1").WhoseValue;
+
+        instancesFromEvent.Should().BeEquivalentTo(instancesFromGet);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }

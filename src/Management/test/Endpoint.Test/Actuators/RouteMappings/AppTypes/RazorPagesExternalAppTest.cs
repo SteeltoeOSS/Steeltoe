@@ -3,14 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Steeltoe.Management.Endpoint.RazorPagesTestWebApp.Pages;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.RouteMappings.AppTypes;
 
-public sealed class RazorPagesExternalAppTest(WebApplicationFactory<IndexModel> factory) : IClassFixture<WebApplicationFactory<IndexModel>>
+public sealed class RazorPagesExternalAppTest(RazorPagesWebApplicationFactory factory) : IClassFixture<RazorPagesWebApplicationFactory>
 {
-    private readonly WebApplicationFactory<IndexModel> _factory = factory;
+    private readonly RazorPagesWebApplicationFactory _factory = factory;
 
     [Fact]
     public async Task Can_get_routes_for_razor_pages()
@@ -272,6 +271,6 @@ public sealed class RazorPagesExternalAppTest(WebApplicationFactory<IndexModel> 
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 }

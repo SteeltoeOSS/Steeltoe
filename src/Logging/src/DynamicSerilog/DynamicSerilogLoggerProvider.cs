@@ -7,6 +7,13 @@ using Microsoft.Extensions.Options;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Extensions.Logging;
+using LockPrimitive =
+#if NET10_0_OR_GREATER
+    System.Threading.Lock
+#else
+    object
+#endif
+    ;
 
 namespace Steeltoe.Logging.DynamicSerilog;
 
@@ -15,7 +22,7 @@ namespace Steeltoe.Logging.DynamicSerilog;
 /// </summary>
 public sealed class DynamicSerilogLoggerProvider : DynamicLoggerProvider
 {
-    private static readonly object LoggerLock = new();
+    private static readonly LockPrimitive LoggerLock = new();
     private static Logger? _serilogLogger;
     private readonly IDisposable? _optionsChangeListener;
 

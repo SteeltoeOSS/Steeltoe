@@ -34,5 +34,4 @@ Steeltoe.Logging.MessageProcessingLogger.MessageProcessingLogger(Microsoft.Exten
 Steeltoe.Logging.MessageProcessingLogger.MessageProcessors.get -> System.Collections.Generic.IReadOnlyCollection<Steeltoe.Logging.IDynamicMessageProcessor!>!
 virtual Steeltoe.Logging.DynamicLoggerProvider.CreateMessageProcessingLogger(string! categoryName) -> Steeltoe.Logging.MessageProcessingLogger!
 virtual Steeltoe.Logging.DynamicLoggerProvider.Dispose(bool disposing) -> void
-virtual Steeltoe.Logging.LoggerFilter.Invoke(Microsoft.Extensions.Logging.LogLevel level) -> bool
 virtual Steeltoe.Logging.MessageProcessingLogger.Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, System.Exception? exception, System.Func<TState, System.Exception?, string!>! formatter) -> void

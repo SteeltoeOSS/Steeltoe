@@ -11,7 +11,7 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Loggers;
 
-internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
+internal sealed partial class LoggersEndpointHandler : ILoggersEndpointHandler
 {
     private const string SpringDefaultCategoryName = "Default";
 
@@ -48,7 +48,7 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        _logger.LogDebug("Invoke({Request})", SecurityUtilities.SanitizeInput(request.ToString()));
+        ExpensiveLogEntering(request);
 
         LoggersResponse? response;
 
@@ -65,6 +65,15 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
         return Task.FromResult(response);
     }
 
+    private void ExpensiveLogEntering(LoggersRequest request)
+    {
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            string input = SecurityUtilities.SanitizeInput(request.ToString());
+            LogEntering(input);
+        }
+    }
+
     private LoggersResponse GetLogLevels()
     {
         ICollection<DynamicLoggerState> loggerStates = _dynamicLoggerProvider.GetLogLevels();
@@ -72,7 +81,7 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
 
         foreach (DynamicLoggerState loggerState in loggerStates.OrderBy(entry => entry.CategoryName))
         {
-            _logger.LogTrace("Adding {LoggerState}", loggerState);
+            LogAddingLoggerState(loggerState);
 
             string categoryName = loggerState.CategoryName.Length == 0 ? SpringDefaultCategoryName : loggerState.CategoryName;
             var levels = new LoggerLevels(loggerState.BackupMinLevel, loggerState.EffectiveMinLevel);
@@ -89,4 +98,10 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
 
         _dynamicLoggerProvider.SetLogLevel(categoryName, logLevel);
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, SkipEnabledCheck = true, Message = "Invoking loggers endpoint handler with request {Request}.")]
+    private partial void LogEntering(string request);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Adding state {LoggerState}.")]
+    private partial void LogAddingLoggerState(DynamicLoggerState loggerState);
 }

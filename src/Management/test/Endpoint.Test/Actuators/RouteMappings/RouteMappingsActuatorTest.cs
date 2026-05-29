@@ -183,7 +183,7 @@ public sealed partial class RouteMappingsActuatorTest
             """);
 
         IList<string> logMessages = loggerProvider.GetAll();
-        logMessages.Should().Contain($"WARN {typeof(AspNetEndpointProvider).FullName}: Conventional routing is not supported.");
+        logMessages.Should().Contain($"WARN {typeof(AspNetEndpointProvider)}: Conventional routing is not supported.");
     }
 
     [Theory]
@@ -373,21 +373,21 @@ public sealed partial class RouteMappingsActuatorTest
     {
         var fileProvider = new MemoryFileProvider();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Management": {
-            "Endpoints": {
-              "Mappings": {
-                "IncludeActuators": false
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Management": {
+                "Endpoints": {
+                  "Mappings": {
+                    "IncludeActuators": false
+                  }
+                }
               }
             }
-          }
-        }
-        """);
+            """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddAllActuators();
         await using WebApplication host = builder.Build();
 
@@ -400,10 +400,10 @@ public sealed partial class RouteMappingsActuatorTest
         responseNode1["contexts"]!["application"]!["mappings"]!["dispatcherServlets"]!["dispatcherServlet"].Should().BeOfType<JsonArray>().Subject.Should()
             .BeEmpty();
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-        }
-        """);
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+            }
+            """);
 
         fileProvider.NotifyChanged();
 

@@ -8,6 +8,7 @@ on:
     - stylecop.json
     - '*.props'
     - '*.ruleset'
+    - nuget.config
     - .config/dotnet-tools.json
     - .github/workflows/component-shared-workflow.yml
     - .github/workflows/component-common.yml

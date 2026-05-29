@@ -18,17 +18,19 @@ permissions:
   pull-requests: write
 
 env:
+  STEELTOE_MACOS_DIAGNOSE_HOSTNAME_LOOKUP: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_NOLOGO: true
-  SOLUTION_FILE: 'src/Steeltoe.All.sln'
+  SOLUTION_FILE: 'src/Steeltoe.All.slnx'
+  NUGET_VULNERABLE_PACKAGE_WARNINGS: '"NU1901;NU1902;NU1903;NU1904"'
   SONAR_TEST_ARGS: >-
-    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}
+    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/TestOutput
     --settings coverlet.runsettings -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.UseSourceLink=false
 
 jobs:
   analyze:
     name: Analyze
-    timeout-minutes: 30
+    timeout-minutes: 60
     runs-on: ubuntu-latest
 
     services:
@@ -43,29 +45,42 @@ jobs:
           eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
           eureka.instance.hostname: localhost
           eureka.instance.instanceId: localhost:configServer:8888
+          encrypt.keyStore.location: file:///workspace/server.jks
+          encrypt.keyStore.password: letmein
+          encrypt.keyStore.alias: mytestkey
+          encrypt.rsa.algorithm: OAEP
+          encrypt.rsa.salt: deadbeef
+          encrypt.rsa.strong: "false"
+        options: --name steeltoe-config
         ports:
         - 8888:8888
 
     steps:
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: |
           8.0.*
           9.0.*
+          10.0.*
 
     - name: Install Sonar .NET Scanner
       run: dotnet tool install --global dotnet-sonarscanner
 
     - name: Git checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         persist-credentials: false
         # Sonar: Shallow clones should be disabled for a better relevancy of analysis.
         fetch-depth: 0
 
-    - name: Restore packages
-      run: dotnet restore ${{ env.SOLUTION_FILE }} /p:Configuration=Release --verbosity minimal
+    - name: Provide jks file for Config Server container
+      # The Config Server container starts before checkout, when server.jks is not yet available.
+      # Copy it into the container now and restart so Config Server can pick up the keystore.
+      shell: bash
+      run: |
+        docker cp src/Configuration/test/Encryption.Test/Cryptography/server.jks steeltoe-config:/workspace/server.jks
+        docker restart steeltoe-config
 
     - name: Begin Sonar .NET scanner
       id: sonar_begin
@@ -75,20 +90,17 @@ jobs:
         dotnet sonarscanner begin /k:"SteeltoeOSS_steeltoe" /o:"steeltoeoss" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
         /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=**/coverage.opencover.xml
 
+    - name: Restore packages
+      run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal /p:Configuration=Release /p:NuGetAuditLevel=low /p:WarningsNotAsErrors='${{ env.NUGET_VULNERABLE_PACKAGE_WARNINGS }}'
+
     - name: Build solution
-      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
+      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal /p:NuGetAuditLevel=low /p:WarningsNotAsErrors='${{ env.NUGET_VULNERABLE_PACKAGE_WARNINGS }}'
 
-    - name: Test (net8.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" --framework net8.0 ${{ env.SONAR_TEST_ARGS }}
+    - name: Test
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" ${{ env.SONAR_TEST_ARGS }}
 
-    - name: Test (net8.0) (memory dumps)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category=MemoryDumps" --framework net8.0 ${{ env.SONAR_TEST_ARGS }}
-
-    - name: Test (net9.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" --framework net9.0  ${{ env.SONAR_TEST_ARGS }}
-
-    - name: Test (net9.0) (memory dumps)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category=MemoryDumps" --framework net9.0  ${{ env.SONAR_TEST_ARGS }}
+    - name: Test (memory dumps)
+      run: dotnet test src/Management/test/Endpoint.Test --filter "Category=MemoryDumps" ${{ env.SONAR_TEST_ARGS }}
 
     - name: End Sonar .NET scanner
       if: ${{ !cancelled() && steps.sonar_begin.outcome == 'success' }}

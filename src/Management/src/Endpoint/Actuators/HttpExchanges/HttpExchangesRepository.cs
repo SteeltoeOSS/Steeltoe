@@ -6,10 +6,11 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
-internal sealed class HttpExchangesRepository
+internal sealed partial class HttpExchangesRepository
 {
     private const string RedactedText = "******";
 
@@ -34,7 +35,7 @@ internal sealed class HttpExchangesRepository
     {
         ArgumentNullException.ThrowIfNull(exchange);
 
-        _logger.LogDebug("Incoming exchange for {Url}.", exchange.Request.Uri);
+        LogIncomingExchange(exchange.Request.Uri);
         _queue.Enqueue(exchange);
 
         if (_queue.Count > _optionsMonitor.CurrentValue.Capacity)
@@ -104,4 +105,7 @@ internal sealed class HttpExchangesRepository
     {
         return !options.IncludeTimeTaken ? null : timeTaken;
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Incoming exchange for {Url}.")]
+    private partial void LogIncomingExchange(MaskedUri url);
 }

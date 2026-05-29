@@ -10,7 +10,7 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Info;
 
-internal sealed class InfoEndpointHandler : IInfoEndpointHandler
+internal sealed partial class InfoEndpointHandler : IInfoEndpointHandler
 {
     private readonly IOptionsMonitor<InfoEndpointOptions> _optionsMonitor;
     private readonly IInfoContributor[] _contributors;
@@ -44,11 +44,13 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
             }
             catch (Exception exception) when (!exception.IsCancellation())
             {
-                _logger.LogWarning(exception, "Exception thrown by contributor '{ContributorTypeName}' while contributing to info endpoint.",
-                    contributor.GetType());
+                LogContributorError(exception, contributor.GetType());
             }
         }
 
         return builder.Build();
     }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Exception thrown by contributor '{ContributorTypeName}' while contributing to info endpoint.")]
+    private partial void LogContributorError(Exception exception, Type contributorTypeName);
 }

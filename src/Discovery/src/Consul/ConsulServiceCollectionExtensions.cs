@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
@@ -32,10 +33,18 @@ public static class ConsulServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        ConfigureConsulServices(services);
-        AddConsulServices(services);
+        if (!IsRegistered(services))
+        {
+            ConfigureConsulServices(services);
+            AddConsulServices(services);
+        }
 
         return services;
+    }
+
+    private static bool IsRegistered(IServiceCollection services)
+    {
+        return services.Any(descriptor => descriptor.SafeGetImplementationType() == typeof(PostConfigureConsulDiscoveryOptions));
     }
 
     private static void ConfigureConsulServices(IServiceCollection services)
@@ -96,6 +105,6 @@ public static class ConsulServiceCollectionExtensions
         services.AddSingleton<ConsulServiceRegistrar>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiscoveryClient, ConsulDiscoveryClient>());
         services.AddHostedService<DiscoveryClientHostedService>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHealthContributor, ConsulHealthContributor>());
+        services.AddSingleton<IHealthContributor, ConsulHealthContributor>();
     }
 }

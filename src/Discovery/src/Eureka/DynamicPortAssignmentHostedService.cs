@@ -95,7 +95,7 @@ internal sealed class DynamicPortAssignmentHostedService : IHostedLifecycleServi
     }
 
     /// <summary>
-    /// Enables to trigger change in <see cref="OptionsMonitor{EurekaInstanceOptions}" />.
+    /// Enables triggering change in <see cref="OptionsMonitor{EurekaInstanceOptions}" />.
     /// </summary>
     internal sealed class EurekaInstanceOptionsChangeTokenSource : IOptionsChangeTokenSource<EurekaInstanceOptions>
     {
@@ -136,7 +136,7 @@ internal sealed class DynamicPortAssignmentHostedService : IHostedLifecycleServi
         {
             ArgumentNullException.ThrowIfNull(options);
 
-            if (_listenState.ListenOnAddresses != null)
+            if (_listenState.ListenOnAddresses != null && options.ShouldSetPortsFromListenAddresses)
             {
                 options.SetPortsFromListenAddresses(_listenState.ListenOnAddresses, "address features", _optionsLogger);
             }

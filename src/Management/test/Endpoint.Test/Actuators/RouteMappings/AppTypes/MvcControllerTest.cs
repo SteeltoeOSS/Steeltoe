@@ -136,7 +136,7 @@ public sealed class MvcControllerTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -300,7 +300,7 @@ public sealed class MvcControllerTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -432,7 +432,7 @@ public sealed class MvcControllerTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -511,7 +511,7 @@ public sealed class MvcControllerTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -630,7 +630,7 @@ public sealed class MvcControllerTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]
@@ -750,6 +750,6 @@ public sealed class MvcControllerTest
                 }
               }
             }
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 }

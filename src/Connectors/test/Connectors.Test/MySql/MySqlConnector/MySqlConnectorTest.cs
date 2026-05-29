@@ -115,7 +115,7 @@ public sealed class MySqlConnectorTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
+        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null, null);
         builder.Services.Configure<MySqlOptions>("myMySqlServiceOne", options => options.ConnectionString += ";Use Compression=false");
         await using WebApplication app = builder.Build();
 
@@ -153,9 +153,8 @@ public sealed class MySqlConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
+        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null, new StringServiceBindingsReader(MultiVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<MySqlOptions>>();
@@ -235,7 +234,7 @@ public sealed class MySqlConnectorTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
+        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null, null);
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>();
@@ -262,7 +261,7 @@ public sealed class MySqlConnectorTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
+        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null, null);
         await using WebApplication app = builder.Build();
 
         RelationalDatabaseHealthContributor[] contributors =
@@ -283,8 +282,7 @@ public sealed class MySqlConnectorTest
     public async Task Registers_default_connection_string_when_only_single_server_binding_found()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
-        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
+        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null, new StringServiceBindingsReader(SingleVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>();
@@ -312,7 +310,7 @@ public sealed class MySqlConnectorTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
+        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null, null);
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>();

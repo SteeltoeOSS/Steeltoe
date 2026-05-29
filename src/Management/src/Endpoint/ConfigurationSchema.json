@@ -192,7 +192,7 @@
                   "items": {
                     "type": "string"
                   },
-                  "description": "Gets the list of keys to sanitize. A key can be a simple string that the property must end with, or a regular expression. A case-insensitive match is always performed. Use a single-element empty string to disable sanitization. Default value: [ \"password\", \"secret\", \"key\", \"token\", \".*credentials.*\", \"vcap_services\" ]"
+                  "description": "Gets the list of keys to sanitize. A key can be a simple string that the property must end with, or a regular expression. A case-insensitive match is always performed. Use a single-element empty string to disable sanitization. Default value: [ \"password\", \"secret\", \"key\", \"token\", \".*credentials.*\", \"vcap_services\", \".*connectionstring.*\" ]"
                 },
                 "Path": {
                   "type": "string",
@@ -204,7 +204,7 @@
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Full."
                 }
               }
             },
@@ -387,7 +387,7 @@
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Full."
                 }
               }
             },
@@ -624,9 +624,13 @@
             "SerializerOptions": {
               "type": "object",
               "properties": {
+                "AllowDuplicateProperties": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value that indicates whether duplicate property names are allowed when deserializing JSON objects."
+                },
                 "AllowOutOfOrderMetadataProperties": {
                   "type": "boolean",
-                  "description": "Allows JSON metadata properties to be specified after regular properties in a deserialized JSON object."
+                  "description": "Gets or sets a value that indicates whether JSON metadata properties can be specified after regular properties in a deserialized JSON object."
                 },
                 "AllowTrailingCommas": {
                   "type": "boolean",
@@ -641,7 +645,9 @@
                     "Never",
                     "Always",
                     "WhenWritingDefault",
-                    "WhenWritingNull"
+                    "WhenWritingNull",
+                    "WhenWriting",
+                    "WhenReading"
                   ],
                   "description": "Gets or sets a value that determines when properties with default values are ignored during serialization or deserialization. The default value is 'System.Text.Json.Serialization.JsonIgnoreCondition.Never'."
                 },
@@ -798,13 +804,13 @@
                     "Restricted",
                     "Full"
                   ],
-                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted."
+                  "description": "Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Full."
                 }
               }
             },
             "UseStatusCodeFromResponse": {
               "type": "boolean",
-              "description": "Gets or sets a value indicating whether the HTTP response status code is based on the health status. This setting can be overruled by sending an X-Use-Status-Code-From-Response HTTP header. Default value: true."
+              "description": "Gets or sets a value indicating whether the HTTP response status code is based on the health status. This setting can be overridden by sending an X-Use-Status-Code-From-Response HTTP header. Default value: true."
             },
             "Web": {
               "type": "object",

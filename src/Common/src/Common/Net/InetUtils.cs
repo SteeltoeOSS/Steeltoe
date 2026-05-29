@@ -13,8 +13,11 @@ namespace Steeltoe.Common.Net;
 
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 // Non-sealed because this type is mocked by tests.
-internal class InetUtils
+internal partial class InetUtils
 {
+    private const RegexOptions InetRegexOptions = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture;
+    private static readonly TimeSpan RegexMatchTimeout = TimeSpan.FromSeconds(1);
+
     private readonly IDomainNameResolver _domainNameResolver;
     private readonly IOptionsMonitor<InetOptions> _optionsMonitor;
     private readonly ILogger<InetUtils> _logger;
@@ -62,7 +65,7 @@ internal class InetUtils
             {
                 if (networkInterface is { OperationalStatus: OperationalStatus.Up, IsReceiveOnly: false })
                 {
-                    _logger.LogTrace("Testing interface: {Name}, {Id}", networkInterface.Name, networkInterface.Id);
+                    LogTestingInterface(networkInterface.Name, networkInterface.Id);
 
                     IPInterfaceProperties properties = networkInterface.GetIPProperties();
                     IPv4InterfaceProperties iPv4Properties = properties.GetIPv4Properties();
@@ -84,7 +87,7 @@ internal class InetUtils
 
                             if (IsInet4Address(address) && !IsLoopbackAddress(address) && IsPreferredAddress(address, inetOptions))
                             {
-                                _logger.LogTrace("Found non-loopback interface: {Name}", networkInterface.Name);
+                                LogNonLoopbackInterfaceFound(networkInterface.Name);
                                 result = address;
                             }
                         }
@@ -94,7 +97,7 @@ internal class InetUtils
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Cannot get first non-loopback address");
+            LogCannotGetNonLoopbackAddress(exception);
         }
 
         if (result != null)
@@ -123,7 +126,7 @@ internal class InetUtils
 
             if (!siteLocalAddress)
             {
-                _logger.LogTrace("Ignoring address: {Address} [UseOnlySiteLocalInterfaces=true, this address is not]", address);
+                LogIgnoringNonSiteLocalAddress(address);
             }
 
             return siteLocalAddress;
@@ -139,7 +142,7 @@ internal class InetUtils
         foreach (string regex in preferredNetworks)
         {
             string hostAddress = address.ToString();
-            var matcher = new Regex(regex, RegexOptions.None, TimeSpan.FromSeconds(1));
+            var matcher = new Regex(regex, InetRegexOptions, RegexMatchTimeout);
 
             if (matcher.IsMatch(hostAddress) || hostAddress.StartsWith(regex, StringComparison.Ordinal))
             {
@@ -147,7 +150,7 @@ internal class InetUtils
             }
         }
 
-        _logger.LogTrace("Ignoring address: {Address}", address);
+        LogIgnoringAddress(address);
         return false;
     }
 
@@ -160,11 +163,11 @@ internal class InetUtils
 
         foreach (string regex in inetOptions.GetIgnoredInterfaces())
         {
-            var matcher = new Regex(regex, RegexOptions.None, TimeSpan.FromSeconds(1));
+            var matcher = new Regex(regex, InetRegexOptions, RegexMatchTimeout);
 
             if (matcher.IsMatch(interfaceName))
             {
-                _logger.LogTrace("Ignoring interface: {Name}", interfaceName);
+                LogIgnoringInterface(interfaceName);
                 return true;
             }
         }
@@ -186,7 +189,7 @@ internal class InetUtils
             }
             catch (Exception exception)
             {
-                _logger.LogInformation(exception, "Cannot determine local hostname.");
+                LogCannotDetermineHostname(exception);
                 hostname = "localhost";
             }
         }
@@ -220,7 +223,7 @@ internal class InetUtils
         }
         catch (Exception exception)
         {
-            _logger.LogWarning(exception, "Unable to resolve host address.");
+            LogUnableToResolveHostAddress(exception);
         }
 
         return result;
@@ -234,7 +237,7 @@ internal class InetUtils
         }
         catch (Exception exception)
         {
-            _logger.LogWarning(exception, "Unable to resolve hostname.");
+            LogUnableToResolveHostname(exception);
             return null;
         }
     }
@@ -252,4 +255,32 @@ internal class InetUtils
         return text.StartsWith("10.", StringComparison.Ordinal) || text.StartsWith("172.16.", StringComparison.Ordinal) ||
             text.StartsWith("192.168.", StringComparison.Ordinal);
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Testing interface {Name} with ID {Id}.")]
+    private partial void LogTestingInterface(string name, string id);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Found non-loopback interface {Name}.")]
+    private partial void LogNonLoopbackInterfaceFound(string name);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Cannot get first non-loopback address.")]
+    private partial void LogCannotGetNonLoopbackAddress(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Trace,
+        Message = "Ignoring address {Address} because UseOnlySiteLocalInterfaces is true and this address is not site-local.")]
+    private partial void LogIgnoringNonSiteLocalAddress(IPAddress address);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Ignoring address {Address}.")]
+    private partial void LogIgnoringAddress(IPAddress address);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Ignoring interface {Name}.")]
+    private partial void LogIgnoringInterface(string name);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Cannot determine local hostname.")]
+    private partial void LogCannotDetermineHostname(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Unable to resolve host address.")]
+    private partial void LogUnableToResolveHostAddress(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Unable to resolve hostname.")]
+    private partial void LogUnableToResolveHostname(Exception exception);
 }

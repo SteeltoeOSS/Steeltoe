@@ -11,7 +11,7 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.DbMigrations;
 
-internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
+internal sealed partial class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 {
     private readonly IOptionsMonitor<DbMigrationsEndpointOptions> _optionsMonitor;
     private readonly IServiceProvider _serviceProvider;
@@ -41,7 +41,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 
         if (dbContextType is null)
         {
-            _logger.LogError("The Microsoft.EntityFrameworkCore.DbContext type is unavailable. Are you missing a package reference?");
+            LogDbContextTypeUnavailable();
         }
         else
         {
@@ -83,7 +83,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
                 }
                 catch (DbException exception) when (exception.Message.Contains("exist", StringComparison.Ordinal))
                 {
-                    _logger.LogWarning(exception, "Failed to load pending/applied migrations, returning all migrations.");
+                    LogFailedToLoadMigrations(exception);
                     AddRange(descriptor.PendingMigrations, _scanner.GetMigrations(dbContext));
                 }
             }
@@ -106,4 +106,10 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
             }
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "The Microsoft.EntityFrameworkCore.DbContext type is unavailable. Are you missing a package reference?")]
+    private partial void LogDbContextTypeUnavailable();
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to load pending/applied migrations, returning all migrations.")]
+    private partial void LogFailedToLoadMigrations(Exception exception);
 }

@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
@@ -31,7 +32,8 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>();
         OpenIdConnectOptions options = optionsMonitor.Get(OpenIdConnectDefaults.AuthenticationScheme);
 
-        var postConfigurer = new PostConfigureOpenIdConnectOptions();
+        using var resolver = new TokenKeyResolver(TimeProvider.System, NullLoggerFactory.Instance);
+        var postConfigurer = new PostConfigureOpenIdConnectOptions(resolver);
 
         postConfigurer.PostConfigure(OpenIdConnectDefaults.AuthenticationScheme, options);
 
@@ -67,10 +69,10 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
             """;
 
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
-        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings().Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Identity).Build();
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
-
+        services.AddLogging();
         services.AddAuthentication().AddOpenIdConnect().ConfigureOpenIdConnectForCloudFoundry();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);

@@ -232,9 +232,8 @@ public sealed class PostgreSqlConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(MultiVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
@@ -349,8 +348,6 @@ public sealed class PostgreSqlConnectorTest
             -----END RSA PRIVATE KEY-----
             """
         }, options => options.WithoutStrictOrdering().Using(IgnoreLineEndingsComparer.Instance));
-
-        CleanupTempFiles(optionsAzureOne.ConnectionString, optionsAzureTwo.ConnectionString, optionsGoogle.ConnectionString);
     }
 
     [Fact]
@@ -461,7 +458,7 @@ public sealed class PostgreSqlConnectorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddHealthChecks();
-        builder.AddPostgreSql(null, null);
+        builder.AddPostgreSql();
         await using WebApplication app = builder.Build();
 
         app.Services.GetServices<IHealthContributor>().Should().BeEmpty();
@@ -489,13 +486,12 @@ public sealed class PostgreSqlConnectorTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass;Log Parameters=True"
+            ["Steeltoe:Client:PostgreSql:DEFAULT:ConnectionString"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass;Log Parameters=True"
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(SingleVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -526,8 +522,7 @@ public sealed class PostgreSqlConnectorTest
     public async Task Registers_default_connection_string_when_only_single_server_binding_found()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(SingleVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -624,9 +619,8 @@ public sealed class PostgreSqlConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(MultiVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -652,9 +646,8 @@ public sealed class PostgreSqlConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(SingleVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -677,9 +670,8 @@ public sealed class PostgreSqlConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddPostgreSql();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(SingleVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
@@ -695,6 +687,36 @@ public sealed class PostgreSqlConnectorTest
         namedConnectionString2.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task Deletes_temporary_files()
+    {
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.AddPostgreSql(null, null, new StringServiceBindingsReader(MultiVcapServicesJson));
+
+        List<string> tempPaths = [];
+
+        await using (WebApplication app = builder.Build())
+        {
+            var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
+
+            PostgreSqlOptions optionsGoogle = optionsMonitor.Get("myPostgreSqlServiceGoogle");
+
+            foreach (string key in TempFileKeys)
+            {
+                string? tempPath = ExtractRawConnectionStringParameter(optionsGoogle.ConnectionString, key);
+                tempPath.Should().NotBeNull();
+                File.Exists(tempPath).Should().BeTrue();
+
+                tempPaths.Add(tempPath);
+            }
+        }
+
+        foreach (string tempPath in tempPaths)
+        {
+            File.Exists(tempPath).Should().BeFalse();
+        }
     }
 
     [Fact]
@@ -717,6 +739,38 @@ public sealed class PostgreSqlConnectorTest
     {
         List<string> entries = [];
 
+        foreach (KeyValuePair<string, string> pair in EnumerateConnectionStringParameters(connectionString))
+        {
+            string value = pair.Value;
+
+            if (TempFileKeys.Contains(pair.Key))
+            {
+                value = File.ReadAllText(value);
+            }
+
+            value = value.Replace("\n", Environment.NewLine, StringComparison.Ordinal);
+
+            entries.Add($"{pair.Key}={value}");
+        }
+
+        return entries;
+    }
+
+    private static string? ExtractRawConnectionStringParameter(string? connectionString, string parameterName)
+    {
+        foreach (KeyValuePair<string, string> pair in EnumerateConnectionStringParameters(connectionString))
+        {
+            if (string.Equals(pair.Key, parameterName, StringComparison.OrdinalIgnoreCase))
+            {
+                return pair.Value;
+            }
+        }
+
+        return null;
+    }
+
+    private static IEnumerable<KeyValuePair<string, string>> EnumerateConnectionStringParameters(string? connectionString)
+    {
         if (connectionString != null)
         {
             foreach (string parameter in connectionString.Split(';'))
@@ -728,37 +782,7 @@ public sealed class PostgreSqlConnectorTest
                     string name = nameValuePair[0];
                     string value = nameValuePair[1];
 
-                    if (TempFileKeys.Contains(name))
-                    {
-                        value = File.ReadAllText(value);
-                    }
-
-                    value = value.Replace("\n", Environment.NewLine, StringComparison.Ordinal);
-
-                    entries.Add($"{name}={value}");
-                }
-            }
-        }
-
-        return entries;
-    }
-
-    private static void CleanupTempFiles(params string?[] connectionStrings)
-    {
-        foreach (string? connectionString in connectionStrings)
-        {
-            if (!string.IsNullOrEmpty(connectionString))
-            {
-                foreach (string entry in connectionString.Split(';'))
-                {
-                    string[] pair = entry.Split('=', 2);
-                    string key = pair[0];
-                    string value = pair[1];
-
-                    if (TempFileKeys.Contains(key) && File.Exists(value))
-                    {
-                        File.Delete(value);
-                    }
+                    yield return new KeyValuePair<string, string>(name, value);
                 }
             }
         }

@@ -10,10 +10,9 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.Certificates;
 
-internal sealed class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
+internal sealed partial class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
 {
-    private static readonly Regex CertificateRegex = new("-+BEGIN CERTIFICATE-+.+?-+END CERTIFICATE-+", RegexOptions.Compiled | RegexOptions.Singleline,
-        TimeSpan.FromSeconds(1));
+    private const int RegexMatchTimeoutInMilliseconds = 1_000;
 
     private readonly IConfiguration _configuration;
 
@@ -23,6 +22,10 @@ internal sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certi
 
         _configuration = configuration;
     }
+
+    [GeneratedRegex("-+BEGIN CERTIFICATE-+.+?-+END CERTIFICATE-+", RegexOptions.Singleline | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture,
+        RegexMatchTimeoutInMilliseconds)]
+    private static partial Regex CertificateRegex();
 
     public void Configure(CertificateOptions options)
     {
@@ -42,12 +45,14 @@ internal sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certi
 
         string? privateKeyFilePath = _configuration.GetValue<string>(GetConfigurationKey(name, "PrivateKeyFilePath"));
 
+#pragma warning disable SYSLIB0057 // Type or member is obsolete
         options.Certificate = privateKeyFilePath != null && File.Exists(privateKeyFilePath)
             ? X509Certificate2.CreateFromPemFile(certificateFilePath, privateKeyFilePath)
             : new X509Certificate2(certificateFilePath);
 
-        X509Certificate2[] certificateChain = CertificateRegex.Matches(File.ReadAllText(certificateFilePath))
+        X509Certificate2[] certificateChain = CertificateRegex().Matches(File.ReadAllText(certificateFilePath))
             .Select(x => new X509Certificate2(Encoding.ASCII.GetBytes(x.Value))).ToArray();
+#pragma warning restore SYSLIB0057 // Type or member is obsolete
 
         foreach (X509Certificate2 issuer in certificateChain.Skip(1))
         {

@@ -22,13 +22,14 @@ public sealed class HostBuilderWrapperTest
             ["foo"] = "bar"
         };
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());
         wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        // ReSharper disable once AccessToDisposedClosure
         wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddProvider(capturingLoggerProvider));
         wrapper.ConfigureWebHost(hostBuilder => hostBuilder.UseUrls("http://*:8888"));
         wrapper.ConfigureServices((contextWrapper, _) => contextWrapper.HostEnvironment.ApplicationName = "TestApp");
@@ -57,13 +58,14 @@ public sealed class HostBuilderWrapperTest
             ["foo"] = "bar"
         };
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
         HostApplicationBuilder builder = TestHostApplicationBuilderFactory.Create();
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());
         wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        // ReSharper disable once AccessToDisposedClosure
         wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddProvider(capturingLoggerProvider));
         wrapper.ConfigureServices((contextWrapper, _) => contextWrapper.HostEnvironment.ApplicationName = "TestApp");
 
@@ -91,13 +93,14 @@ public sealed class HostBuilderWrapperTest
             ["foo"] = "bar"
         };
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());
         wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        // ReSharper disable once AccessToDisposedClosure
         wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddProvider(capturingLoggerProvider));
         wrapper.ConfigureWebHost(hostBuilder => hostBuilder.UseUrls("http://*:8888"));
         wrapper.ConfigureServices((contextWrapper, _) => contextWrapper.HostEnvironment.ApplicationName = "TestApp");
@@ -128,13 +131,14 @@ public sealed class HostBuilderWrapperTest
             ["foo"] = "bar"
         };
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Test", StringComparison.Ordinal));
 
         HostBuilder builder = TestHostBuilderFactory.CreateWeb();
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.ConfigureServices(services => services.AddSingleton<InjectableType>());
         wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        // ReSharper disable once AccessToDisposedClosure
         wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddProvider(capturingLoggerProvider));
         wrapper.ConfigureWebHost(hostBuilder => hostBuilder.UseUrls("http://*:8888"));
         wrapper.ConfigureServices((contextWrapper, _) => contextWrapper.HostEnvironment.ApplicationName = "TestApp");

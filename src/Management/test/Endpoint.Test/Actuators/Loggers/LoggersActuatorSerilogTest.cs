@@ -214,11 +214,8 @@ public sealed class LoggersActuatorSerilogTest
             }
             """);
 
-        HttpResponseMessage resetResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake.Category"), new StringContent("""
-            {
-                "configuredLevel": null
-            }
-            """, RequestContentType), TestContext.Current.CancellationToken);
+        HttpResponseMessage resetResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake.Category"),
+            new StringContent("{}", RequestContentType), TestContext.Current.CancellationToken);
 
         resetResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         (await resetResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Should().BeEmpty();
@@ -275,23 +272,23 @@ public sealed class LoggersActuatorSerilogTest
     {
         var fileProvider = new MemoryFileProvider();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Serilog": {
-            "MinimumLevel": {
-              "Default": "Error",
-              "Override": {
-                "Fake": "Warning",
-                "Fake.Category.AtDebugLevel": "Debug"
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Serilog": {
+                "MinimumLevel": {
+                  "Default": "Error",
+                  "Override": {
+                    "Fake": "Warning",
+                    "Fake.Category.AtDebugLevel": "Debug"
+                  }
+                }
               }
             }
-          }
-        }
-        """);
+            """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddSingleton<ILoggerFactory, OnlyTrackFakeCategoryLoggerFactory>();
         builder.Logging.AddDynamicSerilog();
         builder.Services.AddLoggersActuator();
@@ -345,19 +342,19 @@ public sealed class LoggersActuatorSerilogTest
             }
             """);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Serilog": {
-            "MinimumLevel": {
-              "Default": "Information",
-              "Override": {
-                "Fake.Some": "Error",
-                "Fake.Category": "Warning"
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "Serilog": {
+                "MinimumLevel": {
+                  "Default": "Information",
+                  "Override": {
+                    "Fake.Some": "Error",
+                    "Fake.Category": "Warning"
+                  }
+                }
               }
             }
-          }
-        }
-        """);
+            """);
 
         fileProvider.NotifyChanged();
 

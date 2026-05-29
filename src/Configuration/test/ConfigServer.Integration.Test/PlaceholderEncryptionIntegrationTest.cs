@@ -26,7 +26,7 @@ public sealed class PlaceholderEncryptionIntegrationTest
             ["encrypt:rsa:algorithm"] = "OAEP",
             ["encrypt:rsa:salt"] = "deadbeef",
             ["encrypted"] =
-                "{cipher}AQATBPXCmri0MCEoCam0noXJgKGlFfE/chVN7XhH1V23MqJ8sI3lI61PyvsryJP3LlfNn38gUuulMeslAs/gUCoPFPV/zD7M8x527wQUbmWD6bR0ZMJ4hu3DisK6Diw2YAOxXSsm3Zh46cPFQcowfOG1x2OXj+5uL4T+VBGdt3Nr6dHCOumkTJ1KAtaJMfASf3J8G4M27v6m4Y2EdBqP1zWwDhAZ3R0u9uTP9xYUqQiKsUeOixrhOaCvtb1Q+Zg6A41CxM4cjL3Ty6miNYLx3QkxRvfkdo0iqo7jTrWWAT1aeRV6t5U5iMlWnD4eXzad60E3ZSINhvDiB03xPPPuHKC6qUTRJEEbQFegmn/KIPMMn9WaH/JLLZNvQYMuaFszZ84AE3aQcH0be+sNFDSjHNHL",
+                "{cipher}AQBoKgZNlxY+EWcGG0CXhyfV4q/u7lJjCBS+9liSKpu/w4gNmJhTYvjDJ3XIExVSVit41po5n91LVI3h777QlY7b0D2zOI0f4YR/9MtAdsq/cgRGZ4uzcv69bmVnQ0yt5ilxV021TH0EsVEmwmgyY+n1mKcD7aXWQwS2lAvJycgVgrDfbj2qz2c7aPn+8mXvG8EAbNmEhCbATCdPDlmBUPjLvuSweDlzlefQJ+jVSxLHfOcQ+g17arhIH1j0nZEAGywoNBGS1xg6DQ+8sW0GiYennTrnKslzMFjPTQ8QJSONzYysdRLGbV2Bi73ifUd+4AnMuSKcIRNiRACRtt+i7ZhrgTWRV1F+F8vfIiqf3SfzHdyclHkoCVkPhNBc9ySq0XRubPtg7UnW2KPZufZ0D7xx",
             ["placeholder"] = "${encrypted}"
         };
 
@@ -59,7 +59,7 @@ public sealed class PlaceholderEncryptionIntegrationTest
             ["encrypt:rsa:algorithm"] = "OAEP",
             ["encrypt:rsa:salt"] = "deadbeef",
             ["encrypted"] =
-                "{cipher}AQATBPXCmri0MCEoCam0noXJgKGlFfE/chVN7XhH1V23MqJ8sI3lI61PyvsryJP3LlfNn38gUuulMeslAs/gUCoPFPV/zD7M8x527wQUbmWD6bR0ZMJ4hu3DisK6Diw2YAOxXSsm3Zh46cPFQcowfOG1x2OXj+5uL4T+VBGdt3Nr6dHCOumkTJ1KAtaJMfASf3J8G4M27v6m4Y2EdBqP1zWwDhAZ3R0u9uTP9xYUqQiKsUeOixrhOaCvtb1Q+Zg6A41CxM4cjL3Ty6miNYLx3QkxRvfkdo0iqo7jTrWWAT1aeRV6t5U5iMlWnD4eXzad60E3ZSINhvDiB03xPPPuHKC6qUTRJEEbQFegmn/KIPMMn9WaH/JLLZNvQYMuaFszZ84AE3aQcH0be+sNFDSjHNHL",
+                "{cipher}AQBoKgZNlxY+EWcGG0CXhyfV4q/u7lJjCBS+9liSKpu/w4gNmJhTYvjDJ3XIExVSVit41po5n91LVI3h777QlY7b0D2zOI0f4YR/9MtAdsq/cgRGZ4uzcv69bmVnQ0yt5ilxV021TH0EsVEmwmgyY+n1mKcD7aXWQwS2lAvJycgVgrDfbj2qz2c7aPn+8mXvG8EAbNmEhCbATCdPDlmBUPjLvuSweDlzlefQJ+jVSxLHfOcQ+g17arhIH1j0nZEAGywoNBGS1xg6DQ+8sW0GiYennTrnKslzMFjPTQ8QJSONzYysdRLGbV2Bi73ifUd+4AnMuSKcIRNiRACRtt+i7ZhrgTWRV1F+F8vfIiqf3SfzHdyclHkoCVkPhNBc9ySq0XRubPtg7UnW2KPZufZ0D7xx",
             ["placeholder"] = "${encrypted}"
         };
 

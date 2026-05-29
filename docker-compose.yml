@@ -1,0 +1,42 @@
+# Starts Eureka Server and Spring Cloud Config Server for running Configuration integration tests locally.
+#
+# Usage:
+#   docker compose up -d
+#   Start-Sleep -Seconds 15   # wait for servers to be ready
+#
+# Run all Configuration integration tests:
+#   dotnet test src/Configuration --filter "Category=Integration"
+#
+# To generate a new OAEP-encrypted test vector (for Encryption.Test):
+#   Invoke-RestMethod -Method Post -Uri "http://localhost:8888/encrypt" `
+#       -Body "encrypt the world" -ContentType "text/plain"
+
+services:
+  eureka-server:
+    image: steeltoe.azurecr.io/eureka-server
+    pull_policy: always
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+
+  config-server:
+    image: steeltoe.azurecr.io/config-server
+    pull_policy: always
+    container_name: steeltoe-config
+    depends_on:
+      - eureka-server
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./src/Configuration/test/Encryption.Test/Cryptography/server.jks:/workspace/server.jks:ro
+    environment:
+      eureka.client.enabled: "true"
+      eureka.client.serviceUrl.defaultZone: http://eureka-server:8761/eureka
+      eureka.instance.hostname: localhost
+      eureka.instance.instanceId: localhost:configServer:8888
+      encrypt.keyStore.location: file:///workspace/server.jks
+      encrypt.keyStore.password: letmein
+      encrypt.keyStore.alias: mytestkey
+      encrypt.rsa.algorithm: OAEP
+      encrypt.rsa.salt: deadbeef
+      encrypt.rsa.strong: "false"

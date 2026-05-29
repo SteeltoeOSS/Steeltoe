@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
     <Description>Manage minimum logging levels at runtime using ConsoleLogger.</Description>
     <PackageTags>logging;dynamic-logging;console;log-management;monitoring</PackageTags>
     <IsPackable>true</IsPackable>

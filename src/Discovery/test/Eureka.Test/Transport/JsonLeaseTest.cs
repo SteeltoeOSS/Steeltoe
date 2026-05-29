@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka.Test.Transport;
@@ -10,7 +11,34 @@ namespace Steeltoe.Discovery.Eureka.Test.Transport;
 public sealed class JsonLeaseTest
 {
     [Fact]
-    public void Deserialize_GoodJson()
+    public void Serialize()
+    {
+        var leaseInfo = new JsonLeaseInfo
+        {
+            RenewalIntervalInSeconds = 30,
+            DurationInSeconds = 90,
+            RegistrationTimestamp = 1_457_714_988_223,
+            LastRenewalTimestamp = 1_457_716_158_319,
+            EvictionTimestamp = 1_457_715_134_123,
+            ServiceUpTimestamp = 1_457_714_988_223
+        };
+
+        string result = JsonSerializer.Serialize(leaseInfo, EurekaJsonSerializerContext.Default.JsonLeaseInfo);
+
+        result.Should().BeJson("""
+            {
+              "renewalIntervalInSecs": 30,
+              "durationInSecs": 90,
+              "registrationTimestamp": "1457714988223",
+              "lastRenewalTimestamp": "1457716158319",
+              "evictionTimestamp": "1457715134123",
+              "serviceUpTimestamp": "1457714988223"
+            }
+            """);
+    }
+
+    [Fact]
+    public void Deserialize()
     {
         const string json = """
             {
@@ -18,19 +46,19 @@ public sealed class JsonLeaseTest
               "durationInSecs": 90,
               "registrationTimestamp": 1457714988223,
               "lastRenewalTimestamp": 1457716158319,
-              "evictionTimestamp": 0,
+              "evictionTimestamp": 1457715134123,
               "serviceUpTimestamp": 1457714988223
             }
             """;
 
-        var leaseInfo = JsonSerializer.Deserialize<JsonLeaseInfo>(json);
+        JsonLeaseInfo? result = JsonSerializer.Deserialize(json, EurekaJsonSerializerContext.Default.JsonLeaseInfo);
 
-        leaseInfo.Should().NotBeNull();
-        leaseInfo.RenewalIntervalInSeconds.Should().Be(30);
-        leaseInfo.DurationInSeconds.Should().Be(90);
-        leaseInfo.RegistrationTimestamp.Should().Be(1_457_714_988_223);
-        leaseInfo.LastRenewalTimestamp.Should().Be(1_457_716_158_319);
-        leaseInfo.EvictionTimestamp.Should().Be(0);
-        leaseInfo.ServiceUpTimestamp.Should().Be(1_457_714_988_223);
+        result.Should().NotBeNull();
+        result.RenewalIntervalInSeconds.Should().Be(30);
+        result.DurationInSeconds.Should().Be(90);
+        result.RegistrationTimestamp.Should().Be(1_457_714_988_223);
+        result.LastRenewalTimestamp.Should().Be(1_457_716_158_319);
+        result.EvictionTimestamp.Should().Be(1_457_715_134_123);
+        result.ServiceUpTimestamp.Should().Be(1_457_714_988_223);
     }
 }

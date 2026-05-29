@@ -8,15 +8,17 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Common.Configuration;
 
-internal static class ConfigurationKeyConverter
+internal static partial class ConfigurationKeyConverter
 {
     private const string DotDelimiterString = ".";
     private const char DotDelimiterChar = '.';
     private const char UnderscoreDelimiterChar = '_';
     private const char EscapeChar = '\\';
     private const string EscapeString = "\\";
+    private const int RegexMatchTimeoutInMilliseconds = 1_000;
 
-    private static readonly Regex ArrayRegex = new(@"\[(?<digits>\d+)\]", RegexOptions.Compiled | RegexOptions.Singleline, TimeSpan.FromSeconds(1));
+    [GeneratedRegex(@"\[(?<digits>\d+)\]", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture, RegexMatchTimeoutInMilliseconds)]
+    private static partial Regex ArrayRegex();
 
     public static string AsDotNetConfigurationKey(string key)
     {
@@ -82,6 +84,6 @@ internal static class ConfigurationKeyConverter
 
     private static string ConvertArrayKey(string key)
     {
-        return ArrayRegex.Replace(key, ":${digits}");
+        return ArrayRegex().Replace(key, ":${digits}");
     }
 }

@@ -10,11 +10,12 @@ using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 
+[Collection("TestsForMemoryDumpsMustRunSequentially")]
+[Trait("Category", "MemoryDumps")]
 public sealed class HeapDumperTest
 {
     private static readonly TimeSpan DumpTimeout = TimeSpan.FromMinutes(3);
 
-    [Trait("Category", "MemoryDumps")]
     [Theory]
     [InlineData(HeapDumpType.Full, "fulldump_", "full dump")]
     [InlineData(HeapDumpType.Heap, "heapdump_", "dump with heap")]
@@ -50,14 +51,14 @@ public sealed class HeapDumperTest
         File.Delete(path);
 
         IList<string> logLines = loggerProvider.GetAll();
-        logLines.Should().Contain($"INFO {typeof(HeapDumper).FullName}: Attempting to create a {description}.");
-        logLines.Should().Contain($"INFO {typeof(HeapDumper).FullName}: Successfully created a {description}.");
+        logLines.Should().Contain($"INFO {typeof(HeapDumper)}: Attempting to create a {description}.");
+        logLines.Should().Contain($"INFO {typeof(HeapDumper)}: Successfully created a {description}.");
 
         if (heapDumpType == HeapDumpType.GCDump)
         {
             string logText = loggerProvider.GetAsText();
 
-            logText.Should().Contain($"TRCE {typeof(HeapDumper).FullName}: Captured log from gcdump:");
+            logText.Should().Contain($"TRCE {typeof(HeapDumper)}: Captured log from gcdump:");
             logText.Should().Contain("Done Dumping .NET heap success=True");
         }
     }

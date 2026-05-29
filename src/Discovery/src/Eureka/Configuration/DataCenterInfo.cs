@@ -34,7 +34,15 @@ public sealed class DataCenterInfo
             };
         }
 
-        throw new ArgumentException($"Unsupported datacenter name '{jsonDataCenterInfo.Name}'.", nameof(jsonDataCenterInfo));
+        if (jsonDataCenterInfo.Name == nameof(DataCenterName.Netflix))
+        {
+            return new DataCenterInfo
+            {
+                Name = DataCenterName.Netflix
+            };
+        }
+
+        return null;
     }
 
     internal JsonDataCenterInfo ToJson()

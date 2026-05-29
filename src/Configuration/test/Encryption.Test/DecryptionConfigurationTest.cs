@@ -85,6 +85,34 @@ public sealed class DecryptionConfigurationTest : IDisposable
         configuration["result"].Should().Be("start-SECRET-end");
     }
 
+    [Fact]
+    public void Decrypted_values_in_placeholder_resolution_are_only_logged_at_trace_level()
+    {
+        var decryptor = new ToUpperCaseDecryptor();
+        using var capturingProvider = new CapturingLoggerProvider();
+        using var loggerFactory = new LoggerFactory([capturingProvider]);
+
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["secret"] = "{cipher}classified",
+            ["greeting"] = "hello-${secret}-world"
+        };
+
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(appSettings);
+        builder.AddDecryption(decryptor, loggerFactory);
+        builder.AddPlaceholderResolver(loggerFactory);
+        IConfiguration configuration = builder.Build();
+
+        _ = configuration["greeting"];
+
+        IList<string> logLines = capturingProvider.GetAll();
+        string[] sensitiveLines = [.. logLines.Where(message => message.Contains("CLASSIFIED", StringComparison.Ordinal))];
+
+        sensitiveLines.Should().NotBeEmpty();
+        sensitiveLines.Should().AllSatisfy(message => message.Should().StartWith("TRCE"));
+    }
+
     public void Dispose()
     {
         _loggerFactory.Dispose();

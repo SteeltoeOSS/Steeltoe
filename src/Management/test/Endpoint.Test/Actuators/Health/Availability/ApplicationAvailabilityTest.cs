@@ -20,9 +20,9 @@ public sealed class ApplicationAvailabilityTest
     {
         var availability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
 
-        availability.SetAvailabilityState("Test", LivenessState.Broken, GetType().Name);
-        availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, GetType().Name);
-        availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, GetType().Name);
+        availability.SetAvailabilityState("Test", LivenessState.Broken, nameof(ApplicationAvailabilityTest));
+        availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, nameof(ApplicationAvailabilityTest));
+        availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, nameof(ApplicationAvailabilityTest));
 
         availability.GetAvailabilityState("Test").Should().Be(LivenessState.Broken);
         availability.GetLivenessState().Should().Be(LivenessState.Correct);

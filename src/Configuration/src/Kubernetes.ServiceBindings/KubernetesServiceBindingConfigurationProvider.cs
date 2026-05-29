@@ -9,7 +9,7 @@ using Microsoft.Extensions.Primitives;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBindings;
 
-internal sealed class KubernetesServiceBindingConfigurationProvider : PostProcessorConfigurationProvider, IDisposable
+internal sealed class KubernetesServiceBindingConfigurationProvider : PostProcessorConfigurationProvider
 {
     public const string ProviderKey = "provider";
     public const string TypeKey = "type";
@@ -91,9 +91,10 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
         OnReload();
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
         _changeToken?.Dispose();
+        base.Dispose();
     }
 
     private void AddBindingType(ServiceBinding binding, Dictionary<string, string?> data)

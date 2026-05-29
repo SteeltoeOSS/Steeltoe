@@ -4,8 +4,8 @@
 
 using System.Net;
 using System.Net.Http.Headers;
-using System.Security;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,9 +17,8 @@ using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
-internal sealed class PermissionsProvider
+internal sealed partial class PermissionsProvider
 {
-    private const string ReadSensitiveDataJsonPropertyName = "read_sensitive_data";
     public const string HttpClientName = "CloudFoundrySecurity";
     private static readonly TimeSpan GetPermissionsTimeout = TimeSpan.FromMilliseconds(5_000);
 
@@ -52,21 +51,20 @@ internal sealed class PermissionsProvider
         }
 
         CloudFoundryEndpointOptions options = _optionsMonitor.CurrentValue;
-        string checkPermissionsUri = $"{options.Api}/v2/apps/{options.ApplicationId}/permissions";
-        var request = new HttpRequestMessage(HttpMethod.Get, new Uri(checkPermissionsUri, UriKind.RelativeOrAbsolute));
+        var checkPermissionsUri = new Uri($"{options.Api}/v2/apps/{options.ApplicationId}/permissions", UriKind.RelativeOrAbsolute);
+        var request = new HttpRequestMessage(HttpMethod.Get, checkPermissionsUri);
         var auth = new AuthenticationHeaderValue("bearer", accessToken);
         request.Headers.Authorization = auth;
 
         try
         {
-            _logger.LogDebug("GetPermissionsAsync({Uri})", checkPermissionsUri);
+            LogGetPermissions(checkPermissionsUri);
             using HttpClient httpClient = CreateHttpClient();
             using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                _logger.LogInformation("Cloud Foundry returned status: {HttpStatus} while obtaining permissions from: {PermissionsUri}", response.StatusCode,
-                    checkPermissionsUri);
+                LogResponseStatus(checkPermissionsUri, response.StatusCode);
 
                 if (response.StatusCode is HttpStatusCode.Forbidden)
                 {
@@ -78,8 +76,11 @@ internal sealed class PermissionsProvider
                     : new SecurityResult(HttpStatusCode.ServiceUnavailable, Messages.CloudFoundryNotReachable);
             }
 
-            EndpointPermissions permissions = await ParsePermissionsResponseAsync(response, cancellationToken);
-            return new SecurityResult(permissions);
+            EndpointPermissions? permissions = await ParsePermissionsResponseAsync(response, cancellationToken);
+
+            return permissions != null
+                ? new SecurityResult(permissions.Value)
+                : new SecurityResult(HttpStatusCode.BadGateway, Messages.CloudFoundryBrokenResponse);
         }
         catch (HttpRequestException exception)
         {
@@ -92,34 +93,40 @@ internal sealed class PermissionsProvider
         }
     }
 
-    public async Task<EndpointPermissions> ParsePermissionsResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+    public async Task<EndpointPermissions?> ParsePermissionsResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(response);
 
-        string json = string.Empty;
-        var permissions = EndpointPermissions.None;
-
         try
         {
-            json = await response.Content.ReadAsStringAsync(cancellationToken);
+            string json = await response.Content.ReadAsStringAsync(cancellationToken);
+            ExpensiveLogResponseJson(json);
 
-            _logger.LogDebug("GetPermissionsAsync returned json: {Json}", SecurityUtilities.SanitizeInput(json));
+            PermissionsResponse? result = JsonSerializer.Deserialize(json, CloudFoundryJsonSerializerContext.Default.PermissionsResponse);
 
-            var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
-
-            if (result != null && result.TryGetValue(ReadSensitiveDataJsonPropertyName, out JsonElement permissionElement))
+            EndpointPermissions permissions = result switch
             {
-                bool enabled = JsonSerializer.Deserialize<bool>(permissionElement.GetRawText());
-                permissions = enabled ? EndpointPermissions.Full : EndpointPermissions.Restricted;
-            }
+                { ReadBasicData: true, ReadSensitiveData: true } => EndpointPermissions.Full,
+                { ReadBasicData: true, ReadSensitiveData: false } => EndpointPermissions.Restricted,
+                _ => EndpointPermissions.None
+            };
+
+            LogPermissions(permissions);
+            return permissions;
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            throw new SecurityException($"Exception extracting permissions from json: {SecurityUtilities.SanitizeInput(json)}", exception);
+            return null;
         }
+    }
 
-        _logger.LogDebug("GetPermissionsAsync returning: {Permissions}", permissions);
-        return permissions;
+    private void ExpensiveLogResponseJson(string json)
+    {
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            string input = SecurityUtilities.SanitizeInput(json);
+            LogResponseJson(input);
+        }
     }
 
     private HttpClient CreateHttpClient()
@@ -127,6 +134,27 @@ internal sealed class PermissionsProvider
         HttpClient httpClient = _httpClientFactory.CreateClient(HttpClientName);
         httpClient.ConfigureForSteeltoe(GetPermissionsTimeout);
         return httpClient;
+    }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Fetching permissions from {PermissionsUri}.")]
+    private partial void LogGetPermissions(MaskedUri permissionsUri);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Cloud Foundry returned status {HttpStatus} while obtaining permissions from {PermissionsUri}.")]
+    private partial void LogResponseStatus(MaskedUri permissionsUri, HttpStatusCode httpStatus);
+
+    [LoggerMessage(Level = LogLevel.Debug, SkipEnabledCheck = true, Message = "Permissions response returned JSON: {Json}")]
+    private partial void LogResponseJson(string json);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Resolved permissions to {Permissions}.")]
+    private partial void LogPermissions(EndpointPermissions permissions);
+
+    internal sealed class PermissionsResponse
+    {
+        [JsonPropertyName("read_basic_data")]
+        public bool ReadBasicData { get; set; }
+
+        [JsonPropertyName("read_sensitive_data")]
+        public bool ReadSensitiveData { get; set; }
     }
 
     internal static class Messages
@@ -137,6 +165,7 @@ internal sealed class PermissionsProvider
         public const string CloudFoundryApiMissing = "Cloud controller URL is not available";
         public const string CloudFoundryNotReachable = "Cloud controller not reachable";
         public const string CloudFoundryTimeout = "Cloud controller request timed out";
+        public const string CloudFoundryBrokenResponse = "Failed to parse Cloud controller response";
         public const string InvalidToken = "Invalid token";
     }
 }

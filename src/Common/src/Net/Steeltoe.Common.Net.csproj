@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
     <Description>Abstractions and code for using Windows network files shares.</Description>
     <PackageTags>Windows-file-sharing;SMB;CIFS</PackageTags>
     <IsPackable>true</IsPackable>
