@@ -31,7 +31,7 @@ jobs:
   build:
     name: Build and Test
     timeout-minutes: 15
-    runs-on: ${{ inputs.OS }}-latest
+    runs-on: ${{ inputs.OS }}-${{ inputs.OS == 'macos' && '26' || 'latest' }}
 
     services:
       eurekaServer:

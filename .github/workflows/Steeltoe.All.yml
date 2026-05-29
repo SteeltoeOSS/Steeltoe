@@ -32,13 +32,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-26]
         include:
         - os: ubuntu-latest
           runDockerContainers: true
         - os: windows-latest
           skipIntegrationTests: true
-        - os: macos-latest
+        - os: macos-26
           skipIntegrationTests: true
     runs-on: ${{ matrix.os }}
 
@@ -74,7 +74,7 @@ jobs:
           10.0.*
 
     - name: Turn off dev certificate (macOS only)
-      if: ${{ matrix.os == 'macos-latest' }}
+      if: ${{ matrix.os == 'macos-26' }}
       # Setting DOTNET_GENERATE_ASPNET_CERTIFICATE to "false" makes it easier to determine which test failed on macOS when it tried to start a web server with https enabled.
       # Without setting this, the following message appears in the logs:
       #   The application is trying to access the ASP.NET Core developer certificate key. A prompt might appear to ask for permission to access the key.
