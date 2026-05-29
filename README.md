@@ -1,8 +1,8 @@
 # Steeltoe .NET Open Source Software
 
 [![Build Status](https://github.com/SteeltoeOSS/Steeltoe/actions/workflows/Steeltoe.All.yml/badge.svg?branch=4.x)](https://github.com/SteeltoeOSS/Steeltoe/actions/workflows/Steeltoe.All.yml?query=branch%3A4.x)
-&nbsp;[![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=SteeltoeOSS_steeltoe&branch=main&metric=alert_status)](https://sonarcloud.io/component_measures?id=SteeltoeOSS_steeltoe&branch=main)
-&nbsp;[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=SteeltoeOSS_steeltoe&branch=main&metric=coverage)](https://sonarcloud.io/component_measures?id=SteeltoeOSS_steeltoe&branch=main&metric=coverage&view=list)
+&nbsp;[![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=SteeltoeOSS_steeltoe&branch=4.x&metric=alert_status)](https://sonarcloud.io/component_measures?id=SteeltoeOSS_steeltoe&branch=4.x)
+&nbsp;[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=SteeltoeOSS_steeltoe&branch=4.x&metric=coverage)](https://sonarcloud.io/component_measures?id=SteeltoeOSS_steeltoe&branch=4.x&metric=coverage&view=list)
 &nbsp;[![NuGet Version](https://img.shields.io/nuget/v/Steeltoe.Common.svg?style=flat)](https://www.nuget.org/profiles/SteeltoeOSS)
 &nbsp;[![GitHub License](https://img.shields.io/github/license/SteeltoeOSS/Steeltoe)](LICENSE)
 &nbsp;[![Stack Overflow](https://img.shields.io/badge/stack%20overflow-steeltoe-orange.svg)](http://stackoverflow.com/questions/tagged/steeltoe)
