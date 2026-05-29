@@ -9,10 +9,7 @@ on:
       OS:
         required: true
         type: string
-      skipFilter:
-        required: false
-        type: string
-      runConfigServer:
+      runDockerContainers:
         required: false
         type: boolean
         default: false
@@ -22,16 +19,13 @@ permissions:
   pull-requests: write
 
 env:
+  STEELTOE_MACOS_DIAGNOSE_HOSTNAME_LOOKUP: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_NOLOGO: true
-  SOLUTION_FILE: src/Steeltoe.${{ inputs.component }}.slnf
+  SOLUTION_FILE: 'src/Steeltoe.${{ inputs.component }}.slnf'
   COMMON_TEST_ARGS: >-
-    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/dumps
-    --settings coverlet.runsettings --blame-crash --blame-hang-timeout 3m
-  SKIP_FILTER_NO_MEMORY_DUMPS: >-
-    ${{ inputs.skipFilter && format('--filter "{0}&Category!=MemoryDumps"', inputs.skipFilter) || '--filter "Category!=MemoryDumps"' }}
-  SKIP_FILTER_WITH_MEMORY_DUMPS: >-
-    ${{ inputs.skipFilter && format('--filter "{0}&Category=MemoryDumps"', inputs.skipFilter) || '--filter "Category=MemoryDumps"' }}
+    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/TestOutput
+    --settings coverlet.runsettings --blame-crash --blame-hang-timeout 1m
 
 jobs:
   build:
@@ -41,26 +35,34 @@ jobs:
 
     services:
       eurekaServer:
-        image: ${{ inputs.runConfigServer && 'steeltoe.azurecr.io/eureka-server' || null }}
+        image: ${{ inputs.runDockerContainers && 'steeltoe.azurecr.io/eureka-server' || null }}
         ports:
         - 8761:8761
       configServer:
-        image: ${{ inputs.runConfigServer && 'steeltoe.azurecr.io/config-server' || null }}
+        image: ${{ inputs.runDockerContainers && 'steeltoe.azurecr.io/config-server' || null }}
         env:
           eureka.client.enabled: true
           eureka.client.serviceUrl.defaultZone: http://eurekaServer:8761/eureka
           eureka.instance.hostname: localhost
           eureka.instance.instanceId: localhost:configServer:8888
+          encrypt.keyStore.location: file:///workspace/server.jks
+          encrypt.keyStore.password: letmein
+          encrypt.keyStore.alias: mytestkey
+          encrypt.rsa.algorithm: OAEP
+          encrypt.rsa.salt: deadbeef
+          encrypt.rsa.strong: "false"
+        options: --name steeltoe-config
         ports:
         - 8888:8888
 
     steps:
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: |
           8.0.*
           9.0.*
+          10.0.*
 
     - name: Turn off dev certificate (macOS only)
       if: ${{ inputs.OS == 'macos' }}
@@ -70,50 +72,54 @@ jobs:
       #   When that happens, select 'Always Allow' to grant 'dotnet' access to the certificate key in the future.
       # and the test run fails, but without indicating which test caused it. By setting this, the causing test fails with the next message:
       #   Unable to configure HTTPS endpoint. No server certificate was specified, and the default developer certificate could not be found or is out of date.
-      # To prevent the causing test from failing the test run, disable it on macOS by adding [Trait("Category", "SkipOnMacOS")].
+      # To prevent the causing test from failing the test run, disable it on macOS using FactSkippedOnPlatform/TheorySkippedOnPlatform.
       shell: bash
       run: echo "DOTNET_GENERATE_ASPNET_CERTIFICATE=false" >> $GITHUB_ENV
 
     - name: Git checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         persist-credentials: false
 
+    - name: Provide jks file for Config Server container
+      if: ${{ inputs.runDockerContainers }}
+      # The Config Server container starts before checkout, when server.jks is not yet available.
+      # Copy it into the container now and restart so Config Server can pick up the keystore.
+      shell: bash
+      run: |
+        docker cp src/Configuration/test/Encryption.Test/Cryptography/server.jks steeltoe-config:/workspace/server.jks
+        docker restart steeltoe-config
+
     - name: Restore packages
-      run: dotnet restore ${{ env.SOLUTION_FILE }} /p:Configuration=Release --verbosity minimal
+      run: dotnet restore ${{ env.SOLUTION_FILE }} /p:Configuration=Release /p:NuGetAudit=false --verbosity minimal
 
     - name: Build solution
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
 
-    - name: Test (net8.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net8.0 ${{ env.SKIP_FILTER_NO_MEMORY_DUMPS }} ${{ env.COMMON_TEST_ARGS }}
+    - name: Test
+      id: test
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
 
-    - name: Test (net8.0) (memory dumps)
+    - name: Test (memory dumps)
+      id: test-memory-dumps
       if: ${{ inputs.component == 'Management' }}
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net8.0 ${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }} ${{ env.COMMON_TEST_ARGS }}
-
-    - name: Test (net9.0)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net9.0 ${{ env.SKIP_FILTER_NO_MEMORY_DUMPS }} ${{ env.COMMON_TEST_ARGS }}
-
-    - name: Test (net9.0) (memory dumps)
-      if: ${{ inputs.component == 'Management' }}
-      run: dotnet test ${{ env.SOLUTION_FILE }} --framework net9.0 ${{ env.SKIP_FILTER_WITH_MEMORY_DUMPS }} ${{ env.COMMON_TEST_ARGS }}
+      run: dotnet test src/Management/test/Endpoint.Test --filter "Category=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
 
     - name: Upload crash/hang dumps (on failure)
-      if: ${{ failure() }}
-      uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() && (steps.test.outcome == 'failure' || steps.test-memory-dumps.outcome == 'failure') }}
+      uses: actions/upload-artifact@v7
       with:
-        name: FailedTestOutput-${{ inputs.OS }}
+        name: FailedTestOutput-${{ inputs.OS }}-latest
         path: |
-          ${{ github.workspace }}/dumps/**/*.dmp
-          ${{ github.workspace }}/dumps/**/Sequence_*.xml
+          ${{ github.workspace }}/TestOutput/**/*.dmp
+          ${{ github.workspace }}/TestOutput/**/Sequence_*.xml
         if-no-files-found: ignore
 
     - name: Report test results
-      if: ${{ !cancelled() }}
-      uses: dorny/test-reporter@v2
+      if: ${{ !cancelled() && (steps.test.outcome != 'skipped' || steps.test-memory-dumps.outcome != 'skipped') }}
+      uses: dorny/test-reporter@v3
       with:
-        name: ${{ inputs.OS }} test results
+        name: ${{ inputs.OS }}-latest test results
         reporter: dotnet-trx
         path: '**/*.trx'
         fail-on-empty: 'true'

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Steeltoe.Configuration.Encryption.Cryptography;
 
 namespace Steeltoe.Configuration.Encryption.Test.Cryptography;
@@ -42,8 +43,8 @@ public sealed class RsaKeyStoreDecryptorTest
     }
 
     [Theory]
-    [MemberData(nameof(GetTestVector))]
-    public void Decode_TestForSpringConfigCipher_WithDefaultKey(string salt, string strong, string algorithm, string cipher, string plainText)
+    [MemberData(nameof(GetSpringConfigServerTestVectors))]
+    public void Decrypt_WithSpringCipherText_UsingDefaultKeyAlias(string salt, string strong, string algorithm, string cipher, string plainText)
     {
         var decryptor = new RsaKeyStoreDecryptor(_keyProvider, "mytestkey", salt, bool.Parse(strong), algorithm);
         string decrypted = decryptor.Decrypt(cipher);
@@ -52,8 +53,8 @@ public sealed class RsaKeyStoreDecryptorTest
     }
 
     [Theory]
-    [MemberData(nameof(GetTestVector))]
-    public void Decode_TestForSpringConfigCipher_WithSpecifiedKey(string salt, string strong, string algorithm, string cipher, string plainText)
+    [MemberData(nameof(GetSpringConfigServerTestVectors))]
+    public void Decrypt_WithSpringCipherText_UsingExplicitKeyAlias(string salt, string strong, string algorithm, string cipher, string plainText)
     {
         var decryptor = new RsaKeyStoreDecryptor(_keyProvider, "someKey", salt, bool.Parse(strong), algorithm);
         string decrypted = decryptor.Decrypt(cipher, "mytestkey");
@@ -61,24 +62,42 @@ public sealed class RsaKeyStoreDecryptorTest
         decrypted.Should().Be(plainText);
     }
 
-    public static TheoryData<string, string, string, string, string> GetTestVector()
+    // Requires Config Server to be running with OAEP encryption configured (see docker-compose.yml at the repo root)
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task Decrypt_WithOaepAlgorithm_CanDecryptSpringConfigServerCipherText()
+    {
+        // ReSharper disable once ShortLivedHttpClient
+        using var httpClient = new HttpClient();
+
+        HttpResponseMessage response = await httpClient.PostAsync(new Uri("http://localhost:8888/encrypt"),
+            new StringContent("encrypt the world", Encoding.UTF8, "text/plain"), TestContext.Current.CancellationToken);
+
+        response.EnsureSuccessStatusCode();
+        string springCipherText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        var decryptor = new RsaKeyStoreDecryptor(_keyProvider, "mytestkey", "deadbeef", false, "OAEP");
+        string decrypted = decryptor.Decrypt(springCipherText);
+
+        decrypted.Should().Be("encrypt the world");
+    }
+
+    // Pre-generated ciphertext is from Spring Cloud Config Server (steeltoe.azurecr.io/config-server:4.3.1)
+    public static TheoryData<string, string, string, string, string> GetSpringConfigServerTestVectors()
     {
         List<(string Salt, string Strong, string Algorithm, string Cipher, string PlainText)> data =
         [
             ("deadbeef", "false", "OAEP",
-                "AQATBPXCmri0MCEoCam0noXJgKGlFfE/chVN7XhH1V23MqJ8sI3lI61PyvsryJP3LlfNn38gUuulMeslAs/gUCoPFPV/zD7M8x527wQUbmWD6bR0ZMJ4hu3DisK6Diw2YAOxXSsm3Zh46cPFQcowfOG1x2OXj+5uL4T+VBGdt3Nr6dHCOumkTJ1KAtaJMfASf3J8G4M27v6m4Y2EdBqP1zWwDhAZ3R0u9uTP9xYUqQiKsUeOixrhOaCvtb1Q+Zg6A41CxM4cjL3Ty6miNYLx3QkxRvfkdo0iqo7jTrWWAT1aeRV6t5U5iMlWnD4eXzad60E3ZSINhvDiB03xPPPuHKC6qUTRJEEbQFegmn/KIPMMn9WaH/JLLZNvQYMuaFszZ84AE3aQcH0be+sNFDSjHNHL",
-                "encrypt the world"),
-            ("deadbeef", "false", "OAEP",
-                "AQBoZM07gyw+GN0SXCkARLiSDjhN0flk07QP9+BsNnPEQD+alfH6A5FJwwuEf7d/kNJozppaZuHcPpDnRZbzmsRcqOcO0BiJFjsbX5K9o8jcAsGhDmLAf0jy/Ry1de6bELjZ4MPArbVN9numHTre4plXBXun2AVeNNBYG3yHed0A68o6FCc6UR/Pfdo/H+oTburn2qVKaZL+DAqIKHntcZjTLg/ZRa7MKUMCKiFEtV88U3lg+1YUqgz+XUmg2zyUsHgHNzYlTOtJWkFW51wNz/M2C92Zsu4R6bF1ewb2RM0N8VmjQAw6GpfLNX+CB3gGlDPsfGjc9qiF3zNsJSk88dm1+NruXeon5Nth691NQJ6DpgMXhhFzv7L/eyZKL/kZpGIVZK6dW3iePzsBtuFdrjiZ",
+                "AQA5BZk2Pg7/nbcuTrJ/i4MDOIc831GfHLUg1GQlBtOvRJm2iXngfbPKcnTjbtZZ9X+qPnbdkUcTVbgYcsszY3uoqWIN5Yybwg+dHsqZTv1/XSvwR/kwflDg+I6C+dxg3GepoCAZSPi+J5/MsfCYJAp6KI3WW34tbqkqNlJq1TmF4b/AQHmP7Pth6cIsFE7svQ0xDQRhY61lJESLvLZ1Em4XpA4cfiye1YQhNud7/AKTtyENf7oPT/7siWBN82gyCB63/HEMRNtSLobOKO1XzgWNc96ms4pIhACOA3cZarTDUqaKY+B84ATV5QKgfkQ/ihI6r2oeYB24ApKwjNyE4F4b0bFH1cchdsbooreJlflgn0U9gK0oo8t7cVGnih3lccJs3t0uAFVm+SrJGMG/8rgp",
                 "encrypt the world"),
             ("beefdead", "true", "OAEP",
-                "AQAbWqohCeQ+TTqyJ3ZlNvAtx5cC2I3PmJetuSR82yRRyX+wWd7mTkUXuN/wANJ+nr1ySdzPudjml1lHaxZn42I9szkIKSkNT+6Yg+zNaREMetcE5SXA1awtSbEaFY2NcualSzPVWs8ulsUkKlYyyh6XP9gT/kODbmX0mS6DCtxalJgjei7WujLaJaPjc3jk+EhV9M1TovexqI7XoLlsgrGf6/1gQE+SSOamTFJopWpYEeSpSEwY2dXZfct5KCFWGJVA7eDPRJk0dT6EWIvqd6J4YoMWonxgVy4nG/Gq0NTisXv9XpJHAPYBg0c8B0WrWi2PG/Q00wvFRqGmYQ1hQIVmbJm8z+f0WoCxKwnCZvvdLlgrx2qeK1S21dPdgtmLXlj5bRUrektFrNhlevlENW7wgg==",
+                "AQAwoGhHV/Z82UWIrmqmTT92L510iKkwiF+EhlroV/No3dLwamUovEB9n/4IF+j6wfv8q1Baqekn5y6folcQmiMJd86JHW2n+WNeKUlbjf3Rk5uwgSTL2ST1JZ8w6sZ0PZVE2tqaQoc9mHRmjT7hqRm1lQVsHsic5tCxdTmhYVdGp5J6UGTRPQNfyJBR34w+LFjtgyaOrF//o8Z5ZF9XUx3MGaoe4HnURIYRq5HHcd4yVFINaBpW19ndgPV+nWRANxnmltLgPUbLWBJSvJ8czHOfZvZnTSJrWDBp1GIHN0OFkObJAIl7hmOdCh3vFPkxOL9gH4690VlMOCWYI8elsvuFsOdPG++FtJVSbuGgYC3AnuFo955yBfy8tgdegQ5Zzb2sOS2mwqsWr4mly4Pis+bgpw==",
+                "encrypt the world"),
+            ("deadbeef", "false", "DEFAULT",
+                "AQBSAVVzUP21aZXVAnuTMBDQ+/HGatD/+6H2YT/EbVofx5pWNJIjOlq1ioDpLHRB/JS86nI5oC9scEVBajc/gcWiYJAOtG4+g0Sw2ixzmi3jmho/CYxhtbxGFrkrTOC0r/0I6gcGgCo5ZrQCtaQDUMnHn+aFwo8baduKQ2N6qMyGHvfXIqqJFabnTkYDlLlqgNa3jpI3oKicaDTvPU3jFO42fJyVFWyAdQ8YS0RZdOXV+0xQdRnHrHHjhR8W7D7e0Jyx05RKq1ZEXvN7+x+YSE7ajrwy8riGuxR9a8smZAKkXC8T7KcZMRqtkd/9bpNS10bpw21KSxxp2GF52ekbu0xZYIIPdIj57me7HGubwNd1kXXgV+3L6sZ1IUAN0xnOOEUQD3z6hOWkrTEAmSbNRdYM",
                 "encrypt the world"),
             ("beefdead", "true", "DEFAULT",
                 "AQAhwKArLZqxrc44G2sG6+EwWeqn9JytaIyBpf/Yz2UZ0bLZthR3HPtGgOoKY9AkWpBuRzrw3zQ20ZRkq6q7XU+Stp1kB4OXhrmgbwydNUtYJmuTlpGohtHH8wVoT2n0bd7NuL9rJ2OAbkPXg8K1kJMSgen7Hyg3b+LFZmaA8wCHXdmHuP63Rk4NhSec4Ul/gRRn5jftojmbxVVQ6xRGAeFTZi70oAZ+tzdyXZmukorRZsUtnlgj94aSmGdMCGkukanCiEHHrh130Nigxba4qZ2F2e5n46De7+7EVwnIWWYa2sQH+3BQ+cp5OCebWMiGPdylqZzyTagkwo2jHv/OzW0/ytIF1Qo3AblMQgympSL3/PMPggllopaf2al4o7w63vWczXdv6YzdLchQMrdXRdkLrw==",
-                "encrypt the world"),
-            ("nohexsaltvalue", "true", "DEFAULT",
-                "AQA+sdMQ94WuW7DMBX7ZJQeWaybtFWJqAeVv9kmHyVCwil3yobQPXMxuoF/FGpZgYQu+9JyK52jnuIXiARdyqqaDKxY7ECN/8GLVXdcQi5ooO+ewyOrL53fycyyB2iQtZphbdgmzU2qKQkXvFcWQkauHCCtni6IemITLX/y9O3I6Ss9LEK86lSAWKD1Tikf9ly78vJsCJ01ahQhEQVMbkpTixnnFRgqSL7XZo+2FGMvsyYKHp9pQwEnLkbehI8AFODQlFsTcQ9YYab5lGa4OoYw+5oS3fFH8XlIvVSTfxipI18iyphppz3EefvuGd8FwgSGCbfIeQ2R2zcYxykfWgCgSH5ckev2EqeLaiyaK3tXFanumQBeLiSg7Uii80jg9LLJ62jyrR16m0+8CGqaw6uzZkQ==",
                 "encrypt the world")
         ];
 

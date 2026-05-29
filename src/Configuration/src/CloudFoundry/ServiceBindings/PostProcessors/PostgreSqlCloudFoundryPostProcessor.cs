@@ -22,9 +22,9 @@ internal sealed class PostgreSqlCloudFoundryPostProcessor : CloudFoundryPostProc
 
             // Mapping from CloudFoundry service binding credentials to driver-specific connection string parameters.
             // The available credentials are documented at:
-            // - Tanzu Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/data-solutions/tanzu-for-postgres-on-cloud-foundry/10-1/postgres/app-setup-single-instance-service-guide.html
-            // - GCP Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform-services/tanzu-cloud-service-broker-for-gcp/1-9/csb-gcp/reference-gcp-postgresql.html#binding-creds
-            // - AWS Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform-services/tanzu-cloud-service-broker-for-aws/1-14/csb-aws/reference-aws-postgres.html#binding-creds
+            // - Tanzu Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/tanzu-postgres-tanzu-platform/10-2/postgres-tp/app-setup-single-instance-service-guide.html
+            // - GCP Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/cloud-service-broker-gcp/1-8/csb-gcp/reference-gcp-postgresql.html#binding-creds
+            // - AWS Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/cloud-service-broker-aws/1-15/csb-aws/reference-aws-postgres.html#binding-creds
 
             string? hosts = mapper.MapArrayFromTo("credentials:hosts", "host", HostsSeparator);
 
@@ -62,9 +62,11 @@ internal sealed class PostgreSqlCloudFoundryPostProcessor : CloudFoundryPostProc
             }
 
             mapper.MapFromTo("credentials:password", "password");
-            mapper.MapFromToFile("credentials:sslcert", "SSL Certificate");
-            mapper.MapFromToFile("credentials:sslkey", "SSL Key");
-            mapper.MapFromToFile("credentials:sslrootcert", "Root Certificate");
+            string? sslCertFile = mapper.MapFromToFile("credentials:sslcert", "SSL Certificate");
+            string? sslKeyFile = mapper.MapFromToFile("credentials:sslkey", "SSL Key");
+            string? sslRootCertFile = mapper.MapFromToFile("credentials:sslrootcert", "Root Certificate");
+
+            TrackTempFiles(sslCertFile, sslKeyFile, sslRootCertFile);
         }
     }
 }

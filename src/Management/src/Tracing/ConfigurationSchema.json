@@ -1,4 +1,19 @@
 {
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Management": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Management.Tracing": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  },
   "type": "object",
   "properties": {
     "Spring": {

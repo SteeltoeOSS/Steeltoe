@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -103,6 +104,44 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
     }
 
     [Fact]
+    public async Task AspNetDefaultPort_AlternateManagementPortConfigured_IgnoresSpoofedHostHeader()
+    {
+        const string managementPort = "8000";
+
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Management:Endpoints:Port"] = managementPort
+        };
+
+        await using WebApplication app = await CreateAppAsync(appSettings);
+
+        IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
+        ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
+
+        addresses.Should().HaveCount(2);
+        addresses.ElementAt(0).Should().Be($"http://localhost:{AspNetDefaultPort}");
+        addresses.ElementAt(1).Should().Be($"http://[::]:{managementPort}");
+
+        using HttpClient httpClient = CreateHttpClient();
+
+        HttpResponseMessage appResponse = await httpClient.GetAsync(new Uri($"http://localhost:{AspNetDefaultPort}"), TestContext.Current.CancellationToken);
+        appResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        appResponse = await httpClient.GetAsync(new Uri($"http://localhost:{managementPort}"), TestContext.Current.CancellationToken);
+        appResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri($"http://localhost:{AspNetDefaultPort}/actuator"), TestContext.Current.CancellationToken);
+
+        actuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        var spoofRequest = new HttpRequestMessage(HttpMethod.Get, new Uri($"http://localhost:{AspNetDefaultPort}/actuator"));
+        spoofRequest.Headers.Host = $"anything:{managementPort}";
+        actuatorResponse = await httpClient.SendAsync(spoofRequest, TestContext.Current.CancellationToken);
+        actuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
     public async Task AspNetDefaultPort_AlternateManagementPortConfigured_AccessibleOnCfInstancePorts()
     {
         const string managementPort = "8090";
@@ -142,8 +181,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetDefaultPort_AlternateManagementPortAndSchemeConfigured_AccessibleOnSeparatePortsAndSchemes()
     {
         const string managementPort = "8000";
@@ -180,8 +218,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetCustomPortsConfigured_NoManagementPortConfigured_BothAccessibleOnSamePort()
     {
         const string appHttpPort = "6000";
@@ -218,8 +255,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetCustomPortsConfigured_SameManagementPortConfigured_OnlyActuatorAccessible()
     {
         const string appHttpPort = "6000";
@@ -257,8 +293,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetCustomPortsConfigured_AlternateManagementPortConfigured_AccessibleOnSeparatePorts()
     {
         const string appHttpPort = "6000";
@@ -304,8 +339,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetCustomPortsConfigured_AlternateHttpsManagementPortConfigured_AccessibleOnSeparatePortsAndSchemes()
     {
         const string appHttpPort = "6000";
@@ -352,8 +386,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetCustomPortsInEnvironmentVariables_NoManagementPortConfigured_BothAccessibleOnSamePort()
     {
         const string appHttpPort = "6000";
@@ -388,8 +421,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetCustomPortsInEnvironmentVariables_SameManagementPortConfigured_OnlyActuatorAccessible()
     {
         const string appHttpPort = "6000";
@@ -429,8 +461,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetCustomPortsInEnvironmentVariables_AlternateManagementPortConfigured_AccessibleOnSeparatePorts()
     {
         const string appHttpPort = "6000";
@@ -478,8 +509,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetCustomPortsInEnvironmentVariables_AlternateHttpsManagementPortConfigured_AccessibleOnSeparatePortsAndSchemes()
     {
         const string appHttpPort = "6000";
@@ -528,8 +558,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetCustomPortsInCode_NoManagementPortConfigured_BothAccessibleOnSamePort()
     {
         const string appHttpPort = "6000";
@@ -565,8 +594,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetCustomPortsInCode_SameManagementPortConfigured_OnlyActuatorAccessible()
     {
         const string appHttpPort = "6000";
@@ -607,8 +635,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetCustomPortsInCode_AlternateManagementPortConfigured_AccessibleOnSeparatePorts()
     {
         const string appHttpPort = "6000";
@@ -657,8 +684,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetCustomPortsInCode_AlternateHttpsManagementPortConfigured_AccessibleOnSeparatePortsAndSchemes()
     {
         const string appHttpPort = "6000";
@@ -708,8 +734,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetDynamicPortsConfigured_NoManagementPortConfigured_BothAccessibleOnSamePort()
     {
         var appSettings = new Dictionary<string, string?>
@@ -747,8 +772,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetDynamicPortsConfigured_AlternateManagementPortConfigured_AccessibleOnSeparatePorts()
     {
         const string managementPort = "8000";
@@ -796,8 +820,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // https://github.com/dotnet/aspnetcore/issues/42273
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AspNetDynamicPortsConfigured_AlternateHttpsManagementPortConfigured_AccessibleOnSeparatePortsAndSchemes()
     {
         const string managementPort = "8000";

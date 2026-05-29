@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
 namespace Steeltoe.Connectors.MongoDb;
 
@@ -42,9 +43,15 @@ public static class MongoDbHostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddMongoDb(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         Action<ConnectorAddOptionsBuilder>? addAction)
     {
+        return AddMongoDb(builder, configureAction, addAction, null);
+    }
+
+    internal static IHostApplicationBuilder AddMongoDb(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+        Action<ConnectorAddOptionsBuilder>? addAction, IServiceBindingsReader? serviceBindingsReader)
+    {
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.Configuration.ConfigureMongoDb(configureAction);
+        builder.Configuration.ConfigureMongoDb(configureAction, serviceBindingsReader);
         builder.Services.AddMongoDb(builder.Configuration, addAction);
         return builder;
     }

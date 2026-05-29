@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.TestResources;
 
+#pragma warning disable CA1873 // Avoid potentially expensive logging
+
 namespace Steeltoe.Logging.DynamicConsole.Test;
 
 public sealed class DynamicConsoleLoggerProviderTest : IDisposable
@@ -398,19 +400,17 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
     {
         MemoryFileProvider fileProvider = new();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Logging": {
-            "LogLevel": {
-              "A": "Warning"
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Logging": {
+                "LogLevel": {
+                  "A": "Warning"
+                }
+              }
             }
-          }
-        }
-        """);
+            """);
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder =>
-            configurationBuilder.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true));
-
+        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider));
         DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Warning);
@@ -424,16 +424,16 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
         await testContext.Self.AssertMinLevelAsync(LogLevel.Error, LogLevel.Warning);
         await testContext.Child.AssertMinLevelAsync(LogLevel.Error);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Logging": {
-            "LogLevel": {
-              "A": "Trace",
-              "A.B.C": "Debug"
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "Logging": {
+                "LogLevel": {
+                  "A": "Trace",
+                  "A.B.C": "Debug"
+                }
+              }
             }
-          }
-        }
-        """);
+            """);
 
         fileProvider.NotifyChanged();
         testContext.Refresh();
@@ -489,7 +489,6 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
               "Category": "Fully.Qualified.Type",
               "Message": "Processing of { RequestUrl = https://www.example.com, UserAgent = Steeltoe } started.",
               "State": {
-                "Message": "Processing of { RequestUrl = https://www.example.com, UserAgent = Steeltoe } started.",
                 "@IncomingRequest": "{ RequestUrl = https://www.example.com, UserAgent = Steeltoe }",
                 "{OriginalFormat}": "Processing of {@IncomingRequest} started."
               },
@@ -503,7 +502,7 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
               ]
             }
 
-            """);
+            """, IgnoreLineEndingsComparer.Instance);
     }
 
     [Fact]

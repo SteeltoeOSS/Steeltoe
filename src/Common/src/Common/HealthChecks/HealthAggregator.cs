@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Steeltoe.Common.Extensions;
 using MicrosoftHealthCheckResult = Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult;
@@ -67,7 +68,10 @@ internal sealed class HealthAggregator : IHealthAggregator
     private static async Task<IDictionary<string, SteeltoeHealthCheckResult>> AggregateMicrosoftHealthChecksAsync(ICollection<IHealthContributor> contributors,
         ICollection<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        if (healthCheckRegistrations.Count == 0)
+        HealthCheckRegistration[] activeHealthCheckRegistrations =
+            healthCheckRegistrations.Where(registration => !registration.Tags.Contains("ExcludeFromHealthActuator")).ToArray();
+
+        if (activeHealthCheckRegistrations.Length == 0)
         {
             return new Dictionary<string, SteeltoeHealthCheckResult>();
         }
@@ -75,8 +79,7 @@ internal sealed class HealthAggregator : IHealthAggregator
         var healthChecks = new ConcurrentDictionary<string, SteeltoeHealthCheckResult>();
         var keys = new ConcurrentBag<string>(contributors.Select(contributor => contributor.Id));
 
-        // run all HealthCheckRegistration checks in parallel
-        await Parallel.ForEachAsync(healthCheckRegistrations, cancellationToken, async (registration, _) =>
+        await Parallel.ForEachAsync(activeHealthCheckRegistrations, cancellationToken, async (registration, _) =>
         {
             string contributorName = GetKey(keys, registration.Name);
             SteeltoeHealthCheckResult healthCheckResult;
@@ -108,7 +111,10 @@ internal sealed class HealthAggregator : IHealthAggregator
 
         try
         {
-            IHealthCheck check = registration.Factory(serviceProvider);
+            // Match the behavior of ASP.NET's HealthCheckService, which creates a scope for each check.
+            await using AsyncServiceScope serviceScope = serviceProvider.CreateAsyncScope();
+
+            IHealthCheck check = registration.Factory(serviceScope.ServiceProvider);
             MicrosoftHealthCheckResult result = await check.CheckHealthAsync(context, cancellationToken);
 
             healthCheckResult.Status = ToHealthStatus(result.Status);

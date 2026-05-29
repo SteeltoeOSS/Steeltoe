@@ -12,10 +12,19 @@ public sealed class HttpExchange
     [JsonPropertyName("timeTaken")]
     public string? SerializedTimeTaken => TimeTaken != null ? XmlConvert.ToString(TimeTaken.Value) : null;
 
+    [JsonPropertyName("timestamp")]
     public DateTime Timestamp { get; }
+
+    [JsonPropertyName("principal")]
     public HttpExchangePrincipal? Principal { get; }
+
+    [JsonPropertyName("session")]
     public HttpExchangeSession? Session { get; }
+
+    [JsonPropertyName("request")]
     public HttpExchangeRequest Request { get; }
+
+    [JsonPropertyName("response")]
     public HttpExchangeResponse Response { get; }
 
     [JsonIgnore]

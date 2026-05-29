@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.CompilerServices;
+using Aspire;
 
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration.Test")]
@@ -11,13 +12,18 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Common.Hosting")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Hosting.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Http")]
+[assembly: InternalsVisibleTo("Steeltoe.Common.Logging")]
+[assembly: InternalsVisibleTo("Steeltoe.Common.Net")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.Abstractions")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.CloudFoundry")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.CloudFoundry.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.Encryption")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.Kubernetes.ServiceBindings")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.Placeholder")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.RandomValue")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.SpringBoot")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors.EntityFrameworkCore")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Configuration")]
@@ -38,6 +44,11 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tasks")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tracing")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tracing.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.JwtBearer")]
 [assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.CloudFoundry.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.OpenIdConnect")]
 [assembly: InternalsVisibleTo("Steeltoe.Security.Authorization.Certificate")]
+[assembly: InternalsVisibleTo("Steeltoe.Security.DataProtection.Redis")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+
+[assembly: LoggingCategories("Steeltoe", "Steeltoe.Common")]

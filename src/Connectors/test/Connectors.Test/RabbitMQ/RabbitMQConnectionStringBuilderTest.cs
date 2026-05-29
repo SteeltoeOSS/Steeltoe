@@ -42,6 +42,21 @@ public sealed class RabbitMQConnectionStringBuilderTest
     }
 
     [Fact]
+    public void Preserves_query_string_parameters_when_setting_URL()
+    {
+        var builder = new RabbitMQConnectionStringBuilder
+        {
+            ConnectionString = "amqps://localhost:999/virtual-host-1?first=one&second=two"
+        };
+
+        const string url = "amqps://localhost:999/virtual-host-1?first=one&second=number2";
+        builder["url"] = url;
+
+        builder.ConnectionString.Should().Be("amqps://localhost:999/virtual-host-1?first=one&second=number2");
+        builder["url"].Should().Be(builder.ConnectionString);
+    }
+
+    [Fact]
     public void Returns_null_when_getting_known_keyword()
     {
         var builder = new RabbitMQConnectionStringBuilder();
@@ -52,22 +67,24 @@ public sealed class RabbitMQConnectionStringBuilderTest
     }
 
     [Fact]
-    public void Throws_when_getting_unknown_keyword()
+    public void Returns_null_when_getting_unknown_keyword()
     {
         var builder = new RabbitMQConnectionStringBuilder();
 
-        Action action = () => _ = builder["bad"];
+        object? some = builder["some"];
 
-        action.Should().ThrowExactly<ArgumentException>().WithMessage("Keyword not supported: 'bad'.*");
+        some.Should().BeNull();
     }
 
     [Fact]
-    public void Throws_when_setting_unknown_keyword()
+    public void Can_get_unknown_keyword_that_was_set_earlier()
     {
-        var builder = new RabbitMQConnectionStringBuilder();
+        var builder = new RabbitMQConnectionStringBuilder
+        {
+            ["some"] = "other"
+        };
 
-        Action action = () => builder["bad"] = "some";
-
-        action.Should().ThrowExactly<ArgumentException>().WithMessage("Keyword not supported: 'bad'.*");
+        object? value = builder["some"];
+        value.Should().Be("other");
     }
 }

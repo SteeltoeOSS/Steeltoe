@@ -13,10 +13,13 @@ internal sealed partial class DecryptionConfigurationProvider(
     IList<IConfigurationProvider> providers, ITextDecryptor? textDecryptor, ILoggerFactory loggerFactory)
     : CompositeConfigurationProvider(providers, loggerFactory)
 {
+    private const int RegexMatchTimeoutInMilliseconds = 1_000;
+
     private readonly ILogger<DecryptionConfigurationProvider> _logger = loggerFactory.CreateLogger<DecryptionConfigurationProvider>();
     private ITextDecryptor? _textDecryptor = textDecryptor;
 
-    [GeneratedRegex("^{cipher}({key:(?<alias>.*)})?(?<cipher>.*)$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture, 1000)]
+    [GeneratedRegex("^{cipher}({key:(?<alias>.*)})?(?<cipher>.*)$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture,
+        RegexMatchTimeoutInMilliseconds)]
     private static partial Regex CipherRegex();
 
     public override bool TryGet(string key, out string? value)
@@ -43,7 +46,7 @@ internal sealed partial class DecryptionConfigurationProvider(
             }
         }
 
-        return value != null;
+        return found;
     }
 
     private ITextDecryptor EnsureDecryptor(IConfigurationRoot configurationRoot)
@@ -53,5 +56,5 @@ internal sealed partial class DecryptionConfigurationProvider(
     }
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Decrypted value '{CipherValue}' at key '{Key}' to '{PlainTextValue}'.")]
-    private partial void LogDecrypt(string key, string? cipherValue, string? plainTextValue);
+    private partial void LogDecrypt(string key, string cipherValue, string plainTextValue);
 }

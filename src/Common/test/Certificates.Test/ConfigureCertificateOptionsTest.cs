@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -50,10 +50,9 @@ public sealed class ConfigureCertificateOptionsTest
         options.Certificate.Should().BeNull();
     }
 
-    [Theory]
+    [TheorySkippedOnPlatform(nameof(OSPlatform.OSX))]
     [InlineData("")]
     [InlineData(CertificateName)]
-    [Trait("Category", "SkipOnMacOS")]
     public void ConfigureCertificateOptions_ThrowsOnEmptyFile(string certificateName)
     {
         var appSettings = new Dictionary<string, string?>
@@ -149,7 +148,7 @@ public sealed class ConfigureCertificateOptionsTest
         string secondPrivateKeyContent = await File.ReadAllTextAsync("secondInstance.key", TestContext.Current.CancellationToken);
         using var secondX509 = X509Certificate2.CreateFromPemFile("secondInstance.crt", "secondInstance.key");
         string appSettings = BuildAppSettingsJson(certificateName, certificateFilePath, privateKeyFilePath);
-        string appSettingsPath = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
+        string appSettingsPath = sandbox.CreateFile("appsettings.json", appSettings);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddJsonFile(appSettingsPath, false, true);
         IConfiguration configuration = configurationBuilder.Build();
@@ -164,11 +163,11 @@ public sealed class ConfigureCertificateOptionsTest
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         optionsMonitor.Get(certificateName).Certificate.Should().BeEquivalentTo(firstX509);
 
-        await File.WriteAllTextAsync(certificateFilePath, secondCertificateContent, TestContext.Current.CancellationToken);
-        await File.WriteAllTextAsync(privateKeyFilePath, secondPrivateKeyContent, TestContext.Current.CancellationToken);
-
-        using Task pollTask = WaitUntilCertificateChangedToAsync(secondX509, optionsMonitor, certificateName, TestContext.Current.CancellationToken);
-        await pollTask.WaitAsync(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
+        await WaitUntilCertificateChangedToAsync(certificateName, secondX509, optionsMonitor, async () =>
+        {
+            await File.WriteAllTextAsync(certificateFilePath, secondCertificateContent, TestContext.Current.CancellationToken);
+            await File.WriteAllTextAsync(privateKeyFilePath, secondPrivateKeyContent, TestContext.Current.CancellationToken);
+        });
 
         optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
     }
@@ -186,7 +185,7 @@ public sealed class ConfigureCertificateOptionsTest
         string firstPrivateKeyFilePath = sandbox.CreateFile(Guid.NewGuid() + ".key", firstPrivateKeyContent);
         using var secondX509 = X509Certificate2.CreateFromPemFile("secondInstance.crt", "secondInstance.key");
         string appSettings = BuildAppSettingsJson(certificateName, firstCertificateFilePath, firstPrivateKeyFilePath);
-        string appSettingsPath = sandbox.CreateFile(MemoryFileProvider.DefaultAppSettingsFileName, appSettings);
+        string appSettingsPath = sandbox.CreateFile("appsettings.json", appSettings);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddJsonFile(appSettingsPath, false, true);
         IConfiguration configuration = configurationBuilder.Build();
@@ -201,42 +200,56 @@ public sealed class ConfigureCertificateOptionsTest
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         optionsMonitor.Get(certificateName).Certificate.Should().BeEquivalentTo(firstX509);
 
-        appSettings = BuildAppSettingsJson(certificateName, "secondInstance.crt", "secondInstance.key");
-        await File.WriteAllTextAsync(appSettingsPath, appSettings, TestContext.Current.CancellationToken);
-
-        using Task pollTask = WaitUntilCertificateChangedToAsync(secondX509, optionsMonitor, certificateName, TestContext.Current.CancellationToken);
-        await pollTask.WaitAsync(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
+        await WaitUntilCertificateChangedToAsync(certificateName, secondX509, optionsMonitor, async () =>
+        {
+            appSettings = BuildAppSettingsJson(certificateName, "secondInstance.crt", "secondInstance.key");
+            await File.WriteAllTextAsync(appSettingsPath, appSettings, TestContext.Current.CancellationToken);
+        });
 
         optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
     }
 
     private static string BuildAppSettingsJson(string certificateName, string certificatePath, string keyPath)
     {
-        string certificateBlock = $"""
-                "CertificateFilePath": {JsonSerializer.Serialize(certificatePath)},
-                "PrivateKeyFilePath": {JsonSerializer.Serialize(keyPath)}
-            """;
+        string escapedCertificatePath = certificatePath.Replace(@"\", @"\\", StringComparison.Ordinal);
+        string escapedKeyPath = keyPath.Replace(@"\", @"\\", StringComparison.Ordinal);
 
-        string namedCertificateSection = string.IsNullOrEmpty(certificateName)
-            ? certificateBlock
-            : $"{JsonSerializer.Serialize(certificateName)}: {{ {certificateBlock} }}";
-
-        return $$"""
+        return string.IsNullOrEmpty(certificateName)
+            ? $$"""
             {
               "Certificates": {
-                {{namedCertificateSection}}
+                "CertificateFilePath": "{{escapedCertificatePath}}",
+                "PrivateKeyFilePath": "{{escapedKeyPath}}"
+              }
+            }
+            """
+            : $$"""
+            {
+              "Certificates": {
+                "{{certificateName}}": {
+                  "CertificateFilePath": "{{escapedCertificatePath}}",
+                  "PrivateKeyFilePath": "{{escapedKeyPath}}"
+                }
               }
             }
             """;
     }
 
-    private static async Task WaitUntilCertificateChangedToAsync(X509Certificate2 expectedCertificate, IOptionsMonitor<CertificateOptions> optionsMonitor,
-        string certificateName, CancellationToken cancellationToken)
+    private static async Task WaitUntilCertificateChangedToAsync(string certificateName, X509Certificate2 expectedCertificate,
+        IOptionsMonitor<CertificateOptions> optionsMonitor, Func<Task> triggerAction)
     {
-        while (!Equals(optionsMonitor.Get(certificateName).Certificate, expectedCertificate))
+        var completionSource = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        using IDisposable? changeListener = optionsMonitor.OnChange((options, name) =>
         {
-            await Task.Delay(50, cancellationToken);
-        }
+            if (name == certificateName && Equals(options.Certificate, expectedCertificate))
+            {
+                completionSource.TrySetResult();
+            }
+        });
+
+        await triggerAction();
+        await completionSource.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
     }
 
     private static string GetConfigurationKey(string? optionName, string propertyName)

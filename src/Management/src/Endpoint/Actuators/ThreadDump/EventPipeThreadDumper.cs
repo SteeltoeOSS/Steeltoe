@@ -18,7 +18,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 /// <summary>
 /// Thread dumper that uses the EventPipe to acquire the call stacks of all the running threads.
 /// </summary>
-internal sealed class EventPipeThreadDumper : IThreadDumper
+internal sealed partial class EventPipeThreadDumper : IThreadDumper
 {
     private const string ThreadIdTemplate = "Thread (";
 
@@ -63,7 +63,7 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
         {
             try
             {
-                _logger.LogInformation("Attempting to create a thread dump.");
+                LogStart();
 
                 var client = new DiagnosticsClient(System.Environment.ProcessId);
                 List<EventPipeProvider> providers = [new("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)];
@@ -72,28 +72,28 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
                 using EventPipeSession session = client.StartEventPipeSession(providers);
                 List<ThreadInfo> threads = await GetThreadsFromEventPipeSessionAsync(session, logWriter, cancellationToken);
 
-                _logger.LogInformation("Successfully created a thread dump.");
+                LogSucceeded();
                 return threads;
             }
             finally
             {
 #pragma warning disable S1215 // "GC.Collect" should not be called
-                long totalMemory = GC.GetTotalMemory(true);
+                long memoryInBytes = GC.GetTotalMemory(true);
 #pragma warning restore S1215 // "GC.Collect" should not be called
 
-                _logger.LogDebug("Total memory: {Memory}.", totalMemory);
+                LogTotalMemory(memoryInBytes);
             }
         }, cancellationToken);
     }
 
     internal async Task<TResult> CaptureLogOutputAsync<TResult>(Func<TextWriter, Task<TResult>> action, CancellationToken cancellationToken)
     {
-        bool isLogEnabled = _logger.IsEnabled(LogLevel.Trace);
+        bool isTraceLogEnabled = _logger.IsEnabled(LogLevel.Trace);
         using var logStream = new MemoryStream();
         Exception? error = null;
         TResult? result = default;
 
-        await using (TextWriter logWriter = isLogEnabled ? new StreamWriter(logStream, leaveOpen: true) : TextWriter.Null)
+        await using (TextWriter logWriter = isTraceLogEnabled ? new StreamWriter(logStream, leaveOpen: true) : TextWriter.Null)
         {
             try
             {
@@ -108,7 +108,7 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
 
         string? logOutput = null;
 
-        if (isLogEnabled)
+        if (isTraceLogEnabled)
         {
             logStream.Seek(0, SeekOrigin.Begin);
             using var logReader = new StreamReader(logStream);
@@ -119,16 +119,16 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            string message = isLogEnabled
+            string message = isTraceLogEnabled
                 ? $"Failed to create a thread dump. Captured log:{System.Environment.NewLine}{logOutput}"
                 : "Failed to create a thread dump.";
 
             throw new InvalidOperationException(message, error);
         }
 
-        if (isLogEnabled)
+        if (isTraceLogEnabled)
         {
-            _logger.LogTrace("Captured log from thread dump:{LineBreak}{DumpLog}", System.Environment.NewLine, logOutput);
+            LogDumpLogCaptured(System.Environment.NewLine, logOutput);
         }
 
         return result!;
@@ -153,9 +153,9 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
             var computer = new SampleProfilerThreadTimeComputer(eventLog, symbolReader);
             computer.GenerateThreadTimeStacks(stackSource);
 
-            List<ThreadInfo> results = ReadStackSource(stackSource, symbolReader).ToList();
+            List<ThreadInfo> results = ReadStackSource(stackSource, symbolReader, logWriter).ToList();
 
-            _logger.LogTrace("Finished thread walk.");
+            LogThreadWalkFinished(results.Count);
             return results;
         }
         finally
@@ -183,9 +183,7 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
                 }
                 catch (TimeoutException) when (!cancellationToken.IsCancellationRequested)
                 {
-#pragma warning disable S6667 // Logging in a catch clause should pass the caught exception as a parameter.
-                    _logger.LogInformation("Sufficiently large applications can cause this command to take non-trivial amounts of time.");
-#pragma warning restore S6667 // Logging in a catch clause should pass the caught exception as a parameter.
+                    LogPossiblySlow();
 
                     throw;
                 }
@@ -231,12 +229,14 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
         };
     }
 
-    private IEnumerable<ThreadInfo> ReadStackSource(MutableTraceEventStackSource stackSource, SymbolReader symbolReader)
+    private IEnumerable<ThreadInfo> ReadStackSource(MutableTraceEventStackSource stackSource, SymbolReader symbolReader, TextWriter logWriter)
     {
         var samplesForThread = new Dictionary<int, List<StackSourceSample>>();
 
         stackSource.ForEach(sample =>
         {
+            logWriter.WriteLine($"[Steeltoe] Tracking sample: {sample}");
+
             StackSourceCallStackIndex stackIndex = sample.StackIndex;
 
             while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith(ThreadIdTemplate, StringComparison.Ordinal))
@@ -257,10 +257,14 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
             }
         });
 
+        logWriter.WriteLine(samplesForThread.Count == 0
+            ? "[Steeltoe] WARN: No managed samples found in memory dump."
+            : $"[Steeltoe] Start analyzing all {samplesForThread.Count} threads.");
+
         // For every thread recorded in our trace, use the first stack.
         foreach ((int threadId, List<StackSourceSample> samples) in samplesForThread)
         {
-            _logger.LogDebug("Found {Stacks} stacks for thread {Thread}.", samples.Count, threadId);
+            logWriter.WriteLine($"[Steeltoe] Found {samples.Count} samples for thread {threadId}, analyzing the first one.");
 
             var threadInfo = new ThreadInfo
             {
@@ -269,7 +273,13 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
                 ThreadName = $"Thread-{threadId:D5}"
             };
 
-            List<StackTraceElement> stackTrace = GetStackTrace(threadId, samples[0], stackSource, symbolReader).ToList();
+            List<StackTraceElement> stackTrace = GetStackTrace(threadId, samples[0], stackSource, symbolReader, logWriter).ToList();
+
+            if (logWriter != TextWriter.Null)
+            {
+                int managedCount = stackTrace.Count(frame => !frame.IsNativeMethod);
+                logWriter.WriteLine($"[Steeltoe] Found {managedCount} of {stackTrace.Count} frames in managed code for thread {threadId}.");
+            }
 
             foreach (StackTraceElement stackFrame in stackTrace)
             {
@@ -289,10 +299,10 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
         return int.Parse(frameName.AsSpan(ThreadIdTemplate.Length, firstIndex - ThreadIdTemplate.Length), CultureInfo.InvariantCulture);
     }
 
-    private IEnumerable<StackTraceElement> GetStackTrace(int threadId, StackSourceSample stackSourceSample, TraceEventStackSource stackSource,
-        SymbolReader symbolReader)
+    private static IEnumerable<StackTraceElement> GetStackTrace(int threadId, StackSourceSample stackSourceSample, TraceEventStackSource stackSource,
+        SymbolReader symbolReader, TextWriter logWriter)
     {
-        _logger.LogDebug("Processing thread with ID: {Thread}.", threadId);
+        logWriter.WriteLine($"[Steeltoe] Walking stack frames of thread {threadId}.");
 
         StackSourceCallStackIndex stackIndex = stackSourceSample.StackIndex;
         StackSourceFrameIndex frameIndex = stackSource.GetFrameIndex(stackIndex);
@@ -354,6 +364,24 @@ internal sealed class EventPipeThreadDumper : IThreadDumper
                 ? State.Waiting
                 : State.Runnable;
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Attempting to create a thread dump.")]
+    private partial void LogStart();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Successfully created a thread dump.")]
+    private partial void LogSucceeded();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Total memory is {MemoryInBytes} bytes.")]
+    private partial void LogTotalMemory(long memoryInBytes);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Captured log from thread dump:{LineBreak}{DumpLog}")]
+    private partial void LogDumpLogCaptured(string lineBreak, string? dumpLog);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Finished thread walk, found {Count} results.")]
+    private partial void LogThreadWalkFinished(int count);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Sufficiently large applications can cause this command to take non-trivial amounts of time.")]
+    private partial void LogPossiblySlow();
 
     private sealed record StackFrameSymbol(string AssemblyName, string TypeName, string MemberName, string Parameters)
     {

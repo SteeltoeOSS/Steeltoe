@@ -173,7 +173,7 @@
             },
             "Scheme": {
               "type": "string",
-              "description": "Gets or sets the scheme to register the running app with (\"http\" or \"https\"). Default value: http."
+              "description": "Gets or sets the scheme to register the running app with (\"http\" or \"https\")."
             },
             "ServiceName": {
               "type": "string",
@@ -188,7 +188,7 @@
             },
             "UseAspNetCoreUrls": {
               "type": "boolean",
-              "description": "Gets or sets a value indicating whether to register with the port number ASP.NET Core is listening on. Default value: true."
+              "description": "Gets or sets a value indicating whether to register with the port number ASP.NET Core is listening on. Default value: true.\n\nThis property is ignored when 'Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.Port' or 'Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.Scheme' is explicitly configured."
             },
             "UseNetworkInterfaces": {
               "type": "boolean",

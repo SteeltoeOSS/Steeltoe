@@ -1,0 +1,17 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Connectors": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Connectors.EntityFrameworkCore": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  }
+}

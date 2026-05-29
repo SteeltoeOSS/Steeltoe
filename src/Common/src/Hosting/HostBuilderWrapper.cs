@@ -86,14 +86,14 @@ internal sealed class HostBuilderWrapper
         }
     }
 
-    public HostBuilderWrapper ConfigureServices(Action<IServiceCollection> configureAction)
+    public void ConfigureServices(Action<IServiceCollection> configureAction)
     {
         ArgumentNullException.ThrowIfNull(configureAction);
 
-        return ConfigureServices((_, services) => configureAction(services));
+        ConfigureServices((_, services) => configureAction(services));
     }
 
-    public HostBuilderWrapper ConfigureServices(Action<HostBuilderContextWrapper, IServiceCollection> configureAction)
+    public void ConfigureServices(Action<HostBuilderContextWrapper, IServiceCollection> configureAction)
     {
         ArgumentNullException.ThrowIfNull(configureAction);
 
@@ -106,18 +106,16 @@ internal sealed class HostBuilderWrapper
         {
             _configureServicesActions.Add(configureAction);
         }
-
-        return this;
     }
 
-    public HostBuilderWrapper ConfigureAppConfiguration(Action<IConfigurationBuilder> configureAction)
+    public void ConfigureAppConfiguration(Action<IConfigurationBuilder> configureAction)
     {
         ArgumentNullException.ThrowIfNull(configureAction);
 
-        return ConfigureAppConfiguration((_, configurationBuilder) => configureAction(configurationBuilder));
+        ConfigureAppConfiguration((_, configurationBuilder) => configureAction(configurationBuilder));
     }
 
-    public HostBuilderWrapper ConfigureAppConfiguration(Action<HostBuilderContextWrapper, IConfigurationBuilder> configureAction)
+    public void ConfigureAppConfiguration(Action<HostBuilderContextWrapper, IConfigurationBuilder> configureAction)
     {
         ArgumentNullException.ThrowIfNull(configureAction);
 
@@ -130,18 +128,16 @@ internal sealed class HostBuilderWrapper
         {
             _configureAppConfigurationActions.Add(configureAction);
         }
-
-        return this;
     }
 
-    public HostBuilderWrapper ConfigureLogging(Action<ILoggingBuilder> configureAction)
+    public void ConfigureLogging(Action<ILoggingBuilder> configureAction)
     {
         ArgumentNullException.ThrowIfNull(configureAction);
 
-        return ConfigureLogging((_, configurationBuilder) => configureAction(configurationBuilder));
+        ConfigureLogging((_, configurationBuilder) => configureAction(configurationBuilder));
     }
 
-    public HostBuilderWrapper ConfigureLogging(Action<HostBuilderContextWrapper, ILoggingBuilder> configureAction)
+    public void ConfigureLogging(Action<HostBuilderContextWrapper, ILoggingBuilder> configureAction)
     {
         ArgumentNullException.ThrowIfNull(configureAction);
 
@@ -156,11 +152,9 @@ internal sealed class HostBuilderWrapper
             _configureServicesActions.Add((contextWrapper, collection) => collection.AddLogging(builder => configureAction(contextWrapper, builder)));
 #pragma warning restore S4792 // Configuring loggers is security-sensitive
         }
-
-        return this;
     }
 
-    public HostBuilderWrapper ConfigureWebHost(Action<IWebHostBuilder> configureAction)
+    public void ConfigureWebHost(Action<IWebHostBuilder> configureAction)
     {
         ArgumentNullException.ThrowIfNull(configureAction);
 
@@ -184,7 +178,5 @@ internal sealed class HostBuilderWrapper
         {
             throw new NotSupportedException($"Unknown host builder type '{_innerBuilder.GetType()}'.");
         }
-
-        return this;
     }
 }

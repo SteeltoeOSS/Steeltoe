@@ -9,6 +9,11 @@ namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 public sealed class ThreadDumpEndpointOptions : EndpointOptions
 {
     /// <summary>
+    /// Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Full.
+    /// </summary>
+    public override EndpointPermissions RequiredPermissions { get; set; } = EndpointPermissions.Full;
+
+    /// <summary>
     /// Gets or sets the time (in milliseconds) to trace for, before automatically stopping the trace. Default value: 10.
     /// </summary>
     public int Duration { get; set; } = 10;

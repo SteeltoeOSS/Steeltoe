@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Steeltoe.Common;
 
 namespace Steeltoe.Security.Authentication.JwtBearer;
@@ -13,12 +14,15 @@ internal sealed class PostConfigureJwtBearerOptions : IPostConfigureOptions<JwtB
 {
     private const string BearerConfigurationKeyPrefix = "Authentication:Schemes:Bearer";
     private readonly IConfiguration _configuration;
+    private readonly TokenKeyResolver _tokenKeyResolver;
 
-    public PostConfigureJwtBearerOptions(IConfiguration configuration)
+    public PostConfigureJwtBearerOptions(IConfiguration configuration, TokenKeyResolver tokenKeyResolver)
     {
         ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(tokenKeyResolver);
 
         _configuration = configuration;
+        _tokenKeyResolver = tokenKeyResolver;
     }
 
     public void PostConfigure(string? name, JwtBearerOptions options)
@@ -56,7 +60,10 @@ internal sealed class PostConfigureJwtBearerOptions : IPostConfigureOptions<JwtB
             options.TokenValidationParameters.ValidIssuer = $"{options.Authority}/oauth/token";
         }
 
-        var keyResolver = new TokenKeyResolver(options.Authority, options.Backchannel);
-        options.TokenValidationParameters.IssuerSigningKeyResolver = (_, _, keyId, _) => keyResolver.ResolveSigningKey(keyId);
+        options.TokenValidationParameters.IssuerSigningKeyResolver = (_, _, keyId, _) =>
+        {
+            JsonWebKey? key = _tokenKeyResolver.ResolveSigningKey(options.Authority, keyId, options.Backchannel);
+            return key != null ? [key] : [];
+        };
     }
 }

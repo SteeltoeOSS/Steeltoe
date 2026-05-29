@@ -27,7 +27,6 @@ public sealed class ConfigServerHealthContributorTest
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
         builder.AddPlaceholderResolver();
-
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
@@ -48,55 +47,10 @@ public sealed class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         contributor.Provider.Should().NotBeNull();
-    }
-
-    [Fact]
-    public void GetTimeToLive_ReturnsExpected()
-    {
-        var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
-        {
-            ["spring:cloud:config:uri"] = "http://localhost:8888/",
-            ["spring:cloud:config:name"] = "myName",
-            ["spring:cloud:config:label"] = "myLabel",
-            ["spring:cloud:config:health:timeToLive"] = "100000",
-            ["spring:cloud:config:timeout"] = "10"
-        };
-
-        var builder = new ConfigurationBuilder();
-        builder.AddInMemoryCollection(values);
-        builder.AddConfigServer();
-
-        IConfigurationRoot configurationRoot = builder.Build();
-
-        var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
-        contributor.GetTimeToLive().Should().Be(100_000);
-    }
-
-    [Fact]
-    public void IsEnabled_ReturnsExpected()
-    {
-        var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
-        {
-            ["spring:cloud:config:uri"] = "http://localhost:8888/",
-            ["spring:cloud:config:name"] = "myName",
-            ["spring:cloud:config:label"] = "myLabel",
-            ["spring:cloud:config:health:enabled"] = "true",
-            ["spring:cloud:config:timeout"] = "10"
-        };
-
-        var builder = new ConfigurationBuilder();
-        builder.AddInMemoryCollection(values);
-        builder.AddConfigServer();
-
-        IConfigurationRoot configurationRoot = builder.Build();
-
-        var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
-        contributor.IsEnabled().Should().BeTrue();
     }
 
     [Fact]
@@ -115,15 +69,16 @@ public sealed class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
-        contributor.IsCacheStale(0).Should().BeTrue(); // No cache established yet
+        ConfigServerClientOptions optionsSnapshot = contributor.Provider!.ClientOptions;
+
+        contributor.IsCacheStale(0, optionsSnapshot).Should().BeTrue(); // No cache established yet
         contributor.Cached = new ConfigEnvironment();
         contributor.LastAccess = 9;
-        contributor.IsCacheStale(10).Should().BeTrue();
-        contributor.IsCacheStale(8).Should().BeFalse();
+        contributor.IsCacheStale(10, optionsSnapshot).Should().BeTrue();
+        contributor.IsCacheStale(8, optionsSnapshot).Should().BeFalse();
     }
 
     [Fact]
@@ -143,7 +98,6 @@ public sealed class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance)
@@ -152,7 +106,9 @@ public sealed class ConfigServerHealthContributorTest
         };
 
         long lastAccess = contributor.LastAccess = DateTimeOffset.Now.ToUnixTimeMilliseconds() - 100;
-        IList<PropertySource>? sources = await contributor.GetPropertySourcesAsync(contributor.Provider!, TestContext.Current.CancellationToken);
+
+        IList<PropertySource>? sources =
+            await contributor.GetPropertySourcesAsync(contributor.Provider!, contributor.Provider!.ClientOptions, TestContext.Current.CancellationToken);
 
         contributor.LastAccess.Should().NotBe(lastAccess);
         sources.Should().BeNull();

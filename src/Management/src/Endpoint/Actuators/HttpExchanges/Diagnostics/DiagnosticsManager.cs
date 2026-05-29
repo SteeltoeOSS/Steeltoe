@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges.Diagnostics;
 
-internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable
+internal sealed partial class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable
 {
     private readonly ILogger<DiagnosticsManager> _logger;
     private readonly List<DiagnosticObserver> _observers;
@@ -57,7 +57,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
 
             if (_listenersSubscription != null)
             {
-                _logger.LogTrace("Subscribed to Diagnostic Listener");
+                LogSubscribed();
             }
         }
     }
@@ -82,4 +82,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
             _isDisposed = true;
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Subscribed to diagnostic listener.")]
+    private partial void LogSubscribed();
 }

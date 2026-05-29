@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
     <Description>Automatically configure Steeltoe packages that are referenced by a project. This is not a meta package, other packages must be added separately.</Description>
     <PackageTags>autoconfiguration;automatic;configuration;application;bootstrapping;starter</PackageTags>
     <IsPackable>true</IsPackable>

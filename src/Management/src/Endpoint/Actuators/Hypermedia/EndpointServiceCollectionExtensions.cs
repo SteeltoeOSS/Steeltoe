@@ -39,6 +39,8 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
+        services.AddHttpContextAccessor();
+
         services.AddCoreActuatorServices<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions, HypermediaEndpointMiddleware,
             IHypermediaEndpointHandler, HypermediaEndpointHandler, string, Links>(configureMiddleware);
 

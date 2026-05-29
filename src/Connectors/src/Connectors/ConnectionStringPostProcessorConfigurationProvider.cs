@@ -7,7 +7,7 @@ using Steeltoe.Configuration;
 
 namespace Steeltoe.Connectors;
 
-internal sealed class ConnectionStringPostProcessorConfigurationProvider : PostProcessorConfigurationProvider, IDisposable
+internal sealed class ConnectionStringPostProcessorConfigurationProvider : PostProcessorConfigurationProvider
 {
     private readonly IDisposable? _changeToken;
 
@@ -28,8 +28,9 @@ internal sealed class ConnectionStringPostProcessorConfigurationProvider : PostP
         OnReload();
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
         _changeToken?.Dispose();
+        base.Dispose();
     }
 }

@@ -23,12 +23,7 @@ internal sealed class HypermediaEndpointMiddleware(
             ? headerScheme.ToString()
             : httpContext.Request.Scheme;
 
-        // request.Host automatically includes or excludes the port based on whether it is standard for the scheme
-        // ... except when we manually change the scheme to match the X-Forwarded-Proto
-        string requestUri = scheme == "https" && httpContext.Request.Host.Port == 443
-            ? $"{scheme}://{httpContext.Request.Host.Host}{httpContext.Request.PathBase}{httpContext.Request.Path}"
-            : $"{scheme}://{httpContext.Request.Host}{httpContext.Request.PathBase}{httpContext.Request.Path}";
-
+        string requestUri = $"{scheme}://{httpContext.Request.Host}{httpContext.Request.Path}";
         return Task.FromResult<string?>(requestUri);
     }
 

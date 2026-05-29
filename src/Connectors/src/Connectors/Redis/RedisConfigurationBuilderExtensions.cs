@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
 namespace Steeltoe.Connectors.Redis;
 
@@ -36,9 +38,23 @@ public static class RedisConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder ConfigureRedis(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
+        return ConfigureRedis(builder, configureAction, null);
+    }
+
+    internal static IConfigurationBuilder ConfigureRedis(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+        IServiceBindingsReader? serviceBindingsReader)
+    {
         ArgumentNullException.ThrowIfNull(builder);
 
-        ConnectorConfigurer.Configure(builder, configureAction, new RedisConnectionStringPostProcessor());
+        Action<ConnectorConfigureOptionsBuilder> overrideConfigureAction = options =>
+        {
+            configureAction?.Invoke(options);
+            options.CloudFoundryBrokerTypes = options.SkipDefaultServiceBindings ? CloudFoundryServiceBrokerTypes.None : CloudFoundryServiceBrokerTypes.Redis;
+        };
+
+        ConnectorConfigurer.Configure(builder, overrideConfigureAction, new RedisConnectionStringPostProcessor(), serviceBindingsReader,
+            NullLoggerFactory.Instance);
+
         return builder;
     }
 }

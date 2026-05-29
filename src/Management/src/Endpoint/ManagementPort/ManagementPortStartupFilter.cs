@@ -47,7 +47,7 @@ internal sealed class ManagementPortStartupFilter : IStartupFilter
             int managementPort = _configuration.GetValue<int?>(ManagementPortConfigurationKey) ?? 0;
             bool useHttps = _configuration.GetValue<bool?>(ManagementPortSslConfigurationKey) ?? false;
 
-            if (managementPort > 0)
+            if (managementPort is > 0 and < 65536)
             {
                 var server = applicationBuilder.ApplicationServices.GetRequiredService<IServer>();
                 ICollection<string> addresses = server.Features.GetRequiredFeature<IServerAddressesFeature>().Addresses;

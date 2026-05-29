@@ -2,14 +2,20 @@
 abstract Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TRequest, TResponse>.InvokeEndpointHandlerAsync(TRequest? request, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResponse>!
 const Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.LivenessKey = "Liveness" -> string!
 const Steeltoe.Management.Endpoint.Actuators.Health.Availability.ApplicationAvailability.ReadinessKey = "Readiness" -> string!
+override Steeltoe.Management.Endpoint.Actuators.Environment.EnvironmentEndpointOptions.RequiredPermissions.get -> Steeltoe.Management.Configuration.EndpointPermissions
+override Steeltoe.Management.Endpoint.Actuators.Environment.EnvironmentEndpointOptions.RequiredPermissions.set -> void
 override Steeltoe.Management.Endpoint.Actuators.Health.Availability.AvailabilityState.ToString() -> string!
 override Steeltoe.Management.Endpoint.Actuators.Health.HealthEndpointOptions.RequiresExactMatch() -> bool
+override Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions.RequiredPermissions.get -> Steeltoe.Management.Configuration.EndpointPermissions
+override Steeltoe.Management.Endpoint.Actuators.HeapDump.HeapDumpEndpointOptions.RequiredPermissions.set -> void
 override Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConverter.Read(ref System.Text.Json.Utf8JsonReader reader, System.Type! typeToConvert, System.Text.Json.JsonSerializerOptions! options) -> System.DateTime
 override Steeltoe.Management.Endpoint.Actuators.Info.EpochSecondsDateTimeConverter.Write(System.Text.Json.Utf8JsonWriter! writer, System.DateTime value, System.Text.Json.JsonSerializerOptions! options) -> void
 override Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersEndpointOptions.RequiresExactMatch() -> bool
 override Steeltoe.Management.Endpoint.Actuators.Loggers.LoggersRequest.ToString() -> string!
 override Steeltoe.Management.Endpoint.Actuators.Services.ServiceRegistration.ToString() -> string!
 override Steeltoe.Management.Endpoint.Actuators.ThreadDump.StackTraceElement.ToString() -> string!
+override Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadDumpEndpointOptions.RequiredPermissions.get -> Steeltoe.Management.Configuration.EndpointPermissions
+override Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadDumpEndpointOptions.RequiredPermissions.set -> void
 override Steeltoe.Management.Endpoint.Actuators.ThreadDump.ThreadInfo.ToString() -> string!
 static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState.Broken -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState!
 static readonly Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState.Correct -> Steeltoe.Management.Endpoint.Actuators.Health.Availability.LivenessState!
@@ -204,6 +210,7 @@ Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangePrincipal.Name.
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest.Headers.get -> System.Collections.Generic.IDictionary<string!, Microsoft.Extensions.Primitives.StringValues>!
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest.HttpExchangeRequest(string! method, System.Uri! uri, System.Collections.Generic.IDictionary<string!, Microsoft.Extensions.Primitives.StringValues>! headers, string? remoteAddress) -> void
+Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest.JsonUri.get -> string!
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest.Method.get -> string!
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest.RemoteAddress.get -> string?
 Steeltoe.Management.Endpoint.Actuators.HttpExchanges.HttpExchangeRequest.Uri.get -> System.Uri!

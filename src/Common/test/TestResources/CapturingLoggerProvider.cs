@@ -8,7 +8,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 namespace Steeltoe.Common.TestResources;
 
 /// <summary>
-/// Enables to capture log messages in tests.
+/// Enables capturing log messages in tests.
 /// </summary>
 public sealed class CapturingLoggerProvider : ILoggerProvider
 {

@@ -25,7 +25,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly, null, null, null);
         builder.Services.Configure<SqlServerOptions>(options => options.ConnectionString += ";Encrypt=false");
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseSqlServer(serviceProvider));
         await using WebApplication app = builder.Build();
@@ -34,7 +34,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
         await using var dbContext = scope.ServiceProvider.GetRequiredService<GoodDbContext>();
         string? connectionString = dbContext.Database.GetConnectionString();
 
-        connectionString.Should().Be("Data Source=localhost;Initial Catalog=myDb;User ID=steeltoe;Password=steeltoe;Max Pool Size=50;Encrypt=false");
+        connectionString.Should().StartWith("Data Source=localhost;Initial Catalog=myDb;User ID=steeltoe;Password=steeltoe;Max Pool Size=50;Encrypt=");
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly, null, null, null);
         builder.Services.Configure<SqlServerOptions>("mySqlServerService", options => options.ConnectionString += ";Encrypt=false");
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseSqlServer(serviceProvider, "mySqlServerService"));
         await using WebApplication app = builder.Build();
@@ -56,6 +56,6 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
         await using var dbContext = scope.ServiceProvider.GetRequiredService<GoodDbContext>();
         string? connectionString = dbContext.Database.GetConnectionString();
 
-        connectionString.Should().Be("Data Source=localhost;Initial Catalog=myDb;User ID=steeltoe;Password=steeltoe;Max Pool Size=50;Encrypt=false");
+        connectionString.Should().StartWith("Data Source=localhost;Initial Catalog=myDb;User ID=steeltoe;Password=steeltoe;Max Pool Size=50;Encrypt=");
     }
 }

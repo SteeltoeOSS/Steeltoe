@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
     <Description>Client for service discovery and registration with Hashicorp Consul.</Description>
     <PackageTags>service-discovery;service-registry;Consul;hashicorp</PackageTags>
     <IsPackable>true</IsPackable>

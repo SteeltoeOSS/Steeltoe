@@ -2,8 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Web;
+using Microsoft.AspNetCore.Http;
 
 namespace Steeltoe.Connectors.RabbitMQ;
 
@@ -28,19 +31,18 @@ internal sealed class RabbitMQConnectionStringBuilder : IConnectionStringBuilder
         get
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(keyword);
-            AssertIsKnownKeyword(keyword);
 
             if (string.Equals(keyword, KnownKeywords.Url, StringComparison.OrdinalIgnoreCase))
             {
                 return ConnectionString;
             }
 
+            // Allow getting unknown keyword. We don't pretend to know all valid query string parameters.
             return _settings.GetValueOrDefault(keyword);
         }
         set
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(keyword);
-            AssertIsKnownKeyword(keyword);
 
             if (string.Equals(keyword, KnownKeywords.Url, StringComparison.OrdinalIgnoreCase))
             {
@@ -56,6 +58,7 @@ internal sealed class RabbitMQConnectionStringBuilder : IConnectionStringBuilder
                 }
                 else
                 {
+                    // Allow setting unknown keyword. We don't pretend to know all valid query string parameters.
                     _settings[keyword] = stringValue;
                 }
             }
@@ -97,6 +100,15 @@ internal sealed class RabbitMQConnectionStringBuilder : IConnectionStringBuilder
             builder.Path = Uri.EscapeDataString(virtualHost);
         }
 
+        var queryString = default(QueryString);
+
+        foreach ((string name, string value) in _settings.Where(pair => !KnownKeywords.Exists(pair.Key)))
+        {
+            queryString = queryString.Add(name, value);
+        }
+
+        builder.Query = queryString.Value;
+
         return builder.Uri.AbsoluteUri;
     }
 
@@ -132,14 +144,18 @@ internal sealed class RabbitMQConnectionStringBuilder : IConnectionStringBuilder
             {
                 _settings[KnownKeywords.VirtualHost] = Uri.UnescapeDataString(uri.AbsolutePath[1..]);
             }
-        }
-    }
 
-    private static void AssertIsKnownKeyword(string keyword)
-    {
-        if (!KnownKeywords.Exists(keyword))
-        {
-            throw new ArgumentException($"Keyword not supported: '{keyword}'.", nameof(keyword));
+            NameValueCollection queryString = HttpUtility.ParseQueryString(uri.Query);
+
+            foreach (string remainingKeyword in queryString.AllKeys.Where(key => key != null && !KnownKeywords.Exists(key)).Cast<string>())
+            {
+                string? value = queryString.Get(remainingKeyword);
+
+                if (value != null)
+                {
+                    _settings[remainingKeyword] = value;
+                }
+            }
         }
     }
 

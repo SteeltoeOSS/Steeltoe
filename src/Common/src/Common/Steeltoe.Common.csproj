@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
     <Description>Abstractions and code shared by many Steeltoe components.</Description>
     <PackageTags>common;utility</PackageTags>
     <IsPackable>true</IsPackable>

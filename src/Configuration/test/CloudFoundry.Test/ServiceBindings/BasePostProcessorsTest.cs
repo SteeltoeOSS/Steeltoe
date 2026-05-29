@@ -57,16 +57,6 @@ public abstract class BasePostProcessorsTest
         return new TestPostProcessorConfigurationProvider(source);
     }
 
-    protected string? GetFileContentAtKey(Dictionary<string, string?> configurationData, string key)
-    {
-        if (configurationData.TryGetValue(key, out string? value) && value != null)
-        {
-            return File.ReadAllText(value);
-        }
-
-        return null;
-    }
-
     private sealed class TestPostProcessorConfigurationProvider(PostProcessorConfigurationSource source)
         : PostProcessorConfigurationProvider(source);
 

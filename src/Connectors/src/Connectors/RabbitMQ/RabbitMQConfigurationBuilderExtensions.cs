@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
 namespace Steeltoe.Connectors.RabbitMQ;
 
@@ -36,9 +38,25 @@ public static class RabbitMQConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder ConfigureRabbitMQ(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
+        return ConfigureRabbitMQ(builder, configureAction, null);
+    }
+
+    internal static IConfigurationBuilder ConfigureRabbitMQ(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+        IServiceBindingsReader? serviceBindingsReader)
+    {
         ArgumentNullException.ThrowIfNull(builder);
 
-        ConnectorConfigurer.Configure(builder, configureAction, new RabbitMQConnectionStringPostProcessor());
+        Action<ConnectorConfigureOptionsBuilder> overrideConfigureAction = options =>
+        {
+            configureAction?.Invoke(options);
+
+            options.CloudFoundryBrokerTypes =
+                options.SkipDefaultServiceBindings ? CloudFoundryServiceBrokerTypes.None : CloudFoundryServiceBrokerTypes.RabbitMQ;
+        };
+
+        ConnectorConfigurer.Configure(builder, overrideConfigureAction, new RabbitMQConnectionStringPostProcessor(), serviceBindingsReader,
+            NullLoggerFactory.Instance);
+
         return builder;
     }
 }

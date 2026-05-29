@@ -29,28 +29,11 @@ public sealed class Sandbox : TempDirectory
     /// <returns>
     /// The physical path.
     /// </returns>
-    public string ResolvePath(string path)
+    private string ResolvePath(string path)
     {
         ArgumentNullException.ThrowIfNull(path);
 
         return Path.Combine(FullPath, path);
-    }
-
-    /// <summary>
-    /// Creates a directory at the specified path within the sandbox.
-    /// </summary>
-    /// <param name="path">
-    /// The directory path.
-    /// </param>
-    /// <returns>
-    /// The physical path of the created directory.
-    /// </returns>
-    public string CreateDirectory(string path)
-    {
-        ArgumentNullException.ThrowIfNull(path);
-
-        DirectoryInfo directoryInfo = Directory.CreateDirectory(ResolvePath(path));
-        return directoryInfo.FullName;
     }
 
     /// <summary>

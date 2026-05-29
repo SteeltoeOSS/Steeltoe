@@ -198,7 +198,8 @@ public sealed class TaskHostExtensionsTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create(args);
 
-        var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
+        using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
+        // ReSharper disable once AccessToDisposedClosure
         builder.Services.AddLogging(options => options.AddProvider(capturingLoggerProvider));
 
         WebApplication app = builder.Build();
@@ -338,6 +339,7 @@ public sealed class TaskHostExtensionsTest
         }
     }
 
+    // ReSharper disable once ClassNeverInstantiated.Local
     private sealed class ThrowingApplicationTask : IApplicationTask
     {
         public Task RunAsync(CancellationToken cancellationToken)

@@ -6,8 +6,6 @@ namespace Steeltoe.Management.Configuration;
 
 public abstract class EndpointOptions
 {
-    private string? _path;
-
     /// <summary>
     /// Gets or sets a value indicating whether this endpoint is enabled.
     /// </summary>
@@ -23,14 +21,14 @@ public abstract class EndpointOptions
     /// </summary>
     public virtual string? Path
     {
-        get => _path ?? Id;
-        set => _path = value;
+        get => field ?? Id;
+        set;
     }
 
     /// <summary>
     /// Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Restricted.
     /// </summary>
-    public EndpointPermissions RequiredPermissions { get; set; } = EndpointPermissions.Restricted;
+    public virtual EndpointPermissions RequiredPermissions { get; set; } = EndpointPermissions.Restricted;
 
     /// <summary>
     /// Gets the list of HTTP verbs that are allowed for this endpoint.

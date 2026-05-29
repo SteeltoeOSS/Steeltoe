@@ -53,12 +53,10 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
 
     public IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string? parentPath)
     {
-        string[] earlierKeysArray = earlierKeys as string[] ?? earlierKeys.ToArray();
-#pragma warning disable S3236 // Caller information arguments should not be provided explicitly
-        ArgumentNullException.ThrowIfNull(earlierKeysArray, nameof(earlierKeys));
-#pragma warning restore S3236 // Caller information arguments should not be provided explicitly
+        ArgumentNullException.ThrowIfNull(earlierKeys);
 
-        LogGetChildKeys(GetType().Name, earlierKeysArray, parentPath);
+        string[] earlierKeysArray = earlierKeys as string[] ?? earlierKeys.ToArray();
+        ExpensiveLogGetChildKeys(earlierKeysArray, parentPath);
 
         IConfiguration? section = parentPath == null ? ConfigurationRoot : ConfigurationRoot?.GetSection(parentPath);
 
@@ -74,14 +72,28 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
         return keys;
     }
 
+    private void ExpensiveLogGetChildKeys(string[] earlierKeysArray, string? parentPath)
+    {
+        if (_logger.IsEnabled(LogLevel.Trace))
+        {
+            string earlierKeyNames = string.Join(", ", earlierKeysArray.Select(key => $"'{key}'"));
+            LogGetChildKeys(GetType().Name, earlierKeyNames, parentPath);
+        }
+    }
+
     public virtual bool TryGet(string key, out string? value)
     {
         ArgumentNullException.ThrowIfNull(key);
 
         LogTryGet(GetType().Name, key);
 
-        value = ConfigurationRoot?.GetValue<string>(key);
-        bool found = value != null;
+        if (ConfigurationRoot == null)
+        {
+            value = null;
+            return false;
+        }
+
+        bool found = InnerTryGet(ConfigurationRoot, key, out value);
 
         if (found)
         {
@@ -91,15 +103,37 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
         return found;
     }
 
+    private static bool InnerTryGet(IConfigurationRoot root, string key, out string? value)
+    {
+        IList<IConfigurationProvider> providers = root.Providers as IList<IConfigurationProvider> ?? root.Providers.ToList();
+
+        for (int index = providers.Count - 1; index >= 0; index--)
+        {
+            IConfigurationProvider provider = providers[index];
+
+            try
+            {
+                if (provider.TryGet(key, out value))
+                {
+                    return true;
+                }
+            }
+            catch (ObjectDisposedException)
+            {
+                // Skip disposed providers to avoid exceptions during access.
+            }
+        }
+
+        value = null;
+        return false;
+    }
+
     public void Set(string key, string? value)
     {
         ArgumentNullException.ThrowIfNull(key);
 
         LogSet(GetType().Name, key, value);
-
-#pragma warning disable S1121 // Assignments should not be made from within sub-expressions
         ConfigurationRoot?[key] = value;
-#pragma warning restore S1121 // Assignments should not be made from within sub-expressions
     }
 
     public void Dispose()
@@ -128,8 +162,9 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
     [LoggerMessage(Level = LogLevel.Trace, Message = "CreateConfigurationRoot from {Type} with {ProviderCount} providers.")]
     private partial void LogCreateConfigurationRoot(string type, int providerCount);
 
-    [LoggerMessage(Level = LogLevel.Trace, Message = "GetChildKeys from {Type} with earlierKeys [{EarlierKeys}] and parentPath '{ParentPath}'.")]
-    private partial void LogGetChildKeys(string type, string[] earlierKeys, string? parentPath);
+    [LoggerMessage(Level = LogLevel.Trace, SkipEnabledCheck = true,
+        Message = "GetChildKeys from {Type} with earlierKeys [{EarlierKeys}] and parentPath '{ParentPath}'.")]
+    private partial void LogGetChildKeys(string type, string earlierKeys, string? parentPath);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "TryGet from {Type} with key '{Key}'.")]
     private partial void LogTryGet(string type, string key);

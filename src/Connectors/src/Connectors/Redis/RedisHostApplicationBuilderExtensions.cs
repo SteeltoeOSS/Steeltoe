@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
 namespace Steeltoe.Connectors.Redis;
 
@@ -47,9 +48,15 @@ public static class RedisHostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddRedis(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         Action<ConnectorAddOptionsBuilder>? addAction)
     {
+        return AddRedis(builder, configureAction, addAction, null);
+    }
+
+    internal static IHostApplicationBuilder AddRedis(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+        Action<ConnectorAddOptionsBuilder>? addAction, IServiceBindingsReader? serviceBindingsReader)
+    {
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.Configuration.ConfigureRedis(configureAction);
+        builder.Configuration.ConfigureRedis(configureAction, serviceBindingsReader);
         builder.Services.AddRedis(builder.Configuration, addAction);
         return builder;
     }

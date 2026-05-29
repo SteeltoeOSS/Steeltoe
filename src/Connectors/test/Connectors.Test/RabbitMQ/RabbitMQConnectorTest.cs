@@ -190,8 +190,8 @@ public sealed class RabbitMQConnectorTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceOne:ConnectionString"] = "amqp://user1:pass1@host1:5672/virtual-host-1",
-            ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceTwo:ConnectionString"] = "amqps://user2:pass2@host2:5672/virtual-host-2"
+            ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceOne:ConnectionString"] = "amqp://user1:pass1@host1:5672/virtual-host-1?heartbeat=5",
+            ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceTwo:ConnectionString"] = "amqps://user2:pass2@host2:5672/virtual-host-2?connection_timeout=5000"
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
@@ -203,10 +203,10 @@ public sealed class RabbitMQConnectorTest
         var optionsSnapshot = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<RabbitMQOptions>>();
 
         RabbitMQOptions optionsOne = optionsSnapshot.Get("myRabbitMQServiceOne");
-        optionsOne.ConnectionString.Should().Be("amqp://user1:pass1@host1:5672/virtual-host-1");
+        optionsOne.ConnectionString.Should().Be("amqp://user1:pass1@host1:5672/virtual-host-1?heartbeat=5");
 
         RabbitMQOptions optionsTwo = optionsSnapshot.Get("myRabbitMQServiceTwo");
-        optionsTwo.ConnectionString.Should().Be("amqps://user2:pass2@host2:5672/virtual-host-2");
+        optionsTwo.ConnectionString.Should().Be("amqps://user2:pass2@host2:5672/virtual-host-2?connection_timeout=5000");
     }
 
     [Fact]
@@ -214,13 +214,12 @@ public sealed class RabbitMQConnectorTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceOne:ConnectionString"] = "amqps://user:pass@localhost:5672"
+            ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceOne:ConnectionString"] = "amqps://user:pass@localhost:5672?connection_timeout=5000&heartbeat=5"
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddRabbitMQ();
+        builder.AddRabbitMQ(null, null, new StringServiceBindingsReader(MultiVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
@@ -228,7 +227,7 @@ public sealed class RabbitMQConnectorTest
         RabbitMQOptions optionsOne = optionsMonitor.Get("myRabbitMQServiceOne");
 
         optionsOne.ConnectionString.Should().Be(
-            "amqp://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh:5672/377d9d72-e951-4a1c-82e8-99c3c4933368");
+            "amqp://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh:5672/377d9d72-e951-4a1c-82e8-99c3c4933368?connection_timeout=5000&heartbeat=5");
 
         RabbitMQOptions optionsTwo = optionsMonitor.Get("myRabbitMQServiceTwo");
 
@@ -371,7 +370,6 @@ public sealed class RabbitMQConnectorTest
     public async Task Registers_default_connection_string_when_only_single_server_binding_found()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
         builder.AddRabbitMQ(null, addOptions =>
         {
@@ -382,7 +380,7 @@ public sealed class RabbitMQConnectorTest
 
                 return new FakeConnection(options.ConnectionString);
             };
-        });
+        }, new StringServiceBindingsReader(SingleVcapServicesJson));
 
         await using WebApplication app = builder.Build();
 

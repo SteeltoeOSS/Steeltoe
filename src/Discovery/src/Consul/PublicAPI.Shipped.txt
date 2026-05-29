@@ -106,5 +106,6 @@ Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetInstancesAsync(string! servic
 Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetLocalServiceInstance() -> Steeltoe.Common.Discovery.IServiceInstance?
 Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetServiceIdsAsync(string? dataCenter, Consul.Filtering.Filter? filter, Consul.QueryOptions! queryOptions, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.ISet<string!>!>!
 Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetServiceIdsAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.ISet<string!>!>!
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient.InstancesFetched -> System.EventHandler<Steeltoe.Common.Discovery.DiscoveryInstancesFetchedEventArgs!>?
 Steeltoe.Discovery.Consul.ConsulDiscoveryClient.ShutdownAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 Steeltoe.Discovery.Consul.ConsulServiceCollectionExtensions

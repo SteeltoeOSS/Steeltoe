@@ -31,6 +31,13 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     public string Description => "A discovery client for HashiCorp Consul.";
 
     /// <summary>
+    /// This event is never raised. The Consul client doesn't implement caching.
+    /// </summary>
+#pragma warning disable CS0067 // The event is never used
+    public event EventHandler<DiscoveryInstancesFetchedEventArgs>? InstancesFetched;
+#pragma warning restore CS0067 // The event is never used
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="ConsulDiscoveryClient" /> class.
     /// </summary>
     /// <param name="client">

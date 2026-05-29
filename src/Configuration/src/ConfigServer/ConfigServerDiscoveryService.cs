@@ -12,36 +12,60 @@ using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
+using LockPrimitive =
+#if NET10_0_OR_GREATER
+    System.Threading.Lock
+#else
+    object
+#endif
+    ;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
-internal sealed class ConfigServerDiscoveryService
+internal sealed partial class ConfigServerDiscoveryService
 {
     private static readonly AssemblyLoader AssemblyLoader = new();
     private readonly IConfiguration _configuration;
-    private readonly ConfigServerClientOptions _options;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger _logger;
+    private readonly LockPrimitive _initLock = new();
     private ServiceProvider? _temporaryServiceProviderForDiscoveryClients;
+    private volatile ICollection<IDiscoveryClient>? _discoveryClients;
 
-    internal ICollection<IDiscoveryClient> DiscoveryClients { get; private set; }
+    internal ICollection<IDiscoveryClient>? DiscoveryClients
+    {
+        get => _discoveryClients;
+        private set => _discoveryClients = value;
+    }
 
-    public ConfigServerDiscoveryService(IConfiguration configuration, ConfigServerClientOptions options, ILoggerFactory loggerFactory)
+    public ConfigServerDiscoveryService(IConfiguration configuration, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(configuration);
-        ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _configuration = configuration;
-        _options = options;
+        _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<ConfigServerDiscoveryService>();
-        DiscoveryClients = SetupDiscoveryClients(loggerFactory);
     }
 
-    // Create discovery clients to be used (hopefully only) during startup
-    private IDiscoveryClient[] SetupDiscoveryClients(ILoggerFactory loggerFactory)
+    private void EnsureInitialized()
+    {
+        if (_discoveryClients == null)
+        {
+            lock (_initLock)
+            {
+                if (_discoveryClients == null)
+                {
+                    SetupDiscoveryClients();
+                }
+            }
+        }
+    }
+
+    private void SetupDiscoveryClients()
     {
         var tempServices = new ServiceCollection();
-        tempServices.AddSingleton(loggerFactory);
+        tempServices.AddSingleton(_loggerFactory);
         tempServices.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
         // force settings to make sure we don't register the app here
@@ -70,7 +94,7 @@ internal sealed class ConfigServerDiscoveryService
             WireEurekaDiscoveryClient(tempServices);
         }
 
-        return GetDiscoveryClientsFromServiceCollection(tempServices);
+        _discoveryClients = GetDiscoveryClientsFromServiceCollection(tempServices);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -99,50 +123,56 @@ internal sealed class ConfigServerDiscoveryService
 
         foreach (IDiscoveryClient discoveryClient in discoveryClients)
         {
-            _logger.LogDebug("Found discovery client of type {DiscoveryClientType}", discoveryClient.GetType());
+            LogDiscoveryClientFound(discoveryClient.GetType());
         }
 
         return discoveryClients;
     }
 
-    internal async Task<IEnumerable<IServiceInstance>> GetConfigServerInstancesAsync(CancellationToken cancellationToken)
+    internal async Task<List<IServiceInstance>> GetConfigServerInstancesAsync(ConfigServerClientOptions optionsSnapshot, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(optionsSnapshot);
+
+        EnsureInitialized();
+
         int attempts = 0;
-        int backOff = _options.Retry.InitialInterval;
+        int backOff = optionsSnapshot.Retry.InitialInterval;
         List<IServiceInstance> instances = [];
 
         do
         {
-            _logger.LogDebug("Locating ConfigServer {ServiceId} via discovery", _options.Discovery.ServiceId);
+            LogLocatingConfigServer(optionsSnapshot.Discovery.ServiceId);
 
-            if (_options.Discovery.ServiceId != null)
+            if (optionsSnapshot.Discovery.ServiceId != null)
             {
-                foreach (IDiscoveryClient discoveryClient in DiscoveryClients)
+                foreach (IDiscoveryClient discoveryClient in _discoveryClients ?? [])
                 {
                     try
                     {
-                        IList<IServiceInstance> serviceInstances = await discoveryClient.GetInstancesAsync(_options.Discovery.ServiceId, cancellationToken);
+                        IList<IServiceInstance> serviceInstances =
+                            await discoveryClient.GetInstancesAsync(optionsSnapshot.Discovery.ServiceId, cancellationToken);
+
                         instances.AddRange(serviceInstances);
                     }
                     catch (Exception exception) when (!exception.IsCancellation())
                     {
-                        _logger.LogError(exception, "Failed to get instances during ConfigServer lookup from {DiscoveryClient}.", discoveryClient.GetType());
+                        LogFailedToGetInstances(exception, discoveryClient.GetType());
                     }
                 }
             }
 
-            if (!_options.Retry.Enabled || instances.Count > 0)
+            if (!optionsSnapshot.Retry.Enabled || instances.Count > 0)
             {
                 break;
             }
 
             attempts++;
 
-            if (attempts <= _options.Retry.MaxAttempts)
+            if (attempts <= optionsSnapshot.Retry.MaxAttempts)
             {
-                Thread.CurrentThread.Join(backOff);
-                int nextBackOff = (int)(backOff * _options.Retry.Multiplier);
-                backOff = Math.Min(nextBackOff, _options.Retry.MaxInterval);
+                await Task.Delay(backOff, cancellationToken);
+                int nextBackOff = (int)(backOff * optionsSnapshot.Retry.Multiplier);
+                backOff = Math.Min(nextBackOff, optionsSnapshot.Retry.MaxInterval);
             }
             else
             {
@@ -158,7 +188,7 @@ internal sealed class ConfigServerDiscoveryService
     {
         ArgumentNullException.ThrowIfNull(discoveryClientsFromServiceProvider);
 
-        _logger.LogInformation("Replacing the IDiscoveryClient(s) built at startup with the ones for runtime");
+        LogReplacingDiscoveryClients();
 
         await ShutdownAsync(cancellationToken);
 
@@ -169,7 +199,7 @@ internal sealed class ConfigServerDiscoveryService
     {
         if (_temporaryServiceProviderForDiscoveryClients != null)
         {
-            foreach (IDiscoveryClient discoveryClient in DiscoveryClients)
+            foreach (IDiscoveryClient discoveryClient in _discoveryClients ?? [])
             {
                 await discoveryClient.ShutdownAsync(cancellationToken);
             }
@@ -178,4 +208,16 @@ internal sealed class ConfigServerDiscoveryService
             _temporaryServiceProviderForDiscoveryClients = null;
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Found discovery client of type {DiscoveryClientType}.")]
+    private partial void LogDiscoveryClientFound(Type discoveryClientType);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Locating ConfigServer {ServiceId} via discovery.")]
+    private partial void LogLocatingConfigServer(string? serviceId);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to get instances during ConfigServer lookup from {DiscoveryClient}.")]
+    private partial void LogFailedToGetInstances(Exception exception, Type discoveryClient);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Replacing the IDiscoveryClient(s) built at startup with the ones for runtime.")]
+    private partial void LogReplacingDiscoveryClients();
 }

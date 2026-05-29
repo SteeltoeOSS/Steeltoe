@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint;
 
-internal abstract class ActuatorMapper
+internal abstract partial class ActuatorMapper
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly ILogger<ActuatorMapper> _logger;
@@ -47,9 +47,8 @@ internal abstract class ActuatorMapper
         {
             if (managementOptions is { IsCloudFoundryEnabled: true, HasCloudFoundrySecurity: false })
             {
-                _logger.LogWarning(
-                    $"Actuators at the {ConfigureManagementOptions.DefaultCloudFoundryPath} endpoint are disabled because the Cloud Foundry security middleware is not active. " +
-                    $"Call {nameof(EndpointApplicationBuilderExtensions.UseCloudFoundrySecurity)}() from your custom middleware pipeline to enable them.");
+                LogCloudFoundryActuatorsDisabled(ConfigureManagementOptions.DefaultCloudFoundryPath,
+                    nameof(EndpointApplicationBuilderExtensions.UseCloudFoundrySecurity));
             }
 
             foreach (IEndpointMiddleware middleware in _middlewares.Where(middleware => middleware is not HypermediaEndpointMiddleware))
@@ -62,7 +61,15 @@ internal abstract class ActuatorMapper
 
     protected void LogErrorForDuplicateRoute(string routePattern, IEndpointMiddleware existingMiddleware, IEndpointMiddleware duplicateMiddleware)
     {
-        _logger.LogError("Skipping over duplicate route '{Route}' from {DuplicateMiddlewareType}, which was already added by {ExistingMiddlewareType}",
-            routePattern, duplicateMiddleware.GetType(), existingMiddleware.GetType());
+        LogSkippingDuplicateRoute(routePattern, duplicateMiddleware.GetType(), existingMiddleware.GetType());
     }
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Actuators at the {CloudFoundryPath} endpoint are disabled because the Cloud Foundry security middleware is not active. " +
+            "Call {MethodName}() from your custom middleware pipeline to enable them.")]
+    private partial void LogCloudFoundryActuatorsDisabled(string cloudFoundryPath, string methodName);
+
+    [LoggerMessage(Level = LogLevel.Error,
+        Message = "Skipping over duplicate route '{Route}' from {DuplicateMiddlewareType}, which was already added by {ExistingMiddlewareType}.")]
+    private partial void LogSkippingDuplicateRoute(string route, Type duplicateMiddlewareType, Type existingMiddlewareType);
 }

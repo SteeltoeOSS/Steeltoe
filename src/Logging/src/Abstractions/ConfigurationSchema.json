@@ -1,0 +1,17 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Logging": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Logging.Abstractions": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  }
+}

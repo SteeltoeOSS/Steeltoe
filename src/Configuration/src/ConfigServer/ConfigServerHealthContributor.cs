@@ -8,7 +8,7 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
-internal sealed class ConfigServerHealthContributor : IHealthContributor
+internal sealed partial class ConfigServerHealthContributor : IHealthContributor
 {
     private readonly TimeProvider _timeProvider;
     private readonly ILogger<ConfigServerHealthContributor> _logger;
@@ -30,7 +30,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 
         if (Provider == null)
         {
-            _logger.LogWarning("Unable to find ConfigServerConfigurationProvider, health check disabled");
+            LogHealthCheckDisabled();
         }
     }
 
@@ -40,22 +40,24 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 
         if (Provider == null)
         {
-            _logger.LogDebug("No Config Server provider found");
+            LogNoProviderFound();
             health.Status = HealthStatus.Unknown;
             health.Details.Add("error", "No Config Server provider found");
             return health;
         }
 
-        if (!IsEnabled())
+        ConfigServerClientOptions optionsSnapshot = Provider.ClientOptions;
+
+        if (!optionsSnapshot.Health.Enabled)
         {
             return null;
         }
 
-        IList<PropertySource>? sources = await GetPropertySourcesAsync(Provider, cancellationToken);
+        IList<PropertySource>? sources = await GetPropertySourcesAsync(Provider, optionsSnapshot, cancellationToken);
 
         if (sources == null || sources.Count == 0)
         {
-            _logger.LogDebug("No property sources found");
+            LogNoPropertySourcesFound();
             health.Status = HealthStatus.Unknown;
             health.Details.Add("error", "No property sources found");
             return health;
@@ -67,51 +69,82 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 
     internal void UpdateHealth(HealthCheckResult health, IList<PropertySource> sources)
     {
-        _logger.LogDebug("Config Server health check returning UP");
+        LogHealthCheckReturningUp();
 
         health.Status = HealthStatus.Up;
         List<string?> names = [];
 
         foreach (PropertySource source in sources)
         {
-            _logger.LogDebug("Returning property source: {PropertySource}", source.Name);
             names.Add(source.Name);
         }
 
+        ExpensiveLogReturningPropertySources(names);
         health.Details.Add("propertySources", names);
     }
 
-    internal async Task<IList<PropertySource>?> GetPropertySourcesAsync(ConfigServerConfigurationProvider provider, CancellationToken cancellationToken)
+    private void ExpensiveLogReturningPropertySources(List<string?> names)
+    {
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            string propertySources = string.Join(", ", names);
+            LogReturningPropertySources(propertySources);
+        }
+    }
+
+    internal async Task<IList<PropertySource>?> GetPropertySourcesAsync(ConfigServerConfigurationProvider provider, ConfigServerClientOptions optionsSnapshot,
+        CancellationToken cancellationToken)
     {
         long currentTime = _timeProvider.GetUtcNow().ToUnixTimeMilliseconds();
 
-        if (IsCacheStale(currentTime))
+        if (IsCacheStale(currentTime, optionsSnapshot))
         {
             LastAccess = currentTime;
-            _logger.LogDebug("Cache stale, fetching config server health");
-            Cached = await provider.LoadInternalAsync(false, cancellationToken);
+            LogCacheStale();
+
+            try
+            {
+                Cached = await provider.LoadInternalAsync(optionsSnapshot, false, cancellationToken);
+            }
+            catch (ConfigServerException exception)
+            {
+                LogFetchFailed(exception);
+                Cached = null;
+                return null;
+            }
         }
 
         return Cached?.PropertySources;
     }
 
-    internal bool IsCacheStale(long accessTime)
+    internal bool IsCacheStale(long accessTime, ConfigServerClientOptions optionsSnapshot)
     {
         if (Cached == null)
         {
             return true;
         }
 
-        return accessTime - LastAccess >= GetTimeToLive();
+        return accessTime - LastAccess >= optionsSnapshot.Health.TimeToLive;
     }
 
-    internal bool IsEnabled()
-    {
-        return Provider is { ClientOptions.Health.Enabled: true };
-    }
+    [LoggerMessage(Level = LogLevel.Warning, Message = "No Config Server provider found, health check disabled.")]
+    private partial void LogHealthCheckDisabled();
 
-    internal long GetTimeToLive()
-    {
-        return Provider != null ? Provider.ClientOptions.Health.TimeToLive : long.MaxValue;
-    }
+    [LoggerMessage(Level = LogLevel.Debug, Message = "No Config Server provider found.")]
+    private partial void LogNoProviderFound();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Failed fetching remote configuration from server(s).")]
+    private partial void LogFetchFailed(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "No property sources found.")]
+    private partial void LogNoPropertySourcesFound();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Config Server health check returning UP.")]
+    private partial void LogHealthCheckReturningUp();
+
+    [LoggerMessage(Level = LogLevel.Debug, SkipEnabledCheck = true, Message = "Returning property sources: {PropertySources}.")]
+    private partial void LogReturningPropertySources(string propertySources);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Cache stale, fetching config server health.")]
+    private partial void LogCacheStale();
 }

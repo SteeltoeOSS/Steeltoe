@@ -48,7 +48,7 @@ public sealed class LeaseInfo
     /// <inheritdoc />
     public override string ToString()
     {
-        return JsonSerializer.Serialize(this, DebugSerializerOptions.Instance);
+        return JsonSerializer.Serialize(this, DebugJsonSerializerContext.Default.LeaseInfo);
     }
 
     internal static LeaseInfo? FromJson(JsonLeaseInfo? jsonLeaseInfo)

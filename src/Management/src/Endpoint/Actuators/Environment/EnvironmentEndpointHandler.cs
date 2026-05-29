@@ -11,7 +11,7 @@ using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Environment;
 
-internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
+internal sealed partial class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 {
     private readonly IOptionsMonitor<EnvironmentEndpointOptions> _optionsMonitor;
     private readonly IConfiguration _configuration;
@@ -36,7 +36,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
     public Task<EnvironmentResponse> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
-        _logger.LogTrace("Fetching property sources.");
+        LogFetchingPropertySources();
 
         List<string> activeProfiles = [_environment.EnvironmentName];
         IList<PropertySourceDescriptor> propertySources = GetPropertySources();
@@ -114,4 +114,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
         return initialKeys;
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Fetching property sources.")]
+    private partial void LogFetchingPropertySources();
 }

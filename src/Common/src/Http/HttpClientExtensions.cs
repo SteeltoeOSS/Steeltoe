@@ -73,7 +73,8 @@ internal static class HttpClientExtensions
 
         if (string.IsNullOrEmpty(accessToken))
         {
-            throw new HttpRequestException($"No access token was returned from '{accessTokenUri.ToMaskedString()}'.", null, response.StatusCode);
+            MaskedUri masked = accessTokenUri;
+            throw new HttpRequestException($"No access token was returned from '{masked}'.", null, response.StatusCode);
         }
 
         return accessToken;

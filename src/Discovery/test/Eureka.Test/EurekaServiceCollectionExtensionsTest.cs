@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -55,14 +56,13 @@ public sealed class EurekaServiceCollectionExtensionsTest
         options.Value.StatusPageUrlPath.Should().Be("/actuator/info");
     }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")]
+    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
     public async Task AddEurekaDiscoveryClient_UsesServerTimeout()
     {
         var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:EurekaServer:ConnectTimeoutSeconds"] = "1",
-            ["Eureka:Client:EurekaServer:RetryCount"] = "1"
+            ["Eureka:Client:EurekaServer:RetryCount"] = "0"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();

@@ -4,9 +4,11 @@
 
 using Microsoft.Extensions.Configuration;
 
+#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+
 namespace Steeltoe.Configuration;
 
-internal abstract class PostProcessorConfigurationProvider : ConfigurationProvider
+internal abstract class PostProcessorConfigurationProvider : ConfigurationProvider, IDisposable
 {
     public PostProcessorConfigurationSource Source { get; }
 
@@ -22,6 +24,17 @@ internal abstract class PostProcessorConfigurationProvider : ConfigurationProvid
         foreach (IConfigurationPostProcessor processor in Source.PostProcessors)
         {
             processor.PostProcessConfiguration(this, Data);
+        }
+    }
+
+    public virtual void Dispose()
+    {
+        foreach (IConfigurationPostProcessor processor in Source.PostProcessors)
+        {
+            if (processor is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
         }
     }
 }

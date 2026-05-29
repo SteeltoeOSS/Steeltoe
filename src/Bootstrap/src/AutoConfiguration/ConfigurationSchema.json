@@ -1,0 +1,17 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Bootstrap": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Bootstrap.AutoConfiguration": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  }
+}

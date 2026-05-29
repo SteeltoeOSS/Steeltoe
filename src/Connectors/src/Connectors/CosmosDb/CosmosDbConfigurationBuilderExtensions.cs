@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
 namespace Steeltoe.Connectors.CosmosDb;
 
@@ -38,7 +40,13 @@ public static class CosmosDbConfigurationBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        ConnectorConfigurer.Configure(builder, configureAction, new CosmosDbConnectionStringPostProcessor());
+        Action<ConnectorConfigureOptionsBuilder> overrideConfigureAction = options =>
+        {
+            configureAction?.Invoke(options);
+            options.CloudFoundryBrokerTypes = CloudFoundryServiceBrokerTypes.None;
+        };
+
+        ConnectorConfigurer.Configure(builder, overrideConfigureAction, new CosmosDbConnectionStringPostProcessor(), null, NullLoggerFactory.Instance);
         return builder;
     }
 }

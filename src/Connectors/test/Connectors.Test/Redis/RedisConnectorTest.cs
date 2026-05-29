@@ -131,9 +131,8 @@ public sealed class RedisConnectorTest
         };
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.AddRedis();
+        builder.AddRedis(null, null, new StringServiceBindingsReader(MultiVcapServicesJson));
         await using WebApplication app = builder.Build();
 
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<RedisOptions>>();
@@ -308,7 +307,6 @@ public sealed class RedisConnectorTest
     public async Task Registers_default_connection_string_when_only_single_server_binding_found()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
         builder.AddRedis(null, addOptions =>
         {
@@ -319,7 +317,7 @@ public sealed class RedisConnectorTest
 
                 return GetMockedConnectionMultiplexer(options.ConnectionString);
             };
-        });
+        }, new StringServiceBindingsReader(SingleVcapServicesJson));
 
         await using WebApplication app = builder.Build();
 

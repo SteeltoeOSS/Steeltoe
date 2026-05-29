@@ -4,5 +4,6 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <Import Condition="$(MSBuildProjectName.EndsWith('.Test'))" Project="$(MSBuildThisFileDirectory)\shared-test.props" />
+  <Import Condition="$(MSBuildProjectName.EndsWith('.Test')) Or $(MSBuildProjectName.EndsWith('.Tests'))"
+    Project="$(MSBuildThisFileDirectory)\shared-test.props" />
 </Project>

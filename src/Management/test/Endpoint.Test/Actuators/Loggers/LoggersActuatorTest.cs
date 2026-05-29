@@ -289,11 +289,8 @@ public sealed class LoggersActuatorTest
             }
             """);
 
-        HttpResponseMessage resetResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake.Category"), new StringContent("""
-            {
-                "configuredLevel": null
-            }
-            """, RequestContentType), TestContext.Current.CancellationToken);
+        HttpResponseMessage resetResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake.Category"),
+            new StringContent("{}", RequestContentType), TestContext.Current.CancellationToken);
 
         resetResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         (await resetResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Should().BeEmpty();
@@ -338,6 +335,112 @@ public sealed class LoggersActuatorTest
                 "Fake.Some.Test": {
                   "configuredLevel": "WARN",
                   "effectiveLevel": "INFO"
+                }
+              },
+              "groups": {}
+            }
+            """);
+    }
+
+    [Fact]
+    public async Task Can_reset_minimum_level_by_sending_configuredLevel_null()
+    {
+        var appSettings = new Dictionary<string, string?>(AppSettings)
+        {
+            ["Logging:LogLevel:Default"] = "Error",
+            ["Logging:LogLevel:Fake"] = "Debug"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        EnsureLoggingConfigurationIsBound(builder.Logging, builder.Configuration);
+        builder.Services.AddSingleton<ILoggerFactory, OnlyTrackFakeCategoryLoggerFactory>();
+        builder.Services.AddLoggersActuator();
+        await using WebApplication host = builder.Build();
+
+        using var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+        _ = loggerFactory.CreateLogger("Fake.Some");
+
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using HttpClient httpClient = host.GetTestClient();
+
+        HttpResponseMessage setResponse1 = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake"), new StringContent("""
+            {
+                "configuredLevel": "TRACE"
+            }
+            """, RequestContentType), TestContext.Current.CancellationToken);
+
+        setResponse1.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        (await setResponse1.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Should().BeEmpty();
+
+        HttpResponseMessage getResponse1 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
+
+        getResponse1.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string getResponseBody1 = await getResponse1.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        getResponseBody1.Should().BeJson("""
+            {
+              "levels": [
+                "OFF",
+                "FATAL",
+                "ERROR",
+                "WARN",
+                "INFO",
+                "DEBUG",
+                "TRACE"
+              ],
+              "loggers": {
+                "Default": {
+                  "effectiveLevel": "ERROR"
+                },
+                "Fake": {
+                  "configuredLevel": "DEBUG",
+                  "effectiveLevel": "TRACE"
+                },
+                "Fake.Some": {
+                  "effectiveLevel": "TRACE"
+                }
+              },
+              "groups": {}
+            }
+            """);
+
+        HttpResponseMessage resetResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake"), new StringContent("""
+            {
+              "configuredLevel": null
+            }
+            """, RequestContentType), TestContext.Current.CancellationToken);
+
+        resetResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        (await resetResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Should().BeEmpty();
+
+        HttpResponseMessage getResponse2 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
+
+        getResponse2.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string getResponseBody2 = await getResponse2.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        getResponseBody2.Should().BeJson("""
+            {
+              "levels": [
+                "OFF",
+                "FATAL",
+                "ERROR",
+                "WARN",
+                "INFO",
+                "DEBUG",
+                "TRACE"
+              ],
+              "loggers": {
+                "Default": {
+                  "effectiveLevel": "ERROR"
+                },
+                "Fake": {
+                  "effectiveLevel": "DEBUG"
+                },
+                "Fake.Some": {
+                  "effectiveLevel": "DEBUG"
                 }
               },
               "groups": {}
@@ -485,21 +588,21 @@ public sealed class LoggersActuatorTest
     {
         var fileProvider = new MemoryFileProvider();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Logging": {
-            "LogLevel": {
-              "Default": "Error",
-              "Fake": "Warning",
-              "Fake.Category.AtDebugLevel": "Debug"
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Logging": {
+                "LogLevel": {
+                  "Default": "Error",
+                  "Fake": "Warning",
+                  "Fake.Category.AtDebugLevel": "Debug"
+                }
+              }
             }
-          }
-        }
-        """);
+            """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         EnsureLoggingConfigurationIsBound(builder.Logging, builder.Configuration);
         builder.Services.AddSingleton<ILoggerFactory, OnlyTrackFakeCategoryLoggerFactory>();
         builder.Services.AddLoggersActuator();
@@ -553,17 +656,17 @@ public sealed class LoggersActuatorTest
             }
             """);
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Logging": {
-            "LogLevel": {
-              "Default": "Information",
-              "Fake.Some": "Error",
-              "Fake.Category": "Warning"
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+              "Logging": {
+                "LogLevel": {
+                  "Default": "Information",
+                  "Fake.Some": "Error",
+                  "Fake.Category": "Warning"
+                }
+              }
             }
-          }
-        }
-        """);
+            """);
 
         fileProvider.NotifyChanged();
 

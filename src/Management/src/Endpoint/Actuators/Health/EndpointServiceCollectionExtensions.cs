@@ -76,7 +76,7 @@ public static class EndpointServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds the specified <see cref="IHealthContributor" /> to the D/I container as a scoped service.
+    /// Adds the specified <see cref="IHealthContributor" /> to the D/I container as a singleton service.
     /// </summary>
     /// <typeparam name="T">
     /// The type of health contributor to add.
@@ -98,7 +98,7 @@ public static class EndpointServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds the specified <see cref="IHealthContributor" /> to the D/I container as a scoped service.
+    /// Adds the specified <see cref="IHealthContributor" /> to the D/I container as a singleton service.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.

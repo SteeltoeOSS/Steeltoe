@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Info.Contributors;
 
-internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContributor
+internal sealed partial class GitInfoContributor : ConfigurationContributor, IInfoContributor
 {
     private const string GitSettingsPrefix = "git";
     private const string GitPropertiesFileName = "git.properties";
@@ -78,7 +78,7 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
         }
         else
         {
-            _logger.LogWarning("File '{Path}' does not exist.", _propertiesPath);
+            LogFileNotFound(_propertiesPath);
         }
 
         return null;
@@ -99,4 +99,7 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
 
         dictionary[key] = valueToInsert;
     }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "File '{Path}' does not exist.")]
+    private partial void LogFileNotFound(string path);
 }

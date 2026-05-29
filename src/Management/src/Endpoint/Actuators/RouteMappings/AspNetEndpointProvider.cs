@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.Actuators.RouteMappings;
 /// <summary>
 /// Gathers endpoints in an ASP.NET Core application by combining information from various sources.
 /// </summary>
-internal sealed class AspNetEndpointProvider
+internal sealed partial class AspNetEndpointProvider
 {
     private static readonly MethodInfo? ProducesContentTypesPropertyGetter =
         typeof(ProducesResponseTypeAttribute).GetProperty("ContentTypes", BindingFlags.Instance | BindingFlags.NonPublic)?.GetMethod;
@@ -60,7 +60,7 @@ internal sealed class AspNetEndpointProvider
     {
         if (!_mvcOptionsMonitor.CurrentValue.EnableEndpointRouting)
         {
-            _logger.LogWarning("Conventional routing is not supported.");
+            LogConventionalRoutingNotSupported();
             return [];
         }
 
@@ -436,4 +436,7 @@ internal sealed class AspNetEndpointProvider
             yield return contentType;
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Conventional routing is not supported.")]
+    private partial void LogConventionalRoutingNotSupported();
 }

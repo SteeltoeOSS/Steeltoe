@@ -18,17 +18,6 @@ public sealed class TempFile : TempPath
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TempFile" /> class.
-    /// </summary>
-    /// <param name="prefix">
-    /// File name prefix.
-    /// </param>
-    public TempFile(string prefix)
-        : base(prefix)
-    {
-    }
-
-    /// <summary>
     /// Creates the temporary file.
     /// </summary>
     protected override void Create()

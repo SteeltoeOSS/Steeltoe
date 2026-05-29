@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 
-public sealed class ApplicationAvailability
+public sealed partial class ApplicationAvailability
 {
     public const string LivenessKey = "Liveness";
     public const string ReadinessKey = "Readiness";
@@ -58,7 +58,7 @@ public sealed class ApplicationAvailability
             throw new InvalidOperationException($"{availabilityType} state can only be of type {availabilityType}State");
         }
 
-        _logger.LogTrace("{StateKey} availability has been set to {NewState} by {Caller}", availabilityType, newState, caller ?? "unspecified");
+        LogAvailabilityStateChanged(availabilityType, newState, caller ?? "unspecified");
         _availabilityStates[availabilityType] = newState;
 
         if (availabilityType == LivenessKey)
@@ -71,4 +71,7 @@ public sealed class ApplicationAvailability
             ReadinessChanged?.Invoke(this, new AvailabilityEventArgs(newState));
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "{StateKey} availability has been set to {NewState} by {Caller}.")]
+    private partial void LogAvailabilityStateChanged(string stateKey, AvailabilityState newState, string caller);
 }

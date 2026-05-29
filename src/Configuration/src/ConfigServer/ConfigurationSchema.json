@@ -173,7 +173,7 @@
                 },
                 "TokenRenewRate": {
                   "type": "integer",
-                  "description": "Gets or sets the vault token renew rate (in milliseconds). Default value: 60_000 (1 minute)."
+                  "description": "Gets or sets the Vault token renew rate (in milliseconds). Default value: 60_000 (1 minute)."
                 },
                 "TokenTtl": {
                   "type": "integer",

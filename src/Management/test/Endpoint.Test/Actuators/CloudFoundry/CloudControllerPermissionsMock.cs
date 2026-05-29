@@ -32,11 +32,17 @@ internal static class CloudControllerPermissionsMock
         httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/exception/permissions")
             .Throw(new HttpRequestException(HttpRequestError.NameResolutionError));
 
-        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/no_sensitive_data/permissions").Respond(HttpStatusCode.OK,
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/broken-response/permissions")
+            .Respond(HttpStatusCode.OK, "application/json", "{");
+
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/no-permissions/permissions").Respond(HttpStatusCode.OK, "application/json",
+            """{"read_sensitive_data": false, "read_basic_data": false}""");
+
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/restricted-permissions/permissions").Respond(HttpStatusCode.OK,
             "application/json", """{"read_sensitive_data": false, "read_basic_data": true}""");
 
-        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/success/permissions").Respond(HttpStatusCode.OK, "application/json",
-            """{"read_sensitive_data": true, "read_basic_data": true}""");
+        httpClientHandler.Mock.When(HttpMethod.Get, "https://example.api.com/v2/apps/full-permissions/permissions").Respond(HttpStatusCode.OK,
+            "application/json", """{"read_sensitive_data": true, "read_basic_data": true}""");
 
         return httpClientHandler;
     }

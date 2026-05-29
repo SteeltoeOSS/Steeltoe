@@ -6,18 +6,25 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
+using LockPrimitive =
+#if NET10_0_OR_GREATER
+    System.Threading.Lock
+#else
+    object
+#endif
+    ;
 
 namespace Steeltoe.Discovery.Eureka;
 
 /// <summary>
 /// Keeps track of working and broken Eureka service URIs that are configured, with stickiness to the last working server.
 /// </summary>
-public sealed class EurekaServiceUriStateManager
+public sealed partial class EurekaServiceUriStateManager
 {
     private readonly IOptionsMonitor<EurekaClientOptions> _optionsMonitor;
     private readonly ILogger<EurekaServiceUriStateManager> _logger;
 
-    private readonly object _lockObject = new();
+    private readonly LockPrimitive _lockObject = new();
     private readonly HashSet<Uri> _failedServiceUris = [];
     private Uri? _lastWorkingServiceUri;
 
@@ -55,7 +62,7 @@ public sealed class EurekaServiceUriStateManager
 
             if (_failedServiceUris.Count > 0 && _failedServiceUris.Count >= threshold)
             {
-                _logger.LogDebug("Clearing quarantined list of size {Count}.", _failedServiceUris.Count);
+                LogClearingQuarantinedList(_failedServiceUris.Count);
                 _failedServiceUris.Clear();
             }
 
@@ -126,6 +133,9 @@ public sealed class EurekaServiceUriStateManager
             _failedServiceUris.Add(serviceUri);
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Clearing quarantined list of size {Count}.")]
+    private partial void LogClearingQuarantinedList(int count);
 
     /// <summary>
     /// Provides a method to sequentially try all available Eureka servers.

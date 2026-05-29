@@ -8,7 +8,7 @@ using Steeltoe.Management.Configuration;
 namespace Steeltoe.Management.Endpoint.Configuration;
 
 /// <summary>
-/// Enables to register multiple typed providers to enumerate all <see cref="IOptionsMonitor{TOptions}" />s for the various
+/// Enables registering multiple typed providers to enumerate all <see cref="IOptionsMonitor{TOptions}" />s for the various
 /// <see cref="EndpointOptions" /> types.
 /// </summary>
 internal interface IEndpointOptionsMonitorProvider

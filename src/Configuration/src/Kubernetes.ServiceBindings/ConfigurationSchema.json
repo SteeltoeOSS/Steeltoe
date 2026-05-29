@@ -1,0 +1,20 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Configuration": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Configuration.Kubernetes": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Configuration.Kubernetes.ServiceBindings": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  }
+}

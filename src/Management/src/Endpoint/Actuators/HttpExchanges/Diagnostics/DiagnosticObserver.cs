@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges.Diagnostics;
 
-internal abstract class DiagnosticObserver : IObserver<KeyValuePair<string, object?>>, IDisposable
+internal abstract partial class DiagnosticObserver : IObserver<KeyValuePair<string, object?>>, IDisposable
 {
     private readonly string _observerName;
     private readonly string _listenerName;
@@ -38,7 +38,7 @@ internal abstract class DiagnosticObserver : IObserver<KeyValuePair<string, obje
             _subscription?.Dispose();
             _subscription = null;
 
-            _logger.LogTrace("DiagnosticObserver {Observer} disposed", _observerName);
+            LogObserverDisposed(_observerName);
         }
     }
 
@@ -54,7 +54,7 @@ internal abstract class DiagnosticObserver : IObserver<KeyValuePair<string, obje
             }
 
             _subscription = listener.Subscribe(this);
-            _logger.LogTrace("DiagnosticObserver {Observer} subscribed to {Listener}", _observerName, listener.Name);
+            LogObserverSubscribed(_observerName, listener.Name);
         }
     }
 
@@ -76,9 +76,18 @@ internal abstract class DiagnosticObserver : IObserver<KeyValuePair<string, obje
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Failed to process event {Id}", value.Key);
+            LogFailedToProcessEvent(exception, value.Key);
         }
     }
 
     public abstract void ProcessEvent(string eventName, object? value);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Diagnostic observer {Observer} disposed.")]
+    private partial void LogObserverDisposed(string observer);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Diagnostic observer {Observer} subscribed to {Listener}.")]
+    private partial void LogObserverSubscribed(string observer, string listener);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to process event {Id}.")]
+    private partial void LogFailedToProcessEvent(Exception exception, string id);
 }

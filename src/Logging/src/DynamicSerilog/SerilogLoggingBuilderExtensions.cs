@@ -35,7 +35,7 @@ public static class SerilogLoggingBuilderExtensions
     /// The <see cref="ILoggingBuilder" /> to configure.
     /// </param>
     /// <param name="serilogConfiguration">
-    /// Enables to configure Serilog from code instead of configuration.
+    /// Enables configuring Serilog from code instead of configuration.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
@@ -69,7 +69,7 @@ public static class SerilogLoggingBuilderExtensions
     /// The <see cref="ILoggingBuilder" /> to configure.
     /// </param>
     /// <param name="serilogConfiguration">
-    /// Enables to configure Serilog from code instead of configuration.
+    /// Enables configuring Serilog from code instead of configuration.
     /// </param>
     /// <param name="preserveDefaultConsole">
     /// When set to <c>true</c>, does not remove existing logger providers.
@@ -104,7 +104,7 @@ public static class SerilogLoggingBuilderExtensions
     private static bool IsSerilogDynamicLoggerProviderAlreadyRegistered(ILoggingBuilder builder)
     {
         return builder.Services.Any(descriptor =>
-            descriptor.ServiceType == typeof(ILoggerProvider) && descriptor.SafeGetImplementationType() == typeof(DynamicSerilogLoggerProvider));
+            descriptor.SafeGetImplementationType() == typeof(DynamicSerilogLoggerProvider) && descriptor.ServiceType == typeof(ILoggerProvider));
     }
 
     private static void AssertNoDynamicLoggerProviderRegistered(ILoggingBuilder builder)

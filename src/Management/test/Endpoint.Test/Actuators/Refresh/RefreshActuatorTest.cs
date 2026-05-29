@@ -200,21 +200,21 @@ public sealed class RefreshActuatorTest
     {
         var fileProvider = new MemoryFileProvider();
 
-        fileProvider.IncludeFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-          "Management": {
-            "Endpoints": {
-              "Refresh": {
-                "ReturnConfiguration": false
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Management": {
+                "Endpoints": {
+                  "Refresh": {
+                    "ReturnConfiguration": false
+                  }
+                }
               }
             }
-          }
-        }
-        """);
+            """);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
-        builder.Configuration.AddJsonFile(fileProvider, MemoryFileProvider.DefaultAppSettingsFileName, false, true);
+        builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddRefreshActuator();
         await using WebApplication host = builder.Build();
 
@@ -229,10 +229,10 @@ public sealed class RefreshActuatorTest
 
         responseBody1.Should().BeJson("[]");
 
-        fileProvider.ReplaceFile(MemoryFileProvider.DefaultAppSettingsFileName, """
-        {
-        }
-        """);
+        fileProvider.ReplaceAppSettingsJsonFile("""
+            {
+            }
+            """);
 
         fileProvider.NotifyChanged();
 

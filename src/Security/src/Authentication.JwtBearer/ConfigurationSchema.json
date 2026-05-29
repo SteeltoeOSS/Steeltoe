@@ -1,0 +1,20 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Security": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Security.Authentication": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Security.Authentication.JwtBearer": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  }
+}

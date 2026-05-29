@@ -17,7 +17,8 @@ internal sealed class ConfigureEnvironmentEndpointOptions(IConfiguration configu
         "key",
         "token",
         ".*credentials.*",
-        "vcap_services"
+        "vcap_services",
+        ".*connectionstring.*"
     ];
 
     public override void Configure(EnvironmentEndpointOptions options)
