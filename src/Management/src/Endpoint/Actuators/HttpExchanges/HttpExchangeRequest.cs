@@ -18,14 +18,7 @@ public sealed class HttpExchangeRequest
     public Uri Uri { get; }
 
     [JsonPropertyName("uri")]
-    public string JsonUri
-    {
-        get
-        {
-            MaskedUri masked = Uri;
-            return masked.ToString();
-        }
-    }
+    public string JsonUri => Uri.ToString();
 
     [JsonPropertyName("headers")]
     [JsonIgnoreEmptyCollection]
@@ -41,7 +34,7 @@ public sealed class HttpExchangeRequest
         ArgumentNullException.ThrowIfNull(headers);
 
         Method = method;
-        Uri = uri;
+        Uri = MaskedUri.Mask(uri);
         Headers = headers;
         RemoteAddress = remoteAddress;
     }
