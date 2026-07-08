@@ -12,12 +12,26 @@ internal sealed class BoolStringJsonConverter : JsonConverter<bool>
 {
     public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        return reader.TokenType switch
+        switch (reader.TokenType)
         {
-            JsonTokenType.False or JsonTokenType.True => reader.GetBoolean(),
-            JsonTokenType.String => bool.Parse(reader.GetString()!),
-            _ => throw new JsonException()
-        };
+            case JsonTokenType.False or JsonTokenType.True:
+            {
+                return reader.GetBoolean();
+            }
+            case JsonTokenType.String:
+            {
+                string? value = reader.GetString();
+
+                if (bool.TryParse(value, out bool result))
+                {
+                    return result;
+                }
+
+                break;
+            }
+        }
+
+        throw new JsonException();
     }
 
     public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)

@@ -11,13 +11,47 @@ internal sealed class JsonInstanceInfoConverter : JsonConverter<IList<JsonInstan
 {
     public override IList<JsonInstanceInfo?> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if (reader.TokenType == JsonTokenType.StartArray)
+        // Individual instances are deserialized one at a time (instead of the entire array at once), so that a single instance with invalid
+        // values (for example, an unrecognized "actionType") does not prevent the other instances in the array from being discovered.
+
+        using JsonDocument document = JsonDocument.ParseValue(ref reader);
+        List<JsonInstanceInfo?> instances = [];
+
+        if (document.RootElement.ValueKind == JsonValueKind.Array)
         {
-            return JsonSerializer.Deserialize(ref reader, EurekaJsonSerializerContext.Default.ListJsonInstanceInfo)!;
+            foreach (JsonElement element in document.RootElement.EnumerateArray())
+            {
+                JsonInstanceInfo? instanceInfo = TryDeserializeInstance(element);
+
+                if (instanceInfo != null)
+                {
+                    instances.Add(instanceInfo);
+                }
+            }
+        }
+        else
+        {
+            JsonInstanceInfo? instanceInfo = TryDeserializeInstance(document.RootElement);
+
+            if (instanceInfo != null)
+            {
+                instances.Add(instanceInfo);
+            }
         }
 
-        JsonInstanceInfo? instanceInfo = JsonSerializer.Deserialize(ref reader, EurekaJsonSerializerContext.Default.JsonInstanceInfo);
-        return instanceInfo != null ? [instanceInfo] : [];
+        return instances;
+    }
+
+    private static JsonInstanceInfo? TryDeserializeInstance(JsonElement element)
+    {
+        try
+        {
+            return JsonSerializer.Deserialize(element.GetRawText(), EurekaJsonSerializerContext.Default.JsonInstanceInfo);
+        }
+        catch (Exception exception) when (exception is JsonException or FormatException)
+        {
+            return null;
+        }
     }
 
     public override void Write(Utf8JsonWriter writer, IList<JsonInstanceInfo?> value, JsonSerializerOptions options)
