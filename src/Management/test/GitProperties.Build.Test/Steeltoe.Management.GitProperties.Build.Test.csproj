@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Single-targeted, unlike most Steeltoe test projects: every test here spawns real
+         "dotnet build"/"publish" subprocesses against a fixed netstandard2.0 task assembly and a
+         generated consumer project - none of that exercises this test assembly's own TFM, so
+         building it three times (net8/net9/net10) would just triple the suite's runtime for zero
+         extra coverage. -->
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <!-- Exposes $(TargetFramework) to runtime code (see TestPaths.TestAppTargetFramework), so the
+         TFM used for every generated test-app .csproj tracks this project's own TFM automatically -
+         bumping this property is then the only change needed when a new TFM becomes current. -->
+    <AssemblyMetadata Include="TargetFramework" Value="$(TargetFramework)" />
+  </ItemGroup>
+</Project>

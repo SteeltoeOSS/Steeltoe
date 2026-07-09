@@ -1,0 +1,11 @@
+This file exists so build\Steeltoe.Management.GitProperties.Build.targets can detect, at MSBuild evaluation time,
+whether it is being loaded straight from this source checkout (a consumer's own
+ProjectReference dev loop) or from an installed NuGet package - see
+$(GitPropertiesTaskHost) in that .targets file for why this distinction matters (in-process vs.
+out-of-process task loading).
+
+This file is deliberately excluded from the packed .nupkg (see the <None> item in
+Steeltoe.Management.GitProperties.Build.csproj), so its absence at the equivalent location inside an installed
+package is exactly what identifies "packaged" consumption.
+
+Do not delete, rename, or pack this file.

@@ -1,0 +1,95 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- netstandard2.0, not net10.0: MSBuild tasks run inside the MSBuild host process itself,
+         which may be .NET Framework (e.g. Visual Studio's own MSBuild.exe) rather than a
+         modern .NET runtime. MSBuild tries to load the task assembly in-process first and only
+         falls back to a slower out-of-process task host (with an "AssemblyLoad_Warning") if
+         that fails - which it always will for a net10.0-only assembly hosted in .NET
+         Framework, since the two runtimes can't load each other's assemblies at all.
+         netstandard2.0 is loadable in-process by both .NET Framework 4.6.1+ and any modern
+         .NET MSBuild host, avoiding the fallback (and its warning) entirely. -->
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Generates a Spring Boot-compatible git.properties file at build time via MSBuild props/targets/tasks.</Description>
+    <PackageTags>git;git.properties;actuator;info;MSBuild</PackageTags>
+    <IsPackable>true</IsPackable>
+    <!-- Directory.Build.targets unconditionally wires up JSON schema generation (via
+         ConfigurationSchemaAttribute) for every IsPackable=true project, including a ProjectReference
+         to the net8.0-only ConfigurationSchemaGenerator. This project is netstandard2.0 (an MSBuild
+         task assembly), never uses that attribute, and a netstandard2.0 project can't reference a
+         net8.0 one at all - opt out via the property Directory.Build.targets checks before wiring any
+         of that up. Must be set here, before Directory.Build.targets is auto-imported (at the very end
+         of evaluation), so it sees this value instead of applying its own "true" default. -->
+    <ConfigurationSchemaGeneratorEnabled>false</ConfigurationSchemaGeneratorEnabled>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <!-- Implicit usings include System.Threading.Tasks, whose Task type collides with
+         Microsoft.Build.Utilities.Task (what every MSBuild task class here derives from).
+         Not needed anyway - everything in this project is synchronous. -->
+    <Using Remove="System.Threading.Tasks" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- The task assembly's own build output lands directly under bin\tasks\<tfm>\ instead of
+         the usual bin\<Configuration>\<tfm>\, so build\Steeltoe.Management.GitProperties.Build.targets can
+         reference it via the SAME relative path ("..\bin\tasks\<tfm>\Steeltoe.Management.GitProperties.Build.dll")
+         whether it's being used straight from this source tree (a consumer's ProjectReference dev
+         loop) or from inside the packed .nupkg, where the .None item below places the DLL
+         under "tasks\<tfm>\" at the package root regardless of this local disk layout.
+         Deliberately still nested under a literal "bin\" here (not a bare "tasks\" at the
+         project root) purely so the existing generic **/[Bb]in/* .gitignore pattern already
+         covers it - no project-specific gitignore entry needed. -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>bin\tasks\$(TargetFramework)\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- This package only contributes MSBuild build logic, never application code, so it must
+         never appear as a normal compile-time/runtime dependency of a consuming project, and
+         must never flow transitively to whatever references that project. -->
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <!-- No lib\ output on purpose (this isn't a reference assembly) - the task DLL ships under
+         tasks\ via the explicit <None> item below instead. -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <!-- NU5128: expected - IncludeBuildOutput=false means there's genuinely no lib\/ref\ content.
+         NU5100: expected - the task DLL living under tasks\ instead of lib\ is deliberate; it's
+         an MSBuild task assembly, not something consumers should get as a compile reference. -->
+    <NoWarn>$(NoWarn);NU5128;NU5100</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- PrivateAssets="all" keeps this off the consumer's own dependency list; ExcludeAssets="runtime"
+         stops it from being copied into our output - the MSBuild host process that loads this
+         task assembly already provides these types at runtime. -->
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="$(MicrosoftBuildUtilitiesCoreVersion)" PrivateAssets="all" ExcludeAssets="runtime" />
+    <!-- shared-package.props adds this for public API tracking (PublicAPI.Shipped/Unshipped.txt),
+         which doesn't apply here: this assembly is loaded by the MSBuild engine as a task host, never
+         referenced or compiled against by consumers, so its "public" surface isn't a compatibility
+         contract worth tracking. -->
+    <PackageReference Remove="Microsoft.CodeAnalysis.PublicApiAnalyzers" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- PackagePath matches the local bin\tasks\<tfm>\ disk layout above exactly (the "bin\"
+         segment here is just a folder name inside the .nupkg - NuGet gives no special meaning
+         to it, unlike build\/buildTransitive\/lib\), so build\Steeltoe.Management.GitProperties.Build.targets
+         can use one single relative path in both the source tree and the packed package. -->
+    <!-- NuGet auto-imports build\{PackageId}.targets for any consumer - the filename must match
+         the (now-defaulted) PackageId exactly, or this silently does nothing for a real package
+         consumer: no error, just an inert package, since there's no build/*.targets to hook into. -->
+    <None Include="build\Steeltoe.Management.GitProperties.Build.targets" Pack="true" PackagePath="build\" />
+    <None Include="$(TargetPath)" Pack="true" PackagePath="bin\tasks\$(TargetFramework)\" />
+    <!-- Explicitly never packed: Steeltoe.Management.GitProperties.Build.targets' $(GitPropertiesTaskHost)
+         detection relies on this file's absence to recognize a real installed package (vs. this repo's
+         own source-tree dev loop) - see SourceCheckout.txt itself for the full explanation.
+         Pack="false" is redundant against the SDK's default item globs (which don't pack plain
+         None items unless told to), but stated explicitly so that invariant can never silently
+         break if packing rules elsewhere ever change. -->
+    <None Include="SourceCheckout.txt" Pack="false" />
+  </ItemGroup>
+
+</Project>

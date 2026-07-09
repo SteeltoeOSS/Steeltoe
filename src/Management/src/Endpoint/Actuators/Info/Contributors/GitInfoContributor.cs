@@ -19,7 +19,7 @@ internal sealed partial class GitInfoContributor : ConfigurationContributor, IIn
     private readonly ILogger _logger;
 
     public GitInfoContributor(ILogger<GitInfoContributor> logger)
-        : this($"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}{GitPropertiesFileName}", logger)
+        : this(ResolveDefaultPropertiesPath(), logger)
     {
     }
 
@@ -31,6 +31,30 @@ internal sealed partial class GitInfoContributor : ConfigurationContributor, IIn
 
         _propertiesPath = propertiesPath;
         _logger = logger;
+    }
+
+    private static string ResolveDefaultPropertiesPath()
+    {
+        return ResolveDefaultPropertiesPath(AppContext.BaseDirectory, Directory.GetCurrentDirectory());
+    }
+
+    /// <summary>
+    /// Prefers the directory the running assembly was loaded from (where a build tool like Steeltoe.Management.GitProperties.Build copies git.properties to)
+    /// over the process's current working directory, since the latter depends entirely on how the application was launched (for example, `dotnet run` and
+    /// directly invoking a built DLL both leave the current directory pointed at the project directory, not the output directory the assembly - and
+    /// git.properties - actually live in) and can't be relied on to match. Takes both directories as parameters purely so tests can exercise this resolution
+    /// logic against isolated temporary directories, without touching either of this process's real ones.
+    /// </summary>
+    internal static string ResolveDefaultPropertiesPath(string baseDirectory, string currentDirectory)
+    {
+        string baseDirectoryPath = Path.Combine(baseDirectory, GitPropertiesFileName);
+
+        if (File.Exists(baseDirectoryPath))
+        {
+            return baseDirectoryPath;
+        }
+
+        return Path.Combine(currentDirectory, GitPropertiesFileName);
     }
 
     public async Task ContributeAsync(InfoBuilder builder, CancellationToken cancellationToken)
