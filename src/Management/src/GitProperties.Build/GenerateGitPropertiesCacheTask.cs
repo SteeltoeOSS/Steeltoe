@@ -245,18 +245,18 @@ public sealed class GenerateGitPropertiesCacheTask : Task
     /// From here on, any failure is unexpected and fatal - git and the repository are already known-good (see <see cref="Preflight" />).
     /// </summary>
     /// <remarks>
-    /// Wrapped in a cross-process lock (see <see cref="GitPropertiesFileWriter.TryAcquireExclusiveLock" />): MSBuild's own Inputs/Outputs staleness check
-    /// (in Steeltoe.Management.GitProperties.Build.targets) runs independently per project/TFM, with no coordination between them - so when multiple
-    /// projects or TFMs of the same multi-targeted project build concurrently (MSBuild's default), more than one can see the shared cache as stale and
-    /// decide to invoke this task at the same time, before either has written a fresh one. Deliberately does NOT try to validate whether the existing cache
-    /// content is itself still correct/up to date - that's the target-level Inputs/Outputs check's job, and it has already decided we need to run. The only
-    /// thing checked here is whether the file was rewritten by someone else WHILE this call was waiting for the lock: only then is skipping safe, because a
-    /// concurrent write during that narrow window must be reacting to the exact same staleness trigger, in the same build, against the same repository
-    /// state. (An early, wrong attempt at this compared the cache's stored commit ID to the current one - but tagging an existing commit, for example,
-    /// invalidates the cache without changing the commit ID, so that check silently skipped writes that were actually needed.) This is purely a "thundering
-    /// herd" optimization, not a correctness fix - <see cref="GitPropertiesFileWriter.WriteAtomic" /> already guarantees no reader ever observes a
-    /// torn/partial file even without it, so failing to acquire the lock (or an environment where locking isn't possible at all) safely falls back to doing
-    /// the work anyway, same as before this existed.
+    /// Wrapped in a cross-process lock (see <see cref="AtomicFile.TryAcquireExclusiveLock" />): MSBuild's own Inputs/Outputs staleness check (in
+    /// Steeltoe.Management.GitProperties.Build.targets) runs independently per project/TFM, with no coordination between them - so when multiple projects or
+    /// TFMs of the same multi-targeted project build concurrently (MSBuild's default), more than one can see the shared cache as stale and decide to invoke
+    /// this task at the same time, before either has written a fresh one. Deliberately does NOT try to validate whether the existing cache content is itself
+    /// still correct/up to date - that's the target-level Inputs/Outputs check's job, and it has already decided we need to run. The only thing checked here
+    /// is whether the file was rewritten by someone else WHILE this call was waiting for the lock: only then is skipping safe, because a concurrent write
+    /// during that narrow window must be reacting to the exact same staleness trigger, in the same build, against the same repository state. (An early,
+    /// wrong attempt at this compared the cache's stored commit ID to the current one - but tagging an existing commit, for example, invalidates the cache
+    /// without changing the commit ID, so that check silently skipped writes that were actually needed.) This is purely a "thundering herd" optimization,
+    /// not a correctness fix - <see cref="AtomicFile.WriteAtomic" /> already guarantees no reader ever observes a torn/partial file even without it, so
+    /// failing to acquire the lock (or an environment where locking isn't possible at all) safely falls back to doing the work anyway, same as before this
+    /// existed.
     /// </remarks>
     private bool TryGenerateAndWriteCache(string commitId)
     {
@@ -269,7 +269,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
         // later, and "delete, then someone else recreates the same path" is the classic TOCTOU race that breaks a
         // file-based mutex's mutual exclusion guarantee - simplest to just never delete it and let every build reuse
         // the same, already-existing lock file.
-        using FileStream? cacheLock = GitPropertiesFileWriter.TryAcquireExclusiveLock($"{CacheFile}.lock", TimeSpan.FromSeconds(30));
+        using FileStream? cacheLock = AtomicFile.TryAcquireExclusiveLock($"{CacheFile}.lock", TimeSpan.FromSeconds(30));
 
         if (cacheLock != null && WasCacheRewrittenWhileWaitingForLock(cacheWriteTimeBeforeLock))
         {
@@ -326,28 +326,28 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
         List<string> lines =
         [
-            $"git.branch={GitPropertiesFileWriter.EscapeLineBreaks(branch)}",
-            $"git.commit.id={GitPropertiesFileWriter.EscapeLineBreaks(commitId)}",
-            $"git.commit.id.abbrev={GitPropertiesFileWriter.EscapeLineBreaks(logEntry.AbbrevId)}",
-            $"{GitPropertiesFileWriter.CommitIdDescribeKey}={GitPropertiesFileWriter.EscapeLineBreaks(tagDescription.BaseDescribe)}",
-            $"git.commit.time={GitPropertiesFileWriter.EscapeLineBreaks(logEntry.CommitTime)}",
-            $"git.commit.message.short={GitPropertiesFileWriter.EscapeLineBreaks(logEntry.ShortMessage)}",
-            $"git.commit.message.full={GitPropertiesFileWriter.EscapeLineBreaks(logEntry.FullMessage)}",
-            $"git.commit.user.name={GitPropertiesFileWriter.EscapeLineBreaks(logEntry.AuthorName)}",
-            $"git.commit.user.email={GitPropertiesFileWriter.EscapeLineBreaks(logEntry.AuthorEmail)}",
-            $"git.build.host={GitPropertiesFileWriter.EscapeLineBreaks(buildHost)}",
-            $"git.build.user.name={GitPropertiesFileWriter.EscapeLineBreaks(config.UserName)}",
-            $"git.build.user.email={GitPropertiesFileWriter.EscapeLineBreaks(config.UserEmail)}",
-            $"git.tags={GitPropertiesFileWriter.EscapeLineBreaks(tagsAndCommitCount.Tags)}",
-            $"git.closest.tag.name={GitPropertiesFileWriter.EscapeLineBreaks(tagDescription.ClosestTagName)}",
-            $"git.closest.tag.commit.count={GitPropertiesFileWriter.EscapeLineBreaks(tagDescription.ClosestTagCommitCount)}",
-            $"git.remote.origin.url={GitPropertiesFileWriter.EscapeLineBreaks(config.RemoteUrl)}",
-            $"git.total.commit.count={GitPropertiesFileWriter.EscapeLineBreaks(tagsAndCommitCount.TotalCommitCount)}"
+            $"git.branch={GitPropertiesFormat.EscapeLineBreaks(branch)}",
+            $"git.commit.id={GitPropertiesFormat.EscapeLineBreaks(commitId)}",
+            $"git.commit.id.abbrev={GitPropertiesFormat.EscapeLineBreaks(logEntry.AbbrevId)}",
+            $"{GitPropertiesFormat.CommitIdDescribeKey}={GitPropertiesFormat.EscapeLineBreaks(tagDescription.BaseDescribe)}",
+            $"git.commit.time={GitPropertiesFormat.EscapeLineBreaks(logEntry.CommitTime)}",
+            $"git.commit.message.short={GitPropertiesFormat.EscapeLineBreaks(logEntry.ShortMessage)}",
+            $"git.commit.message.full={GitPropertiesFormat.EscapeLineBreaks(logEntry.FullMessage)}",
+            $"git.commit.user.name={GitPropertiesFormat.EscapeLineBreaks(logEntry.AuthorName)}",
+            $"git.commit.user.email={GitPropertiesFormat.EscapeLineBreaks(logEntry.AuthorEmail)}",
+            $"git.build.host={GitPropertiesFormat.EscapeLineBreaks(buildHost)}",
+            $"git.build.user.name={GitPropertiesFormat.EscapeLineBreaks(config.UserName)}",
+            $"git.build.user.email={GitPropertiesFormat.EscapeLineBreaks(config.UserEmail)}",
+            $"git.tags={GitPropertiesFormat.EscapeLineBreaks(tagsAndCommitCount.Tags)}",
+            $"git.closest.tag.name={GitPropertiesFormat.EscapeLineBreaks(tagDescription.ClosestTagName)}",
+            $"git.closest.tag.commit.count={GitPropertiesFormat.EscapeLineBreaks(tagDescription.ClosestTagCommitCount)}",
+            $"git.remote.origin.url={GitPropertiesFormat.EscapeLineBreaks(config.RemoteUrl)}",
+            $"git.total.commit.count={GitPropertiesFormat.EscapeLineBreaks(tagsAndCommitCount.TotalCommitCount)}"
         ];
 
         try
         {
-            GitPropertiesFileWriter.WriteAtomic(CacheFile, lines);
+            AtomicFile.WriteAtomic(CacheFile, lines);
         }
         catch (IOException exception)
         {

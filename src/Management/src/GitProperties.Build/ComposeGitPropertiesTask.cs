@@ -66,21 +66,31 @@ public sealed class ComposeGitPropertiesTask : Task
         }
 
         bool isDirty = stdout.Length > 0;
-        List<string> lines = File.ReadAllLines(CacheFile).ToList();
+        List<string> lines;
+
+        try
+        {
+            lines = AtomicFile.ReadAllLinesWithRetry(CacheFile).ToList();
+        }
+        catch (IOException exception)
+        {
+            Log.LogError($"git.properties: failed to read {CacheFile}: {exception.Message}");
+            return false;
+        }
 
         for (int index = 0; index < lines.Count; index++)
         {
-            if (isDirty && lines[index].StartsWith($"{GitPropertiesFileWriter.CommitIdDescribeKey}=", StringComparison.Ordinal))
+            if (isDirty && lines[index].StartsWith($"{GitPropertiesFormat.CommitIdDescribeKey}=", StringComparison.Ordinal))
             {
                 lines[index] += "-dirty";
             }
         }
 
         lines.Add($"git.dirty={(isDirty ? "true" : "false")}");
-        lines.Add($"git.build.version={GitPropertiesFileWriter.EscapeLineBreaks(Version)}");
+        lines.Add($"git.build.version={GitPropertiesFormat.EscapeLineBreaks(Version)}");
 
         // S6354 (use an injectable time provider): not practical here, for the same reason as
-        // GitPropertiesFileWriter.TryAcquireExclusiveLock - see that method's remarks. Matches the
+        // AtomicFile.TryAcquireExclusiveLock - see that method's remarks. Matches the
         // ISO-8601-with-offset style git itself uses for git.commit.time (%cI), rather than
         // normalizing to UTC - this is "when this build ran, in the build machine's own local time",
         // not a value that needs to compare directly against the commit's own timestamp.
@@ -91,7 +101,7 @@ public sealed class ComposeGitPropertiesTask : Task
 
         try
         {
-            GitPropertiesFileWriter.WriteAtomic(OutputFile, lines);
+            AtomicFile.WriteAtomic(OutputFile, lines);
         }
         catch (IOException exception)
         {
@@ -106,7 +116,7 @@ public sealed class ComposeGitPropertiesTask : Task
 
         try
         {
-            GitPropertiesFileWriter.WriteAtomic(FallbackFile, lines);
+            AtomicFile.WriteAtomic(FallbackFile, lines);
         }
         catch (IOException exception)
         {
