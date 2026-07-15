@@ -67,7 +67,6 @@ internal static partial class TestPaths
         "shared-package.props",
         "shared-project.props",
         "versions.props",
-        "Directory.Build.targets",
         "stylecop.json",
         "PackageIcon.png",
         "PackageReadme.md",
