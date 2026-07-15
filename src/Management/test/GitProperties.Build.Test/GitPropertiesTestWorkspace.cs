@@ -30,8 +30,26 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
 
     public GitPropertiesTestWorkspace()
     {
-        RootDirectory = Path.Combine(Path.GetTempPath(), $"build-tasks-test_{Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture)[..8]}");
-        Directory.CreateDirectory(RootDirectory);
+        string rootDirectory = Path.Combine(Path.GetTempPath(), $"build-tasks-test_{Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture)[..8]}");
+        Directory.CreateDirectory(rootDirectory);
+        RootDirectory = ResolvePhysicalPath(rootDirectory);
+    }
+
+    /// <summary>
+    /// On macOS, $TMPDIR resolves through a symlink (/var -&gt; /private/var) that the OS silently canonicalizes away whenever a spawned process (git,
+    /// dotnet, MSBuild) reports its own working directory - e.g. in "git.properties: writing..." diagnostic messages. Resolving once up front here keeps
+    /// every path-based assertion in these tests (which compares against exactly that reported text) consistent with what a spawned process itself
+    /// reports, instead of the un-resolved alias $TMPDIR itself returns.
+    /// </summary>
+    private static string ResolvePhysicalPath(string path)
+    {
+        if (!OperatingSystem.IsMacOS())
+        {
+            return path;
+        }
+
+        ProcessResult result = ProcessRunner.Run("pwd", path, "-P");
+        return result.Output.Trim();
     }
 
     public void Dispose()
