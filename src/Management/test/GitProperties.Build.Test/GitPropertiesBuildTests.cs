@@ -258,6 +258,31 @@ public sealed class GitPropertiesBuildTests : IDisposable
         featureOffResult.Output.Should().NotContain("GITPROPS002");
     }
 
+    /// <summary>
+    /// GenerateGitPropertiesCacheTask.ReadConfig only recognizes the literal "remote.origin.url" config key - a repository with additional remotes (a
+    /// fork's "upstream", a CI mirror, etc.) must still resolve git.remote.origin.url to origin's own URL, never another remote's. Also confirms that
+    /// when origin itself has more than one configured URL (via "git remote set-url --add"), the field resolves to the LAST one, matching "git config
+    /// --list"'s own last-value-wins behavior for repeated keys (verified independently against a real git binary before writing this test).
+    /// </summary>
+    [Fact]
+    public void MultipleRemotes_OnlyOriginUrlIsUsed()
+    {
+        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
+        string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
+
+        ProcessRunner.RunGit(repository, "remote", "add", "upstream", "https://example.com/upstream.git");
+        ProcessRunner.RunGit(repository, "remote", "add", "origin", "https://example.com/origin.git");
+        ProcessRunner.RunGit(repository, "remote", "set-url", "--add", "origin", "https://example.com/origin-second.git");
+
+        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build");
+        AssertBuildSucceeded(result, "build with multiple remotes configured");
+
+        Dictionary<string, string> properties = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
+
+        properties["git.remote.origin.url"].Should().Be("https://example.com/origin-second.git",
+            "origin's own last-configured URL must win, ignoring both the unrelated 'upstream' remote and origin's own first URL.");
+    }
+
     [Fact]
     public void ShallowClone_LeavesCommitCountsEmpty()
     {
