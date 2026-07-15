@@ -56,14 +56,14 @@ internal static class AtomicFile
                 MoveOrReplace(tempPath, path);
                 return;
             }
-            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            catch (Exception exception) when (IsTransientError(exception))
             {
                 lastError = exception;
                 Thread.Sleep(ReadWriteRetryDelay);
             }
         }
 
-        throw new IOException($"Failed to write {path}", lastError);
+        throw new IOException($"Failed to write {path} after {MaxAttempts} attempts.", lastError);
     }
 
     /// <summary>
@@ -80,14 +80,14 @@ internal static class AtomicFile
             {
                 return File.ReadAllLines(path);
             }
-            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            catch (Exception exception) when (IsTransientError(exception))
             {
                 lastError = exception;
                 Thread.Sleep(ReadWriteRetryDelay);
             }
         }
 
-        throw new IOException($"Failed to read {path}", lastError);
+        throw new IOException($"Failed to read {path} after {MaxAttempts} attempts.", lastError);
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ internal static class AtomicFile
         {
             File.Move(sourcePath, destinationPath);
         }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException && File.Exists(destinationPath))
+        catch (IOException) when (File.Exists(destinationPath))
         {
             File.Replace(sourcePath, destinationPath, null);
         }
@@ -128,7 +128,7 @@ internal static class AtomicFile
             {
                 return new FileStream(lockFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
             }
-            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            catch (Exception exception) when (IsTransientError(exception))
             {
                 if (CurrentTimeUtc >= deadlineUtc)
                 {
@@ -138,5 +138,10 @@ internal static class AtomicFile
                 Thread.Sleep(AcquireLockRetryDelay);
             }
         }
+    }
+
+    private static bool IsTransientError(Exception exception)
+    {
+        return exception is IOException or UnauthorizedAccessException;
     }
 }

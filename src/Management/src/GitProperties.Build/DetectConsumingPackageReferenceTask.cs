@@ -60,9 +60,12 @@ public sealed class DetectConsumingPackageReferenceTask : Task
                 string content = File.ReadAllText(ProjectAssetsFile);
                 hasReference = ContainsAnyPackage(content);
             }
-            catch
+            catch (Exception exception)
             {
-                hasReference = false;
+                Log.LogError($"git.properties: failed to read '{ProjectAssetsFile}' while checking for a consuming package reference:" +
+                    $"{Environment.NewLine}{exception}");
+
+                return false;
             }
         }
 

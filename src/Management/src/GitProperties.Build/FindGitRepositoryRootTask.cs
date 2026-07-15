@@ -67,10 +67,10 @@ public sealed class FindGitRepositoryRootTask : Task
                 current = current.Parent;
             }
         }
-        catch
+        catch (Exception exception)
         {
-            repositoryRoot = string.Empty;
-            unsupportedGitFile = false;
+            Log.LogError($"git.properties: failed to walk up from '{StartDirectory}' looking for a git repository root:{Environment.NewLine}{exception}");
+            return false;
         }
 
         RepositoryRoot = repositoryRoot;

@@ -12,7 +12,9 @@ namespace Steeltoe.Management.GitProperties.Build;
 /// Merges the shared cache (see <see cref="GenerateGitPropertiesCacheTask" />) with the fields that can never be cached across projects: the live
 /// working-tree dirty state, the per-project $(Version), and the current build's own timestamp. Runs once per project, every build - unlike the cache
 /// generation, this is deliberately not skippable via Inputs/Outputs, since editing a tracked file doesn't touch any file timestamp this task could key
-/// incrementality off, and a cached build time would go stale the moment it's reused by a second build.
+/// incrementality off, and a cached build time would go stale the moment it's reused by a second build. Every failure below returns false: this task's
+/// own output (and the fallback copy, if configured) must never end up mismatched with what's actually on disk, so a partial run must fail the build
+/// loudly rather than let a later step (the copy-to-output/publish targets) pick up stale or incomplete content.
 /// </summary>
 // ReSharper disable once UnusedType.Global
 public sealed class ComposeGitPropertiesTask : Task
@@ -57,7 +59,19 @@ public sealed class ComposeGitPropertiesTask : Task
     /// <inheritdoc />
     public override bool Execute()
     {
-        int exitCode = GitProcessRunner.Run(GitExecutable, RepositoryRoot, "status --porcelain", out string stdout, out string stderr);
+        int exitCode;
+        string stdout;
+        string stderr;
+
+        try
+        {
+            exitCode = GitProcessRunner.Run(GitExecutable, RepositoryRoot, "status --porcelain", out stdout, out stderr);
+        }
+        catch (Exception exception)
+        {
+            Log.LogError($"git.properties: an unexpected error occurred while determining working tree status:{Environment.NewLine}{exception}");
+            return false;
+        }
 
         if (exitCode != 0)
         {
@@ -72,9 +86,9 @@ public sealed class ComposeGitPropertiesTask : Task
         {
             lines = AtomicFile.ReadAllLinesWithRetry(CacheFile).ToList();
         }
-        catch (IOException exception)
+        catch (Exception exception)
         {
-            Log.LogError($"git.properties: failed to read {CacheFile}: {exception.Message}");
+            Log.LogError($"git.properties: failed to read {CacheFile}:{Environment.NewLine}{exception}");
             return false;
         }
 
@@ -103,9 +117,9 @@ public sealed class ComposeGitPropertiesTask : Task
         {
             AtomicFile.WriteAtomic(OutputFile, lines);
         }
-        catch (IOException exception)
+        catch (Exception exception)
         {
-            Log.LogError($"git.properties: failed to write {OutputFile}: {exception.Message}");
+            Log.LogError($"git.properties: failed to write {OutputFile}:{Environment.NewLine}{exception}");
             return false;
         }
 
@@ -118,9 +132,9 @@ public sealed class ComposeGitPropertiesTask : Task
         {
             AtomicFile.WriteAtomic(FallbackFile, lines);
         }
-        catch (IOException exception)
+        catch (Exception exception)
         {
-            Log.LogError($"git.properties: failed to write fallback file {FallbackFile}: {exception.Message}");
+            Log.LogError($"git.properties: failed to write fallback file {FallbackFile}:{Environment.NewLine}{exception}");
             return false;
         }
 

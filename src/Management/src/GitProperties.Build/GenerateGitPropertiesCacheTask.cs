@@ -35,6 +35,15 @@ public sealed class GenerateGitPropertiesCacheTask : Task
     private static readonly Version MinimumGitVersion = new(2, 15, 0);
 
     /// <summary>
+    /// How long <see cref="TryGenerateAndWriteCache" /> waits for the cross-process cache lock before giving up and generating the cache anyway (see
+    /// <see cref="AtomicFile.TryAcquireExclusiveLock" />'s own remarks for why that fallback is always safe). Sized to comfortably cover a real, if slow,
+    /// cache generation - the ~10 sequential git calls that make up one full run of this method, even under heavy antivirus scanning or a large repository's
+    /// slower history-wide commands - without leaving every other concurrently-building project/TFM blocked for anywhere near as long if the holder is
+    /// actually stuck rather than just slow.
+    /// </summary>
+    private static readonly TimeSpan CacheLockTimeout = TimeSpan.FromSeconds(10);
+
+    /// <summary>
     /// Matches "git version 2.42.0", "git version 2.42.0.windows.1", and "git version 2.39.5 (Apple Git-154)" alike - capturing only the leading
     /// major.minor[.patch] numbers every real git build's "--version" output starts with, regardless of whatever vendor-specific suffix follows.
     /// </summary>
@@ -116,14 +125,22 @@ public sealed class GenerateGitPropertiesCacheTask : Task
             return true;
         }
 
-        string? commitId = Preflight();
-
-        if (commitId == null)
+        try
         {
-            return true;
-        }
+            string? commitId = Preflight();
 
-        return TryGenerateAndWriteCache(commitId);
+            if (commitId == null)
+            {
+                return true;
+            }
+
+            return TryGenerateAndWriteCache(commitId);
+        }
+        catch (Exception exception)
+        {
+            Log.LogError($"git.properties: an unexpected error occurred while generating the shared cache:{Environment.NewLine}{exception}");
+            return false;
+        }
     }
 
     /// <summary>
@@ -166,8 +183,10 @@ public sealed class GenerateGitPropertiesCacheTask : Task
     }
 
     /// <summary>
-    /// Runs "git --version", reporting GITPROPS003 (forgivable) if git can't be invoked at all - either the process fails to start, or it starts and exits
-    /// with a non-zero code. Returns the raw output on success, or null in either failure case.
+    /// Runs "git --version", reporting GITPROPS003 (forgivable) if git can't be invoked at all - either the process fails to start (a thrown exception - the
+    /// most likely reason git.properties would ever be used at all: it isn't installed, or isn't on PATH) or it starts and exits with a non-zero code. Both
+    /// are routine, anticipated outcomes here specifically, unlike every other git invocation in this class - reported with just the immediate reason, not a
+    /// full exception dump. Returns the raw output on success, or null in either failure case.
     /// </summary>
     private string? GetGitVersion()
     {
@@ -243,6 +262,9 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
     /// <summary>
     /// From here on, any failure is unexpected and fatal - git and the repository are already known-good (see <see cref="Preflight" />).
+    /// <see cref="ComposeGitPropertiesTask" /> and the copy-to-output targets in Steeltoe.Management.GitProperties.Build.targets are gated on
+    /// <see cref="CacheFile" /> merely existing, not on whether it's actually fresh - so a failure here must return false and stop the build, rather than
+    /// let those steps run against a stale cache left over from an earlier, successful run.
     /// </summary>
     /// <remarks>
     /// Wrapped in a cross-process lock (see <see cref="AtomicFile.TryAcquireExclusiveLock" />): MSBuild's own Inputs/Outputs staleness check (in
@@ -269,9 +291,17 @@ public sealed class GenerateGitPropertiesCacheTask : Task
         // later, and "delete, then someone else recreates the same path" is the classic TOCTOU race that breaks a
         // file-based mutex's mutual exclusion guarantee - simplest to just never delete it and let every build reuse
         // the same, already-existing lock file.
-        using FileStream? cacheLock = AtomicFile.TryAcquireExclusiveLock($"{CacheFile}.lock", TimeSpan.FromSeconds(30));
+        using FileStream? cacheLock = AtomicFile.TryAcquireExclusiveLock($"{CacheFile}.lock", CacheLockTimeout);
 
-        if (cacheLock != null && WasCacheRewrittenWhileWaitingForLock(cacheWriteTimeBeforeLock))
+        if (cacheLock == null)
+        {
+            // Purely informational: TryAcquireExclusiveLock's own contract is that failing to acquire it is never fatal, so this proceeds to regenerate
+            // the cache anyway - same as it always has - but a build that hits this on every single run (rather than as an occasional, expected race) is
+            // worth being able to spot from the log alone, without attaching a debugger.
+            Log.LogMessage("git.properties: could not acquire the lock for '{0}' within {1} seconds - proceeding without it.", CacheFile,
+                CacheLockTimeout.TotalSeconds);
+        }
+        else if (WasCacheRewrittenWhileWaitingForLock(cacheWriteTimeBeforeLock))
         {
             Log.LogMessage(
                 "git.properties: shared cache at '{0}' was rewritten by another concurrently-building project or target framework while waiting for " +
@@ -349,9 +379,9 @@ public sealed class GenerateGitPropertiesCacheTask : Task
         {
             AtomicFile.WriteAtomic(CacheFile, lines);
         }
-        catch (IOException exception)
+        catch (Exception exception)
         {
-            Log.LogError($"git.properties: failed to write {CacheFile}: {exception.Message}");
+            Log.LogError($"git.properties: failed to write {CacheFile}:{Environment.NewLine}{exception}");
             return false;
         }
 
@@ -539,9 +569,9 @@ public sealed class GenerateGitPropertiesCacheTask : Task
     }
 
     /// <summary>
-    /// Reports a forgivable anomaly - either a full skip (GITPROPS001/003/004/005, where the caller has already decided to return false) or a
-    /// degraded-but-successful outcome (GITPROPS006, where generation still proceeds) - as a warning when <see cref="EnableWarnings" /> is true, or a plain
-    /// informational message otherwise.
+    /// Reports a forgivable anomaly - either a full skip (GITPROPS001/003/004/005, where the caller has already decided to skip generation and return true)
+    /// or a degraded-but-successful outcome (GITPROPS006, where generation still proceeds) - as a warning when <see cref="EnableWarnings" /> is true, or a
+    /// plain informational message otherwise.
     /// </summary>
     /// <remarks>
     /// The downgraded message carries no code at all: a code only has a purpose when something is suppressible (via $(NoWarn)/ $(MSBuildWarningsAsErrors)),
@@ -610,8 +640,10 @@ public sealed class GenerateGitPropertiesCacheTask : Task
         Incompatible,
 
         /// <summary>
-        /// Git ran, but its "--version" output couldn't be parsed at all - already reported as a hard error via Log.LogError, since unlike "genuinely too old",
-        /// there's no safe default to fall back to here.
+        /// Git ran, but its "--version" output couldn't be parsed at all - a bug in <see cref="ParseGitVersion" />'s own regex, or an unrecognized version
+        /// string shape, not a routine/anticipated condition like "compatible" or "incompatible". Unlike those two, there's no safe conclusion to draw here - we
+        /// genuinely don't know whether the installed git is usable - so this is reported as a hard error via Log.LogError and, unlike every other skip in this
+        /// class, stops the build rather than letting a stale cache (if one exists from an earlier run) get used regardless.
         /// </summary>
         Unknown
     }
