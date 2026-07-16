@@ -5,52 +5,86 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-#pragma warning disable S2925 // "Thread.Sleep" should not be used in tests
-
 namespace Steeltoe.Management.GitProperties.Build.Test;
 
-/// <summary>
-/// Automated regression tests for the Steeltoe.Management.GitProperties.Build project (build/Steeltoe.Management.GitProperties.Build.targets plus its
-/// compiled MSBuild tasks). Exercises the scenarios that were manually verified while building this feature: ground-truth property values, incremental
-/// cache behavior, publish (with and without a prior build), the warn/info/skip diagnostic paths, shallow clones, non-ASCII commit data, and
-/// cross-project cache sharing. Every test runs against an isolated temporary workspace containing the CURRENT source of
-/// Steeltoe.Management.GitProperties.Build (see GitPropertiesTestWorkspace), not a stale git-tracked copy, so it always exercises whatever is on disk
-/// right now. Every git repository a test operates against is a small, synthetic one created from scratch (`git init` plus a handful of manufactured
-/// commits) - never a clone of this (large, real) repository - so the suite stays fast. Nothing here touches this repository's own working tree.
-/// </summary>
-public sealed class GitPropertiesBuildTests : IDisposable
+// Automated regression tests for the Steeltoe.Management.GitProperties.Build project
+// (build/Steeltoe.Management.GitProperties.Build.targets plus its compiled MSBuild tasks). Exercises the
+// scenarios that were manually verified while building this feature: ground-truth property values,
+// incremental cache behavior, publish (with and without a prior build), the warn/info/skip diagnostic
+// paths, shallow clones, non-ASCII commit data, and cross-project cache sharing. Every test runs against
+// an isolated temporary workspace containing the CURRENT source of Steeltoe.Management.GitProperties.Build
+// (see GitPropertiesTestWorkspace), not a stale git-tracked copy, so it always exercises whatever is on
+// disk right now. Every git repository a test operates against is a small, synthetic one created from
+// scratch (`git init` plus a handful of manufactured commits) - never a clone of this (large, real)
+// repository - so the suite stays fast. Nothing here touches this repository's own working tree.
+//
+// One class per test (see GitPropertiesBuildTestBase's own remarks for why) rather than many [Fact]
+// methods on one shared class: xUnit v3 runs different test classes concurrently by default, but never
+// parallelizes methods within the same class. Every test here is dominated by "dotnet build"/"publish"
+// subprocess time that's mostly I/O/wait-bound, not CPU-bound - splitting this way lets the whole suite's
+// wall-clock approach its single slowest test instead of the sum of all of them.
+//
+// Measured (TRX per-test timing, sequential run): every test costs roughly 3.7-4.2 seconds PER "dotnet
+// build"/"publish" subprocess it spawns, almost regardless of git-repository complexity - even the two
+// tests with no git repository at all still cost ~3.7s each, matching the single-build cases with a real
+// repository. Git setup (git init, commits, tags, config) is comparatively free by contrast. When a new
+// scenario needs only one extra assertion against a plain default build, prefer folding it into an
+// existing test that already builds one (see GroundTruthAllPropertiesMatchGitTest's own remarks for an
+// example) over adding a dedicated test that pays for another subprocess just to re-run the identical
+// setup.
+public sealed class GroundTruthAllPropertiesMatchGitTest : GitPropertiesBuildTestBase
 {
-    private static readonly Regex NuPkgVersionRegex =
-        new($@"^{Regex.Escape(TestPaths.PackageId)}\.(.+)\.nupkg$", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
-
-    private readonly GitPropertiesTestWorkspace _workspace = new();
-
+    /// <summary>
+    /// Also folds in two other checks against this same build, rather than paying for a dedicated "dotnet build" subprocess (by far the dominant cost of any
+    /// test in this suite - see the class remarks) just to exercise a single extra assertion against an otherwise identical, plain default build: that the
+    /// fallback file is never written unless explicitly opted into (see WriteToProjectDirectoryCreatesFallbackFileOnBuildTest for the positive case, which -
+    /// unlike this one - genuinely needs its own build, since it passes a different property), and that writing git.properties is confirmed at default
+    /// verbosity.
+    /// </summary>
     [Fact]
-    public void GroundTruth_AllPropertiesMatchGit()
+    public async Task GroundTruth_AllPropertiesMatchGit()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 3);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 3);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertBuildSucceeded(result, "build");
 
-        Dictionary<string, string> properties = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
+        File.Exists(GetFallbackFilePath(testApp)).Should().BeFalse(
+            "the fallback file must not be written into the project directory unless explicitly opted into.");
 
-        properties["git.commit.id"].Should().Be(ProcessRunner.GetGitOutput(repository, "rev-parse", "HEAD"));
-        properties["git.commit.id.abbrev"].Should().Be(ProcessRunner.GetGitOutput(repository, "rev-parse", "--short=7", "HEAD"));
-        properties["git.commit.user.name"].Should().Be(ProcessRunner.GetGitOutput(repository, "log", "-1", "--format=%an"));
-        properties["git.commit.user.email"].Should().Be(ProcessRunner.GetGitOutput(repository, "log", "-1", "--format=%ae"));
-        properties["git.commit.message.short"].Should().Be(ProcessRunner.GetGitOutput(repository, "log", "-1", "--format=%s"));
-        properties["git.total.commit.count"].Should().Be(ProcessRunner.GetGitOutput(repository, "rev-list", "--count", "HEAD"));
+        string expectedRelativePath = Path.Combine("obj", "Debug", TestPaths.TestAppTargetFramework, "git.properties");
+        result.Output.Should().Contain($"git.properties: writing to '{expectedRelativePath}' for project '{GitPropertiesTestWorkspace.TestAppProjectName}'.");
 
-        bool expectedDirty = ProcessRunner.GetGitOutput(repository, "status", "--porcelain").Length > 0;
+        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+
+        string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
+        properties["git.commit.id"].Should().Be(expectedCommitId);
+
+        string expectedCommitIdAbbrev = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "--short=7", "HEAD");
+        properties["git.commit.id.abbrev"].Should().Be(expectedCommitIdAbbrev);
+
+        string expectedCommitUserName = await ProcessRunner.GetGitOutputAsync(repository, "log", "-1", "--format=%an");
+        properties["git.commit.user.name"].Should().Be(expectedCommitUserName);
+
+        string expectedCommitUserEmail = await ProcessRunner.GetGitOutputAsync(repository, "log", "-1", "--format=%ae");
+        properties["git.commit.user.email"].Should().Be(expectedCommitUserEmail);
+
+        string expectedCommitMessageShort = await ProcessRunner.GetGitOutputAsync(repository, "log", "-1", "--format=%s");
+        properties["git.commit.message.short"].Should().Be(expectedCommitMessageShort);
+
+        string expectedTotalCommitCount = await ProcessRunner.GetGitOutputAsync(repository, "rev-list", "--count", "HEAD");
+        properties["git.total.commit.count"].Should().Be(expectedTotalCommitCount);
+
+        string gitStatus = await ProcessRunner.GetGitOutputAsync(repository, "status", "--porcelain");
+        bool expectedDirty = gitStatus.Length > 0;
         properties["git.dirty"].Should().Be(expectedDirty ? "true" : "false");
 
         // SDK default when $(Version) isn't set.
         properties["git.build.version"].Should().Be("1.0.0");
 
-        DateTimeOffset.TryParse(properties["git.build.time"], CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset buildTime).Should()
-            .BeTrue("git.build.time must be a parseable, ISO-8601-with-offset timestamp, matching the style git itself uses for git.commit.time.");
+        DateTimeOffset.TryParse(properties["git.build.time"], CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset buildTime).Should().BeTrue(
+            "git.build.time must be a parseable, ISO-8601-with-offset timestamp, matching the style git itself uses for git.commit.time.");
 
         buildTime.Should().BeCloseTo(DateTimeOffset.Now, TimeSpan.FromMinutes(5), "git.build.time must reflect roughly when this build actually ran.");
 
@@ -80,51 +114,61 @@ public sealed class GitPropertiesBuildTests : IDisposable
 
         properties.Keys.Should().BeEquivalentTo(expectedKeys);
     }
+}
 
+public sealed class IncrementalBuildCacheSkipsButDirtyStaysLiveTest : GitPropertiesBuildTestBase
+{
     [Fact]
-    public void IncrementalBuild_CacheSkipsButDirtyStaysLive()
+    public async Task IncrementalBuild_CacheSkipsButDirtyStaysLive()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult result1 = ProcessRunner.RunDotnet(testApp, "build");
+        ProcessResult result1 = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertBuildSucceeded(result1, "first build");
         string cacheFile = Path.Combine(repository, "obj", "_GitProperties", "git.properties.cache");
         File.Exists(cacheFile).Should().BeTrue("the cache file should exist after first build.");
-        DateTime writeTimeBefore = File.GetLastWriteTimeUtc(cacheFile);
 
-        // Ensure a rewritten file would get a detectably different modified-time.
-        Thread.Sleep(1100);
-        ProcessResult result2 = ProcessRunner.RunDotnet(testApp, "build", "-v:detailed");
+        ProcessResult result2 = await ProcessRunner.RunDotnetAsync(testApp, "build", "-v:detailed");
         AssertBuildSucceeded(result2, "second build");
+
+        // "Skipping target" is itself the deterministic, sufficient proof that nothing rewrote the
+        // cache file on this second build - no last-write-time comparison (and the sleep it would
+        // otherwise need, to guarantee a detectably different timestamp) is needed on top of it.
         result2.Output.Should().Contain("Skipping target \"GenerateGitPropertiesCache\"");
 
-        File.GetLastWriteTimeUtc(cacheFile).Should().Be(writeTimeBefore, "nothing git-relevant changed, so the cache file must not be rewritten.");
-
-        PropertiesFile.Read(DebugGitPropertiesFile(testApp)).Should().ContainKey("git.dirty");
+        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        properties.Should().ContainKey("git.dirty");
     }
+}
 
+public sealed class BuildTimeChangesAcrossBuildsUnlikeCommitTimeTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// Guards against git.build.time accidentally ending up in the shared, cross-project/cross-TFM cache (see GenerateGitPropertiesCacheTask) instead of
-    /// being recomputed by ComposeGitPropertiesTask on every build - same class of regression IncrementalBuild_CacheSkipsButDirtyStaysLive guards against
+    /// being recomputed by ComposeGitPropertiesTask on every build - same class of regression IncrementalBuildCacheSkipsButDirtyStaysLiveTest guards against
     /// for git.dirty. A cached build time would go stale (reporting the FIRST build's time on every subsequent one), silently defeating the whole point of
     /// the field: telling you when THIS build actually ran.
     /// </summary>
     [Fact]
-    public void BuildTime_ChangesAcrossBuilds_UnlikeCommitTime()
+    public async Task BuildTime_ChangesAcrossBuilds_UnlikeCommitTime()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult result1 = ProcessRunner.RunDotnet(testApp, "build");
+        ProcessResult result1 = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertBuildSucceeded(result1, "first build");
-        Dictionary<string, string> propertiesBefore = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
+        Dictionary<string, string> propertiesBefore = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
 
-        // Ensure a live-recomputed build time would get a detectably different value.
-        Thread.Sleep(1100);
-        ProcessResult result2 = ProcessRunner.RunDotnet(testApp, "build");
+        // git.build.time is formatted "yyyy-MM-ddTHH:mm:sszzz" (ComposeGitPropertiesTask) - second
+        // resolution only, no fractional part - so two builds landing within the same wall-clock
+        // second would produce identical values no matter how this test is written. This delay is
+        // sized to that format's own precision, not incidental slack.
+        await Task.Delay(TimeSpan.FromMilliseconds(1100), TestContext.Current.CancellationToken);
+
+        ProcessResult result2 = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertBuildSucceeded(result2, "second build");
-        Dictionary<string, string> propertiesAfter = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
+        Dictionary<string, string> propertiesAfter = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
 
         propertiesAfter["git.build.time"].Should().NotBe(propertiesBefore["git.build.time"],
             "git.build.time must be recomputed on every build, not reused from the shared cache.");
@@ -134,7 +178,10 @@ public sealed class GitPropertiesBuildTests : IDisposable
 
         propertiesAfter["git.commit.id"].Should().Be(propertiesBefore["git.commit.id"], "nothing about the commit itself changed between the two builds.");
     }
+}
 
+public sealed class NewTagInvalidatesCacheTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// Also folds in coverage for the trickiest shape ParseDescribeOutput's dash-splitting has to get right - a tag name that itself contains a dash
     /// ("release-1.0"), combined with a nonzero commits-ahead count - rather than spinning up a dedicated test just for that. Tagging an ANCESTOR of HEAD,
@@ -143,23 +190,23 @@ public sealed class GitPropertiesBuildTests : IDisposable
     /// GenerateGitPropertiesCacheTask.TryGenerateAndWriteCache's own remarks).
     /// </summary>
     [Fact]
-    public void NewTag_InvalidatesCache()
+    public async Task NewTag_InvalidatesCache()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult result1 = ProcessRunner.RunDotnet(testApp, "build");
+        ProcessResult result1 = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertBuildSucceeded(result1, "first build");
-        Dictionary<string, string> propertiesBefore = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
+        Dictionary<string, string> propertiesBefore = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
         propertiesBefore["git.tags"].Should().BeEmpty();
 
-        string ancestorCommitId = ProcessRunner.GetGitOutput(repository, "rev-parse", "HEAD~1");
-        ProcessResult tagResult = ProcessRunner.RunGit(repository, "tag", "release-1.0", ancestorCommitId);
+        string ancestorCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD~1");
+        ProcessResult tagResult = await ProcessRunner.RunGitAsync(repository, "tag", "release-1.0", ancestorCommitId);
         tagResult.ExitCode.Should().Be(0, "creating the test tag should succeed.");
 
-        ProcessResult result2 = ProcessRunner.RunDotnet(testApp, "build");
+        ProcessResult result2 = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertBuildSucceeded(result2, "second build");
-        Dictionary<string, string> propertiesAfter = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
+        Dictionary<string, string> propertiesAfter = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
 
         propertiesAfter["git.tags"].Should().BeEmpty("the tag points at an ancestor, not HEAD, so it must not show up in git.tags.");
         propertiesAfter["git.closest.tag.name"].Should().Be("release-1.0");
@@ -170,109 +217,109 @@ public sealed class GitPropertiesBuildTests : IDisposable
         // GenerateGitPropertiesCacheTask.ParseDescribeOutput's own BaseDescribe reconstruction.
         propertiesAfter["git.commit.id.describe"].Should().Be("release-1.0-1");
     }
+}
 
-    /// <summary>
-    /// Unlike every GITPROPS0xx diagnostic (all either $(GitPropertiesEnableWarnings)-gated or left at Message's own default importance because they
-    /// describe an anomaly, not the happy path), confirmation that git.properties was actually written is unconditional and at High importance - visible in
-    /// default build output with no extra verbosity flag needed - because it's the one concrete artifact this whole feature exists to produce. Logged from
-    /// Steeltoe.Management.GitProperties.Build.targets (via $(MSBuildProjectName)), not from ComposeGitPropertiesTask itself - a Task has no built-in notion
-    /// of "which project is this", so a solution build with many projects would otherwise be unable to tell which one this line belongs to.
-    /// </summary>
+public sealed class PublishIncludesGitPropertiesTest : GitPropertiesBuildTestBase
+{
     [Fact]
-    public void ComposeGitProperties_LogsWrittenFileAtDefaultVerbosity()
+    public async Task Publish_IncludesGitProperties()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build");
-        AssertBuildSucceeded(result, "build");
-
-        string expectedRelativePath = Path.Combine("obj", "Debug", TestPaths.TestAppTargetFramework, "git.properties");
-        result.Output.Should().Contain($"git.properties: writing to '{expectedRelativePath}' for project '{GitPropertiesTestWorkspace.TestAppProjectName}'.");
-    }
-
-    [Fact]
-    public void Publish_IncludesGitProperties()
-    {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
-        string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
-
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "publish");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "publish");
         AssertBuildSucceeded(result, "publish");
         result.Output.Should().NotContain("duplicate");
 
-        Dictionary<string, string> properties = PropertiesFile.Read(ReleasePublishGitPropertiesFile(testApp));
-        properties["git.commit.id"].Should().Be(ProcessRunner.GetGitOutput(repository, "rev-parse", "HEAD"));
+        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetReleasePublishGitPropertiesFilePath(testApp));
+        string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
+        properties["git.commit.id"].Should().Be(expectedCommitId);
     }
+}
 
+public sealed class PublishNoBuildIncludesGitPropertiesTest : GitPropertiesBuildTestBase
+{
     [Fact]
-    public void Publish_NoBuild_IncludesGitProperties()
+    public async Task Publish_NoBuild_IncludesGitProperties()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult buildResult = ProcessRunner.RunDotnet(testApp, "build", "-c", "Release");
+        ProcessResult buildResult = await ProcessRunner.RunDotnetAsync(testApp, "build", "-c", "Release");
         AssertBuildSucceeded(buildResult, "build");
 
-        ProcessResult publishResult = ProcessRunner.RunDotnet(testApp, "publish", "-c", "Release", "--no-build");
+        ProcessResult publishResult = await ProcessRunner.RunDotnetAsync(testApp, "publish", "-c", "Release", "--no-build");
         AssertBuildSucceeded(publishResult, "publish --no-build");
         publishResult.Output.Should().NotContain("duplicate");
 
-        Dictionary<string, string> properties = PropertiesFile.Read(ReleasePublishGitPropertiesFile(testApp));
-        properties["git.commit.id"].Should().Be(ProcessRunner.GetGitOutput(repository, "rev-parse", "HEAD"));
+        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetReleasePublishGitPropertiesFilePath(testApp));
+        string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
+        properties["git.commit.id"].Should().Be(expectedCommitId);
     }
+}
 
+public sealed class NoGitWarnsByDefaultTest : GitPropertiesBuildTestBase
+{
     [Fact]
-    public void NoGit_WarnsByDefault()
+    public async Task NoGit_WarnsByDefault()
     {
-        string projectDirectory = Path.Combine(_workspace.RootDirectory, "proj");
+        string projectDirectory = Path.Combine(Workspace.RootDirectory, "proj");
         Directory.CreateDirectory(projectDirectory);
-        string testApp = _workspace.CopyCurrentProjectFiles(projectDirectory);
+        string testApp = await Workspace.CopyCurrentProjectFilesAsync(projectDirectory);
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertBuildSucceeded(result, "the build with no .git present");
         AssertWarned(result, "GITPROPS001");
         AssertNoGitPropertiesGenerated(testApp);
     }
+}
 
+public sealed class NoGitInfoWhenEnableWarningsFalseTest : GitPropertiesBuildTestBase
+{
     [Fact]
-    public void NoGit_InfoWhenEnableWarningsFalse()
+    public async Task NoGit_InfoWhenEnableWarningsFalse()
     {
-        string projectDirectory = Path.Combine(_workspace.RootDirectory, "proj");
+        string projectDirectory = Path.Combine(Workspace.RootDirectory, "proj");
         Directory.CreateDirectory(projectDirectory);
-        string testApp = _workspace.CopyCurrentProjectFiles(projectDirectory);
+        string testApp = await Workspace.CopyCurrentProjectFilesAsync(projectDirectory);
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build", "-p:GitPropertiesEnableWarnings=false", "-v:normal");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesEnableWarnings=false", "-v:normal");
         AssertBuildSucceeded(result, "build");
         AssertReportedAsInfoOnly(result, "GITPROPS001", "no usable .git directory found above");
         AssertNoGitPropertiesGenerated(testApp);
     }
+}
 
+public sealed class GitFileWarnsByDefaultTest : GitPropertiesBuildTestBase
+{
     [Fact]
-    public void GitFile_WarnsByDefault()
+    public async Task GitFile_WarnsByDefault()
     {
-        string projectDirectory = Path.Combine(_workspace.RootDirectory, "proj");
+        string projectDirectory = Path.Combine(Workspace.RootDirectory, "proj");
         Directory.CreateDirectory(projectDirectory);
-        string testApp = _workspace.CopyCurrentProjectFiles(projectDirectory);
+        string testApp = await Workspace.CopyCurrentProjectFilesAsync(projectDirectory);
         // ".git" must sit above BOTH TestApp and Steeltoe.Management.GitProperties.Build for the repo-root walk
         // (which starts at TestApp, the project actually being built) to find it - i.e. at
         // projectDirectory itself.
-        File.WriteAllText(Path.Combine(projectDirectory, ".git"), "gitdir: /some/where/.git/worktrees/proj");
+        await File.WriteAllTextAsync(Path.Combine(projectDirectory, ".git"), "gitdir: /some/where/.git/worktrees/proj", TestContext.Current.CancellationToken);
 
-        ProcessResult defaultResult = ProcessRunner.RunDotnet(testApp, "build");
+        ProcessResult defaultResult = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertBuildSucceeded(defaultResult, "the build with .git as a file (a worktree/submodule checkout - e.g. an AI agent - must never fail)");
         AssertWarned(defaultResult, "GITPROPS002");
         AssertNoGitPropertiesGenerated(testApp);
 
-        ProcessResult enableWarningsFalseResult = ProcessRunner.RunDotnet(testApp, "build", "-p:GitPropertiesEnableWarnings=false", "-v:normal");
+        ProcessResult enableWarningsFalseResult = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesEnableWarnings=false", "-v:normal");
         AssertBuildSucceeded(enableWarningsFalseResult, "build");
         AssertReportedAsInfoOnly(enableWarningsFalseResult, "GITPROPS002", "resolves to a git worktree or submodule");
 
-        ProcessResult featureOffResult = ProcessRunner.RunDotnet(testApp, "build", "-p:GenerateGitProperties=false");
+        ProcessResult featureOffResult = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GenerateGitProperties=false");
         AssertBuildSucceeded(featureOffResult, "build with GenerateGitProperties=false");
         featureOffResult.Output.Should().NotContain("GITPROPS002");
     }
+}
 
+public sealed class MultipleRemotesOnlyOriginUrlIsUsedTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// GenerateGitPropertiesCacheTask.ReadConfig only recognizes the literal "remote.origin.url" config key - a repository with additional remotes (a fork's
     /// "upstream", a CI mirror, etc.) must still resolve git.remote.origin.url to origin's own URL, never another remote's. Also confirms that when origin
@@ -282,160 +329,174 @@ public sealed class GitPropertiesBuildTests : IDisposable
     /// that: proves credentials are stripped from whichever URL actually wins, not just from a hypothetical single-remote case.
     /// </summary>
     [Fact]
-    public void MultipleRemotes_OnlyOriginUrlIsUsed()
+    public async Task MultipleRemotes_OnlyOriginUrlIsUsed()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessRunner.RunGit(repository, "remote", "add", "upstream", "https://example.com/upstream.git");
-        ProcessRunner.RunGit(repository, "remote", "add", "origin", "https://example.com/origin.git");
-        ProcessRunner.RunGit(repository, "remote", "set-url", "--add", "origin", "https://user:pass@example.com/origin-second.git");
+        await ProcessRunner.RunGitAsync(repository, "remote", "add", "upstream", "https://example.com/upstream.git");
+        await ProcessRunner.RunGitAsync(repository, "remote", "add", "origin", "https://example.com/origin.git");
+        await ProcessRunner.RunGitAsync(repository, "remote", "set-url", "--add", "origin", "https://user:pass@example.com/origin-second.git");
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertBuildSucceeded(result, "build with multiple remotes configured");
 
-        Dictionary<string, string> properties = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
+        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
 
         properties["git.remote.origin.url"].Should().Be("https://example.com/origin-second.git",
             "origin's own last-configured URL must win, ignoring both the unrelated 'upstream' remote and origin's own first URL - and its embedded " +
             "'user:pass@' credentials must be stripped before the value ever reaches the cache file.");
     }
+}
 
+public sealed class ShallowCloneLeavesCommitCountsEmptyTest : GitPropertiesBuildTestBase
+{
     [Fact]
-    public void ShallowClone_LeavesCommitCountsEmpty()
+    public async Task ShallowClone_LeavesCommitCountsEmpty()
     {
-        string source = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "source"), 3);
-        ProcessRunner.RunGit(source, "tag", "v1.0.0");
+        string source = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "source"), 3);
+        await ProcessRunner.RunGitAsync(source, "tag", "v1.0.0");
 
-        string shallow = Path.Combine(_workspace.RootDirectory, "shallow");
+        string shallow = Path.Combine(Workspace.RootDirectory, "shallow");
         // --no-local is required here: for a plain local filesystem path, git's local-clone
         // optimization bypasses shallow-transfer logic entirely and --depth is silently ignored,
         // producing a full clone that would make this test worthless.
-        ProcessResult cloneResult = ProcessRunner.RunGit(Path.GetTempPath(), "clone", "--quiet", "--no-local", "--depth", "1", source, shallow);
+        ProcessResult cloneResult = await ProcessRunner.RunGitAsync(Path.GetTempPath(), "clone", "--quiet", "--no-local", "--depth", "1", source, shallow);
         cloneResult.ExitCode.Should().Be(0, "shallow clone should succeed.");
-        ProcessRunner.GetGitOutput(shallow, "rev-parse", "--is-shallow-repository").Should().Be("true");
+        string isShallowRepository = await ProcessRunner.GetGitOutputAsync(shallow, "rev-parse", "--is-shallow-repository");
+        isShallowRepository.Should().Be("true");
 
-        string testApp = _workspace.CopyCurrentProjectFiles(shallow);
+        string testApp = await Workspace.CopyCurrentProjectFilesAsync(shallow);
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertBuildSucceeded(result, "the build against a shallow clone");
         result.Output.Should().NotContain("GITPROPS001");
         result.Output.Should().NotContain("GITPROPS002");
         AssertWarned(result, "GITPROPS006");
 
-        Dictionary<string, string> properties = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
+        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
         properties["git.total.commit.count"].Should().BeEmpty();
         properties["git.closest.tag.commit.count"].Should().BeEmpty();
     }
+}
 
+public sealed class ShallowCloneInfoWhenEnableWarningsFalseTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// GITPROPS006 (unlike GITPROPS001-005) never blocks generation - the shallow clone is still fully usable, just with two fields left empty (see
-    /// <see cref="ShallowClone_LeavesCommitCountsEmpty" />). Confirms $(GitPropertiesEnableWarnings) downgrades it to an informational message the same way
-    /// it does for the others.
+    /// <see cref="ShallowCloneLeavesCommitCountsEmptyTest" />). Confirms $(GitPropertiesEnableWarnings) downgrades it to an informational message the same
+    /// way it does for the others.
     /// </summary>
     [Fact]
-    public void ShallowClone_InfoWhenEnableWarningsFalse()
+    public async Task ShallowClone_InfoWhenEnableWarningsFalse()
     {
-        string source = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "source"), 1);
+        string source = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "source"), 1);
 
-        string shallow = Path.Combine(_workspace.RootDirectory, "shallow");
-        ProcessResult cloneResult = ProcessRunner.RunGit(Path.GetTempPath(), "clone", "--quiet", "--no-local", "--depth", "1", source, shallow);
+        string shallow = Path.Combine(Workspace.RootDirectory, "shallow");
+        ProcessResult cloneResult = await ProcessRunner.RunGitAsync(Path.GetTempPath(), "clone", "--quiet", "--no-local", "--depth", "1", source, shallow);
         cloneResult.ExitCode.Should().Be(0, "shallow clone should succeed.");
 
-        string testApp = _workspace.CopyCurrentProjectFiles(shallow);
+        string testApp = await Workspace.CopyCurrentProjectFilesAsync(shallow);
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build", "-p:GitPropertiesEnableWarnings=false", "-v:normal");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesEnableWarnings=false", "-v:normal");
         AssertBuildSucceeded(result, "build");
         AssertReportedAsInfoOnly(result, "GITPROPS006", "repository is a shallow clone");
     }
+}
 
+public sealed class NonAsciiCommitDataRendersCorrectlyTest : GitPropertiesBuildTestBase
+{
     [Fact]
-    public void NonAscii_CommitDataRendersCorrectly()
+    public async Task NonAscii_CommitDataRendersCorrectly()
     {
-        string repository = Path.Combine(_workspace.RootDirectory, "repo");
+        string repository = Path.Combine(Workspace.RootDirectory, "repo");
         Directory.CreateDirectory(repository);
-        ProcessRunner.RunGit(repository, "init", "--quiet", "--initial-branch=main", ".");
+        await ProcessRunner.RunGitAsync(repository, "init", "--quiet", "--initial-branch=main", ".");
         // \u-escaped rather than literal, so this source file itself stays plain ASCII: renders as accented Latin-1
         // supplement letters plus the trailing three characters of "commit", spelled out in Japanese (CJK).
         const string nonAsciiUserName = "\u00DCn\u00EFc\u00F6d\u00E9 T\u00EBst";
         const string nonAsciiCommitMessage = "\u00DCn\u00EFc\u00F6d\u00E9 t\u00EBst commit \u65E5\u672C\u8A9E";
 
-        ProcessRunner.RunGit(repository, "config", "user.name", nonAsciiUserName);
-        ProcessRunner.RunGit(repository, "config", "user.email", "test@example.com");
-        File.WriteAllText(Path.Combine(repository, ".gitignore"), "bin/\r\nobj/\r\n");
-        File.WriteAllText(Path.Combine(repository, "file.txt"), "content");
-        ProcessRunner.RunGit(repository, "add", "-A");
-        ProcessRunner.RunGit(repository, "commit", "--quiet", "-m", nonAsciiCommitMessage);
+        await ProcessRunner.RunGitAsync(repository, "config", "user.name", nonAsciiUserName);
+        await ProcessRunner.RunGitAsync(repository, "config", "user.email", "test@example.com");
+        await File.WriteAllTextAsync(Path.Combine(repository, ".gitignore"), "bin/\r\nobj/\r\n", TestContext.Current.CancellationToken);
+        await File.WriteAllTextAsync(Path.Combine(repository, "file.txt"), "content", TestContext.Current.CancellationToken);
+        await ProcessRunner.RunGitAsync(repository, "add", "-A");
+        await ProcessRunner.RunGitAsync(repository, "commit", "--quiet", "-m", nonAsciiCommitMessage);
 
-        string testApp = _workspace.CopyCurrentProjectFiles(repository);
+        string testApp = await Workspace.CopyCurrentProjectFilesAsync(repository);
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertBuildSucceeded(result, "build");
 
-        Dictionary<string, string> properties = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
+        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
         properties["git.commit.user.name"].Should().Be(nonAsciiUserName);
         properties["git.commit.message.short"].Should().Be(nonAsciiCommitMessage);
     }
+}
 
+public sealed class MultiProjectSharesCacheTest : GitPropertiesBuildTestBase
+{
     [Fact]
-    public void MultiProject_SharesCache()
+    public async Task MultiProject_SharesCache()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 2);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 2);
 
         // Two independent projects at the repo root, each with their own ProjectReference/Import
         // pointing at the SAME sibling Steeltoe.Management.GitProperties.Build copy (CreateSyntheticRepo
-        // already placed TestApp there; reuse that exact relative layout for ProjA/ProjB by placing them
+        // already placed TestApp there; reuse that exact relative layout for ProjectA/ProjectB by placing them
         // at the repo root too, siblings of TestApp and "src").
-        GitPropertiesTestWorkspace.WriteAppProject(repository, "ProjA");
-        GitPropertiesTestWorkspace.WriteAppProject(repository, "ProjB");
+        await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, "ProjectA");
+        await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, "ProjectB");
 
-        string projA = Path.Combine(repository, "ProjA");
-        string projB = Path.Combine(repository, "ProjB");
+        string projectA = Path.Combine(repository, "ProjectA");
+        string projectB = Path.Combine(repository, "ProjectB");
 
-        ProcessResult resultA = ProcessRunner.RunDotnet(projA, "build", "-v:detailed");
-        AssertBuildSucceeded(resultA, "ProjA build");
+        ProcessResult resultA = await ProcessRunner.RunDotnetAsync(projectA, "build", "-v:detailed");
+        AssertBuildSucceeded(resultA, "ProjectA build");
 
         resultA.Output.Should().Contain("git.properties: generating shared cache",
-            "ProjA (first to build) should be the one that actually generates the shared cache.");
+            "ProjectA (first to build) should be the one that actually generates the shared cache.");
 
         string cacheFile = Path.Combine(repository, "obj", "_GitProperties", "git.properties.cache");
-        File.Exists(cacheFile).Should().BeTrue("ProjA's build should have generated the shared cache.");
-        DateTime cacheWriteTimeAfterA = File.GetLastWriteTimeUtc(cacheFile);
+        File.Exists(cacheFile).Should().BeTrue("ProjectA's build should have generated the shared cache.");
 
-        // Ensure a rewritten file would get a detectably different modified-time.
-        Thread.Sleep(1100);
+        ProcessResult resultB = await ProcessRunner.RunDotnetAsync(projectB, "build", "-v:detailed");
+        AssertBuildSucceeded(resultB, "ProjectB build");
 
-        ProcessResult resultB = ProcessRunner.RunDotnet(projB, "build", "-v:detailed");
-        AssertBuildSucceeded(resultB, "ProjB build");
-        resultB.Output.Should().NotContain("git.properties: generating shared cache", "ProjB should reuse ProjA's cache instead of regenerating it.");
+        // "did not log generating the cache" is itself the deterministic, sufficient proof ProjectB
+        // reused ProjectA's cache instead of rewriting it - no last-write-time comparison (and the
+        // sleep it would otherwise need) is needed on top of it.
+        resultB.Output.Should().NotContain("git.properties: generating shared cache", "ProjectB should reuse ProjectA's cache instead of regenerating it.");
 
-        File.GetLastWriteTimeUtc(cacheFile).Should().Be(cacheWriteTimeAfterA, "ProjB must not have rewritten the shared cache file.");
-
-        Dictionary<string, string> propertiesA = PropertiesFile.Read(DebugGitPropertiesFile(projA));
-        Dictionary<string, string> propertiesB = PropertiesFile.Read(DebugGitPropertiesFile(projB));
+        Dictionary<string, string> propertiesA = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(projectA));
+        Dictionary<string, string> propertiesB = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(projectB));
         propertiesB["git.commit.id"].Should().Be(propertiesA["git.commit.id"]);
     }
+}
 
+public sealed class MultiTargetedProjectSharesCacheAcrossTargetFrameworksTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// A single multi-targeted project (current TFM plus the one immediately before it - see <see cref="TestPaths.MultiTargetTestFrameworks" />) is a
-    /// different sharing scenario than <see cref="MultiProject_SharesCache" />: MSBuild builds a multi-targeted project's inner TFMs concurrently by default
-    /// (unlike the two sequential "dotnet build" invocations that test uses), which is exactly the race
+    /// different sharing scenario than <see cref="MultiProjectSharesCacheTest" />: MSBuild builds a multi-targeted project's inner TFMs concurrently by
+    /// default (unlike the two sequential "dotnet build" invocations that test uses), which is exactly the race
     /// GenerateGitPropertiesCacheTask.TryGenerateAndWriteCache's cross-process lock exists to handle. Also guards against the regression that fix's first
     /// (wrong) attempt introduced: tagging the current commit invalidates the cache without changing the commit ID, so a naive "does the cache already
     /// reflect this commit" freshness check would wrongly skip regenerating it.
     /// </summary>
     [Fact]
-    public void MultiTargetedProject_SharesCacheAcrossTargetFrameworks()
+    public async Task MultiTargetedProject_SharesCacheAcrossTargetFrameworks()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
-        string testApp = GitPropertiesTestWorkspace.WriteAppProject(repository, "MultiTargetApp", TestPaths.MultiTargetTestFrameworks);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
+        string testApp = await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, "MultiTargetApp", TestPaths.MultiTargetTestFrameworks);
         string[] frameworks = TestPaths.MultiTargetTestFrameworks.Split(';');
 
-        ProcessResult result1 = ProcessRunner.RunDotnet(testApp, "build");
+        ProcessResult result1 = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertBuildSucceeded(result1, "multi-targeted build");
 
-        string expectedCommitId = ProcessRunner.GetGitOutput(repository, "rev-parse", "HEAD");
-        Dictionary<string, string>[] propertiesBefore = ReadPropertiesForEachFramework(testApp, frameworks);
+        string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
+        List<Dictionary<string, string>> propertiesBefore = await GetGitPropertiesPerTargetFrameworkAsync(testApp, frameworks);
 
         foreach (Dictionary<string, string> properties in propertiesBefore)
         {
@@ -443,86 +504,87 @@ public sealed class GitPropertiesBuildTests : IDisposable
             properties["git.tags"].Should().BeEmpty();
         }
 
-        ProcessResult tagResult = ProcessRunner.RunGit(repository, "tag", "v1.0.0");
+        ProcessResult tagResult = await ProcessRunner.RunGitAsync(repository, "tag", "v1.0.0");
         tagResult.ExitCode.Should().Be(0, "creating the test tag should succeed.");
 
-        ProcessResult result2 = ProcessRunner.RunDotnet(testApp, "build");
+        ProcessResult result2 = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertBuildSucceeded(result2, "second multi-targeted build");
 
-        Dictionary<string, string>[] propertiesAfter = ReadPropertiesForEachFramework(testApp, frameworks);
+        List<Dictionary<string, string>> propertiesAfter = await GetGitPropertiesPerTargetFrameworkAsync(testApp, frameworks);
 
         foreach (Dictionary<string, string> properties in propertiesAfter)
         {
             properties["git.tags"].Should().Be("v1.0.0", "both target frameworks must observe the new tag, even though the commit it points at didn't change.");
         }
     }
+}
 
+public sealed class WriteToProjectDirectoryCreatesFallbackFileOnBuildTest : GitPropertiesBuildTestBase
+{
     [Fact]
-    public void WriteToProjectDirectory_DefaultsToOff()
+    public async Task WriteToProjectDirectory_CreatesFallbackFile_OnBuild()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1, true);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build");
-        AssertBuildSucceeded(result, "build");
+        ProcessResult result1 = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
+        AssertBuildSucceeded(result1, "build with GitPropertiesWriteToProjectDirectory=true");
 
-        File.Exists(FallbackFile(testApp)).Should().BeFalse("the fallback file must not be written into the project directory unless explicitly opted into.");
-    }
+        result1.Output.Should().Contain(
+            $"git.properties: writing fallback copy to '{GetFallbackFilePath(testApp)}' for project '{GitPropertiesTestWorkspace.TestAppProjectName}'.");
 
-    [Fact]
-    public void WriteToProjectDirectory_CreatesFallbackFile_OnBuild()
-    {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1, true);
-        string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
+        File.Exists(GetFallbackFilePath(testApp)).Should().BeTrue("the fallback file should have been written next to the .csproj.");
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
-        AssertBuildSucceeded(result, "build with GitPropertiesWriteToProjectDirectory=true");
+        Dictionary<string, string> fallbackProperties = await PropertiesFile.ReadAsync(GetFallbackFilePath(testApp));
+        Dictionary<string, string> outputProperties1 = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        fallbackProperties.Should().BeEquivalentTo(outputProperties1, "the fallback file must carry the exact same content as the live build output.");
 
-        result.Output.Should()
-            .Contain($"git.properties: writing fallback copy to '{FallbackFile(testApp)}' for project '{GitPropertiesTestWorkspace.TestAppProjectName}'.");
-
-        File.Exists(FallbackFile(testApp)).Should().BeTrue("the fallback file should have been written next to the .csproj.");
-
-        Dictionary<string, string> fallbackProperties = PropertiesFile.Read(FallbackFile(testApp));
-        Dictionary<string, string> outputProperties = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
-        fallbackProperties.Should().BeEquivalentTo(outputProperties, "the fallback file must carry the exact same content as the live build output.");
-
-        ProcessRunner.GetGitOutput(repository, "status", "--porcelain").Should()
-            .BeEmpty("the fallback file is gitignored, so it must not show up as an untracked change.");
+        string gitStatus = await ProcessRunner.GetGitOutputAsync(repository, "status", "--porcelain");
+        gitStatus.Should().BeEmpty("the fallback file is gitignored, so it must not show up as an untracked change.");
 
         // A gitignored fallback file left over from the first build must not itself make a LATER build see the tree as dirty.
-        ProcessResult secondResult = ProcessRunner.RunDotnet(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
-        AssertBuildSucceeded(secondResult, "second build");
+        ProcessResult result2 = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
+        AssertBuildSucceeded(result2, "second build");
 
-        PropertiesFile.Read(DebugGitPropertiesFile(testApp))["git.dirty"].Should().Be("false",
+        Dictionary<string, string> outputProperties2 = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+
+        outputProperties2["git.dirty"].Should().Be("false",
             "the gitignored fallback file from the first build must not make a later build see the tree as dirty.");
     }
+}
 
+public sealed class FallbackFileWithoutGitignoreMakesLaterBuildsAppearDirtyTest : GitPropertiesBuildTestBase
+{
     /// <summary>
-    /// The negative counterpart to <see cref="WriteToProjectDirectory_CreatesFallbackFile_OnBuild" /> - proves the README's ".gitignore this file" warning
+    /// The negative counterpart to <see cref="WriteToProjectDirectoryCreatesFallbackFileOnBuildTest" /> - proves the README's ".gitignore this file" warning
     /// is describing a real consequence, not a hypothetical one: deliberately uses a repository WITHOUT the fallback file gitignored, so the file the first
     /// build writes is left behind as a genuine untracked change - permanently flipping git.dirty to "true" on every later build, even though nothing about
     /// the actually-tracked source changed in between.
     /// </summary>
     [Fact]
-    public void FallbackFile_WithoutGitignore_MakesLaterBuildsAppearDirty()
+    public async Task FallbackFile_WithoutGitignore_MakesLaterBuildsAppearDirty()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult firstResult = ProcessRunner.RunDotnet(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
-        AssertBuildSucceeded(firstResult, "first build, which writes the (not yet gitignored) fallback file");
+        ProcessResult result1 = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
+        AssertBuildSucceeded(result1, "first build, which writes the (not yet gitignored) fallback file");
 
-        ProcessRunner.GetGitOutput(repository, "status", "--porcelain").Should()
-            .NotBeEmpty("the freshly-written, ungitignored fallback file should show up as an untracked change.");
+        string gitStatus = await ProcessRunner.GetGitOutputAsync(repository, "status", "--porcelain");
+        gitStatus.Should().NotBeEmpty("the freshly-written, ungitignored fallback file should show up as an untracked change.");
 
-        ProcessResult secondResult = ProcessRunner.RunDotnet(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
-        AssertBuildSucceeded(secondResult, "second build");
+        ProcessResult result2 = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
+        AssertBuildSucceeded(result2, "second build");
 
-        PropertiesFile.Read(DebugGitPropertiesFile(testApp))["git.dirty"].Should().Be("true",
+        Dictionary<string, string> properties2 = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+
+        properties2["git.dirty"].Should().Be("true",
             "the ungitignored fallback file left over from the first build makes every later build see the tree as dirty.");
     }
+}
 
+public sealed class WriteToProjectDirectoryCreatesFallbackFileOnPublishTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// "dotnet publish" runs its own compile/composition steps internally regardless of whether "dotnet build" ran first - this guards against the fallback
     /// file only being written along the "build" target chain and silently never firing when publish is the very first command run against a fresh checkout
@@ -531,49 +593,57 @@ public sealed class GitPropertiesBuildTests : IDisposable
     /// is available here, nothing should be skipped (and no GITPROPS0xx code should appear) regardless of that setting.
     /// </summary>
     [Fact]
-    public void WriteToProjectDirectory_CreatesFallbackFile_OnPublish()
+    public async Task WriteToProjectDirectory_CreatesFallbackFile_OnPublish()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1, true);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1, true);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult result =
-            ProcessRunner.RunDotnet(testApp, "publish", "-p:GitPropertiesWriteToProjectDirectory=true", "-p:GitPropertiesEnableWarnings=true");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "publish", "-p:GitPropertiesWriteToProjectDirectory=true",
+            "-p:GitPropertiesEnableWarnings=true");
 
         AssertBuildSucceeded(result, "publish with GitPropertiesWriteToProjectDirectory=true, without an upfront build");
 
         result.Output.Should().NotContain("GITPROPS0",
             "nothing should be skipped, and no fallback should be needed, when a real .git repository is available.");
 
-        File.Exists(FallbackFile(testApp)).Should().BeTrue("the fallback file should have been written next to the .csproj, even for a bare publish.");
+        File.Exists(GetFallbackFilePath(testApp)).Should().BeTrue("the fallback file should have been written next to the .csproj, even for a bare publish.");
 
-        Dictionary<string, string> fallbackProperties = PropertiesFile.Read(FallbackFile(testApp));
-        Dictionary<string, string> publishedProperties = PropertiesFile.Read(ReleasePublishGitPropertiesFile(testApp));
+        Dictionary<string, string> fallbackProperties = await PropertiesFile.ReadAsync(GetFallbackFilePath(testApp));
+        Dictionary<string, string> publishedProperties = await PropertiesFile.ReadAsync(GetReleasePublishGitPropertiesFilePath(testApp));
         fallbackProperties.Should().BeEquivalentTo(publishedProperties, "the fallback file must carry the exact same content as the published output.");
 
-        ProcessRunner.GetGitOutput(repository, "status", "--porcelain").Should()
-            .BeEmpty("the fallback file is gitignored, so it must not show up as an untracked change.");
+        string gitStatus = await ProcessRunner.GetGitOutputAsync(repository, "status", "--porcelain");
+        gitStatus.Should().BeEmpty("the fallback file is gitignored, so it must not show up as an untracked change.");
     }
+}
 
+public sealed class FallbackFileIgnoredWhenLiveGitAvailableTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// Guards against a stale fallback file (left over from some earlier build) ever shadowing live generation - the fallback file must only ever be used as
     /// a last resort, never preferred over a real, currently-usable .git repository.
     /// </summary>
     [Fact]
-    public void FallbackFile_Ignored_WhenLiveGitAvailable()
+    public async Task FallbackFile_Ignored_WhenLiveGitAvailable()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1, true);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1, true);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        File.WriteAllLines(FallbackFile(testApp), ["git.commit.id=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"]);
+        await File.WriteAllLinesAsync(GetFallbackFilePath(testApp), ["git.commit.id=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"],
+            TestContext.Current.CancellationToken);
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build", "-v:detailed");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-v:detailed");
         AssertBuildSucceeded(result, "build with a stale fallback file present alongside a real .git repository");
         result.Output.Should().NotContain("using pre-generated fallback file", "the fallback notice must not appear when live generation actually ran.");
 
-        Dictionary<string, string> properties = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
-        properties["git.commit.id"].Should().Be(ProcessRunner.GetGitOutput(repository, "rev-parse", "HEAD"));
+        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
+        properties["git.commit.id"].Should().Be(expectedCommitId);
     }
+}
 
+public sealed class FallbackFileUsedWhenNoGitAvailableTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// End-to-end simulation of the scenario that motivated $(GitPropertiesWriteToProjectDirectory) in the first place: `cf push` using the
     /// dotnet_core_buildpack directly from source, which strips ".git" from the pushed tree unconditionally (see SimulateSourcePush) - meaning live
@@ -581,57 +651,64 @@ public sealed class GitPropertiesBuildTests : IDisposable
     /// along in the pushed source tree and get picked up, ending up in the published output exactly as if it had been generated live.
     /// </summary>
     [Fact]
-    public void FallbackFile_UsedWhenNoGitAvailable()
+    public async Task FallbackFile_UsedWhenNoGitAvailable()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 2, true);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 2, true);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult fallbackResult = ProcessRunner.RunDotnet(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
+        ProcessResult fallbackResult = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
         AssertBuildSucceeded(fallbackResult, "the local build that produces the fallback file");
-        Dictionary<string, string> fallbackProperties = PropertiesFile.Read(FallbackFile(testApp));
+        Dictionary<string, string> fallbackProperties = await PropertiesFile.ReadAsync(GetFallbackFilePath(testApp));
         fallbackProperties["git.dirty"].Should().Be("false", "the gitignored fallback file must not make its own producing build see the tree as dirty.");
 
-        string pushedRoot = GitPropertiesTestWorkspace.SimulateSourcePush(repository, Path.Combine(_workspace.RootDirectory, "pushed"));
+        string pushedRoot = GitPropertiesTestWorkspace.SimulateSourcePush(repository, Path.Combine(Workspace.RootDirectory, "pushed"));
         string pushedApp = Path.Combine(pushedRoot, GitPropertiesTestWorkspace.TestAppProjectName);
         Directory.Exists(Path.Combine(pushedRoot, ".git")).Should().BeFalse("the simulated push must not carry '.git' along, matching cf push's own default.");
-        File.Exists(FallbackFile(pushedApp)).Should().BeTrue("the fallback git.properties must have survived the simulated push.");
+        File.Exists(GetFallbackFilePath(pushedApp)).Should().BeTrue("the fallback git.properties must have survived the simulated push.");
 
-        ProcessResult publishResult = ProcessRunner.RunDotnet(pushedApp, "publish", "-v:detailed");
+        ProcessResult publishResult = await ProcessRunner.RunDotnetAsync(pushedApp, "publish", "-v:detailed");
         AssertBuildSucceeded(publishResult, "publish with no usable .git repository present");
         publishResult.Output.Should().NotContain("GITPROPS001", "the fallback file should suppress the usual no-.git diagnostic entirely.");
 
-        publishResult.Output.Should()
-            .Contain("using pre-generated fallback file", "using the fallback should still be traceable, so it's never silently stale.");
+        publishResult.Output.Should().Contain(
+            "using pre-generated fallback file", "using the fallback should still be traceable, so it's never silently stale.");
 
-        Dictionary<string, string> publishedProperties = PropertiesFile.Read(ReleasePublishGitPropertiesFile(pushedApp));
+        Dictionary<string, string> publishedProperties = await PropertiesFile.ReadAsync(GetReleasePublishGitPropertiesFilePath(pushedApp));
         publishedProperties.Should().BeEquivalentTo(fallbackProperties, "the fallback-produced output must exactly match the pre-generated fallback content.");
     }
+}
 
+public sealed class WriteGitPropertiesFallbackFileProducesFallbackFileWithoutCompilingTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// The stable, documented entry point for step 1 of the "Recommended cf push workflow" (see PackageReadme.md) - confirms it actually produces a usable
     /// fallback file, and that doing so never compiles anything (the whole reason to prefer it over a full "dotnet build" before a source push).
     /// </summary>
     [Fact]
-    public void WriteGitPropertiesFallbackFile_ProducesFallbackFile_WithoutCompiling()
+    public async Task WriteGitPropertiesFallbackFile_ProducesFallbackFile_WithoutCompiling()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1, true);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1, true);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build", "-t:WriteGitPropertiesFallbackFile");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-t:WriteGitPropertiesFallbackFile");
         AssertBuildSucceeded(result, "build -t:WriteGitPropertiesFallbackFile");
 
-        File.Exists(FallbackFile(testApp)).Should().BeTrue("the fallback file should have been written next to the .csproj.");
-        Dictionary<string, string> properties = PropertiesFile.Read(FallbackFile(testApp));
-        properties["git.commit.id"].Should().Be(ProcessRunner.GetGitOutput(repository, "rev-parse", "HEAD"));
+        File.Exists(GetFallbackFilePath(testApp)).Should().BeTrue("the fallback file should have been written next to the .csproj.");
+        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetFallbackFilePath(testApp));
+        string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
+        properties["git.commit.id"].Should().Be(expectedCommitId);
 
         // "bin\Debug\<TFM>\publish" gets created as empty, routine SDK scaffolding even here (PrepareForPublish's own setup) - checking for the absence
         // of the compiled assembly itself, not just the bin directory, is what actually proves no compilation happened.
         File.Exists(Path.Combine(testApp, "bin", "Debug", TestPaths.TestAppTargetFramework, $"{GitPropertiesTestWorkspace.TestAppProjectName}.dll")).Should()
             .BeFalse("this target must never compile the project - that's the whole point of using it instead of a full build before a source push.");
     }
+}
 
+public sealed class WriteGitPropertiesFallbackFileThenSimulatedPushServerPublishUsesItTest : GitPropertiesBuildTestBase
+{
     /// <summary>
-    /// End-to-end simulation of the actual documented workflow - the lightweight-target equivalent of <see cref="FallbackFile_UsedWhenNoGitAvailable" />
+    /// End-to-end simulation of the actual documented workflow - the lightweight-target equivalent of <see cref="FallbackFileUsedWhenNoGitAvailableTest" />
     /// (which uses a full build instead): produce the fallback file via
     /// <c>
     /// WriteGitPropertiesFallbackFile
@@ -639,48 +716,54 @@ public sealed class GitPropertiesBuildTests : IDisposable
     /// , simulate a source-based `cf push`, and confirm the server-side publish still picks it up correctly.
     /// </summary>
     [Fact]
-    public void WriteGitPropertiesFallbackFile_ThenSimulatedPush_ServerPublishUsesIt()
+    public async Task WriteGitPropertiesFallbackFile_ThenSimulatedPush_ServerPublishUsesIt()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 2, true);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 2, true);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult writeResult = ProcessRunner.RunDotnet(testApp, "build", "-t:WriteGitPropertiesFallbackFile");
+        ProcessResult writeResult = await ProcessRunner.RunDotnetAsync(testApp, "build", "-t:WriteGitPropertiesFallbackFile");
         AssertBuildSucceeded(writeResult, "build -t:WriteGitPropertiesFallbackFile");
-        Dictionary<string, string> fallbackProperties = PropertiesFile.Read(FallbackFile(testApp));
+        Dictionary<string, string> fallbackProperties = await PropertiesFile.ReadAsync(GetFallbackFilePath(testApp));
 
-        string pushedRoot = GitPropertiesTestWorkspace.SimulateSourcePush(repository, Path.Combine(_workspace.RootDirectory, "pushed"));
+        string pushedRoot = GitPropertiesTestWorkspace.SimulateSourcePush(repository, Path.Combine(Workspace.RootDirectory, "pushed"));
         string pushedApp = Path.Combine(pushedRoot, GitPropertiesTestWorkspace.TestAppProjectName);
-        File.Exists(FallbackFile(pushedApp)).Should().BeTrue("the fallback git.properties must have survived the simulated push.");
+        File.Exists(GetFallbackFilePath(pushedApp)).Should().BeTrue("the fallback git.properties must have survived the simulated push.");
 
-        ProcessResult publishResult = ProcessRunner.RunDotnet(pushedApp, "publish", "-v:detailed");
+        ProcessResult publishResult = await ProcessRunner.RunDotnetAsync(pushedApp, "publish", "-v:detailed");
         AssertBuildSucceeded(publishResult, "publish with no usable .git repository present");
 
-        publishResult.Output.Should()
-            .Contain("using pre-generated fallback file", "using the fallback should still be traceable, so it's never silently stale.");
+        publishResult.Output.Should().Contain(
+            "using pre-generated fallback file", "using the fallback should still be traceable, so it's never silently stale.");
 
-        Dictionary<string, string> publishedProperties = PropertiesFile.Read(ReleasePublishGitPropertiesFile(pushedApp));
+        Dictionary<string, string> publishedProperties = await PropertiesFile.ReadAsync(GetReleasePublishGitPropertiesFilePath(pushedApp));
         publishedProperties.Should().BeEquivalentTo(fallbackProperties, "the fallback-produced output must exactly match the pre-generated fallback content.");
     }
+}
 
+public sealed class WriteGitPropertiesFallbackFileWorksWithNoRestoreTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// "--no-restore" must work the same way for this target as for any other build invocation - it only requires that restore already happened at least
     /// once, same as a normal build.
     /// </summary>
     [Fact]
-    public void WriteGitPropertiesFallbackFile_WorksWithNoRestore()
+    public async Task WriteGitPropertiesFallbackFile_WorksWithNoRestore()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1, true);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1, true);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult restoreResult = ProcessRunner.RunDotnet(testApp, "restore");
+        ProcessResult restoreResult = await ProcessRunner.RunDotnetAsync(testApp, "restore");
         AssertBuildSucceeded(restoreResult, "restore");
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build", "--no-restore", "-t:WriteGitPropertiesFallbackFile");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build", "--no-restore", "-t:WriteGitPropertiesFallbackFile");
         AssertBuildSucceeded(result, "build --no-restore -t:WriteGitPropertiesFallbackFile");
 
-        File.Exists(FallbackFile(testApp)).Should().BeTrue();
+        File.Exists(GetFallbackFilePath(testApp)).Should().BeTrue();
     }
+}
 
+public sealed class WriteGitPropertiesFallbackFileThenPublishNoBuildFailsTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// Documents/guards the one real caveat called out in PackageReadme.md: this target never produces real build output, so a local "dotnet publish
     /// --no-build" afterward must fail - there is nothing compiled to publish. If this target's own implementation ever accidentally started producing
@@ -688,20 +771,23 @@ public sealed class GitPropertiesBuildTests : IDisposable
     /// succeeding) - a signal to revisit the target, not just delete this test.
     /// </summary>
     [Fact]
-    public void WriteGitPropertiesFallbackFile_ThenPublishNoBuild_Fails()
+    public async Task WriteGitPropertiesFallbackFile_ThenPublishNoBuild_Fails()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1, true);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1, true);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult writeResult = ProcessRunner.RunDotnet(testApp, "build", "-t:WriteGitPropertiesFallbackFile");
+        ProcessResult writeResult = await ProcessRunner.RunDotnetAsync(testApp, "build", "-t:WriteGitPropertiesFallbackFile");
         AssertBuildSucceeded(writeResult, "build -t:WriteGitPropertiesFallbackFile");
 
-        ProcessResult publishResult = ProcessRunner.RunDotnet(testApp, "publish", "--no-build");
+        ProcessResult publishResult = await ProcessRunner.RunDotnetAsync(testApp, "publish", "--no-build");
 
         publishResult.ExitCode.Should().NotBe(0,
             "publishing --no-build after only writing the fallback file (no real build ever ran) must fail - there is no compiled output to publish.");
     }
+}
 
+public sealed class NuGetPackageConsumedViaPackageReferenceGeneratesGitPropertiesTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// Every other test here consumes Steeltoe.Management.GitProperties.Build straight from source (ProjectReference + Import) - this is the only one that
     /// goes through a real, packed .nupkg via &lt;PackageReference&gt;, the way an actual external user of the package would. That exercises the NuGet
@@ -712,25 +798,27 @@ public sealed class GitPropertiesBuildTests : IDisposable
     /// stale result from - the machine-wide global-packages cache at %userprofile%\.nuget\packages.
     /// </summary>
     [Fact]
-    public void NuGetPackage_ConsumedViaPackageReference_GeneratesGitProperties()
+    public async Task NuGetPackage_ConsumedViaPackageReference_GeneratesGitProperties()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
 
-        string feedDirectory = _workspace.PackGitPropertiesBuildToFeed();
+        string feedDirectory = await Workspace.PackGitPropertiesBuildToFeedAsync();
+        string packageId = await TestPaths.GetPackageIdAsync();
 
-        string[] nuPkgFiles = Directory.GetFiles(feedDirectory, $"{TestPaths.PackageId}.*.nupkg");
+        string[] nuPkgFiles = Directory.GetFiles(feedDirectory, $"{packageId}.*.nupkg");
         nuPkgFiles.Should().ContainSingle("packing should produce exactly one .nupkg.");
 
-        Match versionMatch = NuPkgVersionRegex.Match(Path.GetFileName(nuPkgFiles[0]));
+        var nuPkgVersionRegex = new Regex($@"^{Regex.Escape(packageId)}\.(.+)\.nupkg$", RegexOptions.None, TimeSpan.FromSeconds(1));
+        Match versionMatch = nuPkgVersionRegex.Match(Path.GetFileName(nuPkgFiles[0]));
         versionMatch.Success.Should().BeTrue("the .nupkg file name should embed the package version.");
         string packageVersion = versionMatch.Groups[1].Value;
 
         string consumerDirectory = Path.Combine(repository, "Consumer");
-        GitPropertiesTestWorkspace.CreatePackageConsumerProject(consumerDirectory, packageVersion);
-        GitPropertiesTestWorkspace.WriteIsolatedNuGetConfig(Path.Combine(consumerDirectory, "nuget.config"), feedDirectory);
+        await GitPropertiesTestWorkspace.CreatePackageConsumerProjectAsync(consumerDirectory, packageVersion);
+        await GitPropertiesTestWorkspace.WriteIsolatedNuGetConfigAsync(Path.Combine(consumerDirectory, "nuget.config"), feedDirectory);
 
-        string isolatedPackagesPath = Path.Combine(_workspace.RootDirectory, "isolated-packages");
-        ProcessResult result = ProcessRunner.RunDotnet(consumerDirectory, "build", $"-p:RestorePackagesPath={isolatedPackagesPath}");
+        string isolatedPackagesPath = Path.Combine(Workspace.RootDirectory, "isolated-packages");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(consumerDirectory, "build", $"-p:RestorePackagesPath={isolatedPackagesPath}");
         AssertBuildSucceeded(result, "the build of a project consuming Steeltoe.Management.GitProperties.Build via PackageReference");
 
         result.Output.Should().Contain("0 Warning(s)",
@@ -740,99 +828,120 @@ public sealed class GitPropertiesBuildTests : IDisposable
         // an arbitrary case normalization, so ToUpperInvariant() (as generally preferred) would look here for
         // a folder that NuGet never creates.
 #pragma warning disable S4040
-        string lowerCasePackageId = TestPaths.PackageId.ToLowerInvariant();
+        string lowerCasePackageId = packageId.ToLowerInvariant();
 #pragma warning restore S4040
 
-        Directory.Exists(Path.Combine(isolatedPackagesPath, lowerCasePackageId, packageVersion)).Should()
-            .BeTrue("the package should restore into the isolated path, never the machine-wide global-packages cache.");
+        Directory.Exists(Path.Combine(isolatedPackagesPath, lowerCasePackageId, packageVersion)).Should().BeTrue(
+            "the package should restore into the isolated path, never the machine-wide global-packages cache.");
 
-        Dictionary<string, string> properties = PropertiesFile.Read(DebugGitPropertiesFile(consumerDirectory));
-        properties["git.commit.id"].Should().Be(ProcessRunner.GetGitOutput(repository, "rev-parse", "HEAD"));
+        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(consumerDirectory));
+        string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
+        properties["git.commit.id"].Should().Be(expectedCommitId);
     }
+}
 
+public sealed class SmartDefaultSkipsGenerationWhenNoConsumingPackageReferenceTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// The default case for the overwhelming majority of projects in a large solution (a class library, a test project, anything without a consuming package
     /// anywhere in its resolved dependency graph): generation is skipped entirely, without needing an explicit opt-out, and without breaking the build. A
-    /// real git repository is deliberately present here (unlike NoGit_WarnsByDefault) to prove the smart default - not "no .git found" - is what causes the
-    /// skip.
+    /// real git repository is deliberately present here (unlike NoGitWarnsByDefaultTest) to prove the smart default - not "no .git found" - is what causes
+    /// the skip.
     /// </summary>
     [Fact]
-    public void SmartDefault_SkipsGeneration_WhenNoConsumingPackageReference()
+    public async Task SmartDefault_SkipsGeneration_WhenNoConsumingPackageReference()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
-        string testApp = GitPropertiesTestWorkspace.WriteAppProject(repository, GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build", "-v:detailed");
+        string testApp =
+            await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null);
+
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-v:detailed");
         AssertBuildSucceeded(result, "build with no consuming-package reference and $(GenerateGitProperties) left at its smart default");
         // Not a numbered GITPROPS0xx code - this is plain internal trace output, not a diagnosable outcome (see the .targets file's own comment on it).
         result.Output.Should().Contain("git.properties generation skipped: no reference to");
         AssertNoGitPropertiesGenerated(testApp);
     }
+}
 
+public sealed class SmartDefaultGeneratesGitPropertiesWhenConsumingPackageReferencedTest : GitPropertiesBuildTestBase
+{
     /// <summary>
-    /// The positive counterpart to <see cref="SmartDefault_SkipsGeneration_WhenNoConsumingPackageReference" />: a project referencing the real default
+    /// The positive counterpart to <see cref="SmartDefaultSkipsGenerationWhenNoConsumingPackageReferenceTest" />: a project referencing the real default
     /// consuming package ID (Steeltoe.Management.Endpoint) gets git.properties generated with no explicit $(GenerateGitProperties) needed. Uses a minimal
-    /// stand-in project with that exact name/PackageId (see WriteDummyDependencyProject's remarks) rather than the real, large Endpoint project, so this
-    /// test stays fast and fully offline.
+    /// stand-in project with that exact name/PackageId (see WriteDummyDependencyProjectAsync's remarks) rather than the real, large Endpoint project, so
+    /// this test stays fast and fully offline.
     /// </summary>
     [Fact]
-    public void SmartDefault_GeneratesGitProperties_WhenConsumingPackageReferenced()
+    public async Task SmartDefault_GeneratesGitProperties_WhenConsumingPackageReferenced()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         const string consumingPackageStandInName = "Steeltoe.Management.Endpoint";
-        GitPropertiesTestWorkspace.WriteDummyDependencyProject(repository, consumingPackageStandInName);
+        await GitPropertiesTestWorkspace.WriteDummyDependencyProjectAsync(repository, consumingPackageStandInName);
 
-        string testApp = GitPropertiesTestWorkspace.WriteAppProject(repository, GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
+        string testApp = await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName,
+            generateGitProperties: null,
             extraItemGroupContent: $"""<ProjectReference Include="..\{consumingPackageStandInName}\{consumingPackageStandInName}.csproj" />""");
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertBuildSucceeded(result, "build with a Steeltoe.Management.Endpoint reference and $(GenerateGitProperties) left at its smart default");
 
-        Dictionary<string, string> properties = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
-        properties["git.commit.id"].Should().Be(ProcessRunner.GetGitOutput(repository, "rev-parse", "HEAD"));
+        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
+        properties["git.commit.id"].Should().Be(expectedCommitId);
     }
+}
 
+public sealed class SmartDefaultOverrideDetectsCustomPackageIdsTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// Proves $(GitPropertiesConsumingPackageIds) is genuinely overridable - for consumers of this package who don't use Steeltoe.Management.Endpoint at all
     /// (e.g. a hand-rolled /info endpoint reading git.properties directly), so the smart default isn't hardcoded away from them.
     /// </summary>
     [Fact]
-    public void SmartDefault_Override_DetectsCustomPackageIds()
+    public async Task SmartDefault_Override_DetectsCustomPackageIds()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         const string customPackageId = "Contoso.Actuators";
-        GitPropertiesTestWorkspace.WriteDummyDependencyProject(repository, customPackageId);
+        await GitPropertiesTestWorkspace.WriteDummyDependencyProjectAsync(repository, customPackageId);
 
-        string testApp = GitPropertiesTestWorkspace.WriteAppProject(repository, GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
-            extraItemGroupContent: $"""<ProjectReference Include="..\{customPackageId}\{customPackageId}.csproj" />""");
+        string testApp = await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName,
+            generateGitProperties: null, extraItemGroupContent: $"""<ProjectReference Include="..\{customPackageId}\{customPackageId}.csproj" />""");
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build", $"-p:GitPropertiesConsumingPackageIds={customPackageId}");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build", $"-p:GitPropertiesConsumingPackageIds={customPackageId}");
         AssertBuildSucceeded(result, "build with a custom $(GitPropertiesConsumingPackageIds) matching a referenced project");
 
-        Dictionary<string, string> properties = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
-        properties["git.commit.id"].Should().Be(ProcessRunner.GetGitOutput(repository, "rev-parse", "HEAD"));
+        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
+        properties["git.commit.id"].Should().Be(expectedCommitId);
     }
+}
 
+public sealed class SmartDefaultOverrideDoesNotMatchPackageIdAsPrefixTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// Guards against a regression to a naive substring match (e.g. "IndexOf(id + "/")" without also requiring the match to be a whole library key) - a
     /// project referencing only "Some2" (never "Some" itself) must NOT be detected when $(GitPropertiesConsumingPackageIds) is configured as "Some", even
     /// though "Some2" starts with "Some". Proves DetectConsumingPackageReferenceTask compares whole package IDs, not prefixes.
     /// </summary>
     [Fact]
-    public void SmartDefault_Override_DoesNotMatchPackageIdAsPrefix()
+    public async Task SmartDefault_Override_DoesNotMatchPackageIdAsPrefix()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         const string longerPackageId = "Some2";
-        GitPropertiesTestWorkspace.WriteDummyDependencyProject(repository, longerPackageId);
+        await GitPropertiesTestWorkspace.WriteDummyDependencyProjectAsync(repository, longerPackageId);
 
-        string testApp = GitPropertiesTestWorkspace.WriteAppProject(repository, GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
-            extraItemGroupContent: $"""<ProjectReference Include="..\{longerPackageId}\{longerPackageId}.csproj" />""");
+        string testApp = await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName,
+            generateGitProperties: null, extraItemGroupContent: $"""<ProjectReference Include="..\{longerPackageId}\{longerPackageId}.csproj" />""");
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build", "-p:GitPropertiesConsumingPackageIds=Some");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesConsumingPackageIds=Some");
         AssertBuildSucceeded(result, "build with a referenced package ('Some2') that is a superstring, not a match, of the configured ID ('Some')");
         AssertNoGitPropertiesGenerated(testApp);
     }
+}
 
+public sealed class SmartDefaultOverrideEmptyPackageIdsViaGlobalPropertySkipsGenerationGracefullyTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// Guards against a regression where MSBuild's required-parameter check for a Task string parameter treats an empty string the same as "not supplied":
     /// setting $(GitPropertiesConsumingPackageIds) to blank via a global property (e.g. "-p:GitPropertiesConsumingPackageIds=") reaches
@@ -841,20 +950,24 @@ public sealed class GitPropertiesBuildTests : IDisposable
     /// i.e. skip generation gracefully rather than fail the build with MSB4044.
     /// </summary>
     [Fact]
-    public void SmartDefault_Override_EmptyPackageIdsViaGlobalProperty_SkipsGenerationGracefully()
+    public async Task SmartDefault_Override_EmptyPackageIdsViaGlobalProperty_SkipsGenerationGracefully()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         const string consumingPackageStandInName = "Steeltoe.Management.Endpoint";
-        GitPropertiesTestWorkspace.WriteDummyDependencyProject(repository, consumingPackageStandInName);
+        await GitPropertiesTestWorkspace.WriteDummyDependencyProjectAsync(repository, consumingPackageStandInName);
 
-        string testApp = GitPropertiesTestWorkspace.WriteAppProject(repository, GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
+        string testApp = await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName,
+            generateGitProperties: null,
             extraItemGroupContent: $"""<ProjectReference Include="..\{consumingPackageStandInName}\{consumingPackageStandInName}.csproj" />""");
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build", "-p:GitPropertiesConsumingPackageIds=");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesConsumingPackageIds=");
         AssertBuildSucceeded(result, "build with $(GitPropertiesConsumingPackageIds) explicitly cleared via a global property");
         AssertNoGitPropertiesGenerated(testApp);
     }
+}
 
+public sealed class SmartDefaultExplicitFalseWinsOverDetectedConsumingPackageReferenceTest : GitPropertiesBuildTestBase
+{
     /// <summary>
     /// A consumer's explicit choice must never be second-guessed by the smart default, in either direction - the negative direction (no reference, but
     /// explicitly forced on) is already exercised by every other test in this file, which all set $(GenerateGitProperties)=true explicitly via
@@ -862,68 +975,18 @@ public sealed class GitPropertiesBuildTests : IDisposable
     /// the consumer explicitly opted out anyway.
     /// </summary>
     [Fact]
-    public void SmartDefault_ExplicitFalse_WinsOverDetectedConsumingPackageReference()
+    public async Task SmartDefault_ExplicitFalse_WinsOverDetectedConsumingPackageReference()
     {
-        string repository = _workspace.CreateSyntheticRepo(Path.Combine(_workspace.RootDirectory, "repo"), 1);
+        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         const string consumingPackageStandInName = "Steeltoe.Management.Endpoint";
-        GitPropertiesTestWorkspace.WriteDummyDependencyProject(repository, consumingPackageStandInName);
+        await GitPropertiesTestWorkspace.WriteDummyDependencyProjectAsync(repository, consumingPackageStandInName);
 
-        string testApp = GitPropertiesTestWorkspace.WriteAppProject(repository, GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
+        string testApp = await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName,
+            generateGitProperties: null,
             extraItemGroupContent: $"""<ProjectReference Include="..\{consumingPackageStandInName}\{consumingPackageStandInName}.csproj" />""");
 
-        ProcessResult result = ProcessRunner.RunDotnet(testApp, "build", "-p:GenerateGitProperties=false");
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GenerateGitProperties=false");
         AssertBuildSucceeded(result, "build with GenerateGitProperties explicitly set to false despite a consuming-package reference being present");
         AssertNoGitPropertiesGenerated(testApp);
-    }
-
-    private static Dictionary<string, string>[] ReadPropertiesForEachFramework(string projectDirectory, string[] frameworks)
-    {
-        return Array.ConvertAll(frameworks, framework => PropertiesFile.Read(Path.Combine(projectDirectory, "bin", "Debug", framework, "git.properties")));
-    }
-
-    private static string FallbackFile(string projectDirectory)
-    {
-        return Path.Combine(projectDirectory, "git.properties");
-    }
-
-    public void Dispose()
-    {
-        _workspace.Dispose();
-    }
-
-    private static void AssertBuildSucceeded(ProcessResult result, string action)
-    {
-        result.ExitCode.Should().Be(0, "{0} should succeed. Output:\n{1}", action, result.Output);
-    }
-
-    private static void AssertWarned(ProcessResult result, string code)
-    {
-        result.Output.Should().Contain($"warning {code}");
-    }
-
-    /// <summary>
-    /// GitPropertiesEnableWarnings=false downgrades a diagnostic from a Warning to a plain informational message - with no code at all (see
-    /// GenerateGitPropertiesCacheTask.ReportDiagnostic's remarks for why), and at Importance="Normal" rather than the default's "high", so it's visible at
-    /// "-v:normal" but not in default build output.
-    /// </summary>
-    private static void AssertReportedAsInfoOnly(ProcessResult result, string code, string messageSnippet)
-    {
-        result.Output.Should().NotContain(code, "a downgraded message must never carry a code - only warnings do.");
-        result.Output.Should().Contain(messageSnippet);
-    }
-
-    private static void AssertNoGitPropertiesGenerated(string projectDirectory)
-    {
-        File.Exists(DebugGitPropertiesFile(projectDirectory)).Should().BeFalse("no git.properties should be generated.");
-    }
-
-    private static string DebugGitPropertiesFile(string projectDirectory)
-    {
-        return Path.Combine(projectDirectory, "bin", "Debug", TestPaths.TestAppTargetFramework, "git.properties");
-    }
-
-    private static string ReleasePublishGitPropertiesFile(string projectDirectory)
-    {
-        return Path.Combine(projectDirectory, "bin", "Release", TestPaths.TestAppTargetFramework, "publish", "git.properties");
     }
 }

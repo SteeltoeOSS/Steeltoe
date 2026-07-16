@@ -11,11 +11,15 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 /// test's workspace path can never accidentally satisfy an Assert.Contains/DoesNotContain check against a GITPROPS0xx diagnostic code in build output,
 /// which routinely echoes back the working directory path.
 /// </summary>
+/// <remarks>
+/// Constructed via <see cref="CreateAsync" /> rather than a public constructor: resolving the physical (symlink-free) root directory on macOS needs a
+/// "pwd -P" subprocess, and a constructor can't await one.
+/// </remarks>
 internal sealed class GitPropertiesTestWorkspace : IDisposable
 {
     /// <summary>
     /// The project name every dev-loop consumer test writes its own copy of Steeltoe.Management.GitProperties.Build against (see
-    /// <see cref="WriteAppProject" />) - shared so callers never retype it.
+    /// <see cref="WriteAppProjectAsync" />) - shared so callers never retype it.
     /// </summary>
     public const string TestAppProjectName = "TestApp";
 
@@ -28,27 +32,33 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
 
     public string RootDirectory { get; }
 
-    public GitPropertiesTestWorkspace()
+    private GitPropertiesTestWorkspace(string rootDirectory)
+    {
+        RootDirectory = rootDirectory;
+    }
+
+    public static async Task<GitPropertiesTestWorkspace> CreateAsync()
     {
         string rootDirectory = Path.Combine(Path.GetTempPath(), $"build-tasks-test_{Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture)[..8]}");
         Directory.CreateDirectory(rootDirectory);
-        RootDirectory = ResolvePhysicalPath(rootDirectory);
+        string physicalRootDirectory = await ResolvePhysicalPathAsync(rootDirectory);
+        return new GitPropertiesTestWorkspace(physicalRootDirectory);
     }
 
     /// <summary>
     /// On macOS, $TMPDIR resolves through a symlink (/var -&gt; /private/var) that the OS silently canonicalizes away whenever a spawned process (git,
     /// dotnet, MSBuild) reports its own working directory - e.g. in "git.properties: writing..." diagnostic messages. Resolving once up front here keeps
-    /// every path-based assertion in these tests (which compares against exactly that reported text) consistent with what a spawned process itself
-    /// reports, instead of the un-resolved alias $TMPDIR itself returns.
+    /// every path-based assertion in these tests (which compares against exactly that reported text) consistent with what a spawned process itself reports,
+    /// instead of the un-resolved alias $TMPDIR itself returns.
     /// </summary>
-    private static string ResolvePhysicalPath(string path)
+    private static async Task<string> ResolvePhysicalPathAsync(string path)
     {
         if (!OperatingSystem.IsMacOS())
         {
             return path;
         }
 
-        ProcessResult result = ProcessRunner.Run("pwd", path, "-P");
+        ProcessResult result = await ProcessRunner.RunAsync("pwd", path, TestContext.Current.CancellationToken, "-P");
         return result.Output.Trim();
     }
 
@@ -96,15 +106,21 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     /// unhelpfully for these tests) detect "packaged" consumption instead of the dev loop this is meant to simulate, silently skipping the TaskHostFactory
     /// path every other test here relies on.
     /// </summary>
-    private static void CopyGitPropertiesBuildSource(string repoRootDestination)
+    private static async Task CopyGitPropertiesBuildSourceAsync(string repoRootDestination)
     {
         string destination = Path.Combine(repoRootDestination, TestPaths.GitPropertiesBuildRelativePath);
         Directory.CreateDirectory(Path.Combine(destination, "build"));
-        File.Copy(TestPaths.GitPropertiesBuildProjectFile, Path.Combine(destination, Path.GetFileName(TestPaths.GitPropertiesBuildProjectFile)), true);
-        File.Copy(TestPaths.TargetsFile, Path.Combine(destination, "build", Path.GetFileName(TestPaths.TargetsFile)), true);
-        File.Copy(TestPaths.SourceCheckoutMarkerFile, Path.Combine(destination, Path.GetFileName(TestPaths.SourceCheckoutMarkerFile)), true);
 
-        foreach (string sourceFile in Directory.GetFiles(TestPaths.GitPropertiesBuildDirectory, "*.cs"))
+        string projectFile = await TestPaths.GetGitPropertiesBuildProjectFileAsync();
+        string targetsFile = await TestPaths.GetTargetsFileAsync();
+        string markerFile = await TestPaths.GetSourceCheckoutMarkerFileAsync();
+        string buildDirectory = await TestPaths.GetGitPropertiesBuildDirectoryAsync();
+
+        File.Copy(projectFile, Path.Combine(destination, Path.GetFileName(projectFile)), true);
+        File.Copy(targetsFile, Path.Combine(destination, "build", Path.GetFileName(targetsFile)), true);
+        File.Copy(markerFile, Path.Combine(destination, Path.GetFileName(markerFile)), true);
+
+        foreach (string sourceFile in Directory.GetFiles(buildDirectory, "*.cs"))
         {
             File.Copy(sourceFile, Path.Combine(destination, Path.GetFileName(sourceFile)), true);
         }
@@ -115,13 +131,14 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     /// chain needs (versioning, packaging defaults, analyzers), so a synthetic test repo - which has none of Steeltoe's other real projects - still
     /// evaluates the same properties a real build inside the repository would.
     /// </summary>
-    private static void CopySharedBuildInfrastructure(string repoRootDestination)
+    private static async Task CopySharedBuildInfrastructureAsync(string repoRootDestination)
     {
         Directory.CreateDirectory(repoRootDestination);
+        string repositoryRoot = await TestPaths.GetRepositoryRootAsync();
 
         foreach (string fileName in TestPaths.SharedBuildInfrastructureFiles)
         {
-            File.Copy(Path.Combine(TestPaths.RepositoryRoot, fileName), Path.Combine(repoRootDestination, fileName), true);
+            File.Copy(Path.Combine(repositoryRoot, fileName), Path.Combine(repoRootDestination, fileName), true);
         }
     }
 
@@ -134,7 +151,7 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     /// semicolon-separated list instead (see <see cref="TestPaths.MultiTargetTestFrameworks" />).
     /// </summary>
     /// <param name="repoRootDestination">
-    /// The directory to write the project under - typically a repository root returned by <see cref="CreateSyntheticRepo" />.
+    /// The directory to write the project under - typically a repository root returned by <see cref="CreateSyntheticRepoAsync" />.
     /// </param>
     /// <param name="projectName">
     /// The project's name - also used as its directory and file name.
@@ -146,15 +163,15 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     /// <param name="generateGitProperties">
     /// Emits an explicit $(GenerateGitProperties) override when non-null - true for almost every test here, since they exist to test generation itself, not
     /// the smart default that decides whether it runs at all. Pass null (letting the smart default apply) only for tests that specifically cover
-    /// DetectConsumingPackageReferenceTask/$(GitPropertiesConsumingPackageIds) - see <see cref="WriteDummyDependencyProject" />.
+    /// DetectConsumingPackageReferenceTask/$(GitPropertiesConsumingPackageIds) - see <see cref="WriteDummyDependencyProjectAsync" />.
     /// </param>
     /// <param name="extraItemGroupContent">
     /// Extra raw XML inserted into the same &lt;ItemGroup&gt; as the ProjectReference above - currently only used to add a second, normal (not
-    /// ReferenceOutputAssembly="false") ProjectReference to a <see cref="WriteDummyDependencyProject" /> stand-in, so it actually participates in restore
-    /// and shows up in this project's own project.assets.json (see DetectConsumingPackageReferenceTask's remarks for why that distinction matters).
+    /// ReferenceOutputAssembly="false") ProjectReference to a <see cref="WriteDummyDependencyProjectAsync" /> stand-in, so it actually participates in
+    /// restore and shows up in this project's own project.assets.json (see DetectConsumingPackageReferenceTask's remarks for why that distinction matters).
     /// </param>
-    public static string WriteAppProject(string repoRootDestination, string projectName, string? targetFrameworks = null, bool? generateGitProperties = true,
-        string? extraItemGroupContent = null)
+    public static async Task<string> WriteAppProjectAsync(string repoRootDestination, string projectName, string? targetFrameworks = null,
+        bool? generateGitProperties = true, string? extraItemGroupContent = null)
     {
         string appDirectory = Path.Combine(repoRootDestination, projectName);
         Directory.CreateDirectory(appDirectory);
@@ -171,6 +188,9 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
             generateGitPropertiesElement = $"<GenerateGitProperties>{generateGitPropertiesValue}</GenerateGitProperties>";
         }
 
+        string projectFile = await TestPaths.GetGitPropertiesBuildProjectFileAsync();
+        string targetsFile = await TestPaths.GetTargetsFileAsync();
+
         string projectContent = $"""
             <Project Sdk="Microsoft.NET.Sdk">
               <PropertyGroup>
@@ -182,21 +202,21 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
               </PropertyGroup>
 
               <ItemGroup>
-                <ProjectReference Include="../{TestPaths.GitPropertiesBuildRelativePath}/{Path.GetFileName(TestPaths.GitPropertiesBuildProjectFile)}">
+                <ProjectReference Include="../{TestPaths.GitPropertiesBuildRelativePath}/{Path.GetFileName(projectFile)}">
                   <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
                 </ProjectReference>
                 {extraItemGroupContent}
               </ItemGroup>
 
-              <Import Project="$(MSBuildThisFileDirectory)../{TestPaths.GitPropertiesBuildRelativePath}/build/{Path.GetFileName(TestPaths.TargetsFile)}" />
+              <Import Project="$(MSBuildThisFileDirectory)../{TestPaths.GitPropertiesBuildRelativePath}/build/{Path.GetFileName(targetsFile)}" />
             </Project>
             """;
 
-        File.WriteAllText(Path.Combine(appDirectory, $"{projectName}.csproj"), projectContent);
+        await File.WriteAllTextAsync(Path.Combine(appDirectory, $"{projectName}.csproj"), projectContent, TestContext.Current.CancellationToken);
 
-        File.WriteAllText(Path.Combine(appDirectory, "Program.cs"), """
+        await File.WriteAllTextAsync(Path.Combine(appDirectory, "Program.cs"), """
         Console.WriteLine("Hello, World!");
-        """);
+        """, TestContext.Current.CancellationToken);
 
         return appDirectory;
     }
@@ -205,21 +225,21 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     /// Writes a minimal, do-nothing class library project - used only by the smart-default detection tests as a stand-in for a real dependency (e.g.
     /// Steeltoe.Management.Endpoint itself, or some other actuator-registering package) that a test app references NORMALLY (see
     /// <paramref name="repoRootDestination" />'s caller), so it actually participates in restore and shows up in the referencing project's own
-    /// project.assets.json - unlike WriteAppProject's own ReferenceOutputAssembly="false" reference to Steeltoe.Management.GitProperties.Build, which was
-    /// verified (empirically, against a real "dotnet restore") to be excluded from the resolved dependency graph entirely.
+    /// project.assets.json - unlike WriteAppProjectAsync's own ReferenceOutputAssembly="false" reference to Steeltoe.Management.GitProperties.Build, which
+    /// was verified (empirically, against a real "dotnet restore") to be excluded from the resolved dependency graph entirely.
     /// </summary>
-    public static string WriteDummyDependencyProject(string repoRootDestination, string projectName)
+    public static async Task<string> WriteDummyDependencyProjectAsync(string repoRootDestination, string projectName)
     {
         string projectDirectory = Path.Combine(repoRootDestination, projectName);
         Directory.CreateDirectory(projectDirectory);
 
-        File.WriteAllText(Path.Combine(projectDirectory, $"{projectName}.csproj"), $"""
+        await File.WriteAllTextAsync(Path.Combine(projectDirectory, $"{projectName}.csproj"), $"""
             <Project Sdk="Microsoft.NET.Sdk">
               <PropertyGroup>
                 <TargetFramework>{TestPaths.TestAppTargetFramework}</TargetFramework>
               </PropertyGroup>
             </Project>
-            """);
+            """, TestContext.Current.CancellationToken);
 
         return projectDirectory;
     }
@@ -242,12 +262,12 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     /// specifically cover $(GitPropertiesWriteToProjectDirectory)/the fallback file, so a regression that accidentally wrote one in a test that doesn't
     /// expect it still shows up as an untracked file (and, transitively, as git.dirty=true) instead of being silently absorbed by a blanket ignore rule.
     /// </param>
-    public string CreateSyntheticRepo(string destination, int commitCount, bool gitignoreFallbackFile = false)
+    public async Task<string> CreateSyntheticRepoAsync(string destination, int commitCount, bool gitignoreFallbackFile = false)
     {
         Directory.CreateDirectory(destination);
-        ProcessRunner.RunGit(destination, "init", "--quiet", "--initial-branch=main", ".");
-        ProcessRunner.RunGit(destination, "config", "user.name", "Test User");
-        ProcessRunner.RunGit(destination, "config", "user.email", "test@example.com");
+        await ProcessRunner.RunGitAsync(destination, "init", "--quiet", "--initial-branch=main", ".");
+        await ProcessRunner.RunGitAsync(destination, "config", "user.name", "Test User");
+        await ProcessRunner.RunGitAsync(destination, "config", "user.email", "test@example.com");
 
         // Without this, dotnet build's own obj/bin output is untracked and git status correctly
         // (but unhelpfully, for these tests) reports the tree as dirty - real projects always
@@ -263,22 +283,24 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
             obj/
             """;
 
-        File.WriteAllText(Path.Combine(destination, ".gitignore"), gitignoreContent);
+        await File.WriteAllTextAsync(Path.Combine(destination, ".gitignore"), gitignoreContent, TestContext.Current.CancellationToken);
 
         for (int commitNumber = 1; commitNumber <= commitCount; commitNumber++)
         {
-            File.WriteAllText(Path.Combine(destination, $"file{commitNumber}.txt"), $"content {commitNumber}");
-            ProcessRunner.RunGit(destination, "add", "-A");
-            ProcessRunner.RunGit(destination, "commit", "--quiet", "-m", $"Commit {commitNumber}");
+            await File.WriteAllTextAsync(Path.Combine(destination, $"file{commitNumber}.txt"), $"content {commitNumber}",
+                TestContext.Current.CancellationToken);
+
+            await ProcessRunner.RunGitAsync(destination, "add", "-A");
+            await ProcessRunner.RunGitAsync(destination, "commit", "--quiet", "-m", $"Commit {commitNumber}");
         }
 
-        CopyCurrentProjectFiles(destination);
+        await CopyCurrentProjectFilesAsync(destination);
 
         // Commit the project files too, so the synthetic repo starts clean (git.dirty=false)
         // unless a test deliberately makes a further change - otherwise every synthetic repo would
         // show git.dirty=true purely because of these untracked-but-just-added files.
-        ProcessRunner.RunGit(destination, "add", "-A");
-        ProcessRunner.RunGit(destination, "commit", "--quiet", "-m", "Add project files");
+        await ProcessRunner.RunGitAsync(destination, "add", "-A");
+        await ProcessRunner.RunGitAsync(destination, "commit", "--quiet", "-m", "Add project files");
         return destination;
     }
 
@@ -322,11 +344,11 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     /// becomes the "repository root" for relative-path purposes, whether or not it's actually a git repository), then writes a TestApp project referencing
     /// it. Returns the TestApp directory.
     /// </summary>
-    public string CopyCurrentProjectFiles(string destination)
+    public async Task<string> CopyCurrentProjectFilesAsync(string destination)
     {
-        CopySharedBuildInfrastructure(destination);
-        CopyGitPropertiesBuildSource(destination);
-        return WriteAppProject(destination, TestAppProjectName);
+        await CopySharedBuildInfrastructureAsync(destination);
+        await CopyGitPropertiesBuildSourceAsync(destination);
+        return await WriteAppProjectAsync(destination, TestAppProjectName);
     }
 
     /// <summary>
@@ -337,21 +359,24 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     /// (IncludeBuildOutput=false makes NuGet's Pack target skip its usual dependency on Build), so it fails with NU5019 ("file not found") against the DLL
     /// our own &lt;None Include="$(TargetPath)"&gt; pack item expects to already exist.
     /// </summary>
-    public string PackGitPropertiesBuildToFeed()
+    public async Task<string> PackGitPropertiesBuildToFeedAsync()
     {
         string packSourceDirectory = Path.Combine(RootDirectory, "pack-source");
-        CopySharedBuildInfrastructure(packSourceDirectory);
-        CopyGitPropertiesBuildSource(packSourceDirectory);
+        await CopySharedBuildInfrastructureAsync(packSourceDirectory);
+        await CopyGitPropertiesBuildSourceAsync(packSourceDirectory);
 
         string projectDirectory = Path.Combine(packSourceDirectory, TestPaths.GitPropertiesBuildRelativePath);
-        ProcessResult result = ProcessRunner.RunDotnet(projectDirectory, "build", Path.GetFileName(TestPaths.GitPropertiesBuildProjectFile), "-c", "Release");
+        string projectFile = await TestPaths.GetGitPropertiesBuildProjectFileAsync();
+        ProcessResult result = await ProcessRunner.RunDotnetAsync(projectDirectory, "build", Path.GetFileName(projectFile), "-c", "Release");
 
         if (result.ExitCode != 0)
         {
-            throw new InvalidOperationException($"Building/packing {TestPaths.PackageId} failed.\n{result.Output}");
+            string packageId = await TestPaths.GetPackageIdAsync();
+            throw new InvalidOperationException($"Building/packing {packageId} failed.\n{result.Output}");
         }
 
-        return Path.Combine(projectDirectory, "bin", "tasks", TestPaths.GitPropertiesBuildTargetFramework);
+        string targetFramework = await TestPaths.GetGitPropertiesBuildTargetFrameworkAsync();
+        return Path.Combine(projectDirectory, "bin", "tasks", targetFramework);
     }
 
     /// <summary>
@@ -359,7 +384,7 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     /// clear/&gt;, restore would still see nuget.org and friends - harmless here since nothing else is needed, but clearing makes the test fully
     /// offline-capable and guarantees it's really our local build being consumed, not a same-named/versioned package resolved from somewhere else.
     /// </summary>
-    public static void WriteIsolatedNuGetConfig(string filePath, string feedDirectory)
+    public static async Task WriteIsolatedNuGetConfigAsync(string filePath, string feedDirectory)
     {
         string content = $"""
             <?xml version="1.0" encoding="utf-8"?>
@@ -371,7 +396,7 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
             </configuration>
             """;
 
-        File.WriteAllText(filePath, content);
+        await File.WriteAllTextAsync(filePath, content, TestContext.Current.CancellationToken);
     }
 
     /// <summary>
@@ -380,7 +405,7 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     /// .targets file: that's the whole point of the "build\{PackageId}.targets" NuGet auto-import convention this package relies on, and this is the only
     /// test that actually exercises it end-to-end.
     /// </summary>
-    public static void CreatePackageConsumerProject(string projectDirectory, string packageVersion)
+    public static async Task CreatePackageConsumerProjectAsync(string projectDirectory, string packageVersion)
     {
         Directory.CreateDirectory(projectDirectory);
 
@@ -391,7 +416,7 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
                 <TargetFramework>{TestPaths.TestAppTargetFramework}</TargetFramework>
                 <ImplicitUsings>enable</ImplicitUsings>
                 <!-- This test exists to exercise real PackageReference-based consumption, not the
-                     smart default that decides whether generation runs at all - see WriteAppProject's
+                     smart default that decides whether generation runs at all - see WriteAppProjectAsync's
                      own generateGitProperties parameter for where that IS covered. -->
                 <GenerateGitProperties>true</GenerateGitProperties>
               </PropertyGroup>
@@ -402,10 +427,10 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
             </Project>
             """;
 
-        File.WriteAllText(Path.Combine(projectDirectory, "Consumer.csproj"), projectContent);
+        await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Consumer.csproj"), projectContent, TestContext.Current.CancellationToken);
 
-        File.WriteAllText(Path.Combine(projectDirectory, "Program.cs"), """
+        await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Program.cs"), """
         Console.WriteLine("Hello, World!");
-        """);
+        """, TestContext.Current.CancellationToken);
     }
 }

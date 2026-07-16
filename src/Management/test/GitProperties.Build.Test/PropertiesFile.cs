@@ -8,7 +8,7 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 
 internal static class PropertiesFile
 {
-    public static Dictionary<string, string> Read(string path)
+    public static async Task<Dictionary<string, string>> ReadAsync(string path)
     {
         if (!File.Exists(path))
         {
@@ -17,7 +17,7 @@ internal static class PropertiesFile
 
         var map = new Dictionary<string, string>();
 
-        foreach (string line in File.ReadAllLines(path, Encoding.UTF8))
+        foreach (string line in await File.ReadAllLinesAsync(path, Encoding.UTF8, TestContext.Current.CancellationToken))
         {
             if (!line.StartsWith("git.", StringComparison.Ordinal))
             {
