@@ -135,6 +135,13 @@ public sealed class GitPropertiesBuildTests : IDisposable
         propertiesAfter["git.commit.id"].Should().Be(propertiesBefore["git.commit.id"], "nothing about the commit itself changed between the two builds.");
     }
 
+    /// <summary>
+    /// Also folds in coverage for the trickiest shape ParseDescribeOutput's dash-splitting has to get right - a tag name that itself contains a dash
+    /// ("release-1.0"), combined with a nonzero commits-ahead count - rather than spinning up a dedicated test just for that. Tagging an ANCESTOR of HEAD,
+    /// not HEAD itself, serves both purposes at once: it produces that nonzero count, and it keeps HEAD's own commit ID unchanged, which is the actual point
+    /// of this test's name - proving a new tag ref alone still invalidates the shared cache (see the regression this guards against in
+    /// GenerateGitPropertiesCacheTask.TryGenerateAndWriteCache's own remarks).
+    /// </summary>
     [Fact]
     public void NewTag_InvalidatesCache()
     {
@@ -146,14 +153,22 @@ public sealed class GitPropertiesBuildTests : IDisposable
         Dictionary<string, string> propertiesBefore = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
         propertiesBefore["git.tags"].Should().BeEmpty();
 
-        ProcessResult tagResult = ProcessRunner.RunGit(repository, "tag", "v1.0.0");
+        string ancestorCommitId = ProcessRunner.GetGitOutput(repository, "rev-parse", "HEAD~1");
+        ProcessResult tagResult = ProcessRunner.RunGit(repository, "tag", "release-1.0", ancestorCommitId);
         tagResult.ExitCode.Should().Be(0, "creating the test tag should succeed.");
 
         ProcessResult result2 = ProcessRunner.RunDotnet(testApp, "build");
         AssertBuildSucceeded(result2, "second build");
         Dictionary<string, string> propertiesAfter = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
-        propertiesAfter["git.tags"].Should().Be("v1.0.0");
-        propertiesAfter["git.commit.id.describe"].Should().Be("v1.0.0");
+
+        propertiesAfter["git.tags"].Should().BeEmpty("the tag points at an ancestor, not HEAD, so it must not show up in git.tags.");
+        propertiesAfter["git.closest.tag.name"].Should().Be("release-1.0");
+        propertiesAfter["git.closest.tag.commit.count"].Should().Be("1", "HEAD is exactly one commit ahead of the tagged ancestor.");
+
+        // "release-1.0-1", not the raw "git describe" output ("release-1.0-1-g<sha>"):
+        // git.commit.id.describe deliberately omits the abbreviated SHA - see
+        // GenerateGitPropertiesCacheTask.ParseDescribeOutput's own BaseDescribe reconstruction.
+        propertiesAfter["git.commit.id.describe"].Should().Be("release-1.0-1");
     }
 
     /// <summary>
@@ -259,10 +274,12 @@ public sealed class GitPropertiesBuildTests : IDisposable
     }
 
     /// <summary>
-    /// GenerateGitPropertiesCacheTask.ReadConfig only recognizes the literal "remote.origin.url" config key - a repository with additional remotes (a
-    /// fork's "upstream", a CI mirror, etc.) must still resolve git.remote.origin.url to origin's own URL, never another remote's. Also confirms that
-    /// when origin itself has more than one configured URL (via "git remote set-url --add"), the field resolves to the LAST one, matching "git config
-    /// --list"'s own last-value-wins behavior for repeated keys (verified independently against a real git binary before writing this test).
+    /// GenerateGitPropertiesCacheTask.ReadConfig only recognizes the literal "remote.origin.url" config key - a repository with additional remotes (a fork's
+    /// "upstream", a CI mirror, etc.) must still resolve git.remote.origin.url to origin's own URL, never another remote's. Also confirms that when origin
+    /// itself has more than one configured URL (via "git remote set-url --add"), the field resolves to the LAST one, matching "git config --list"'s own
+    /// last-value-wins behavior for repeated keys (verified independently against a real git binary before writing this test). The winning URL is
+    /// deliberately given embedded credentials, folding StripUserInfo's own coverage into this same build rather than spinning up a dedicated test just for
+    /// that: proves credentials are stripped from whichever URL actually wins, not just from a hypothetical single-remote case.
     /// </summary>
     [Fact]
     public void MultipleRemotes_OnlyOriginUrlIsUsed()
@@ -272,7 +289,7 @@ public sealed class GitPropertiesBuildTests : IDisposable
 
         ProcessRunner.RunGit(repository, "remote", "add", "upstream", "https://example.com/upstream.git");
         ProcessRunner.RunGit(repository, "remote", "add", "origin", "https://example.com/origin.git");
-        ProcessRunner.RunGit(repository, "remote", "set-url", "--add", "origin", "https://example.com/origin-second.git");
+        ProcessRunner.RunGit(repository, "remote", "set-url", "--add", "origin", "https://user:pass@example.com/origin-second.git");
 
         ProcessResult result = ProcessRunner.RunDotnet(testApp, "build");
         AssertBuildSucceeded(result, "build with multiple remotes configured");
@@ -280,7 +297,8 @@ public sealed class GitPropertiesBuildTests : IDisposable
         Dictionary<string, string> properties = PropertiesFile.Read(DebugGitPropertiesFile(testApp));
 
         properties["git.remote.origin.url"].Should().Be("https://example.com/origin-second.git",
-            "origin's own last-configured URL must win, ignoring both the unrelated 'upstream' remote and origin's own first URL.");
+            "origin's own last-configured URL must win, ignoring both the unrelated 'upstream' remote and origin's own first URL - and its embedded " +
+            "'user:pass@' credentials must be stripped before the value ever reaches the cache file.");
     }
 
     [Fact]
