@@ -13,19 +13,18 @@ public sealed class NoCommitsWarnsByDefaultTest : GitPropertiesBuildTestBase
     [Fact]
     public async Task NoCommits_WarnsByDefault()
     {
-        string repository = Path.Combine(Workspace.RootDirectory, "repo");
-        Directory.CreateDirectory(repository);
-        await ProcessRunner.RunGitAsync(repository, "init", "--quiet", "--initial-branch=main", ".");
-        string testApp = await TestProjectWriter.CopyCurrentProjectFilesAsync(repository);
+        EmptyGitRepository emptyRepository = await Workspace.CreateEmptyRepositoryAsync("repo");
+        GitRepository repository = await emptyRepository.AddTestAppAsync();
 
-        string defaultResult = await ProcessRunner.RunDotnetAsync(testApp, "build");
-        AssertWarned(defaultResult, "GITPROPS005");
-        AssertNoGitPropertiesGenerated(testApp);
+        string defaultResult = await repository.TestApp.BuildAsync();
+        defaultResult.AssertWarned("GITPROPS005");
 
-        string enableWarningsFalseResult = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesEnableWarnings=false", "-v:normal");
-        AssertReportedAsInfoOnly(enableWarningsFalseResult, "GITPROPS005", "no commits yet");
+        string enableWarningsFalseResult = await repository.TestApp.BuildAsync("-p:GitPropertiesEnableWarnings=false", "-v:normal");
+        enableWarningsFalseResult.AssertReportedAsInfoOnly("GITPROPS005", "no commits yet");
 
-        string featureOffResult = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GenerateGitProperties=false");
+        string featureOffResult = await repository.TestApp.BuildAsync("-p:GenerateGitProperties=false");
         featureOffResult.Should().NotContain("GITPROPS005");
+
+        repository.TestApp.GitPropertiesGenerated.Should().BeFalse();
     }
 }

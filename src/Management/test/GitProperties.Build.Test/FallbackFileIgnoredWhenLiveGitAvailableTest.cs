@@ -13,17 +13,16 @@ public sealed class FallbackFileIgnoredWhenLiveGitAvailableTest : GitPropertiesB
     [Fact]
     public async Task FallbackFile_Ignored_WhenLiveGitAvailable()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1, true);
-        string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1, true);
 
-        await File.WriteAllLinesAsync(GetFallbackFilePath(testApp), ["git.commit.id=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"],
+        await File.WriteAllLinesAsync(repository.TestApp.FallbackFilePath, ["git.commit.id=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"],
             TestContext.Current.CancellationToken);
 
-        string result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-v:detailed");
+        string result = await repository.TestApp.BuildAsync("-v:detailed");
         result.Should().NotContain("using pre-generated fallback file", "the fallback notice must not appear when live generation actually ran.");
 
-        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
-        string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
+        Dictionary<string, string> properties = await repository.TestApp.ReadDebugPropertiesAsync();
+        string expectedCommitId = await repository.GetCommitIdAsync();
         properties["git.commit.id"].Should().Be(expectedCommitId);
     }
 }

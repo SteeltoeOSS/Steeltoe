@@ -63,7 +63,7 @@ internal static class TestProjectWriter
     /// semicolon-separated list instead (see <see cref="TestPaths.MultiTargetTestFrameworks" />).
     /// </summary>
     /// <param name="repoRootDestination">
-    /// The directory to write the project under - typically a repository root returned by <see cref="GitPropertiesTestWorkspace.CreateSyntheticRepoAsync" />
+    /// The directory to write the project under - typically a repository root returned by <see cref="GitPropertiesTestWorkspace.CreateGitRepositoryAsync" />
     /// .
     /// </param>
     /// <param name="projectName">

@@ -43,39 +43,36 @@ public sealed class GroundTruthAllPropertiesMatchGitTest : GitPropertiesBuildTes
     [Fact]
     public async Task GroundTruth_AllPropertiesMatchGit()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 3);
-        string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 3);
+        string result = await repository.TestApp.BuildAsync();
 
-        string result = await ProcessRunner.RunDotnetAsync(testApp, "build");
-
-        File.Exists(GetFallbackFilePath(testApp)).Should().BeFalse(
+        repository.TestApp.FallbackGitPropertiesGenerated.Should().BeFalse(
             "the fallback file must not be written into the project directory unless explicitly opted into.");
 
         string expectedRelativePath = Path.Combine("obj", "Debug", TestPaths.TestAppTargetFramework, "git.properties");
         result.Should().Contain($"git.properties: writing to '{expectedRelativePath}' for project '{GitPropertiesTestWorkspace.TestAppProjectName}'.");
 
-        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        Dictionary<string, string> properties = await repository.TestApp.ReadDebugPropertiesAsync();
 
-        string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
+        string expectedCommitId = await repository.GetCommitIdAsync();
         properties["git.commit.id"].Should().Be(expectedCommitId);
 
-        string expectedCommitIdAbbrev = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "--short=7", "HEAD");
+        string expectedCommitIdAbbrev = await repository.RunGitAsync("rev-parse", "--short=7", "HEAD");
         properties["git.commit.id.abbrev"].Should().Be(expectedCommitIdAbbrev);
 
-        string expectedCommitUserName = await ProcessRunner.GetGitOutputAsync(repository, "log", "-1", "--format=%an");
+        string expectedCommitUserName = await repository.RunGitAsync("log", "-1", "--format=%an");
         properties["git.commit.user.name"].Should().Be(expectedCommitUserName);
 
-        string expectedCommitUserEmail = await ProcessRunner.GetGitOutputAsync(repository, "log", "-1", "--format=%ae");
+        string expectedCommitUserEmail = await repository.RunGitAsync("log", "-1", "--format=%ae");
         properties["git.commit.user.email"].Should().Be(expectedCommitUserEmail);
 
-        string expectedCommitMessageShort = await ProcessRunner.GetGitOutputAsync(repository, "log", "-1", "--format=%s");
+        string expectedCommitMessageShort = await repository.RunGitAsync("log", "-1", "--format=%s");
         properties["git.commit.message.short"].Should().Be(expectedCommitMessageShort);
 
-        string expectedTotalCommitCount = await ProcessRunner.GetGitOutputAsync(repository, "rev-list", "--count", "HEAD");
+        string expectedTotalCommitCount = await repository.RunGitAsync("rev-list", "--count", "HEAD");
         properties["git.total.commit.count"].Should().Be(expectedTotalCommitCount);
 
-        string gitStatus = await ProcessRunner.GetGitOutputAsync(repository, "status", "--porcelain");
-        bool expectedDirty = gitStatus.Length > 0;
+        bool expectedDirty = await repository.IsDirtyAsync();
         properties["git.dirty"].Should().Be(expectedDirty ? "true" : "false");
 
         // SDK default when $(Version) isn't set.

@@ -18,16 +18,12 @@ public sealed class MultipleRemotesOnlyOriginUrlIsUsedTest : GitPropertiesBuildT
     [Fact]
     public async Task MultipleRemotes_OnlyOriginUrlIsUsed()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
-        string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
-
-        await ProcessRunner.RunGitAsync(repository, "remote", "add", "upstream", "https://example.com/upstream.git");
-        await ProcessRunner.RunGitAsync(repository, "remote", "add", "origin", "https://example.com/origin.git");
-        await ProcessRunner.RunGitAsync(repository, "remote", "set-url", "--add", "origin", "https://user:pass@example.com/origin-second.git");
-
-        await ProcessRunner.RunDotnetAsync(testApp, "build");
-
-        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
+        await repository.RunGitAsync("remote", "add", "upstream", "https://example.com/upstream.git");
+        await repository.RunGitAsync("remote", "add", "origin", "https://example.com/origin.git");
+        await repository.RunGitAsync("remote", "set-url", "--add", "origin", "https://user:pass@example.com/origin-second.git");
+        await repository.TestApp.BuildAsync();
+        Dictionary<string, string> properties = await repository.TestApp.ReadDebugPropertiesAsync();
 
         properties["git.remote.origin.url"].Should().Be("https://example.com/origin-second.git",
             "origin's own last-configured URL must win, ignoring both the unrelated 'upstream' remote and origin's own first URL - and its embedded " +
@@ -43,12 +39,10 @@ public sealed class MultipleRemotesOnlyOriginUrlIsUsedTest : GitPropertiesBuildT
         // --add"), and git refuses a plain "set-url" against a remote with multiple values ("fatal: could not set
         // 'remote.origin.url' ... has multiple values") - remove-then-add is the clean way to replace all of them
         // with exactly one.
-        await ProcessRunner.RunGitAsync(repository, "remote", "remove", "origin");
-        await ProcessRunner.RunGitAsync(repository, "remote", "add", "origin", "git@github.com:org/repo.git");
-
-        await ProcessRunner.RunDotnetAsync(testApp, "build");
-
-        Dictionary<string, string> propertiesAfterScpStyleUrl = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        await repository.RunGitAsync("remote", "remove", "origin");
+        await repository.RunGitAsync("remote", "add", "origin", "git@github.com:org/repo.git");
+        await repository.TestApp.BuildAsync();
+        Dictionary<string, string> propertiesAfterScpStyleUrl = await repository.TestApp.ReadDebugPropertiesAsync();
 
         propertiesAfterScpStyleUrl["git.remote.origin.url"].Should().Be("git@github.com:org/repo.git",
             "a non-absolute, scp-style remote URL must be left exactly as-is - there is nothing safe for StripUserInfo to rewrite.");

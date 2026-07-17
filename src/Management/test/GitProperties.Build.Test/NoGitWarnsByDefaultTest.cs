@@ -9,12 +9,9 @@ public sealed class NoGitWarnsByDefaultTest : GitPropertiesBuildTestBase
     [Fact]
     public async Task NoGit_WarnsByDefault()
     {
-        string projectDirectory = Path.Combine(Workspace.RootDirectory, "proj");
-        Directory.CreateDirectory(projectDirectory);
-        string testApp = await TestProjectWriter.CopyCurrentProjectFilesAsync(projectDirectory);
-
-        string result = await ProcessRunner.RunDotnetAsync(testApp, "build");
-        AssertWarned(result, "GITPROPS001");
-        AssertNoGitPropertiesGenerated(testApp);
+        TestProject testApp = await Workspace.CreateProjectDirectoryAsync("test-project");
+        string result = await testApp.BuildAsync();
+        result.AssertWarned("GITPROPS001");
+        testApp.GitPropertiesGenerated.Should().BeFalse();
     }
 }

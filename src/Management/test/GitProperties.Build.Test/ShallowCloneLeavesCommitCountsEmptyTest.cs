@@ -9,25 +9,18 @@ public sealed class ShallowCloneLeavesCommitCountsEmptyTest : GitPropertiesBuild
     [Fact]
     public async Task ShallowClone_LeavesCommitCountsEmpty()
     {
-        string source = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "source"), 3);
-        await ProcessRunner.RunGitAsync(source, "tag", "v1.0.0");
-
-        string shallow = Path.Combine(Workspace.RootDirectory, "shallow");
-        // --no-local is required here: for a plain local filesystem path, git's local-clone
-        // optimization bypasses shallow-transfer logic entirely and --depth is silently ignored,
-        // producing a full clone that would make this test worthless.
-        await ProcessRunner.RunGitAsync(Path.GetTempPath(), "clone", "--quiet", "--no-local", "--depth", "1", source, shallow);
-        string isShallowRepository = await ProcessRunner.GetGitOutputAsync(shallow, "rev-parse", "--is-shallow-repository");
+        GitRepository source = await Workspace.CreateGitRepositoryAsync("source", 3);
+        await source.TagAsync("v1.0.0");
+        GitRepository shallow = await source.CloneAsShallowAsync("shallow");
+        string isShallowRepository = await shallow.RunGitAsync("rev-parse", "--is-shallow-repository");
         isShallowRepository.Should().Be("true");
 
-        string testApp = await TestProjectWriter.CopyCurrentProjectFilesAsync(shallow);
-
-        string result = await ProcessRunner.RunDotnetAsync(testApp, "build");
+        string result = await shallow.TestApp.BuildAsync();
         result.Should().NotContain("GITPROPS001");
         result.Should().NotContain("GITPROPS002");
-        AssertWarned(result, "GITPROPS006");
+        result.AssertWarned("GITPROPS006");
 
-        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        Dictionary<string, string> properties = await shallow.TestApp.ReadDebugPropertiesAsync();
         properties["git.total.commit.count"].Should().BeEmpty();
         properties["git.closest.tag.commit.count"].Should().BeEmpty();
     }

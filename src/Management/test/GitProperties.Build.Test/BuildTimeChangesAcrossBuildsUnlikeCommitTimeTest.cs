@@ -15,11 +15,9 @@ public sealed class BuildTimeChangesAcrossBuildsUnlikeCommitTimeTest : GitProper
     [Fact]
     public async Task BuildTime_ChangesAcrossBuilds_UnlikeCommitTime()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
-        string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
-
-        await ProcessRunner.RunDotnetAsync(testApp, "build");
-        Dictionary<string, string> propertiesBefore = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
+        await repository.TestApp.BuildAsync();
+        Dictionary<string, string> propertiesBefore = await repository.TestApp.ReadDebugPropertiesAsync();
 
         // git.build.time is formatted "yyyy-MM-ddTHH:mm:sszzz" (ComposeGitPropertiesTask) - second
         // resolution only, no fractional part - so two builds landing within the same wall-clock
@@ -27,8 +25,8 @@ public sealed class BuildTimeChangesAcrossBuildsUnlikeCommitTimeTest : GitProper
         // sized to that format's own precision, not incidental slack.
         await Task.Delay(TimeSpan.FromMilliseconds(1100), TestContext.Current.CancellationToken);
 
-        await ProcessRunner.RunDotnetAsync(testApp, "build");
-        Dictionary<string, string> propertiesAfter = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        await repository.TestApp.BuildAsync();
+        Dictionary<string, string> propertiesAfter = await repository.TestApp.ReadDebugPropertiesAsync();
 
         propertiesAfter["git.build.time"].Should().NotBe(propertiesBefore["git.build.time"],
             "git.build.time must be recomputed on every build, not reused from the shared cache.");

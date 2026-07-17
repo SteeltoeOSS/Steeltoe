@@ -15,17 +15,15 @@ public sealed class FallbackFileWithoutGitignoreMakesLaterBuildsAppearDirtyTest 
     [Fact]
     public async Task FallbackFile_WithoutGitignore_MakesLaterBuildsAppearDirty()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
-        string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
+        await repository.TestApp.BuildAsync("-p:GitPropertiesWriteToProjectDirectory=true");
 
-        await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
+        bool isDirty = await repository.IsDirtyAsync();
+        isDirty.Should().BeTrue("the freshly-written, ungitignored fallback file should show up as an untracked change.");
 
-        string gitStatus = await ProcessRunner.GetGitOutputAsync(repository, "status", "--porcelain");
-        gitStatus.Should().NotBeEmpty("the freshly-written, ungitignored fallback file should show up as an untracked change.");
+        await repository.TestApp.BuildAsync("-p:GitPropertiesWriteToProjectDirectory=true");
 
-        await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
-
-        Dictionary<string, string> properties2 = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        Dictionary<string, string> properties2 = await repository.TestApp.ReadDebugPropertiesAsync();
 
         properties2["git.dirty"].Should().Be("true",
             "the ungitignored fallback file left over from the first build makes every later build see the tree as dirty.");

@@ -15,27 +15,25 @@ public sealed class NonAsciiCommitDataRendersCorrectlyTest : GitPropertiesBuildT
     [Fact]
     public async Task NonAscii_CommitDataRendersCorrectly()
     {
-        string repository = Path.Combine(Workspace.RootDirectory, "repo");
-        Directory.CreateDirectory(repository);
-        await ProcessRunner.RunGitAsync(repository, "init", "--quiet", "--initial-branch=main", ".");
+        EmptyGitRepository emptyRepository = await Workspace.CreateEmptyRepositoryAsync("repo");
+
         // \u-escaped rather than literal, so this source file itself stays plain ASCII: renders as accented Latin-1
         // supplement letters plus the trailing three characters of "commit", spelled out in Japanese (CJK).
         const string nonAsciiUserName = "\u00DCn\u00EFc\u00F6d\u00E9 T\u00EBst";
         const string nonAsciiCommitSubject = "\u00DCn\u00EFc\u00F6d\u00E9 t\u00EBst commit \u65E5\u672C\u8A9E";
         const string commitBody = "Adds a null check before calling Ping().";
 
-        await ProcessRunner.RunGitAsync(repository, "config", "user.name", nonAsciiUserName);
-        await ProcessRunner.RunGitAsync(repository, "config", "user.email", "test@example.com");
-        await File.WriteAllTextAsync(Path.Combine(repository, ".gitignore"), "bin/\r\nobj/\r\n", TestContext.Current.CancellationToken);
-        await File.WriteAllTextAsync(Path.Combine(repository, "file.txt"), "content", TestContext.Current.CancellationToken);
-        await ProcessRunner.RunGitAsync(repository, "add", "-A");
-        await ProcessRunner.RunGitAsync(repository, "commit", "--quiet", "-m", nonAsciiCommitSubject, "-m", commitBody);
+        await emptyRepository.RunGitAsync("config", "user.name", nonAsciiUserName);
+        await emptyRepository.RunGitAsync("config", "user.email", "test@example.com");
+        await File.WriteAllTextAsync(Path.Combine(emptyRepository.RootDirectory, ".gitignore"), "bin/\r\nobj/\r\n", TestContext.Current.CancellationToken);
+        await File.WriteAllTextAsync(Path.Combine(emptyRepository.RootDirectory, "file.txt"), "content", TestContext.Current.CancellationToken);
+        await emptyRepository.RunGitAsync("add", "-A");
+        await emptyRepository.RunGitAsync("commit", "--quiet", "-m", nonAsciiCommitSubject, "-m", commitBody);
 
-        string testApp = await TestProjectWriter.CopyCurrentProjectFilesAsync(repository);
+        GitRepository repository = await emptyRepository.AddTestAppAsync();
+        await repository.TestApp.BuildAsync();
 
-        await ProcessRunner.RunDotnetAsync(testApp, "build");
-
-        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        Dictionary<string, string> properties = await repository.TestApp.ReadDebugPropertiesAsync();
         properties["git.commit.user.name"].Should().Be(nonAsciiUserName);
         properties["git.commit.message.short"].Should().Be(nonAsciiCommitSubject, "the short/subject line is never multi-line to begin with.");
 

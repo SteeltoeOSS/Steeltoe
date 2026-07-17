@@ -186,7 +186,8 @@ internal static class ProcessRunner
     public static async Task<string> RunGitAsync(string workingDirectory, CancellationToken cancellationToken, params string[] arguments)
     {
         string gitExecutable = await RealGitExecutableTask;
-        return await RunAsync(gitExecutable, workingDirectory, 0, cancellationToken, arguments);
+        string output = await RunAsync(gitExecutable, workingDirectory, 0, cancellationToken, arguments);
+        return output.Trim();
     }
 
     /// <summary>
@@ -220,12 +221,6 @@ internal static class ProcessRunner
             "-p:RunAnalyzers=false",
             "-p:NuGetAudit=false"
         ];
-    }
-
-    public static async Task<string> GetGitOutputAsync(string workingDirectory, params string[] arguments)
-    {
-        string output = await RunGitAsync(workingDirectory, arguments);
-        return output.Trim();
     }
 
     /// <summary>

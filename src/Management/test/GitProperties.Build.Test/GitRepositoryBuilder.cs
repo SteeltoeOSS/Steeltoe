@@ -7,10 +7,10 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 /// <summary>
 /// Builds synthetic git repositories with a controlled, minimal commit history for tests, and simulates the one deployment step (`cf push`) that strips
 /// ".git" from what a running app actually sees on disk. Deliberately never operates on a clone of this (large, real) repository, so the suite stays
-/// fast - see <see cref="GitPropertiesTestWorkspace.CreateSyntheticRepoAsync" /> for the workspace-level entry point that also copies in the project
+/// fast - see <see cref="GitPropertiesTestWorkspace.CreateGitRepositoryAsync" /> for the workspace-level entry point that also copies in the project
 /// files under test.
 /// </summary>
-internal static class SyntheticGitRepositoryBuilder
+internal static class GitRepositoryBuilder
 {
     private static readonly HashSet<string> SimulatedPushExcludedDirectoryNames = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -21,7 +21,7 @@ internal static class SyntheticGitRepositoryBuilder
 
     /// <summary>
     /// `git init` plus a handful of manufactured commits under <paramref name="destination" />. Deliberately stops short of committing anything beyond those
-    /// manufactured files - see <see cref="GitPropertiesTestWorkspace.CreateSyntheticRepoAsync" /> for the project-files-copy and final commit step this
+    /// manufactured files - see <see cref="GitPropertiesTestWorkspace.CreateGitRepositoryAsync" /> for the project-files-copy and final commit step this
     /// leaves to its caller.
     /// </summary>
     /// <param name="destination">
@@ -31,7 +31,7 @@ internal static class SyntheticGitRepositoryBuilder
     /// The number of manufactured commits to create.
     /// </param>
     /// <param name="gitignoreFallbackFile">
-    /// Whether to also list "git.properties" in the repository's .gitignore - see <see cref="GitPropertiesTestWorkspace.CreateSyntheticRepoAsync" /> for the
+    /// Whether to also list "git.properties" in the repository's .gitignore - see <see cref="GitPropertiesTestWorkspace.CreateGitRepositoryAsync" /> for the
     /// full explanation.
     /// </param>
     public static async Task InitializeAsync(string destination, int commitCount, bool gitignoreFallbackFile)
@@ -68,7 +68,7 @@ internal static class SyntheticGitRepositoryBuilder
     }
 
     /// <summary>
-    /// A small "git add -A / git commit" primitive - used by <see cref="GitPropertiesTestWorkspace.CreateSyntheticRepoAsync" /> to commit the project files
+    /// A small "git add -A / git commit" primitive - used by <see cref="GitPropertiesTestWorkspace.CreateGitRepositoryAsync" /> to commit the project files
     /// it copies in after <see cref="InitializeAsync" /> runs.
     /// </summary>
     public static async Task CommitAllAsync(string repositoryDirectory, string message)

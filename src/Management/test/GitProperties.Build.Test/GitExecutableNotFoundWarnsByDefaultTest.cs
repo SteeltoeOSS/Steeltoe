@@ -17,21 +17,18 @@ public sealed class GitExecutableNotFoundWarnsByDefaultTest : GitPropertiesBuild
     [Fact]
     public async Task GitExecutableNotFound_WarnsByDefault()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
-        string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
+        string defaultResult = await repository.TestApp.BuildAsync($"-p:GitExecutable={BogusGitExecutable}");
+        defaultResult.AssertWarned("GITPROPS003");
 
-        string defaultResult = await ProcessRunner.RunDotnetAsync(testApp, "build", $"-p:GitExecutable={BogusGitExecutable}");
-        AssertWarned(defaultResult, "GITPROPS003");
-        AssertNoGitPropertiesGenerated(testApp);
+        string enableWarningsFalseResult =
+            await repository.TestApp.BuildAsync($"-p:GitExecutable={BogusGitExecutable}", "-p:GitPropertiesEnableWarnings=false", "-v:normal");
 
-        string enableWarningsFalseResult = await ProcessRunner.RunDotnetAsync(testApp, "build", $"-p:GitExecutable={BogusGitExecutable}",
-            "-p:GitPropertiesEnableWarnings=false", "-v:normal");
+        enableWarningsFalseResult.AssertReportedAsInfoOnly("GITPROPS003", "could not run");
 
-        AssertReportedAsInfoOnly(enableWarningsFalseResult, "GITPROPS003", "could not run");
-
-        string featureOffResult = await ProcessRunner.RunDotnetAsync(testApp, "build", $"-p:GitExecutable={BogusGitExecutable}",
-            "-p:GenerateGitProperties=false");
-
+        string featureOffResult = await repository.TestApp.BuildAsync($"-p:GitExecutable={BogusGitExecutable}", "-p:GenerateGitProperties=false");
         featureOffResult.Should().NotContain("GITPROPS003");
+
+        repository.TestApp.GitPropertiesGenerated.Should().BeFalse();
     }
 }

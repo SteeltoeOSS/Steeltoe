@@ -15,17 +15,16 @@ public sealed class SmartDefaultGeneratesGitPropertiesWhenConsumingPackageRefere
     [Fact]
     public async Task SmartDefault_GeneratesGitProperties_WhenConsumingPackageReferenced()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
-        const string consumingPackageStandInName = "Steeltoe.Management.Endpoint";
-        await TestProjectWriter.WriteDummyDependencyProjectAsync(repository, consumingPackageStandInName);
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
+        TestProject dependency = await repository.AddDependencyProjectAsync("Steeltoe.Management.Endpoint");
 
-        string testApp = await TestProjectWriter.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
-            extraItemGroupContent: $"""<ProjectReference Include="..\{consumingPackageStandInName}\{consumingPackageStandInName}.csproj" />""");
+        TestProject testApp = await repository.AddProjectAsync(GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
+            extraItemGroupContent: dependency.ToProjectReferenceXml());
 
-        await ProcessRunner.RunDotnetAsync(testApp, "build");
+        await testApp.BuildAsync();
 
-        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
-        string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
+        Dictionary<string, string> properties = await testApp.ReadDebugPropertiesAsync();
+        string expectedCommitId = await repository.GetCommitIdAsync();
         properties["git.commit.id"].Should().Be(expectedCommitId);
     }
 }

@@ -15,14 +15,16 @@ public sealed class WriteGitPropertiesFallbackFileThenPublishNoBuildFailsTest : 
     [Fact]
     public async Task WriteGitPropertiesFallbackFile_ThenPublishNoBuild_Fails()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1, true);
-        string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1, true);
+        await repository.TestApp.BuildAsync("-t:WriteGitPropertiesFallbackFile");
 
-        await ProcessRunner.RunDotnetAsync(testApp, "build", "-t:WriteGitPropertiesFallbackFile");
+        // Confirms the actual premise of this test: nothing was compiled, so there is genuinely nothing for
+        // "dotnet publish --no-build" below to publish.
+        repository.TestApp.CompiledAssemblyExists.Should().BeFalse();
 
         // 1, not just "nonzero": MSBuild's own long-standing, stable convention for "the build failed" (verified
         // against a real "dotnet publish --no-build" in this exact no-compiled-output scenario) - checked here,
         // at the point of the call, rather than via a separate assertion afterward.
-        await ProcessRunner.RunDotnetAsync(testApp, 1, "publish", "--no-build");
+        await repository.TestApp.PublishAsync(1, "--no-build");
     }
 }

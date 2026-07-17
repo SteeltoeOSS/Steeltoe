@@ -15,24 +15,20 @@ public sealed class FallbackFileUsedWhenNoGitAvailableTest : GitPropertiesBuildT
     [Fact]
     public async Task FallbackFile_UsedWhenNoGitAvailable()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 2, true);
-        string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
-
-        await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
-        Dictionary<string, string> fallbackProperties = await PropertiesFile.ReadAsync(GetFallbackFilePath(testApp));
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 2, true);
+        await repository.TestApp.BuildAsync("-p:GitPropertiesWriteToProjectDirectory=true");
+        Dictionary<string, string> fallbackProperties = await repository.TestApp.ReadFallbackPropertiesAsync();
         fallbackProperties["git.dirty"].Should().Be("false", "the gitignored fallback file must not make its own producing build see the tree as dirty.");
 
-        string destinationDirectory = Path.Combine(Workspace.RootDirectory, "pushed");
-        string pushedRoot = SyntheticGitRepositoryBuilder.SimulateSourcePush(repository, destinationDirectory);
-        string pushedApp = Path.Combine(pushedRoot, GitPropertiesTestWorkspace.TestAppProjectName);
-        Directory.Exists(Path.Combine(pushedRoot, ".git")).Should().BeFalse("the simulated push must not carry '.git' along, matching cf push's own default.");
-        File.Exists(GetFallbackFilePath(pushedApp)).Should().BeTrue("the fallback git.properties must have survived the simulated push.");
+        RemotePushProjectTree remote = repository.SimulatePush("pushed");
+        remote.HasGitDirectory.Should().BeFalse("the simulated push must not carry '.git' along, matching cf push's own default.");
+        remote.TestApp.FallbackGitPropertiesGenerated.Should().BeTrue("the fallback git.properties must have survived the simulated push.");
 
-        string publishResult = await ProcessRunner.RunDotnetAsync(pushedApp, "publish", "-v:detailed");
+        string publishResult = await remote.TestApp.PublishAsync("-v:detailed");
         publishResult.Should().NotContain("GITPROPS001", "the fallback file should suppress the usual no-.git diagnostic entirely.");
         publishResult.Should().Contain("using pre-generated fallback file", "using the fallback should still be traceable, so it's never silently stale.");
 
-        Dictionary<string, string> publishedProperties = await PropertiesFile.ReadAsync(GetReleasePublishGitPropertiesFilePath(pushedApp));
+        Dictionary<string, string> publishedProperties = await remote.TestApp.ReadReleasePublishPropertiesAsync();
         publishedProperties.Should().BeEquivalentTo(fallbackProperties, "the fallback-produced output must exactly match the pre-generated fallback content.");
     }
 }

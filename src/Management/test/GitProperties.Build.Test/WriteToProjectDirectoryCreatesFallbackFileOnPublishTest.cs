@@ -16,21 +16,18 @@ public sealed class WriteToProjectDirectoryCreatesFallbackFileOnPublishTest : Gi
     [Fact]
     public async Task WriteToProjectDirectory_CreatesFallbackFile_OnPublish()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1, true);
-        string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
-
-        string result = await ProcessRunner.RunDotnetAsync(testApp, "publish", "-p:GitPropertiesWriteToProjectDirectory=true",
-            "-p:GitPropertiesEnableWarnings=true");
-
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1, true);
+        string result = await repository.TestApp.PublishAsync("-p:GitPropertiesWriteToProjectDirectory=true", "-p:GitPropertiesEnableWarnings=true");
         result.Should().NotContain("GITPROPS0", "nothing should be skipped, and no fallback should be needed, when a real .git repository is available.");
 
-        File.Exists(GetFallbackFilePath(testApp)).Should().BeTrue("the fallback file should have been written next to the .csproj, even for a bare publish.");
+        repository.TestApp.FallbackGitPropertiesGenerated.Should().BeTrue(
+            "the fallback file should have been written next to the .csproj, even for a bare publish.");
 
-        Dictionary<string, string> fallbackProperties = await PropertiesFile.ReadAsync(GetFallbackFilePath(testApp));
-        Dictionary<string, string> publishedProperties = await PropertiesFile.ReadAsync(GetReleasePublishGitPropertiesFilePath(testApp));
+        Dictionary<string, string> fallbackProperties = await repository.TestApp.ReadFallbackPropertiesAsync();
+        Dictionary<string, string> publishedProperties = await repository.TestApp.ReadReleasePublishPropertiesAsync();
         fallbackProperties.Should().BeEquivalentTo(publishedProperties, "the fallback file must carry the exact same content as the published output.");
 
-        string gitStatus = await ProcessRunner.GetGitOutputAsync(repository, "status", "--porcelain");
-        gitStatus.Should().BeEmpty("the fallback file is gitignored, so it must not show up as an untracked change.");
+        bool isDirty = await repository.IsDirtyAsync();
+        isDirty.Should().BeFalse("the fallback file is gitignored, so it must not show up as an untracked change.");
     }
 }

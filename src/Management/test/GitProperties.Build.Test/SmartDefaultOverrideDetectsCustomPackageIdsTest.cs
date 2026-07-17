@@ -13,17 +13,18 @@ public sealed class SmartDefaultOverrideDetectsCustomPackageIdsTest : GitPropert
     [Fact]
     public async Task SmartDefault_Override_DetectsCustomPackageIds()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
-        const string customPackageId = "Contoso.Actuators";
-        await TestProjectWriter.WriteDummyDependencyProjectAsync(repository, customPackageId);
+        const string customPackageId = "Example.Package.Name";
 
-        string testApp = await TestProjectWriter.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
-            extraItemGroupContent: $"""<ProjectReference Include="..\{customPackageId}\{customPackageId}.csproj" />""");
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
+        TestProject dependency = await repository.AddDependencyProjectAsync(customPackageId);
 
-        await ProcessRunner.RunDotnetAsync(testApp, "build", $"-p:GitPropertiesConsumingPackageIds={customPackageId}");
+        TestProject testApp = await repository.AddProjectAsync(GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
+            extraItemGroupContent: dependency.ToProjectReferenceXml());
 
-        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
-        string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
+        await testApp.BuildAsync($"-p:GitPropertiesConsumingPackageIds={customPackageId}");
+
+        Dictionary<string, string> properties = await testApp.ReadDebugPropertiesAsync();
+        string expectedCommitId = await repository.GetCommitIdAsync();
         properties["git.commit.id"].Should().Be(expectedCommitId);
     }
 }

@@ -15,14 +15,13 @@ public sealed class SmartDefaultExplicitFalseWinsOverDetectedConsumingPackageRef
     [Fact]
     public async Task SmartDefault_ExplicitFalse_WinsOverDetectedConsumingPackageReference()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
-        const string consumingPackageStandInName = "Steeltoe.Management.Endpoint";
-        await TestProjectWriter.WriteDummyDependencyProjectAsync(repository, consumingPackageStandInName);
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
+        TestProject dependency = await repository.AddDependencyProjectAsync("Steeltoe.Management.Endpoint");
 
-        string testApp = await TestProjectWriter.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
-            extraItemGroupContent: $"""<ProjectReference Include="..\{consumingPackageStandInName}\{consumingPackageStandInName}.csproj" />""");
+        TestProject testApp = await repository.AddProjectAsync(GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
+            extraItemGroupContent: dependency.ToProjectReferenceXml());
 
-        await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GenerateGitProperties=false");
-        AssertNoGitPropertiesGenerated(testApp);
+        await testApp.BuildAsync("-p:GenerateGitProperties=false");
+        testApp.GitPropertiesGenerated.Should().BeFalse();
     }
 }

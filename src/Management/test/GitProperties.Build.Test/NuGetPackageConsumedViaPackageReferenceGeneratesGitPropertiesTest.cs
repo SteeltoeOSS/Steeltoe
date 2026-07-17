@@ -20,11 +20,9 @@ public sealed class NuGetPackageConsumedViaPackageReferenceGeneratesGitPropertie
     [Fact]
     public async Task NuGetPackage_ConsumedViaPackageReference_GeneratesGitProperties()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
-
-        string feedDirectory = await TestProjectWriter.PackGitPropertiesBuildToFeedAsync(Workspace.RootDirectory);
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
+        string feedDirectory = await Workspace.PackGitPropertiesBuildToFeedAsync();
         string packageId = await TestPaths.GetPackageIdAsync();
-
         string[] nuPkgFiles = Directory.GetFiles(feedDirectory, $"{packageId}.*.nupkg");
         nuPkgFiles.Should().ContainSingle("packing should produce exactly one .nupkg.");
 
@@ -33,12 +31,11 @@ public sealed class NuGetPackageConsumedViaPackageReferenceGeneratesGitPropertie
         versionMatch.Success.Should().BeTrue("the .nupkg file name should embed the package version.");
         string packageVersion = versionMatch.Groups[1].Value;
 
-        string consumerDirectory = Path.Combine(repository, "Consumer");
-        await TestProjectWriter.CreatePackageConsumerProjectAsync(consumerDirectory, packageVersion);
-        await TestProjectWriter.WriteIsolatedNuGetConfigAsync(Path.Combine(consumerDirectory, "nuget.config"), feedDirectory);
+        TestProject consumer = await repository.AddPackageConsumerProjectAsync("Consumer", packageVersion);
+        await Workspace.WriteIsolatedNuGetConfigAsync(consumer, feedDirectory);
 
-        string isolatedPackagesPath = Path.Combine(Workspace.RootDirectory, "isolated-packages");
-        string result = await ProcessRunner.RunDotnetAsync(consumerDirectory, "build", $"-p:RestorePackagesPath={isolatedPackagesPath}");
+        string isolatedPackagesPath = Workspace.GetPath("isolated-packages");
+        string result = await consumer.BuildAsync($"-p:RestorePackagesPath={isolatedPackagesPath}");
         result.Should().Contain("0 Warning(s)", "a real package consumer should see no in-process task-loading fallback warning or any other diagnostic.");
 
         // NuGet always lowercases the package ID for the on-disk global-packages-folder layout - this isn't
@@ -51,8 +48,8 @@ public sealed class NuGetPackageConsumedViaPackageReferenceGeneratesGitPropertie
         Directory.Exists(Path.Combine(isolatedPackagesPath, lowerCasePackageId, packageVersion)).Should().BeTrue(
             "the package should restore into the isolated path, never the machine-wide global-packages cache.");
 
-        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(consumerDirectory));
-        string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
+        Dictionary<string, string> properties = await consumer.ReadDebugPropertiesAsync();
+        string expectedCommitId = await repository.GetCommitIdAsync();
         properties["git.commit.id"].Should().Be(expectedCommitId);
     }
 }

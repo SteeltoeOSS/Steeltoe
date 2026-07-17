@@ -16,18 +16,16 @@ public sealed class NewTagInvalidatesCacheTest : GitPropertiesBuildTestBase
     [Fact]
     public async Task NewTag_InvalidatesCache()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
-        string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
-
-        await ProcessRunner.RunDotnetAsync(testApp, "build");
-        Dictionary<string, string> propertiesBefore = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
+        await repository.TestApp.BuildAsync();
+        Dictionary<string, string> propertiesBefore = await repository.TestApp.ReadDebugPropertiesAsync();
         propertiesBefore["git.tags"].Should().BeEmpty();
 
-        string ancestorCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD~1");
-        await ProcessRunner.RunGitAsync(repository, "tag", "release-1.0", ancestorCommitId);
+        string ancestorCommitId = await repository.RunGitAsync("rev-parse", "HEAD~1");
+        await repository.TagAsync("release-1.0", ancestorCommitId);
 
-        await ProcessRunner.RunDotnetAsync(testApp, "build");
-        Dictionary<string, string> propertiesAfter = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        await repository.TestApp.BuildAsync();
+        Dictionary<string, string> propertiesAfter = await repository.TestApp.ReadDebugPropertiesAsync();
 
         propertiesAfter["git.tags"].Should().BeEmpty("the tag points at an ancestor, not HEAD, so it must not show up in git.tags.");
         propertiesAfter["git.closest.tag.name"].Should().Be("release-1.0");

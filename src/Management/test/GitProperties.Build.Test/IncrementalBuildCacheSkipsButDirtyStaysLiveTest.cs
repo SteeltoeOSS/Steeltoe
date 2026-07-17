@@ -9,21 +9,18 @@ public sealed class IncrementalBuildCacheSkipsButDirtyStaysLiveTest : GitPropert
     [Fact]
     public async Task IncrementalBuild_CacheSkipsButDirtyStaysLive()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
-        string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
+        await repository.TestApp.BuildAsync();
+        repository.SharedCacheExists.Should().BeTrue("the cache file should exist after first build.");
 
-        await ProcessRunner.RunDotnetAsync(testApp, "build");
-        string cacheFile = Path.Combine(repository, "obj", "_GitProperties", "git.properties.cache");
-        File.Exists(cacheFile).Should().BeTrue("the cache file should exist after first build.");
-
-        string result2 = await ProcessRunner.RunDotnetAsync(testApp, "build", "-v:detailed");
+        string result2 = await repository.TestApp.BuildAsync("-v:detailed");
 
         // "Skipping target" is itself the deterministic, sufficient proof that nothing rewrote the
         // cache file on this second build - no last-write-time comparison (and the sleep it would
         // otherwise need, to guarantee a detectably different timestamp) is needed on top of it.
         result2.Should().Contain("Skipping target \"GenerateGitPropertiesCache\"");
 
-        Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+        Dictionary<string, string> properties = await repository.TestApp.ReadDebugPropertiesAsync();
         properties.Should().ContainKey("git.dirty");
     }
 }

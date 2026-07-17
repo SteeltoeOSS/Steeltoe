@@ -7,16 +7,11 @@ using System.Globalization;
 namespace Steeltoe.Management.GitProperties.Build.Test;
 
 /// <summary>
-/// An isolated temporary directory tree for a single test, cleaned up on Dispose - and the entry point every test uses to set up its own synthetic
-/// project/repository layout. Owns only its own lifecycle plus the couple of methods that need its own <see cref="RootDirectory" />; the actual git-repo
-/// mechanics live in <see cref="SyntheticGitRepositoryBuilder" /> and project/package file writing lives in <see cref="TestProjectWriter" /> - both are
-/// exposed here as thin forwarding methods purely so every test can keep calling through
-/// <c>
-/// Workspace
-/// </c>
-/// /<see cref="GitPropertiesTestWorkspace" /> without needing to know which of the three classes actually implements a given piece. Deliberately avoids
-/// "gitprop" in its own name (in any casing) so a test's workspace path can never accidentally satisfy an Assert.Contains/DoesNotContain check against a
-/// GITPROPS0xx diagnostic code in build output, which routinely echoes back the working directory path.
+/// An isolated temporary directory tree for a single test, cleaned up on Dispose - and the factory every test uses to create the
+/// <see cref="GitRepository" />/<see cref="TestProject" /> instances its scenario needs, so no test has to combine a path under
+/// <see cref="RootDirectory" /> itself. Deliberately avoids "gitprop" in its own name (in any casing) so a test's workspace path can never accidentally
+/// satisfy an Assert.Contains/DoesNotContain check against a GITPROPS0xx diagnostic code in build output, which routinely echoes back the working
+/// directory path.
 /// </summary>
 /// <remarks>
 /// Constructed via <see cref="CreateAsync" /> rather than a public constructor: resolving the physical (symlink-free) root directory on macOS needs a
@@ -100,34 +95,81 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     }
 
     /// <summary>
-    /// A brand-new, synthetic git repo with a controlled, minimal history (`git init` plus a handful of manufactured commits, via
-    /// <see cref="SyntheticGitRepositoryBuilder.InitializeAsync" />) - deliberately never a clone of this (large, real) repository, so the suite stays fast.
-    /// Returns the repository root (not the TestApp directory - callers combine "TestApp" themselves, mirroring how multi-project tests place additional
-    /// sibling projects at the same root).
+    /// Combines a short, per-test name (e.g. "repo", "proj") with <see cref="RootDirectory" /> - the one remaining path-combining primitive every factory
+    /// method below (and the occasional test that needs a workspace-scoped scratch path with no object of its own, e.g. an isolated NuGet packages folder)
+    /// is built on.
     /// </summary>
-    /// <param name="destination">
-    /// The directory to initialize the repository in.
+    public string GetPath(string name)
+    {
+        return Path.Combine(RootDirectory, name);
+    }
+
+    /// <summary>
+    /// A directory with no git repository at all, containing just a copy of the CURRENT Steeltoe.Management.GitProperties.Build source and its default
+    /// TestApp - see <see cref="TestProjectWriter.CopyCurrentProjectFilesAsync" />. For tests that specifically cover the "no usable git repository above
+    /// this project" diagnostics.
+    /// </summary>
+    public async Task<TestProject> CreateProjectDirectoryAsync(string name)
+    {
+        string directory = GetPath(name);
+        Directory.CreateDirectory(directory);
+        string appDirectory = await TestProjectWriter.CopyCurrentProjectFilesAsync(directory);
+        return new TestProject(appDirectory, TestAppProjectName);
+    }
+
+    /// <summary>
+    /// A freshly-initialized git repository with zero commits - "git init" only, no config/.gitignore/manufactured history. For tests that specifically
+    /// cover the "repository has no commits yet" diagnostic, and any scenario that wants full manual control over its own git commands before adding
+    /// projects (see <see cref="EmptyGitRepository.AddTestAppAsync" />).
+    /// </summary>
+    public async Task<EmptyGitRepository> CreateEmptyRepositoryAsync(string name)
+    {
+        string directory = GetPath(name);
+        Directory.CreateDirectory(directory);
+        await ProcessRunner.RunGitAsync(directory, "init", "--quiet", "--initial-branch=main", ".");
+        return new EmptyGitRepository(this, directory);
+    }
+
+    /// <summary>
+    /// A brand-new, synthetic git repo with a controlled, minimal history (`git init` plus a handful of manufactured commits, via
+    /// <see cref="GitRepositoryBuilder.InitializeAsync" />) plus the default TestApp - deliberately never a clone of this (large, real) repository, so the
+    /// suite stays fast.
+    /// </summary>
+    /// <param name="name">
+    /// The directory to initialize the repository in, relative to <see cref="RootDirectory" />.
     /// </param>
     /// <param name="commitCount">
     /// The number of manufactured commits to create before the project files are added.
     /// </param>
     /// <param name="gitignoreFallbackFile">
     /// Whether to also list "git.properties" in the repository's .gitignore, modeling the setup a real consumer of $(GitPropertiesWriteToProjectDirectory)
-    /// must follow - see <see cref="SyntheticGitRepositoryBuilder.SimulateSourcePush" /> for the complementary "not .cfignore'd" half of that same guidance.
-    /// Defaults to false so most tests (which never write a fallback file into the project directory at all) aren't given a gitignore entry they don't
-    /// exercise - only pass true for tests that specifically cover $(GitPropertiesWriteToProjectDirectory)/the fallback file, so a regression that
-    /// accidentally wrote one in a test that doesn't expect it still shows up as an untracked file (and, transitively, as git.dirty=true) instead of being
-    /// silently absorbed by a blanket ignore rule.
+    /// must follow - see <see cref="GitRepositoryBuilder.SimulateSourcePush" /> for the complementary "not .cfignore'd" half of that same guidance. Defaults
+    /// to false so most tests (which never write a fallback file into the project directory at all) aren't given a gitignore entry they don't exercise -
+    /// only pass true for tests that specifically cover $(GitPropertiesWriteToProjectDirectory)/the fallback file, so a regression that accidentally wrote
+    /// one in a test that doesn't expect it still shows up as an untracked file (and, transitively, as git.dirty=true) instead of being silently absorbed by
+    /// a blanket ignore rule.
     /// </param>
-    public async Task<string> CreateSyntheticRepoAsync(string destination, int commitCount, bool gitignoreFallbackFile = false)
+    public async Task<GitRepository> CreateGitRepositoryAsync(string name, int commitCount, bool gitignoreFallbackFile = false)
     {
-        await SyntheticGitRepositoryBuilder.InitializeAsync(destination, commitCount, gitignoreFallbackFile);
-        await TestProjectWriter.CopyCurrentProjectFilesAsync(destination);
+        string directory = GetPath(name);
+        await GitRepositoryBuilder.InitializeAsync(directory, commitCount, gitignoreFallbackFile);
+        TestProject testApp = await GitRepository.WriteDefaultTestAppAsync(directory);
+        var repository = new GitRepository(this, directory, testApp);
 
         // Commit the project files too, so the synthetic repo starts clean (git.dirty=false)
         // unless a test deliberately makes a further change - otherwise every synthetic repo would
         // show git.dirty=true purely because of these untracked-but-just-added files.
-        await SyntheticGitRepositoryBuilder.CommitAllAsync(destination, "Add project files");
-        return destination;
+        await GitRepositoryBuilder.CommitAllAsync(directory, "Add project files");
+        return repository;
+    }
+
+    public Task<string> PackGitPropertiesBuildToFeedAsync()
+    {
+        return TestProjectWriter.PackGitPropertiesBuildToFeedAsync(RootDirectory);
+    }
+
+    public Task WriteIsolatedNuGetConfigAsync(TestProject project, string feedDirectory)
+    {
+        return TestProjectWriter.WriteIsolatedNuGetConfigAsync(Path.Combine(project.RootDirectory, "nuget.config"), feedDirectory);
     }
 }

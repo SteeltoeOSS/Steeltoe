@@ -17,14 +17,13 @@ public sealed class MultiTargetedProjectSharesCacheAcrossTargetFrameworksTest : 
     [Fact]
     public async Task MultiTargetedProject_SharesCacheAcrossTargetFrameworks()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
-        string testApp = await TestProjectWriter.WriteAppProjectAsync(repository, "MultiTargetApp", TestPaths.MultiTargetTestFrameworks);
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
+        TestProject testApp = await repository.AddProjectAsync("MultiTargetApp", TestPaths.MultiTargetTestFrameworks);
         string[] frameworks = TestPaths.MultiTargetTestFrameworks.Split(';');
+        await testApp.BuildAsync();
 
-        await ProcessRunner.RunDotnetAsync(testApp, "build");
-
-        string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
-        List<Dictionary<string, string>> propertiesBefore = await GetGitPropertiesPerTargetFrameworkAsync(testApp, frameworks);
+        string expectedCommitId = await repository.GetCommitIdAsync();
+        List<Dictionary<string, string>> propertiesBefore = await testApp.ReadDebugPropertiesPerTargetFrameworkAsync(frameworks);
 
         foreach (Dictionary<string, string> properties in propertiesBefore)
         {
@@ -32,11 +31,9 @@ public sealed class MultiTargetedProjectSharesCacheAcrossTargetFrameworksTest : 
             properties["git.tags"].Should().BeEmpty();
         }
 
-        await ProcessRunner.RunGitAsync(repository, "tag", "v1.0.0");
-
-        await ProcessRunner.RunDotnetAsync(testApp, "build");
-
-        List<Dictionary<string, string>> propertiesAfter = await GetGitPropertiesPerTargetFrameworkAsync(testApp, frameworks);
+        await repository.TagAsync("v1.0.0");
+        await testApp.BuildAsync();
+        List<Dictionary<string, string>> propertiesAfter = await testApp.ReadDebugPropertiesPerTargetFrameworkAsync(frameworks);
 
         foreach (Dictionary<string, string> properties in propertiesAfter)
         {

@@ -17,21 +17,17 @@ public sealed class WriteGitPropertiesFallbackFileThenSimulatedPushServerPublish
     [Fact]
     public async Task WriteGitPropertiesFallbackFile_ThenSimulatedPush_ServerPublishUsesIt()
     {
-        string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 2, true);
-        string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
+        GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 2, true);
+        await repository.TestApp.BuildAsync("-t:WriteGitPropertiesFallbackFile");
+        Dictionary<string, string> fallbackProperties = await repository.TestApp.ReadFallbackPropertiesAsync();
 
-        await ProcessRunner.RunDotnetAsync(testApp, "build", "-t:WriteGitPropertiesFallbackFile");
-        Dictionary<string, string> fallbackProperties = await PropertiesFile.ReadAsync(GetFallbackFilePath(testApp));
+        RemotePushProjectTree remote = repository.SimulatePush("pushed");
+        remote.TestApp.FallbackGitPropertiesGenerated.Should().BeTrue("the fallback git.properties must have survived the simulated push.");
 
-        string destinationDirectory = Path.Combine(Workspace.RootDirectory, "pushed");
-        string pushedRoot = SyntheticGitRepositoryBuilder.SimulateSourcePush(repository, destinationDirectory);
-        string pushedApp = Path.Combine(pushedRoot, GitPropertiesTestWorkspace.TestAppProjectName);
-        File.Exists(GetFallbackFilePath(pushedApp)).Should().BeTrue("the fallback git.properties must have survived the simulated push.");
-
-        string publishResult = await ProcessRunner.RunDotnetAsync(pushedApp, "publish", "-v:detailed");
+        string publishResult = await remote.TestApp.PublishAsync("-v:detailed");
         publishResult.Should().Contain("using pre-generated fallback file", "using the fallback should still be traceable, so it's never silently stale.");
 
-        Dictionary<string, string> publishedProperties = await PropertiesFile.ReadAsync(GetReleasePublishGitPropertiesFilePath(pushedApp));
+        Dictionary<string, string> publishedProperties = await remote.TestApp.ReadReleasePublishPropertiesAsync();
         publishedProperties.Should().BeEquivalentTo(fallbackProperties, "the fallback-produced output must exactly match the pre-generated fallback content.");
     }
 }
