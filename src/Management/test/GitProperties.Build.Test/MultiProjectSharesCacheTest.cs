@@ -15,8 +15,8 @@ public sealed class MultiProjectSharesCacheTest : GitPropertiesBuildTestBase
         // pointing at the SAME sibling Steeltoe.Management.GitProperties.Build copy (CreateSyntheticRepo
         // already placed TestApp there; reuse that exact relative layout for ProjectA/ProjectB by placing them
         // at the repo root too, siblings of TestApp and "src").
-        await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, "ProjectA");
-        await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, "ProjectB");
+        await TestProjectWriter.WriteAppProjectAsync(repository, "ProjectA");
+        await TestProjectWriter.WriteAppProjectAsync(repository, "ProjectB");
 
         string projectA = Path.Combine(repository, "ProjectA");
         string projectB = Path.Combine(repository, "ProjectB");

@@ -15,10 +15,10 @@ public sealed class SmartDefaultOverrideDetectsCustomPackageIdsTest : GitPropert
     {
         string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         const string customPackageId = "Contoso.Actuators";
-        await GitPropertiesTestWorkspace.WriteDummyDependencyProjectAsync(repository, customPackageId);
+        await TestProjectWriter.WriteDummyDependencyProjectAsync(repository, customPackageId);
 
-        string testApp = await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName,
-            generateGitProperties: null, extraItemGroupContent: $"""<ProjectReference Include="..\{customPackageId}\{customPackageId}.csproj" />""");
+        string testApp = await TestProjectWriter.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
+            extraItemGroupContent: $"""<ProjectReference Include="..\{customPackageId}\{customPackageId}.csproj" />""");
 
         await ProcessRunner.RunDotnetAsync(testApp, "build", $"-p:GitPropertiesConsumingPackageIds={customPackageId}");
 

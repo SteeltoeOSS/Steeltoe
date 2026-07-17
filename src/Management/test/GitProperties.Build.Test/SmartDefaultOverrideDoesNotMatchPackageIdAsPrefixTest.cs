@@ -16,10 +16,10 @@ public sealed class SmartDefaultOverrideDoesNotMatchPackageIdAsPrefixTest : GitP
     {
         string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         const string longerPackageId = "Some2";
-        await GitPropertiesTestWorkspace.WriteDummyDependencyProjectAsync(repository, longerPackageId);
+        await TestProjectWriter.WriteDummyDependencyProjectAsync(repository, longerPackageId);
 
-        string testApp = await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName,
-            generateGitProperties: null, extraItemGroupContent: $"""<ProjectReference Include="..\{longerPackageId}\{longerPackageId}.csproj" />""");
+        string testApp = await TestProjectWriter.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
+            extraItemGroupContent: $"""<ProjectReference Include="..\{longerPackageId}\{longerPackageId}.csproj" />""");
 
         await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesConsumingPackageIds=Some");
         AssertNoGitPropertiesGenerated(testApp);

@@ -20,7 +20,7 @@ public sealed class ShallowCloneLeavesCommitCountsEmptyTest : GitPropertiesBuild
         string isShallowRepository = await ProcessRunner.GetGitOutputAsync(shallow, "rev-parse", "--is-shallow-repository");
         isShallowRepository.Should().Be("true");
 
-        string testApp = await Workspace.CopyCurrentProjectFilesAsync(shallow);
+        string testApp = await TestProjectWriter.CopyCurrentProjectFilesAsync(shallow);
 
         string result = await ProcessRunner.RunDotnetAsync(testApp, "build");
         result.Should().NotContain("GITPROPS001");

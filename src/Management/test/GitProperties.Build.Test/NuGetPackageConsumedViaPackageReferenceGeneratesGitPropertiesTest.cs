@@ -22,7 +22,7 @@ public sealed class NuGetPackageConsumedViaPackageReferenceGeneratesGitPropertie
     {
         string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
 
-        string feedDirectory = await Workspace.PackGitPropertiesBuildToFeedAsync();
+        string feedDirectory = await TestProjectWriter.PackGitPropertiesBuildToFeedAsync(Workspace.RootDirectory);
         string packageId = await TestPaths.GetPackageIdAsync();
 
         string[] nuPkgFiles = Directory.GetFiles(feedDirectory, $"{packageId}.*.nupkg");
@@ -34,8 +34,8 @@ public sealed class NuGetPackageConsumedViaPackageReferenceGeneratesGitPropertie
         string packageVersion = versionMatch.Groups[1].Value;
 
         string consumerDirectory = Path.Combine(repository, "Consumer");
-        await GitPropertiesTestWorkspace.CreatePackageConsumerProjectAsync(consumerDirectory, packageVersion);
-        await GitPropertiesTestWorkspace.WriteIsolatedNuGetConfigAsync(Path.Combine(consumerDirectory, "nuget.config"), feedDirectory);
+        await TestProjectWriter.CreatePackageConsumerProjectAsync(consumerDirectory, packageVersion);
+        await TestProjectWriter.WriteIsolatedNuGetConfigAsync(Path.Combine(consumerDirectory, "nuget.config"), feedDirectory);
 
         string isolatedPackagesPath = Path.Combine(Workspace.RootDirectory, "isolated-packages");
         string result = await ProcessRunner.RunDotnetAsync(consumerDirectory, "build", $"-p:RestorePackagesPath={isolatedPackagesPath}");

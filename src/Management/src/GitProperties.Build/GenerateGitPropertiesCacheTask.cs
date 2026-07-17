@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Globalization;
-using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -42,12 +40,6 @@ public sealed class GenerateGitPropertiesCacheTask : Task
     /// actually stuck rather than just slow.
     /// </summary>
     private static readonly TimeSpan CacheLockTimeout = TimeSpan.FromSeconds(10);
-
-    /// <summary>
-    /// Matches "git version 2.42.0", "git version 2.42.0.windows.1", and "git version 2.39.5 (Apple Git-154)" alike - capturing only the leading
-    /// major.minor[.patch] numbers every real git build's "--version" output starts with, regardless of whatever vendor-specific suffix follows.
-    /// </summary>
-    private static readonly Regex GitVersionRegex = new(@"^git version (\d+)\.(\d+)(?:\.(\d+))?", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
     /// <summary>
     /// The field separator ("%x1f", ASCII Unit Separator) used in <see cref="GetLatestCommitLogEntry" />'s own "--pretty=format:" string - a single-element
@@ -163,7 +155,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
             return GitVersionStatus.Incompatible;
         }
 
-        Version? installedVersion = ParseGitVersion(output);
+        Version? installedVersion = GitOutputParser.ParseGitVersion(output);
 
         if (installedVersion == null)
         {
@@ -211,28 +203,6 @@ public sealed class GenerateGitPropertiesCacheTask : Task
         }
 
         return output;
-    }
-
-    /// <summary>
-    /// Matches "git version 2.42.0", "git version 2.42.0.windows.1", and "git version 2.39.5 (Apple Git-154)" alike - capturing only the leading
-    /// major.minor[.patch] numbers every real git build's "--version" output starts with, regardless of whatever vendor-specific suffix follows. Pure string
-    /// parsing, no I/O and no MSBuild logging - deliberately kept separate from <see cref="GetGitVersion" /> so this part alone could be unit-tested without
-    /// a real git process, if this project ever adds that kind of test.
-    /// </summary>
-    private static Version? ParseGitVersion(string output)
-    {
-        Match match = GitVersionRegex.Match(output);
-
-        if (!match.Success)
-        {
-            return null;
-        }
-
-        int major = int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
-        int minor = int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
-        int build = match.Groups[3].Success ? int.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture) : 0;
-
-        return new Version(major, minor, build);
     }
 
     /// <summary>
@@ -313,11 +283,8 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
         Log.LogMessage("git.properties: generating shared cache at '{0}'.", CacheFile);
 
-        int exitCode = RunGit("rev-parse --is-shallow-repository", out string stdout, out string stderr);
-
-        if (exitCode != 0)
+        if (!TryRunGit("rev-parse --is-shallow-repository", "determine shallow-clone status", out string stdout))
         {
-            Log.LogError("git.properties: failed to determine shallow-clone status: {0}", stderr);
             return false;
         }
 
@@ -405,12 +372,9 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
     private CommitLogEntry? GetLatestCommitLogEntry()
     {
-        int exitCode = RunGit($"log -1 --abbrev={CommitIdAbbrevLength} --pretty=format:%h%x1f%an%x1f%ae%x1f%cI%x1f%s%x1f%B", out string stdout,
-            out string stderr);
-
-        if (exitCode != 0)
+        if (!TryRunGit($"log -1 --abbrev={CommitIdAbbrevLength} --pretty=format:%h%x1f%an%x1f%ae%x1f%cI%x1f%s%x1f%B", "read commit metadata",
+            out string stdout))
         {
-            Log.LogError("git.properties: failed to read commit metadata: {0}", stderr);
             return null;
         }
 
@@ -422,52 +386,27 @@ public sealed class GenerateGitPropertiesCacheTask : Task
     }
 
     /// <summary>
-    /// Parses the single "describe --tags --long --always" call for its three possible shapes: exactly-on-tag ("tag-0-gsha"), N-commits-ahead
-    /// ("tag-N-gsha"), and no-tags-at-all (a bare "--always" fallback SHA, with no dashes). Failure here is not fatal - it degrades to empty/fallback
-    /// values, same as "no tags exist".
+    /// Runs "describe --tags --long --always" and hands its output to <see cref="GitOutputParser.ParseTagDescribe" />. Failure here is not fatal - it
+    /// degrades to empty/fallback values, same as "no tags exist".
     /// </summary>
     private TagDescription DescribeClosestTag(bool isShallow)
     {
         int exitCode = RunGit("describe --tags --long --always", out string stdout, out _);
-        string baseDescribe = string.Empty;
-        string closestTagName = string.Empty;
-        string closestTagCommitCount = string.Empty;
-
-        if (exitCode == 0 && !string.IsNullOrEmpty(stdout))
-        {
-            int lastDashIndex = stdout.LastIndexOf('-');
-            int secondLastDash = lastDashIndex >= 0 ? stdout.LastIndexOf('-', lastDashIndex - 1) : -1;
-            bool hasTagPrefix = lastDashIndex >= 0 && secondLastDash >= 0 && stdout.Substring(lastDashIndex + 1).StartsWith("g", StringComparison.Ordinal);
-
-            if (!hasTagPrefix)
-            {
-                // No tags reachable at all - "--always" fallback is a bare abbreviated SHA.
-                baseDescribe = stdout;
-            }
-            else
-            {
-                closestTagName = stdout.Substring(0, secondLastDash);
-                closestTagCommitCount = stdout.Substring(secondLastDash + 1, lastDashIndex - secondLastDash - 1);
-                baseDescribe = closestTagCommitCount == "0" ? closestTagName : $"{closestTagName}-{closestTagCommitCount}";
-            }
-        }
+        TagDescription description = exitCode == 0 ? GitOutputParser.ParseTagDescribe(stdout) : TagDescription.Empty;
 
         if (isShallow)
         {
             // Ancestry walk is truncated on a shallow clone - a "count" here would be silently wrong.
-            closestTagCommitCount = string.Empty;
+            description = new TagDescription(description.BaseDescribe, description.ClosestTagName, string.Empty);
         }
 
-        return new TagDescription(baseDescribe, closestTagName, closestTagCommitCount);
+        return description;
     }
 
     private TagsAndCommitCount? ReadTagsAndTotalCommitCount(bool isShallow)
     {
-        int exitCode = RunGit("tag --points-at HEAD", out string stdout, out string stderr);
-
-        if (exitCode != 0)
+        if (!TryRunGit("tag --points-at HEAD", "list tags", out string stdout))
         {
-            Log.LogError("git.properties: failed to list tags: {0}", stderr);
             return null;
         }
 
@@ -477,11 +416,8 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
         if (!isShallow)
         {
-            exitCode = RunGit("rev-list --count HEAD", out stdout, out stderr);
-
-            if (exitCode != 0)
+            if (!TryRunGit("rev-list --count HEAD", "count commits", out stdout))
             {
-                Log.LogError("git.properties: failed to count commits: {0}", stderr);
                 return null;
             }
 
@@ -493,45 +429,12 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
     private GitConfig? ReadConfig()
     {
-        int exitCode = RunGit("config --list", out string stdout, out string stderr);
-
-        if (exitCode != 0)
+        if (!TryRunGit("config --list", "read git config", out string stdout))
         {
-            Log.LogError("git.properties: failed to read git config: {0}", stderr);
             return null;
         }
 
-        string userName = string.Empty;
-        string userEmail = string.Empty;
-        string remoteUrl = string.Empty;
-
-        foreach (string line in stdout.Split('\n'))
-        {
-            int equalsIndex = line.IndexOf('=');
-
-            if (equalsIndex < 0)
-            {
-                continue;
-            }
-
-            string key = line.Substring(0, equalsIndex).Trim();
-            string value = line.Substring(equalsIndex + 1).Trim();
-
-            if (string.Equals(key, "user.name", StringComparison.OrdinalIgnoreCase))
-            {
-                userName = value;
-            }
-            else if (string.Equals(key, "user.email", StringComparison.OrdinalIgnoreCase))
-            {
-                userEmail = value;
-            }
-            else if (string.Equals(key, "remote.origin.url", StringComparison.OrdinalIgnoreCase))
-            {
-                remoteUrl = value;
-            }
-        }
-
-        return new GitConfig(userName, userEmail, StripUserInfo(remoteUrl));
+        return GitOutputParser.ParseConfig(stdout);
     }
 
     /// <summary>
@@ -570,6 +473,25 @@ public sealed class GenerateGitPropertiesCacheTask : Task
     }
 
     /// <summary>
+    /// Runs a git command whose failure is unexpected and fatal for cache generation - the shape shared by every call in
+    /// <see cref="TryGenerateAndWriteCache" /> that isn't allowed to degrade gracefully (unlike, say, <see cref="DescribeClosestTag" /> or
+    /// <see cref="ResolveBranch" />, which fall back to empty values instead). Logs a build error and returns false on a non-zero exit code;
+    /// <paramref name="stdout" /> is only meaningful when this returns true.
+    /// </summary>
+    private bool TryRunGit(string arguments, string description, out string stdout)
+    {
+        int exitCode = RunGit(arguments, out stdout, out string stderr);
+
+        if (exitCode != 0)
+        {
+            Log.LogError("git.properties: failed to {0}: {1}", description, stderr);
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// Reports a forgivable anomaly - either a full skip (GITPROPS001/003/004/005, where the caller has already decided to skip generation and return true)
     /// or a degraded-but-successful outcome (GITPROPS006, where generation still proceeds) - as a warning when <see cref="EnableWarnings" /> is true, or a
     /// plain informational message otherwise.
@@ -594,36 +516,6 @@ public sealed class GenerateGitPropertiesCacheTask : Task
         }
     }
 
-    private static string StripUserInfo(string url)
-    {
-        if (string.IsNullOrEmpty(url))
-        {
-            return url;
-        }
-
-        try
-        {
-            var uri = new Uri(url);
-
-            if (!string.IsNullOrEmpty(uri.UserInfo))
-            {
-                var builder = new UriBuilder(uri)
-                {
-                    UserName = string.Empty,
-                    Password = string.Empty
-                };
-
-                return builder.Uri.ToString();
-            }
-        }
-        catch (UriFormatException)
-        {
-            // Not a parseable absolute URL (e.g. SCP-like "git@host:org/repo.git") - nothing to strip.
-        }
-
-        return url;
-    }
-
     /// <summary>
     /// Whether the installed git is new enough to use, as determined by <see cref="CheckGitVersion" />.
     /// </summary>
@@ -641,10 +533,10 @@ public sealed class GenerateGitPropertiesCacheTask : Task
         Incompatible,
 
         /// <summary>
-        /// Git ran, but its "--version" output couldn't be parsed at all - a bug in <see cref="ParseGitVersion" />'s own regex, or an unrecognized version
-        /// string shape, not a routine/anticipated condition like "compatible" or "incompatible". Unlike those two, there's no safe conclusion to draw here - we
-        /// genuinely don't know whether the installed git is usable - so this is reported as a hard error via Log.LogError and, unlike every other skip in this
-        /// class, stops the build rather than letting a stale cache (if one exists from an earlier run) get used regardless.
+        /// Git ran, but its "--version" output couldn't be parsed at all - a bug in <see cref="GitOutputParser.ParseGitVersion" />'s own regex, or an
+        /// unrecognized version string shape, not a routine/anticipated condition like "compatible" or "incompatible". Unlike those two, there's no safe
+        /// conclusion to draw here - we genuinely don't know whether the installed git is usable - so this is reported as a hard error via Log.LogError and,
+        /// unlike every other skip in this class, stops the build rather than letting a stale cache (if one exists from an earlier run) get used regardless.
         /// </summary>
         Unknown
     }
@@ -668,31 +560,11 @@ public sealed class GenerateGitPropertiesCacheTask : Task
     }
 
     /// <summary>
-    /// The fields derived from a single "describe --tags --long --always" call - see <see cref="DescribeClosestTag" />.
-    /// </summary>
-    private sealed class TagDescription(string baseDescribe, string closestTagName, string closestTagCommitCount)
-    {
-        public string BaseDescribe { get; } = baseDescribe;
-        public string ClosestTagName { get; } = closestTagName;
-        public string ClosestTagCommitCount { get; } = closestTagCommitCount;
-    }
-
-    /// <summary>
     /// The fields read from "tag --points-at HEAD" and (unless shallow) "rev-list --count HEAD" - see <see cref="ReadTagsAndTotalCommitCount" />.
     /// </summary>
     private sealed class TagsAndCommitCount(string tags, string totalCommitCount)
     {
         public string Tags { get; } = tags;
         public string TotalCommitCount { get; } = totalCommitCount;
-    }
-
-    /// <summary>
-    /// The fields read from a single "config --list" call - see <see cref="ReadConfig" />.
-    /// </summary>
-    private sealed class GitConfig(string userName, string userEmail, string remoteUrl)
-    {
-        public string UserName { get; } = userName;
-        public string UserEmail { get; } = userEmail;
-        public string RemoteUrl { get; } = remoteUrl;
     }
 }

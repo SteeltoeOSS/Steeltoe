@@ -22,7 +22,8 @@ public sealed class FallbackFileUsedWhenNoGitAvailableTest : GitPropertiesBuildT
         Dictionary<string, string> fallbackProperties = await PropertiesFile.ReadAsync(GetFallbackFilePath(testApp));
         fallbackProperties["git.dirty"].Should().Be("false", "the gitignored fallback file must not make its own producing build see the tree as dirty.");
 
-        string pushedRoot = GitPropertiesTestWorkspace.SimulateSourcePush(repository, Path.Combine(Workspace.RootDirectory, "pushed"));
+        string destinationDirectory = Path.Combine(Workspace.RootDirectory, "pushed");
+        string pushedRoot = SyntheticGitRepositoryBuilder.SimulateSourcePush(repository, destinationDirectory);
         string pushedApp = Path.Combine(pushedRoot, GitPropertiesTestWorkspace.TestAppProjectName);
         Directory.Exists(Path.Combine(pushedRoot, ".git")).Should().BeFalse("the simulated push must not carry '.git' along, matching cf push's own default.");
         File.Exists(GetFallbackFilePath(pushedApp)).Should().BeTrue("the fallback git.properties must have survived the simulated push.");

@@ -23,7 +23,8 @@ public sealed class WriteGitPropertiesFallbackFileThenSimulatedPushServerPublish
         await ProcessRunner.RunDotnetAsync(testApp, "build", "-t:WriteGitPropertiesFallbackFile");
         Dictionary<string, string> fallbackProperties = await PropertiesFile.ReadAsync(GetFallbackFilePath(testApp));
 
-        string pushedRoot = GitPropertiesTestWorkspace.SimulateSourcePush(repository, Path.Combine(Workspace.RootDirectory, "pushed"));
+        string destinationDirectory = Path.Combine(Workspace.RootDirectory, "pushed");
+        string pushedRoot = SyntheticGitRepositoryBuilder.SimulateSourcePush(repository, destinationDirectory);
         string pushedApp = Path.Combine(pushedRoot, GitPropertiesTestWorkspace.TestAppProjectName);
         File.Exists(GetFallbackFilePath(pushedApp)).Should().BeTrue("the fallback git.properties must have survived the simulated push.");
 

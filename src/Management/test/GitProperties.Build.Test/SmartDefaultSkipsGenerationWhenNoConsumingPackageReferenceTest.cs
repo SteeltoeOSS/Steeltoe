@@ -16,9 +16,7 @@ public sealed class SmartDefaultSkipsGenerationWhenNoConsumingPackageReferenceTe
     public async Task SmartDefault_SkipsGeneration_WhenNoConsumingPackageReference()
     {
         string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
-
-        string testApp =
-            await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null);
+        string testApp = await TestProjectWriter.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null);
 
         string result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-v:detailed");
         // Not a numbered GITPROPS0xx code - this is plain internal trace output, not a diagnosable outcome (see the .targets file's own comment on it).

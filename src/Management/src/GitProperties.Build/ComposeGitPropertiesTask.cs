@@ -80,15 +80,10 @@ public sealed class ComposeGitPropertiesTask : Task
         }
 
         bool isDirty = stdout.Length > 0;
-        List<string> lines;
+        List<string> lines = [];
 
-        try
+        if (!TryRunFileOperation($"read {CacheFile}", () => lines = AtomicFile.ReadAllLinesWithRetry(CacheFile).ToList()))
         {
-            lines = AtomicFile.ReadAllLinesWithRetry(CacheFile).ToList();
-        }
-        catch (Exception exception)
-        {
-            Log.LogError($"git.properties: failed to read {CacheFile}:{Environment.NewLine}{exception}");
             return false;
         }
 
@@ -113,13 +108,8 @@ public sealed class ComposeGitPropertiesTask : Task
 #pragma warning restore S6354
         lines.Add($"git.build.time={buildTime}");
 
-        try
+        if (!TryRunFileOperation($"write {OutputFile}", () => AtomicFile.WriteAtomic(OutputFile, lines)))
         {
-            AtomicFile.WriteAtomic(OutputFile, lines);
-        }
-        catch (Exception exception)
-        {
-            Log.LogError($"git.properties: failed to write {OutputFile}:{Environment.NewLine}{exception}");
             return false;
         }
 
@@ -128,16 +118,25 @@ public sealed class ComposeGitPropertiesTask : Task
             return true;
         }
 
+        return TryRunFileOperation($"write fallback file {FallbackFile}", () => AtomicFile.WriteAtomic(FallbackFile, lines));
+    }
+
+    /// <summary>
+    /// Runs a file-system operation that must succeed for this task to succeed - the shape shared by every step below that isn't the initial git status
+    /// check (which has its own, dual failure modes - see <see cref="Execute" />). Logs a build error and returns false if <paramref name="action" />
+    /// throws.
+    /// </summary>
+    private bool TryRunFileOperation(string description, Action action)
+    {
         try
         {
-            AtomicFile.WriteAtomic(FallbackFile, lines);
+            action();
+            return true;
         }
         catch (Exception exception)
         {
-            Log.LogError($"git.properties: failed to write fallback file {FallbackFile}:{Environment.NewLine}{exception}");
+            Log.LogError($"git.properties: failed to {description}:{Environment.NewLine}{exception}");
             return false;
         }
-
-        return true;
     }
 }

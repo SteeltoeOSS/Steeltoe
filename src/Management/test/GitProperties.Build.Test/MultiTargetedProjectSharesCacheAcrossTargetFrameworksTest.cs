@@ -18,7 +18,7 @@ public sealed class MultiTargetedProjectSharesCacheAcrossTargetFrameworksTest : 
     public async Task MultiTargetedProject_SharesCacheAcrossTargetFrameworks()
     {
         string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
-        string testApp = await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, "MultiTargetApp", TestPaths.MultiTargetTestFrameworks);
+        string testApp = await TestProjectWriter.WriteAppProjectAsync(repository, "MultiTargetApp", TestPaths.MultiTargetTestFrameworks);
         string[] frameworks = TestPaths.MultiTargetTestFrameworks.Split(';');
 
         await ProcessRunner.RunDotnetAsync(testApp, "build");

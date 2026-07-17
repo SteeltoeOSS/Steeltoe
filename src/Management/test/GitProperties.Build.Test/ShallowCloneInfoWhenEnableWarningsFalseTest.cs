@@ -19,7 +19,7 @@ public sealed class ShallowCloneInfoWhenEnableWarningsFalseTest : GitPropertiesB
         string shallow = Path.Combine(Workspace.RootDirectory, "shallow");
         await ProcessRunner.RunGitAsync(Path.GetTempPath(), "clone", "--quiet", "--no-local", "--depth", "1", source, shallow);
 
-        string testApp = await Workspace.CopyCurrentProjectFilesAsync(shallow);
+        string testApp = await TestProjectWriter.CopyCurrentProjectFilesAsync(shallow);
 
         string result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesEnableWarnings=false", "-v:normal");
         AssertReportedAsInfoOnly(result, "GITPROPS006", "repository is a shallow clone");

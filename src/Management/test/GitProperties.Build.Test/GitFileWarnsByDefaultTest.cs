@@ -11,7 +11,7 @@ public sealed class GitFileWarnsByDefaultTest : GitPropertiesBuildTestBase
     {
         string projectDirectory = Path.Combine(Workspace.RootDirectory, "proj");
         Directory.CreateDirectory(projectDirectory);
-        string testApp = await Workspace.CopyCurrentProjectFilesAsync(projectDirectory);
+        string testApp = await TestProjectWriter.CopyCurrentProjectFilesAsync(projectDirectory);
         // ".git" must sit above BOTH TestApp and Steeltoe.Management.GitProperties.Build for the repo-root walk
         // (which starts at TestApp, the project actually being built) to find it - i.e. at
         // projectDirectory itself.

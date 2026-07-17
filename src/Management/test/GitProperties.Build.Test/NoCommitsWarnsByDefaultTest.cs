@@ -16,7 +16,7 @@ public sealed class NoCommitsWarnsByDefaultTest : GitPropertiesBuildTestBase
         string repository = Path.Combine(Workspace.RootDirectory, "repo");
         Directory.CreateDirectory(repository);
         await ProcessRunner.RunGitAsync(repository, "init", "--quiet", "--initial-branch=main", ".");
-        string testApp = await Workspace.CopyCurrentProjectFilesAsync(repository);
+        string testApp = await TestProjectWriter.CopyCurrentProjectFilesAsync(repository);
 
         string defaultResult = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertWarned(defaultResult, "GITPROPS005");

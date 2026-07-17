@@ -31,7 +31,7 @@ public sealed class NonAsciiCommitDataRendersCorrectlyTest : GitPropertiesBuildT
         await ProcessRunner.RunGitAsync(repository, "add", "-A");
         await ProcessRunner.RunGitAsync(repository, "commit", "--quiet", "-m", nonAsciiCommitSubject, "-m", commitBody);
 
-        string testApp = await Workspace.CopyCurrentProjectFilesAsync(repository);
+        string testApp = await TestProjectWriter.CopyCurrentProjectFilesAsync(repository);
 
         await ProcessRunner.RunDotnetAsync(testApp, "build");
 
