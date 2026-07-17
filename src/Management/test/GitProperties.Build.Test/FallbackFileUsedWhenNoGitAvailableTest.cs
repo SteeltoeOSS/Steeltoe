@@ -13,7 +13,7 @@ public sealed class FallbackFileUsedWhenNoGitAvailableTest : GitPropertiesBuildT
     /// along in the pushed source tree and get picked up, ending up in the published output exactly as if it had been generated live.
     /// </summary>
     [Fact]
-    public async Task FallbackFile_UsedWhenNoGitAvailable()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 2, true);
         await repository.TestApp.BuildAsync("-p:GitPropertiesWriteToProjectDirectory=true");

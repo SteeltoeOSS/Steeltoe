@@ -13,7 +13,7 @@ public sealed class NonAsciiCommitDataRendersCorrectlyTest : GitPropertiesBuildT
     /// desynchronize the line-based "git.&lt;key&gt;=&lt;value&gt;" format by spanning more than one physical line.
     /// </summary>
     [Fact]
-    public async Task NonAscii_CommitDataRendersCorrectly()
+    public async Task Test()
     {
         EmptyGitRepository emptyRepository = await Workspace.CreateEmptyRepositoryAsync("repo");
 
@@ -27,8 +27,7 @@ public sealed class NonAsciiCommitDataRendersCorrectlyTest : GitPropertiesBuildT
         await emptyRepository.RunGitAsync("config", "user.email", "test@example.com");
         await File.WriteAllTextAsync(Path.Combine(emptyRepository.RootDirectory, ".gitignore"), "bin/\r\nobj/\r\n", TestContext.Current.CancellationToken);
         await File.WriteAllTextAsync(Path.Combine(emptyRepository.RootDirectory, "file.txt"), "content", TestContext.Current.CancellationToken);
-        await emptyRepository.RunGitAsync("add", "-A");
-        await emptyRepository.RunGitAsync("commit", "--quiet", "-m", nonAsciiCommitSubject, "-m", commitBody);
+        await emptyRepository.CommitAllAsync(nonAsciiCommitSubject, commitBody);
 
         GitRepository repository = await emptyRepository.AddTestAppAsync();
         await repository.TestApp.BuildAsync();

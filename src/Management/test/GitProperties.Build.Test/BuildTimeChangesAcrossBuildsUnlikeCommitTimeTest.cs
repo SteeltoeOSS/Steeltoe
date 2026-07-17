@@ -13,7 +13,7 @@ public sealed class BuildTimeChangesAcrossBuildsUnlikeCommitTimeTest : GitProper
     /// the field: telling you when THIS build actually ran.
     /// </summary>
     [Fact]
-    public async Task BuildTime_ChangesAcrossBuilds_UnlikeCommitTime()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         await repository.TestApp.BuildAsync();

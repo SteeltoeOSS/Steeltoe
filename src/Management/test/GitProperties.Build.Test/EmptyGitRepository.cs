@@ -19,6 +19,11 @@ internal sealed class EmptyGitRepository(GitPropertiesTestWorkspace workspace, s
         return ProcessRunner.RunGitAsync(RootDirectory, arguments);
     }
 
+    public Task CommitAllAsync(string subject, string? body = null)
+    {
+        return GitRepositoryBuilder.CommitAllAsync(RootDirectory, subject, body);
+    }
+
     /// <summary>
     /// Copies the CURRENT Steeltoe.Management.GitProperties.Build source into this repository and writes the default TestApp project referencing it - see
     /// <see cref="TestProjectWriter.CopyCurrentProjectFilesAsync" />. Deliberately does not commit anything: this is meant for the "fully custom setup"

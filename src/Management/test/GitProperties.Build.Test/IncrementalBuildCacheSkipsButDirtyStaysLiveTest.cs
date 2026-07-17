@@ -7,7 +7,7 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 public sealed class IncrementalBuildCacheSkipsButDirtyStaysLiveTest : GitPropertiesBuildTestBase
 {
     [Fact]
-    public async Task IncrementalBuild_CacheSkipsButDirtyStaysLive()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         await repository.TestApp.BuildAsync();

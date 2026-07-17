@@ -7,7 +7,7 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 public sealed class ShallowCloneLeavesCommitCountsEmptyTest : GitPropertiesBuildTestBase
 {
     [Fact]
-    public async Task ShallowClone_LeavesCommitCountsEmpty()
+    public async Task Test()
     {
         GitRepository source = await Workspace.CreateGitRepositoryAsync("source", 3);
         await source.TagAsync("v1.0.0");

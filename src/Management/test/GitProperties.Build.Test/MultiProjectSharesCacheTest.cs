@@ -7,7 +7,7 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 public sealed class MultiProjectSharesCacheTest : GitPropertiesBuildTestBase
 {
     [Fact]
-    public async Task MultiProject_SharesCache()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 2);
 

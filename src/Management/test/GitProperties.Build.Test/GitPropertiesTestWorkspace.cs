@@ -125,8 +125,7 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     public async Task<EmptyGitRepository> CreateEmptyRepositoryAsync(string name)
     {
         string directory = GetPath(name);
-        Directory.CreateDirectory(directory);
-        await ProcessRunner.RunGitAsync(directory, "init", "--quiet", "--initial-branch=main", ".");
+        await GitRepositoryBuilder.InitializeEmptyAsync(directory);
         return new EmptyGitRepository(this, directory);
     }
 

@@ -7,7 +7,7 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 public sealed class NoGitWarnsByDefaultTest : GitPropertiesBuildTestBase
 {
     [Fact]
-    public async Task NoGit_WarnsByDefault()
+    public async Task Test()
     {
         TestProject testApp = await Workspace.CreateProjectDirectoryAsync("test-project");
         string result = await testApp.BuildAsync();

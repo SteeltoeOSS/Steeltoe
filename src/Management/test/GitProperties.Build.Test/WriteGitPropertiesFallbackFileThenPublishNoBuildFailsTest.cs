@@ -13,7 +13,7 @@ public sealed class WriteGitPropertiesFallbackFileThenPublishNoBuildFailsTest : 
     /// succeeding) - a signal to revisit the target, not just delete this test.
     /// </summary>
     [Fact]
-    public async Task WriteGitPropertiesFallbackFile_ThenPublishNoBuild_Fails()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1, true);
         await repository.TestApp.BuildAsync("-t:WriteGitPropertiesFallbackFile");

@@ -7,7 +7,7 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 public sealed class WriteToProjectDirectoryCreatesFallbackFileOnBuildTest : GitPropertiesBuildTestBase
 {
     [Fact]
-    public async Task WriteToProjectDirectory_CreatesFallbackFile_OnBuild()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1, true);
         string result1 = await repository.TestApp.BuildAsync("-p:GitPropertiesWriteToProjectDirectory=true");

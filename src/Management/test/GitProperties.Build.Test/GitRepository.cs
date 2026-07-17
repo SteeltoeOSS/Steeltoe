@@ -54,6 +54,17 @@ internal sealed class GitRepository(GitPropertiesTestWorkspace workspace, string
     }
 
     /// <summary>
+    /// Adds the default TestApp project referencing <paramref name="dependency" /> via a normal &lt;ProjectReference&gt; (see
+    /// <see cref="TestProject.ToProjectReferenceXml" />), with $(GenerateGitProperties) left unset so the smart default applies - the shared setup every
+    /// SmartDefault*Test in this suite needs before overriding $(GitPropertiesConsumingPackageIds) or $(GenerateGitProperties) itself.
+    /// </summary>
+    public Task<TestProject> AddTestAppReferencingAsync(TestProject dependency)
+    {
+        string extraItemGroupContent = dependency.ToProjectReferenceXml();
+        return AddProjectAsync(GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null, extraItemGroupContent: extraItemGroupContent);
+    }
+
+    /// <summary>
     /// A bare console app consuming Steeltoe.Management.GitProperties.Build via &lt;PackageReference&gt; - see
     /// <see cref="TestProjectWriter.CreatePackageConsumerProjectAsync" />. Placed inside this repository (not directly under the workspace root), so the
     /// repo-root walk that starts at the consumer project still finds this repository's own ".git" above it.

@@ -41,7 +41,7 @@ public sealed class GroundTruthAllPropertiesMatchGitTest : GitPropertiesBuildTes
     /// verbosity.
     /// </summary>
     [Fact]
-    public async Task GroundTruth_AllPropertiesMatchGit()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 3);
         string result = await repository.TestApp.BuildAsync();

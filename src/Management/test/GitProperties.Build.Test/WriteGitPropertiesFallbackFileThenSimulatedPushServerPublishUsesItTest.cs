@@ -15,7 +15,7 @@ public sealed class WriteGitPropertiesFallbackFileThenSimulatedPushServerPublish
     /// , simulate a source-based `cf push`, and confirm the server-side publish still picks it up correctly.
     /// </summary>
     [Fact]
-    public async Task WriteGitPropertiesFallbackFile_ThenSimulatedPush_ServerPublishUsesIt()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 2, true);
         await repository.TestApp.BuildAsync("-t:WriteGitPropertiesFallbackFile");

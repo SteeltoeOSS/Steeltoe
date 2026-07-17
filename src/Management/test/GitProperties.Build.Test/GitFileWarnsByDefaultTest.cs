@@ -7,7 +7,7 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 public sealed class GitFileWarnsByDefaultTest : GitPropertiesBuildTestBase
 {
     [Fact]
-    public async Task GitFile_WarnsByDefault()
+    public async Task Test()
     {
         string projectDirectory = Workspace.GetPath("test-project");
         TestProject testApp = await Workspace.CreateProjectDirectoryAsync("test-project");

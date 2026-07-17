@@ -12,17 +12,14 @@ public sealed class SmartDefaultOverrideDoesNotMatchPackageIdAsPrefixTest : GitP
     /// though "Some2" starts with "Some". Proves DetectConsumingPackageReferenceTask compares whole package IDs, not prefixes.
     /// </summary>
     [Fact]
-    public async Task SmartDefault_Override_DoesNotMatchPackageIdAsPrefix()
+    public async Task Test()
     {
         const string shortPackageId = "Some";
         const string longerPackageId = "Some2";
 
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         TestProject dependency = await repository.AddDependencyProjectAsync(longerPackageId);
-
-        TestProject testApp = await repository.AddProjectAsync(GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
-            extraItemGroupContent: dependency.ToProjectReferenceXml());
-
+        TestProject testApp = await repository.AddTestAppReferencingAsync(dependency);
         await testApp.BuildAsync($"-p:GitPropertiesConsumingPackageIds={shortPackageId}");
         testApp.GitPropertiesGenerated.Should().BeFalse();
     }

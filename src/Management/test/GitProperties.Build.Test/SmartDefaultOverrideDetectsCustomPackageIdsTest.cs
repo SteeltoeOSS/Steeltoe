@@ -11,16 +11,13 @@ public sealed class SmartDefaultOverrideDetectsCustomPackageIdsTest : GitPropert
     /// (e.g. a hand-rolled /info endpoint reading git.properties directly), so the smart default isn't hardcoded away from them.
     /// </summary>
     [Fact]
-    public async Task SmartDefault_Override_DetectsCustomPackageIds()
+    public async Task Test()
     {
         const string customPackageId = "Example.Package.Name";
 
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         TestProject dependency = await repository.AddDependencyProjectAsync(customPackageId);
-
-        TestProject testApp = await repository.AddProjectAsync(GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
-            extraItemGroupContent: dependency.ToProjectReferenceXml());
-
+        TestProject testApp = await repository.AddTestAppReferencingAsync(dependency);
         await testApp.BuildAsync($"-p:GitPropertiesConsumingPackageIds={customPackageId}");
 
         Dictionary<string, string> properties = await testApp.ReadDebugPropertiesAsync();

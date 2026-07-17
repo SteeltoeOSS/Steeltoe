@@ -13,7 +13,7 @@ public sealed class FallbackFileWithoutGitignoreMakesLaterBuildsAppearDirtyTest 
     /// the actually-tracked source changed in between.
     /// </summary>
     [Fact]
-    public async Task FallbackFile_WithoutGitignore_MakesLaterBuildsAppearDirty()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         await repository.TestApp.BuildAsync("-p:GitPropertiesWriteToProjectDirectory=true");

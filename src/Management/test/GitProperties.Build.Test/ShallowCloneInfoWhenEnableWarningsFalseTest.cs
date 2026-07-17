@@ -12,7 +12,7 @@ public sealed class ShallowCloneInfoWhenEnableWarningsFalseTest : GitPropertiesB
     /// way it does for the others.
     /// </summary>
     [Fact]
-    public async Task ShallowClone_InfoWhenEnableWarningsFalse()
+    public async Task Test()
     {
         GitRepository source = await Workspace.CreateGitRepositoryAsync("source", 1);
         GitRepository shallow = await source.CloneAsShallowAsync("shallow");

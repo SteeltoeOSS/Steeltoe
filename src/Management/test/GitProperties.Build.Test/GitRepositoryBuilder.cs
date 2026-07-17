@@ -20,6 +20,16 @@ internal static class GitRepositoryBuilder
     };
 
     /// <summary>
+    /// `git init` only - no config/.gitignore/history. Shared by <see cref="InitializeAsync" /> and
+    /// <see cref="GitPropertiesTestWorkspace.CreateEmptyRepositoryAsync" />, so the two never drift out of sync with each other.
+    /// </summary>
+    public static async Task InitializeEmptyAsync(string destination)
+    {
+        Directory.CreateDirectory(destination);
+        await ProcessRunner.RunGitAsync(destination, "init", "--quiet", "--initial-branch=main", ".");
+    }
+
+    /// <summary>
     /// `git init` plus a handful of manufactured commits under <paramref name="destination" />. Deliberately stops short of committing anything beyond those
     /// manufactured files - see <see cref="GitPropertiesTestWorkspace.CreateGitRepositoryAsync" /> for the project-files-copy and final commit step this
     /// leaves to its caller.
@@ -36,8 +46,7 @@ internal static class GitRepositoryBuilder
     /// </param>
     public static async Task InitializeAsync(string destination, int commitCount, bool gitignoreFallbackFile)
     {
-        Directory.CreateDirectory(destination);
-        await ProcessRunner.RunGitAsync(destination, "init", "--quiet", "--initial-branch=main", ".");
+        await InitializeEmptyAsync(destination);
         await ProcessRunner.RunGitAsync(destination, "config", "user.name", "Test User");
         await ProcessRunner.RunGitAsync(destination, "config", "user.email", "test@example.com");
 
@@ -62,19 +71,27 @@ internal static class GitRepositoryBuilder
             await File.WriteAllTextAsync(Path.Combine(destination, $"file{commitNumber}.txt"), $"content {commitNumber}",
                 TestContext.Current.CancellationToken);
 
-            await ProcessRunner.RunGitAsync(destination, "add", "-A");
-            await ProcessRunner.RunGitAsync(destination, "commit", "--quiet", "-m", $"Commit {commitNumber}");
+            await CommitAllAsync(destination, $"Commit {commitNumber}");
         }
     }
 
     /// <summary>
     /// A small "git add -A / git commit" primitive - used by <see cref="GitPropertiesTestWorkspace.CreateGitRepositoryAsync" /> to commit the project files
-    /// it copies in after <see cref="InitializeAsync" /> runs.
+    /// it copies in after <see cref="InitializeAsync" /> runs, and by <see cref="EmptyGitRepository.CommitAllAsync" /> for a fully custom commit.
+    /// <paramref name="body" />, when given, becomes a second "-m" argument - git's own subject/body convention for a single commit, not a second commit.
     /// </summary>
-    public static async Task CommitAllAsync(string repositoryDirectory, string message)
+    public static async Task CommitAllAsync(string repositoryDirectory, string subject, string? body = null)
     {
         await ProcessRunner.RunGitAsync(repositoryDirectory, "add", "-A");
-        await ProcessRunner.RunGitAsync(repositoryDirectory, "commit", "--quiet", "-m", message);
+
+        if (body == null)
+        {
+            await ProcessRunner.RunGitAsync(repositoryDirectory, "commit", "--quiet", "-m", subject);
+        }
+        else
+        {
+            await ProcessRunner.RunGitAsync(repositoryDirectory, "commit", "--quiet", "-m", subject, "-m", body);
+        }
     }
 
     /// <summary>

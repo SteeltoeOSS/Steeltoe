@@ -7,7 +7,7 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 public sealed class PublishIncludesGitPropertiesTest : GitPropertiesBuildTestBase
 {
     [Fact]
-    public async Task Publish_IncludesGitProperties()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         string result = await repository.TestApp.PublishAsync();

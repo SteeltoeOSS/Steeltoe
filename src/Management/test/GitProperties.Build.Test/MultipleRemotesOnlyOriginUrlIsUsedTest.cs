@@ -16,7 +16,7 @@ public sealed class MultipleRemotesOnlyOriginUrlIsUsedTest : GitPropertiesBuildT
     /// this same test, also folds in coverage for an scp-style URL - the other shape StripUserInfo has to handle safely.
     /// </summary>
     [Fact]
-    public async Task MultipleRemotes_OnlyOriginUrlIsUsed()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         await repository.RunGitAsync("remote", "add", "upstream", "https://example.com/upstream.git");

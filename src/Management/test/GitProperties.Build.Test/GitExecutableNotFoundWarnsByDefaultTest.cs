@@ -15,7 +15,7 @@ public sealed class GitExecutableNotFoundWarnsByDefaultTest : GitPropertiesBuild
     /// $(GitExecutable) at a name that can never resolve on any platform's PATH reliably reproduces "could not run git at all" through a real build.
     /// </summary>
     [Fact]
-    public async Task GitExecutableNotFound_WarnsByDefault()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         string defaultResult = await repository.TestApp.BuildAsync($"-p:GitExecutable={BogusGitExecutable}");

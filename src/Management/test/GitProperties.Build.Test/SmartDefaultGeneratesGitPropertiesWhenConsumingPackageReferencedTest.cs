@@ -13,14 +13,11 @@ public sealed class SmartDefaultGeneratesGitPropertiesWhenConsumingPackageRefere
     /// this test stays fast and fully offline.
     /// </summary>
     [Fact]
-    public async Task SmartDefault_GeneratesGitProperties_WhenConsumingPackageReferenced()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         TestProject dependency = await repository.AddDependencyProjectAsync("Steeltoe.Management.Endpoint");
-
-        TestProject testApp = await repository.AddProjectAsync(GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
-            extraItemGroupContent: dependency.ToProjectReferenceXml());
-
+        TestProject testApp = await repository.AddTestAppReferencingAsync(dependency);
         await testApp.BuildAsync();
 
         Dictionary<string, string> properties = await testApp.ReadDebugPropertiesAsync();

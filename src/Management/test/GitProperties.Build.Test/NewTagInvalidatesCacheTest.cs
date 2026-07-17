@@ -14,7 +14,7 @@ public sealed class NewTagInvalidatesCacheTest : GitPropertiesBuildTestBase
     /// GenerateGitPropertiesCacheTask.TryGenerateAndWriteCache's own remarks).
     /// </summary>
     [Fact]
-    public async Task NewTag_InvalidatesCache()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         await repository.TestApp.BuildAsync();

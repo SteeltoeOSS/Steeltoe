@@ -14,7 +14,7 @@ public sealed class WriteToProjectDirectoryCreatesFallbackFileOnPublishTest : Gi
     /// is available here, nothing should be skipped (and no GITPROPS0xx code should appear) regardless of that setting.
     /// </summary>
     [Fact]
-    public async Task WriteToProjectDirectory_CreatesFallbackFile_OnPublish()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1, true);
         string result = await repository.TestApp.PublishAsync("-p:GitPropertiesWriteToProjectDirectory=true", "-p:GitPropertiesEnableWarnings=true");

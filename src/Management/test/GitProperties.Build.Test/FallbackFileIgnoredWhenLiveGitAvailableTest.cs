@@ -11,7 +11,7 @@ public sealed class FallbackFileIgnoredWhenLiveGitAvailableTest : GitPropertiesB
     /// a last resort, never preferred over a real, currently-usable .git repository.
     /// </summary>
     [Fact]
-    public async Task FallbackFile_Ignored_WhenLiveGitAvailable()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1, true);
 

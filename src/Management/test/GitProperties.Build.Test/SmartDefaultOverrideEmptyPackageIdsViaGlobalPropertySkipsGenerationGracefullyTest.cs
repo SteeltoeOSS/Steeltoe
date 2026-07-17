@@ -14,14 +14,11 @@ public sealed class SmartDefaultOverrideEmptyPackageIdsViaGlobalPropertySkipsGen
     /// i.e. skip generation gracefully rather than fail the build with MSB4044.
     /// </summary>
     [Fact]
-    public async Task SmartDefault_Override_EmptyPackageIdsViaGlobalProperty_SkipsGenerationGracefully()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         TestProject dependency = await repository.AddDependencyProjectAsync("Steeltoe.Management.Endpoint");
-
-        TestProject testApp = await repository.AddProjectAsync(GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
-            extraItemGroupContent: dependency.ToProjectReferenceXml());
-
+        TestProject testApp = await repository.AddTestAppReferencingAsync(dependency);
         await testApp.BuildAsync("-p:GitPropertiesConsumingPackageIds=");
         testApp.GitPropertiesGenerated.Should().BeFalse();
     }

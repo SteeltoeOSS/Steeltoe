@@ -13,7 +13,7 @@ public sealed class SmartDefaultSkipsGenerationWhenNoConsumingPackageReferenceTe
     /// the skip.
     /// </summary>
     [Fact]
-    public async Task SmartDefault_SkipsGeneration_WhenNoConsumingPackageReference()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         TestProject testApp = await repository.AddProjectAsync(GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null);

@@ -11,7 +11,7 @@ public sealed class WriteGitPropertiesFallbackFileProducesFallbackFileWithoutCom
     /// fallback file, and that doing so never compiles anything (the whole reason to prefer it over a full "dotnet build" before a source push).
     /// </summary>
     [Fact]
-    public async Task WriteGitPropertiesFallbackFile_ProducesFallbackFile_WithoutCompiling()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1, true);
         await repository.TestApp.BuildAsync("-t:WriteGitPropertiesFallbackFile");

@@ -13,13 +13,11 @@ public sealed class SmartDefaultExplicitFalseWinsOverDetectedConsumingPackageRef
     /// the consumer explicitly opted out anyway.
     /// </summary>
     [Fact]
-    public async Task SmartDefault_ExplicitFalse_WinsOverDetectedConsumingPackageReference()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         TestProject dependency = await repository.AddDependencyProjectAsync("Steeltoe.Management.Endpoint");
-
-        TestProject testApp = await repository.AddProjectAsync(GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null,
-            extraItemGroupContent: dependency.ToProjectReferenceXml());
+        TestProject testApp = await repository.AddTestAppReferencingAsync(dependency);
 
         await testApp.BuildAsync("-p:GenerateGitProperties=false");
         testApp.GitPropertiesGenerated.Should().BeFalse();

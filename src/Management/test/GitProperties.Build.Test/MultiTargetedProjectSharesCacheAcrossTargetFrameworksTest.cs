@@ -15,7 +15,7 @@ public sealed class MultiTargetedProjectSharesCacheAcrossTargetFrameworksTest : 
     /// reflect this commit" freshness check would wrongly skip regenerating it.
     /// </summary>
     [Fact]
-    public async Task MultiTargetedProject_SharesCacheAcrossTargetFrameworks()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         TestProject testApp = await repository.AddProjectAsync("MultiTargetApp", TestPaths.MultiTargetTestFrameworks);

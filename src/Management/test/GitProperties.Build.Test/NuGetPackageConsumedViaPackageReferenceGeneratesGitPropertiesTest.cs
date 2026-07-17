@@ -18,7 +18,7 @@ public sealed class NuGetPackageConsumedViaPackageReferenceGeneratesGitPropertie
     /// stale result from - the machine-wide global-packages cache at %userprofile%\.nuget\packages.
     /// </summary>
     [Fact]
-    public async Task NuGetPackage_ConsumedViaPackageReference_GeneratesGitProperties()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         string feedDirectory = await Workspace.PackGitPropertiesBuildToFeedAsync();

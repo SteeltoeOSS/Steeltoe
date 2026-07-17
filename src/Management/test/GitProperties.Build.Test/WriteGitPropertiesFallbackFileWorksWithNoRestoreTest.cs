@@ -11,7 +11,7 @@ public sealed class WriteGitPropertiesFallbackFileWorksWithNoRestoreTest : GitPr
     /// once, same as a normal build.
     /// </summary>
     [Fact]
-    public async Task WriteGitPropertiesFallbackFile_WorksWithNoRestore()
+    public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1, true);
         await repository.TestApp.RestoreAsync();

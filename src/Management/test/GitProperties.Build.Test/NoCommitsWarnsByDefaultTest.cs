@@ -11,7 +11,7 @@ public sealed class NoCommitsWarnsByDefaultTest : GitPropertiesBuildTestBase
     /// this state, which GenerateGitPropertiesCacheTask.Preflight treats as a routine, forgivable precondition rather than an unexpected failure.
     /// </summary>
     [Fact]
-    public async Task NoCommits_WarnsByDefault()
+    public async Task Test()
     {
         EmptyGitRepository emptyRepository = await Workspace.CreateEmptyRepositoryAsync("repo");
         GitRepository repository = await emptyRepository.AddTestAppAsync();
