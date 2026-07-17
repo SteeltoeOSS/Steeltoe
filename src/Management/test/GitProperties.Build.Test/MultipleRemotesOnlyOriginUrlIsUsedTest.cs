@@ -12,7 +12,8 @@ public sealed class MultipleRemotesOnlyOriginUrlIsUsedTest : GitPropertiesBuildT
     /// itself has more than one configured URL (via "git remote set-url --add"), the field resolves to the LAST one, matching "git config --list"'s own
     /// last-value-wins behavior for repeated keys (verified independently against a real git binary before writing this test). The winning URL is
     /// deliberately given embedded credentials, folding StripUserInfo's own coverage into this same build rather than spinning up a dedicated test just for
-    /// that: proves credentials are stripped from whichever URL actually wins, not just from a hypothetical single-remote case.
+    /// that: proves credentials are stripped from whichever URL actually wins, not just from a hypothetical single-remote case. A second build, later in
+    /// this same test, also folds in coverage for an scp-style URL - the other shape StripUserInfo has to handle safely.
     /// </summary>
     [Fact]
     public async Task MultipleRemotes_OnlyOriginUrlIsUsed()
@@ -24,13 +25,32 @@ public sealed class MultipleRemotesOnlyOriginUrlIsUsedTest : GitPropertiesBuildT
         await ProcessRunner.RunGitAsync(repository, "remote", "add", "origin", "https://example.com/origin.git");
         await ProcessRunner.RunGitAsync(repository, "remote", "set-url", "--add", "origin", "https://user:pass@example.com/origin-second.git");
 
-        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build");
-        AssertBuildSucceeded(result, "build with multiple remotes configured");
+        await ProcessRunner.RunDotnetAsync(testApp, "build");
 
         Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
 
         properties["git.remote.origin.url"].Should().Be("https://example.com/origin-second.git",
             "origin's own last-configured URL must win, ignoring both the unrelated 'upstream' remote and origin's own first URL - and its embedded " +
             "'user:pass@' credentials must be stripped before the value ever reaches the cache file.");
+
+        // A non-absolute, scp-style URL (git's other common remote syntax, alongside plain HTTPS/SSH URLs) isn't
+        // something Uri can parse - proves StripUserInfo leaves it untouched rather than mangling or blanking it,
+        // since there's nothing safe for it to rewrite. Reuses this same repository/build (a second build, not a
+        // dedicated test) rather than paying for a whole new synthetic repo just to reconfigure one remote - only
+        // possible because .git\config is itself a tracked _GitPropertiesCacheInputs entry, so this reconfiguration
+        // alone (no new commit needed) is enough to force the cache to regenerate on the next build. Remove-then-add
+        // rather than a plain "set-url": origin already carries two URLs from above (via "remote add" + "set-url
+        // --add"), and git refuses a plain "set-url" against a remote with multiple values ("fatal: could not set
+        // 'remote.origin.url' ... has multiple values") - remove-then-add is the clean way to replace all of them
+        // with exactly one.
+        await ProcessRunner.RunGitAsync(repository, "remote", "remove", "origin");
+        await ProcessRunner.RunGitAsync(repository, "remote", "add", "origin", "git@github.com:org/repo.git");
+
+        await ProcessRunner.RunDotnetAsync(testApp, "build");
+
+        Dictionary<string, string> propertiesAfterScpStyleUrl = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
+
+        propertiesAfterScpStyleUrl["git.remote.origin.url"].Should().Be("git@github.com:org/repo.git",
+            "a non-absolute, scp-style remote URL must be left exactly as-is - there is nothing safe for StripUserInfo to rewrite.");
     }
 }

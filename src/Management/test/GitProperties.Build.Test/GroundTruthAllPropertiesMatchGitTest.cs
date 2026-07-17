@@ -46,14 +46,13 @@ public sealed class GroundTruthAllPropertiesMatchGitTest : GitPropertiesBuildTes
         string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 3);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build");
-        AssertBuildSucceeded(result, "build");
+        string result = await ProcessRunner.RunDotnetAsync(testApp, "build");
 
         File.Exists(GetFallbackFilePath(testApp)).Should().BeFalse(
             "the fallback file must not be written into the project directory unless explicitly opted into.");
 
         string expectedRelativePath = Path.Combine("obj", "Debug", TestPaths.TestAppTargetFramework, "git.properties");
-        result.Output.Should().Contain($"git.properties: writing to '{expectedRelativePath}' for project '{GitPropertiesTestWorkspace.TestAppProjectName}'.");
+        result.Should().Contain($"git.properties: writing to '{expectedRelativePath}' for project '{GitPropertiesTestWorkspace.TestAppProjectName}'.");
 
         Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
 

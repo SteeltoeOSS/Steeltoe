@@ -12,9 +12,8 @@ public sealed class PublishIncludesGitPropertiesTest : GitPropertiesBuildTestBas
         string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "publish");
-        AssertBuildSucceeded(result, "publish");
-        result.Output.Should().NotContain("duplicate");
+        string result = await ProcessRunner.RunDotnetAsync(testApp, "publish");
+        result.Should().NotContain("duplicate");
 
         Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetReleasePublishGitPropertiesFilePath(testApp));
         string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");

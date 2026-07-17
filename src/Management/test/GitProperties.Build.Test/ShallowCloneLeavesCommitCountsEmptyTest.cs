@@ -16,17 +16,15 @@ public sealed class ShallowCloneLeavesCommitCountsEmptyTest : GitPropertiesBuild
         // --no-local is required here: for a plain local filesystem path, git's local-clone
         // optimization bypasses shallow-transfer logic entirely and --depth is silently ignored,
         // producing a full clone that would make this test worthless.
-        ProcessResult cloneResult = await ProcessRunner.RunGitAsync(Path.GetTempPath(), "clone", "--quiet", "--no-local", "--depth", "1", source, shallow);
-        cloneResult.ExitCode.Should().Be(0, "shallow clone should succeed.");
+        await ProcessRunner.RunGitAsync(Path.GetTempPath(), "clone", "--quiet", "--no-local", "--depth", "1", source, shallow);
         string isShallowRepository = await ProcessRunner.GetGitOutputAsync(shallow, "rev-parse", "--is-shallow-repository");
         isShallowRepository.Should().Be("true");
 
         string testApp = await Workspace.CopyCurrentProjectFilesAsync(shallow);
 
-        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build");
-        AssertBuildSucceeded(result, "the build against a shallow clone");
-        result.Output.Should().NotContain("GITPROPS001");
-        result.Output.Should().NotContain("GITPROPS002");
+        string result = await ProcessRunner.RunDotnetAsync(testApp, "build");
+        result.Should().NotContain("GITPROPS001");
+        result.Should().NotContain("GITPROPS002");
         AssertWarned(result, "GITPROPS006");
 
         Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));

@@ -21,22 +21,20 @@ public sealed class MultiProjectSharesCacheTest : GitPropertiesBuildTestBase
         string projectA = Path.Combine(repository, "ProjectA");
         string projectB = Path.Combine(repository, "ProjectB");
 
-        ProcessResult resultA = await ProcessRunner.RunDotnetAsync(projectA, "build", "-v:detailed");
-        AssertBuildSucceeded(resultA, "ProjectA build");
+        string resultA = await ProcessRunner.RunDotnetAsync(projectA, "build", "-v:detailed");
 
-        resultA.Output.Should().Contain("git.properties: generating shared cache",
+        resultA.Should().Contain("git.properties: generating shared cache",
             "ProjectA (first to build) should be the one that actually generates the shared cache.");
 
         string cacheFile = Path.Combine(repository, "obj", "_GitProperties", "git.properties.cache");
         File.Exists(cacheFile).Should().BeTrue("ProjectA's build should have generated the shared cache.");
 
-        ProcessResult resultB = await ProcessRunner.RunDotnetAsync(projectB, "build", "-v:detailed");
-        AssertBuildSucceeded(resultB, "ProjectB build");
+        string resultB = await ProcessRunner.RunDotnetAsync(projectB, "build", "-v:detailed");
 
         // "did not log generating the cache" is itself the deterministic, sufficient proof ProjectB
         // reused ProjectA's cache instead of rewriting it - no last-write-time comparison (and the
         // sleep it would otherwise need) is needed on top of it.
-        resultB.Output.Should().NotContain("git.properties: generating shared cache", "ProjectB should reuse ProjectA's cache instead of regenerating it.");
+        resultB.Should().NotContain("git.properties: generating shared cache", "ProjectB should reuse ProjectA's cache instead of regenerating it.");
 
         Dictionary<string, string> propertiesA = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(projectA));
         Dictionary<string, string> propertiesB = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(projectB));

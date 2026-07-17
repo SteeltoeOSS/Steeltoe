@@ -12,11 +12,11 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 /// one-class-per-test lets the whole suite's wall-clock approach its slowest single test instead of the sum of all of them.
 /// </summary>
 /// <remarks>
-/// Public (xUnit only discovers public test classes), but every member below is internal rather than protected: ProcessResult and
-/// GitPropertiesTestWorkspace are themselves internal, and a protected member of a public class can't expose a less-accessible type in its signature
-/// (CS0051/CS0052). Internal still works the same way for every derived class here, since they all live in this same assembly. Implements IAsyncLifetime
-/// (not a constructor) to create <see cref="Workspace" />: GitPropertiesTestWorkspace.CreateAsync itself awaits a "pwd -P" subprocess on macOS to
-/// resolve a symlink-free root path, and a constructor can't await.
+/// Public (xUnit only discovers public test classes), but every member below is internal rather than protected: GitPropertiesTestWorkspace is itself
+/// internal, and a protected member of a public class can't expose a less-accessible type in its signature (CS0051/CS0052). Internal still works the
+/// same way for every derived class here, since they all live in this same assembly. Implements IAsyncLifetime (not a constructor) to create
+/// <see cref="Workspace" />: GitPropertiesTestWorkspace.CreateAsync itself awaits a "pwd -P" subprocess on macOS to resolve a symlink-free root path,
+/// and a constructor can't await.
 /// </remarks>
 public abstract class GitPropertiesBuildTestBase : IAsyncLifetime
 {
@@ -52,14 +52,9 @@ public abstract class GitPropertiesBuildTestBase : IAsyncLifetime
         return Path.Combine(projectDirectory, "git.properties");
     }
 
-    internal static void AssertBuildSucceeded(ProcessResult result, string action)
+    internal static void AssertWarned(string output, string code)
     {
-        result.ExitCode.Should().Be(0, "{0} should succeed. Output:\n{1}", action, result.Output);
-    }
-
-    internal static void AssertWarned(ProcessResult result, string code)
-    {
-        result.Output.Should().Contain($"warning {code}");
+        output.Should().Contain($"warning {code}");
     }
 
     /// <summary>
@@ -67,10 +62,10 @@ public abstract class GitPropertiesBuildTestBase : IAsyncLifetime
     /// GenerateGitPropertiesCacheTask.ReportDiagnostic's remarks for why), and at Importance="Normal" rather than the default's "high", so it's visible at
     /// "-v:normal" but not in default build output.
     /// </summary>
-    internal static void AssertReportedAsInfoOnly(ProcessResult result, string code, string messageSnippet)
+    internal static void AssertReportedAsInfoOnly(string output, string code, string messageSnippet)
     {
-        result.Output.Should().NotContain(code, "a downgraded message must never carry a code - only warnings do.");
-        result.Output.Should().Contain(messageSnippet);
+        output.Should().NotContain(code, "a downgraded message must never carry a code - only warnings do.");
+        output.Should().Contain(messageSnippet);
     }
 
     internal static void AssertNoGitPropertiesGenerated(string projectDirectory)

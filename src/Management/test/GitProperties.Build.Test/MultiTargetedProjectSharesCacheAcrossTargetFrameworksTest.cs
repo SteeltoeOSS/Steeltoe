@@ -21,8 +21,7 @@ public sealed class MultiTargetedProjectSharesCacheAcrossTargetFrameworksTest : 
         string testApp = await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, "MultiTargetApp", TestPaths.MultiTargetTestFrameworks);
         string[] frameworks = TestPaths.MultiTargetTestFrameworks.Split(';');
 
-        ProcessResult result1 = await ProcessRunner.RunDotnetAsync(testApp, "build");
-        AssertBuildSucceeded(result1, "multi-targeted build");
+        await ProcessRunner.RunDotnetAsync(testApp, "build");
 
         string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");
         List<Dictionary<string, string>> propertiesBefore = await GetGitPropertiesPerTargetFrameworkAsync(testApp, frameworks);
@@ -33,11 +32,9 @@ public sealed class MultiTargetedProjectSharesCacheAcrossTargetFrameworksTest : 
             properties["git.tags"].Should().BeEmpty();
         }
 
-        ProcessResult tagResult = await ProcessRunner.RunGitAsync(repository, "tag", "v1.0.0");
-        tagResult.ExitCode.Should().Be(0, "creating the test tag should succeed.");
+        await ProcessRunner.RunGitAsync(repository, "tag", "v1.0.0");
 
-        ProcessResult result2 = await ProcessRunner.RunDotnetAsync(testApp, "build");
-        AssertBuildSucceeded(result2, "second multi-targeted build");
+        await ProcessRunner.RunDotnetAsync(testApp, "build");
 
         List<Dictionary<string, string>> propertiesAfter = await GetGitPropertiesPerTargetFrameworkAsync(testApp, frameworks);
 

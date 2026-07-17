@@ -18,8 +18,7 @@ public sealed class BuildTimeChangesAcrossBuildsUnlikeCommitTimeTest : GitProper
         string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult result1 = await ProcessRunner.RunDotnetAsync(testApp, "build");
-        AssertBuildSucceeded(result1, "first build");
+        await ProcessRunner.RunDotnetAsync(testApp, "build");
         Dictionary<string, string> propertiesBefore = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
 
         // git.build.time is formatted "yyyy-MM-ddTHH:mm:sszzz" (ComposeGitPropertiesTask) - second
@@ -28,8 +27,7 @@ public sealed class BuildTimeChangesAcrossBuildsUnlikeCommitTimeTest : GitProper
         // sized to that format's own precision, not incidental slack.
         await Task.Delay(TimeSpan.FromMilliseconds(1100), TestContext.Current.CancellationToken);
 
-        ProcessResult result2 = await ProcessRunner.RunDotnetAsync(testApp, "build");
-        AssertBuildSucceeded(result2, "second build");
+        await ProcessRunner.RunDotnetAsync(testApp, "build");
         Dictionary<string, string> propertiesAfter = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
 
         propertiesAfter["git.build.time"].Should().NotBe(propertiesBefore["git.build.time"],

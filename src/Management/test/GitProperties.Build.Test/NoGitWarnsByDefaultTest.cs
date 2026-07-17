@@ -13,8 +13,7 @@ public sealed class NoGitWarnsByDefaultTest : GitPropertiesBuildTestBase
         Directory.CreateDirectory(projectDirectory);
         string testApp = await Workspace.CopyCurrentProjectFilesAsync(projectDirectory);
 
-        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build");
-        AssertBuildSucceeded(result, "the build with no .git present");
+        string result = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertWarned(result, "GITPROPS001");
         AssertNoGitPropertiesGenerated(testApp);
     }

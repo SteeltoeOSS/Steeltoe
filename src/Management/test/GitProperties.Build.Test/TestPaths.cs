@@ -154,13 +154,7 @@ internal static partial class TestPaths
     private static async Task<string> ResolveRepositoryRootAsync([CallerFilePath] string sourceFilePath = "")
     {
         string sourceDirectory = Path.GetDirectoryName(sourceFilePath) ?? throw new InvalidOperationException("Could not determine the test source directory.");
-        ProcessResult result = await ProcessRunner.RunGitAsync(sourceDirectory, CancellationToken.None, "rev-parse", "--show-toplevel");
-
-        if (result.ExitCode != 0)
-        {
-            throw new InvalidOperationException($"Could not resolve the repository root from {sourceDirectory}.");
-        }
-
-        return result.Output.Trim().Replace('/', Path.DirectorySeparatorChar);
+        string output = await ProcessRunner.RunGitAsync(sourceDirectory, CancellationToken.None, "rev-parse", "--show-toplevel");
+        return output.Trim().Replace('/', Path.DirectorySeparatorChar);
     }
 }

@@ -17,17 +17,14 @@ public sealed class GitFileWarnsByDefaultTest : GitPropertiesBuildTestBase
         // projectDirectory itself.
         await File.WriteAllTextAsync(Path.Combine(projectDirectory, ".git"), "gitdir: /some/where/.git/worktrees/proj", TestContext.Current.CancellationToken);
 
-        ProcessResult defaultResult = await ProcessRunner.RunDotnetAsync(testApp, "build");
-        AssertBuildSucceeded(defaultResult, "the build with .git as a file (a worktree/submodule checkout - e.g. an AI agent - must never fail)");
+        string defaultResult = await ProcessRunner.RunDotnetAsync(testApp, "build");
         AssertWarned(defaultResult, "GITPROPS002");
         AssertNoGitPropertiesGenerated(testApp);
 
-        ProcessResult enableWarningsFalseResult = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesEnableWarnings=false", "-v:normal");
-        AssertBuildSucceeded(enableWarningsFalseResult, "build");
+        string enableWarningsFalseResult = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesEnableWarnings=false", "-v:normal");
         AssertReportedAsInfoOnly(enableWarningsFalseResult, "GITPROPS002", "resolves to a git worktree or submodule");
 
-        ProcessResult featureOffResult = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GenerateGitProperties=false");
-        AssertBuildSucceeded(featureOffResult, "build with GenerateGitProperties=false");
-        featureOffResult.Output.Should().NotContain("GITPROPS002");
+        string featureOffResult = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GenerateGitProperties=false");
+        featureOffResult.Should().NotContain("GITPROPS002");
     }
 }

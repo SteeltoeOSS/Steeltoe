@@ -16,8 +16,7 @@ public sealed class WriteGitPropertiesFallbackFileProducesFallbackFileWithoutCom
         string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1, true);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-t:WriteGitPropertiesFallbackFile");
-        AssertBuildSucceeded(result, "build -t:WriteGitPropertiesFallbackFile");
+        await ProcessRunner.RunDotnetAsync(testApp, "build", "-t:WriteGitPropertiesFallbackFile");
 
         File.Exists(GetFallbackFilePath(testApp)).Should().BeTrue("the fallback file should have been written next to the .csproj.");
         Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetFallbackFilePath(testApp));

@@ -38,11 +38,8 @@ public sealed class NuGetPackageConsumedViaPackageReferenceGeneratesGitPropertie
         await GitPropertiesTestWorkspace.WriteIsolatedNuGetConfigAsync(Path.Combine(consumerDirectory, "nuget.config"), feedDirectory);
 
         string isolatedPackagesPath = Path.Combine(Workspace.RootDirectory, "isolated-packages");
-        ProcessResult result = await ProcessRunner.RunDotnetAsync(consumerDirectory, "build", $"-p:RestorePackagesPath={isolatedPackagesPath}");
-        AssertBuildSucceeded(result, "the build of a project consuming Steeltoe.Management.GitProperties.Build via PackageReference");
-
-        result.Output.Should().Contain("0 Warning(s)",
-            "a real package consumer should see no in-process task-loading fallback warning or any other diagnostic.");
+        string result = await ProcessRunner.RunDotnetAsync(consumerDirectory, "build", $"-p:RestorePackagesPath={isolatedPackagesPath}");
+        result.Should().Contain("0 Warning(s)", "a real package consumer should see no in-process task-loading fallback warning or any other diagnostic.");
 
         // NuGet always lowercases the package ID for the on-disk global-packages-folder layout - this isn't
         // an arbitrary case normalization, so ToUpperInvariant() (as generally preferred) would look here for

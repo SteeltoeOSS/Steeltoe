@@ -16,11 +16,8 @@ public sealed class WriteGitPropertiesFallbackFileWorksWithNoRestoreTest : GitPr
         string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1, true);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult restoreResult = await ProcessRunner.RunDotnetAsync(testApp, "restore");
-        AssertBuildSucceeded(restoreResult, "restore");
-
-        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build", "--no-restore", "-t:WriteGitPropertiesFallbackFile");
-        AssertBuildSucceeded(result, "build --no-restore -t:WriteGitPropertiesFallbackFile");
+        await ProcessRunner.RunDotnetAsync(testApp, "restore");
+        await ProcessRunner.RunDotnetAsync(testApp, "build", "--no-restore", "-t:WriteGitPropertiesFallbackFile");
 
         File.Exists(GetFallbackFilePath(testApp)).Should().BeTrue();
     }

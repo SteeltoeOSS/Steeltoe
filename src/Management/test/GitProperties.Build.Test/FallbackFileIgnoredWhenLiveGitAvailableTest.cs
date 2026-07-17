@@ -19,9 +19,8 @@ public sealed class FallbackFileIgnoredWhenLiveGitAvailableTest : GitPropertiesB
         await File.WriteAllLinesAsync(GetFallbackFilePath(testApp), ["git.commit.id=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"],
             TestContext.Current.CancellationToken);
 
-        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-v:detailed");
-        AssertBuildSucceeded(result, "build with a stale fallback file present alongside a real .git repository");
-        result.Output.Should().NotContain("using pre-generated fallback file", "the fallback notice must not appear when live generation actually ran.");
+        string result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-v:detailed");
+        result.Should().NotContain("using pre-generated fallback file", "the fallback notice must not appear when live generation actually ran.");
 
         Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
         string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");

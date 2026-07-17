@@ -149,9 +149,10 @@ public sealed class GenerateGitPropertiesCacheTask : Task
     /// with "unknown option" on one).
     /// </summary>
     /// <remarks>
-    /// The "too old"/"unparseable" paths are both untested against a real git binary, for the same reason the git-not-runnable-at-all case always has been:
-    /// reliably faking a fully working-but-old (or malformed-version) git installation across Windows/Linux/macOS in this suite's plain "spawn a real dotnet
-    /// build" test style isn't practical.
+    /// The "too old"/"unparseable" paths are both untested against a real git binary: reliably faking a fully working-but-old (or malformed-version) git
+    /// installation across Windows/Linux/macOS in this suite's plain "spawn a real dotnet build" test style isn't practical. The git-not-runnable-at-all
+    /// case doesn't share that problem - pointing $(GitExecutable) at a name that can never resolve on any platform's PATH is enough - see
+    /// GitExecutableNotFoundWarnsByDefaultTest.
     /// </remarks>
     private GitVersionStatus CheckGitVersion()
     {

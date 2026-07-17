@@ -19,13 +19,10 @@ public sealed class WriteToProjectDirectoryCreatesFallbackFileOnPublishTest : Gi
         string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1, true);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "publish", "-p:GitPropertiesWriteToProjectDirectory=true",
+        string result = await ProcessRunner.RunDotnetAsync(testApp, "publish", "-p:GitPropertiesWriteToProjectDirectory=true",
             "-p:GitPropertiesEnableWarnings=true");
 
-        AssertBuildSucceeded(result, "publish with GitPropertiesWriteToProjectDirectory=true, without an upfront build");
-
-        result.Output.Should().NotContain("GITPROPS0",
-            "nothing should be skipped, and no fallback should be needed, when a real .git repository is available.");
+        result.Should().NotContain("GITPROPS0", "nothing should be skipped, and no fallback should be needed, when a real .git repository is available.");
 
         File.Exists(GetFallbackFilePath(testApp)).Should().BeTrue("the fallback file should have been written next to the .csproj, even for a bare publish.");
 

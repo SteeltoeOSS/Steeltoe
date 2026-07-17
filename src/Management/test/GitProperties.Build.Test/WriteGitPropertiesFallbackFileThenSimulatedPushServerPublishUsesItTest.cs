@@ -20,19 +20,15 @@ public sealed class WriteGitPropertiesFallbackFileThenSimulatedPushServerPublish
         string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 2, true);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult writeResult = await ProcessRunner.RunDotnetAsync(testApp, "build", "-t:WriteGitPropertiesFallbackFile");
-        AssertBuildSucceeded(writeResult, "build -t:WriteGitPropertiesFallbackFile");
+        await ProcessRunner.RunDotnetAsync(testApp, "build", "-t:WriteGitPropertiesFallbackFile");
         Dictionary<string, string> fallbackProperties = await PropertiesFile.ReadAsync(GetFallbackFilePath(testApp));
 
         string pushedRoot = GitPropertiesTestWorkspace.SimulateSourcePush(repository, Path.Combine(Workspace.RootDirectory, "pushed"));
         string pushedApp = Path.Combine(pushedRoot, GitPropertiesTestWorkspace.TestAppProjectName);
         File.Exists(GetFallbackFilePath(pushedApp)).Should().BeTrue("the fallback git.properties must have survived the simulated push.");
 
-        ProcessResult publishResult = await ProcessRunner.RunDotnetAsync(pushedApp, "publish", "-v:detailed");
-        AssertBuildSucceeded(publishResult, "publish with no usable .git repository present");
-
-        publishResult.Output.Should().Contain(
-            "using pre-generated fallback file", "using the fallback should still be traceable, so it's never silently stale.");
+        string publishResult = await ProcessRunner.RunDotnetAsync(pushedApp, "publish", "-v:detailed");
+        publishResult.Should().Contain("using pre-generated fallback file", "using the fallback should still be traceable, so it's never silently stale.");
 
         Dictionary<string, string> publishedProperties = await PropertiesFile.ReadAsync(GetReleasePublishGitPropertiesFilePath(pushedApp));
         publishedProperties.Should().BeEquivalentTo(fallbackProperties, "the fallback-produced output must exactly match the pre-generated fallback content.");

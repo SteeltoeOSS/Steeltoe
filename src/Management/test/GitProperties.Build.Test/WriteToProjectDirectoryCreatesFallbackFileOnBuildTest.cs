@@ -12,10 +12,9 @@ public sealed class WriteToProjectDirectoryCreatesFallbackFileOnBuildTest : GitP
         string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1, true);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult result1 = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
-        AssertBuildSucceeded(result1, "build with GitPropertiesWriteToProjectDirectory=true");
+        string result1 = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
 
-        result1.Output.Should().Contain(
+        result1.Should().Contain(
             $"git.properties: writing fallback copy to '{GetFallbackFilePath(testApp)}' for project '{GitPropertiesTestWorkspace.TestAppProjectName}'.");
 
         File.Exists(GetFallbackFilePath(testApp)).Should().BeTrue("the fallback file should have been written next to the .csproj.");
@@ -28,8 +27,7 @@ public sealed class WriteToProjectDirectoryCreatesFallbackFileOnBuildTest : GitP
         gitStatus.Should().BeEmpty("the fallback file is gitignored, so it must not show up as an untracked change.");
 
         // A gitignored fallback file left over from the first build must not itself make a LATER build see the tree as dirty.
-        ProcessResult result2 = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
-        AssertBuildSucceeded(result2, "second build");
+        await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
 
         Dictionary<string, string> outputProperties2 = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
 

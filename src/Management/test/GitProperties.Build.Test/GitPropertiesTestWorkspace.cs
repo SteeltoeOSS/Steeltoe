@@ -58,8 +58,8 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
             return path;
         }
 
-        ProcessResult result = await ProcessRunner.RunAsync("pwd", path, TestContext.Current.CancellationToken, "-P");
-        return result.Output.Trim();
+        string output = await ProcessRunner.RunPwdAsync(path);
+        return output.Trim();
     }
 
     public void Dispose()
@@ -367,13 +367,7 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
 
         string projectDirectory = Path.Combine(packSourceDirectory, TestPaths.GitPropertiesBuildRelativePath);
         string projectFile = await TestPaths.GetGitPropertiesBuildProjectFileAsync();
-        ProcessResult result = await ProcessRunner.RunDotnetAsync(projectDirectory, "build", Path.GetFileName(projectFile), "-c", "Release");
-
-        if (result.ExitCode != 0)
-        {
-            string packageId = await TestPaths.GetPackageIdAsync();
-            throw new InvalidOperationException($"Building/packing {packageId} failed.\n{result.Output}");
-        }
+        await ProcessRunner.RunDotnetAsync(projectDirectory, "build", Path.GetFileName(projectFile), "-c", "Release");
 
         string targetFramework = await TestPaths.GetGitPropertiesBuildTargetFrameworkAsync();
         return Path.Combine(projectDirectory, "bin", "tasks", targetFramework);

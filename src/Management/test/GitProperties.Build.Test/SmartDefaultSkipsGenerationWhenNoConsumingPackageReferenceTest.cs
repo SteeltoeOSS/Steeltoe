@@ -20,10 +20,9 @@ public sealed class SmartDefaultSkipsGenerationWhenNoConsumingPackageReferenceTe
         string testApp =
             await GitPropertiesTestWorkspace.WriteAppProjectAsync(repository, GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null);
 
-        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-v:detailed");
-        AssertBuildSucceeded(result, "build with no consuming-package reference and $(GenerateGitProperties) left at its smart default");
+        string result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-v:detailed");
         // Not a numbered GITPROPS0xx code - this is plain internal trace output, not a diagnosable outcome (see the .targets file's own comment on it).
-        result.Output.Should().Contain("git.properties generation skipped: no reference to");
+        result.Should().Contain("git.properties generation skipped: no reference to");
         AssertNoGitPropertiesGenerated(testApp);
     }
 }

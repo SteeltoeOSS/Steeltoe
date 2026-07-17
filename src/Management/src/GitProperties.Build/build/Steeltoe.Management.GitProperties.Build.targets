@@ -241,18 +241,24 @@
 
     <!-- A literal (non-wildcard) Inputs path that doesn't exist forces MSBuild to rebuild
          "completely" every time, rather than just being excluded from the comparison - unlike a
-         glob, which simply matches nothing if its directory is absent or empty. packed-refs in
-         particular is commonly absent (only appears after a `git gc`/`pack-refs`), so it and the
-         other literal paths are only added here when they actually exist.
-         Deliberately excludes .git\index: it's irrelevant to every field cached here (all 17 are
-         HEAD/refs-derived; the only field that depends on the working tree/index is git.dirty,
-         which is never cached - see ComposeGitProperties). Including it caused real, observed
-         cache thrashing: the live "git status" call (run on every build for the dirty check) can
-         itself rewrite .git\index - e.g. git commonly refreshes its stat cache the first time
-         status runs after a fresh clone - which touched a newer mtime than the just-written
-         cache and forced a full, unnecessary regeneration on the very next build. -->
+         glob, which simply matches nothing if its directory is absent or empty. packed-refs and
+         config are both commonly absent/unwritten between commits, so all the literal paths here
+         are only added when they actually exist.
+         .git\config is included alongside HEAD/refs: git.remote.origin.url, git.commit.user.name,
+         and git.commit.user.email are all read from git's own config output, not derived from
+         HEAD/refs at all - without this, e.g. reconfiguring "origin"'s URL (or committer identity)
+         with no new commit in between left the cache stale, still serving the previous config's
+         values.
+         Deliberately excludes .git\index: it's irrelevant to every field cached here (the only field
+         that depends on the working tree/index is git.dirty, which is never cached - see
+         ComposeGitProperties). Including it caused real, observed cache thrashing: the live "git
+         status" call (run on every build for the dirty check) can itself rewrite .git\index - e.g.
+         git commonly refreshes its stat cache the first time status runs after a fresh clone - which
+         touched a newer mtime than the just-written cache and forced a full, unnecessary
+         regeneration on the very next build. -->
     <ItemGroup Condition="'$(GitRepositoryRoot)' != ''">
       <_GitPropertiesCacheInputs Include="$(GitRepositoryRoot).git\HEAD" Condition="Exists('$(GitRepositoryRoot).git\HEAD')" />
+      <_GitPropertiesCacheInputs Include="$(GitRepositoryRoot).git\config" Condition="Exists('$(GitRepositoryRoot).git\config')" />
       <_GitPropertiesCacheInputs Include="$(GitRepositoryRoot).git\packed-refs" Condition="Exists('$(GitRepositoryRoot).git\packed-refs')" />
       <_GitPropertiesCacheInputs Include="$(GitRepositoryRoot).git\refs\heads\**\*" />
       <_GitPropertiesCacheInputs Include="$(GitRepositoryRoot).git\refs\tags\**\*" />

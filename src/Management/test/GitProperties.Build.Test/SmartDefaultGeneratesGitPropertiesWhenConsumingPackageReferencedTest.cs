@@ -23,8 +23,7 @@ public sealed class SmartDefaultGeneratesGitPropertiesWhenConsumingPackageRefere
             generateGitProperties: null,
             extraItemGroupContent: $"""<ProjectReference Include="..\{consumingPackageStandInName}\{consumingPackageStandInName}.csproj" />""");
 
-        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build");
-        AssertBuildSucceeded(result, "build with a Steeltoe.Management.Endpoint reference and $(GenerateGitProperties) left at its smart default");
+        await ProcessRunner.RunDotnetAsync(testApp, "build");
 
         Dictionary<string, string> properties = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
         string expectedCommitId = await ProcessRunner.GetGitOutputAsync(repository, "rev-parse", "HEAD");

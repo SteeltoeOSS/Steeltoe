@@ -18,14 +18,12 @@ public sealed class FallbackFileWithoutGitignoreMakesLaterBuildsAppearDirtyTest 
         string repository = await Workspace.CreateSyntheticRepoAsync(Path.Combine(Workspace.RootDirectory, "repo"), 1);
         string testApp = Path.Combine(repository, GitPropertiesTestWorkspace.TestAppProjectName);
 
-        ProcessResult result1 = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
-        AssertBuildSucceeded(result1, "first build, which writes the (not yet gitignored) fallback file");
+        await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
 
         string gitStatus = await ProcessRunner.GetGitOutputAsync(repository, "status", "--porcelain");
         gitStatus.Should().NotBeEmpty("the freshly-written, ungitignored fallback file should show up as an untracked change.");
 
-        ProcessResult result2 = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
-        AssertBuildSucceeded(result2, "second build");
+        await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesWriteToProjectDirectory=true");
 
         Dictionary<string, string> properties2 = await PropertiesFile.ReadAsync(GetDebugGitPropertiesFilePath(testApp));
 

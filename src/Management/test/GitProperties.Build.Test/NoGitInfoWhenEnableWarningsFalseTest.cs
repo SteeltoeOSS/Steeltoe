@@ -13,8 +13,7 @@ public sealed class NoGitInfoWhenEnableWarningsFalseTest : GitPropertiesBuildTes
         Directory.CreateDirectory(projectDirectory);
         string testApp = await Workspace.CopyCurrentProjectFilesAsync(projectDirectory);
 
-        ProcessResult result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesEnableWarnings=false", "-v:normal");
-        AssertBuildSucceeded(result, "build");
+        string result = await ProcessRunner.RunDotnetAsync(testApp, "build", "-p:GitPropertiesEnableWarnings=false", "-v:normal");
         AssertReportedAsInfoOnly(result, "GITPROPS001", "no usable .git directory found above");
         AssertNoGitPropertiesGenerated(testApp);
     }

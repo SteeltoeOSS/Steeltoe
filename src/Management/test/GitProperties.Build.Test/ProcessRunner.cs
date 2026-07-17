@@ -15,7 +15,7 @@ internal static class ProcessRunner
 {
     private static readonly string LocatorCommand = OperatingSystem.IsWindows() ? "where" : "which";
 
-    private static readonly char[]? LineSeparators =
+    private static readonly char[] LineSeparators =
     [
         '\r',
         '\n'
@@ -35,7 +35,15 @@ internal static class ProcessRunner
     /// </summary>
     private static readonly Task<string> RealGitExecutableTask = ResolveGitExecutableAsync();
 
-    public static async Task<ProcessResult> RunAsync(string fileName, string workingDirectory, CancellationToken cancellationToken, params string[] arguments)
+    /// <summary>
+    /// The single, shared place every process this suite ever spawns gets its exit code checked - required, not defaulted, specifically so every one of
+    /// RunGitAsync, RunDotnetAsync, and RunPwdAsync has to make its own success expectation explicit, rather than silently inheriting whatever the last
+    /// caller happened to pass. Private: every real caller in this project goes through one of those three named, purpose-specific wrappers instead of this
+    /// directly. A silently-ignored failure here is exactly what let a broken "git remote set-url" call (rejected by git itself, exit code 128, because the
+    /// remote already had multiple values) pass unnoticed until a much later, more confusing assertion failed on a stale property value instead.
+    /// </summary>
+    private static async Task<string> RunAsync(string fileName, string workingDirectory, int exitCodeExpected, CancellationToken cancellationToken,
+        params string[] arguments)
     {
         var outputBuilder = new StringBuilder();
         object outputLock = new();
@@ -104,7 +112,11 @@ internal static class ProcessRunner
         }
 
         string output = outputBuilder.ToString();
-        return new ProcessResult(process.ExitCode, output);
+
+        process.ExitCode.Should().Be(exitCodeExpected, "'{0} {1}' in '{2}' was expected to exit with code {3}. Output:\n{4}", fileName,
+            string.Join(' ', arguments), workingDirectory, exitCodeExpected, output);
+
+        return output;
 
         void AppendLine(string? line)
         {
@@ -161,7 +173,7 @@ internal static class ProcessRunner
     /// Uses the currently-running test's own TestContext.Current.CancellationToken - the right default for every call site in this suite except one: see the
     /// explicit-CancellationToken overload below for why TestPaths.ResolveRepositoryRootAsync can't use this one.
     /// </summary>
-    public static Task<ProcessResult> RunGitAsync(string workingDirectory, params string[] arguments)
+    public static Task<string> RunGitAsync(string workingDirectory, params string[] arguments)
     {
         return RunGitAsync(workingDirectory, TestContext.Current.CancellationToken, arguments);
     }
@@ -171,10 +183,28 @@ internal static class ProcessRunner
     /// see that method's own remarks (and <see cref="ResolveGitExecutableAsync" />'s, for the identical reasoning) for why a specific test's
     /// TestContext.Current.CancellationToken would be wrong there.
     /// </summary>
-    public static async Task<ProcessResult> RunGitAsync(string workingDirectory, CancellationToken cancellationToken, params string[] arguments)
+    public static async Task<string> RunGitAsync(string workingDirectory, CancellationToken cancellationToken, params string[] arguments)
     {
         string gitExecutable = await RealGitExecutableTask;
-        return await RunAsync(gitExecutable, workingDirectory, cancellationToken, arguments);
+        return await RunAsync(gitExecutable, workingDirectory, 0, cancellationToken, arguments);
+    }
+
+    /// <summary>
+    /// Defaults to expecting success (exit code 0), symmetric with <see cref="RunGitAsync(string,string[])" /> - see the explicit-exit-code overload below
+    /// for the handful of tests that deliberately provoke a build/publish failure as the scenario under test.
+    /// </summary>
+    public static Task<string> RunDotnetAsync(string workingDirectory, params string[] arguments)
+    {
+        return RunDotnetAsync(workingDirectory, 0, arguments);
+    }
+
+    /// <summary>
+    /// For the rare test that provokes a specific dotnet build/publish failure as the very scenario under test (e.g.
+    /// WriteGitPropertiesFallbackFileThenPublishNoBuildFailsTest).
+    /// </summary>
+    public static Task<string> RunDotnetAsync(string workingDirectory, int exitCodeExpected, params string[] arguments)
+    {
+        return RunAsync("dotnet", workingDirectory, exitCodeExpected, TestContext.Current.CancellationToken, BuildDotnetArguments(arguments));
     }
 
     /// <summary>
@@ -182,22 +212,29 @@ internal static class ProcessRunner
     /// and within run-to-run noise once folded into a real end-to-end TestApp build, but harmless either way here: no test in this suite asserts on analyzer
     /// diagnostics or NuGet audit warnings, only on this project's own GITPROPS0xx codes and plain build success/failure.
     /// </summary>
-    public static Task<ProcessResult> RunDotnetAsync(string workingDirectory, params string[] arguments)
+    private static string[] BuildDotnetArguments(string[] arguments)
     {
-        string[] allArguments =
+        return
         [
             .. arguments,
             "-p:RunAnalyzers=false",
             "-p:NuGetAudit=false"
         ];
-
-        return RunAsync("dotnet", workingDirectory, TestContext.Current.CancellationToken, allArguments);
     }
 
     public static async Task<string> GetGitOutputAsync(string workingDirectory, params string[] arguments)
     {
-        ProcessResult result = await RunGitAsync(workingDirectory, arguments);
-        return result.Output.Trim();
+        string output = await RunGitAsync(workingDirectory, arguments);
+        return output.Trim();
+    }
+
+    /// <summary>
+    /// Used only by GitPropertiesTestWorkspace's macOS-only $TMPDIR symlink resolution (see its own remarks) - "pwd -P" is unrelated to git/dotnet, so this
+    /// runs it directly rather than forcing that through RunGitAsync/RunDotnetAsync.
+    /// </summary>
+    public static Task<string> RunPwdAsync(string workingDirectory)
+    {
+        return RunAsync("pwd", workingDirectory, 0, TestContext.Current.CancellationToken, "-P");
     }
 
     /// <summary>
@@ -208,9 +245,9 @@ internal static class ProcessRunner
     /// </summary>
     private static async Task<string> ResolveGitExecutableAsync()
     {
-        ProcessResult result = await RunAsync(LocatorCommand, Path.GetTempPath(), CancellationToken.None, "git");
+        string output = await RunAsync(LocatorCommand, Path.GetTempPath(), 0, CancellationToken.None, "git");
 
-        string firstLine = result.Output.Split(LineSeparators, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ??
+        string firstLine = output.Split(LineSeparators, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ??
             throw new InvalidOperationException($"Could not resolve the location of git via '{LocatorCommand} git'.");
 
         return firstLine.Trim();
