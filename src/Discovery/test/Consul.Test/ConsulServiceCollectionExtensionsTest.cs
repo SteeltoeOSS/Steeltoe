@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
@@ -142,12 +143,14 @@ public sealed class ConsulServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public async Task ConsulOptionsValidation_FailsWhenRunningInCloudWithLocalhost()
+    public async Task ConsulOptionsValidation_WarnsWhenRunningInCloudWithLocalhost()
     {
         using var scope = new EnvironmentVariableScope("DOTNET_RUNNING_IN_CONTAINER", "true");
+        using var capturingLoggerProvider = new CapturingLoggerProvider();
 
         var services = new ServiceCollection();
-        services.AddLogging();
+        // ReSharper disable once AccessToDisposedClosure
+        services.AddLogging(builder => builder.AddProvider(capturingLoggerProvider));
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddConsulDiscoveryClient();
 
@@ -155,9 +158,13 @@ public sealed class ConsulServiceCollectionExtensionsTest
         var consulOptions = serviceProvider.GetRequiredService<IOptions<ConsulOptions>>();
 
         Action action = () => _ = consulOptions.Value;
+        action.Should().NotThrow();
 
-        action.Should().ThrowExactly<OptionsValidationException>().WithMessage(
-            "Consul URL 'http://localhost:8500' is not valid in containerized or cloud environments. " +
-            "Please configure Consul:Host with a non-localhost server.");
+        string? logEntry = capturingLoggerProvider.GetAll().Should().ContainSingle().Which;
+
+        logEntry.Should()
+            .Be(
+                $"WARN {typeof(ValidateConsulOptions).FullName}: Consul URL 'http://localhost:8500' is unlikely to be valid in containerized or cloud environments. " +
+                "Please configure Consul:Host with a non-localhost server.");
     }
 }
