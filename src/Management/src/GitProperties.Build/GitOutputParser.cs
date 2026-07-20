@@ -10,13 +10,13 @@ namespace Steeltoe.Management.GitProperties.Build;
 internal static class GitOutputParser
 {
     /// <summary>
-    /// Matches "git version 2.42.0", "git version 2.42.0.windows.1", and "git version 2.39.5 (Apple Git-154)" alike - capturing only the leading
-    /// major.minor[.patch] numbers every real git build's "--version" output starts with, regardless of whatever vendor-specific suffix follows.
+    /// Matches "git version 2.42.0", "git version 2.42.0.windows.1", and "git version 2.39.5 (Apple Git-154)" alike, capturing only the leading
+    /// major/minor/patch numbers every real git build's "--version" output starts with, regardless of whatever vendor-specific suffix follows.
     /// </summary>
     private static readonly Regex GitVersionRegex = new(@"^git version (\d+)\.(\d+)(?:\.(\d+))?", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
     /// <summary>
-    /// Parses the leading major.minor[.patch] numbers out of "git --version" output.
+    /// Parses the leading major/minor/patch numbers out of "git --version" output.
     /// </summary>
     public static Version? ParseGitVersion(string output)
     {
@@ -35,7 +35,7 @@ internal static class GitOutputParser
     }
 
     /// <summary>
-    /// Parses "describe --tags --long --always" output for its three possible shapes: exactly-on-tag ("tag-0-gsha"), N-commits-ahead ("tag-N-gsha"), and
+    /// Parses "git describe --tags --long --always" output for its three possible shapes: exactly-on-tag ("tag-0-gsha"), N-commits-ahead ("tag-N-gsha"), and
     /// no-tags-at-all (a bare "--always" fallback SHA, with no dashes). An empty or unrecognized shape yields all-empty fields, same as "no tags exist".
     /// </summary>
     public static TagDescription ParseTagDescribe(string describeOutput)
@@ -54,7 +54,7 @@ internal static class GitOutputParser
 
             if (!hasTagPrefix)
             {
-                // No tags reachable at all - "--always" fallback is a bare abbreviated SHA.
+                // No tags reachable at all. The "--always" fallback is a bare abbreviated SHA.
                 baseDescribe = describeOutput;
             }
             else
@@ -69,7 +69,7 @@ internal static class GitOutputParser
     }
 
     /// <summary>
-    /// Parses "config --list" output for the keys we care about, stripping any embedded credentials from the remote URL.
+    /// Parses "git config --list" output for the keys we care about, stripping any embedded credentials from the remote URL.
     /// </summary>
     public static GitConfig ParseConfig(string configListOutput)
     {
@@ -126,7 +126,7 @@ internal static class GitOutputParser
             }
             catch (UriFormatException)
             {
-                // Not a parseable absolute URL (e.g. SCP-like "git@host:org/repo.git") - nothing to strip.
+                // Not a parseable absolute URL (e.g. SCP-like "git@host:org/repo.git"), so there is nothing to strip.
             }
         }
 

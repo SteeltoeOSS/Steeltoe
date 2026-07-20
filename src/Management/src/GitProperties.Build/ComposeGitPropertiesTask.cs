@@ -9,12 +9,10 @@ using Microsoft.Build.Utilities;
 namespace Steeltoe.Management.GitProperties.Build;
 
 /// <summary>
-/// Merges the shared cache (see <see cref="GenerateGitPropertiesCacheTask" />) with the fields that can never be cached across projects: the live
-/// working-tree dirty state, the per-project $(Version), and the current build's own timestamp. Runs once per project, every build - unlike the cache
-/// generation, this is deliberately not skippable via Inputs/Outputs, since editing a tracked file doesn't touch any file timestamp this task could key
-/// incrementality off, and a cached build time would go stale the moment it's reused by a second build. Every failure below returns false: this task's
-/// own output (and the fallback copy, if configured) must never end up mismatched with what's actually on disk, so a partial run must fail the build
-/// loudly rather than let a later step (the copy-to-output/publish targets) pick up stale or incomplete content.
+/// Merges the shared git.properties cache with the fields that can never be cached: the live working-tree dirty state, the per-project $(Version), and
+/// the build's own timestamp. Runs every build with no Inputs/Outputs skip: editing a tracked file doesn't touch any file timestamp this task could key
+/// incrementality off, and a cached build time would go stale the moment it's reused. Every failure returns <c>false</c>, so a partial run can't leave
+/// output mismatched with what's on disk for a later step to pick up.
 /// </summary>
 // ReSharper disable once UnusedType.Global
 public sealed class ComposeGitPropertiesTask : Task
@@ -49,10 +47,8 @@ public sealed class ComposeGitPropertiesTask : Task
     public string? Version { get; set; }
 
     /// <summary>
-    /// Gets or sets an optional additional path to copy the same composed content to - the durable fallback file that
-    /// Steeltoe.Management.GitProperties.Build.targets' IncludeGitPropertiesInOutput target later falls back to when a build has no usable git repository at
-    /// all (e.g. a source-based `cf push`, where .git is excluded from the pushed tree by default). Empty (the default) is a no-op; only non-empty when the
-    /// consumer opted into $(GitPropertiesWriteToProjectDirectory).
+    /// Gets or sets an optional additional path to copy the composed git.properties to. This is the durable fallback file used when a build has no usable
+    /// git repository at all (e.g. a source-based `cf push`, where .git is excluded from the pushed tree).
     /// </summary>
     public string? FallbackFile { get; set; }
 
@@ -82,7 +78,7 @@ public sealed class ComposeGitPropertiesTask : Task
         bool isDirty = stdout.Length > 0;
         List<string> lines = [];
 
-        if (!TryRunFileOperation($"read {CacheFile}", () => lines = AtomicFile.ReadAllLinesWithRetry(CacheFile).ToList()))
+        if (!TryRunFileOperation($"read {CacheFile}", () => lines = AtomicFile.Read(CacheFile).ToList()))
         {
             return false;
         }
@@ -98,17 +94,14 @@ public sealed class ComposeGitPropertiesTask : Task
         lines.Add($"git.dirty={(isDirty ? "true" : "false")}");
         lines.Add($"git.build.version={GitPropertiesFormat.EscapeLineBreaks(Version)}");
 
-        // S6354 (use an injectable time provider): not practical here, for the same reason as
-        // AtomicFile.TryAcquireExclusiveLock - see that method's remarks. Matches the
-        // ISO-8601-with-offset style git itself uses for git.commit.time (%cI), rather than
-        // normalizing to UTC - this is "when this build ran, in the build machine's own local time",
-        // not a value that needs to compare directly against the commit's own timestamp.
+        // Local time, not UTC, to match the ISO-8601-with-offset style git itself uses for git.commit.time. This is "when this build ran, in the
+        // machine's own local time", not a value that needs to compare against the commit's own timestamp.
 #pragma warning disable S6354
         string buildTime = DateTimeOffset.Now.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);
 #pragma warning restore S6354
         lines.Add($"git.build.time={buildTime}");
 
-        if (!TryRunFileOperation($"write {OutputFile}", () => AtomicFile.WriteAtomic(OutputFile, lines)))
+        if (!TryRunFileOperation($"write {OutputFile}", () => AtomicFile.Write(OutputFile, lines)))
         {
             return false;
         }
@@ -118,14 +111,9 @@ public sealed class ComposeGitPropertiesTask : Task
             return true;
         }
 
-        return TryRunFileOperation($"write fallback file {FallbackFile}", () => AtomicFile.WriteAtomic(FallbackFile, lines));
+        return TryRunFileOperation($"write fallback file {FallbackFile}", () => AtomicFile.Write(FallbackFile, lines));
     }
 
-    /// <summary>
-    /// Runs a file-system operation that must succeed for this task to succeed - the shape shared by every step below that isn't the initial git status
-    /// check (which has its own, dual failure modes - see <see cref="Execute" />). Logs a build error and returns false if <paramref name="action" />
-    /// throws.
-    /// </summary>
     private bool TryRunFileOperation(string description, Action action)
     {
         try

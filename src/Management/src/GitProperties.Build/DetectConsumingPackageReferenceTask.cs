@@ -5,23 +5,21 @@
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+
 namespace Steeltoe.Management.GitProperties.Build;
 
 /// <summary>
-/// Determines whether this project's own fully-resolved dependency graph includes any of <see cref="PackageIds" /> - used to smart-default
-/// $(GenerateGitProperties) so the vast majority of projects in a large solution (class libraries, test projects, anything that can't possibly expose an
-/// actuator) skip generation entirely, without requiring each of them to opt out individually.
+/// Determines whether this project's own fully-resolved dependency graph includes any of <see cref="PackageIds" />. Used to smart-default whether to
+/// generate git.properties, so most projects in a large solution skip generation without opting out individually.
 /// </summary>
 /// <remarks>
-/// Reads <see cref="ProjectAssetsFile" /> (project.assets.json) rather than this project's own @(PackageReference) items deliberately: NuGet flattens
-/// the *entire* transitive graph - through both PackageReference and ProjectReference chains - into every consuming project's own assets file, the same
-/// mechanism that already lets a shared base library's own dependencies "just work" for whoever references it, without redeclaring them. That means this
-/// also correctly detects the common pattern of a shared library wrapping actuator registration on behalf of many host apps, as long as that library's
-/// own reference isn't PrivateAssets="All" - which would also strip the actuator assembly from every host's own runtime output, breaking the feature
-/// outright, so it's not a viable pattern for a library that actually activates actuators in the first place. The file is written by a prior, separate
-/// restore pass (implicit or explicit) - never by a target within the current build - so there's no ordering dependency on any of our own targets/hooks:
-/// it's either already on disk with the final, fully-resolved graph, or it doesn't exist yet (a fresh clone with no restore at all), in which case this
-/// safely reports no match instead of failing the build.
+/// Reads <see cref="ProjectAssetsFile" /> (project.assets.json) rather than this project's own @(PackageReference) items: NuGet flattens the entire
+/// transitive graph, through both PackageReference and ProjectReference chains, into every consuming project's assets file, so this also detects a
+/// shared library wrapping actuator registration on behalf of many host apps. The assets file is written by a prior, separate restore pass, so if it
+/// doesn't exist yet (a fresh clone with no restore), this safely reports no match instead of failing the build.
 /// </remarks>
 // ReSharper disable once UnusedType.Global
 public sealed class DetectConsumingPackageReferenceTask : Task
@@ -30,10 +28,11 @@ public sealed class DetectConsumingPackageReferenceTask : Task
     /// Gets or sets the semicolon-separated list of package IDs to look for.
     /// </summary>
     /// <remarks>
-    /// Deliberately not [Required], unlike every other string parameter on tasks in this project: MSBuild's required-parameter check treats an empty string
-    /// the same as "not supplied" at all, which would turn $(GitPropertiesConsumingPackageIds) explicitly set to blank (e.g. via
-    /// "-p:GitPropertiesConsumingPackageIds=") into a build error instead of the well-defined, graceful "no package ID ever matches" outcome
-    /// <see cref="ContainsAnyPackage" /> already produces for it.
+    /// Deliberately not [Required]: MSBuild's required-parameter check treats an empty string the same as "not supplied", which would turn an explicitly
+    /// blank value into a build error instead of the graceful "no package ID ever matches" outcome <see cref="ContainsAnyPackage" /> already produces. An
+    /// explicit blank value does reach this property in one case: a global property set on the command line (e.g. "-p:GitPropertiesConsumingPackageIds=")
+    /// can never be reassigned by the project's own conditional default, so it stays blank all the way through instead of falling back to the default
+    /// package ID.
     /// </remarks>
     public string PackageIds { get; set; } = string.Empty;
 
@@ -73,20 +72,13 @@ public sealed class DetectConsumingPackageReferenceTask : Task
         return true;
     }
 
-    /// <summary>
-    /// A plain substring search for the quoted package ID plus a trailing slash - the shape every "libraries" entry key in project.assets.json takes
-    /// ("PackageId/Version") - rather than a full JSON parse. Deliberately not scoped to the "libraries" object specifically, and deliberately not guarding
-    /// against a configured ID that happens to collide with an unrelated NuGet content-folder name (e.g. "lib", "tools", "analyzers", which show up as path
-    /// prefixes inside every package's own file list): Steeltoe's own consumers are enterprise teams that namespace-qualify their packages (e.g.
-    /// "Contoso.Actuators"), so a configured ID colliding with a short, generic folder name isn't a realistic scenario worth the complexity of a bounded
-    /// parse to rule out.
-    /// </summary>
     private bool ContainsAnyPackage(string assetsFileContent)
     {
         foreach (string rawPackageId in PackageIds.Split(';'))
         {
             string packageId = rawPackageId.Trim();
 
+            // A plain substring search for efficiency. Taking a dependency on a JSON parser (so we can search inside "libraries") is too intrusive.
             if (packageId.Length > 0 && assetsFileContent.IndexOf($"\"{packageId}/", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return true;

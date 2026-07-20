@@ -51,7 +51,11 @@
       PackagePath="" />
   </ItemGroup>
 
-  <ItemGroup>
+  <PropertyGroup>
+    <PublicApiAnalyzersEnabled Condition="'$(PublicApiAnalyzersEnabled)' == ''">true</PublicApiAnalyzersEnabled>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(PublicApiAnalyzersEnabled)' == 'true'">
     <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="$(PublicApiAnalyzersVersion)" PrivateAssets="All" />
   </ItemGroup>
 

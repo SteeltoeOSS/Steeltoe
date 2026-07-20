@@ -5,11 +5,15 @@
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+
 namespace Steeltoe.Management.GitProperties.Build;
 
 /// <summary>
 /// Walks up from <see cref="StartDirectory" /> looking for a ".git" directory. A ".git" file (worktree or submodule pointer) is deliberately reported
-/// back via <see cref="IsUnsupportedGitFile" /> rather than treated as a match - full worktree/submodule support is out of scope.
+/// back via <see cref="IsUnsupportedGitFile" /> rather than treated as a match.
 /// </summary>
 // ReSharper disable once UnusedType.Global
 public sealed class FindGitRepositoryRootTask : Task
@@ -36,7 +40,7 @@ public sealed class FindGitRepositoryRootTask : Task
     public override bool Execute()
     {
         string repositoryRoot = string.Empty;
-        bool unsupportedGitFile = false;
+        bool isUnsupportedGitFile = false;
 
         try
         {
@@ -60,7 +64,7 @@ public sealed class FindGitRepositoryRootTask : Task
 
                 if (File.Exists(gitPath))
                 {
-                    unsupportedGitFile = true;
+                    isUnsupportedGitFile = true;
                     break;
                 }
 
@@ -74,7 +78,7 @@ public sealed class FindGitRepositoryRootTask : Task
         }
 
         RepositoryRoot = repositoryRoot;
-        IsUnsupportedGitFile = unsupportedGitFile;
+        IsUnsupportedGitFile = isUnsupportedGitFile;
         return true;
     }
 }
