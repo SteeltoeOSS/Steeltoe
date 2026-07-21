@@ -6,12 +6,6 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 
 public sealed class SmartDefaultExplicitFalseWinsOverDetectedConsumingPackageReferenceTest : GitPropertiesBuildTestBase
 {
-    /// <summary>
-    /// A consumer's explicit choice must never be second-guessed by the smart default, in either direction - the negative direction (no reference, but
-    /// explicitly forced on) is already exercised by every other test in this file, which all set $(GenerateGitProperties)=true explicitly via
-    /// WriteAppProject's default. This covers the other direction: a consuming-package reference IS present (the smart default would say "generate"), but
-    /// the consumer explicitly opted out anyway.
-    /// </summary>
     [Fact]
     public async Task Test()
     {

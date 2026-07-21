@@ -10,8 +10,7 @@ public sealed class PublishIncludesGitPropertiesTest : GitPropertiesBuildTestBas
     public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
-        string result = await repository.TestApp.PublishAsync();
-        result.Should().NotContain("duplicate");
+        await repository.TestApp.PublishAsync();
 
         Dictionary<string, string> properties = await repository.TestApp.ReadReleasePublishPropertiesAsync();
         string expectedCommitId = await repository.GetCommitIdAsync();

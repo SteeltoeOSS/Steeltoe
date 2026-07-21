@@ -168,7 +168,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
         if (exitCode != 0 || stdout != "true")
         {
-            ReportDiagnostic(1, $"git.properties generation skipped: '{RepositoryRoot}' is not inside a usable git working tree.");
+            ReportDiagnostic(1, $"git.properties generation skipped: '{RepositoryRoot}' is not inside a usable git repository.");
             return null;
         }
 
@@ -406,11 +406,11 @@ public sealed class GenerateGitPropertiesCacheTask : Task
         return true;
     }
 
-    private void ReportDiagnostic(int code, string message)
+    private void ReportDiagnostic(int diagnosticId, string message)
     {
         if (EnableWarnings)
         {
-            string warningCode = $"{DiagnosticPrefix}{code:D3}";
+            string warningCode = $"{DiagnosticPrefix}{diagnosticId:D3}";
             Log.LogWarning(null, warningCode, null, null, 0, 0, 0, 0, message);
         }
         else

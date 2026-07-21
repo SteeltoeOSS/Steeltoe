@@ -6,24 +6,20 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 
 public sealed class NoCommitsWarnsByDefaultTest : GitPropertiesBuildTestBase
 {
-    /// <summary>
-    /// A freshly-initialized repository (real ".git", so GITPROPS001/002 don't fire instead) with zero commits yet - "git rev-parse HEAD" itself fails in
-    /// this state, which GenerateGitPropertiesCacheTask.Preflight treats as a routine, forgivable precondition rather than an unexpected failure.
-    /// </summary>
     [Fact]
     public async Task Test()
     {
         EmptyGitRepository emptyRepository = await Workspace.CreateEmptyRepositoryAsync("repo");
         GitRepository repository = await emptyRepository.AddTestAppAsync();
 
-        string defaultResult = await repository.TestApp.BuildAsync();
-        defaultResult.AssertWarned("GITPROPS005");
+        DotNetCommandOutput defaultOutput = await repository.TestApp.BuildAsync();
+        defaultOutput.Should().ContainGitWarning(GitDiagnosticId.GitRepositoryHasNoCommits);
 
-        string enableWarningsFalseResult = await repository.TestApp.BuildAsync("-p:GitPropertiesEnableWarnings=false", "-v:normal");
-        enableWarningsFalseResult.AssertReportedAsInfoOnly("GITPROPS005", "no commits yet");
+        DotNetCommandOutput disableWarningsOutput = await repository.TestApp.BuildAsync("-p:GitPropertiesEnableWarnings=false", "-v:normal");
+        disableWarningsOutput.Should().ContainGitInfo(GitDiagnosticId.GitRepositoryHasNoCommits, "no commits yet");
 
-        string featureOffResult = await repository.TestApp.BuildAsync("-p:GenerateGitProperties=false");
-        featureOffResult.Should().NotContain("GITPROPS005");
+        DotNetCommandOutput featureOffOutput = await repository.TestApp.BuildAsync("-p:GenerateGitProperties=false");
+        featureOffOutput.Should().NotContainGitWarning(GitDiagnosticId.GitRepositoryHasNoCommits);
 
         repository.TestApp.GitPropertiesGenerated.Should().BeFalse();
     }

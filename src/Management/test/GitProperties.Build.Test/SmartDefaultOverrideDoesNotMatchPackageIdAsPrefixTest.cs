@@ -6,11 +6,6 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 
 public sealed class SmartDefaultOverrideDoesNotMatchPackageIdAsPrefixTest : GitPropertiesBuildTestBase
 {
-    /// <summary>
-    /// Guards against a regression to a naive substring match (e.g. "IndexOf(id + "/")" without also requiring the match to be a whole library key) - a
-    /// project referencing only "Some2" (never "Some" itself) must NOT be detected when $(GitPropertiesConsumingPackageIds) is configured as "Some", even
-    /// though "Some2" starts with "Some". Proves DetectConsumingPackageReferenceTask compares whole package IDs, not prefixes.
-    /// </summary>
     [Fact]
     public async Task Test()
     {

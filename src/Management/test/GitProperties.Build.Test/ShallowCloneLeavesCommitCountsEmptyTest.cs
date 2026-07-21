@@ -15,10 +15,10 @@ public sealed class ShallowCloneLeavesCommitCountsEmptyTest : GitPropertiesBuild
         string isShallowRepository = await shallow.RunGitAsync("rev-parse", "--is-shallow-repository");
         isShallowRepository.Should().Be("true");
 
-        string result = await shallow.TestApp.BuildAsync();
-        result.Should().NotContain("GITPROPS001");
-        result.Should().NotContain("GITPROPS002");
-        result.AssertWarned("GITPROPS006");
+        DotNetCommandOutput output = await shallow.TestApp.BuildAsync();
+        output.Should().NotContainGitWarning(GitDiagnosticId.GitRepositoryNotFound);
+        output.Should().NotContainGitWarning(GitDiagnosticId.GitWorktreeFound);
+        output.Should().ContainGitWarning(GitDiagnosticId.GitRepositoryIsShallowClone);
 
         Dictionary<string, string> properties = await shallow.TestApp.ReadDebugPropertiesAsync();
         properties["git.total.commit.count"].Should().BeEmpty();

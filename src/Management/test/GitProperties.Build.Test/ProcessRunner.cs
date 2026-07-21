@@ -7,9 +7,6 @@ using System.Text;
 
 namespace Steeltoe.Management.GitProperties.Build.Test;
 
-/// <summary>
-/// Runs external processes and captures stdout/stderr merged into a single string.
-/// </summary>
 internal static class ProcessRunner
 {
     private static readonly string LocatorCommand = OperatingSystem.IsWindows() ? "where" : "which";
@@ -21,9 +18,8 @@ internal static class ProcessRunner
     ];
 
     /// <summary>
-    /// Generous enough to comfortably cover the slowest single command this test suite ever runs (a Release build plus NuGet pack, or a "dotnet build"
-    /// against a cold/isolated restore) even under heavy system load, while still turning a genuine hang into an informative test failure instead of
-    /// blocking the whole suite indefinitely.
+    /// Generous enough to cover the slowest command this suite runs (a Release build plus NuGet pack) under heavy load, while still turning a genuine hang
+    /// into an informative test failure instead of blocking the whole suite indefinitely.
     /// </summary>
     private static readonly TimeSpan ProcessExitTimeout = TimeSpan.FromMinutes(2);
 
@@ -96,10 +92,9 @@ internal static class ProcessRunner
             startInfo.ArgumentList.Add(argument);
         }
 
-        // Without this, a spawned "dotnet build"/"publish" leaves a persistent MSBuild worker node running in the background for reuse by a later build
-        // (the SDK's default, off a dev machine with no CI environment variable set). That node inherits our redirected stdout/stderr pipe handles and
-        // keeps them open even after the process we launched here exits, so the read end never sees EOF, and awaiting exit below would otherwise block
-        // forever waiting for a pipe close that will never happen, even though the build already completed successfully.
+        // Without this, a spawned "dotnet build"/"publish" leaves a persistent MSBuild worker node running in the background for reuse by a later
+        // build. That node inherits our redirected stdout/stderr pipe handles and keeps them open after the process we launched exits, so the read end
+        // never sees EOF and awaiting exit below would block forever even though the build already completed successfully.
         startInfo.EnvironmentVariables["MSBUILDDISABLENODEREUSE"] = "1";
 
         using var process = new Process();
@@ -144,9 +139,8 @@ internal static class ProcessRunner
             }
 
 #pragma warning disable S6507 // Blocks should not be synchronized on local variables
-            // Deliberately a call-scoped lock, not a shared static one: many tests run processes concurrently, and every process's stdout/stderr callback
-            // would otherwise contend for one single global lock. Under enough concurrent, high-volume output (e.g. "dotnet build -v:detailed"), that starves
-            // the thread pool and stalls the whole suite indefinitely. This lock only ever guards this one call's own StringBuilder.
+            // Justification: Deliberately a call-scoped lock, not a shared static one: a global lock would serialize stdout/stderr callbacks
+            // across every concurrently running process, starving the thread pool under high-volume output (e.g. "dotnet build -v:detailed").
             lock (outputLock)
 #pragma warning restore S6507 // Blocks should not be synchronized on local variables
             {
@@ -167,7 +161,7 @@ internal static class ProcessRunner
             }
             catch (Exception)
             {
-                // Intentionally left empty.
+                // Best-effort kill of an already-timed-out process.
             }
         });
     }

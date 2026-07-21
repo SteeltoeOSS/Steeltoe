@@ -6,13 +6,8 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 
 public sealed class SmartDefaultOverrideEmptyPackageIdsViaGlobalPropertySkipsGenerationGracefullyTest : GitPropertiesBuildTestBase
 {
-    /// <summary>
-    /// Guards against a regression where MSBuild's required-parameter check for a Task string parameter treats an empty string the same as "not supplied":
-    /// setting $(GitPropertiesConsumingPackageIds) to blank via a global property (e.g. "-p:GitPropertiesConsumingPackageIds=") reaches
-    /// DetectConsumingPackageReferenceTask.PackageIds unchanged (global properties can't be reassigned by the project's own conditional default at
-    /// ResolveGitPropertiesPaths above), so PackageIds must NOT be [Required] - it must instead behave exactly like "no configured ID happens to match",
-    /// i.e. skip generation gracefully rather than fail the build with MSB4044.
-    /// </summary>
+    // Global properties can't be reassigned by the project's own conditional default, so this reaches the task's PackageIds parameter as a genuinely
+    // empty string, not "unset". That parameter must NOT be [Required]: MSBuild treats empty the same as "not supplied" and would fail with MSB4044.
     [Fact]
     public async Task Test()
     {

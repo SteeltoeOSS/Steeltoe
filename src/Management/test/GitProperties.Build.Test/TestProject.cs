@@ -4,11 +4,6 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test;
 
-/// <summary>
-/// A single project directory under test (TestApp, ProjectA, a multi-targeted app, a dummy dependency, a pushed copy, a PackageReference consumer...).
-/// Wraps the directory and project name so a test can build/publish it and read whatever git.properties it produced without re-deriving any of those
-/// paths itself. Created by <see cref="GitPropertiesTestWorkspace" /> or <see cref="GitRepository" /> - never directly.
-/// </summary>
 internal sealed class TestProject(string rootDirectory, string name)
 {
     private readonly string _debugGitPropertiesFilePath = Path.Combine(rootDirectory, "bin", "Debug", TestPaths.TestAppTargetFramework, "git.properties");
@@ -24,33 +19,33 @@ internal sealed class TestProject(string rootDirectory, string name)
     public bool FallbackGitPropertiesGenerated => File.Exists(FallbackFilePath);
     public bool CompiledAssemblyExists => File.Exists(Path.Combine(RootDirectory, "bin", "Debug", TestPaths.TestAppTargetFramework, $"{Name}.dll"));
 
-    /// <summary>
-    /// The relative XML this project's directory/name pair would need to be referenced as a &lt;ProjectReference&gt; from a sibling project - used by the
-    /// smart-default detection tests to wire a <see cref="GitRepository.AddDependencyProjectAsync" /> stand-in into the app under test.
-    /// </summary>
     public string ToProjectReferenceXml()
     {
         return $"""<ProjectReference Include="..\{Name}\{Name}.csproj" />""";
     }
 
-    public Task<string> BuildAsync(params string[] arguments)
+    public async Task<DotNetCommandOutput> BuildAsync(params string[] arguments)
     {
-        return RunDotnetAsync("build", arguments);
+        string output = await RunDotnetAsync("build", arguments);
+        return new DotNetCommandOutput(output);
     }
 
-    public Task<string> PublishAsync(params string[] arguments)
+    public async Task<DotNetCommandOutput> PublishAsync(params string[] arguments)
     {
-        return RunDotnetAsync("publish", arguments);
+        string output = await RunDotnetAsync("publish", arguments);
+        return new DotNetCommandOutput(output);
     }
 
-    public Task<string> PublishAsync(int exitCodeExpected, params string[] arguments)
+    public async Task<DotNetCommandOutput> PublishAsync(int exitCodeExpected, params string[] arguments)
     {
-        return RunDotnetAsync(exitCodeExpected, "publish", arguments);
+        string output = await RunDotnetAsync(exitCodeExpected, "publish", arguments);
+        return new DotNetCommandOutput(output);
     }
 
-    public Task<string> RestoreAsync(params string[] arguments)
+    public async Task<DotNetCommandOutput> RestoreAsync(params string[] arguments)
     {
-        return RunDotnetAsync("restore", arguments);
+        string output = await RunDotnetAsync("restore", arguments);
+        return new DotNetCommandOutput(output);
     }
 
     private Task<string> RunDotnetAsync(string command, params string[] arguments)
@@ -84,10 +79,6 @@ internal sealed class TestProject(string rootDirectory, string name)
         return PropertiesFile.ReadAsync(FallbackFilePath);
     }
 
-    /// <summary>
-    /// Reads the per-target-framework "bin\Debug\&lt;tfm&gt;\git.properties" produced by a multi-targeted build of this project - see
-    /// <see cref="TestPaths.MultiTargetTestFrameworks" />.
-    /// </summary>
     public async Task<List<Dictionary<string, string>>> ReadDebugPropertiesPerTargetFrameworkAsync(IEnumerable<string> targetFrameworks)
     {
         List<Dictionary<string, string>> result = [];

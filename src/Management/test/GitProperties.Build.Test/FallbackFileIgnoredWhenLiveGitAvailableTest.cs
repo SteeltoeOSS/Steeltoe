@@ -6,20 +6,13 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 
 public sealed class FallbackFileIgnoredWhenLiveGitAvailableTest : GitPropertiesBuildTestBase
 {
-    /// <summary>
-    /// Guards against a stale fallback file (left over from some earlier build) ever shadowing live generation - the fallback file must only ever be used as
-    /// a last resort, never preferred over a real, currently-usable .git repository.
-    /// </summary>
     [Fact]
     public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1, true);
-
-        await File.WriteAllLinesAsync(repository.TestApp.FallbackFilePath, ["git.commit.id=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"],
-            TestContext.Current.CancellationToken);
-
-        string result = await repository.TestApp.BuildAsync("-v:detailed");
-        result.Should().NotContain("using pre-generated fallback file", "the fallback notice must not appear when live generation actually ran.");
+        await Workspace.WriteFileAsync(repository.TestApp.FallbackFilePath, ["git.commit.id=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"]);
+        DotNetCommandOutput output = await repository.TestApp.BuildAsync("-v:detailed");
+        output.Value.Should().NotContain("using pre-generated fallback file");
 
         Dictionary<string, string> properties = await repository.TestApp.ReadDebugPropertiesAsync();
         string expectedCommitId = await repository.GetCommitIdAsync();

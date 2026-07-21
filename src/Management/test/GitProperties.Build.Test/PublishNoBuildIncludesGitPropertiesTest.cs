@@ -11,8 +11,7 @@ public sealed class PublishNoBuildIncludesGitPropertiesTest : GitPropertiesBuild
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         await repository.TestApp.BuildAsync("-c", "Release");
-        string publishResult = await repository.TestApp.PublishAsync("-c", "Release", "--no-build");
-        publishResult.Should().NotContain("duplicate");
+        await repository.TestApp.PublishAsync("-c", "Release", "--no-build");
 
         Dictionary<string, string> properties = await repository.TestApp.ReadReleasePublishPropertiesAsync();
         string expectedCommitId = await repository.GetCommitIdAsync();

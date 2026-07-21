@@ -8,26 +8,20 @@ public sealed class GitExecutableNotFoundWarnsByDefaultTest : GitPropertiesBuild
 {
     private const string BogusGitExecutable = "this-executable-definitely-does-not-exist-anywhere";
 
-    /// <summary>
-    /// $(GitExecutable) itself failing to run - the most likely real-world reason git.properties would ever be skipped at all: git simply isn't installed,
-    /// or isn't on PATH - is otherwise untested (see GenerateGitPropertiesCacheTask.CheckGitVersion's own remarks on why the "too old"/"unparseable version
-    /// string" siblings of this same check can't reasonably be exercised this way). Unlike those two, this one needs no real-but-fake git binary: pointing
-    /// $(GitExecutable) at a name that can never resolve on any platform's PATH reliably reproduces "could not run git at all" through a real build.
-    /// </summary>
     [Fact]
     public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
-        string defaultResult = await repository.TestApp.BuildAsync($"-p:GitExecutable={BogusGitExecutable}");
-        defaultResult.AssertWarned("GITPROPS003");
+        DotNetCommandOutput defaultOutput = await repository.TestApp.BuildAsync($"-p:GitExecutable={BogusGitExecutable}");
+        defaultOutput.Should().ContainGitWarning(GitDiagnosticId.GitExecutableNotFound);
 
-        string enableWarningsFalseResult =
+        DotNetCommandOutput disableWarningsOutput =
             await repository.TestApp.BuildAsync($"-p:GitExecutable={BogusGitExecutable}", "-p:GitPropertiesEnableWarnings=false", "-v:normal");
 
-        enableWarningsFalseResult.AssertReportedAsInfoOnly("GITPROPS003", "could not run");
+        disableWarningsOutput.Should().ContainGitInfo(GitDiagnosticId.GitExecutableNotFound, "git.properties generation skipped: could not run");
 
-        string featureOffResult = await repository.TestApp.BuildAsync($"-p:GitExecutable={BogusGitExecutable}", "-p:GenerateGitProperties=false");
-        featureOffResult.Should().NotContain("GITPROPS003");
+        DotNetCommandOutput featureOffOutput = await repository.TestApp.BuildAsync($"-p:GitExecutable={BogusGitExecutable}", "-p:GenerateGitProperties=false");
+        featureOffOutput.Should().NotContainGitWarning(GitDiagnosticId.GitExecutableNotFound);
 
         repository.TestApp.GitPropertiesGenerated.Should().BeFalse();
     }

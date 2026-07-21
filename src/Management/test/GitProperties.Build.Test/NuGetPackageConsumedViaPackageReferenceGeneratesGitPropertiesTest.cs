@@ -8,15 +8,6 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 
 public sealed class NuGetPackageConsumedViaPackageReferenceGeneratesGitPropertiesTest : GitPropertiesBuildTestBase
 {
-    /// <summary>
-    /// Every other test here consumes Steeltoe.Management.GitProperties.Build straight from source (ProjectReference + Import) - this is the only one that
-    /// goes through a real, packed .nupkg via &lt;PackageReference&gt;, the way an actual external user of the package would. That exercises the NuGet
-    /// "build\{PackageId}.targets" auto-import convention end-to-end (no explicit &lt;Import&gt; anywhere in the consumer project) and the in-process
-    /// (non-dev-loop) task-loading branch (SourceCheckout.txt is never packed, so it's absent in this layout - see $(GitPropertiesTaskHost) in
-    /// Steeltoe.Management.GitProperties.Build.targets). Isolated per andrewlock.net's "Creating a source generator, part 3" approach: a local folder feed
-    /// (just our own freshly-packed .nupkg, via a nuget.config with &lt;clear/&gt;) and a per-test RestorePackagesPath, so this never touches - or gets a
-    /// stale result from - the machine-wide global-packages cache at %userprofile%\.nuget\packages.
-    /// </summary>
     [Fact]
     public async Task Test()
     {
@@ -24,29 +15,24 @@ public sealed class NuGetPackageConsumedViaPackageReferenceGeneratesGitPropertie
         string feedDirectory = await Workspace.PackGitPropertiesBuildToFeedAsync();
         string packageId = await TestPaths.GetPackageIdAsync();
         string[] nuPkgFiles = Directory.GetFiles(feedDirectory, $"{packageId}.*.nupkg");
-        nuPkgFiles.Should().ContainSingle("packing should produce exactly one .nupkg.");
+        nuPkgFiles.Should().ContainSingle();
 
         var nuPkgVersionRegex = new Regex($@"^{Regex.Escape(packageId)}\.(.+)\.nupkg$", RegexOptions.None, TimeSpan.FromSeconds(1));
         Match versionMatch = nuPkgVersionRegex.Match(Path.GetFileName(nuPkgFiles[0]));
-        versionMatch.Success.Should().BeTrue("the .nupkg file name should embed the package version.");
-        string packageVersion = versionMatch.Groups[1].Value;
+        versionMatch.Success.Should().BeTrue();
 
+        string packageVersion = versionMatch.Groups[1].Value;
         TestProject consumer = await repository.AddPackageConsumerProjectAsync("Consumer", packageVersion);
         await Workspace.WriteIsolatedNuGetConfigAsync(consumer, feedDirectory);
-
         string isolatedPackagesPath = Workspace.GetPath("isolated-packages");
-        string result = await consumer.BuildAsync($"-p:RestorePackagesPath={isolatedPackagesPath}");
-        result.Should().Contain("0 Warning(s)", "a real package consumer should see no in-process task-loading fallback warning or any other diagnostic.");
+        DotNetCommandOutput output = await consumer.BuildAsync($"-p:RestorePackagesPath={isolatedPackagesPath}");
+        output.Value.Should().Contain("0 Warning(s)");
 
-        // NuGet always lowercases the package ID for the on-disk global-packages-folder layout - this isn't
-        // an arbitrary case normalization, so ToUpperInvariant() (as generally preferred) would look here for
-        // a folder that NuGet never creates.
 #pragma warning disable S4040
+        // Justification: NuGet always lowercases the package ID for the on-disk global-packages-folder layout.
         string lowerCasePackageId = packageId.ToLowerInvariant();
 #pragma warning restore S4040
-
-        Directory.Exists(Path.Combine(isolatedPackagesPath, lowerCasePackageId, packageVersion)).Should().BeTrue(
-            "the package should restore into the isolated path, never the machine-wide global-packages cache.");
+        Directory.Exists(Path.Combine(isolatedPackagesPath, lowerCasePackageId, packageVersion)).Should().BeTrue();
 
         Dictionary<string, string> properties = await consumer.ReadDebugPropertiesAsync();
         string expectedCommitId = await repository.GetCommitIdAsync();

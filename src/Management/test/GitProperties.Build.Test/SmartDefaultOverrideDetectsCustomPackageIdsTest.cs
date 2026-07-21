@@ -6,10 +6,6 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 
 public sealed class SmartDefaultOverrideDetectsCustomPackageIdsTest : GitPropertiesBuildTestBase
 {
-    /// <summary>
-    /// Proves $(GitPropertiesConsumingPackageIds) is genuinely overridable - for consumers of this package who don't use Steeltoe.Management.Endpoint at all
-    /// (e.g. a hand-rolled /info endpoint reading git.properties directly), so the smart default isn't hardcoded away from them.
-    /// </summary>
     [Fact]
     public async Task Test()
     {

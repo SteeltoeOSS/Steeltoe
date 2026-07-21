@@ -6,10 +6,6 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 
 public sealed class WriteGitPropertiesFallbackFileWorksWithNoRestoreTest : GitPropertiesBuildTestBase
 {
-    /// <summary>
-    /// "--no-restore" must work the same way for this target as for any other build invocation - it only requires that restore already happened at least
-    /// once, same as a normal build.
-    /// </summary>
     [Fact]
     public async Task Test()
     {
