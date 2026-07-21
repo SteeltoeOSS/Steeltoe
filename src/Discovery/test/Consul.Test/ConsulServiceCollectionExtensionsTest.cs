@@ -164,7 +164,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
 
         logEntry.Should()
             .Be(
-                $"WARN {typeof(ValidateConsulOptions).FullName}: Consul URL 'http://localhost:8500' is unlikely to be valid in containerized or cloud environments. " +
+                $"WARN {typeof(PostConfigureConsulOptions).FullName}: Consul URL 'http://localhost:8500' is unlikely to be valid in containerized or cloud environments. " +
                 "Please configure Consul:Host with a non-localhost server.");
     }
 }

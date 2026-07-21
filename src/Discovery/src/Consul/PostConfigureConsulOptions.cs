@@ -9,20 +9,21 @@ using Steeltoe.Discovery.Consul.Configuration;
 
 namespace Steeltoe.Discovery.Consul;
 
-internal sealed partial class ValidateConsulOptions : IValidateOptions<ConsulOptions>
+internal sealed partial class PostConfigureConsulOptions : IPostConfigureOptions<ConsulOptions>
 {
-    private readonly ILogger<ValidateConsulOptions> _logger;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _discoveryOptionsMonitor;
+    private readonly ILogger<PostConfigureConsulOptions> _logger;
 
-    public ValidateConsulOptions(IOptionsMonitor<ConsulDiscoveryOptions> discoveryOptionsMonitor, ILogger<ValidateConsulOptions> logger)
+    public PostConfigureConsulOptions(IOptionsMonitor<ConsulDiscoveryOptions> discoveryOptionsMonitor, ILogger<PostConfigureConsulOptions> logger)
     {
         ArgumentNullException.ThrowIfNull(discoveryOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _discoveryOptionsMonitor = discoveryOptionsMonitor;
         _logger = logger;
     }
 
-    public ValidateOptionsResult Validate(string? name, ConsulOptions options)
+    public void PostConfigure(string? name, ConsulOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
 
@@ -30,8 +31,6 @@ internal sealed partial class ValidateConsulOptions : IValidateOptions<ConsulOpt
         {
             LogLocalhostConsulUrl(_logger, $"{options.Scheme}://{options.Host}:{options.Port}");
         }
-
-        return ValidateOptionsResult.Success;
     }
 
     [LoggerMessage(EventId = 0, Level = LogLevel.Warning,
