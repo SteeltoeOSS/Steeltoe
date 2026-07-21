@@ -10,6 +10,7 @@ internal sealed class DotNetCommandOutputAssertions(DotNetCommandOutput subject)
     : ReferenceTypeAssertions<DotNetCommandOutput, DotNetCommandOutputAssertions>(subject)
 {
     private const string DiagnosticPrefix = "GITPROPS";
+
     protected override string Identifier => nameof(DotNetCommandOutput);
 
     [CustomAssertion]
@@ -29,15 +30,14 @@ internal sealed class DotNetCommandOutputAssertions(DotNetCommandOutput subject)
     [CustomAssertion]
     public void NotContainAnyGitWarnings()
     {
-        Subject.Value.Should().NotContain(DiagnosticPrefix);
+        Subject.Value.Should().NotContain($"warning {DiagnosticPrefix}");
     }
 
     [CustomAssertion]
-    public void ContainGitInfo(GitDiagnosticId diagnosticId, string messageSnippet)
+    public void ContainGitMessage(GitDiagnosticId diagnosticId)
     {
         string code = FormatCode(diagnosticId);
-        Subject.Value.Should().NotContain(code);
-        Subject.Value.Should().Contain(messageSnippet);
+        Subject.Value.Should().Contain($"message {code}");
     }
 
     private static string FormatCode(GitDiagnosticId diagnosticId)

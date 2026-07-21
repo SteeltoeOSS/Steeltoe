@@ -15,13 +15,14 @@ public sealed class GitWorktreeWarnsByDefaultTest : GitPropertiesBuildTestBase
 
         DotNetCommandOutput defaultOutput = await testApp.BuildAsync();
         defaultOutput.Should().ContainGitWarning(GitDiagnosticId.GitWorktreeFound);
+        testApp.GitPropertiesGenerated.Should().BeFalse();
 
-        DotNetCommandOutput disableWarningsOutput = await testApp.BuildAsync("-p:GitPropertiesEnableWarnings=false", "-v:normal");
-        disableWarningsOutput.Should().ContainGitInfo(GitDiagnosticId.GitWorktreeFound, "resolves to a git worktree or submodule");
+        DotNetCommandOutput disableWarningsOutput = await testApp.BuildAsync("-p:GitPropertiesEnableWarnings=false");
+        disableWarningsOutput.Should().ContainGitMessage(GitDiagnosticId.GitWorktreeFound);
+        testApp.GitPropertiesGenerated.Should().BeFalse();
 
         DotNetCommandOutput featureOffOutput = await testApp.BuildAsync("-p:GenerateGitProperties=false");
         featureOffOutput.Should().NotContainGitWarning(GitDiagnosticId.GitWorktreeFound);
-
         testApp.GitPropertiesGenerated.Should().BeFalse();
     }
 }

@@ -12,11 +12,11 @@ public sealed class MultiProjectSharesCacheTest : GitPropertiesBuildTestBase
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 2);
         TestProject projectA = await repository.AddProjectAsync("ProjectA");
         TestProject projectB = await repository.AddProjectAsync("ProjectB");
-        DotNetCommandOutput outputA = await projectA.BuildAsync("-v:detailed");
+        DotNetCommandOutput outputA = await projectA.BuildAsync();
         outputA.Value.Should().Contain("git.properties: generating shared cache");
         repository.SharedCacheExists.Should().BeTrue();
 
-        DotNetCommandOutput outputB = await projectB.BuildAsync("-v:detailed");
+        DotNetCommandOutput outputB = await projectB.BuildAsync();
         outputB.Value.Should().NotContain("git.properties: generating shared cache");
 
         Dictionary<string, string> propertiesA = await projectA.ReadDebugPropertiesAsync();

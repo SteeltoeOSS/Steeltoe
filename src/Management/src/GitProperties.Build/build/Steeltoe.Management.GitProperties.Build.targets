@@ -33,12 +33,15 @@
     TaskFactory="TaskHostFactory" />
   <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' == 'true'" TaskName="ComposeGitPropertiesTask" AssemblyFile="$(GitPropertiesTasksAssembly)"
     TaskFactory="TaskHostFactory" />
+  <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' == 'true'" TaskName="ReportGitDiagnosticTask" AssemblyFile="$(GitPropertiesTasksAssembly)"
+    TaskFactory="TaskHostFactory" />
 
   <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' != 'true'" TaskName="FindGitRepositoryRootTask" AssemblyFile="$(GitPropertiesTasksAssembly)" />
   <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' != 'true'" TaskName="DetectConsumingPackageReferenceTask"
     AssemblyFile="$(GitPropertiesTasksAssembly)" />
   <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' != 'true'" TaskName="GenerateGitPropertiesCacheTask" AssemblyFile="$(GitPropertiesTasksAssembly)" />
   <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' != 'true'" TaskName="ComposeGitPropertiesTask" AssemblyFile="$(GitPropertiesTasksAssembly)" />
+  <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' != 'true'" TaskName="ReportGitDiagnosticTask" AssemblyFile="$(GitPropertiesTasksAssembly)" />
 
   <!--
     Hooked directly to every relevant BeforeTargets value, not via DependsOnTargets, because a target's own Condition is evaluated before its
@@ -74,19 +77,13 @@
       <GitPropertiesCacheFile Condition="'$(GitPropertiesCacheFile)' == ''">$(GitPropertiesCacheDirectory)git.properties.cache</GitPropertiesCacheFile>
     </PropertyGroup>
 
-    <Warning Code="GITPROPS001"
-      Condition="'$(GitPropertiesEnableWarnings)' == 'true' and '$(GitRepositoryRoot)' == '' and '$(_GitPropertiesUnsupportedGitFile)' != 'true' and '$(_GitPropertiesShouldGenerate)' == 'true' and !Exists('$(GitPropertiesFallbackFile)')"
-      Text="git.properties generation skipped: no usable .git directory found above '$(MSBuildProjectDirectory)'." />
-    <Message
-      Condition="'$(GitPropertiesEnableWarnings)' != 'true' and '$(GitRepositoryRoot)' == '' and '$(_GitPropertiesUnsupportedGitFile)' != 'true' and '$(_GitPropertiesShouldGenerate)' == 'true' and !Exists('$(GitPropertiesFallbackFile)')"
-      Text="git.properties generation skipped: no usable .git directory found above '$(MSBuildProjectDirectory)'." />
+    <ReportGitDiagnosticTask DiagnosticId="1" EnableWarnings="$(GitPropertiesEnableWarnings)"
+      Condition="'$(GitRepositoryRoot)' == '' and '$(_GitPropertiesUnsupportedGitFile)' != 'true' and '$(_GitPropertiesShouldGenerate)' == 'true' and !Exists('$(GitPropertiesFallbackFile)')"
+      Message="git.properties generation skipped: no usable .git directory found above '$(MSBuildProjectDirectory)'." />
 
-    <Warning Code="GITPROPS002"
-      Condition="'$(GitPropertiesEnableWarnings)' == 'true' and '$(_GitPropertiesUnsupportedGitFile)' == 'true' and '$(_GitPropertiesShouldGenerate)' == 'true' and !Exists('$(GitPropertiesFallbackFile)')"
-      Text="git.properties generation skipped: '$(MSBuildProjectDirectory)' resolves to a git worktree or submodule (a '.git' file, not a directory), which this feature does not support." />
-    <Message
-      Condition="'$(GitPropertiesEnableWarnings)' != 'true' and '$(_GitPropertiesUnsupportedGitFile)' == 'true' and '$(_GitPropertiesShouldGenerate)' == 'true' and !Exists('$(GitPropertiesFallbackFile)')"
-      Text="git.properties generation skipped: '$(MSBuildProjectDirectory)' resolves to a git worktree or submodule (a '.git' file, not a directory), which this feature does not support." />
+    <ReportGitDiagnosticTask DiagnosticId="2" EnableWarnings="$(GitPropertiesEnableWarnings)"
+      Condition="'$(_GitPropertiesUnsupportedGitFile)' == 'true' and '$(_GitPropertiesShouldGenerate)' == 'true' and !Exists('$(GitPropertiesFallbackFile)')"
+      Message="git.properties generation skipped: '$(MSBuildProjectDirectory)' resolves to a git worktree or submodule (a '.git' file, not a directory), which this feature does not support." />
 
     <Message Condition="'$(GitRepositoryRoot)' == '' and '$(_GitPropertiesShouldGenerate)' == 'true' and Exists('$(GitPropertiesFallbackFile)')"
       Text="git.properties: live generation skipped; using pre-generated fallback file '$(GitPropertiesFallbackFile)' instead." />
@@ -121,7 +118,7 @@
     "git.properties" Link at once.
   -->
   <Target Name="IncludeGitPropertiesInOutput" BeforeTargets="BeforeBuild;AssignTargetPaths;PrepareForPublish" DependsOnTargets="GenerateGitPropertiesCache"
-    Condition="'$(_GitPropertiesIncluded)' != 'true' and (Exists('$(GitPropertiesCacheFile)') or Exists('$(GitPropertiesFallbackFile)'))">
+    Condition="'$(_GitPropertiesShouldGenerate)' == 'true' and '$(_GitPropertiesIncluded)' != 'true' and (Exists('$(GitPropertiesCacheFile)') or Exists('$(GitPropertiesFallbackFile)'))">
     <ItemGroup Condition="Exists('$(GitPropertiesCacheFile)')">
       <Content Include="$(GitPropertiesFile)" Link="git.properties" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest"
         Visible="false" />
@@ -147,17 +144,17 @@
     computes it later in the pipeline.
   -->
   <Target Name="ComposeGitProperties" BeforeTargets="CoreCompile;PrepareForPublish" DependsOnTargets="GenerateGitPropertiesCache"
-    Condition="Exists('$(GitPropertiesCacheFile)') and '$(DesignTimeBuild)' != 'true' and '$(_GitPropertiesComposed)' != 'true'">
+    Condition="'$(_GitPropertiesShouldGenerate)' == 'true' and Exists('$(GitPropertiesCacheFile)') and '$(DesignTimeBuild)' != 'true' and '$(_GitPropertiesComposed)' != 'true'">
     <PropertyGroup>
       <_GitPropertiesFallbackFileTarget Condition="'$(GitPropertiesWriteToProjectDirectory)' == 'true'">$(GitPropertiesFallbackFile)</_GitPropertiesFallbackFileTarget>
     </PropertyGroup>
 
     <ComposeGitPropertiesTask RepositoryRoot="$(GitRepositoryRoot)" GitExecutable="$(GitExecutable)" CacheFile="$(GitPropertiesCacheFile)"
-      OutputFile="$(GitPropertiesFile)" Version="$(Version)" FallbackFile="$(_GitPropertiesFallbackFileTarget)" />
+      OutputFile="$(GitPropertiesFile)" Version="$(Version)" FallbackFile="$(_GitPropertiesFallbackFileTarget)" EnableWarnings="$(GitPropertiesEnableWarnings)" />
 
-    <Message Importance="High" Text="git.properties: writing to '$(GitPropertiesFile)' for project '$(MSBuildProjectName)'." />
+    <Message Importance="High" Text="git.properties: writing to '$([System.IO.Path]::GetFullPath('$(GitPropertiesFile)'))'." />
     <Message Importance="High" Condition="'$(_GitPropertiesFallbackFileTarget)' != ''"
-      Text="git.properties: writing fallback copy to '$(_GitPropertiesFallbackFileTarget)' for project '$(MSBuildProjectName)'." />
+      Text="git.properties: writing fallback copy to '$([System.IO.Path]::GetFullPath('$(_GitPropertiesFallbackFileTarget)'))'." />
 
     <PropertyGroup>
       <_GitPropertiesComposed>true</_GitPropertiesComposed>

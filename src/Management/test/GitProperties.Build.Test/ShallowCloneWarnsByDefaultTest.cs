@@ -12,17 +12,18 @@ public sealed class ShallowCloneWarnsByDefaultTest : GitPropertiesBuildTestBase
         GitRepository source = await Workspace.CreateGitRepositoryAsync("source", 1);
         GitRepository shallow = await source.CloneAsShallowAsync("shallow");
 
-        DotNetCommandOutput defaultOutput = await shallow.TestApp.BuildAsync("-v:normal");
+        DotNetCommandOutput defaultOutput = await shallow.TestApp.BuildAsync();
         defaultOutput.Should().ContainGitWarning(GitDiagnosticId.GitRepositoryIsShallowClone);
+        shallow.TestApp.GitPropertiesGenerated.Should().BeTrue();
 
         shallow.DeleteSharedCache();
-        DotNetCommandOutput disableWarningsOutput = await shallow.TestApp.BuildAsync("-p:GitPropertiesEnableWarnings=false", "-v:normal");
-        disableWarningsOutput.Should().ContainGitInfo(GitDiagnosticId.GitRepositoryIsShallowClone, "repository is a shallow clone");
+        DotNetCommandOutput disableWarningsOutput = await shallow.TestApp.BuildAsync("-p:GitPropertiesEnableWarnings=false");
+        disableWarningsOutput.Should().ContainGitMessage(GitDiagnosticId.GitRepositoryIsShallowClone);
+        shallow.TestApp.GitPropertiesGenerated.Should().BeTrue();
 
         shallow.DeleteSharedCache();
         DotNetCommandOutput featureOffOutput = await shallow.TestApp.BuildAsync("-p:GenerateGitProperties=false");
         featureOffOutput.Should().NotContainGitWarning(GitDiagnosticId.GitRepositoryIsShallowClone);
-
-        shallow.TestApp.GitPropertiesGenerated.Should().BeTrue();
+        shallow.TestApp.GitPropertiesGenerated.Should().BeFalse();
     }
 }

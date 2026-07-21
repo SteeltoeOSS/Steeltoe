@@ -11,7 +11,7 @@ public sealed class FallbackFileIgnoredWhenLiveGitAvailableTest : GitPropertiesB
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1, true);
         await Workspace.WriteFileAsync(repository.TestApp.FallbackFilePath, ["git.commit.id=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"]);
-        DotNetCommandOutput output = await repository.TestApp.BuildAsync("-v:detailed");
+        DotNetCommandOutput output = await repository.TestApp.BuildAsync("-v:normal");
         output.Value.Should().NotContain("using pre-generated fallback file");
 
         Dictionary<string, string> properties = await repository.TestApp.ReadDebugPropertiesAsync();

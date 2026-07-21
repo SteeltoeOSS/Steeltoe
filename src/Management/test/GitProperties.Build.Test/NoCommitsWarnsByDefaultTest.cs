@@ -14,13 +14,14 @@ public sealed class NoCommitsWarnsByDefaultTest : GitPropertiesBuildTestBase
 
         DotNetCommandOutput defaultOutput = await repository.TestApp.BuildAsync();
         defaultOutput.Should().ContainGitWarning(GitDiagnosticId.GitRepositoryHasNoCommits);
+        repository.TestApp.GitPropertiesGenerated.Should().BeFalse();
 
-        DotNetCommandOutput disableWarningsOutput = await repository.TestApp.BuildAsync("-p:GitPropertiesEnableWarnings=false", "-v:normal");
-        disableWarningsOutput.Should().ContainGitInfo(GitDiagnosticId.GitRepositoryHasNoCommits, "no commits yet");
+        DotNetCommandOutput disableWarningsOutput = await repository.TestApp.BuildAsync("-p:GitPropertiesEnableWarnings=false");
+        disableWarningsOutput.Should().ContainGitMessage(GitDiagnosticId.GitRepositoryHasNoCommits);
+        repository.TestApp.GitPropertiesGenerated.Should().BeFalse();
 
         DotNetCommandOutput featureOffOutput = await repository.TestApp.BuildAsync("-p:GenerateGitProperties=false");
         featureOffOutput.Should().NotContainGitWarning(GitDiagnosticId.GitRepositoryHasNoCommits);
-
         repository.TestApp.GitPropertiesGenerated.Should().BeFalse();
     }
 }

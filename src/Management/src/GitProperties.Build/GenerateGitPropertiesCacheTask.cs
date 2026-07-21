@@ -18,7 +18,8 @@ namespace Steeltoe.Management.GitProperties.Build;
 // ReSharper disable once UnusedType.Global
 public sealed class GenerateGitPropertiesCacheTask : Task
 {
-    private const string DiagnosticPrefix = "GITPROPS";
+    private const string VersionCheckArguments = "--version";
+
     private static readonly Version MinimumGitVersion = new(2, 15, 0);
 
     /// <summary>
@@ -122,15 +123,15 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
         if (installedVersion == null)
         {
-            Log.LogError($"git.properties: could not parse the installed git version from '{GitExecutable} --version' output: '{output}'.");
+            Log.LogError($"git.properties: could not parse the installed git version from '{GitExecutable} {VersionCheckArguments}' output: '{output}'.");
             return GitVersionStatus.Unknown;
         }
 
         if (installedVersion < MinimumGitVersion)
         {
-            ReportDiagnostic(4,
-                $"git.properties generation skipped: installed git version {installedVersion} is older than the minimum supported version " +
-                $"({MinimumGitVersion}). Upgrade git to resolve this.");
+            GitDiagnosticReporter.Report(Log, 4, EnableWarnings,
+                $"git.properties generation skipped: installed git version {installedVersion} " +
+                $"is older than the minimum supported version ({MinimumGitVersion}). Upgrade git to resolve this.");
 
             return GitVersionStatus.Incompatible;
         }
@@ -145,17 +146,19 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
         try
         {
-            exitCode = RunGit("--version", out output, out _);
+            exitCode = RunGit(VersionCheckArguments, out output, out _);
         }
         catch (Exception exception)
         {
-            ReportDiagnostic(3, $"git.properties generation skipped: could not run '{GitExecutable}' ({exception.Message}).");
+            string message = $"git.properties generation skipped: could not run '{GitExecutable}' ({exception.Message}).";
+            GitDiagnosticReporter.Report(Log, 3, EnableWarnings, message);
             return null;
         }
 
         if (exitCode != 0)
         {
-            ReportDiagnostic(3, $"git.properties generation skipped: '{GitExecutable} --version' exited with code {exitCode}.");
+            string message = $"git.properties generation skipped: '{GitExecutable} {VersionCheckArguments}' exited with code {exitCode}.";
+            GitDiagnosticReporter.Report(Log, 3, EnableWarnings, message);
             return null;
         }
 
@@ -168,7 +171,8 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
         if (exitCode != 0 || stdout != "true")
         {
-            ReportDiagnostic(1, $"git.properties generation skipped: '{RepositoryRoot}' is not inside a usable git repository.");
+            string message = $"git.properties generation skipped: '{RepositoryRoot}' is not inside a usable git repository.";
+            GitDiagnosticReporter.Report(Log, 1, EnableWarnings, message);
             return null;
         }
 
@@ -176,7 +180,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
         if (exitCode != 0)
         {
-            ReportDiagnostic(5, "git.properties generation skipped: repository has no commits yet.");
+            GitDiagnosticReporter.Report(Log, 5, EnableWarnings, "git.properties generation skipped: repository has no commits yet.");
             return null;
         }
 
@@ -212,7 +216,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
             return true;
         }
 
-        Log.LogMessage("git.properties: generating shared cache at '{0}'.", CacheFile);
+        Log.LogMessage(MessageImportance.High, "git.properties: generating shared cache at '{0}'.", CacheFile);
 
         if (!TryRunGit("rev-parse --is-shallow-repository", "determine shallow-clone status", out string stdout))
         {
@@ -223,7 +227,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
         if (isShallow)
         {
-            ReportDiagnostic(6,
+            GitDiagnosticReporter.Report(Log, 6, EnableWarnings,
                 "git.properties: repository is a shallow clone. git.total.commit.count and git.closest.tag.commit.count will be left empty. Run " +
                 "'git fetch --unshallow' to fetch full history, or configure your CI checkout for full depth (e.g. GitHub Actions: fetch-depth: 0).");
         }
@@ -404,20 +408,6 @@ public sealed class GenerateGitPropertiesCacheTask : Task
         }
 
         return true;
-    }
-
-    private void ReportDiagnostic(int diagnosticId, string message)
-    {
-        if (EnableWarnings)
-        {
-            string warningCode = $"{DiagnosticPrefix}{diagnosticId:D3}";
-            Log.LogWarning(null, warningCode, null, null, 0, 0, 0, 0, message);
-        }
-        else
-        {
-            // Omit code, which is only useful to suppress warnings/errors.
-            Log.LogMessage(message);
-        }
     }
 
     /// <summary>

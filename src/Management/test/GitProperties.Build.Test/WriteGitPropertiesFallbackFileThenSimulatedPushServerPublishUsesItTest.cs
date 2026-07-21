@@ -16,7 +16,7 @@ public sealed class WriteGitPropertiesFallbackFileThenSimulatedPushServerPublish
         RemotePushProjectTree remote = repository.SimulatePush("pushed");
         remote.TestApp.FallbackGitPropertiesGenerated.Should().BeTrue();
 
-        DotNetCommandOutput output = await remote.TestApp.PublishAsync("-v:detailed");
+        DotNetCommandOutput output = await remote.TestApp.PublishAsync("-v:normal");
         output.Value.Should().Contain("using pre-generated fallback file");
 
         Dictionary<string, string> publishProperties = await remote.TestApp.ReadReleasePublishPropertiesAsync();

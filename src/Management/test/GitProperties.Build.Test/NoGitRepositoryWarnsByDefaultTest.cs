@@ -15,8 +15,8 @@ public sealed class NoGitRepositoryWarnsByDefaultTest : GitPropertiesBuildTestBa
         defaultOutput.Should().ContainGitWarning(GitDiagnosticId.GitRepositoryNotFound);
         testApp.GitPropertiesGenerated.Should().BeFalse();
 
-        DotNetCommandOutput disableWarningsOutput = await testApp.BuildAsync("-p:GitPropertiesEnableWarnings=false", "-v:normal");
-        disableWarningsOutput.Should().ContainGitInfo(GitDiagnosticId.GitRepositoryNotFound, "no usable .git directory found above");
+        DotNetCommandOutput disableWarningsOutput = await testApp.BuildAsync("-p:GitPropertiesEnableWarnings=false");
+        disableWarningsOutput.Should().ContainGitMessage(GitDiagnosticId.GitRepositoryNotFound);
         testApp.GitPropertiesGenerated.Should().BeFalse();
 
         DotNetCommandOutput featureOffOutput = await testApp.BuildAsync("-p:GenerateGitProperties=false");

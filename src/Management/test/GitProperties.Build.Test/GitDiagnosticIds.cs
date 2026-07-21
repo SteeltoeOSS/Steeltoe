@@ -12,6 +12,7 @@ internal sealed class GitDiagnosticId
     public static GitDiagnosticId IncompatibleGitVersion { get; } = new(4);
     public static GitDiagnosticId GitRepositoryHasNoCommits { get; } = new(5);
     public static GitDiagnosticId GitRepositoryIsShallowClone { get; } = new(6);
+    public static GitDiagnosticId GitDirtyStateUnknown { get; } = new(7);
 
     public int Value { get; }
 

@@ -9,10 +9,9 @@ using Microsoft.Build.Utilities;
 namespace Steeltoe.Management.GitProperties.Build;
 
 /// <summary>
-/// Merges the shared git.properties cache with the fields that can never be cached: the live working-tree dirty state, the per-project $(Version), and
-/// the build's own timestamp. Runs every build with no Inputs/Outputs skip: editing a tracked file doesn't touch any file timestamp this task could key
-/// incrementality off, and a cached build time would go stale the moment it's reused. Every failure returns <c>false</c>, so a partial run can't leave
-/// output mismatched with what's on disk for a later step to pick up.
+/// Merges the shared git.properties cache with the fields that can never be cached: the live repository dirty state, the per-project $(Version), and the
+/// build's own timestamp. Runs every build with no Inputs/Outputs skip: editing a tracked file doesn't touch any file timestamp this task could key
+/// incrementality off, and a cached build time would go stale the moment it's reused.
 /// </summary>
 // ReSharper disable once UnusedType.Global
 public sealed class ComposeGitPropertiesTask : Task
@@ -52,30 +51,16 @@ public sealed class ComposeGitPropertiesTask : Task
     /// </summary>
     public string? FallbackFile { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether a git executable failure is reported as a warning (true) or an informational message (false).
+    /// </summary>
+    public bool EnableWarnings { get; set; }
+
     /// <inheritdoc />
     public override bool Execute()
     {
-        int exitCode;
-        string stdout;
-        string stderr;
+        bool? isDirty = DetermineDirtyState();
 
-        try
-        {
-            exitCode = GitProcessRunner.Run(GitExecutable, RepositoryRoot, "status --porcelain", out stdout, out stderr);
-        }
-        catch (Exception exception)
-        {
-            Log.LogError($"git.properties: an unexpected error occurred while determining working tree status:{Environment.NewLine}{exception}");
-            return false;
-        }
-
-        if (exitCode != 0)
-        {
-            Log.LogError("git.properties: failed to determine working tree status: {0}", stderr);
-            return false;
-        }
-
-        bool isDirty = stdout.Length > 0;
         List<string> lines = [];
 
         if (!TryRunFileOperation($"read {CacheFile}", () => lines = AtomicFile.Read(CacheFile).ToList()))
@@ -83,15 +68,22 @@ public sealed class ComposeGitPropertiesTask : Task
             return false;
         }
 
-        for (int index = 0; index < lines.Count; index++)
+        if (isDirty == true)
         {
-            if (isDirty && lines[index].StartsWith($"{GitPropertiesFormat.CommitIdDescribeKey}=", StringComparison.Ordinal))
+            for (int index = 0; index < lines.Count; index++)
             {
-                lines[index] += "-dirty";
+                if (lines[index].StartsWith($"{GitPropertiesFormat.CommitIdDescribeKey}=", StringComparison.Ordinal))
+                {
+                    lines[index] += "-dirty";
+                }
             }
         }
 
-        lines.Add($"git.dirty={(isDirty ? "true" : "false")}");
+        if (isDirty != null)
+        {
+            lines.Add($"git.dirty={(isDirty.Value ? "true" : "false")}");
+        }
+
         lines.Add($"git.build.version={GitPropertiesFormat.EscapeLineBreaks(Version)}");
 
         // Local time, not UTC, to match the ISO-8601-with-offset style git itself uses for git.commit.time. This is "when this build ran, in the
@@ -112,6 +104,36 @@ public sealed class ComposeGitPropertiesTask : Task
         }
 
         return TryRunFileOperation($"write fallback file {FallbackFile}", () => AtomicFile.Write(FallbackFile, lines));
+    }
+
+    private bool? DetermineDirtyState()
+    {
+        const string dirtyCheckArguments = "status --porcelain";
+
+        int exitCode;
+        string stdout;
+
+        try
+        {
+            exitCode = GitProcessRunner.Run(GitExecutable, RepositoryRoot, dirtyCheckArguments, out stdout, out _);
+        }
+        catch (Exception exception)
+        {
+            GitDiagnosticReporter.Report(Log, 7, EnableWarnings,
+                $"git.properties: unable to determine dirty state because '{GitExecutable}' failed ({exception.Message}).");
+
+            return null;
+        }
+
+        if (exitCode != 0)
+        {
+            GitDiagnosticReporter.Report(Log, 7, EnableWarnings,
+                $"git.properties: unable to determine dirty state because '{GitExecutable} {dirtyCheckArguments}' exited with code {exitCode}.");
+
+            return null;
+        }
+
+        return stdout.Length > 0;
     }
 
     private bool TryRunFileOperation(string description, Action action)

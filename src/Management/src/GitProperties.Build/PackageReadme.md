@@ -1,6 +1,6 @@
 # Steeltoe.Management.GitProperties.Build
 
-Generates a `git.properties` file at build time, compatible with the [Spring Boot Actuator `git.properties`](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.info.git-commit-information) format. When used together with Steeltoe's `Info` actuator endpoint, the information in this file (commit ID, branch, tags, whether the working tree was "dirty" at build time, etc.) is automatically exposed at runtime.
+Generates a `git.properties` file at build time, compatible with the [Spring Boot Actuator `git.properties`](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.info.git-commit-information) format. When used together with Steeltoe's `Info` actuator endpoint, the information in this file (commit ID, branch, tags, whether the repository was "dirty" at build time, etc.) is automatically exposed at runtime.
 
 ## Getting started
 
@@ -64,6 +64,7 @@ This package may log one of the following codes:
 | `GITPROPS004` | The installed Git version is older than 2.15.0, the minimum version this package requires. |
 | `GITPROPS005` | A Git repository was found, but it has no commits yet. |
 | `GITPROPS006` | The repository is a shallow clone, so `git.total.commit.count` and `git.closest.tag.commit.count` are left empty. |
+| `GITPROPS007` | The repository's dirty state could not be determined, so `git.dirty` is omitted. |
 
 ## Deploying without access to your Git repository
 

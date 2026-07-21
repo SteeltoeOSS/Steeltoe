@@ -11,10 +11,7 @@ public sealed class WriteToProjectDirectoryCreatesFallbackFileOnBuildTest : GitP
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1, true);
         DotNetCommandOutput output = await repository.TestApp.BuildAsync("-p:GitPropertiesWriteToProjectDirectory=true");
-
-        output.Value.Should().Contain(
-            $"git.properties: writing fallback copy to '{repository.TestApp.FallbackFilePath}' for project '{GitPropertiesTestWorkspace.TestAppProjectName}'.");
-
+        output.Value.Should().Contain($"git.properties: writing fallback copy to '{repository.TestApp.FallbackFilePath}'.");
         repository.TestApp.FallbackGitPropertiesGenerated.Should().BeTrue();
 
         Dictionary<string, string> fallbackProperties = await repository.TestApp.ReadFallbackPropertiesAsync();

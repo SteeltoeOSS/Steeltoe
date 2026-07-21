@@ -11,7 +11,7 @@ public sealed class SmartDefaultSkipsGenerationWhenNoConsumingPackageReferenceTe
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         TestProject testApp = await repository.AddProjectAsync(GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null);
-        DotNetCommandOutput output = await testApp.BuildAsync("-v:detailed");
+        DotNetCommandOutput output = await testApp.BuildAsync("-v:normal");
         output.Value.Should().Contain("git.properties generation skipped: no reference to");
         testApp.GitPropertiesGenerated.Should().BeFalse();
     }
