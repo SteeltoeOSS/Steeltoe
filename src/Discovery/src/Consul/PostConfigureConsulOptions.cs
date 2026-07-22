@@ -11,15 +11,15 @@ namespace Steeltoe.Discovery.Consul;
 
 internal sealed partial class PostConfigureConsulOptions : IPostConfigureOptions<ConsulOptions>
 {
-    private readonly IOptionsMonitor<ConsulDiscoveryOptions> _discoveryOptionsMonitor;
+    private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
     private readonly ILogger<PostConfigureConsulOptions> _logger;
 
-    public PostConfigureConsulOptions(IOptionsMonitor<ConsulDiscoveryOptions> discoveryOptionsMonitor, ILogger<PostConfigureConsulOptions> logger)
+    public PostConfigureConsulOptions(IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ILogger<PostConfigureConsulOptions> logger)
     {
-        ArgumentNullException.ThrowIfNull(discoveryOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
         ArgumentNullException.ThrowIfNull(logger);
 
-        _discoveryOptionsMonitor = discoveryOptionsMonitor;
+        _optionsMonitor = optionsMonitor;
         _logger = logger;
     }
 
@@ -27,14 +27,14 @@ internal sealed partial class PostConfigureConsulOptions : IPostConfigureOptions
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        if (_discoveryOptionsMonitor.CurrentValue.Enabled && (Platform.IsContainerized || Platform.IsCloudHosted) && options.Host == "localhost")
+        if (_optionsMonitor.CurrentValue.Enabled && (Platform.IsContainerized || Platform.IsCloudHosted) && options.Host == "localhost")
         {
-            LogLocalhostConsulUrl(_logger, $"{options.Scheme}://{options.Host}:{options.Port}");
+            LogLocalhostConsulUrl($"{options.Scheme}://{options.Host}:{options.Port}");
         }
     }
 
     [LoggerMessage(EventId = 0, Level = LogLevel.Warning,
         Message = "Consul URL '{Url}' is unlikely to be valid in containerized or cloud environments. " +
             "Please configure Consul:Host with a non-localhost server.")]
-    private static partial void LogLocalhostConsulUrl(ILogger logger, string url);
+    private partial void LogLocalhostConsulUrl(string url);
 }

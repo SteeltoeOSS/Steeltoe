@@ -210,7 +210,7 @@ public sealed class EurekaClientOptionsTest
     }
 
     [Fact]
-    public async Task ClientOptionsValidation_WarnsWhenRunningInCloudWithLocalhost()
+    public async Task ValidateEurekaClientOptions_WarnsWhenRunningInCloudWithLocalhost()
     {
         using var scope = new EnvironmentVariableScope("DOTNET_RUNNING_IN_CONTAINER", "true");
         using var capturingLoggerProvider = new CapturingLoggerProvider();
@@ -228,10 +228,35 @@ public sealed class EurekaClientOptionsTest
 
         string? logEntry = capturingLoggerProvider.GetAll().Should().ContainSingle().Which;
 
-        logEntry.Should()
-            .Be(
-                $"WARN {typeof(ValidateEurekaClientOptions).FullName}: Eureka URL 'http://localhost:8761/eureka/' is unlikely to be valid in containerized or cloud environments. " +
-                "Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
+        logEntry.Should().Be(
+            $"WARN {typeof(ValidateEurekaClientOptions).FullName}: Eureka URL 'http://localhost:8761/eureka/' is unlikely to be valid in containerized or cloud environments. " +
+            "Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
+    }
+
+    [Fact]
+    public async Task ValidateEurekaClientOptions_DoesNotWarnWhenEurekaIsDisabled()
+    {
+        using var scope = new EnvironmentVariableScope("DOTNET_RUNNING_IN_CONTAINER", "true");
+        using var capturingLoggerProvider = new CapturingLoggerProvider();
+
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["eureka:client:enabled"] = "false"
+        };
+
+        var services = new ServiceCollection();
+        // ReSharper disable once AccessToDisposedClosure
+        services.AddLogging(builder => builder.AddProvider(capturingLoggerProvider));
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddEurekaDiscoveryClient();
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
+
+        Action action = () => _ = clientOptions.Value;
+        action.Should().NotThrow();
+
+        capturingLoggerProvider.GetAll().Should().BeEmpty();
     }
 
     [Fact]

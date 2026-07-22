@@ -143,7 +143,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public async Task ConsulOptionsValidation_WarnsWhenRunningInCloudWithLocalhost()
+    public async Task PostConfigureConsulOptions_WarnsWhenRunningInCloudWithLocalhost()
     {
         using var scope = new EnvironmentVariableScope("DOTNET_RUNNING_IN_CONTAINER", "true");
         using var capturingLoggerProvider = new CapturingLoggerProvider();
@@ -162,9 +162,34 @@ public sealed class ConsulServiceCollectionExtensionsTest
 
         string? logEntry = capturingLoggerProvider.GetAll().Should().ContainSingle().Which;
 
-        logEntry.Should()
-            .Be(
-                $"WARN {typeof(PostConfigureConsulOptions).FullName}: Consul URL 'http://localhost:8500' is unlikely to be valid in containerized or cloud environments. " +
-                "Please configure Consul:Host with a non-localhost server.");
+        logEntry.Should().Be(
+            $"WARN {typeof(PostConfigureConsulOptions).FullName}: Consul URL 'http://localhost:8500' is unlikely to be valid in containerized or cloud environments. " +
+            "Please configure Consul:Host with a non-localhost server.");
+    }
+
+    [Fact]
+    public async Task PostConfigureConsulOptions_DoesNotWarnWhenConsulIsDisabled()
+    {
+        using var scope = new EnvironmentVariableScope("DOTNET_RUNNING_IN_CONTAINER", "true");
+        using var capturingLoggerProvider = new CapturingLoggerProvider();
+
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["consul:discovery:enabled"] = "false"
+        };
+
+        var services = new ServiceCollection();
+        // ReSharper disable once AccessToDisposedClosure
+        services.AddLogging(builder => builder.AddProvider(capturingLoggerProvider));
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddConsulDiscoveryClient();
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var consulOptions = serviceProvider.GetRequiredService<IOptions<ConsulOptions>>();
+
+        Action action = () => _ = consulOptions.Value;
+        action.Should().NotThrow();
+
+        capturingLoggerProvider.GetAll().Should().BeEmpty();
     }
 }

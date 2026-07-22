@@ -9,8 +9,17 @@ using Steeltoe.Discovery.Eureka.Configuration;
 
 namespace Steeltoe.Discovery.Eureka;
 
-internal sealed partial class ValidateEurekaClientOptions(ILogger<ValidateEurekaClientOptions> logger) : IValidateOptions<EurekaClientOptions>
+internal sealed partial class ValidateEurekaClientOptions : IValidateOptions<EurekaClientOptions>
 {
+    private readonly ILogger<ValidateEurekaClientOptions> _logger;
+
+    public ValidateEurekaClientOptions(ILogger<ValidateEurekaClientOptions> logger)
+    {
+        ArgumentNullException.ThrowIfNull(logger);
+
+        _logger = logger;
+    }
+
     public ValidateOptionsResult Validate(string? name, EurekaClientOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
@@ -40,7 +49,7 @@ internal sealed partial class ValidateEurekaClientOptions(ILogger<ValidateEureka
                 {
                     if (uri.Host == "localhost" && (Platform.IsContainerized || Platform.IsCloudHosted))
                     {
-                        LogLocalhostEurekaUrl(logger, url);
+                        LogLocalhostEurekaUrl(url);
                     }
                 }
             }
@@ -52,5 +61,5 @@ internal sealed partial class ValidateEurekaClientOptions(ILogger<ValidateEureka
     [LoggerMessage(EventId = 0, Level = LogLevel.Warning,
         Message = "Eureka URL '{Url}' is unlikely to be valid in containerized or cloud environments. " +
             "Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.")]
-    private static partial void LogLocalhostEurekaUrl(ILogger logger, string url);
+    private partial void LogLocalhostEurekaUrl(string url);
 }
