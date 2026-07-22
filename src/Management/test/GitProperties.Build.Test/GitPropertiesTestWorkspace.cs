@@ -77,6 +77,15 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
         return new TestProject(appDirectory, TestAppProjectName);
     }
 
+    public async Task<string> CreateFakeGitExecutableAsync(string versionOutput)
+    {
+        string projectDirectory = await TestProjectWriter.WriteFakeGitExecutableProjectAsync(RootDirectory, "FakeGit", versionOutput);
+        await ProcessRunner.RunDotnetAsync(projectDirectory, "build");
+
+        string executableName = OperatingSystem.IsWindows() ? "FakeGit.exe" : "FakeGit";
+        return Path.Combine(projectDirectory, "bin", "Debug", TestPaths.TestAppTargetFramework, executableName);
+    }
+
     public async Task<EmptyGitRepository> CreateEmptyRepositoryAsync(string name)
     {
         string directory = GetPath(name);

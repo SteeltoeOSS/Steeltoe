@@ -10,41 +10,41 @@ internal static class TestProjectWriter
         Console.WriteLine("Hello, World!");
         """;
 
-    private static async Task CopyGitPropertiesBuildSourceAsync(string repoRootDestination)
+    private static async Task CopyGitPropertiesBuildSourceAsync(string destinationDirectory)
     {
-        string destination = Path.Combine(repoRootDestination, TestPaths.GitPropertiesBuildRelativePath);
-        Directory.CreateDirectory(Path.Combine(destination, "build"));
+        string basePath = Path.Combine(destinationDirectory, TestPaths.GitPropertiesBuildRelativePath);
+        Directory.CreateDirectory(Path.Combine(basePath, "build"));
 
         string projectFile = await TestPaths.GetGitPropertiesBuildProjectFileAsync();
         string targetsFile = await TestPaths.GetTargetsFileAsync();
         string markerFile = await TestPaths.GetSourceCheckoutMarkerFileAsync();
         string buildDirectory = await TestPaths.GetGitPropertiesBuildDirectoryAsync();
 
-        File.Copy(projectFile, Path.Combine(destination, Path.GetFileName(projectFile)), true);
-        File.Copy(targetsFile, Path.Combine(destination, "build", Path.GetFileName(targetsFile)), true);
-        File.Copy(markerFile, Path.Combine(destination, Path.GetFileName(markerFile)), true);
+        File.Copy(projectFile, Path.Combine(basePath, Path.GetFileName(projectFile)), true);
+        File.Copy(targetsFile, Path.Combine(basePath, "build", Path.GetFileName(targetsFile)), true);
+        File.Copy(markerFile, Path.Combine(basePath, Path.GetFileName(markerFile)), true);
 
         foreach (string sourceFile in Directory.GetFiles(buildDirectory, "*.cs"))
         {
-            File.Copy(sourceFile, Path.Combine(destination, Path.GetFileName(sourceFile)), true);
+            File.Copy(sourceFile, Path.Combine(basePath, Path.GetFileName(sourceFile)), true);
         }
     }
 
-    private static async Task CopySharedBuildInfrastructureAsync(string repoRootDestination)
+    private static async Task CopySharedBuildInfrastructureAsync(string destinationDirectory)
     {
-        Directory.CreateDirectory(repoRootDestination);
+        Directory.CreateDirectory(destinationDirectory);
         string repositoryRoot = await TestPaths.GetRepositoryRootAsync();
 
         foreach (string fileName in TestPaths.SharedBuildInfrastructureFiles)
         {
-            File.Copy(Path.Combine(repositoryRoot, fileName), Path.Combine(repoRootDestination, fileName), true);
+            File.Copy(Path.Combine(repositoryRoot, fileName), Path.Combine(destinationDirectory, fileName), true);
         }
     }
 
-    public static async Task<string> WriteAppProjectAsync(string repoRootDestination, string projectName, string? targetFrameworks = null,
+    public static async Task<string> WriteAppProjectAsync(string destinationDirectory, string projectName, string? targetFrameworks = null,
         bool? generateGitProperties = true, string? extraItemGroupContent = null)
     {
-        string appDirectory = Path.Combine(repoRootDestination, projectName);
+        string appDirectory = Path.Combine(destinationDirectory, projectName);
         Directory.CreateDirectory(appDirectory);
 
         string targetFrameworkElement = targetFrameworks == null
@@ -89,9 +89,32 @@ internal static class TestProjectWriter
         return appDirectory;
     }
 
-    public static async Task<string> WriteDummyDependencyProjectAsync(string repoRootDestination, string projectName)
+    public static async Task<string> WriteFakeGitExecutableProjectAsync(string destinationDirectory, string projectName, string versionOutput)
     {
-        string projectDirectory = Path.Combine(repoRootDestination, projectName);
+        string projectDirectory = Path.Combine(destinationDirectory, projectName);
+        Directory.CreateDirectory(projectDirectory);
+
+        string projectContent = $"""
+            <Project Sdk="Microsoft.NET.Sdk">
+              <PropertyGroup>
+                <OutputType>Exe</OutputType>
+                <TargetFramework>{TestPaths.TestAppTargetFramework}</TargetFramework>
+                <ImplicitUsings>enable</ImplicitUsings>
+              </PropertyGroup>
+            </Project>
+            """;
+
+        await File.WriteAllTextAsync(Path.Combine(projectDirectory, $"{projectName}.csproj"), projectContent, TestContext.Current.CancellationToken);
+
+        string gitVersionCode = $"""Console.WriteLine("{versionOutput}");""";
+        await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Program.cs"), gitVersionCode, TestContext.Current.CancellationToken);
+
+        return projectDirectory;
+    }
+
+    public static async Task<string> WriteDummyDependencyProjectAsync(string destinationDirectory, string projectName)
+    {
+        string projectDirectory = Path.Combine(destinationDirectory, projectName);
         Directory.CreateDirectory(projectDirectory);
 
         await File.WriteAllTextAsync(Path.Combine(projectDirectory, $"{projectName}.csproj"), $"""
