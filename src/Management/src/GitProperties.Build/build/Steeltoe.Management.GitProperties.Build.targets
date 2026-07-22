@@ -10,6 +10,11 @@
     <GitCommitIdAbbrevLength Condition="'$(GitCommitIdAbbrevLength)' == ''">7</GitCommitIdAbbrevLength>
   </PropertyGroup>
 
+  <ItemGroup Condition="Exists('$(GitPropertiesFallbackFile)')">
+    <!-- Outside any Target, so this is evaluated early enough to hide the fallback file from Solution Explorer. -->
+    <None Remove="$(GitPropertiesFallbackFile)" />
+  </ItemGroup>
+
   <!--
     General note: Tasks don't run when DesignTimeBuild is true, to prevent shelling out to git on every keystroke.
   -->
@@ -120,8 +125,7 @@
   <Target Name="IncludeGitPropertiesInOutput" BeforeTargets="BeforeBuild;AssignTargetPaths;PrepareForPublish" DependsOnTargets="GenerateGitPropertiesCache"
     Condition="'$(_GitPropertiesShouldGenerate)' == 'true' and '$(_GitPropertiesIncluded)' != 'true' and (Exists('$(GitPropertiesCacheFile)') or Exists('$(GitPropertiesFallbackFile)'))">
     <ItemGroup Condition="Exists('$(GitPropertiesCacheFile)')">
-      <Content Include="$(GitPropertiesFile)" Link="git.properties" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest"
-        Visible="false" />
+      <Content Include="$(GitPropertiesFile)" Link="git.properties" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
       <FileWrites Include="$(GitPropertiesFile)" />
     </ItemGroup>
 
@@ -130,8 +134,7 @@
       Don't add it "for consistency", that would delete the one durable copy a git-less build depends on.
     -->
     <ItemGroup Condition="!Exists('$(GitPropertiesCacheFile)') and Exists('$(GitPropertiesFallbackFile)')">
-      <Content Include="$(GitPropertiesFallbackFile)" Link="git.properties" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest"
-        Visible="false" />
+      <Content Include="$(GitPropertiesFallbackFile)" Link="git.properties" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     </ItemGroup>
 
     <PropertyGroup>
