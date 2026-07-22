@@ -48,6 +48,7 @@ All settings are optional MSBuild properties, set in your project file (or a `Di
 | `GenerateGitProperties` | `auto` | Generates only when the project has a direct or indirect reference to one of `GitPropertiesConsumingPackageIds`. Set explicitly to `true` or `false` to always generate or always skip. |
 | `GitPropertiesWriteToProjectDirectory` | `false` | Also writes a durable copy of `git.properties` directly next to your project file, so a remote build with no Git repository available can still find it. |
 | `GitPropertiesEnableWarnings` | `true` | Whether the situations listed under [Diagnostics](#diagnostics) are reported as MSBuild warnings. |
+| `GitPropertiesReportFileWrites` | `true` | Whether to report when the shared cache, `git.properties`, and its fallback copy are (re)written. Set to `false` to silence these. |
 | `GitPropertiesConsumingPackageIds` | `Steeltoe.Management.Endpoint` | Semicolon-separated package IDs that trigger the `auto` default above. |
 | `GitExecutable` | `git` | The git executable to invoke. Override this if `git` isn't on the `PATH` in your build environment. |
 | `GitCommitIdAbbrevLength` | `7` | Number of characters used for the abbreviated commit ID. |

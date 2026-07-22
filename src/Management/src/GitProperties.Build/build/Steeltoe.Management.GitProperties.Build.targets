@@ -5,6 +5,7 @@
     <GitPropertiesWriteToProjectDirectory Condition="'$(GitPropertiesWriteToProjectDirectory)' == ''">false</GitPropertiesWriteToProjectDirectory>
     <GitPropertiesFallbackFile Condition="'$(GitPropertiesFallbackFile)' == ''">$(MSBuildProjectDirectory)\git.properties</GitPropertiesFallbackFile>
     <GitPropertiesEnableWarnings Condition="'$(GitPropertiesEnableWarnings)' == ''">true</GitPropertiesEnableWarnings>
+    <GitPropertiesReportFileWrites Condition="'$(GitPropertiesReportFileWrites)' == ''">true</GitPropertiesReportFileWrites>
     <GitPropertiesConsumingPackageIds Condition="'$(GitPropertiesConsumingPackageIds)' == ''">Steeltoe.Management.Endpoint</GitPropertiesConsumingPackageIds>
     <GitExecutable Condition="'$(GitExecutable)' == ''">git</GitExecutable>
     <GitCommitIdAbbrevLength Condition="'$(GitCommitIdAbbrevLength)' == ''">7</GitCommitIdAbbrevLength>
@@ -113,7 +114,8 @@
     Condition="'$(_GitPropertiesShouldGenerate)' == 'true' and '$(TargetFramework)' != '' and '$(DesignTimeBuild)' != 'true'"
     Inputs="@(_GitPropertiesCacheInputs)" Outputs="$(GitPropertiesCacheFile)">
     <GenerateGitPropertiesCacheTask Condition="'$(GitRepositoryRoot)' != ''" RepositoryRoot="$(GitRepositoryRoot)" GitExecutable="$(GitExecutable)"
-      CacheFile="$(GitPropertiesCacheFile)" CommitIdAbbrevLength="$(GitCommitIdAbbrevLength)" EnableWarnings="$(GitPropertiesEnableWarnings)" />
+      CacheFile="$(GitPropertiesCacheFile)" CommitIdAbbrevLength="$(GitCommitIdAbbrevLength)" EnableWarnings="$(GitPropertiesEnableWarnings)"
+      ReportFileWrites="$(GitPropertiesReportFileWrites)" />
   </Target>
 
   <!--
@@ -155,8 +157,9 @@
     <ComposeGitPropertiesTask RepositoryRoot="$(GitRepositoryRoot)" GitExecutable="$(GitExecutable)" CacheFile="$(GitPropertiesCacheFile)"
       OutputFile="$(GitPropertiesFile)" Version="$(Version)" FallbackFile="$(_GitPropertiesFallbackFileTarget)" EnableWarnings="$(GitPropertiesEnableWarnings)" />
 
-    <Message Importance="High" Text="git.properties: writing to '$([System.IO.Path]::GetFullPath('$(GitPropertiesFile)'))'." />
-    <Message Importance="High" Condition="'$(_GitPropertiesFallbackFileTarget)' != ''"
+    <Message Importance="High" Condition="'$(GitPropertiesReportFileWrites)' == 'true'"
+      Text="git.properties: writing to '$([System.IO.Path]::GetFullPath('$(GitPropertiesFile)'))'." />
+    <Message Importance="High" Condition="'$(_GitPropertiesFallbackFileTarget)' != '' and '$(GitPropertiesReportFileWrites)' == 'true'"
       Text="git.properties: writing fallback copy to '$([System.IO.Path]::GetFullPath('$(_GitPropertiesFallbackFileTarget)'))'." />
 
     <PropertyGroup>

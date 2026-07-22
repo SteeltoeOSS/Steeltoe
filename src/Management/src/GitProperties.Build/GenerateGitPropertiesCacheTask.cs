@@ -77,6 +77,12 @@ public sealed class GenerateGitPropertiesCacheTask : Task
     [Required]
     public bool EnableWarnings { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether to report when the shared cache is (re)generated.
+    /// </summary>
+    [Required]
+    public bool ReportFileWrites { get; set; }
+
     /// <inheritdoc />
     public override bool Execute()
     {
@@ -216,7 +222,10 @@ public sealed class GenerateGitPropertiesCacheTask : Task
             return true;
         }
 
-        Log.LogMessage(MessageImportance.High, "git.properties: generating shared cache at '{0}'.", CacheFile);
+        if (ReportFileWrites)
+        {
+            Log.LogMessage(MessageImportance.High, "git.properties: generating shared cache at '{0}'.", CacheFile);
+        }
 
         if (!TryRunGit("rev-parse --is-shallow-repository", "determine shallow-clone status", out string stdout))
         {
