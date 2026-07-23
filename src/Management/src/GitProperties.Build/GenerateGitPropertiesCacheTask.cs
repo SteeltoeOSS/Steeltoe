@@ -347,7 +347,6 @@ public sealed class GenerateGitPropertiesCacheTask : Task
         }
 
         string tags = string.Join(",", stdout.Split(LineSeparators, StringSplitOptions.RemoveEmptyEntries));
-
         string totalCommitCount = string.Empty;
 
         if (!isShallow)

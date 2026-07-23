@@ -32,7 +32,7 @@ internal sealed class GitRepository(GitPropertiesTestWorkspace workspace, string
         return commitId == null ? RunGitAsync("tag", name) : RunGitAsync("tag", name, commitId);
     }
 
-    public async Task<TestProject> AddProjectAsync(string name, string? targetFrameworks = null, bool? generateGitProperties = true,
+    public async Task<TestProject> AddProjectAsync(string name, IEnumerable<string>? targetFrameworks = null, bool? generateGitProperties = true,
         string? extraItemGroupContent = null)
     {
         string projectDirectory = await TestProjectWriter.WriteAppProjectAsync(rootDirectory, name, targetFrameworks, generateGitProperties,

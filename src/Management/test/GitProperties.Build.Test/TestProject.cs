@@ -6,10 +6,10 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 
 internal sealed class TestProject(string rootDirectory, string name)
 {
-    private readonly string _debugGitPropertiesFilePath = Path.Combine(rootDirectory, "bin", "Debug", TestPaths.TestAppTargetFramework, "git.properties");
+    private readonly string _debugGitPropertiesFilePath = Path.Combine(rootDirectory, "bin", "Debug", TestAppTargetFramework.Default, "git.properties");
 
     private readonly string _releasePublishGitPropertiesFilePath =
-        Path.Combine(rootDirectory, "bin", "Release", TestPaths.TestAppTargetFramework, "publish", "git.properties");
+        Path.Combine(rootDirectory, "bin", "Release", TestAppTargetFramework.Default, "publish", "git.properties");
 
     public string RootDirectory { get; } = rootDirectory;
     public string Name { get; } = name;
@@ -17,7 +17,7 @@ internal sealed class TestProject(string rootDirectory, string name)
     public string FallbackFilePath { get; } = Path.Combine(rootDirectory, "git.properties");
     public bool GitPropertiesGenerated => File.Exists(_debugGitPropertiesFilePath);
     public bool FallbackGitPropertiesGenerated => File.Exists(FallbackFilePath);
-    public bool CompiledAssemblyExists => File.Exists(Path.Combine(RootDirectory, "bin", "Debug", TestPaths.TestAppTargetFramework, $"{Name}.dll"));
+    public bool CompiledAssemblyExists => File.Exists(Path.Combine(RootDirectory, "bin", "Debug", TestAppTargetFramework.Default, $"{Name}.dll"));
 
     public string ToProjectReferenceXml()
     {

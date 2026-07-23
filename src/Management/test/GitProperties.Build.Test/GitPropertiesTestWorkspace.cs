@@ -83,7 +83,7 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
         await ProcessRunner.RunDotnetAsync(projectDirectory, "build");
 
         string executableName = OperatingSystem.IsWindows() ? "FakeGit.exe" : "FakeGit";
-        return Path.Combine(projectDirectory, "bin", "Debug", TestPaths.TestAppTargetFramework, executableName);
+        return Path.Combine(projectDirectory, "bin", "Debug", TestAppTargetFramework.Default, executableName);
     }
 
     public async Task<EmptyGitRepository> CreateEmptyRepositoryAsync(string name)
@@ -106,6 +106,11 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     public Task<string> PackGitPropertiesBuildToFeedAsync()
     {
         return TestProjectWriter.PackGitPropertiesBuildToFeedAsync(RootDirectory);
+    }
+
+    public Task<string> GetPackageIdAsync()
+    {
+        return TestProjectWriter.GetPackageIdAsync();
     }
 
     public Task WriteIsolatedNuGetConfigAsync(TestProject project, string feedDirectory)

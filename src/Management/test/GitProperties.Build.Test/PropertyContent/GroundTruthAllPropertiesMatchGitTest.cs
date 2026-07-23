@@ -18,7 +18,7 @@ public sealed class GroundTruthAllPropertiesMatchGitTest : GitPropertiesBuildTes
 
         repository.TestApp.FallbackGitPropertiesGenerated.Should().BeFalse();
 
-        string expectedPath = Path.Combine(repository.TestApp.RootDirectory, "obj", "Debug", TestPaths.TestAppTargetFramework, "git.properties");
+        string expectedPath = Path.Combine(repository.TestApp.RootDirectory, "obj", "Debug", TestAppTargetFramework.Default, "git.properties");
         output.Value.Should().Contain($"git.properties: writing to '{expectedPath}'.");
 
         Dictionary<string, string> properties = await repository.TestApp.ReadDebugPropertiesAsync();

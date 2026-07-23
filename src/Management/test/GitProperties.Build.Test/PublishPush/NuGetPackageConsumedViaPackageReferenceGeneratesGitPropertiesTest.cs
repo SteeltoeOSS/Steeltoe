@@ -13,7 +13,7 @@ public sealed class NuGetPackageConsumedViaPackageReferenceGeneratesGitPropertie
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         string feedDirectory = await Workspace.PackGitPropertiesBuildToFeedAsync();
-        string packageId = await TestPaths.GetPackageIdAsync();
+        string packageId = await Workspace.GetPackageIdAsync();
         string[] nuPkgFiles = Directory.GetFiles(feedDirectory, $"{packageId}.*.nupkg");
         nuPkgFiles.Should().ContainSingle();
 

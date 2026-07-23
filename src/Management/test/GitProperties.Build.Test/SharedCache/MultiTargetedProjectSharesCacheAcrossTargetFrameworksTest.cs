@@ -10,12 +10,11 @@ public sealed class MultiTargetedProjectSharesCacheAcrossTargetFrameworksTest : 
     public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
-        TestProject testApp = await repository.AddProjectAsync("MultiTargetApp", TestPaths.MultiTargetTestFrameworks);
-        string[] frameworks = TestPaths.MultiTargetTestFrameworks.Split(';');
+        TestProject testApp = await repository.AddProjectAsync("MultiTargetApp", TestAppTargetFramework.Multiple);
         await testApp.BuildAsync();
 
         string expectedCommitId = await repository.GetCommitIdAsync();
-        List<Dictionary<string, string>> propertiesBefore = await testApp.ReadDebugPropertiesPerTargetFrameworkAsync(frameworks);
+        List<Dictionary<string, string>> propertiesBefore = await testApp.ReadDebugPropertiesPerTargetFrameworkAsync(TestAppTargetFramework.Multiple);
 
         foreach (Dictionary<string, string> properties in propertiesBefore)
         {
@@ -25,7 +24,7 @@ public sealed class MultiTargetedProjectSharesCacheAcrossTargetFrameworksTest : 
 
         await repository.TagAsync("v1.0.0");
         await testApp.BuildAsync();
-        List<Dictionary<string, string>> propertiesAfter = await testApp.ReadDebugPropertiesPerTargetFrameworkAsync(frameworks);
+        List<Dictionary<string, string>> propertiesAfter = await testApp.ReadDebugPropertiesPerTargetFrameworkAsync(TestAppTargetFramework.Multiple);
 
         foreach (Dictionary<string, string> properties in propertiesAfter)
         {

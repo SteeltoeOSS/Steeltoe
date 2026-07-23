@@ -2,23 +2,43 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+
 namespace Steeltoe.Management.GitProperties.Build.Test;
 
-internal static class TestProjectWriter
+internal static partial class TestProjectWriter
 {
     private const string HelloWorldCode = """
         Console.WriteLine("Hello, World!");
         """;
 
+    private const string GitPropertiesBuildRelativePath = "src/Management/src/GitProperties.Build";
+
+    private static readonly string[] SharedBuildInfrastructureFiles =
+    [
+        "shared.props",
+        "shared-package.props",
+        "shared-project.props",
+        "versions.props",
+        "stylecop.json",
+        "PackageIcon.png",
+        "PackageReadme.md",
+        "Steeltoe.Debug.ruleset",
+        "Steeltoe.Release.ruleset"
+    ];
+
+    private static readonly Task<string> RepositoryRootTask = ResolveRepositoryRootAsync();
+
     private static async Task CopyGitPropertiesBuildSourceAsync(string destinationDirectory)
     {
-        string basePath = Path.Combine(destinationDirectory, TestPaths.GitPropertiesBuildRelativePath);
+        string basePath = Path.Combine(destinationDirectory, GitPropertiesBuildRelativePath);
         Directory.CreateDirectory(Path.Combine(basePath, "build"));
 
-        string projectFile = await TestPaths.GetGitPropertiesBuildProjectFileAsync();
-        string targetsFile = await TestPaths.GetTargetsFileAsync();
-        string markerFile = await TestPaths.GetSourceCheckoutMarkerFileAsync();
-        string buildDirectory = await TestPaths.GetGitPropertiesBuildDirectoryAsync();
+        string projectFile = await GetGitPropertiesBuildProjectFileAsync();
+        string targetsFile = await GetTargetsFileAsync();
+        string markerFile = await GetSourceCheckoutMarkerFileAsync();
+        string buildDirectory = await GetGitPropertiesBuildDirectoryAsync();
 
         File.Copy(projectFile, Path.Combine(basePath, Path.GetFileName(projectFile)), true);
         File.Copy(targetsFile, Path.Combine(basePath, "build", Path.GetFileName(targetsFile)), true);
@@ -33,23 +53,74 @@ internal static class TestProjectWriter
     private static async Task CopySharedBuildInfrastructureAsync(string destinationDirectory)
     {
         Directory.CreateDirectory(destinationDirectory);
-        string repositoryRoot = await TestPaths.GetRepositoryRootAsync();
+        string repositoryRoot = await RepositoryRootTask;
 
-        foreach (string fileName in TestPaths.SharedBuildInfrastructureFiles)
+        foreach (string fileName in SharedBuildInfrastructureFiles)
         {
             File.Copy(Path.Combine(repositoryRoot, fileName), Path.Combine(destinationDirectory, fileName), true);
         }
     }
 
-    public static async Task<string> WriteAppProjectAsync(string destinationDirectory, string projectName, string? targetFrameworks = null,
+    private static async Task<string> GetGitPropertiesBuildDirectoryAsync()
+    {
+        string repositoryRoot = await RepositoryRootTask;
+        return Path.Combine(repositoryRoot, "src", "Management", "src", "GitProperties.Build");
+    }
+
+    private static async Task<string> GetGitPropertiesBuildProjectFileAsync()
+    {
+        string directory = await GetGitPropertiesBuildDirectoryAsync();
+        return Path.Combine(directory, "Steeltoe.Management.GitProperties.Build.csproj");
+    }
+
+    private static async Task<string> GetTargetsFileAsync()
+    {
+        string directory = await GetGitPropertiesBuildDirectoryAsync();
+        return Path.Combine(directory, "build", "Steeltoe.Management.GitProperties.Build.targets");
+    }
+
+    private static async Task<string> GetSourceCheckoutMarkerFileAsync()
+    {
+        string directory = await GetGitPropertiesBuildDirectoryAsync();
+        return Path.Combine(directory, "SourceCheckout.txt");
+    }
+
+    public static async Task<string> GetPackageIdAsync()
+    {
+        string projectFile = await GetGitPropertiesBuildProjectFileAsync();
+        return Path.GetFileNameWithoutExtension(projectFile);
+    }
+
+    private static async Task<string> GetGitPropertiesBuildTargetFrameworkAsync()
+    {
+        string projectFile = await GetGitPropertiesBuildProjectFileAsync();
+        string projectContent = await File.ReadAllTextAsync(projectFile, TestContext.Current.CancellationToken);
+        Match match = TargetFrameworkRegex().Match(projectContent);
+
+        if (!match.Success)
+        {
+            throw new InvalidOperationException($"Could not find <TargetFramework> in {projectFile}.");
+        }
+
+        return match.Groups[1].Value;
+    }
+
+    private static async Task<string> ResolveRepositoryRootAsync([CallerFilePath] string sourceFilePath = "")
+    {
+        string sourceDirectory = Path.GetDirectoryName(sourceFilePath) ?? throw new InvalidOperationException("Could not determine the test source directory.");
+        string output = await ProcessRunner.RunGitAsync(sourceDirectory, CancellationToken.None, "rev-parse", "--show-toplevel");
+        return output.Trim().Replace('/', Path.DirectorySeparatorChar);
+    }
+
+    public static async Task<string> WriteAppProjectAsync(string destinationDirectory, string projectName, IEnumerable<string>? targetFrameworks = null,
         bool? generateGitProperties = true, string? extraItemGroupContent = null)
     {
         string appDirectory = Path.Combine(destinationDirectory, projectName);
         Directory.CreateDirectory(appDirectory);
 
         string targetFrameworkElement = targetFrameworks == null
-            ? $"<TargetFramework>{TestPaths.TestAppTargetFramework}</TargetFramework>"
-            : $"<TargetFrameworks>{targetFrameworks}</TargetFrameworks>";
+            ? $"<TargetFramework>{TestAppTargetFramework.Default}</TargetFramework>"
+            : $"<TargetFrameworks>{string.Join(';', targetFrameworks)}</TargetFrameworks>";
 
         string generateGitPropertiesElement = string.Empty;
 
@@ -59,8 +130,8 @@ internal static class TestProjectWriter
             generateGitPropertiesElement = $"<GenerateGitProperties>{generateGitPropertiesValue}</GenerateGitProperties>";
         }
 
-        string projectFile = await TestPaths.GetGitPropertiesBuildProjectFileAsync();
-        string targetsFile = await TestPaths.GetTargetsFileAsync();
+        string projectFile = await GetGitPropertiesBuildProjectFileAsync();
+        string targetsFile = await GetTargetsFileAsync();
 
         string projectContent = $"""
             <Project Sdk="Microsoft.NET.Sdk">
@@ -73,13 +144,13 @@ internal static class TestProjectWriter
               </PropertyGroup>
 
               <ItemGroup>
-                <ProjectReference Include="../{TestPaths.GitPropertiesBuildRelativePath}/{Path.GetFileName(projectFile)}">
+                <ProjectReference Include="../{GitPropertiesBuildRelativePath}/{Path.GetFileName(projectFile)}">
                   <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
                 </ProjectReference>
                 {extraItemGroupContent}
               </ItemGroup>
 
-              <Import Project="$(MSBuildThisFileDirectory)../{TestPaths.GitPropertiesBuildRelativePath}/build/{Path.GetFileName(targetsFile)}" />
+              <Import Project="$(MSBuildThisFileDirectory)../{GitPropertiesBuildRelativePath}/build/{Path.GetFileName(targetsFile)}" />
             </Project>
             """;
 
@@ -98,7 +169,7 @@ internal static class TestProjectWriter
             <Project Sdk="Microsoft.NET.Sdk">
               <PropertyGroup>
                 <OutputType>Exe</OutputType>
-                <TargetFramework>{TestPaths.TestAppTargetFramework}</TargetFramework>
+                <TargetFramework>{TestAppTargetFramework.Default}</TargetFramework>
                 <ImplicitUsings>enable</ImplicitUsings>
               </PropertyGroup>
             </Project>
@@ -120,7 +191,7 @@ internal static class TestProjectWriter
         await File.WriteAllTextAsync(Path.Combine(projectDirectory, $"{projectName}.csproj"), $"""
             <Project Sdk="Microsoft.NET.Sdk">
               <PropertyGroup>
-                <TargetFramework>{TestPaths.TestAppTargetFramework}</TargetFramework>
+                <TargetFramework>{TestAppTargetFramework.Default}</TargetFramework>
               </PropertyGroup>
             </Project>
             """, TestContext.Current.CancellationToken);
@@ -141,11 +212,11 @@ internal static class TestProjectWriter
         await CopySharedBuildInfrastructureAsync(packSourceDirectory);
         await CopyGitPropertiesBuildSourceAsync(packSourceDirectory);
 
-        string projectDirectory = Path.Combine(packSourceDirectory, TestPaths.GitPropertiesBuildRelativePath);
-        string projectFile = await TestPaths.GetGitPropertiesBuildProjectFileAsync();
+        string projectDirectory = Path.Combine(packSourceDirectory, GitPropertiesBuildRelativePath);
+        string projectFile = await GetGitPropertiesBuildProjectFileAsync();
         await ProcessRunner.RunDotnetAsync(projectDirectory, "build", Path.GetFileName(projectFile), "-c", "Release");
 
-        string targetFramework = await TestPaths.GetGitPropertiesBuildTargetFrameworkAsync();
+        string targetFramework = await GetGitPropertiesBuildTargetFrameworkAsync();
         return Path.Combine(projectDirectory, "bin", "tasks", targetFramework);
     }
 
@@ -172,7 +243,7 @@ internal static class TestProjectWriter
             <Project Sdk="Microsoft.NET.Sdk">
               <PropertyGroup>
                 <OutputType>Exe</OutputType>
-                <TargetFramework>{TestPaths.TestAppTargetFramework}</TargetFramework>
+                <TargetFramework>{TestAppTargetFramework.Default}</TargetFramework>
                 <ImplicitUsings>enable</ImplicitUsings>
                 <GenerateGitProperties>true</GenerateGitProperties>
               </PropertyGroup>
@@ -186,4 +257,7 @@ internal static class TestProjectWriter
         await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Consumer.csproj"), projectContent, TestContext.Current.CancellationToken);
         await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Program.cs"), HelloWorldCode, TestContext.Current.CancellationToken);
     }
+
+    [GeneratedRegex("<TargetFramework>(.+?)</TargetFramework>")]
+    private static partial Regex TargetFrameworkRegex();
 }
