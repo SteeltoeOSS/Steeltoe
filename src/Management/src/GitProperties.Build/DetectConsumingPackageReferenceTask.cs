@@ -12,7 +12,7 @@ using Microsoft.Build.Utilities;
 namespace Steeltoe.Management.GitProperties.Build;
 
 /// <summary>
-/// Determines whether this project's own fully-resolved dependency graph includes any of <see cref="PackageIds" />. Used to smart-default whether to
+/// Determines whether this project's own fully-resolved dependency graph includes any of <see cref="PackageIds" />. Used to auto-detect whether to
 /// generate git.properties, so most projects in a large solution skip generation without opting out individually.
 /// </summary>
 /// <remarks>
