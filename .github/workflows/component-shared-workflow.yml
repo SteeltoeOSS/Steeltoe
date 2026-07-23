@@ -24,8 +24,8 @@ env:
   DOTNET_NOLOGO: true
   SOLUTION_FILE: 'src/Steeltoe.${{ inputs.component }}.slnf'
   COMMON_TEST_ARGS: >-
-    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/TestOutput
-    --settings coverlet.runsettings --blame-crash --blame-hang-timeout 5m
+    --no-build --configuration Release --logger trx --results-directory ${{ github.workspace }}/TestOutput
+    --blame-crash --blame-hang-timeout 5m
 
 jobs:
   build:
