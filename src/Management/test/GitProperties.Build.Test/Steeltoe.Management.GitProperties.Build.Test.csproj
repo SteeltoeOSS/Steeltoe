@@ -13,4 +13,15 @@
     <!-- Exposes $(TargetFramework) to runtime code, so the TFM can be changed without adapting existing tests. -->
     <AssemblyMetadata Include="TargetFramework" Value="$(TargetFramework)" />
   </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      This project's coverage is always collected with dotnet-coverage wrapping the whole dotnet build/publish
+      subprocess tree (see Steeltoe.All.yml/sonarcube.yml), never coverlet's own "XPlat Code Coverage" collector, so
+      the coverlet.collector reference pulled in by shared-test.props is unused here. Removing it also stops VSTest
+      from probing coverlet.collector.dll/coverlet.core.dll at test-host startup, which otherwise shows up as bogus
+      near-empty "coverlet.collector"/"coverlet.core" entries in the coverage report.
+    -->
+    <PackageReference Remove="coverlet.collector" />
+  </ItemGroup>
 </Project>

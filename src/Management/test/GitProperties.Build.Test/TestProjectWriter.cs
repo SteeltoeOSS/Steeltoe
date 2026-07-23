@@ -177,7 +177,14 @@ internal static partial class TestProjectWriter
 
         await File.WriteAllTextAsync(Path.Combine(projectDirectory, $"{projectName}.csproj"), projectContent, TestContext.Current.CancellationToken);
 
-        string gitVersionCode = $"""Console.WriteLine("{versionOutput}");""";
+        string gitVersionCode = $"""
+            using System.Diagnostics.CodeAnalysis;
+
+            [assembly: ExcludeFromCodeCoverage]
+
+            Console.WriteLine("{versionOutput}");
+            """;
+
         await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Program.cs"), gitVersionCode, TestContext.Current.CancellationToken);
 
         return projectDirectory;
