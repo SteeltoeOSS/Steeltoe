@@ -82,6 +82,9 @@ jobs:
         docker cp src/Configuration/test/Encryption.Test/Cryptography/server.jks steeltoe-config:/workspace/server.jks
         docker restart steeltoe-config
 
+    - name: Restore tools
+      run: dotnet tool restore --verbosity minimal
+
     - name: Begin Sonar .NET scanner
       id: sonar_begin
       env:
@@ -89,6 +92,7 @@ jobs:
       run: >-
         dotnet sonarscanner begin /k:"SteeltoeOSS_steeltoe" /o:"steeltoeoss" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
         /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=**/coverage.opencover.xml
+        /d:sonar.cs.cobertura.reportsPaths=**/*.cobertura.xml
 
     - name: Restore packages
       run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal /p:Configuration=Release /p:NuGetAuditLevel=low /p:WarningsNotAsErrors='${{ env.NUGET_VULNERABLE_PACKAGE_WARNINGS }}'
@@ -97,10 +101,22 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal /p:NuGetAuditLevel=low /p:WarningsNotAsErrors='${{ env.NUGET_VULNERABLE_PACKAGE_WARNINGS }}'
 
     - name: Test
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" ${{ env.SONAR_TEST_ARGS }}
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps&FullyQualifiedName!~Steeltoe.Management.GitProperties.Build.Test" ${{ env.SONAR_TEST_ARGS }}
 
     - name: Test (memory dumps)
       run: dotnet test src/Management/test/Endpoint.Test --filter "Category=MemoryDumps" ${{ env.SONAR_TEST_ARGS }}
+
+    - name: Test (GitProperties.Build)
+      run: >-
+        dotnet dotnet-coverage collect -f cobertura -o ${{ github.workspace }}/TestOutput/GitProperties.Build.Test.cobertura.xml --
+        dotnet test src/Management/test/GitProperties.Build.Test --no-build --configuration Release --logger trx --results-directory ${{ github.workspace }}/TestOutput
+
+    - name: Normalize coverage paths (GitProperties.Build)
+      shell: pwsh
+      run: >-
+        ./.github/scripts/normalize-coverage-paths.ps1
+        -CoverageFile ${{ github.workspace }}/TestOutput/GitProperties.Build.Test.cobertura.xml
+        -CanonicalPrefix ${{ github.workspace }}/src/Management/src/GitProperties.Build
 
     - name: End Sonar .NET scanner
       if: ${{ !cancelled() && steps.sonar_begin.outcome == 'success' }}

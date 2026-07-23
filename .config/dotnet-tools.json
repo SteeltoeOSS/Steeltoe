@@ -15,6 +15,13 @@
         "regitlint"
       ],
       "rollForward": false
+    },
+    "dotnet-coverage": {
+      "version": "18.9.0",
+      "commands": [
+        "dotnet-coverage"
+      ],
+      "rollForward": false
     }
   }
 }

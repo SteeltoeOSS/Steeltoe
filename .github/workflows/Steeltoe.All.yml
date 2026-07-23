@@ -99,6 +99,9 @@ jobs:
         docker cp src/Configuration/test/Encryption.Test/Cryptography/server.jks steeltoe-config:/workspace/server.jks
         docker restart steeltoe-config
 
+    - name: Restore tools
+      run: dotnet tool restore --verbosity minimal
+
     - name: Restore packages
       run: dotnet restore ${{ env.SOLUTION_FILE }} /p:Configuration=Release /p:NuGetAudit=false --verbosity minimal
 
@@ -107,14 +110,28 @@ jobs:
 
     - name: Test
       id: test
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "${{ matrix.skipIntegrationTests == true && 'Category!=MemoryDumps&Category!=Integration' || 'Category!=MemoryDumps' }}" ${{ env.COMMON_TEST_ARGS }}
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "${{ matrix.skipIntegrationTests == true && 'Category!=MemoryDumps&Category!=Integration&FullyQualifiedName!~Steeltoe.Management.GitProperties.Build.Test' || 'Category!=MemoryDumps&FullyQualifiedName!~Steeltoe.Management.GitProperties.Build.Test' }}" ${{ env.COMMON_TEST_ARGS }}
 
     - name: Test (memory dumps)
       id: test-memory-dumps
       run: dotnet test src/Management/test/Endpoint.Test --filter "Category=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
 
+    - name: Test (GitProperties.Build)
+      id: test-gitproperties-build
+      run: >-
+        dotnet dotnet-coverage collect -f cobertura -o ${{ github.workspace }}/TestOutput/GitProperties.Build.Test.cobertura.xml --
+        dotnet test src/Management/test/GitProperties.Build.Test --no-build --configuration Release --filter "Category!=MemoryDumps"
+        --logger trx --results-directory ${{ github.workspace }}/TestOutput --blame-crash --blame-hang-timeout 5m
+
+    - name: Normalize coverage paths (GitProperties.Build)
+      shell: pwsh
+      run: >-
+        ./.github/scripts/normalize-coverage-paths.ps1
+        -CoverageFile ${{ github.workspace }}/TestOutput/GitProperties.Build.Test.cobertura.xml
+        -CanonicalPrefix ${{ github.workspace }}/src/Management/src/GitProperties.Build
+
     - name: Upload crash/hang dumps (on failure)
-      if: ${{ !cancelled() && (steps.test.outcome == 'failure' || steps.test-memory-dumps.outcome == 'failure') }}
+      if: ${{ !cancelled() && (steps.test.outcome == 'failure' || steps.test-memory-dumps.outcome == 'failure' || steps.test-gitproperties-build.outcome == 'failure') }}
       uses: actions/upload-artifact@v7
       with:
         name: FailedTestOutput-${{ matrix.os }}
@@ -124,7 +141,7 @@ jobs:
         if-no-files-found: ignore
 
     - name: Report test results
-      if: ${{ !cancelled() && (steps.test.outcome != 'skipped' || steps.test-memory-dumps.outcome != 'skipped') }}
+      if: ${{ !cancelled() && (steps.test.outcome != 'skipped' || steps.test-memory-dumps.outcome != 'skipped' || steps.test-gitproperties-build.outcome != 'skipped') }}
       uses: dorny/test-reporter@v3
       with:
         name: ${{ matrix.os }} test results
@@ -136,7 +153,7 @@ jobs:
     - name: Generate code coverage report
       uses: danielpalme/ReportGenerator-GitHub-Action@v5
       with:
-        reports: '**/coverage.opencover.xml'
+        reports: '**/coverage.opencover.xml;**/*.cobertura.xml'
         targetdir: 'coveragereport'
         reporttypes: 'MarkdownAssembliesSummary;MarkdownSummaryGithub'
         filefilters: '-*.g.cs'
