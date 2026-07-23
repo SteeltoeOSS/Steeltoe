@@ -6,7 +6,7 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 
 internal static class GitRepositoryBuilder
 {
-    private static readonly HashSet<string> SimulatedPushExcludedDirectoryNames = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly HashSet<string> DirectoryNamesExcludedInPush = new(StringComparer.OrdinalIgnoreCase)
     {
         ".git",
         "bin",
@@ -61,10 +61,9 @@ internal static class GitRepositoryBuilder
         }
     }
 
-    public static string SimulateSourcePush(string sourceDirectory, string destinationDirectory)
+    public static void SimulateSourcePush(string sourceDirectory, string destinationDirectory)
     {
-        CopyDirectoryExcluding(new DirectoryInfo(sourceDirectory), destinationDirectory, SimulatedPushExcludedDirectoryNames);
-        return destinationDirectory;
+        CopyDirectoryExcluding(new DirectoryInfo(sourceDirectory), destinationDirectory, DirectoryNamesExcludedInPush);
     }
 
     private static void CopyDirectoryExcluding(DirectoryInfo source, string destination, HashSet<string> excludedDirectoryNames)

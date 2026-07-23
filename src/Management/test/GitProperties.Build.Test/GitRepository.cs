@@ -78,12 +78,12 @@ internal sealed class GitRepository(GitPropertiesTestWorkspace workspace, string
     public RemotePushProjectTree SimulatePush(string name)
     {
         string destination = workspace.GetPath(name);
-        string pushRoot = GitRepositoryBuilder.SimulateSourcePush(rootDirectory, destination);
+        GitRepositoryBuilder.SimulateSourcePush(rootDirectory, destination);
 
-        var pushedTestApp = new TestProject(Path.Combine(pushRoot, GitPropertiesTestWorkspace.TestAppProjectName),
+        var pushedTestApp = new TestProject(Path.Combine(destination, GitPropertiesTestWorkspace.TestAppProjectName),
             GitPropertiesTestWorkspace.TestAppProjectName);
 
-        return new RemotePushProjectTree(pushRoot, pushedTestApp);
+        return new RemotePushProjectTree(destination, pushedTestApp);
     }
 
     internal static async Task<TestProject> WriteDefaultTestAppAsync(string repositoryDirectory)
