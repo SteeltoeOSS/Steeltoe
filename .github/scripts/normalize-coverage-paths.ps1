@@ -1,24 +1,29 @@
 param(
     [Parameter(Mandatory = $true)][string]$CoverageFile,
-    [Parameter(Mandatory = $true)][string]$CanonicalPrefix
+    [Parameter(Mandatory = $true)][string]$RepoRoot,
+    [Parameter(Mandatory = $true)][string]$ProjectRelativePath
 )
 
-# Each dotnet build/publish subprocess spawned by GitProperties.Build.Test runs against its own temporary copy of the
-# repo, so the PDB (and therefore the coverage report) embeds an ephemeral temp path per test run instead of the real
-# checkout path, and dotnet-coverage records one separate <class> entry per subprocess rather than recognizing them
-# as the same logical file. This script rewrites the paths to the real checkout path, then merges the resulting
-# duplicate <class> entries: line hits are summed, and each branch <condition> (always a binary jump, so its
-# "coverage" is always 0%/50%/100%) takes the maximum observed across subprocesses. Without that merge, tools that
-# correlate coverage by file path (SonarCloud) or re-aggregate reports (ReportGenerator's Cobertura export) both pick
-# an arbitrary "last one wins" entry instead of the union of what every subprocess actually executed.
+# Some test suites (e.g. GitProperties.Build.Test) run dotnet build/publish subprocesses against their own temporary
+# copy of the repo, so the PDB (and therefore the coverage report) embeds an ephemeral temp path per test run instead
+# of the real checkout path, and dotnet-coverage records one separate <class> entry per subprocess rather than
+# recognizing them as the same logical file. This script rewrites any path ending in $ProjectRelativePath to the real
+# checkout path, then merges the resulting duplicate <class> entries: line hits are summed, and each branch
+# <condition> (always a binary jump, so its "coverage" is always 0%/50%/100%) takes the maximum observed across
+# subprocesses. Without that merge, tools that correlate coverage by file path (SonarCloud) or re-aggregate reports
+# (ReportGenerator's Cobertura export) both pick an arbitrary "last one wins" entry instead of the union of what
+# every subprocess actually executed.
 #
 # Branch merging is a best-effort approximation: taking the max per condition cannot distinguish "two subprocesses
 # both took the same half of a 50/50 branch" from "they took different halves", so it can still undercount versus a
 # true union, but it never overstates coverage and is strictly more accurate than last-one-wins.
 Add-Type -AssemblyName System.Xml.Linq
 
-$pattern = '[^"]*[\\/]src[\\/]Management[\\/]src[\\/]GitProperties\.Build[\\/]'
-$replacement = "$CanonicalPrefix/"
+$normalizedRelativePath = $ProjectRelativePath.Replace('\', '/').Trim('/')
+$escapedSegments = $normalizedRelativePath -split '/' | ForEach-Object { [Regex]::Escape($_) }
+$pattern = '[^"]*[\\/]' + ($escapedSegments -join '[\\/]') + '[\\/]'
+$canonicalPrefix = ($RepoRoot.TrimEnd('/', '\').Replace('\', '/')) + '/' + $normalizedRelativePath
+$replacement = "$canonicalPrefix/"
 
 $content = Get-Content -Path $CoverageFile -Raw
 $content = [System.Text.RegularExpressions.Regex]::Replace($content, $pattern, $replacement)

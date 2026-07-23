@@ -116,7 +116,8 @@ jobs:
       run: >-
         ./.github/scripts/normalize-coverage-paths.ps1
         -CoverageFile ${{ github.workspace }}/TestOutput/GitProperties.Build.Test.cobertura.xml
-        -CanonicalPrefix ${{ github.workspace }}/src/Management/src/GitProperties.Build
+        -RepoRoot ${{ github.workspace }}
+        -ProjectRelativePath src/Management/src/GitProperties.Build
 
     - name: End Sonar .NET scanner
       if: ${{ !cancelled() && steps.sonar_begin.outcome == 'success' }}
