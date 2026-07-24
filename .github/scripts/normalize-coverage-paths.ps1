@@ -131,7 +131,7 @@ foreach ($package in $doc.Descendants("package")) {
             }
 
             foreach ($line in $keptClass.Descendants("line")) {
-                $line.Attribute("hits").Value = [string]$lineHits[$line.Attribute("number").Value]
+                $line.SetAttributeValue("hits", [string]$lineHits[$line.Attribute("number").Value])
 
                 $conditionsElement = $line.Element("conditions")
 
@@ -145,7 +145,7 @@ foreach ($package in $doc.Descendants("package")) {
                 foreach ($condition in $conditionsElement.Elements("condition")) {
                     $key = "$($line.Attribute("number").Value)|$($condition.Attribute("number").Value)"
                     $percentage = $conditionCoverage[$key]
-                    $condition.Attribute("coverage").Value = Format-Percentage $percentage
+                    $condition.SetAttributeValue("coverage", (Format-Percentage $percentage))
                     $lineTotal += 2
                     $lineCovered += [Math]::Round($percentage / 100 * 2)
                 }
@@ -160,23 +160,34 @@ foreach ($package in $doc.Descendants("package")) {
         }
 
         $keptClassLines = $keptClass.Element("lines").Elements("line")
-        $keptClass.Attribute("line-rate").Value = Get-LineRate $keptClassLines
-        $keptClass.Attribute("branch-rate").Value = Get-BranchRate $keptClassLines
+        $keptClass.SetAttributeValue("line-rate", (Get-LineRate $keptClassLines))
+        $keptClass.SetAttributeValue("branch-rate", (Get-BranchRate $keptClassLines))
     }
 
     $packageLines = $classesElement.Elements("class").Element("lines").Elements("line")
-    $package.Attribute("line-rate").Value = Get-LineRate $packageLines
-    $package.Attribute("branch-rate").Value = Get-BranchRate $packageLines
+    $package.SetAttributeValue("line-rate", (Get-LineRate $packageLines))
+    $package.SetAttributeValue("branch-rate", (Get-BranchRate $packageLines))
 }
 
+# SetAttributeValue (create-or-update) is used instead of Attribute().Value to avoid null-refs: dotnet-coverage omits
+# these attributes from the root element entirely (rather than writing zeros) when its profiler never initialized.
 $allLines = @($doc.Descendants("class") | ForEach-Object { $_.Element("lines").Elements("line") })
-$doc.Root.Attribute("lines-valid").Value = [string]$allLines.Count
-$doc.Root.Attribute("lines-covered").Value = [string]@($allLines | Where-Object { [int]$_.Attribute("hits").Value -gt 0 }).Count
-$doc.Root.Attribute("line-rate").Value = Get-LineRate $allLines
+$doc.Root.SetAttributeValue("lines-valid", [string]$allLines.Count)
+$doc.Root.SetAttributeValue("lines-covered", [string]@($allLines | Where-Object { [int]$_.Attribute("hits").Value -gt 0 }).Count)
+$doc.Root.SetAttributeValue("line-rate", (Get-LineRate $allLines))
 
 $branchCounts = Get-BranchCounts $allLines
-$doc.Root.Attribute("branches-valid").Value = [string]$branchCounts.Total
-$doc.Root.Attribute("branches-covered").Value = [string]$branchCounts.Covered
-$doc.Root.Attribute("branch-rate").Value = Get-BranchRate $allLines
+$doc.Root.SetAttributeValue("branches-valid", [string]$branchCounts.Total)
+$doc.Root.SetAttributeValue("branches-covered", [string]$branchCounts.Covered)
+$doc.Root.SetAttributeValue("branch-rate", (Get-BranchRate $allLines))
+
+# A profiler that never initializes (e.g. dynamic instrumentation isn't supported on macOS arm64 runners, and this
+# suite's build/publish subprocesses can't be statically instrumented since their assemblies don't exist until
+# mid-run) yields zero packages/classes here. That's a platform limitation, not proof the code is untested.
+if ($allLines.Count -eq 0) {
+    $message = "Skipping $CoverageFile - no coverage data found"
+    Write-Warning $message
+    Write-Output "::warning::$message"
+}
 
 $doc.Save($CoverageFile)
