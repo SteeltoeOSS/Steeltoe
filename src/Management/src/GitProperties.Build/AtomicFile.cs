@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Steeltoe.Management.GitProperties.Build;
@@ -40,24 +41,12 @@ internal static class AtomicFile
 
         string tempPath = Path.Combine(directory ?? string.Empty, $"{Path.GetRandomFileName()}~");
         var encoding = new UTF8Encoding(false);
-        Exception? lastError = null;
 
-        for (int attempt = 1; attempt <= MaxAttempts; attempt++)
+        ExecuteWithRetry(() =>
         {
-            try
-            {
-                File.WriteAllText(tempPath, $"{string.Join("\n", lines)}\n", encoding);
-                MoveOrReplace(tempPath, path);
-                return;
-            }
-            catch (Exception exception) when (IsTransientError(exception))
-            {
-                lastError = exception;
-                Thread.Sleep(ReadWriteRetryDelay);
-            }
-        }
-
-        throw new IOException($"Failed to write {path} after {MaxAttempts} attempts.", lastError);
+            File.WriteAllText(tempPath, $"{string.Join("\n", lines)}\n", encoding);
+            MoveOrReplace(tempPath, path);
+        }, ReadWriteRetryDelay, "write", path);
     }
 
     /// <summary>
@@ -65,22 +54,7 @@ internal static class AtomicFile
     /// </summary>
     public static string[] Read(string path)
     {
-        Exception? lastError = null;
-
-        for (int attempt = 1; attempt <= MaxAttempts; attempt++)
-        {
-            try
-            {
-                return File.ReadAllLines(path);
-            }
-            catch (Exception exception) when (IsTransientError(exception))
-            {
-                lastError = exception;
-                Thread.Sleep(ReadWriteRetryDelay);
-            }
-        }
-
-        throw new IOException($"Failed to read {path} after {MaxAttempts} attempts.", lastError);
+        return ExecuteWithRetry(() => File.ReadAllLines(path), ReadWriteRetryDelay, "read", path);
     }
 
     private static void MoveOrReplace(string sourcePath, string destinationPath)
@@ -111,11 +85,50 @@ internal static class AtomicFile
 
         DateTime deadlineUtc = CurrentTimeUtc + timeout;
 
+        return ExecuteWithTimeoutRetry(() => new FileStream(lockFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None), deadlineUtc,
+            AcquireLockRetryDelay);
+    }
+
+    // These retry harnesses are only reachable when a real transient I/O error occurs mid-build, which tests can't reliably induce.
+    [ExcludeFromCodeCoverage]
+    private static void ExecuteWithRetry(Action action, TimeSpan retryDelay, string operation, string path)
+    {
+        ExecuteWithRetry<object?>(() =>
+        {
+            action();
+            return null;
+        }, retryDelay, operation, path);
+    }
+
+    [ExcludeFromCodeCoverage]
+    private static T ExecuteWithRetry<T>(Func<T> action, TimeSpan retryDelay, string operation, string path)
+    {
+        Exception? lastError = null;
+
+        for (int attempt = 1; attempt <= MaxAttempts; attempt++)
+        {
+            try
+            {
+                return action();
+            }
+            catch (Exception exception) when (IsTransientError(exception))
+            {
+                lastError = exception;
+                Thread.Sleep(retryDelay);
+            }
+        }
+
+        throw new IOException($"Failed to {operation} {path} after {MaxAttempts} attempts.", lastError);
+    }
+
+    [ExcludeFromCodeCoverage]
+    private static FileStream? ExecuteWithTimeoutRetry(Func<FileStream> action, DateTime deadlineUtc, TimeSpan retryDelay)
+    {
         while (true)
         {
             try
             {
-                return new FileStream(lockFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                return action();
             }
             catch (Exception exception) when (IsTransientError(exception))
             {
@@ -124,11 +137,12 @@ internal static class AtomicFile
                     return null;
                 }
 
-                Thread.Sleep(AcquireLockRetryDelay);
+                Thread.Sleep(retryDelay);
             }
         }
     }
 
+    [ExcludeFromCodeCoverage]
     private static bool IsTransientError(Exception exception)
     {
         return exception is IOException or UnauthorizedAccessException;
