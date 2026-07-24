@@ -27,12 +27,15 @@ internal static class ProcessRunner
 
     private static async Task<string> ResolveGitExecutableAsync()
     {
-        string output = await RunAsync(LocatorCommand, Path.GetTempPath(), 0, CancellationToken.None, "git");
+        string output = await RunAsync(LocatorCommand, Path.GetTempPath(), 0, null, CancellationToken.None, "git");
+        string? firstLine = output.Split(LineSeparators, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).FirstOrDefault();
 
-        string firstLine = output.Split(LineSeparators, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ??
+        if (firstLine == null)
+        {
             throw new InvalidOperationException($"Could not resolve the location of git via '{LocatorCommand} git'.");
+        }
 
-        return firstLine.Trim();
+        return firstLine;
     }
 
     public static Task<string> RunGitAsync(string workingDirectory, params string[] arguments)
@@ -43,34 +46,43 @@ internal static class ProcessRunner
     public static async Task<string> RunGitAsync(string workingDirectory, CancellationToken cancellationToken, params string[] arguments)
     {
         string gitExecutable = await RealGitExecutableTask;
-        string output = await RunAsync(gitExecutable, workingDirectory, 0, cancellationToken, arguments);
+        string output = await RunAsync(gitExecutable, workingDirectory, 0, null, cancellationToken, arguments);
         return output.Trim();
     }
 
-    public static Task<string> RunDotnetAsync(string workingDirectory, params string[] arguments)
+    public static Task<string> RunDotNetAsync(string workingDirectory, int exitCodeExpected, Dictionary<string, string>? environmentVariables,
+        params string[] arguments)
     {
-        return RunDotnetAsync(workingDirectory, 0, arguments);
-    }
-
-    public static Task<string> RunDotnetAsync(string workingDirectory, int exitCodeExpected, params string[] arguments)
-    {
-        string[] dotnetArguments =
+        string[] dotNetArguments =
         [
             .. arguments,
             "-p:RunAnalyzers=false",
             "-p:NuGetAudit=false"
         ];
 
-        return RunAsync("dotnet", workingDirectory, exitCodeExpected, TestContext.Current.CancellationToken, dotnetArguments);
+        var dotNetEnvironmentVariables = new Dictionary<string, string>
+        {
+            // Without this, a spawned "dotnet build"/"publish" leaves a persistent MSBuild worker node running in the background for reuse by a later
+            // build. That node inherits our redirected stdout/stderr pipe handles and keeps them open after the process we launched exits, so the read end
+            // never sees EOF and awaiting exit below would block forever even though the build already completed successfully.
+            ["MSBUILDDISABLENODEREUSE"] = "1"
+        };
+
+        foreach ((string name, string value) in environmentVariables ?? [])
+        {
+            dotNetEnvironmentVariables[name] = value;
+        }
+
+        return RunAsync("dotnet", workingDirectory, exitCodeExpected, dotNetEnvironmentVariables, TestContext.Current.CancellationToken, dotNetArguments);
     }
 
     public static Task<string> RunPwdAsync(string workingDirectory)
     {
-        return RunAsync("pwd", workingDirectory, 0, TestContext.Current.CancellationToken, "-P");
+        return RunAsync("pwd", workingDirectory, 0, null, TestContext.Current.CancellationToken, "-P");
     }
 
-    private static async Task<string> RunAsync(string fileName, string workingDirectory, int exitCodeExpected, CancellationToken cancellationToken,
-        params string[] arguments)
+    private static async Task<string> RunAsync(string fileName, string workingDirectory, int exitCodeExpected, Dictionary<string, string>? environmentVariables,
+        CancellationToken cancellationToken, params string[] arguments)
     {
         var outputBuilder = new StringBuilder();
         Lock outputLock = new();
@@ -92,10 +104,10 @@ internal static class ProcessRunner
             startInfo.ArgumentList.Add(argument);
         }
 
-        // Without this, a spawned "dotnet build"/"publish" leaves a persistent MSBuild worker node running in the background for reuse by a later
-        // build. That node inherits our redirected stdout/stderr pipe handles and keeps them open after the process we launched exits, so the read end
-        // never sees EOF and awaiting exit below would block forever even though the build already completed successfully.
-        startInfo.EnvironmentVariables["MSBUILDDISABLENODEREUSE"] = "1";
+        foreach ((string key, string name) in environmentVariables ?? [])
+        {
+            startInfo.EnvironmentVariables[key] = name;
+        }
 
         using var process = new Process();
         process.StartInfo = startInfo;

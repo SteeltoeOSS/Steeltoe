@@ -221,7 +221,8 @@ internal static partial class TestProjectWriter
 
         string projectDirectory = Path.Combine(packSourceDirectory, GitPropertiesBuildRelativePath);
         string projectFile = await GetGitPropertiesBuildProjectFileAsync();
-        await ProcessRunner.RunDotnetAsync(projectDirectory, "build", Path.GetFileName(projectFile), "-c", "Release");
+
+        await ProcessRunner.RunDotNetAsync(projectDirectory, 0, null, "build", Path.GetFileName(projectFile), "-c", "Release");
 
         string targetFramework = await GetGitPropertiesBuildTargetFrameworkAsync();
         return Path.Combine(projectDirectory, "bin", "tasks", targetFramework);

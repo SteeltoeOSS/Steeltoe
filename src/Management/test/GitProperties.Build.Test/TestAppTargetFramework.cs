@@ -18,7 +18,12 @@ internal static partial class TestAppTargetFramework
         AssemblyMetadataAttribute? attribute = Assembly.GetExecutingAssembly().GetCustomAttributes<AssemblyMetadataAttribute>()
             .FirstOrDefault(candidate => candidate.Key == "TargetFramework");
 
-        return attribute?.Value ?? throw new InvalidOperationException("Could not resolve this test assembly's own TargetFramework from its AssemblyMetadata.");
+        if (attribute?.Value == null)
+        {
+            throw new InvalidOperationException("Could not resolve this test assembly's own TargetFramework from its AssemblyMetadata.");
+        }
+
+        return attribute.Value;
     }
 
     private static string[] ResolveMultiple()

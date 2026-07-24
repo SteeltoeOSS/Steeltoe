@@ -26,42 +26,38 @@ internal sealed class TestProject(string rootDirectory, string name)
 
     public async Task<DotNetCommandOutput> BuildAsync(params string[] arguments)
     {
-        string output = await RunDotnetAsync("build", arguments);
-        return new DotNetCommandOutput(output);
+        return await BuildAsync(0, null, arguments);
+    }
+
+    public async Task<DotNetCommandOutput> BuildAsync(int exitCodeExpected, Dictionary<string, string>? environmentVariables, params string[] arguments)
+    {
+        return await RunDotNetCommandAsync("build", exitCodeExpected, environmentVariables, arguments);
     }
 
     public async Task<DotNetCommandOutput> PublishAsync(params string[] arguments)
     {
-        string output = await RunDotnetAsync("publish", arguments);
-        return new DotNetCommandOutput(output);
+        return await PublishAsync(0, arguments);
     }
 
     public async Task<DotNetCommandOutput> PublishAsync(int exitCodeExpected, params string[] arguments)
     {
-        string output = await RunDotnetAsync(exitCodeExpected, "publish", arguments);
-        return new DotNetCommandOutput(output);
+        return await RunDotNetCommandAsync("publish", exitCodeExpected, null, arguments);
     }
 
     public async Task<DotNetCommandOutput> RestoreAsync(params string[] arguments)
     {
-        string output = await RunDotnetAsync("restore", arguments);
+        return await RunDotNetCommandAsync("restore", 0, null, arguments);
+    }
+
+    private async Task<DotNetCommandOutput> RunDotNetCommandAsync(string command, int exitCodeExpected, Dictionary<string, string>? environmentVariables,
+        params string[] arguments)
+    {
+        string output = await ProcessRunner.RunDotNetAsync(RootDirectory, exitCodeExpected, environmentVariables, [
+            command,
+            .. arguments
+        ]);
+
         return new DotNetCommandOutput(output);
-    }
-
-    private Task<string> RunDotnetAsync(string command, params string[] arguments)
-    {
-        return ProcessRunner.RunDotnetAsync(RootDirectory, [
-            command,
-            .. arguments
-        ]);
-    }
-
-    private Task<string> RunDotnetAsync(int exitCodeExpected, string command, params string[] arguments)
-    {
-        return ProcessRunner.RunDotnetAsync(RootDirectory, exitCodeExpected, [
-            command,
-            .. arguments
-        ]);
     }
 
     public Task<Dictionary<string, string>> ReadDebugPropertiesAsync()

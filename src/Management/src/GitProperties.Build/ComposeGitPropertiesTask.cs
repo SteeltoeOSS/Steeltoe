@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -63,7 +64,7 @@ public sealed class ComposeGitPropertiesTask : Task
 
         List<string> lines = [];
 
-        if (!TryRunFileOperation($"read {CacheFile}", () => lines = AtomicFile.Read(CacheFile).ToList()))
+        if (!LogOnFailure($"read {CacheFile}", () => lines = AtomicFile.Read(CacheFile).ToList()))
         {
             return false;
         }
@@ -93,7 +94,7 @@ public sealed class ComposeGitPropertiesTask : Task
 #pragma warning restore S6354
         lines.Add($"git.build.time={buildTime}");
 
-        if (!TryRunFileOperation($"write {OutputFile}", () => AtomicFile.Write(OutputFile, lines)))
+        if (!LogOnFailure($"write {OutputFile}", () => AtomicFile.Write(OutputFile, lines)))
         {
             return false;
         }
@@ -103,7 +104,7 @@ public sealed class ComposeGitPropertiesTask : Task
             return true;
         }
 
-        return TryRunFileOperation($"write fallback file {FallbackFile}", () => AtomicFile.Write(FallbackFile, lines));
+        return LogOnFailure($"write fallback file {FallbackFile}", () => AtomicFile.Write(FallbackFile, lines));
     }
 
     private bool? DetermineDirtyState()
@@ -136,7 +137,9 @@ public sealed class ComposeGitPropertiesTask : Task
         return stdout.Length > 0;
     }
 
-    private bool TryRunFileOperation(string description, Action action)
+    // Only reachable when a real, unexpected I/O error occurs mid-build, which tests can't reliably induce.
+    [ExcludeFromCodeCoverage]
+    private bool LogOnFailure(string description, Action action)
     {
         try
         {

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -42,7 +43,7 @@ public sealed class FindGitRepositoryRootTask : Task
         string repositoryRoot = string.Empty;
         bool isUnsupportedGitFile = false;
 
-        try
+        return LogOnFailure($"walk up from '{StartDirectory}' looking for a git repository root", () =>
         {
             var current = new DirectoryInfo(StartDirectory);
 
@@ -70,15 +71,25 @@ public sealed class FindGitRepositoryRootTask : Task
 
                 current = current.Parent;
             }
+
+            RepositoryRoot = repositoryRoot;
+            IsUnsupportedGitFile = isUnsupportedGitFile;
+        });
+    }
+
+    // Only reachable when a real, unexpected I/O error occurs mid-build, which tests can't reliably induce.
+    [ExcludeFromCodeCoverage]
+    private bool LogOnFailure(string description, Action action)
+    {
+        try
+        {
+            action();
+            return true;
         }
         catch (Exception exception)
         {
-            Log.LogError($"git.properties: failed to walk up from '{StartDirectory}' looking for a git repository root:{Environment.NewLine}{exception}");
+            Log.LogError($"git.properties: failed to {description}:{Environment.NewLine}{exception}");
             return false;
         }
-
-        RepositoryRoot = repositoryRoot;
-        IsUnsupportedGitFile = isUnsupportedGitFile;
-        return true;
     }
 }

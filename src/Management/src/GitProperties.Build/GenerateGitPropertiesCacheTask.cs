@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -98,7 +99,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
             return true;
         }
 
-        try
+        return LogOnFailure("an unexpected error occurred while generating the shared cache", () =>
         {
             string? commitId = TryGetGitCommitId();
 
@@ -108,12 +109,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
             }
 
             return TryGenerate(commitId);
-        }
-        catch (Exception exception)
-        {
-            Log.LogError($"git.properties: an unexpected error occurred while generating the shared cache:{Environment.NewLine}{exception}");
-            return false;
-        }
+        });
     }
 
     private GitVersionStatus CheckGitVersion()
@@ -152,7 +148,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
         try
         {
-            exitCode = RunGit(VersionCheckArguments, out output, out _);
+            exitCode = TryRunGit(VersionCheckArguments, out output, out _);
         }
         catch (Exception exception)
         {
@@ -173,7 +169,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
     private string? TryGetGitCommitId()
     {
-        int exitCode = RunGit("rev-parse --is-inside-work-tree", out string stdout, out _);
+        int exitCode = TryRunGit("rev-parse --is-inside-work-tree", out string stdout, out _);
 
         if (exitCode != 0 || stdout != "true")
         {
@@ -182,7 +178,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
             return null;
         }
 
-        exitCode = RunGit("rev-parse HEAD", out stdout, out _);
+        exitCode = TryRunGit("rev-parse HEAD", out stdout, out _);
 
         if (exitCode != 0)
         {
@@ -227,7 +223,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
             Log.LogMessage(MessageImportance.High, "git.properties: generating shared cache at '{0}'.", CacheFile);
         }
 
-        if (!TryRunGit("rev-parse --is-shallow-repository", "determine shallow-clone status", out string stdout))
+        if (!RunGit("rev-parse --is-shallow-repository", "determine shallow-clone status", out string stdout))
         {
             return false;
         }
@@ -287,17 +283,11 @@ public sealed class GenerateGitPropertiesCacheTask : Task
             $"git.total.commit.count={GitPropertiesFormat.EscapeLineBreaks(tagsAndCommitCount.TotalCommitCount)}"
         ];
 
-        try
+        return LogOnFailure($"failed to write {CacheFile}", () =>
         {
             AtomicFile.Write(CacheFile, lines);
-        }
-        catch (Exception exception)
-        {
-            Log.LogError($"git.properties: failed to write {CacheFile}:{Environment.NewLine}{exception}");
-            return false;
-        }
-
-        return true;
+            return true;
+        });
     }
 
     private bool WasCacheRewrittenWhileWaitingForLock(DateTime? writeTimeBeforeLock)
@@ -312,8 +302,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
     private CommitLogEntry? GetLatestCommitLogEntry()
     {
-        if (!TryRunGit($"log -1 --abbrev={CommitIdAbbrevLength} --pretty=format:%h%x1f%an%x1f%ae%x1f%cI%x1f%s%x1f%B", "read commit metadata",
-            out string stdout))
+        if (!RunGit($"log -1 --abbrev={CommitIdAbbrevLength} --pretty=format:%h%x1f%an%x1f%ae%x1f%cI%x1f%s%x1f%B", "read commit metadata", out string stdout))
         {
             return null;
         }
@@ -327,7 +316,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
     private TagDescription DescribeClosestTag(bool isShallow)
     {
-        int exitCode = RunGit("describe --tags --long --always", out string stdout, out _);
+        int exitCode = TryRunGit("describe --tags --long --always", out string stdout, out _);
         TagDescription description = exitCode == 0 ? GitOutputParser.ParseTagDescribe(stdout) : TagDescription.Empty;
 
         if (isShallow)
@@ -341,7 +330,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
     private TagsAndCommitCount? ReadTagsAndTotalCommitCount(bool isShallow)
     {
-        if (!TryRunGit("tag --points-at HEAD", "list tags", out string stdout))
+        if (!RunGit("tag --points-at HEAD", "list tags", out string stdout))
         {
             return null;
         }
@@ -351,7 +340,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
         if (!isShallow)
         {
-            if (!TryRunGit("rev-list --count HEAD", "count commits", out stdout))
+            if (!RunGit("rev-list --count HEAD", "count commits", out stdout))
             {
                 return null;
             }
@@ -364,7 +353,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
     private GitConfig? ReadConfig()
     {
-        if (!TryRunGit("config --list", "read git config", out string stdout))
+        if (!RunGit("config --list", "read git config", out string stdout))
         {
             return null;
         }
@@ -374,48 +363,48 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
     private string ResolveBranch()
     {
-        string branch = string.Empty;
-        int exitCode = RunGit("rev-parse --abbrev-ref HEAD", out string stdout, out _);
+        // Most CI checkouts leave HEAD detached, where git has no branch name to report at all.
+        string? branchName = BranchEnvironmentVariableNames.Select(Environment.GetEnvironmentVariable).FirstOrDefault(value => !string.IsNullOrEmpty(value));
 
-        if (exitCode == 0)
+        if (branchName == null && RunGit("rev-parse --abbrev-ref HEAD", "determine branch name", out string stdout) && stdout != "HEAD")
         {
-            branch = stdout;
+            branchName = stdout;
         }
 
-        if (string.IsNullOrEmpty(branch) || branch == "HEAD")
-        {
-            // Fallback to common CI environment variables when HEAD is detached (e.g. most CI checkouts).
-            foreach (string name in BranchEnvironmentVariableNames)
-            {
-                string? value = Environment.GetEnvironmentVariable(name);
-
-                if (!string.IsNullOrEmpty(value))
-                {
-                    branch = value;
-                    break;
-                }
-            }
-        }
-
-        return branch;
+        return branchName ?? string.Empty;
     }
 
-    private int RunGit(string arguments, out string stdout, out string stderr)
+    private bool RunGit(string arguments, string description, out string stdout)
     {
-        return GitProcessRunner.Run(GitExecutable, RepositoryRoot, arguments, out stdout, out stderr);
-    }
-
-    private bool TryRunGit(string arguments, string description, out string stdout)
-    {
-        int exitCode = RunGit(arguments, out stdout, out string stderr);
+        int exitCode = TryRunGit(arguments, out stdout, out string stderr);
 
         if (exitCode != 0)
         {
-            Log.LogError("git.properties: failed to {0}: {1}", description, stderr);
+            Log.LogError("git.properties: failed to {0} (exit code {1}): {2}", description, exitCode, stderr);
             return false;
         }
 
         return true;
+    }
+
+    private int TryRunGit(string arguments, out string stdout, out string stderr)
+    {
+        return GitProcessRunner.Run(GitExecutable, RepositoryRoot, arguments, out stdout, out stderr);
+    }
+
+    // Only reachable on a genuinely unexpected failure, which tests can't reliably induce.
+    [ExcludeFromCodeCoverage]
+    private bool LogOnFailure(string errorMessage, Func<bool> action)
+    {
+        try
+        {
+            return action();
+        }
+        catch (Exception exception)
+        {
+            Log.LogError($"git.properties: {errorMessage}:{Environment.NewLine}{exception}");
+            return false;
+        }
     }
 
     /// <summary>
