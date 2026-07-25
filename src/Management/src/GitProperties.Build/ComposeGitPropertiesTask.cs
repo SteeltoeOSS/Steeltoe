@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -61,50 +60,47 @@ public sealed class ComposeGitPropertiesTask : Task
     public override bool Execute()
     {
         bool? isDirty = DetermineDirtyState();
-
         List<string> lines = [];
 
-        if (!LogOnFailure($"read {CacheFile}", () => lines = AtomicFile.Read(CacheFile).ToList()))
+        if (this.LogOnFailure($"failed to read {CacheFile}", () => lines = AtomicFile.Read(CacheFile).ToList()))
         {
-            return false;
-        }
-
-        if (isDirty == true)
-        {
-            for (int index = 0; index < lines.Count; index++)
+            if (isDirty == true)
             {
-                if (lines[index].StartsWith($"{GitPropertiesFormat.CommitIdDescribeKey}=", StringComparison.Ordinal))
+                for (int index = 0; index < lines.Count; index++)
                 {
-                    lines[index] += "-dirty";
+                    if (lines[index].StartsWith($"{GitPropertiesFormat.CommitIdDescribeKey}=", StringComparison.Ordinal))
+                    {
+                        lines[index] += "-dirty";
+                    }
                 }
+            }
+
+            if (isDirty != null)
+            {
+                lines.Add($"git.dirty={(isDirty.Value ? "true" : "false")}");
+            }
+
+            lines.Add($"git.build.version={GitPropertiesFormat.EscapeLineBreaks(Version)}");
+
+            // Local time, not UTC, to match the ISO-8601-with-offset style git itself uses for git.commit.time. This is "when this build ran, in the
+            // machine's own local time", not a value that needs to compare against the commit's own timestamp.
+#pragma warning disable S6354
+            string buildTime = DateTimeOffset.Now.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);
+#pragma warning restore S6354
+            lines.Add($"git.build.time={buildTime}");
+
+            if (this.LogOnFailure($"failed to write {OutputFile}", () => AtomicFile.Write(OutputFile, lines)))
+            {
+                if (FallbackFile is null or "")
+                {
+                    return true;
+                }
+
+                return this.LogOnFailure($"failed to write fallback file {FallbackFile}", () => AtomicFile.Write(FallbackFile, lines));
             }
         }
 
-        if (isDirty != null)
-        {
-            lines.Add($"git.dirty={(isDirty.Value ? "true" : "false")}");
-        }
-
-        lines.Add($"git.build.version={GitPropertiesFormat.EscapeLineBreaks(Version)}");
-
-        // Local time, not UTC, to match the ISO-8601-with-offset style git itself uses for git.commit.time. This is "when this build ran, in the
-        // machine's own local time", not a value that needs to compare against the commit's own timestamp.
-#pragma warning disable S6354
-        string buildTime = DateTimeOffset.Now.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);
-#pragma warning restore S6354
-        lines.Add($"git.build.time={buildTime}");
-
-        if (!LogOnFailure($"write {OutputFile}", () => AtomicFile.Write(OutputFile, lines)))
-        {
-            return false;
-        }
-
-        if (FallbackFile is null or "")
-        {
-            return true;
-        }
-
-        return LogOnFailure($"write fallback file {FallbackFile}", () => AtomicFile.Write(FallbackFile, lines));
+        return false;
     }
 
     private bool? DetermineDirtyState()
@@ -135,21 +131,5 @@ public sealed class ComposeGitPropertiesTask : Task
         }
 
         return stdout.Length > 0;
-    }
-
-    // Only reachable when a real, unexpected I/O error occurs mid-build, which tests can't reliably induce.
-    [ExcludeFromCodeCoverage]
-    private bool LogOnFailure(string description, Action action)
-    {
-        try
-        {
-            action();
-            return true;
-        }
-        catch (Exception exception)
-        {
-            Log.LogError($"git.properties: failed to {description}:{Environment.NewLine}{exception}");
-            return false;
-        }
     }
 }

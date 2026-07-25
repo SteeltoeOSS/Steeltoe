@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -53,7 +52,7 @@ public sealed class DetectConsumingPackageReferenceTask : Task
     {
         if (ProjectAssetsFile.Length > 0 && File.Exists(ProjectAssetsFile))
         {
-            return LogOnFailure($"read '{ProjectAssetsFile}' while checking for a consuming package reference", () =>
+            return this.LogOnFailure($"failed to read '{ProjectAssetsFile}' while checking for a consuming package reference", () =>
             {
                 string content = File.ReadAllText(ProjectAssetsFile);
                 HasReference = ContainsAnyPackage(content);
@@ -77,21 +76,5 @@ public sealed class DetectConsumingPackageReferenceTask : Task
         }
 
         return false;
-    }
-
-    // Only reachable when a real, unexpected I/O error occurs mid-build, which tests can't reliably induce.
-    [ExcludeFromCodeCoverage]
-    private bool LogOnFailure(string description, Action action)
-    {
-        try
-        {
-            action();
-            return true;
-        }
-        catch (Exception exception)
-        {
-            Log.LogError($"git.properties: failed to {description}:{Environment.NewLine}{exception}");
-            return false;
-        }
     }
 }

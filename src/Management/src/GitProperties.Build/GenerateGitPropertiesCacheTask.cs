@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -89,56 +88,51 @@ public sealed class GenerateGitPropertiesCacheTask : Task
     {
         GitVersionStatus versionStatus = CheckGitVersion();
 
-        if (versionStatus == GitVersionStatus.Unknown)
+        return versionStatus switch
         {
-            return false;
-        }
-
-        if (versionStatus == GitVersionStatus.Incompatible)
-        {
-            return true;
-        }
-
-        return LogOnFailure("an unexpected error occurred while generating the shared cache", () =>
-        {
-            string? commitId = TryGetGitCommitId();
-
-            if (commitId == null)
+            GitVersionStatus.Unknown => false,
+            GitVersionStatus.Incompatible => true,
+            _ => this.LogOnFailure("an unexpected error occurred while generating the shared cache", () =>
             {
-                return true;
-            }
+                string? commitId = TryGetGitCommitId();
 
-            return TryGenerate(commitId);
-        });
+                if (commitId == null)
+                {
+                    return true;
+                }
+
+                return TryGenerate(commitId);
+            })
+        };
     }
 
     private GitVersionStatus CheckGitVersion()
     {
         string? output = GetGitVersion();
 
-        if (output == null)
+        if (output != null)
         {
-            return GitVersionStatus.Incompatible;
+            Version? installedVersion = GitOutputParser.ParseGitVersion(output);
+
+            if (installedVersion != null)
+            {
+                if (installedVersion >= MinimumGitVersion)
+                {
+                    return GitVersionStatus.Compatible;
+                }
+
+                GitDiagnosticReporter.Report(Log, 4, EnableWarnings,
+                    $"git.properties generation skipped: installed git version {installedVersion} " +
+                    $"is older than the minimum supported version ({MinimumGitVersion}). Upgrade git to resolve this.");
+            }
+            else
+            {
+                Log.LogError($"git.properties: could not parse the installed git version from '{GitExecutable} {VersionCheckArguments}' output: '{output}'.");
+                return GitVersionStatus.Unknown;
+            }
         }
 
-        Version? installedVersion = GitOutputParser.ParseGitVersion(output);
-
-        if (installedVersion == null)
-        {
-            Log.LogError($"git.properties: could not parse the installed git version from '{GitExecutable} {VersionCheckArguments}' output: '{output}'.");
-            return GitVersionStatus.Unknown;
-        }
-
-        if (installedVersion < MinimumGitVersion)
-        {
-            GitDiagnosticReporter.Report(Log, 4, EnableWarnings,
-                $"git.properties generation skipped: installed git version {installedVersion} " +
-                $"is older than the minimum supported version ({MinimumGitVersion}). Upgrade git to resolve this.");
-
-            return GitVersionStatus.Incompatible;
-        }
-
-        return GitVersionStatus.Compatible;
+        return GitVersionStatus.Incompatible;
     }
 
     private string? GetGitVersion()
@@ -223,95 +217,88 @@ public sealed class GenerateGitPropertiesCacheTask : Task
             Log.LogMessage(MessageImportance.High, "git.properties: generating shared cache at '{0}'.", CacheFile);
         }
 
-        if (!RunGit("rev-parse --is-shallow-repository", "determine shallow-clone status", out string stdout))
+        if (RunGit("rev-parse --is-shallow-repository", "determine shallow-clone status", out string stdout))
         {
-            return false;
+            bool isShallow = stdout == "true";
+
+            if (isShallow)
+            {
+                GitDiagnosticReporter.Report(Log, 6, EnableWarnings,
+                    "git.properties: repository is a shallow clone. git.total.commit.count and git.closest.tag.commit.count will be left empty. Run " +
+                    "'git fetch --unshallow' to fetch full history, or configure your CI checkout for full depth (e.g. GitHub Actions: fetch-depth: 0).");
+            }
+
+            CommitLogEntry? logEntry = GetLatestCommitLogEntry();
+
+            if (logEntry != null)
+            {
+                TagDescription tagDescription = DescribeClosestTag(isShallow);
+                TagsAndCommitCount? tagsAndCommitCount = ReadTagsAndTotalCommitCount(isShallow);
+
+                if (tagsAndCommitCount != null)
+                {
+                    GitConfig? config = ReadConfig();
+
+                    if (config != null)
+                    {
+                        string branch = ResolveBranch();
+                        string buildHost = Environment.MachineName;
+
+                        List<string> lines =
+                        [
+                            $"git.branch={GitPropertiesFormat.EscapeLineBreaks(branch)}",
+                            $"git.commit.id={GitPropertiesFormat.EscapeLineBreaks(commitId)}",
+                            $"git.commit.id.abbrev={GitPropertiesFormat.EscapeLineBreaks(logEntry.AbbrevId)}",
+                            $"{GitPropertiesFormat.CommitIdDescribeKey}={GitPropertiesFormat.EscapeLineBreaks(tagDescription.BaseDescribe)}",
+                            $"git.commit.time={GitPropertiesFormat.EscapeLineBreaks(logEntry.CommitTime)}",
+                            $"git.commit.message.short={GitPropertiesFormat.EscapeLineBreaks(logEntry.ShortMessage)}",
+                            $"git.commit.message.full={GitPropertiesFormat.EscapeLineBreaks(logEntry.FullMessage)}",
+                            $"git.commit.user.name={GitPropertiesFormat.EscapeLineBreaks(logEntry.AuthorName)}",
+                            $"git.commit.user.email={GitPropertiesFormat.EscapeLineBreaks(logEntry.AuthorEmail)}",
+                            $"git.build.host={GitPropertiesFormat.EscapeLineBreaks(buildHost)}",
+                            $"git.build.user.name={GitPropertiesFormat.EscapeLineBreaks(config.UserName)}",
+                            $"git.build.user.email={GitPropertiesFormat.EscapeLineBreaks(config.UserEmail)}",
+                            $"git.tags={GitPropertiesFormat.EscapeLineBreaks(tagsAndCommitCount.Tags)}",
+                            $"git.closest.tag.name={GitPropertiesFormat.EscapeLineBreaks(tagDescription.ClosestTagName)}",
+                            $"git.closest.tag.commit.count={GitPropertiesFormat.EscapeLineBreaks(tagDescription.ClosestTagCommitCount)}",
+                            $"git.remote.origin.url={GitPropertiesFormat.EscapeLineBreaks(config.RemoteUrl)}",
+                            $"git.total.commit.count={GitPropertiesFormat.EscapeLineBreaks(tagsAndCommitCount.TotalCommitCount)}"
+                        ];
+
+                        return this.LogOnFailure($"failed to write {CacheFile}", () =>
+                        {
+                            AtomicFile.Write(CacheFile, lines);
+                        });
+                    }
+                }
+            }
         }
 
-        bool isShallow = stdout == "true";
-
-        if (isShallow)
-        {
-            GitDiagnosticReporter.Report(Log, 6, EnableWarnings,
-                "git.properties: repository is a shallow clone. git.total.commit.count and git.closest.tag.commit.count will be left empty. Run " +
-                "'git fetch --unshallow' to fetch full history, or configure your CI checkout for full depth (e.g. GitHub Actions: fetch-depth: 0).");
-        }
-
-        CommitLogEntry? logEntry = GetLatestCommitLogEntry();
-
-        if (logEntry == null)
-        {
-            return false;
-        }
-
-        TagDescription tagDescription = DescribeClosestTag(isShallow);
-        TagsAndCommitCount? tagsAndCommitCount = ReadTagsAndTotalCommitCount(isShallow);
-
-        if (tagsAndCommitCount == null)
-        {
-            return false;
-        }
-
-        GitConfig? config = ReadConfig();
-
-        if (config == null)
-        {
-            return false;
-        }
-
-        string branch = ResolveBranch();
-        string buildHost = Environment.MachineName;
-
-        List<string> lines =
-        [
-            $"git.branch={GitPropertiesFormat.EscapeLineBreaks(branch)}",
-            $"git.commit.id={GitPropertiesFormat.EscapeLineBreaks(commitId)}",
-            $"git.commit.id.abbrev={GitPropertiesFormat.EscapeLineBreaks(logEntry.AbbrevId)}",
-            $"{GitPropertiesFormat.CommitIdDescribeKey}={GitPropertiesFormat.EscapeLineBreaks(tagDescription.BaseDescribe)}",
-            $"git.commit.time={GitPropertiesFormat.EscapeLineBreaks(logEntry.CommitTime)}",
-            $"git.commit.message.short={GitPropertiesFormat.EscapeLineBreaks(logEntry.ShortMessage)}",
-            $"git.commit.message.full={GitPropertiesFormat.EscapeLineBreaks(logEntry.FullMessage)}",
-            $"git.commit.user.name={GitPropertiesFormat.EscapeLineBreaks(logEntry.AuthorName)}",
-            $"git.commit.user.email={GitPropertiesFormat.EscapeLineBreaks(logEntry.AuthorEmail)}",
-            $"git.build.host={GitPropertiesFormat.EscapeLineBreaks(buildHost)}",
-            $"git.build.user.name={GitPropertiesFormat.EscapeLineBreaks(config.UserName)}",
-            $"git.build.user.email={GitPropertiesFormat.EscapeLineBreaks(config.UserEmail)}",
-            $"git.tags={GitPropertiesFormat.EscapeLineBreaks(tagsAndCommitCount.Tags)}",
-            $"git.closest.tag.name={GitPropertiesFormat.EscapeLineBreaks(tagDescription.ClosestTagName)}",
-            $"git.closest.tag.commit.count={GitPropertiesFormat.EscapeLineBreaks(tagDescription.ClosestTagCommitCount)}",
-            $"git.remote.origin.url={GitPropertiesFormat.EscapeLineBreaks(config.RemoteUrl)}",
-            $"git.total.commit.count={GitPropertiesFormat.EscapeLineBreaks(tagsAndCommitCount.TotalCommitCount)}"
-        ];
-
-        return LogOnFailure($"failed to write {CacheFile}", () =>
-        {
-            AtomicFile.Write(CacheFile, lines);
-            return true;
-        });
+        return false;
     }
 
     private bool WasCacheRewrittenWhileWaitingForLock(DateTime? writeTimeBeforeLock)
     {
-        if (!File.Exists(CacheFile))
+        if (File.Exists(CacheFile))
         {
-            return false;
+            return writeTimeBeforeLock == null || File.GetLastWriteTimeUtc(CacheFile) > writeTimeBeforeLock.Value;
         }
 
-        return writeTimeBeforeLock == null || File.GetLastWriteTimeUtc(CacheFile) > writeTimeBeforeLock.Value;
+        return false;
     }
 
     private CommitLogEntry? GetLatestCommitLogEntry()
     {
-        if (!RunGit($"log -1 --abbrev={CommitIdAbbrevLength} --pretty=format:%h%x1f%an%x1f%ae%x1f%cI%x1f%s%x1f%B", "read commit metadata", out string stdout))
+        if (RunGit($"log -1 --abbrev={CommitIdAbbrevLength} --pretty=format:%h%x1f%an%x1f%ae%x1f%cI%x1f%s%x1f%B", "read commit metadata", out string stdout))
         {
-            return null;
+            string[] logFields = stdout.Split(CommitLogFieldSeparator, 6);
+
+            return new CommitLogEntry(logFields.Length > 0 ? logFields[0] : string.Empty, logFields.Length > 1 ? logFields[1] : string.Empty,
+                logFields.Length > 2 ? logFields[2] : string.Empty, logFields.Length > 3 ? logFields[3] : string.Empty,
+                logFields.Length > 4 ? logFields[4] : string.Empty, logFields.Length > 5 ? logFields[5] : string.Empty);
         }
 
-        string[] logFields = stdout.Split(CommitLogFieldSeparator, 6);
-
-        return new CommitLogEntry(logFields.Length > 0 ? logFields[0] : string.Empty, logFields.Length > 1 ? logFields[1] : string.Empty,
-            logFields.Length > 2 ? logFields[2] : string.Empty, logFields.Length > 3 ? logFields[3] : string.Empty,
-            logFields.Length > 4 ? logFields[4] : string.Empty, logFields.Length > 5 ? logFields[5] : string.Empty);
+        return null;
     }
 
     private TagDescription DescribeClosestTag(bool isShallow)
@@ -330,35 +317,32 @@ public sealed class GenerateGitPropertiesCacheTask : Task
 
     private TagsAndCommitCount? ReadTagsAndTotalCommitCount(bool isShallow)
     {
-        if (!RunGit("tag --points-at HEAD", "list tags", out string stdout))
+        if (RunGit("tag --points-at HEAD", "list tags", out string stdout))
         {
-            return null;
-        }
+            string tags = string.Join(",", stdout.Split(LineSeparators, StringSplitOptions.RemoveEmptyEntries));
 
-        string tags = string.Join(",", stdout.Split(LineSeparators, StringSplitOptions.RemoveEmptyEntries));
-        string totalCommitCount = string.Empty;
-
-        if (!isShallow)
-        {
-            if (!RunGit("rev-list --count HEAD", "count commits", out stdout))
+            if (isShallow)
             {
-                return null;
+                return new TagsAndCommitCount(tags, string.Empty);
             }
 
-            totalCommitCount = stdout;
+            if (RunGit("rev-list --count HEAD", "count commits", out stdout))
+            {
+                return new TagsAndCommitCount(tags, stdout);
+            }
         }
 
-        return new TagsAndCommitCount(tags, totalCommitCount);
+        return null;
     }
 
     private GitConfig? ReadConfig()
     {
-        if (!RunGit("config --list", "read git config", out string stdout))
+        if (RunGit("config --list", "read git config", out string stdout))
         {
-            return null;
+            return GitOutputParser.ParseConfig(stdout);
         }
 
-        return GitOutputParser.ParseConfig(stdout);
+        return null;
     }
 
     private string ResolveBranch()
@@ -378,33 +362,18 @@ public sealed class GenerateGitPropertiesCacheTask : Task
     {
         int exitCode = TryRunGit(arguments, out stdout, out string stderr);
 
-        if (exitCode != 0)
+        if (exitCode == 0)
         {
-            Log.LogError("git.properties: failed to {0} (exit code {1}): {2}", description, exitCode, stderr);
-            return false;
+            return true;
         }
 
-        return true;
+        Log.LogError("git.properties: failed to {0} (exit code {1}): {2}", description, exitCode, stderr);
+        return false;
     }
 
     private int TryRunGit(string arguments, out string stdout, out string stderr)
     {
         return GitProcessRunner.Run(GitExecutable, RepositoryRoot, arguments, out stdout, out stderr);
-    }
-
-    // Only reachable on a genuinely unexpected failure, which tests can't reliably induce.
-    [ExcludeFromCodeCoverage]
-    private bool LogOnFailure(string errorMessage, Func<bool> action)
-    {
-        try
-        {
-            return action();
-        }
-        catch (Exception exception)
-        {
-            Log.LogError($"git.properties: {errorMessage}:{Environment.NewLine}{exception}");
-            return false;
-        }
     }
 
     /// <summary>
