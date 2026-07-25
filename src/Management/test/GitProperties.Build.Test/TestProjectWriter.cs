@@ -9,11 +9,19 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 
 internal static partial class TestProjectWriter
 {
-    private const string HelloWorldCode = """
+    private const string GitPropertiesBuildRelativePath = "src/Management/src/GitProperties.Build";
+
+    private const string HelloWorldSource = """
         Console.WriteLine("Hello, World!");
         """;
 
-    private const string GitPropertiesBuildRelativePath = "src/Management/src/GitProperties.Build";
+    private const string NonZeroExitSource = """
+        using System.Diagnostics.CodeAnalysis;
+
+        [assembly: ExcludeFromCodeCoverage]
+
+        return 1;
+        """;
 
     private static readonly string[] SharedBuildInfrastructureFiles =
     [
@@ -155,7 +163,7 @@ internal static partial class TestProjectWriter
             """;
 
         await File.WriteAllTextAsync(Path.Combine(appDirectory, $"{projectName}.csproj"), projectContent, TestContext.Current.CancellationToken);
-        await File.WriteAllTextAsync(Path.Combine(appDirectory, "Program.cs"), HelloWorldCode, TestContext.Current.CancellationToken);
+        await File.WriteAllTextAsync(Path.Combine(appDirectory, "Program.cs"), HelloWorldSource, TestContext.Current.CancellationToken);
 
         return appDirectory;
     }
@@ -177,7 +185,7 @@ internal static partial class TestProjectWriter
 
         await File.WriteAllTextAsync(Path.Combine(projectDirectory, $"{projectName}.csproj"), projectContent, TestContext.Current.CancellationToken);
 
-        string gitVersionCode = $"""
+        string printVersionSource = $"""
             using System.Diagnostics.CodeAnalysis;
 
             [assembly: ExcludeFromCodeCoverage]
@@ -185,9 +193,27 @@ internal static partial class TestProjectWriter
             Console.WriteLine("{versionOutput}");
             """;
 
-        await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Program.cs"), gitVersionCode, TestContext.Current.CancellationToken);
+        await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Program.cs"), printVersionSource, TestContext.Current.CancellationToken);
 
         return projectDirectory;
+    }
+
+    public static async Task WriteNonZeroExitCodeGitExecutableProjectAsync(string projectDirectory, string projectName)
+    {
+        Directory.CreateDirectory(projectDirectory);
+
+        string projectContent = $"""
+            <Project Sdk="Microsoft.NET.Sdk">
+              <PropertyGroup>
+                <OutputType>Exe</OutputType>
+                <TargetFramework>{TestAppTargetFramework.Default}</TargetFramework>
+                <ImplicitUsings>enable</ImplicitUsings>
+              </PropertyGroup>
+            </Project>
+            """;
+
+        await File.WriteAllTextAsync(Path.Combine(projectDirectory, $"{projectName}.csproj"), projectContent, TestContext.Current.CancellationToken);
+        await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Program.cs"), NonZeroExitSource, TestContext.Current.CancellationToken);
     }
 
     public static async Task<string> WriteDummyDependencyProjectAsync(string destinationDirectory, string projectName)
@@ -263,7 +289,7 @@ internal static partial class TestProjectWriter
             """;
 
         await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Consumer.csproj"), projectContent, TestContext.Current.CancellationToken);
-        await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Program.cs"), HelloWorldCode, TestContext.Current.CancellationToken);
+        await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Program.cs"), HelloWorldSource, TestContext.Current.CancellationToken);
     }
 
     [GeneratedRegex("<TargetFramework>(.+?)</TargetFramework>")]

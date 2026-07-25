@@ -16,7 +16,7 @@ public sealed class GitDirtyStateUnknownWarnsByDefaultTest : GitPropertiesBuildT
         repository.SharedCacheExists.Should().BeTrue();
 
         DotNetCommandOutput defaultOutput = await repository.TestApp.BuildAsync($"-p:GitExecutable={BogusGitExecutable}");
-        defaultOutput.Should().ContainGitWarning(GitDiagnosticId.GitDirtyStateUnknown);
+        defaultOutput.Should().ContainGitWarning(GitDiagnosticId.GitDirtyStateUnknown, "failed (");
         repository.TestApp.GitPropertiesGenerated.Should().BeTrue();
 
         Dictionary<string, string> properties = await repository.TestApp.ReadDebugPropertiesAsync();
@@ -27,11 +27,19 @@ public sealed class GitDirtyStateUnknownWarnsByDefaultTest : GitPropertiesBuildT
         DotNetCommandOutput disableWarningsOutput =
             await repository.TestApp.BuildAsync($"-p:GitExecutable={BogusGitExecutable}", "-p:GitPropertiesEnableWarnings=false");
 
-        disableWarningsOutput.Should().ContainGitMessage(GitDiagnosticId.GitDirtyStateUnknown);
+        disableWarningsOutput.Should().ContainGitMessage(GitDiagnosticId.GitDirtyStateUnknown, "failed (");
         repository.TestApp.GitPropertiesGenerated.Should().BeTrue();
 
         DotNetCommandOutput featureOffOutput = await repository.TestApp.BuildAsync($"-p:GitExecutable={BogusGitExecutable}", "-p:GenerateGitProperties=false");
         featureOffOutput.Should().NotContainGitWarning(GitDiagnosticId.GitDirtyStateUnknown);
         repository.TestApp.GitPropertiesGenerated.Should().BeFalse();
+
+        string nonZeroExitCodeGitExecutable = await GitPropertiesTestWorkspace.GetNonZeroExitCodeGitExecutableAsync();
+        DotNetCommandOutput nonZeroExitCodeOutput = await repository.TestApp.BuildAsync($"-p:GitExecutable={nonZeroExitCodeGitExecutable}");
+        nonZeroExitCodeOutput.Should().ContainGitWarning(GitDiagnosticId.GitDirtyStateUnknown, "exited with code");
+        repository.TestApp.GitPropertiesGenerated.Should().BeTrue();
+
+        Dictionary<string, string> nonZeroExitCodeProperties = await repository.TestApp.ReadDebugPropertiesAsync();
+        nonZeroExitCodeProperties.Should().NotContainKey("git.dirty");
     }
 }

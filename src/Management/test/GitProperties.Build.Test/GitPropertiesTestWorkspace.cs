@@ -10,6 +10,8 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
 {
     public const string TestAppProjectName = "TestApp";
 
+    private static readonly Task<string> NonZeroExitCodeGitExecutableTask = GetOrCreateNonZeroExitCodeGitExecutableAsync();
+
     public string RootDirectory { get; }
 
     private GitPropertiesTestWorkspace(string rootDirectory)
@@ -84,6 +86,26 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
 
         string executableName = OperatingSystem.IsWindows() ? "FakeGit.exe" : "FakeGit";
         return Path.Combine(projectDirectory, "bin", "Debug", TestAppTargetFramework.Default, executableName);
+    }
+
+    public static Task<string> GetNonZeroExitCodeGitExecutableAsync()
+    {
+        return NonZeroExitCodeGitExecutableTask;
+    }
+
+    private static async Task<string> GetOrCreateNonZeroExitCodeGitExecutableAsync()
+    {
+        string projectDirectory = Path.Combine(Path.GetTempPath(), "steeltoe-nonzero-exit-git", "NonZeroExitCodeGit");
+        string executableName = OperatingSystem.IsWindows() ? "NonZeroExitCodeGit.exe" : "NonZeroExitCodeGit";
+        string executablePath = Path.Combine(projectDirectory, "bin", "Debug", TestAppTargetFramework.Default, executableName);
+
+        if (!File.Exists(executablePath))
+        {
+            await TestProjectWriter.WriteNonZeroExitCodeGitExecutableProjectAsync(projectDirectory, "NonZeroExitCodeGit");
+            await ProcessRunner.RunDotNetAsync(projectDirectory, 0, null, "build");
+        }
+
+        return executablePath;
     }
 
     public async Task<EmptyGitRepository> CreateEmptyRepositoryAsync(string name)

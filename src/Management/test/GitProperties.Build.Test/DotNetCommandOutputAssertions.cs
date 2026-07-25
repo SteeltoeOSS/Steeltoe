@@ -14,10 +14,10 @@ internal sealed class DotNetCommandOutputAssertions(DotNetCommandOutput subject)
     protected override string Identifier => nameof(DotNetCommandOutput);
 
     [CustomAssertion]
-    public void ContainGitWarning(GitDiagnosticId diagnosticId)
+    public void ContainGitWarning(GitDiagnosticId diagnosticId, string? messageSnippet = null)
     {
         string code = FormatCode(diagnosticId);
-        Subject.Value.Should().Contain($"warning {code}");
+        AssertContainsDiagnosticLine("warning", code, messageSnippet);
     }
 
     [CustomAssertion]
@@ -34,10 +34,23 @@ internal sealed class DotNetCommandOutputAssertions(DotNetCommandOutput subject)
     }
 
     [CustomAssertion]
-    public void ContainGitMessage(GitDiagnosticId diagnosticId)
+    public void ContainGitMessage(GitDiagnosticId diagnosticId, string? messageSnippet = null)
     {
         string code = FormatCode(diagnosticId);
-        Subject.Value.Should().Contain($"message {code}");
+        AssertContainsDiagnosticLine("message", code, messageSnippet);
+    }
+
+    [CustomAssertion]
+    private void AssertContainsDiagnosticLine(string kind, string code, string? messageSnippet)
+    {
+        string marker = $"{kind} {code}";
+        Subject.Value.Should().Contain(marker);
+
+        if (messageSnippet != null)
+        {
+            string[] lines = Subject.Value.Split('\n');
+            lines.Should().Contain(line => line.Contains(marker, StringComparison.Ordinal) && line.Contains(messageSnippet, StringComparison.Ordinal));
+        }
     }
 
     private static string FormatCode(GitDiagnosticId diagnosticId)

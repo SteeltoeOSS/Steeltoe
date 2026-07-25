@@ -13,17 +13,22 @@ public sealed class GitExecutableNotFoundWarnsByDefaultTest : GitPropertiesBuild
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         DotNetCommandOutput defaultOutput = await repository.TestApp.BuildAsync($"-p:GitExecutable={BogusGitExecutable}");
-        defaultOutput.Should().ContainGitWarning(GitDiagnosticId.GitExecutableNotFound);
+        defaultOutput.Should().ContainGitWarning(GitDiagnosticId.GitExecutableNotFound, "could not run");
         repository.TestApp.GitPropertiesGenerated.Should().BeFalse();
 
         DotNetCommandOutput disableWarningsOutput =
             await repository.TestApp.BuildAsync($"-p:GitExecutable={BogusGitExecutable}", "-p:GitPropertiesEnableWarnings=false");
 
-        disableWarningsOutput.Should().ContainGitMessage(GitDiagnosticId.GitExecutableNotFound);
+        disableWarningsOutput.Should().ContainGitMessage(GitDiagnosticId.GitExecutableNotFound, "could not run");
         repository.TestApp.GitPropertiesGenerated.Should().BeFalse();
 
         DotNetCommandOutput featureOffOutput = await repository.TestApp.BuildAsync($"-p:GitExecutable={BogusGitExecutable}", "-p:GenerateGitProperties=false");
         featureOffOutput.Should().NotContainGitWarning(GitDiagnosticId.GitExecutableNotFound);
+        repository.TestApp.GitPropertiesGenerated.Should().BeFalse();
+
+        string nonZeroExitCodeGitExecutable = await GitPropertiesTestWorkspace.GetNonZeroExitCodeGitExecutableAsync();
+        DotNetCommandOutput nonZeroExitCodeOutput = await repository.TestApp.BuildAsync($"-p:GitExecutable={nonZeroExitCodeGitExecutable}");
+        nonZeroExitCodeOutput.Should().ContainGitWarning(GitDiagnosticId.GitExecutableNotFound, "exited with code");
         repository.TestApp.GitPropertiesGenerated.Should().BeFalse();
     }
 }
