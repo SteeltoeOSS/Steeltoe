@@ -29,6 +29,7 @@ internal static class GitOutputParser
 
         int major = int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
         int minor = int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
+        // Git versions before 2006 did not always include the patch version. And even today, versions built from source can look like "2.44-rc0".
         int build = match.Groups[3].Success ? int.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture) : 0;
 
         return new Version(major, minor, build);
