@@ -11,6 +11,8 @@ internal sealed class TestProject(string rootDirectory, string name)
     private readonly string _releasePublishGitPropertiesFilePath =
         Path.Combine(rootDirectory, "bin", "Release", TestAppTargetFramework.Default, "publish", "git.properties");
 
+    private bool _hasRestored;
+
     public string RootDirectory { get; } = rootDirectory;
     public string Name { get; } = name;
 
@@ -52,11 +54,16 @@ internal sealed class TestProject(string rootDirectory, string name)
     private async Task<DotNetCommandOutput> RunDotNetCommandAsync(string command, int exitCodeExpected, Dictionary<string, string>? environmentVariables,
         params string[] arguments)
     {
+        // Avoid redundant restore of repeated build/publish calls in the same test to improve performance.
+        bool skipRestore = _hasRestored && command != "restore";
+
         string output = await ProcessRunner.RunDotNetAsync(RootDirectory, exitCodeExpected, environmentVariables, [
             command,
+            .. skipRestore ? ["--no-restore"] : Array.Empty<string>(),
             .. arguments
         ]);
 
+        _hasRestored = true;
         return new DotNetCommandOutput(output);
     }
 
