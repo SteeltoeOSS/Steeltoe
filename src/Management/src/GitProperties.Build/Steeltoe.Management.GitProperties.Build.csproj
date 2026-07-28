@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      This must target netstandard2.0 to make MSBuild run tasks inside its host process itself, which may be .NET Framework rather than a modern .NET
+      runtime. If targeting something else, MSBuild switches to out-of-process mode, which is slower.
+    -->
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Generates a Spring Boot-compatible git.properties file at build time via MSBuild props/targets/tasks.</Description>
+    <PackageTags>git.properties;actuators;CloudFoundry;Tanzu</PackageTags>
+    <IsPackable>true</IsPackable>
+    <ConfigurationSchemaGeneratorEnabled>false</ConfigurationSchemaGeneratorEnabled>
+    <PublicApiAnalyzersEnabled>false</PublicApiAnalyzersEnabled>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <!-- Conflicts with Microsoft.Build.Utilities.Task. -->
+    <Using Remove="System.Threading.Tasks" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!--
+      Lands directly under bin\tasks\<tfm>\ instead of bin\<Configuration>\<tfm>\, so the .targets file can reference it via one relative path whether
+      used straight from source or from inside the packed .nupkg. Still nested under "bin\" so the generic .gitignore pattern already covers it.
+    -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>bin\tasks\$(TargetFramework)\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- This package only contributes MSBuild build logic, never application code, so it must never flow to a consuming project as a dependency. -->
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <!-- No lib\ output (this isn't a reference assembly). The task DLL ships under tasks\ via the explicit <None> item below instead. -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <!-- NU5128/NU5100 both expected given IncludeBuildOutput=false and the DLL living under tasks\ instead of lib\. -->
+    <NoWarn>$(NoWarn);NU5128;NU5100</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The MSBuild host already provides these types at runtime. -->
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="$(MicrosoftBuildUtilitiesCoreVersion)" PrivateAssets="all" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="build\Steeltoe.Management.GitProperties.Build.targets" Pack="true" PackagePath="build\" />
+    <None Include="$(TargetPath)" Pack="true" PackagePath="bin\tasks\$(TargetFramework)\" />
+    <None Include="SourceCheckout.txt" Pack="false" />
+  </ItemGroup>
+</Project>

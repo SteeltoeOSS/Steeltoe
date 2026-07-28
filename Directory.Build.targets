@@ -15,6 +15,7 @@
   PackageId.targets file which brings the ConfigurationSchema.json file into the Json Schema.
   -->
   <PropertyGroup>
+    <ConfigurationSchemaGeneratorEnabled Condition="'$(ConfigurationSchemaGeneratorEnabled)' == ''">true</ConfigurationSchemaGeneratorEnabled>
     <ConfigurationSchemaPath>$(MSBuildProjectDirectory)\ConfigurationSchema.json</ConfigurationSchemaPath>
     <ConfigurationSchemaExists Condition="Exists('$(ConfigurationSchemaPath)')">true</ConfigurationSchemaExists>
   </PropertyGroup>
@@ -39,15 +40,15 @@
   <!--
   Logic for generating and comparing the ConfigurationSchema.json file
   -->
-  <PropertyGroup Condition="'$(IsPackable)' == 'true'">
+  <PropertyGroup Condition="'$(IsPackable)' == 'true' AND '$(ConfigurationSchemaGeneratorEnabled)' == 'true'">
     <TargetsTriggeredByCompilation Condition="'$(DesignTimeBuild)' != 'true'">$(TargetsTriggeredByCompilation);GenerateConfigurationSchema</TargetsTriggeredByCompilation>
 
     <ConfigurationSchemaGeneratorProjectPath>$(MSBuildThisFileDirectory)src\Tools\src\ConfigurationSchemaGenerator\ConfigurationSchemaGenerator.csproj</ConfigurationSchemaGeneratorProjectPath>
-    <ConfigurationSchemaGeneratorRspPath>$(IntermediateOutputPath)$(AsemblyName).configschema.rsp</ConfigurationSchemaGeneratorRspPath>
+    <ConfigurationSchemaGeneratorRspPath>$(IntermediateOutputPath)$(AssemblyName).configschema.rsp</ConfigurationSchemaGeneratorRspPath>
     <GeneratedConfigurationSchemaOutputPath>$(IntermediateOutputPath)ConfigurationSchema.json</GeneratedConfigurationSchemaOutputPath>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(IsPackable)' == 'true'">
+  <ItemGroup Condition="'$(IsPackable)' == 'true' AND '$(ConfigurationSchemaGeneratorEnabled)' == 'true'">
     <!-- ensure the config generator is built -->
     <ProjectReference Include="$(ConfigurationSchemaGeneratorProjectPath)"
                       Private="false"

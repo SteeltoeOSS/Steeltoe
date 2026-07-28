@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      No test's outcome depends on which TFM this assembly itself is compiled as, so multi-targeting would just
+      triple the suite's runtime for zero extra coverage.
+    -->
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <!-- Exposes $(TargetFramework) to runtime code, so the TFM can be changed without adapting existing tests. -->
+    <AssemblyMetadata Include="TargetFramework" Value="$(TargetFramework)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Coverlet is unable to instrument side-loaded assemblies, which is why we use the dotnet-coverage tool. -->
+    <PackageReference Remove="coverlet.collector" />
+  </ItemGroup>
+</Project>
