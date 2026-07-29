@@ -10,9 +10,8 @@ public sealed class AutoDetectionSkipsGenerationWhenNoConsumingPackageReferenceT
     public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
-        TestProject testApp = await repository.AddProjectAsync(GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null);
-        DotNetCommandOutput output = await testApp.BuildAsync("-v:normal");
+        DotNetCommandOutput output = await repository.TestApp.BuildAsync("-v:normal", "-p:GenerateGitProperties=auto");
         output.Value.Should().Contain("git.properties generation skipped: no reference to");
-        testApp.GitPropertiesGenerated.Should().BeFalse();
+        repository.TestApp.GitPropertiesGenerated.Should().BeFalse();
     }
 }

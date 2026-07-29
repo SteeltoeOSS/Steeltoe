@@ -11,9 +11,8 @@ public sealed class AutoDetectionExplicitFalseWinsOverDetectedConsumingPackageRe
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         TestProject dependency = await repository.AddDependencyProjectAsync("Steeltoe.Management.Endpoint");
-        TestProject testApp = await repository.AddTestAppReferencingAsync(dependency);
-
-        await testApp.BuildAsync("-p:GenerateGitProperties=false");
-        testApp.GitPropertiesGenerated.Should().BeFalse();
+        TestProject consumingApp = await repository.AddTestAppReferencingAsync(dependency);
+        await consumingApp.BuildAsync("-p:GenerateGitProperties=false");
+        consumingApp.GitPropertiesGenerated.Should().BeFalse();
     }
 }

@@ -6,6 +6,8 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 
 internal sealed class GitRepository(GitPropertiesTestWorkspace workspace, string rootDirectory, TestProject testApp)
 {
+    private const string ConsumerAppProjectName = "ConsumerApp";
+
     private readonly string _rootDirectory = rootDirectory;
     private readonly string _sharedCacheFilePath = Path.Combine(rootDirectory, "obj", "git.properties.cache");
 
@@ -51,7 +53,7 @@ internal sealed class GitRepository(GitPropertiesTestWorkspace workspace, string
     public Task<TestProject> AddTestAppReferencingAsync(TestProject dependency)
     {
         string extraItemGroupContent = dependency.ToProjectReferenceXml();
-        return AddProjectAsync(GitPropertiesTestWorkspace.TestAppProjectName, generateGitProperties: null, extraItemGroupContent: extraItemGroupContent);
+        return AddProjectAsync(ConsumerAppProjectName, generateGitProperties: null, extraItemGroupContent: extraItemGroupContent);
     }
 
     public async Task<TestProject> AddPackageConsumerProjectAsync(string name, string packageVersion)

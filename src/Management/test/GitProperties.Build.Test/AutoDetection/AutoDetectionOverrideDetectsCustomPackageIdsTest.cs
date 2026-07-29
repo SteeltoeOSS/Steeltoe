@@ -13,10 +13,9 @@ public sealed class AutoDetectionOverrideDetectsCustomPackageIdsTest : GitProper
 
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         TestProject dependency = await repository.AddDependencyProjectAsync(customPackageId);
-        TestProject testApp = await repository.AddTestAppReferencingAsync(dependency);
-        await testApp.BuildAsync($"-p:GitPropertiesConsumingPackageIds={customPackageId}");
-
-        Dictionary<string, string> properties = await testApp.ReadDebugPropertiesAsync();
+        TestProject consumingApp = await repository.AddTestAppReferencingAsync(dependency);
+        await consumingApp.BuildAsync($"-p:GitPropertiesConsumingPackageIds={customPackageId}");
+        Dictionary<string, string> properties = await consumingApp.ReadDebugPropertiesAsync();
         string expectedCommitId = await repository.GetCommitIdAsync();
         properties["git.commit.id"].Should().Be(expectedCommitId);
     }

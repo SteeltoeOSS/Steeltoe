@@ -14,8 +14,8 @@ public sealed class AutoDetectionOverrideDoesNotMatchPackageIdAsPrefixTest : Git
 
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         TestProject dependency = await repository.AddDependencyProjectAsync(longerPackageId);
-        TestProject testApp = await repository.AddTestAppReferencingAsync(dependency);
-        await testApp.BuildAsync($"-p:GitPropertiesConsumingPackageIds={shortPackageId}");
-        testApp.GitPropertiesGenerated.Should().BeFalse();
+        TestProject consumingApp = await repository.AddTestAppReferencingAsync(dependency);
+        await consumingApp.BuildAsync($"-p:GitPropertiesConsumingPackageIds={shortPackageId}");
+        consumingApp.GitPropertiesGenerated.Should().BeFalse();
     }
 }

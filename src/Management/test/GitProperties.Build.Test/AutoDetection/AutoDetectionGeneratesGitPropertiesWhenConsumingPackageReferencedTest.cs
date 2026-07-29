@@ -11,10 +11,9 @@ public sealed class AutoDetectionGeneratesGitPropertiesWhenConsumingPackageRefer
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         TestProject dependency = await repository.AddDependencyProjectAsync("Steeltoe.Management.Endpoint");
-        TestProject testApp = await repository.AddTestAppReferencingAsync(dependency);
-        await testApp.BuildAsync();
-
-        Dictionary<string, string> properties = await testApp.ReadDebugPropertiesAsync();
+        TestProject consumingApp = await repository.AddTestAppReferencingAsync(dependency);
+        await consumingApp.BuildAsync();
+        Dictionary<string, string> properties = await consumingApp.ReadDebugPropertiesAsync();
         string expectedCommitId = await repository.GetCommitIdAsync();
         properties["git.commit.id"].Should().Be(expectedCommitId);
     }

@@ -11,8 +11,8 @@ public sealed class AutoDetectionOverrideEmptyPackageIdsViaGlobalPropertySkipsGe
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         TestProject dependency = await repository.AddDependencyProjectAsync("Steeltoe.Management.Endpoint");
-        TestProject testApp = await repository.AddTestAppReferencingAsync(dependency);
-        await testApp.BuildAsync("-p:GitPropertiesConsumingPackageIds=");
-        testApp.GitPropertiesGenerated.Should().BeFalse();
+        TestProject consumingApp = await repository.AddTestAppReferencingAsync(dependency);
+        await consumingApp.BuildAsync("-p:GitPropertiesConsumingPackageIds=");
+        consumingApp.GitPropertiesGenerated.Should().BeFalse();
     }
 }
