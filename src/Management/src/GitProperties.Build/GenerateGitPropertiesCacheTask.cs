@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -19,6 +20,10 @@ namespace Steeltoe.Management.GitProperties.Build;
 public sealed class GenerateGitPropertiesCacheTask : Task
 {
     private const string VersionCheckArguments = "--version";
+
+    // Git requires at least 4 hex digits to keep an abbreviated commit ID meaningfully unique, and no more than a full SHA-1 (40) or SHA-256 (64) hash.
+    private const int MinimumCommitIdAbbrevLength = 4;
+    private const int MaximumCommitIdAbbrevLength = 64;
 
     private static readonly Version MinimumGitVersion = new(2, 15, 0);
 
@@ -56,6 +61,10 @@ public sealed class GenerateGitPropertiesCacheTask : Task
         "SEMAPHORE_GIT_BRANCH",
         "CIRRUS_BRANCH"
     ];
+
+    private bool IsCommitIdAbbrevLengthValid =>
+        int.TryParse(CommitIdAbbrevLength, NumberStyles.None, CultureInfo.InvariantCulture, out int length) &&
+        length is >= MinimumCommitIdAbbrevLength and <= MaximumCommitIdAbbrevLength;
 
     /// <summary>
     /// Gets or sets the resolved git repository root directory.
@@ -96,6 +105,14 @@ public sealed class GenerateGitPropertiesCacheTask : Task
     /// <inheritdoc />
     public override bool Execute()
     {
+        if (!IsCommitIdAbbrevLengthValid)
+        {
+            Log.LogError(
+                $"git.properties: '{CommitIdAbbrevLength}' must be an integer between {MinimumCommitIdAbbrevLength} and {MaximumCommitIdAbbrevLength}.");
+
+            return false;
+        }
+
         GitVersionStatus versionStatus = CheckGitVersion();
 
         return versionStatus switch
