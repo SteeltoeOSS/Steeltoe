@@ -39,7 +39,7 @@ internal static class AtomicFile
             Directory.CreateDirectory(directory);
         }
 
-        string tempPath = Path.Combine(directory ?? string.Empty, $"{Path.GetRandomFileName()}~");
+        string tempPath = Path.Combine(directory ?? string.Empty, $"{Path.GetFileName(path)}.{Path.GetRandomFileName()}~");
         var encoding = new UTF8Encoding(false);
 
         ExecuteWithRetry(() =>
