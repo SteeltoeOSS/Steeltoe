@@ -108,7 +108,7 @@ public sealed class GenerateGitPropertiesCacheTask : Task
         if (!IsCommitIdAbbrevLengthValid)
         {
             Log.LogError(
-                $"git.properties: '{CommitIdAbbrevLength}' must be an integer between {MinimumCommitIdAbbrevLength} and {MaximumCommitIdAbbrevLength}.");
+                $"git.properties: 'GitCommitIdAbbrevLength' must be an integer between {MinimumCommitIdAbbrevLength} and {MaximumCommitIdAbbrevLength}.");
 
             return false;
         }
