@@ -1,0 +1,187 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <GenerateGitProperties Condition="'$(GenerateGitProperties)' == ''">auto</GenerateGitProperties>
+    <GitPropertiesWriteToProjectDirectory Condition="'$(GitPropertiesWriteToProjectDirectory)' == ''">false</GitPropertiesWriteToProjectDirectory>
+    <GitPropertiesFallbackFile Condition="'$(GitPropertiesFallbackFile)' == ''">$(MSBuildProjectDirectory)\git.properties</GitPropertiesFallbackFile>
+    <GitPropertiesEnableWarnings Condition="'$(GitPropertiesEnableWarnings)' == ''">true</GitPropertiesEnableWarnings>
+    <GitPropertiesReportFileWrites Condition="'$(GitPropertiesReportFileWrites)' == ''">true</GitPropertiesReportFileWrites>
+    <GitPropertiesConsumingPackageIds Condition="'$(GitPropertiesConsumingPackageIds)' == ''">Steeltoe.Management.Endpoint</GitPropertiesConsumingPackageIds>
+    <GitExecutable Condition="'$(GitExecutable)' == ''">git</GitExecutable>
+    <GitCommitIdAbbrevLength Condition="'$(GitCommitIdAbbrevLength)' == ''">7</GitCommitIdAbbrevLength>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists('$(GitPropertiesFallbackFile)')">
+    <!-- Outside any Target, so this is evaluated early enough to hide the fallback file from Solution Explorer. -->
+    <None Remove="$(GitPropertiesFallbackFile)" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!--
+      Building from source repeatedly recompiles this assembly, so tasks load out-of-process via TaskHostFactory below to avoid locking it against a
+      rebuild; a NuGet consumer never rebuilds it, so tasks load in-process instead, which is faster.
+    -->
+    <GitPropertiesTasksTfm Condition="'$(GitPropertiesTasksTfm)' == ''">netstandard2.0</GitPropertiesTasksTfm>
+    <GitPropertiesTasksAssembly>$(MSBuildThisFileDirectory)..\bin\tasks\$(GitPropertiesTasksTfm)\Steeltoe.Management.GitProperties.Build.dll</GitPropertiesTasksAssembly>
+    <GitPropertiesUseTaskHostFactory Condition="'$(GitPropertiesUseTaskHostFactory)' == '' and Exists('$(MSBuildThisFileDirectory)..\SourceCheckout.txt')">true</GitPropertiesUseTaskHostFactory>
+    <GitPropertiesUseTaskHostFactory Condition="'$(GitPropertiesUseTaskHostFactory)' == ''">false</GitPropertiesUseTaskHostFactory>
+  </PropertyGroup>
+
+  <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' == 'true'" TaskName="FindGitRepositoryRootTask" AssemblyFile="$(GitPropertiesTasksAssembly)"
+    TaskFactory="TaskHostFactory" />
+  <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' == 'true'" TaskName="DetectConsumingPackageReferenceTask"
+    AssemblyFile="$(GitPropertiesTasksAssembly)" TaskFactory="TaskHostFactory" />
+  <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' == 'true'" TaskName="GenerateGitPropertiesCacheTask" AssemblyFile="$(GitPropertiesTasksAssembly)"
+    TaskFactory="TaskHostFactory" />
+  <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' == 'true'" TaskName="ComposeGitPropertiesTask" AssemblyFile="$(GitPropertiesTasksAssembly)"
+    TaskFactory="TaskHostFactory" />
+
+  <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' != 'true'" TaskName="FindGitRepositoryRootTask" AssemblyFile="$(GitPropertiesTasksAssembly)" />
+  <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' != 'true'" TaskName="DetectConsumingPackageReferenceTask"
+    AssemblyFile="$(GitPropertiesTasksAssembly)" />
+  <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' != 'true'" TaskName="GenerateGitPropertiesCacheTask" AssemblyFile="$(GitPropertiesTasksAssembly)" />
+  <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' != 'true'" TaskName="ComposeGitPropertiesTask" AssemblyFile="$(GitPropertiesTasksAssembly)" />
+
+  <!--
+    Tasks intentionally don't run when DesignTimeBuild is true, to prevent shelling out to git on every keystroke.
+  -->
+
+  <Target Name="ResolveGitPropertiesPaths" BeforeTargets="BeforeBuild;AssignTargetPaths;CoreCompile;PrepareForPublish"
+    DependsOnTargets="ResolveProjectReferences" Condition="'$(DesignTimeBuild)' != 'true'">
+    <!--
+      Hooked directly to every relevant BeforeTargets value, not via DependsOnTargets, because a target's own Condition is evaluated before its
+      DependsOnTargets run. So nothing that reads $(GitRepositoryRoot)/$(_GitPropertiesShouldGenerate) could rely on a DependsOnTargets chain to set them first.
+      DependsOnTargets="ResolveProjectReferences": needed when this package is consumed via ProjectReference rather than an installed NuGet package, so the task
+      assembly exists on disk before these hooks fire.
+    -->
+    <PropertyGroup>
+      <GitPropertiesFile Condition="'$(GitPropertiesFile)' == ''">$(IntermediateOutputPath)git.properties</GitPropertiesFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(GenerateGitProperties)' != 'auto'">
+      <_GitPropertiesShouldGenerate>$(GenerateGitProperties)</_GitPropertiesShouldGenerate>
+    </PropertyGroup>
+
+    <DetectConsumingPackageReferenceTask PackageIds="$(GitPropertiesConsumingPackageIds)" ProjectAssetsFile="$(ProjectAssetsFile)"
+      Condition="'$(GenerateGitProperties)' == 'auto'">
+      <Output TaskParameter="HasReference" PropertyName="_GitPropertiesShouldGenerate" />
+    </DetectConsumingPackageReferenceTask>
+
+    <Message Condition="'$(GenerateGitProperties)' == 'auto' and '$(_GitPropertiesShouldGenerate)' != 'true'"
+      Text="git.properties generation skipped: no reference to '$(GitPropertiesConsumingPackageIds)' found in this project's resolved dependency graph. Set GenerateGitProperties=true to generate it anyway." />
+
+    <PropertyGroup Condition="'$(_GitPropertiesSuppressGitRepositoryNotFound)' == ''">
+      <_GitPropertiesSuppressGitRepositoryNotFound>false</_GitPropertiesSuppressGitRepositoryNotFound>
+      <_GitPropertiesSuppressGitRepositoryNotFound Condition="Exists('$(GitPropertiesFallbackFile)')">true</_GitPropertiesSuppressGitRepositoryNotFound>
+    </PropertyGroup>
+
+    <FindGitRepositoryRootTask StartDirectory="$(MSBuildProjectDirectory)" EnableWarnings="$(GitPropertiesEnableWarnings)"
+      SuppressGitRepositoryNotFound="$(_GitPropertiesSuppressGitRepositoryNotFound)"
+      Condition="'$(GitRepositoryRoot)' == '' and '$(_GitPropertiesShouldGenerate)' == 'true'">
+      <Output TaskParameter="RepositoryRoot" PropertyName="GitRepositoryRoot" />
+      <Output TaskParameter="HeadGitDirectory" PropertyName="HeadGitDirectory" />
+      <Output TaskParameter="CommonGitDirectory" PropertyName="CommonGitDirectory" />
+    </FindGitRepositoryRootTask>
+
+    <PropertyGroup Condition="'$(GitRepositoryRoot)' != ''">
+      <HeadGitDirectory Condition="'$(HeadGitDirectory)' == ''">$(GitRepositoryRoot).git\</HeadGitDirectory>
+      <CommonGitDirectory Condition="'$(CommonGitDirectory)' == ''">$(GitRepositoryRoot).git\</CommonGitDirectory>
+      <GitPropertiesCacheDirectory Condition="'$(GitPropertiesCacheDirectory)' == ''">$(GitRepositoryRoot)obj\</GitPropertiesCacheDirectory>
+      <GitPropertiesCacheFile Condition="'$(GitPropertiesCacheFile)' == ''">$(GitPropertiesCacheDirectory)git.properties.cache</GitPropertiesCacheFile>
+    </PropertyGroup>
+
+    <Message Condition="'$(GitRepositoryRoot)' == '' and '$(_GitPropertiesShouldGenerate)' == 'true' and Exists('$(GitPropertiesFallbackFile)')"
+      Text="git.properties: live generation skipped; using pre-generated fallback file '$(GitPropertiesFallbackFile)' instead." />
+
+    <ItemGroup Condition="'$(GitRepositoryRoot)' != ''">
+      <!--
+        A literal Inputs path that doesn't exist forces a full rebuild every time rather than being excluded, unlike a glob, so some entries are only
+        added when present. index is deliberately excluded: the live "git status" call made on every build tracks dirty state.
+      -->
+      <_GitPropertiesCacheInputs Include="$(HeadGitDirectory)HEAD" Condition="Exists('$(HeadGitDirectory)HEAD')">
+        <!-- Covers git checkout, switch, branch rename of the current branch -->
+      </_GitPropertiesCacheInputs>
+      <_GitPropertiesCacheInputs Include="$(CommonGitDirectory)config" Condition="Exists('$(CommonGitDirectory)config')">
+        <!-- Covers git config (git.remote.origin.url and the committer identity fields), remote add/set-url/remove -->
+      </_GitPropertiesCacheInputs>
+      <_GitPropertiesCacheInputs Include="$(CommonGitDirectory)packed-refs" Condition="Exists('$(CommonGitDirectory)packed-refs')">
+        <!-- Covers git gc, pack-refs (plus incidental rewrites from deleting an already-packed ref) -->
+      </_GitPropertiesCacheInputs>
+      <_GitPropertiesCacheInputs Include="$(CommonGitDirectory)refs\heads\**\*">
+        <!-- Covers git commit (including amend), merge, rebase, cherry-pick, reset, pull, branch (create/rename/delete) -->
+      </_GitPropertiesCacheInputs>
+      <_GitPropertiesCacheInputs Include="$(CommonGitDirectory)refs\tags\**\*">
+        <!-- Covers git tag (create; delete only while still unpacked) -->
+      </_GitPropertiesCacheInputs>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="GenerateGitPropertiesCache" BeforeTargets="BeforeBuild;AssignTargetPaths" DependsOnTargets="ResolveGitPropertiesPaths"
+    Condition="'$(_GitPropertiesShouldGenerate)' == 'true' and '$(TargetFramework)' != '' and '$(DesignTimeBuild)' != 'true'"
+    Inputs="@(_GitPropertiesCacheInputs)" Outputs="$(GitPropertiesCacheFile)">
+    <GenerateGitPropertiesCacheTask Condition="'$(GitRepositoryRoot)' != ''" RepositoryRoot="$(GitRepositoryRoot)" GitExecutable="$(GitExecutable)"
+      CacheFile="$(GitPropertiesCacheFile)" CommitIdAbbrevLength="$(GitCommitIdAbbrevLength)" EnableWarnings="$(GitPropertiesEnableWarnings)"
+      ReportFileWrites="$(GitPropertiesReportFileWrites)" />
+  </Target>
+
+  <Target Name="IncludeGitPropertiesInOutput" BeforeTargets="BeforeBuild;AssignTargetPaths;PrepareForPublish" DependsOnTargets="GenerateGitPropertiesCache"
+    Condition="'$(_GitPropertiesShouldGenerate)' == 'true' and '$(_GitPropertiesIncluded)' != 'true' and (Exists('$(GitPropertiesCacheFile)') or Exists('$(GitPropertiesFallbackFile)'))">
+    <!--
+      Registers the Content item before AssignTargetPaths converts it into what the copy-to-output/publish targets use. PrepareForPublish is kept as a
+      safety net for a no-build publish, which runs AssignTargetPaths before PrepareForPublish rather than after.
+      The two ItemGroups below are mutually exclusive: the fallback file is only used when there's no live-generated cache, so both never map to the same
+      "git.properties" Link at once.
+    -->
+    <ItemGroup Condition="Exists('$(GitPropertiesCacheFile)')">
+      <Content Include="$(GitPropertiesFile)" Link="git.properties" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+      <FileWrites Include="$(GitPropertiesFile)" />
+    </ItemGroup>
+
+    <ItemGroup Condition="!Exists('$(GitPropertiesCacheFile)') and Exists('$(GitPropertiesFallbackFile)')">
+      <!--
+        Deliberately not added to FileWrites: this file lives in the project directory, not $(IntermediateOutputPath), so `dotnet clean` never touches it.
+        Don't add it "for consistency", that would delete the one durable copy a git-less build depends on.
+      -->
+      <Content Include="$(GitPropertiesFallbackFile)" Link="git.properties" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_GitPropertiesIncluded>true</_GitPropertiesIncluded>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="ComposeGitProperties" BeforeTargets="CoreCompile;PrepareForPublish" DependsOnTargets="GenerateGitPropertiesCache"
+    Condition="'$(_GitPropertiesShouldGenerate)' == 'true' and Exists('$(GitPropertiesCacheFile)') and '$(DesignTimeBuild)' != 'true' and '$(_GitPropertiesComposed)' != 'true'">
+    <!--
+      BeforeTargets="CoreCompile", not "BeforeBuild", so $(Version) is final even when a versioning tool (Nerdbank.GitVersioning/GitVersion/MinVer)
+      computes it later in the pipeline.
+    -->
+    <PropertyGroup>
+      <_GitPropertiesFallbackFileTarget Condition="'$(GitPropertiesWriteToProjectDirectory)' == 'true'">$(GitPropertiesFallbackFile)</_GitPropertiesFallbackFileTarget>
+    </PropertyGroup>
+
+    <ComposeGitPropertiesTask RepositoryRoot="$(GitRepositoryRoot)" GitExecutable="$(GitExecutable)" CacheFile="$(GitPropertiesCacheFile)"
+      OutputFile="$(GitPropertiesFile)" Version="$(Version)" FallbackFile="$(_GitPropertiesFallbackFileTarget)" EnableWarnings="$(GitPropertiesEnableWarnings)" />
+
+    <Message Importance="High" Condition="'$(GitPropertiesReportFileWrites)' == 'true'"
+      Text="git.properties: writing to '$([System.IO.Path]::GetFullPath('$(GitPropertiesFile)'))'." />
+    <Message Importance="High" Condition="'$(_GitPropertiesFallbackFileTarget)' != '' and '$(GitPropertiesReportFileWrites)' == 'true'"
+      Text="git.properties: writing fallback copy to '$([System.IO.Path]::GetFullPath('$(_GitPropertiesFallbackFileTarget)'))'." />
+
+    <PropertyGroup>
+      <_GitPropertiesComposed>true</_GitPropertiesComposed>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="WriteGitPropertiesFallbackFile">
+    <!--
+      Refreshes just the fallback file without a full build. Intended for source-based `cf push`. Runs a nested <MSBuild> re-invocation reaching
+      "AssignTargetPaths;PrepareForPublish" rather than depending on or invoking ComposeGitProperties directly, because that target's own Condition depends
+      on $(GitPropertiesCacheFile), which is set only by its own DependsOnTargets chain. That chain has not run yet when the Condition is checked (the same
+      rule noted on ResolveGitPropertiesPaths above). The nested build reaches the SDK's own injection points instead, without ever reaching CoreCompile.
+    -->
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="AssignTargetPaths;PrepareForPublish"
+      Properties="Configuration=$(Configuration);GenerateGitProperties=true;GitPropertiesWriteToProjectDirectory=true;_GitPropertiesSuppressGitRepositoryNotFound=false" />
+  </Target>
+
+</Project>
