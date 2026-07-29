@@ -16,10 +16,6 @@
     <None Remove="$(GitPropertiesFallbackFile)" />
   </ItemGroup>
 
-  <!--
-    Tasks intentionally don't run when DesignTimeBuild is true, to prevent shelling out to git on every keystroke.
-  -->
-
   <PropertyGroup>
     <!--
       Building from source repeatedly recompiles this assembly, so tasks load out-of-process via TaskHostFactory below to avoid locking it against a
@@ -45,6 +41,10 @@
     AssemblyFile="$(GitPropertiesTasksAssembly)" />
   <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' != 'true'" TaskName="GenerateGitPropertiesCacheTask" AssemblyFile="$(GitPropertiesTasksAssembly)" />
   <UsingTask Condition="'$(GitPropertiesUseTaskHostFactory)' != 'true'" TaskName="ComposeGitPropertiesTask" AssemblyFile="$(GitPropertiesTasksAssembly)" />
+
+  <!--
+    Tasks intentionally don't run when DesignTimeBuild is true, to prevent shelling out to git on every keystroke.
+  -->
 
   <Target Name="ResolveGitPropertiesPaths" BeforeTargets="BeforeBuild;AssignTargetPaths;CoreCompile;PrepareForPublish"
     DependsOnTargets="ResolveProjectReferences" Condition="'$(DesignTimeBuild)' != 'true'">
