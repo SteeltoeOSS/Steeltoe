@@ -45,12 +45,14 @@ internal static partial class TestProjectWriter
 
         string projectFile = await GetGitPropertiesBuildProjectFileAsync();
         string targetsFile = await GetTargetsFileAsync();
-        string markerFile = await GetSourceCheckoutMarkerFileAsync();
         string buildDirectory = await GetGitPropertiesBuildDirectoryAsync();
 
         File.Copy(projectFile, Path.Combine(basePath, Path.GetFileName(projectFile)), true);
         File.Copy(targetsFile, Path.Combine(basePath, "build", Path.GetFileName(targetsFile)), true);
-        File.Copy(markerFile, Path.Combine(basePath, Path.GetFileName(markerFile)), true);
+
+        // Deliberately not copying SourceCheckout.txt: The test fixture builds this copy exactly once and never rebuilds it while
+        // tests run, so the concurrent-rebuild-vs-locked-assembly problem TaskHostFactory exists for can't happen here. Skipping it lets every test use
+        // the faster in-process task hosting a real NuGet consumer gets, instead of paying out-of-process hosting overhead for a risk that isn't present.
 
         foreach (string sourceFile in Directory.GetFiles(buildDirectory, "*.cs"))
         {
@@ -85,12 +87,6 @@ internal static partial class TestProjectWriter
     {
         string directory = await GetGitPropertiesBuildDirectoryAsync();
         return Path.Combine(directory, "build", "Steeltoe.Management.GitProperties.Build.targets");
-    }
-
-    private static async Task<string> GetSourceCheckoutMarkerFileAsync()
-    {
-        string directory = await GetGitPropertiesBuildDirectoryAsync();
-        return Path.Combine(directory, "SourceCheckout.txt");
     }
 
     public static async Task<string> GetPackageIdAsync()
