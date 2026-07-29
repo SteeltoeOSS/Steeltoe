@@ -124,4 +124,62 @@ public sealed class ConfigurationBuilderExtensionsTest
         configurationRoot.GetValue<string>("vcap:services:elephantsql:0:name").Should().Be("elephantsql-c6c60");
         configurationRoot.GetValue<string>("vcap:services:sendgrid:0:name").Should().BeNull();
     }
+
+    [Fact]
+    public void AddCloudFoundryServiceBindings_CredHub_LoadsFullBindingWithDeepStructure()
+    {
+        const string credHubJson = """
+            {
+              "credhub": [
+                {
+                  "name": "my-credhub-service",
+                  "label": "credhub",
+                  "tags": [
+                    "credhub"
+                  ],
+                  "plan": "default",
+                  "credentials": {
+                    "Encrypt__Key": "secret-value",
+                    "some.setting": "setting-value",
+                    "app": {
+                      "database": {
+                        "connection_string": "Server=tcp:sql.domain;Database=db;",
+                        "max_pool_size": "20"
+                      },
+                      "feature__flag": "enabled"
+                    },
+                    "endpoints": [
+                      "https://api1.example.com",
+                      "https://api2.example.com"
+                    ]
+                  }
+                }
+              ]
+            }
+            """;
+
+        var reader = new StringServiceBindingsReader(credHubJson);
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundryServiceBindings(reader);
+        IConfigurationRoot configurationRoot = builder.Build();
+
+        const string keyPrefix = "steeltoe:service-bindings:credhub:my-credhub-service:";
+        configurationRoot.GetValue<string>($"{keyPrefix}Encrypt__Key").Should().Be("secret-value");
+        configurationRoot.GetValue<string>($"{keyPrefix}some.setting").Should().Be("setting-value");
+
+        configurationRoot.GetValue<string>($"{keyPrefix}app:database:connection_string").Should().Be("Server=tcp:sql.domain;Database=db;");
+
+        configurationRoot.GetValue<string>($"{keyPrefix}app:database:max_pool_size").Should().Be("20");
+        configurationRoot.GetValue<string>($"{keyPrefix}app:feature__flag").Should().Be("enabled");
+        configurationRoot.GetValue<string>($"{keyPrefix}endpoints:0").Should().Be("https://api1.example.com");
+        configurationRoot.GetValue<string>($"{keyPrefix}endpoints:1").Should().Be("https://api2.example.com");
+
+        configurationRoot.GetValue<string>("Encrypt:Key").Should().Be("secret-value");
+        configurationRoot.GetValue<string>("some.setting").Should().Be("setting-value");
+        configurationRoot.GetValue<string>("app:database:connection_string").Should().Be("Server=tcp:sql.domain;Database=db;");
+        configurationRoot.GetValue<string>("app:database:max_pool_size").Should().Be("20");
+        configurationRoot.GetValue<string>("app:feature:flag").Should().Be("enabled");
+        configurationRoot.GetValue<string>("endpoints:0").Should().Be("https://api1.example.com");
+        configurationRoot.GetValue<string>("endpoints:1").Should().Be("https://api2.example.com");
+    }
 }
