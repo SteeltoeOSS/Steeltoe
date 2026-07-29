@@ -11,8 +11,8 @@ public sealed class MultiTargetedProjectSharesCacheAcrossTargetFrameworksTest : 
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         TestProject testApp = await repository.AddProjectAsync("MultiTargetApp", TestAppTargetFramework.Multiple);
-        DotNetCommandOutput buildOutputBefore = await testApp.BuildAsync();
-        buildOutputBefore.Value.Should().Contain("git.properties: generating shared cache", Exactly.Once());
+        await testApp.BuildAsync();
+        repository.SharedCacheExists.Should().BeTrue();
 
         string expectedCommitId = await repository.GetCommitIdAsync();
         List<Dictionary<string, string>> propertiesBefore = await testApp.ReadDebugPropertiesPerTargetFrameworkAsync(TestAppTargetFramework.Multiple);
@@ -24,8 +24,7 @@ public sealed class MultiTargetedProjectSharesCacheAcrossTargetFrameworksTest : 
         }
 
         await repository.TagAsync("v1.0.0");
-        DotNetCommandOutput buildOutputAfter = await testApp.BuildAsync();
-        buildOutputAfter.Value.Should().Contain("git.properties: generating shared cache", Exactly.Once());
+        await testApp.BuildAsync();
         List<Dictionary<string, string>> propertiesAfter = await testApp.ReadDebugPropertiesPerTargetFrameworkAsync(TestAppTargetFramework.Multiple);
 
         foreach (Dictionary<string, string> properties in propertiesAfter)
