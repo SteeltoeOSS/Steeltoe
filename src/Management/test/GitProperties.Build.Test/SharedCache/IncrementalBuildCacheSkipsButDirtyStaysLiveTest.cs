@@ -13,10 +13,14 @@ public sealed class IncrementalBuildCacheSkipsButDirtyStaysLiveTest : GitPropert
         await repository.TestApp.BuildAsync();
         repository.SharedCacheExists.Should().BeTrue();
 
+        Dictionary<string, string> propertiesBefore = await repository.TestApp.ReadDebugPropertiesAsync();
+        propertiesBefore["git.dirty"].Should().Be("false");
+
+        await Workspace.WriteFileAsync(Path.Combine(repository.TestApp.RootDirectory, "uncommitted.txt"), "uncommitted content");
         DotNetCommandOutput output = await repository.TestApp.BuildAsync("-v:normal");
         output.Value.Should().Contain("Skipping target \"GenerateGitPropertiesCache\"");
 
-        Dictionary<string, string> properties = await repository.TestApp.ReadDebugPropertiesAsync();
-        properties.Should().ContainKey("git.dirty");
+        Dictionary<string, string> propertiesAfter = await repository.TestApp.ReadDebugPropertiesAsync();
+        propertiesAfter["git.dirty"].Should().Be("true");
     }
 }

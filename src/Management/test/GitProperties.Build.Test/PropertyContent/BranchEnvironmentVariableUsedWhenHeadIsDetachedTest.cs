@@ -15,7 +15,7 @@ public sealed class BranchEnvironmentVariableUsedWhenHeadIsDetachedTest : GitPro
 
         var environmentVariables = new Dictionary<string, string>
         {
-            ["GITHUB_HEAD_REF"] = "feature/from-ci"
+            ["GITHUB_HEAD_REF"] = "refs/heads/feature/from-ci"
         };
 
         await repository.TestApp.BuildAsync(0, environmentVariables);

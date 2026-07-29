@@ -39,6 +39,20 @@ public sealed class GitPropertiesMatchGitOutputTest : GitPropertiesBuildTestBase
         string expectedTotalCommitCount = await repository.RunGitAsync("rev-list", "--count", "HEAD");
         properties["git.total.commit.count"].Should().Be(expectedTotalCommitCount);
 
+        string expectedCommitTime = await repository.RunGitAsync("log", "-1", "--format=%cI");
+        properties["git.commit.time"].Should().Be(expectedCommitTime);
+
+        string expectedCommitDescribe = await repository.RunGitAsync("describe", "--tags", "--long", "--always");
+        properties["git.commit.id.describe"].Should().Be(expectedCommitDescribe);
+
+        string expectedBuildUserName = await repository.RunGitAsync("config", "user.name");
+        properties["git.build.user.name"].Should().Be(expectedBuildUserName);
+
+        string expectedBuildUserEmail = await repository.RunGitAsync("config", "user.email");
+        properties["git.build.user.email"].Should().Be(expectedBuildUserEmail);
+
+        properties["git.build.host"].Should().Be(Environment.MachineName);
+
         bool expectedDirty = await repository.IsDirtyAsync();
         properties["git.dirty"].Should().Be(expectedDirty ? "true" : "false");
 
