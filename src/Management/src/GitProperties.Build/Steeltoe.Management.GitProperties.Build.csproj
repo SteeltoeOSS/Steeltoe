@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="build\Steeltoe.Management.GitProperties.Build.targets" Pack="true" PackagePath="build\" />
+    <None Include="buildTransitive\Steeltoe.Management.GitProperties.Build.targets" Pack="true" PackagePath="buildTransitive\" />
     <None Include="$(TargetPath)" Pack="true" PackagePath="bin\tasks\$(TargetFramework)\" />
     <None Include="SourceCheckout.txt" Pack="false" />
   </ItemGroup>
