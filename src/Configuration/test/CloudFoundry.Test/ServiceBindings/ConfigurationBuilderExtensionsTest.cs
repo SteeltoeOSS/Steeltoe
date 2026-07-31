@@ -164,21 +164,17 @@ public sealed class ConfigurationBuilderExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         const string keyPrefix = "steeltoe:service-bindings:credhub:my-credhub-service:";
-        configurationRoot.GetValue<string>($"{keyPrefix}Encrypt__Key").Should().Be("secret-value");
-        configurationRoot.GetValue<string>($"{keyPrefix}some.setting").Should().Be("setting-value");
+        configurationRoot.GetValue<string>($"{keyPrefix}Encrypt__Key").Should().BeNull();
 
-        configurationRoot.GetValue<string>($"{keyPrefix}app:database:connection_string").Should().Be("Server=tcp:sql.domain;Database=db;");
+        // "__" is a .NET-only environment variable convention and is left untouched here.
+        configurationRoot.GetValue<string>("Encrypt__Key").Should().Be("secret-value");
+        configurationRoot.GetValue<string>("app:feature__flag").Should().Be("enabled");
 
-        configurationRoot.GetValue<string>($"{keyPrefix}app:database:max_pool_size").Should().Be("20");
-        configurationRoot.GetValue<string>($"{keyPrefix}app:feature__flag").Should().Be("enabled");
-        configurationRoot.GetValue<string>($"{keyPrefix}endpoints:0").Should().Be("https://api1.example.com");
-        configurationRoot.GetValue<string>($"{keyPrefix}endpoints:1").Should().Be("https://api2.example.com");
+        // Dots are converted to colons, so secrets can be shared between Spring and .NET apps.
+        configurationRoot.GetValue<string>("some:setting").Should().Be("setting-value");
 
-        configurationRoot.GetValue<string>("Encrypt:Key").Should().Be("secret-value");
-        configurationRoot.GetValue<string>("some.setting").Should().Be("setting-value");
         configurationRoot.GetValue<string>("app:database:connection_string").Should().Be("Server=tcp:sql.domain;Database=db;");
         configurationRoot.GetValue<string>("app:database:max_pool_size").Should().Be("20");
-        configurationRoot.GetValue<string>("app:feature:flag").Should().Be("enabled");
         configurationRoot.GetValue<string>("endpoints:0").Should().Be("https://api1.example.com");
         configurationRoot.GetValue<string>("endpoints:1").Should().Be("https://api2.example.com");
     }

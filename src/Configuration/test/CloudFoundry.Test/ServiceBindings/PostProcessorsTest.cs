@@ -350,9 +350,9 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("credentials:simple", "test-simple-value"),
             Tuple.Create("credentials:app:database:connection_string", "Server=tcp:sql.domain;Database=db;"),
             Tuple.Create("credentials:app:database:max_pool_size", "20"),
-            Tuple.Create("credentials:app:feature__flag", "enabled"),
             Tuple.Create("credentials:endpoints:0", "https://api1.example.com"),
-            Tuple.Create("credentials:endpoints:1", "https://api2.example.com")
+            Tuple.Create("credentials:endpoints:1", "https://api2.example.com"),
+            Tuple.Create("credentials:[maps.google.com]:apikey", "test-maps-api-key")
         ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(CredHubCloudFoundryPostProcessor.BindingType, TestBindingName,
@@ -363,23 +363,22 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, CredHubCloudFoundryPostProcessor.BindingType);
-        configurationData.Should().ContainKey($"{keyPrefix}:Encrypt__Key").WhoseValue.Should().Be("test-encrypted-key-value");
-        configurationData.Should().ContainKey($"{keyPrefix}:some.setting").WhoseValue.Should().Be("test-setting-value");
-        configurationData.Should().ContainKey($"{keyPrefix}:simple").WhoseValue.Should().Be("test-simple-value");
-        configurationData.Should().ContainKey($"{keyPrefix}:app:database:connection_string").WhoseValue.Should().Be("Server=tcp:sql.domain;Database=db;");
-        configurationData.Should().ContainKey($"{keyPrefix}:app:database:max_pool_size").WhoseValue.Should().Be("20");
-        configurationData.Should().ContainKey($"{keyPrefix}:app:feature__flag").WhoseValue.Should().Be("enabled");
-        configurationData.Should().ContainKey($"{keyPrefix}:endpoints:0").WhoseValue.Should().Be("https://api1.example.com");
-        configurationData.Should().ContainKey($"{keyPrefix}:endpoints:1").WhoseValue.Should().Be("https://api2.example.com");
+        configurationData.Should().NotContainKey($"{keyPrefix}:simple");
 
-        configurationData.Should().ContainKey("Encrypt:Key").WhoseValue.Should().Be("test-encrypted-key-value");
-        configurationData.Should().ContainKey("some.setting").WhoseValue.Should().Be("test-setting-value");
+        // "__" is a .NET-only environment variable convention and is left untouched here.
+        configurationData.Should().ContainKey("Encrypt__Key").WhoseValue.Should().Be("test-encrypted-key-value");
+
+        // Dots are converted to colons, so secrets can be shared between Spring and .NET apps.
+        configurationData.Should().ContainKey("some:setting").WhoseValue.Should().Be("test-setting-value");
+
         configurationData.Should().ContainKey("simple").WhoseValue.Should().Be("test-simple-value");
         configurationData.Should().ContainKey("app:database:connection_string").WhoseValue.Should().Be("Server=tcp:sql.domain;Database=db;");
         configurationData.Should().ContainKey("app:database:max_pool_size").WhoseValue.Should().Be("20");
-        configurationData.Should().ContainKey("app:feature:flag").WhoseValue.Should().Be("enabled");
         configurationData.Should().ContainKey("endpoints:0").WhoseValue.Should().Be("https://api1.example.com");
         configurationData.Should().ContainKey("endpoints:1").WhoseValue.Should().Be("https://api2.example.com");
+
+        // A bracket-wrapped segment escapes its dots, so they are kept literal instead of being converted to colons.
+        configurationData.Should().ContainKey("maps.google.com:apikey").WhoseValue.Should().Be("test-maps-api-key");
     }
 
     [Fact]
