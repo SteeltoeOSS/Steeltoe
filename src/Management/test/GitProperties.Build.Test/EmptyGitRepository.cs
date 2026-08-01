@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test;
 
-internal sealed class EmptyGitRepository(GitPropertiesTestWorkspace workspace, string rootDirectory)
+internal sealed class EmptyGitRepository(TestWorkspace workspace, string rootDirectory)
 {
     public string RootDirectory { get; } = rootDirectory;
 
@@ -22,7 +22,7 @@ internal sealed class EmptyGitRepository(GitPropertiesTestWorkspace workspace, s
     {
         // Deliberately does not commit anything: any commit is the caller's own responsibility.
 
-        TestProject testApp = await GitRepository.WriteDefaultTestAppAsync(RootDirectory);
+        TestProject testApp = await workspace.WriteDefaultTestAppAsync(RootDirectory);
         return new GitRepository(workspace, RootDirectory, testApp);
     }
 }

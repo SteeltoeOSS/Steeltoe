@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.Diagnostics;
 
-public sealed class NoGitRepositoryWarnsByDefaultTest : GitPropertiesBuildTestBase
+public sealed class NoGitRepositoryWarnsByDefaultTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

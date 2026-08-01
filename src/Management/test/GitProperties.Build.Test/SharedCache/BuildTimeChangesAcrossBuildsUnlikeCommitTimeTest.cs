@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.SharedCache;
 
-public sealed class BuildTimeChangesAcrossBuildsUnlikeCommitTimeTest : GitPropertiesBuildTestBase
+public sealed class BuildTimeChangesAcrossBuildsUnlikeCommitTimeTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

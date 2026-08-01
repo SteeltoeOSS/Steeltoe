@@ -6,7 +6,7 @@ using System.Globalization;
 
 namespace Steeltoe.Management.GitProperties.Build.Test.PropertyContent;
 
-public sealed class GitPropertiesMatchGitOutputTest : GitPropertiesBuildTestBase
+public sealed class GitPropertiesMatchGitOutputTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

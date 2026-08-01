@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.SharedCache;
 
-public sealed class IncrementalBuildCacheSkipsButDirtyStaysLiveTest : GitPropertiesBuildTestBase
+public sealed class IncrementalBuildCacheSkipsButDirtyStaysLiveTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.Diagnostics;
 
-public sealed class UnparseableGitVersionFailsBuildTest : GitPropertiesBuildTestBase
+public sealed class UnparseableGitVersionFailsBuildTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

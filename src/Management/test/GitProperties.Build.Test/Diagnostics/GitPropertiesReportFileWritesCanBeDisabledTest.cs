@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.Diagnostics;
 
-public sealed class GitPropertiesReportFileWritesCanBeDisabledTest : GitPropertiesBuildTestBase
+public sealed class GitPropertiesReportFileWritesCanBeDisabledTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

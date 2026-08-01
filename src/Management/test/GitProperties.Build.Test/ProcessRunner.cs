@@ -60,13 +60,13 @@ internal static class ProcessRunner
             "-p:NuGetAudit=false"
         ];
 
-        var dotNetEnvironmentVariables = new Dictionary<string, string>
-        {
-            // Without this, a spawned "dotnet build"/"publish" leaves a persistent MSBuild worker node running in the background for reuse by a later
-            // build. That node inherits our redirected stdout/stderr pipe handles and keeps them open after the process we launched exits, so the read end
-            // never sees EOF and awaiting exit below would block forever even though the build already completed successfully.
-            ["MSBUILDDISABLENODEREUSE"] = "1"
-        };
+        // Workaround for https://github.com/dotnet/msbuild/issues/6219.
+        Dictionary<string, string> dotNetEnvironmentVariables = GetRedirectedTempEnvironmentVariables();
+
+        // Without this, a spawned "dotnet build"/"publish" leaves a persistent MSBuild worker node running in the background for reuse by a later
+        // build. That node inherits our redirected stdout/stderr pipe handles and keeps them open after the process we launched exits, so the read end
+        // never sees EOF and awaiting exit below would block forever even though the build already completed successfully.
+        dotNetEnvironmentVariables["MSBUILDDISABLENODEREUSE"] = "1";
 
         foreach ((string name, string value) in environmentVariables ?? [])
         {
@@ -74,6 +74,18 @@ internal static class ProcessRunner
         }
 
         return RunAsync("dotnet", workingDirectory, exitCodeExpected, dotNetEnvironmentVariables, TestContext.Current.CancellationToken, dotNetArguments);
+    }
+
+    private static Dictionary<string, string> GetRedirectedTempEnvironmentVariables()
+    {
+        string tempDirectory = PackGitPropertiesSourceOnceFixture.TempDirectory;
+
+        return new Dictionary<string, string>
+        {
+            ["TMP"] = tempDirectory,
+            ["TEMP"] = tempDirectory,
+            ["TMPDIR"] = tempDirectory
+        };
     }
 
     public static Task<string> RunPwdAsync(string workingDirectory)

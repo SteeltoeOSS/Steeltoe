@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.Worktree;
 
-public sealed class WorktreeGeneratesOwnGitPropertiesTest : GitPropertiesBuildTestBase
+public sealed class WorktreeGeneratesOwnGitPropertiesTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

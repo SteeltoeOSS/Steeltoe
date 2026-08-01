@@ -4,14 +4,15 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.AutoDetection;
 
-public sealed class AutoDetectionSkipsGenerationWhenNoConsumingPackageReferenceTest : GitPropertiesBuildTestBase
+public sealed class AutoDetectionSkipsGenerationWhenNoConsumingPackageReferenceTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
-        DotNetCommandOutput output = await repository.TestApp.BuildAsync("-v:normal", "-p:GenerateGitProperties=auto");
+        TestProject testApp = await repository.AddTestAppAsync("NoConsumingReference", [Workspace.GitPropertiesPackageReference]);
+        DotNetCommandOutput output = await testApp.BuildAsync("-v:normal");
         output.Value.Should().Contain("git.properties generation skipped: no reference to");
-        repository.TestApp.GitPropertiesGenerated.Should().BeFalse();
+        testApp.GitPropertiesGenerated.Should().BeFalse();
     }
 }

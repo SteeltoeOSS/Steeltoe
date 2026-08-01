@@ -4,13 +4,18 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.SharedCache;
 
-public sealed class MultiTargetedProjectSharesCacheAcrossTargetFrameworksTest : GitPropertiesBuildTestBase
+public sealed class MultiTargetedProjectSharesCacheAcrossTargetFrameworksTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
-        TestProject testApp = await repository.AddProjectAsync("MultiTargetApp", TestAppTargetFramework.Multiple);
+
+        TestProject testApp = await repository.AddTestAppAsync("MultiTargetApp", [
+            Workspace.GitPropertiesPackageReference,
+            Workspace.FakeEndpointPackageReference
+        ], targetFrameworks: TestAppTargetFramework.Multiple);
+
         await testApp.BuildAsync();
         repository.SharedCacheExists.Should().BeTrue();
 

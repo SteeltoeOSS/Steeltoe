@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.PropertyContent;
 
-public sealed class ShallowCloneLeavesCommitCountsEmptyTest : GitPropertiesBuildTestBase
+public sealed class ShallowCloneLeavesCommitCountsEmptyTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

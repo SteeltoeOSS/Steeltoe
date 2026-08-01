@@ -4,13 +4,13 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.Diagnostics;
 
-public sealed class GitVersionCheckExitsNonZeroWarnsByDefaultTest : GitPropertiesBuildTestBase
+public sealed class GitVersionCheckExitsNonZeroWarnsByDefaultTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
-        string gitExecutable = await GitPropertiesTestWorkspace.GetNonZeroExitCodeGitExecutableAsync();
+        string gitExecutable = await TestWorkspace.GetNonZeroExitCodeGitExecutableAsync();
 
         DotNetCommandOutput defaultOutput = await repository.TestApp.BuildAsync($"-p:GitExecutable={gitExecutable}");
         defaultOutput.Should().ContainOnlyGitWarning(GitDiagnostic.GitVersionCheckExitsNonZero);

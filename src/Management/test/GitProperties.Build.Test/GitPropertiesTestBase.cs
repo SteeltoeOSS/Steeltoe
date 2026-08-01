@@ -10,13 +10,14 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 /// build"/"publish" subprocess time, so this lets the suite's wall-clock approach its slowest single test instead of the sum of all of them.
 /// </summary>
 [Trait("Category", "GitProperties")]
-public abstract class GitPropertiesBuildTestBase : IAsyncLifetime
+public abstract class GitPropertiesTestBase : IAsyncLifetime
 {
-    internal GitPropertiesTestWorkspace Workspace { get; private set; } = null!;
+    internal TestWorkspace Workspace { get; private set; } = null!;
 
-    public async ValueTask InitializeAsync()
+    public ValueTask InitializeAsync()
     {
-        Workspace = await GitPropertiesTestWorkspace.CreateAsync();
+        Workspace = TestWorkspace.Create();
+        return ValueTask.CompletedTask;
     }
 
     public ValueTask DisposeAsync()

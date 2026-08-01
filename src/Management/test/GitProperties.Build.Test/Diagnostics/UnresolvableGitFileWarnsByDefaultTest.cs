@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.Diagnostics;
 
-public sealed class UnresolvableGitFileWarnsByDefaultTest : GitPropertiesBuildTestBase
+public sealed class UnresolvableGitFileWarnsByDefaultTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

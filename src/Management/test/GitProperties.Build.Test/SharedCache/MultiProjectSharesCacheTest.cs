@@ -4,23 +4,26 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.SharedCache;
 
-public sealed class MultiProjectSharesCacheTest : GitPropertiesBuildTestBase
+public sealed class MultiProjectSharesCacheTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()
     {
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 2);
-        TestProject projectA = await repository.AddProjectAsync("ProjectA");
-        TestProject projectB = await repository.AddProjectAsync("ProjectB");
-        DotNetCommandOutput outputA = await projectA.BuildAsync();
-        outputA.Value.Should().Contain("git.properties: generating shared cache");
+        DotNetCommandOutput defaultAppOutput = await repository.TestApp.BuildAsync();
+        defaultAppOutput.Value.Should().Contain("git.properties: generating shared cache");
         repository.SharedCacheExists.Should().BeTrue();
 
-        DotNetCommandOutput outputB = await projectB.BuildAsync();
-        outputB.Value.Should().NotContain("git.properties: generating shared cache");
+        TestProject extraApp = await repository.AddTestAppAsync("ExtraApp", [
+            Workspace.GitPropertiesPackageReference,
+            Workspace.FakeEndpointPackageReference
+        ]);
 
-        Dictionary<string, string> propertiesA = await projectA.ReadDebugPropertiesAsync();
-        Dictionary<string, string> propertiesB = await projectB.ReadDebugPropertiesAsync();
-        propertiesB["git.commit.id"].Should().Be(propertiesA["git.commit.id"]);
+        DotNetCommandOutput extraAppOutput = await extraApp.BuildAsync();
+        extraAppOutput.Value.Should().NotContain("git.properties: generating shared cache");
+
+        Dictionary<string, string> testAppProperties = await repository.TestApp.ReadDebugPropertiesAsync();
+        Dictionary<string, string> extraAppProperties = await extraApp.ReadDebugPropertiesAsync();
+        extraAppProperties["git.commit.id"].Should().Be(testAppProperties["git.commit.id"]);
     }
 }

@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.SharedCache;
 
-public sealed class NewTagInvalidatesCacheTest : GitPropertiesBuildTestBase
+public sealed class NewTagInvalidatesCacheTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

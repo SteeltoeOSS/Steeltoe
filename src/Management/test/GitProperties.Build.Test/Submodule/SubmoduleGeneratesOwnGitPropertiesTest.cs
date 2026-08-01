@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.Submodule;
 
-public sealed class SubmoduleGeneratesOwnGitPropertiesTest : GitPropertiesBuildTestBase
+public sealed class SubmoduleGeneratesOwnGitPropertiesTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

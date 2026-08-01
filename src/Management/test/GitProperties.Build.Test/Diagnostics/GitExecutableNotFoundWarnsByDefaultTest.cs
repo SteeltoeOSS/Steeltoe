@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.Diagnostics;
 
-public sealed class GitExecutableNotFoundWarnsByDefaultTest : GitPropertiesBuildTestBase
+public sealed class GitExecutableNotFoundWarnsByDefaultTest : GitPropertiesTestBase
 {
     private const string BogusGitExecutable = "this-executable-definitely-does-not-exist-anywhere";
 

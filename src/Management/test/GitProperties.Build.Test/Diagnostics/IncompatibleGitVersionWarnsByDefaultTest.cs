@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.Diagnostics;
 
-public sealed class IncompatibleGitVersionWarnsByDefaultTest : GitPropertiesBuildTestBase
+public sealed class IncompatibleGitVersionWarnsByDefaultTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

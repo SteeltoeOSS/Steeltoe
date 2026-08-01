@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.AutoDetection;
 
-public sealed class AutoDetectionOverrideDetectsCustomPackageIdsTest : GitPropertiesBuildTestBase
+public sealed class AutoDetectionOverrideDetectsCustomPackageIdsTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()
@@ -12,8 +12,8 @@ public sealed class AutoDetectionOverrideDetectsCustomPackageIdsTest : GitProper
         const string customPackageId = "Example.Package.Name";
 
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
-        TestProject dependency = await repository.AddDependencyProjectAsync(customPackageId);
-        TestProject consumingApp = await repository.AddTestAppReferencingAsync(dependency);
+        TestProject dependency = await repository.AddTestLibraryAsync(customPackageId);
+        TestProject consumingApp = await repository.AddTestAppAsync("ConsumerApp", [Workspace.GitPropertiesPackageReference], [dependency]);
         await consumingApp.BuildAsync($"-p:GitPropertiesConsumingPackageIds={customPackageId}");
         Dictionary<string, string> properties = await consumingApp.ReadDebugPropertiesAsync();
         string expectedCommitId = await repository.GetCommitIdAsync();
