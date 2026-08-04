@@ -361,8 +361,6 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         configurationData.Should().NotContainKey($"{keyPrefix}:simple");
         configurationData.Should().ContainKey("Encrypt__Key").WhoseValue.Should().Be("test-encrypted-key-value");
         configurationData.Should().ContainKey("simple").WhoseValue.Should().Be("test-simple-value");
-
-        // Dots are converted to colons, so secrets can be shared between Spring and .NET apps.
         configurationData.Should().ContainKey("some:setting").WhoseValue.Should().Be("test-setting-value");
     }
 

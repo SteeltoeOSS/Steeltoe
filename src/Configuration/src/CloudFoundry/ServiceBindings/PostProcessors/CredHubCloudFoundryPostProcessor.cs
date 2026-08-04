@@ -9,7 +9,6 @@ namespace Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
 
 // CredHub credentials have no fixed schema: the keys are arbitrary secret names chosen by whoever created the CredHub credential.
 // Each credential is written to the root of the configuration, so it can be read the same way a literal environment variable would be.
-// Dots in a credential key are converted to colons so secrets can be shared between Spring and .NET apps.
 internal sealed partial class CredHubCloudFoundryPostProcessor : CloudFoundryPostProcessor
 {
     internal const string BindingType = "credhub";
@@ -37,6 +36,7 @@ internal sealed partial class CredHubCloudFoundryPostProcessor : CloudFoundryPos
                     continue;
                 }
 
+                // Dots in a credential key are converted to colons so secrets can be shared between Spring and .NET apps.
                 string keyWithoutPrefix = fullKey[credentialsPrefix.Length..];
                 string normalizedKey = keyWithoutPrefix.Replace(".", ConfigurationPath.KeyDelimiter, StringComparison.Ordinal);
 
