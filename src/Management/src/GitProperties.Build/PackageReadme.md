@@ -106,7 +106,7 @@ This command writes an extra copy of `git.properties` directly next to your proj
 
 Installing this package as shown under [Getting started](#getting-started), whether with the `dotnet` CLI or Visual Studio's Add Package dialog, writes `PrivateAssets="all"` into the `<PackageReference>` line automatically. This stops the reference from becoming transitive, so `git.properties` generation stays local to the project you installed it in. That's the right choice for most solutions: usually only a few host apps need `git.properties`, so keeping the reference non-transitive avoids running Git commands anywhere else.
 
-Some solutions centralize Steeltoe registration in one shared project instead, for example a .NET Aspire `ServiceDefaults` project used by several host apps. In that case, install this package once, in the shared project, and make the reference transitive so every host app referencing it generates its own `git.properties` file.
+Some solutions centralize Steeltoe registration in one shared project instead, for example an Aspire `ServiceDefaults` project used by several host apps. In that case, install this package once, in the shared project, and make the reference transitive so every host app referencing it generates its own `git.properties` file.
 
 To make the reference transitive, add `PrivateAssets="none"` to this package's `PackageReference` in the shared project. Also set `GenerateGitProperties` to `false` on the shared project itself, since it isn't a deployable host app and doesn't need its own `git.properties` file:
 
