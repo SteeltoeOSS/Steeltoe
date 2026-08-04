@@ -30,15 +30,15 @@ internal sealed partial class CredHubCloudFoundryPostProcessor : CloudFoundryPos
             string bindingName = configurationData[ConfigurationPath.Combine(bindingKey, "name")] ?? string.Empty;
             string credentialsPrefix = $"{bindingKey}{ConfigurationPath.KeyDelimiter}credentials{ConfigurationPath.KeyDelimiter}";
 
-            foreach ((string key, string? value) in configurationData.ToArray())
+            foreach ((string fullKey, string? value) in configurationData.ToArray())
             {
-                if (!key.StartsWith(credentialsPrefix, StringComparison.OrdinalIgnoreCase))
+                if (!fullKey.StartsWith(credentialsPrefix, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
 
-                string credentialPath = key[credentialsPrefix.Length..];
-                string normalizedKey = NormalizeCredentialPath(credentialPath);
+                string keyWithoutPrefix = fullKey[credentialsPrefix.Length..];
+                string normalizedKey = keyWithoutPrefix.Replace(".", ConfigurationPath.KeyDelimiter, StringComparison.Ordinal);
 
                 if (configurationData.TryGetValue(normalizedKey, out string? existingValue) && existingValue != value)
                 {
@@ -48,16 +48,6 @@ internal sealed partial class CredHubCloudFoundryPostProcessor : CloudFoundryPos
                 configurationData[normalizedKey] = value;
             }
         }
-    }
-
-    private static string NormalizeCredentialPath(string credentialPath)
-    {
-        if (!credentialPath.Contains('.', StringComparison.Ordinal))
-        {
-            return credentialPath;
-        }
-
-        return credentialPath.Replace('.', ConfigurationPath.KeyDelimiter[0]);
     }
 
     [LoggerMessage(Level = LogLevel.Warning,

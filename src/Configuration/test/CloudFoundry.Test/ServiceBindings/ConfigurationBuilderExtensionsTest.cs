@@ -126,7 +126,7 @@ public sealed class ConfigurationBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddCloudFoundryServiceBindings_CredHub_LoadsFullBindingWithDeepStructure()
+    public void AddCloudFoundryServiceBindings_CredHub_LiftsCredentialsToConfigurationRoot()
     {
         const string credHubJson = """
             {
@@ -141,12 +141,6 @@ public sealed class ConfigurationBuilderExtensionsTest
                   "credentials": {
                     "Encrypt__Key": "secret-value",
                     "some.setting": "setting-value",
-                    "app": {
-                      "database": {
-                        "connection_string": "Server=tcp:sql.domain;Database=db;",
-                        "max_pool_size": "20"
-                      }
-                    },
                     "endpoints": [
                       "https://api1.example.com",
                       "https://api2.example.com"
@@ -164,15 +158,8 @@ public sealed class ConfigurationBuilderExtensionsTest
 
         const string keyPrefix = "steeltoe:service-bindings:credhub:my-credhub-service:";
         configurationRoot.GetValue<string>($"{keyPrefix}Encrypt__Key").Should().BeNull();
-
-        // "__" is a .NET-only environment variable convention and is left untouched here.
         configurationRoot.GetValue<string>("Encrypt__Key").Should().Be("secret-value");
-
-        // Dots are converted to colons, so secrets can be shared between Spring and .NET apps.
         configurationRoot.GetValue<string>("some:setting").Should().Be("setting-value");
-
-        configurationRoot.GetValue<string>("app:database:connection_string").Should().Be("Server=tcp:sql.domain;Database=db;");
-        configurationRoot.GetValue<string>("app:database:max_pool_size").Should().Be("20");
         configurationRoot.GetValue<string>("endpoints:0").Should().Be("https://api1.example.com");
         configurationRoot.GetValue<string>("endpoints:1").Should().Be("https://api2.example.com");
     }

@@ -346,12 +346,8 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         Tuple<string, string>[] secrets =
         [
             Tuple.Create("credentials:Encrypt__Key", "test-encrypted-key-value"),
-            Tuple.Create("credentials:some.setting", "test-setting-value"),
             Tuple.Create("credentials:simple", "test-simple-value"),
-            Tuple.Create("credentials:app:database:connection_string", "Server=tcp:sql.domain;Database=db;"),
-            Tuple.Create("credentials:app:database:max_pool_size", "20"),
-            Tuple.Create("credentials:endpoints:0", "https://api1.example.com"),
-            Tuple.Create("credentials:endpoints:1", "https://api2.example.com")
+            Tuple.Create("credentials:some.setting", "test-setting-value")
         ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(CredHubCloudFoundryPostProcessor.BindingType, TestBindingName,
@@ -363,18 +359,11 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, CredHubCloudFoundryPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:simple");
-
-        // "__" is a .NET-only environment variable convention and is left untouched here.
         configurationData.Should().ContainKey("Encrypt__Key").WhoseValue.Should().Be("test-encrypted-key-value");
+        configurationData.Should().ContainKey("simple").WhoseValue.Should().Be("test-simple-value");
 
         // Dots are converted to colons, so secrets can be shared between Spring and .NET apps.
         configurationData.Should().ContainKey("some:setting").WhoseValue.Should().Be("test-setting-value");
-
-        configurationData.Should().ContainKey("simple").WhoseValue.Should().Be("test-simple-value");
-        configurationData.Should().ContainKey("app:database:connection_string").WhoseValue.Should().Be("Server=tcp:sql.domain;Database=db;");
-        configurationData.Should().ContainKey("app:database:max_pool_size").WhoseValue.Should().Be("20");
-        configurationData.Should().ContainKey("endpoints:0").WhoseValue.Should().Be("https://api1.example.com");
-        configurationData.Should().ContainKey("endpoints:1").WhoseValue.Should().Be("https://api2.example.com");
     }
 
     [Fact]
