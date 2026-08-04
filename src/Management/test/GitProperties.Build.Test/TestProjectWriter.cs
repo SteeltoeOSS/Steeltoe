@@ -2,15 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
-
 namespace Steeltoe.Management.GitProperties.Build.Test;
 
-internal static partial class TestProjectWriter
+internal static class TestProjectWriter
 {
-    private const string LibraryRelativePath = "src/Management/src/GitProperties.Build";
-
     private const string HelloWorldSource = """
         Console.WriteLine("Hello, World!");
         """;
@@ -23,171 +18,18 @@ internal static partial class TestProjectWriter
         return 1;
         """;
 
-    private static readonly string[] CommonBuildInfrastructureFiles =
-    [
-        "shared.props",
-        "shared-package.props",
-        "shared-project.props",
-        "versions.props",
-        "stylecop.json",
-        "PackageIcon.png",
-        "PackageReadme.md",
-        "Steeltoe.Debug.ruleset",
-        "Steeltoe.Release.ruleset"
-    ];
-
-    private static readonly Task<string> RepositoryRootTask = ResolveRepositoryRootAsync();
-
-    private static async Task CopyGitPropertiesBuildSourceAsync(string destinationDirectory)
+    public static Task<string> WriteAppProjectAsync(string destinationDirectory, string projectName, ProjectFileBuilder builder)
     {
-        string basePath = Path.Combine(destinationDirectory, LibraryRelativePath);
-        Directory.CreateDirectory(Path.Combine(basePath, "build"));
-
-        string projectFile = await GetGitPropertiesBuildProjectFileAsync();
-        string targetsFile = await GetTargetsFileAsync();
-        string buildDirectory = await GetGitPropertiesBuildDirectoryAsync();
-
-        File.Copy(projectFile, Path.Combine(basePath, Path.GetFileName(projectFile)), true);
-        File.Copy(targetsFile, Path.Combine(basePath, "build", Path.GetFileName(targetsFile)), true);
-
-        // Deliberately not copying SourceCheckout.txt: The test fixture builds this copy exactly once and never rebuilds it while
-        // tests run, so the concurrent-rebuild-vs-locked-assembly problem TaskHostFactory exists for can't happen here. Skipping it lets every test use
-        // the faster in-process task hosting a real NuGet consumer gets, instead of paying out-of-process hosting overhead for a risk that isn't present.
-
-        foreach (string sourceFile in Directory.GetFiles(buildDirectory, "*.cs"))
-        {
-            File.Copy(sourceFile, Path.Combine(basePath, Path.GetFileName(sourceFile)), true);
-        }
+        return WriteProjectAsync(destinationDirectory, projectName, builder, HelloWorldSource);
     }
 
-    private static async Task CopySharedBuildInfrastructureAsync(string destinationDirectory)
+    public static Task<string> WriteLibraryProjectAsync(string destinationDirectory, string projectName, ProjectFileBuilder builder)
     {
-        Directory.CreateDirectory(destinationDirectory);
-        string repositoryRoot = await RepositoryRootTask;
-
-        foreach (string fileName in CommonBuildInfrastructureFiles)
-        {
-            File.Copy(Path.Combine(repositoryRoot, fileName), Path.Combine(destinationDirectory, fileName), true);
-        }
+        return WriteProjectAsync(destinationDirectory, projectName, builder);
     }
 
-    private static async Task<string> GetGitPropertiesBuildDirectoryAsync()
+    public static Task<string> WriteFakeGitProjectAsync(string destinationDirectory, string projectName, string versionOutput)
     {
-        string repositoryRoot = await RepositoryRootTask;
-        return Path.Combine(repositoryRoot, "src", "Management", "src", "GitProperties.Build");
-    }
-
-    private static async Task<string> GetGitPropertiesBuildProjectFileAsync()
-    {
-        string directory = await GetGitPropertiesBuildDirectoryAsync();
-        return Path.Combine(directory, "Steeltoe.Management.GitProperties.Build.csproj");
-    }
-
-    private static async Task<string> GetTargetsFileAsync()
-    {
-        string directory = await GetGitPropertiesBuildDirectoryAsync();
-        return Path.Combine(directory, "build", "Steeltoe.Management.GitProperties.Build.targets");
-    }
-
-    public static async Task<string> GetPackageIdAsync()
-    {
-        string projectFile = await GetGitPropertiesBuildProjectFileAsync();
-        return Path.GetFileNameWithoutExtension(projectFile);
-    }
-
-    private static async Task<string> GetGitPropertiesBuildTargetFrameworkAsync()
-    {
-        string projectFile = await GetGitPropertiesBuildProjectFileAsync();
-        string projectContent = await File.ReadAllTextAsync(projectFile, TestContext.Current.CancellationToken);
-        Match match = TargetFrameworkRegex().Match(projectContent);
-
-        if (!match.Success)
-        {
-            throw new InvalidOperationException($"Could not find <TargetFramework> in {projectFile}.");
-        }
-
-        return match.Groups[1].Value;
-    }
-
-    private static async Task<string> ResolveRepositoryRootAsync([CallerFilePath] string sourceFilePath = "")
-    {
-        string sourceDirectory = Path.GetDirectoryName(sourceFilePath) ?? throw new InvalidOperationException("Could not determine the test source directory.");
-        string output = await ProcessRunner.RunGitAsync(sourceDirectory, CancellationToken.None, "rev-parse", "--show-toplevel");
-        return output.Trim().Replace('/', Path.DirectorySeparatorChar);
-    }
-
-    public static async Task<string> BuildSharedGitPropertiesBuildCopyAsync(string destinationDirectory)
-    {
-        await CopySharedBuildInfrastructureAsync(destinationDirectory);
-        await CopyGitPropertiesBuildSourceAsync(destinationDirectory);
-
-        string projectDirectory = Path.Combine(destinationDirectory, LibraryRelativePath);
-        string projectFile = await GetGitPropertiesBuildProjectFileAsync();
-        await ProcessRunner.RunDotNetAsync(projectDirectory, 0, null, "build", Path.GetFileName(projectFile));
-
-        string targetsFile = await GetTargetsFileAsync();
-        return Path.Combine(projectDirectory, "build", Path.GetFileName(targetsFile));
-    }
-
-    public static async Task<string> WriteAppProjectAsync(string destinationDirectory, string projectName, IEnumerable<string>? targetFrameworks = null,
-        bool? generateGitProperties = true, string? extraItemGroupContent = null)
-    {
-        string appDirectory = Path.Combine(destinationDirectory, projectName);
-        Directory.CreateDirectory(appDirectory);
-
-        string targetFrameworkElement = targetFrameworks == null
-            ? $"<TargetFramework>{TestAppTargetFramework.Default}</TargetFramework>"
-            : $"<TargetFrameworks>{string.Join(';', targetFrameworks)}</TargetFrameworks>";
-
-        string generateGitPropertiesElement = string.Empty;
-
-        if (generateGitProperties != null)
-        {
-            string generateGitPropertiesValue = generateGitProperties.Value ? "true" : "false";
-            generateGitPropertiesElement = $"<GenerateGitProperties>{generateGitPropertiesValue}</GenerateGitProperties>";
-        }
-
-        string projectContent = $"""
-            <Project Sdk="Microsoft.NET.Sdk">
-              <PropertyGroup>
-                <OutputType>Exe</OutputType>
-                {targetFrameworkElement}
-                {generateGitPropertiesElement}
-                <ImplicitUsings>enable</ImplicitUsings>
-                <Nullable>enable</Nullable>
-              </PropertyGroup>
-
-              <ItemGroup>
-                {extraItemGroupContent}
-              </ItemGroup>
-
-              <Import Project="{CompileGitPropertiesBuildOnceFixture.TargetsFilePath}" />
-            </Project>
-            """;
-
-        await File.WriteAllTextAsync(Path.Combine(appDirectory, $"{projectName}.csproj"), projectContent, TestContext.Current.CancellationToken);
-        await File.WriteAllTextAsync(Path.Combine(appDirectory, "Program.cs"), HelloWorldSource, TestContext.Current.CancellationToken);
-
-        return appDirectory;
-    }
-
-    public static async Task<string> WriteFakeGitExecutableProjectAsync(string destinationDirectory, string projectName, string versionOutput)
-    {
-        string projectDirectory = Path.Combine(destinationDirectory, projectName);
-        Directory.CreateDirectory(projectDirectory);
-
-        string projectContent = $"""
-            <Project Sdk="Microsoft.NET.Sdk">
-              <PropertyGroup>
-                <OutputType>Exe</OutputType>
-                <TargetFramework>{TestAppTargetFramework.Default}</TargetFramework>
-                <ImplicitUsings>enable</ImplicitUsings>
-              </PropertyGroup>
-            </Project>
-            """;
-
-        await File.WriteAllTextAsync(Path.Combine(projectDirectory, $"{projectName}.csproj"), projectContent, TestContext.Current.CancellationToken);
-
         string printVersionSource = $"""
             using System.Diagnostics.CodeAnalysis;
 
@@ -196,104 +38,52 @@ internal static partial class TestProjectWriter
             Console.WriteLine("{versionOutput}");
             """;
 
-        await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Program.cs"), printVersionSource, TestContext.Current.CancellationToken);
+        var builder = new ProjectFileBuilder();
+        return WriteProjectAsync(destinationDirectory, projectName, builder, printVersionSource);
+    }
+
+    public static Task WriteNonZeroExitCodeGitProjectAsync(string destinationDirectory, string projectName)
+    {
+        var builder = new ProjectFileBuilder();
+        return WriteProjectAsync(destinationDirectory, projectName, builder, NonZeroExitSource);
+    }
+
+    private static async Task<string> WriteProjectAsync(string destinationDirectory, string projectName, ProjectFileBuilder projectFileBuilder,
+        string? programContent = null)
+    {
+        string projectDirectory = new DirectoryInfo(destinationDirectory).CreateSubdirectory(projectName).FullName;
+
+        if (programContent != null)
+        {
+            string programFilePath = Path.Combine(projectDirectory, "Program.cs");
+            await File.WriteAllTextAsync(programFilePath, programContent, TestContext.Current.CancellationToken);
+
+            projectFileBuilder.IsExecutable = true;
+        }
+
+        string projectContent = projectFileBuilder.Build();
+        string projectFilePath = Path.Combine(projectDirectory, $"{projectName}.csproj");
+        await File.WriteAllTextAsync(projectFilePath, projectContent, TestContext.Current.CancellationToken);
 
         return projectDirectory;
     }
 
-    public static async Task WriteNonZeroExitCodeGitExecutableProjectAsync(string projectDirectory, string projectName)
-    {
-        Directory.CreateDirectory(projectDirectory);
-
-        string projectContent = $"""
-            <Project Sdk="Microsoft.NET.Sdk">
-              <PropertyGroup>
-                <OutputType>Exe</OutputType>
-                <TargetFramework>{TestAppTargetFramework.Default}</TargetFramework>
-                <ImplicitUsings>enable</ImplicitUsings>
-              </PropertyGroup>
-            </Project>
-            """;
-
-        await File.WriteAllTextAsync(Path.Combine(projectDirectory, $"{projectName}.csproj"), projectContent, TestContext.Current.CancellationToken);
-        await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Program.cs"), NonZeroExitSource, TestContext.Current.CancellationToken);
-    }
-
-    public static async Task<string> WriteDummyDependencyProjectAsync(string destinationDirectory, string projectName)
-    {
-        string projectDirectory = Path.Combine(destinationDirectory, projectName);
-        Directory.CreateDirectory(projectDirectory);
-
-        await File.WriteAllTextAsync(Path.Combine(projectDirectory, $"{projectName}.csproj"), $"""
-            <Project Sdk="Microsoft.NET.Sdk">
-              <PropertyGroup>
-                <TargetFramework>{TestAppTargetFramework.Default}</TargetFramework>
-              </PropertyGroup>
-            </Project>
-            """, TestContext.Current.CancellationToken);
-
-        return projectDirectory;
-    }
-
-    public static async Task<string> WriteDefaultTestAppProjectAsync(string destination)
-    {
-        await CopySharedBuildInfrastructureAsync(destination);
-        return await WriteAppProjectAsync(destination, GitPropertiesTestWorkspace.TestAppProjectName);
-    }
-
-    public static async Task<string> PackGitPropertiesBuildToFeedAsync(string workspaceRootDirectory)
-    {
-        string packSourceDirectory = Path.Combine(workspaceRootDirectory, "pack-source");
-        await CopySharedBuildInfrastructureAsync(packSourceDirectory);
-        await CopyGitPropertiesBuildSourceAsync(packSourceDirectory);
-
-        string projectDirectory = Path.Combine(packSourceDirectory, LibraryRelativePath);
-        string projectFile = await GetGitPropertiesBuildProjectFileAsync();
-
-        await ProcessRunner.RunDotNetAsync(projectDirectory, 0, null, "build", Path.GetFileName(projectFile), "-c", "Release");
-
-        string targetFramework = await GetGitPropertiesBuildTargetFrameworkAsync();
-        return Path.Combine(projectDirectory, "bin", "tasks", targetFramework);
-    }
-
-    public static async Task WriteNuGetConfigAsync(string filePath, string feedDirectory)
+    public static async Task WriteNuGetConfigAsync(string destinationDirectory, NuGetSource source)
     {
         string content = $"""
             <?xml version="1.0" encoding="utf-8"?>
             <configuration>
+              <config>
+                <add key="globalPackagesFolder" value="{source.PackagesDirectory}" />
+              </config>
               <packageSources>
                 <clear />
-                <add key="local-git-properties-build" value="{feedDirectory}" />
+                <add key="local-git-properties" value="{source.FeedDirectory}" />
               </packageSources>
             </configuration>
             """;
 
+        string filePath = Path.Combine(destinationDirectory, "nuget.config");
         await File.WriteAllTextAsync(filePath, content, TestContext.Current.CancellationToken);
     }
-
-    public static async Task CreatePackageConsumerProjectAsync(string projectDirectory, string packageVersion)
-    {
-        Directory.CreateDirectory(projectDirectory);
-
-        string projectContent = $"""
-            <Project Sdk="Microsoft.NET.Sdk">
-              <PropertyGroup>
-                <OutputType>Exe</OutputType>
-                <TargetFramework>{TestAppTargetFramework.Default}</TargetFramework>
-                <ImplicitUsings>enable</ImplicitUsings>
-                <GenerateGitProperties>true</GenerateGitProperties>
-              </PropertyGroup>
-
-              <ItemGroup>
-                <PackageReference Include="Steeltoe.Management.GitProperties.Build" Version="{packageVersion}" />
-              </ItemGroup>
-            </Project>
-            """;
-
-        await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Consumer.csproj"), projectContent, TestContext.Current.CancellationToken);
-        await File.WriteAllTextAsync(Path.Combine(projectDirectory, "Program.cs"), HelloWorldSource, TestContext.Current.CancellationToken);
-    }
-
-    [GeneratedRegex("<TargetFramework>(.+?)</TargetFramework>")]
-    private static partial Regex TargetFrameworkRegex();
 }

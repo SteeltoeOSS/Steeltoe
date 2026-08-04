@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.PropertyContent;
 
-public sealed class BranchEnvironmentVariableUsedWhenHeadIsDetachedTest : GitPropertiesBuildTestBase
+public sealed class BranchEnvironmentVariableUsedWhenHeadIsDetachedTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

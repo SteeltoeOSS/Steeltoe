@@ -8,7 +8,7 @@ Generates a `git.properties` file at build time, compatible with the [Spring Boo
 dotnet add package Steeltoe.Management.GitProperties.Build
 ```
 
-No other setup is required for a project that references `Steeltoe.Management.Endpoint` and lives inside a Git repository. The next time you build that project, a `git.properties` file is generated and copied into your build (and publish) output automatically. Steeltoe's `Info` actuator endpoint then picks it up automatically at runtime.
+No other setup is required for a project that references `Steeltoe.Management.Endpoint` and lives inside a Git repository. The next time you build that project, a `git.properties` file is generated and copied into your build (and publish) output automatically. Steeltoe's `Info` actuator endpoint then picks it up automatically at runtime. This package doesn't add any runtime dependency to your application.
 
 ## Example output
 
@@ -44,6 +44,8 @@ When Steeltoe's `Info` actuator endpoint is enabled, all of these values are aut
 Computing repository-wide information (commit ID, branch, tags, and so on) is relatively expensive, especially when repeated for every project and target framework in a large solution. This package computes it at most once per build instead, and stores the result in a shared cache file, `obj/git.properties.cache`, at the root of your Git repository. Every project that generates `git.properties` reuses that shared cache.
 
 The cache refreshes automatically whenever something changes in your Git repository, for example after pull, checkout, commit/tag, or merge/rebase. If you ever need to force a refresh yourself, delete the `git.properties.cache` file and rebuild.
+
+One thing isn't cached, though: whether your repository is "dirty" can change between builds without a commit, tag, or anything else the cache watches for. Each project checks that freshly with its own `git` invocation, every time it builds.
 
 ## Configuration
 
@@ -100,16 +102,39 @@ This command writes an extra copy of `git.properties` directly next to your proj
 >
 > If you deploy by pushing your source code directly, rather than a pre-built or published output (for example with Cloud Foundry's `cf push`), be careful not to *also* exclude `git.properties` from whatever gets pushed or deployed. For Cloud Foundry, that means leaving it out of `.cfignore`. `git.properties` must stay out of Git through `.gitignore`, but it still needs to be present on disk and travel along with your source code.
 
+## Using this package in a shared project
+
+Installing this package as shown under [Getting started](#getting-started), whether with the `dotnet` CLI or Visual Studio's Add Package dialog, writes `PrivateAssets="all"` into the `<PackageReference>` line automatically. This stops the reference from becoming transitive, so `git.properties` generation stays local to the project you installed it in. That's the right choice for most solutions: usually only a few host apps need `git.properties`, so keeping the reference non-transitive avoids running Git commands anywhere else.
+
+Some solutions centralize Steeltoe registration in one shared project instead, for example an Aspire `ServiceDefaults` project used by several host apps. In that case, install this package once, in the shared project, and make the reference transitive so every host app referencing it generates its own `git.properties` file.
+
+To make the reference transitive, add `PrivateAssets="none"` to this package's `PackageReference` in the shared project. Also set `GenerateGitProperties` to `false` on the shared project itself, since it isn't a deployable host app and doesn't need its own `git.properties` file:
+
+```xml
+<!-- ServiceDefaults.csproj -->
+<PropertyGroup>
+  <GenerateGitProperties>false</GenerateGitProperties>
+</PropertyGroup>
+
+<ItemGroup>
+  <PackageReference Include="Steeltoe.Management.Endpoint" Version="..." />
+  <PackageReference Include="Steeltoe.Management.GitProperties.Build" Version="..." PrivateAssets="none" />
+</ItemGroup>
+```
+
+Host apps referencing `ServiceDefaults` need no changes. Each host app keeps the default `GenerateGitProperties` setting (`auto`), detects the transitive reference to `Steeltoe.Management.Endpoint` coming from `ServiceDefaults`, and generates its own `git.properties` file.
+
+> [!CAUTION]
+> This package executes `git` commands, which has a small but real per-project cost not fully eliminated by the [shared cache](#shared-cache). Keep `GenerateGitProperties` at its `auto` default rather than forcing it to `true` everywhere, and only make the reference transitive from a project like `ServiceDefaults` that's exclusively referenced by projects that actually need `git.properties`, not from a general-purpose shared library referenced by all kinds of projects.
+
 ## Good to know
 
-- **Build-time only.** This package doesn't add any runtime dependency to your application. It never flows transitively to anything that references your project.
 - **Cross-platform.** Works the same way on Windows, Linux, and macOS.
 - **Skips cleanly for anticipated Git issues.** If a Git repository can't be found or read for one of the reasons listed in [Diagnostics](#diagnostics), generation is skipped with a message you can suppress (see `GitPropertiesEnableWarnings`), instead of failing your build. This makes it safe to add this package to projects that aren't always built inside a Git checkout, such as a Docker image build stage.
 - **Git worktrees and submodules are supported.** A build running from a worktree writes `git.properties` for *that worktree's* own checked-out branch and commit, with its own independent [shared cache](#shared-cache). A submodule is treated as the fully independent repository it is, with its own commit history separate from the repository it's nested in.
 - **Shallow clones are supported.** `git.total.commit.count` and `git.closest.tag.commit.count` are left empty, because a shallow clone doesn't have the full commit history needed to count them. This is reported via `GITPROPS006` (see [Diagnostics](#diagnostics)), so it's never silently incomplete.
 - **Detached HEAD is supported.** When building for a pull request, such as in GitHub Actions, Azure DevOps, or Jenkins, well-known environment variables are used to determine the branch name.
 - **Git v2.15.0 or later must be installed.** The `git` command must be runnable during your build, either on the `PATH` or at a location you configure with `GitExecutable`.
-- **Performance impact.** This package executes real `git` commands, which has a small but real cost. Adding it to every project in a large solution is not recommended. Setting `GenerateGitProperties` to `true` unconditionally, so it always runs, is not recommended either. Add this package only to the projects that actually need `git.properties`, typically your actuator-hosting host apps.
 - **An IDE build might not notice a new commit, branch, or tag.** Visual Studio and similar IDEs can skip invoking a real build for a project when none of the files they track (source code, project file, references) have changed, even if you've committed, switched branches, or created a tag since the last build. If `git.properties` looks out of date, force a full rebuild, or build from the command line with `dotnet build`.
 - **File deletions inside `.git` aren't tracked.** The [shared cache](#shared-cache) only refreshes when a file is added or changed, not when one is deleted. For example, deleting a tag (`git tag -d`) or turning a shallow clone into a full one (`git fetch --unshallow`) doesn't invalidate the cache by itself. It catches up automatically the next time something else in git changes.
 - **Changing your global Git username or email isn't tracked.** The [shared cache](#shared-cache) doesn't notice when you update your name or email in Git's global settings. It catches up automatically the next time something else changes.

@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.PropertyContent;
 
-public sealed class MultipleRemotesOnlyOriginUrlIsUsedTest : GitPropertiesBuildTestBase
+public sealed class MultipleRemotesOnlyOriginUrlIsUsedTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

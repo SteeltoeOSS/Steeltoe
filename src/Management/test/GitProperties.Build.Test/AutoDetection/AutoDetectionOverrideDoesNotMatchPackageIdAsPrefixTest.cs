@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.AutoDetection;
 
-public sealed class AutoDetectionOverrideDoesNotMatchPackageIdAsPrefixTest : GitPropertiesBuildTestBase
+public sealed class AutoDetectionOverrideDoesNotMatchPackageIdAsPrefixTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()
@@ -13,8 +13,8 @@ public sealed class AutoDetectionOverrideDoesNotMatchPackageIdAsPrefixTest : Git
         const string longerPackageId = "Some2";
 
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
-        TestProject dependency = await repository.AddDependencyProjectAsync(longerPackageId);
-        TestProject consumingApp = await repository.AddTestAppReferencingAsync(dependency);
+        TestProject dependency = await repository.AddTestLibraryAsync(longerPackageId);
+        TestProject consumingApp = await repository.AddTestAppAsync("ConsumerApp", [Workspace.GitPropertiesPackageReference], [dependency]);
         await consumingApp.BuildAsync($"-p:GitPropertiesConsumingPackageIds={shortPackageId}");
         consumingApp.GitPropertiesGenerated.Should().BeFalse();
     }

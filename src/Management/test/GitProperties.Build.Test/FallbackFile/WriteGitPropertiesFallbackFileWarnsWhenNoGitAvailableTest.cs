@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.FallbackFile;
 
-public sealed class WriteGitPropertiesFallbackFileWarnsWhenNoGitAvailableTest : GitPropertiesBuildTestBase
+public sealed class WriteGitPropertiesFallbackFileWarnsWhenNoGitAvailableTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

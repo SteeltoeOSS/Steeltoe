@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.PropertyContent;
 
-public sealed class NonAsciiCommitDataRendersCorrectlyTest : GitPropertiesBuildTestBase
+public sealed class NonAsciiCommitDataRendersCorrectlyTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

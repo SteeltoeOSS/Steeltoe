@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.FallbackFile;
 
-public sealed class FallbackFileIsUsedWhenNoGitAvailableTest : GitPropertiesBuildTestBase
+public sealed class FallbackFileIsUsedWhenNoGitAvailableTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

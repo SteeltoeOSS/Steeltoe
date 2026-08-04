@@ -19,9 +19,9 @@ internal sealed class TestProject(string rootDirectory, string name)
     public bool FallbackGitPropertiesGenerated => File.Exists(FallbackFilePath);
     public bool CompiledAssemblyExists => File.Exists(Path.Combine(RootDirectory, "bin", "Debug", TestAppTargetFramework.Default, $"{name}.dll"));
 
-    public string ToProjectReferenceXml()
+    public ProjectReference ToProjectReference()
     {
-        return $"""<ProjectReference Include="..\{name}\{name}.csproj" />""";
+        return new ProjectReference(name);
     }
 
     public async Task<DotNetCommandOutput> BuildAsync(params string[] arguments)

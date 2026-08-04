@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.Diagnostics;
 
-public sealed class ShallowCloneWarnsByDefaultTest : GitPropertiesBuildTestBase
+public sealed class ShallowCloneWarnsByDefaultTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

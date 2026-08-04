@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.FallbackFile;
 
-public sealed class FallbackFileWithoutGitignoreMakesLaterBuildsAppearDirtyTest : GitPropertiesBuildTestBase
+public sealed class FallbackFileWithoutGitignoreMakesLaterBuildsAppearDirtyTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()

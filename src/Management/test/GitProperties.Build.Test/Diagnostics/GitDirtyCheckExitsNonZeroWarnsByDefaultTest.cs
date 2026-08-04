@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.Diagnostics;
 
-public sealed class GitDirtyCheckExitsNonZeroWarnsByDefaultTest : GitPropertiesBuildTestBase
+public sealed class GitDirtyCheckExitsNonZeroWarnsByDefaultTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()
@@ -12,7 +12,7 @@ public sealed class GitDirtyCheckExitsNonZeroWarnsByDefaultTest : GitPropertiesB
         GitRepository repository = await Workspace.CreateGitRepositoryAsync("repo", 1);
         await repository.TestApp.BuildAsync();
         repository.SharedCacheExists.Should().BeTrue();
-        string gitExecutable = await GitPropertiesTestWorkspace.GetNonZeroExitCodeGitExecutableAsync();
+        string gitExecutable = await TestWorkspace.GetNonZeroExitCodeGitExecutableAsync();
 
         DotNetCommandOutput defaultOutput = await repository.TestApp.BuildAsync($"-p:GitExecutable={gitExecutable}");
         defaultOutput.Should().ContainOnlyGitWarning(GitDiagnostic.GitDirtyCheckExitsNonZero);

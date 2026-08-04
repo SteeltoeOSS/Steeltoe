@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.Diagnostics;
 
-public sealed class GitDirtyStateUnknownWarnsByDefaultTest : GitPropertiesBuildTestBase
+public sealed class GitDirtyStateUnknownWarnsByDefaultTest : GitPropertiesTestBase
 {
     private const string BogusGitExecutable = "this-executable-definitely-does-not-exist-anywhere";
 

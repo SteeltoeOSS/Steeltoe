@@ -4,19 +4,17 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test;
 
-internal sealed class GitRepository(GitPropertiesTestWorkspace workspace, string rootDirectory, TestProject testApp)
+internal sealed class GitRepository(TestWorkspace workspace, string rootDirectory, TestProject testApp)
 {
-    private const string ConsumerAppProjectName = "ConsumerApp";
-
-    private readonly string _rootDirectory = rootDirectory;
     private readonly string _sharedCacheFilePath = Path.Combine(rootDirectory, "obj", "git.properties.cache");
+    private string RootDirectory { get; } = rootDirectory;
 
     public TestProject TestApp { get; } = testApp;
     public bool SharedCacheExists => File.Exists(_sharedCacheFilePath);
 
     public Task<string> RunGitAsync(params string[] arguments)
     {
-        return ProcessRunner.RunGitAsync(_rootDirectory, arguments);
+        return ProcessRunner.RunGitAsync(RootDirectory, arguments);
     }
 
     public Task<string> GetCommitIdAsync()
@@ -35,41 +33,13 @@ internal sealed class GitRepository(GitPropertiesTestWorkspace workspace, string
         return commitId == null ? RunGitAsync("tag", name) : RunGitAsync("tag", name, commitId);
     }
 
-    public async Task<TestProject> AddProjectAsync(string name, IEnumerable<string>? targetFrameworks = null, bool? generateGitProperties = true,
-        string? extraItemGroupContent = null)
-    {
-        string projectDirectory = await TestProjectWriter.WriteAppProjectAsync(_rootDirectory, name, targetFrameworks, generateGitProperties,
-            extraItemGroupContent);
-
-        return new TestProject(projectDirectory, name);
-    }
-
-    public async Task<TestProject> AddDependencyProjectAsync(string name)
-    {
-        string projectDirectory = await TestProjectWriter.WriteDummyDependencyProjectAsync(_rootDirectory, name);
-        return new TestProject(projectDirectory, name);
-    }
-
-    public Task<TestProject> AddTestAppReferencingAsync(TestProject dependency)
-    {
-        string extraItemGroupContent = dependency.ToProjectReferenceXml();
-        return AddProjectAsync(ConsumerAppProjectName, generateGitProperties: null, extraItemGroupContent: extraItemGroupContent);
-    }
-
-    public async Task<TestProject> AddPackageConsumerProjectAsync(string name, string packageVersion)
-    {
-        string projectDirectory = Path.Combine(_rootDirectory, name);
-        await TestProjectWriter.CreatePackageConsumerProjectAsync(projectDirectory, packageVersion);
-        return new TestProject(projectDirectory, name);
-    }
-
     public async Task<GitRepository> CloneAsShallowAsync(string name, int depth = 1)
     {
         string destination = workspace.GetPath(name);
         // --no-local is required: for a local path, git's local-clone optimization otherwise bypasses shallow-transfer logic entirely and silently ignores --depth, producing a full clone.
-        await ProcessRunner.RunGitAsync(Path.GetTempPath(), "clone", "--quiet", "--no-local", "--depth", $"{depth}", _rootDirectory, destination);
+        await ProcessRunner.RunGitAsync(Path.GetTempPath(), "clone", "--quiet", "--no-local", "--depth", $"{depth}", RootDirectory, destination);
 
-        TestProject shallowTestApp = await WriteDefaultTestAppAsync(destination);
+        TestProject shallowTestApp = GetExistingTestApp(destination);
         return new GitRepository(workspace, destination, shallowTestApp);
     }
 
@@ -78,18 +48,18 @@ internal sealed class GitRepository(GitPropertiesTestWorkspace workspace, string
         string destination = workspace.GetPath(name);
         await RunGitAsync("worktree", "add", "--quiet", "-b", newBranchName, destination);
 
-        TestProject worktreeTestApp = await WriteDefaultTestAppAsync(destination);
+        TestProject worktreeTestApp = GetExistingTestApp(destination);
         return new GitRepository(workspace, destination, worktreeTestApp);
     }
 
     public async Task<GitRepository> AddSubmoduleAsync(string name, GitRepository sourceRepository)
     {
         // protocol.file.allow is required: git blocks local-path submodule sources by default.
-        await RunGitAsync("-c", "protocol.file.allow=always", "submodule", "add", "--quiet", sourceRepository._rootDirectory, name);
-        await GitRepositoryBuilder.CommitAllAsync(_rootDirectory, $"Add submodule {name}");
+        await RunGitAsync("-c", "protocol.file.allow=always", "submodule", "add", "--quiet", sourceRepository.RootDirectory, name);
+        await GitRepositoryBuilder.CommitAllAsync(RootDirectory, $"Add submodule {name}");
 
-        string destination = Path.Combine(_rootDirectory, name);
-        TestProject submoduleTestApp = await WriteDefaultTestAppAsync(destination);
+        string destination = Path.Combine(RootDirectory, name);
+        TestProject submoduleTestApp = GetExistingTestApp(destination);
         return new GitRepository(workspace, destination, submoduleTestApp);
     }
 
@@ -101,17 +71,60 @@ internal sealed class GitRepository(GitPropertiesTestWorkspace workspace, string
     public RemotePushProjectTree SimulatePush(string name)
     {
         string destination = workspace.GetPath(name);
-        GitRepositoryBuilder.SimulateSourcePush(_rootDirectory, destination);
+        GitRepositoryBuilder.SimulateSourcePush(RootDirectory, destination);
 
-        var pushedTestApp = new TestProject(Path.Combine(destination, GitPropertiesTestWorkspace.TestAppProjectName),
-            GitPropertiesTestWorkspace.TestAppProjectName);
-
+        TestProject pushedTestApp = GetExistingTestApp(destination);
         return new RemotePushProjectTree(destination, pushedTestApp);
     }
 
-    internal static async Task<TestProject> WriteDefaultTestAppAsync(string repositoryDirectory)
+    private static TestProject GetExistingTestApp(string repositoryDirectory)
     {
-        string appDirectory = await TestProjectWriter.WriteDefaultTestAppProjectAsync(repositoryDirectory);
-        return new TestProject(appDirectory, GitPropertiesTestWorkspace.TestAppProjectName);
+        string appDirectory = Path.Combine(repositoryDirectory, TestWorkspace.TestAppProjectName);
+        return new TestProject(appDirectory, TestWorkspace.TestAppProjectName);
+    }
+
+    public async Task<TestProject> AddTestAppAsync(string name, PackageReference[]? packageReferences = null, TestProject[]? projectReferences = null,
+        string[]? targetFrameworks = null)
+    {
+        ProjectFileBuilder builder = BuildProjectFile(packageReferences, projectReferences);
+
+        if (targetFrameworks != null)
+        {
+            builder.WithTargetFrameworks(targetFrameworks);
+        }
+
+        string projectDirectory = await TestProjectWriter.WriteAppProjectAsync(RootDirectory, name, builder);
+        return new TestProject(projectDirectory, name);
+    }
+
+    public async Task<TestProject> AddTestLibraryAsync(string name, bool? generateGitProperties = null, PackageReference[]? packageReferences = null,
+        TestProject[]? projectReferences = null)
+    {
+        ProjectFileBuilder builder = BuildProjectFile(packageReferences, projectReferences);
+
+        if (generateGitProperties != null)
+        {
+            builder.WithGenerateGitProperties(generateGitProperties.Value);
+        }
+
+        string projectDirectory = await TestProjectWriter.WriteLibraryProjectAsync(RootDirectory, name, builder);
+        return new TestProject(projectDirectory, name);
+    }
+
+    private static ProjectFileBuilder BuildProjectFile(PackageReference[]? packageReferences, TestProject[]? projectReferences)
+    {
+        var builder = new ProjectFileBuilder();
+
+        foreach (PackageReference packageReference in packageReferences ?? [])
+        {
+            builder.WithPackageReference(packageReference);
+        }
+
+        foreach (TestProject testProject in projectReferences ?? [])
+        {
+            builder.WithProjectReference(testProject.ToProjectReference());
+        }
+
+        return builder;
     }
 }

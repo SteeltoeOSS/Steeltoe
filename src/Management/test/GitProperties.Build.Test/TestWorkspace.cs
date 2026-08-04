@@ -2,53 +2,36 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Globalization;
-
 namespace Steeltoe.Management.GitProperties.Build.Test;
 
-internal sealed class GitPropertiesTestWorkspace : IDisposable
+internal sealed class TestWorkspace : IDisposable
 {
     public const string TestAppProjectName = "TestApp";
 
     private static readonly Task<string> NonZeroExitCodeGitExecutableTask = GetOrCreateNonZeroExitCodeGitExecutableAsync();
     private readonly string _rootDirectory;
 
-    private GitPropertiesTestWorkspace(string rootDirectory)
+    public PackageReference GitPropertiesPackageReference { get; } = PackGitPropertiesSourceOnceFixture.GitPropertiesPackageReference;
+    public PackageReference FakeEndpointPackageReference { get; } = PackGitPropertiesSourceOnceFixture.FakeEndpointPackageReference;
+
+    private TestWorkspace(string rootDirectory)
     {
         _rootDirectory = rootDirectory;
     }
 
-    public static async Task<GitPropertiesTestWorkspace> CreateAsync()
+    public PackageReference GetGitPropertiesPackageReferenceWithPrivateAssets(string? privateAssets)
     {
-        string rootDirectory = Path.Combine(Path.GetTempPath(), $"build-tasks-test_{Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture)[..8]}");
-        Directory.CreateDirectory(rootDirectory);
-        string physicalRootDirectory = await ResolvePhysicalPathAsync(rootDirectory);
-        return new GitPropertiesTestWorkspace(physicalRootDirectory);
+        return GitPropertiesPackageReference with
+        {
+            PrivateAssets = privateAssets
+        };
     }
 
-    private static async Task<string> ResolvePhysicalPathAsync(string path)
+    public static TestWorkspace Create()
     {
-        if (OperatingSystem.IsMacOS())
-        {
-            // On macOS, $TMPDIR resolves through a symlink (/var -> /private/var).
-            string output = await ProcessRunner.RunPwdAsync(path);
-            return output.Trim();
-        }
-
-        return path;
-    }
-
-    private static void ClearReadOnlyAttributes(DirectoryInfo directory)
-    {
-        foreach (FileInfo file in directory.GetFiles())
-        {
-            file.Attributes = FileAttributes.Normal;
-        }
-
-        foreach (DirectoryInfo subDirectory in directory.GetDirectories())
-        {
-            ClearReadOnlyAttributes(subDirectory);
-        }
+        string testDirectory = Path.Combine(PackGitPropertiesSourceOnceFixture.SessionDirectory, "tests", TestContext.Current.TestClass!.TestClassSimpleName);
+        Directory.CreateDirectory(testDirectory);
+        return new TestWorkspace(testDirectory);
     }
 
     public string GetPath(string name)
@@ -60,13 +43,23 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     {
         string directory = GetPath(name);
         Directory.CreateDirectory(directory);
-        string appDirectory = await TestProjectWriter.WriteDefaultTestAppProjectAsync(directory);
+
+        await WriteNuGetConfigAsync(directory);
+        return await WriteDefaultTestAppAsync(directory);
+    }
+
+    public async Task<TestProject> WriteDefaultTestAppAsync(string destinationDirectory)
+    {
+        ProjectFileBuilder builder = new ProjectFileBuilder().WithPackageReference(GitPropertiesPackageReference)
+            .WithPackageReference(FakeEndpointPackageReference);
+
+        string appDirectory = await TestProjectWriter.WriteAppProjectAsync(destinationDirectory, TestAppProjectName, builder);
         return new TestProject(appDirectory, TestAppProjectName);
     }
 
     public async Task<string> CreateFakeGitExecutableAsync(string versionOutput)
     {
-        string projectDirectory = await TestProjectWriter.WriteFakeGitExecutableProjectAsync(_rootDirectory, "FakeGit", versionOutput);
+        string projectDirectory = await TestProjectWriter.WriteFakeGitProjectAsync(_rootDirectory, "FakeGit", versionOutput);
         await ProcessRunner.RunDotNetAsync(projectDirectory, 0, null, "build");
 
         string executableName = OperatingSystem.IsWindows() ? "FakeGit.exe" : "FakeGit";
@@ -80,13 +73,14 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
 
     private static async Task<string> GetOrCreateNonZeroExitCodeGitExecutableAsync()
     {
-        string projectDirectory = Path.Combine(Path.GetTempPath(), "steeltoe-nonzero-exit-git", "NonZeroExitCodeGit");
+        string parentDirectory = Path.Combine(Path.GetTempPath(), "steeltoe-nonzero-exit-git");
+        string projectDirectory = Path.Combine(parentDirectory, "NonZeroExitCodeGit");
         string executableName = OperatingSystem.IsWindows() ? "NonZeroExitCodeGit.exe" : "NonZeroExitCodeGit";
         string executablePath = Path.Combine(projectDirectory, "bin", "Debug", TestAppTargetFramework.Default, executableName);
 
         if (!File.Exists(executablePath))
         {
-            await TestProjectWriter.WriteNonZeroExitCodeGitExecutableProjectAsync(projectDirectory, "NonZeroExitCodeGit");
+            await TestProjectWriter.WriteNonZeroExitCodeGitProjectAsync(parentDirectory, "NonZeroExitCodeGit");
             await ProcessRunner.RunDotNetAsync(projectDirectory, 0, null, "build");
         }
 
@@ -97,6 +91,7 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     {
         string directory = GetPath(name);
         await GitRepositoryBuilder.InitializeEmptyAsync(directory);
+        await WriteNuGetConfigAsync(directory);
         return new EmptyGitRepository(this, directory);
     }
 
@@ -104,25 +99,17 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     {
         string directory = GetPath(name);
         await GitRepositoryBuilder.InitializeAsync(directory, commitCount, includeFallbackFileInGitignore);
-        TestProject testApp = await GitRepository.WriteDefaultTestAppAsync(directory);
+        await WriteNuGetConfigAsync(directory);
+
+        TestProject testApp = await WriteDefaultTestAppAsync(directory);
         var repository = new GitRepository(this, directory, testApp);
         await GitRepositoryBuilder.CommitAllAsync(directory, "Add project files");
         return repository;
     }
 
-    public Task<string> PackGitPropertiesBuildToFeedAsync()
+    private async Task WriteNuGetConfigAsync(string directory)
     {
-        return TestProjectWriter.PackGitPropertiesBuildToFeedAsync(_rootDirectory);
-    }
-
-    public Task<string> GetPackageIdAsync()
-    {
-        return TestProjectWriter.GetPackageIdAsync();
-    }
-
-    public Task WriteIsolatedNuGetConfigAsync(TestProject project, string feedDirectory)
-    {
-        return TestProjectWriter.WriteNuGetConfigAsync(Path.Combine(project.RootDirectory, "nuget.config"), feedDirectory);
+        await TestProjectWriter.WriteNuGetConfigAsync(directory, PackGitPropertiesSourceOnceFixture.Source);
     }
 
     public async Task WriteFileAsync(string path, string contents)
@@ -139,13 +126,41 @@ internal sealed class GitPropertiesTestWorkspace : IDisposable
     {
         try
         {
-            // git marks files under .git\objects read-only on Windows, which makes a plain recursive delete throw UnauthorizedAccessException.
-            ClearReadOnlyAttributes(new DirectoryInfo(_rootDirectory));
+            // Git marks files under .git\objects read-only on Windows, which makes a plain recursive delete throw UnauthorizedAccessException.
+            ClearReadOnlyAttributesUnderGitDirectories(new DirectoryInfo(_rootDirectory));
             Directory.Delete(_rootDirectory, true);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
             // Best-effort cleanup only: a transiently locked file (e.g. an antivirus scan) must not fail the test run.
+        }
+    }
+
+    private static void ClearReadOnlyAttributesUnderGitDirectories(DirectoryInfo directory)
+    {
+        foreach (DirectoryInfo subdirectory in directory.GetDirectories())
+        {
+            if (subdirectory.Name == ".git")
+            {
+                ClearReadOnlyAttributes(subdirectory);
+            }
+            else
+            {
+                ClearReadOnlyAttributesUnderGitDirectories(subdirectory);
+            }
+        }
+    }
+
+    private static void ClearReadOnlyAttributes(DirectoryInfo directory)
+    {
+        foreach (FileInfo file in directory.GetFiles())
+        {
+            file.Attributes = FileAttributes.Normal;
+        }
+
+        foreach (DirectoryInfo subdirectory in directory.GetDirectories())
+        {
+            ClearReadOnlyAttributes(subdirectory);
         }
     }
 }
