@@ -3,7 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
 
 namespace Steeltoe.Configuration.CloudFoundry.Test.ServiceBindings;
@@ -334,6 +336,62 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             configurationData.Should().ContainKey($"{keyPrefix}:ClientId").WhoseValue.Should().Be("test-id");
             configurationData.Should().ContainKey($"{keyPrefix}:ClientSecret").WhoseValue.Should().Be("test-secret");
         }
+    }
+
+    [Fact]
+    public void Processes_CredHub_configuration()
+    {
+        var postProcessor = new CredHubCloudFoundryPostProcessor(NullLogger<CredHubCloudFoundryPostProcessor>.Instance);
+
+        Tuple<string, string>[] secrets =
+        [
+            Tuple.Create("credentials:Encrypt__Key", "test-encrypted-key-value"),
+            Tuple.Create("credentials:simple", "test-simple-value"),
+            Tuple.Create("credentials:some.setting", "test-setting-value")
+        ];
+
+        Dictionary<string, string?> configurationData = GetConfigurationData(CredHubCloudFoundryPostProcessor.BindingType, TestBindingName,
+            [CredHubCloudFoundryPostProcessor.BindingType], null, secrets);
+
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CredHubCloudFoundryPostProcessor.BindingType);
+        configurationData.Should().NotContainKey($"{keyPrefix}:simple");
+        configurationData.Should().ContainKey("Encrypt__Key").WhoseValue.Should().Be("test-encrypted-key-value");
+        configurationData.Should().ContainKey("simple").WhoseValue.Should().Be("test-simple-value");
+        configurationData.Should().ContainKey("some:setting").WhoseValue.Should().Be("test-setting-value");
+    }
+
+    [Fact]
+    public void Processes_CredHub_configuration_LogsWarning_WhenMultipleBindingsShareASecretName()
+    {
+        using var loggerProvider = new CapturingLoggerProvider((_, level) => level == LogLevel.Warning);
+        using var loggerFactory = new LoggerFactory([loggerProvider]);
+        var postProcessor = new CredHubCloudFoundryPostProcessor(loggerFactory.CreateLogger<CredHubCloudFoundryPostProcessor>());
+
+        var configurationData = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["vcap:services:credhub:0:name"] = "first-credhub-service",
+            ["vcap:services:credhub:0:tags:0"] = CredHubCloudFoundryPostProcessor.BindingType,
+            ["vcap:services:credhub:0:credentials:simple"] = "first-value",
+            ["vcap:services:credhub:1:name"] = "second-credhub-service",
+            ["vcap:services:credhub:1:tags:0"] = CredHubCloudFoundryPostProcessor.BindingType,
+            ["vcap:services:credhub:1:credentials:simple"] = "second-value"
+        };
+
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        configurationData.Should().ContainKey("simple").WhoseValue.Should().Be("second-value");
+        string logEntry = loggerProvider.GetAll().Should().ContainSingle().Which;
+
+        string expectedLog =
+            $"WARN {typeof(CredHubCloudFoundryPostProcessor).FullName}: CredHub binding 'second-credhub-service' overwrites configuration key 'simple', which was already set from a different source.";
+
+        logEntry.Should().Be(expectedLog);
     }
 
     private static void AssertFileHasContent([NotNull] string? path, string expectedValue)

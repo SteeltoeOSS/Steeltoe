@@ -198,5 +198,11 @@ public static class ConfigurationBuilderExtensions
         {
             source.RegisterPostProcessor(new SqlServerCloudFoundryPostProcessor());
         }
+
+        if (brokerTypes.HasFlag(CloudFoundryServiceBrokerTypes.CredHub))
+        {
+            ILogger<CredHubCloudFoundryPostProcessor> credHubLogger = loggerFactory.CreateLogger<CredHubCloudFoundryPostProcessor>();
+            source.RegisterPostProcessor(new CredHubCloudFoundryPostProcessor(credHubLogger));
+        }
     }
 }
