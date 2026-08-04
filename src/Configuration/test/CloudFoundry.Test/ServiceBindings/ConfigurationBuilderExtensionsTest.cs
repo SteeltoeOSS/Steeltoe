@@ -145,17 +145,12 @@ public sealed class ConfigurationBuilderExtensionsTest
                       "database": {
                         "connection_string": "Server=tcp:sql.domain;Database=db;",
                         "max_pool_size": "20"
-                      },
-                      "servers": [
-                        "server1.example.com",
-                        "server2.example.com"
-                      ]
+                      }
                     },
                     "endpoints": [
                       "https://api1.example.com",
                       "https://api2.example.com"
-                    ],
-                    "[maps.google.com]": "maps-api-key"
+                    ]
                   }
                 }
               ]
@@ -178,12 +173,7 @@ public sealed class ConfigurationBuilderExtensionsTest
 
         configurationRoot.GetValue<string>("app:database:connection_string").Should().Be("Server=tcp:sql.domain;Database=db;");
         configurationRoot.GetValue<string>("app:database:max_pool_size").Should().Be("20");
-        configurationRoot.GetValue<string>("app:servers:0").Should().Be("server1.example.com");
-        configurationRoot.GetValue<string>("app:servers:1").Should().Be("server2.example.com");
         configurationRoot.GetValue<string>("endpoints:0").Should().Be("https://api1.example.com");
         configurationRoot.GetValue<string>("endpoints:1").Should().Be("https://api2.example.com");
-
-        // A bracket-wrapped segment escapes its dots, so they are kept literal instead of being converted to colons.
-        configurationRoot.GetValue<string>("maps.google.com").Should().Be("maps-api-key");
     }
 }

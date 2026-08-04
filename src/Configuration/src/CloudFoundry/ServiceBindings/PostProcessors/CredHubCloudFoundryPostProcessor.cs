@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -10,8 +9,7 @@ namespace Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
 
 // CredHub credentials have no fixed schema: the keys are arbitrary secret names chosen by whoever created the CredHub credential.
 // Each credential is written to the root of the configuration, so it can be read the same way a literal environment variable would be.
-// Dots in a credential key are converted to colons so secrets can be shared between Spring and .NET apps. To keep a literal dot, wrap
-// that part of the key in square brackets, mirroring Spring's escape convention for map keys.
+// Dots in a credential key are converted to colons so secrets can be shared between Spring and .NET apps.
 internal sealed partial class CredHubCloudFoundryPostProcessor : CloudFoundryPostProcessor
 {
     internal const string BindingType = "credhub";
@@ -52,46 +50,14 @@ internal sealed partial class CredHubCloudFoundryPostProcessor : CloudFoundryPos
         }
     }
 
-    // Converts dots to colons, except inside square brackets, which escape a literal dot (matching Spring's map-key escape convention).
     private static string NormalizeCredentialPath(string credentialPath)
     {
-        if (!credentialPath.Contains('.', StringComparison.Ordinal) && !credentialPath.Contains('[', StringComparison.Ordinal))
+        if (!credentialPath.Contains('.', StringComparison.Ordinal))
         {
             return credentialPath;
         }
 
-        var builder = new StringBuilder(credentialPath.Length);
-        int index = 0;
-
-        while (index < credentialPath.Length)
-        {
-            char character = credentialPath[index];
-
-            if (character == '[')
-            {
-                int closingIndex = credentialPath.IndexOf(']', index + 1);
-
-                if (closingIndex != -1)
-                {
-                    builder.Append(credentialPath, index + 1, closingIndex - index - 1);
-                    index = closingIndex + 1;
-                    continue;
-                }
-            }
-
-            if (character == '.')
-            {
-                builder.Append(ConfigurationPath.KeyDelimiter);
-            }
-            else
-            {
-                builder.Append(character);
-            }
-
-            index++;
-        }
-
-        return builder.ToString();
+        return credentialPath.Replace('.', ConfigurationPath.KeyDelimiter[0]);
     }
 
     [LoggerMessage(Level = LogLevel.Warning,

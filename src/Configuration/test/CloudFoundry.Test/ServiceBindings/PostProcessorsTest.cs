@@ -351,8 +351,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("credentials:app:database:connection_string", "Server=tcp:sql.domain;Database=db;"),
             Tuple.Create("credentials:app:database:max_pool_size", "20"),
             Tuple.Create("credentials:endpoints:0", "https://api1.example.com"),
-            Tuple.Create("credentials:endpoints:1", "https://api2.example.com"),
-            Tuple.Create("credentials:[maps.google.com]:apikey", "test-maps-api-key")
+            Tuple.Create("credentials:endpoints:1", "https://api2.example.com")
         ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(CredHubCloudFoundryPostProcessor.BindingType, TestBindingName,
@@ -376,9 +375,6 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         configurationData.Should().ContainKey("app:database:max_pool_size").WhoseValue.Should().Be("20");
         configurationData.Should().ContainKey("endpoints:0").WhoseValue.Should().Be("https://api1.example.com");
         configurationData.Should().ContainKey("endpoints:1").WhoseValue.Should().Be("https://api2.example.com");
-
-        // A bracket-wrapped segment escapes its dots, so they are kept literal instead of being converted to colons.
-        configurationData.Should().ContainKey("maps.google.com:apikey").WhoseValue.Should().Be("test-maps-api-key");
     }
 
     [Fact]
