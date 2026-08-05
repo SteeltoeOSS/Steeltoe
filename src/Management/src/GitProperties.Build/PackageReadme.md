@@ -102,6 +102,31 @@ This command writes an extra copy of `git.properties` directly next to your proj
 >
 > If you deploy by pushing your source code directly, rather than a pre-built or published output (for example with Cloud Foundry's `cf push`), be careful not to *also* exclude `git.properties` from whatever gets pushed or deployed. For Cloud Foundry, that means leaving it out of `.cfignore`. `git.properties` must stay out of Git through `.gitignore`, but it still needs to be present on disk and travel along with your source code.
 
+### Refreshing many projects at once
+
+The command above works for one project at a time. If your solution has several projects, and only some of them use this package, running the same command on a project that doesn't use it fails with an error like this:
+
+```
+error MSB4057: The target "WriteGitPropertiesFallbackFile" does not exist in the project.
+```
+
+To safely refresh every project at once, add a `Directory.Build.targets` file that applies to all of them (your solution's root folder works well). It defines a new target that only calls the real one on projects that use this package. This makes it safe to run on every project, even ones that don't use this package:
+
+```xml
+<!-- Directory.Build.targets -->
+<Project>
+  <Target Name="RefreshGitPropertiesFallbackFile">
+    <CallTarget Targets="WriteGitPropertiesFallbackFile" Condition="'$(GitExecutable)' != ''" />
+  </Target>
+</Project>
+```
+
+Then, instead of the command shown above, run this new target for your whole solution:
+
+```shell
+dotnet build YourSolution.slnx -t:RefreshGitPropertiesFallbackFile
+```
+
 ## Using this package in a shared project
 
 Installing this package as shown under [Getting started](#getting-started), whether with the `dotnet` CLI or Visual Studio's Add Package dialog, writes `PrivateAssets="all"` into the `<PackageReference>` line automatically. This stops the reference from becoming transitive, so `git.properties` generation stays local to the project you installed it in. That's the right choice for most solutions: usually only a few host apps need `git.properties`, so keeping the reference non-transitive avoids running Git commands anywhere else.

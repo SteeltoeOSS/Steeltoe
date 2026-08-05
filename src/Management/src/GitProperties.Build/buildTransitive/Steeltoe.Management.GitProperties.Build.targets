@@ -181,7 +181,7 @@
       rule noted on ResolveGitPropertiesPaths above). The nested build reaches the SDK's own injection points instead, without ever reaching CoreCompile.
     -->
     <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="AssignTargetPaths;PrepareForPublish"
-      Properties="Configuration=$(Configuration);GenerateGitProperties=true;GitPropertiesWriteToProjectDirectory=true;_GitPropertiesSuppressGitRepositoryNotFound=false" />
+      Properties="Configuration=$(Configuration);GitPropertiesWriteToProjectDirectory=true;_GitPropertiesSuppressGitRepositoryNotFound=false" />
   </Target>
 
 </Project>
