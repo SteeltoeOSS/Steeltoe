@@ -58,6 +58,10 @@
       <GitPropertiesFile Condition="'$(GitPropertiesFile)' == ''">$(IntermediateOutputPath)git.properties</GitPropertiesFile>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(_ForceWriteGitPropertiesFallbackFile)' == 'true'">
+      <GenerateGitProperties>true</GenerateGitProperties>
+    </PropertyGroup>
+
     <PropertyGroup Condition="'$(GenerateGitProperties)' != 'auto'">
       <_GitPropertiesShouldGenerate>$(GenerateGitProperties)</_GitPropertiesShouldGenerate>
     </PropertyGroup>
