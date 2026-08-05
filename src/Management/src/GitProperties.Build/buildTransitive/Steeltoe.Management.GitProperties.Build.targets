@@ -72,7 +72,7 @@
 
     <PropertyGroup Condition="'$(_GitPropertiesSuppressGitRepositoryNotFound)' == ''">
       <_GitPropertiesSuppressGitRepositoryNotFound>false</_GitPropertiesSuppressGitRepositoryNotFound>
-      <_GitPropertiesSuppressGitRepositoryNotFound Condition="Exists('$(GitPropertiesFallbackFile)')">true</_GitPropertiesSuppressGitRepositoryNotFound>
+      <_GitPropertiesSuppressGitRepositoryNotFound Condition="Exists('$(GitPropertiesFallbackFile)') and '$(_ForceWriteGitPropertiesFallbackFile)' != 'true'">true</_GitPropertiesSuppressGitRepositoryNotFound>
     </PropertyGroup>
 
     <FindGitRepositoryRootTask StartDirectory="$(MSBuildProjectDirectory)" EnableWarnings="$(GitPropertiesEnableWarnings)"
@@ -157,7 +157,7 @@
       computes it later in the pipeline.
     -->
     <PropertyGroup>
-      <_GitPropertiesFallbackFileTarget Condition="'$(GitPropertiesWriteToProjectDirectory)' == 'true'">$(GitPropertiesFallbackFile)</_GitPropertiesFallbackFileTarget>
+      <_GitPropertiesFallbackFileTarget Condition="'$(GitPropertiesWriteToProjectDirectory)' == 'true' or '$(_ForceWriteGitPropertiesFallbackFile)' == 'true'">$(GitPropertiesFallbackFile)</_GitPropertiesFallbackFileTarget>
     </PropertyGroup>
 
     <ComposeGitPropertiesTask RepositoryRoot="$(GitRepositoryRoot)" GitExecutable="$(GitExecutable)" CacheFile="$(GitPropertiesCacheFile)"
@@ -176,12 +176,22 @@
   <Target Name="WriteGitPropertiesFallbackFile">
     <!--
       Refreshes just the fallback file without a full build. Intended for source-based `cf push`. Runs a nested <MSBuild> re-invocation reaching
-      "AssignTargetPaths;PrepareForPublish" rather than depending on or invoking ComposeGitProperties directly, because that target's own Condition depends
-      on $(GitPropertiesCacheFile), which is set only by its own DependsOnTargets chain. That chain has not run yet when the Condition is checked (the same
-      rule noted on ResolveGitPropertiesPaths above). The nested build reaches the SDK's own injection points instead, without ever reaching CoreCompile.
+      "AssignTargetPaths;PrepareForPublish", the SDK's own injection points, instead of depending on ComposeGitProperties directly: that target's
+      Condition depends on $(GitPropertiesCacheFile), which isn't set until its own DependsOnTargets chain runs (same rule as ResolveGitPropertiesPaths
+      above). Never reaches CoreCompile.
     -->
     <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="AssignTargetPaths;PrepareForPublish"
-      Properties="Configuration=$(Configuration);GitPropertiesWriteToProjectDirectory=true;_GitPropertiesSuppressGitRepositoryNotFound=false" />
+      Properties="Configuration=$(Configuration);_ForceWriteGitPropertiesFallbackFile=true" />
+  </Target>
+
+  <Target Name="_ExcludeGitPropertiesOverrideFromProjectReferences" BeforeTargets="AssignProjectConfiguration"
+    Condition="'$(_ForceWriteGitPropertiesFallbackFile)' == 'true'">
+    <!-- Prevent the global _ForceWriteGitPropertiesFallbackFile from flowing to every ProjectReference. -->
+    <ItemGroup>
+      <ProjectReference>
+        <GlobalPropertiesToRemove>%(ProjectReference.GlobalPropertiesToRemove);_ForceWriteGitPropertiesFallbackFile</GlobalPropertiesToRemove>
+      </ProjectReference>
+    </ItemGroup>
   </Target>
 
 </Project>
