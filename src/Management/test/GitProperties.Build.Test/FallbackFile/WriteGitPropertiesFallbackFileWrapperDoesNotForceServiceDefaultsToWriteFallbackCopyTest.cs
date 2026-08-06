@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.GitProperties.Build.Test.FallbackFile;
 
-public sealed class WriteGitPropertiesFallbackFileWrapperSupportsServiceDefaultsAndAppHostTest : GitPropertiesTestBase
+public sealed class WriteGitPropertiesFallbackFileWrapperDoesNotForceServiceDefaultsToWriteFallbackCopyTest : GitPropertiesTestBase
 {
     [Fact]
     public async Task Test()
@@ -24,14 +24,20 @@ public sealed class WriteGitPropertiesFallbackFileWrapperSupportsServiceDefaults
             Workspace.GetGitPropertiesPackageReferenceWithPrivateAssets("none")
         ]);
 
+        await serviceDefaults.BuildAsync("-t:RefreshGitPropertiesFallbackFile");
+        serviceDefaults.GitPropertiesGenerated.Should().BeFalse();
+        serviceDefaults.FallbackGitPropertiesGenerated.Should().BeFalse();
+
         TestProject apiService = await repository.AddTestAppAsync("ApiService", projectReferences: [serviceDefaults]);
         await apiService.BuildAsync("-t:RefreshGitPropertiesFallbackFile");
+        apiService.GitPropertiesGenerated.Should().BeFalse();
+        apiService.FallbackGitPropertiesGenerated.Should().BeTrue();
+        serviceDefaults.GitPropertiesGenerated.Should().BeFalse();
+        serviceDefaults.FallbackGitPropertiesGenerated.Should().BeFalse();
 
         TestProject appHost = await repository.AddTestAppAsync("AppHost");
         await appHost.BuildAsync("-t:RefreshGitPropertiesFallbackFile");
-
-        serviceDefaults.FallbackGitPropertiesGenerated.Should().BeFalse();
-        apiService.FallbackGitPropertiesGenerated.Should().BeTrue();
+        appHost.GitPropertiesGenerated.Should().BeFalse();
         appHost.FallbackGitPropertiesGenerated.Should().BeFalse();
     }
 }
