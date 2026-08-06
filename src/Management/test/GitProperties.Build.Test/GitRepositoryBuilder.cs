@@ -6,6 +6,14 @@ namespace Steeltoe.Management.GitProperties.Build.Test;
 
 internal static class GitRepositoryBuilder
 {
+    private const string GitConfigAppendix = """
+        [user]
+        name = Test User
+        email = test@example.com
+        [commit]
+        gpgsign = false   # Avoid an interactive prompt on a machine that has commit signing configured globally.
+        """;
+
     private static readonly HashSet<string> DirectoryNamesExcludedInPush = new(StringComparer.OrdinalIgnoreCase)
     {
         ".git",
@@ -17,13 +25,12 @@ internal static class GitRepositoryBuilder
     {
         Directory.CreateDirectory(destination);
         await ProcessRunner.RunGitAsync(destination, "init", "--quiet", "--initial-branch=main", ".");
+        await File.AppendAllTextAsync(Path.Combine(destination, ".git", "config"), GitConfigAppendix, TestContext.Current.CancellationToken);
     }
 
     public static async Task InitializeAsync(string destination, int commitCount, bool includeFallbackFileInGitignore)
     {
         await InitializeEmptyAsync(destination);
-        await ProcessRunner.RunGitAsync(destination, "config", "user.name", "Test User");
-        await ProcessRunner.RunGitAsync(destination, "config", "user.email", "test@example.com");
 
         string gitignoreContent = includeFallbackFileInGitignore
             ? """
