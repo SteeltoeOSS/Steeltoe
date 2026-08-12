@@ -11,8 +11,15 @@ namespace Steeltoe.Connectors.EntityFrameworkCore.MySql.DynamicTypeAccess;
 /// </summary>
 internal sealed class MySqlEntityFrameworkCorePackageResolver : PackageResolver
 {
+    private const string MicrotingPackageName = "Microting.EntityFrameworkCore.MySql ";
     private const string PomeloPackageName = "Pomelo.EntityFrameworkCore.MySql";
     private const string OraclePackageName = "MySql.EntityFrameworkCore";
+
+    private static readonly List<string> MicrotingAssemblyNames =
+    [
+        "Microting.EntityFrameworkCore.MySql",
+        "MySqlConnector"
+    ];
 
     private static readonly List<string> PomeloAssemblyNames =
     [
@@ -26,10 +33,18 @@ internal sealed class MySqlEntityFrameworkCorePackageResolver : PackageResolver
         "MySql.Data"
     ];
 
-    public static readonly MySqlEntityFrameworkCorePackageResolver Default = new(PomeloAssemblyNames.Concat(OracleAssemblyNames).ToArray(), [
+    public static readonly MySqlEntityFrameworkCorePackageResolver Default = new(((string[])
+    [
+        .. MicrotingAssemblyNames,
+        .. PomeloAssemblyNames,
+        .. OracleAssemblyNames
+    ]).Distinct().ToArray().AsReadOnly(), [
+        MicrotingPackageName,
         PomeloPackageName,
         OraclePackageName
     ]);
+
+    internal static readonly MySqlEntityFrameworkCorePackageResolver MicrotingOnly = new(MicrotingAssemblyNames, [MicrotingPackageName]);
 
     internal static readonly MySqlEntityFrameworkCorePackageResolver PomeloOnly = new(PomeloAssemblyNames, [PomeloPackageName]);
 

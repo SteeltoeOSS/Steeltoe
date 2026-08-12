@@ -1,32 +1,33 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
 
-  <PropertyGroup>
-    <NoWarn>
-      <!--
-        Temporary workaround: Unstable EF Core 10 package for Pomelo.EntityFrameworkCore.MySql is not available yet.
-        NU1608: Detected package version outside of dependency constraint
-      -->
-      $(NoWarn);NU1608
-    </NoWarn>
-  </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EntityFrameworkCoreTestVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EntityFrameworkCoreTestVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EntityFrameworkCoreTestVersion)" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(EntityFrameworkCoreTestVersion)" />
-    <PackageReference Include="MySql.EntityFrameworkCore" Version="$(EntityFrameworkCoreTestVersion)" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="$(PomeloEntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(MatchTargetFrameworkVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(MatchTargetFrameworkVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(MatchTargetFrameworkVersion)" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(MatchTargetFrameworkVersion)" />
+    <PackageReference Include="Microting.EntityFrameworkCore.MySql" Condition="'$(TargetFramework)' != 'net9.0' And '$(TargetFramework)' != 'net8.0'" Version="$(MatchTargetFrameworkVersion)" />
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="$(MatchTargetFrameworkVersion)" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Condition="'$(TargetFramework)' == 'net9.0' Or '$(TargetFramework)' == 'net8.0'" Version="$(MatchTargetFrameworkVersion)" />
     <PackageReference Include="System.Text.Json" Version="$(FoundationalVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Management\src\Tasks\Steeltoe.Management.Tasks.csproj" />
     <ProjectReference Include="..\..\src\EntityFrameworkCore\Steeltoe.Connectors.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' Or '$(TargetFramework)' == 'net8.0' ">
+    <Compile Remove="**/*.other.cs" />
+    <None Include="**/*.other.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net9.0' And '$(TargetFramework)' != 'net8.0' ">
+    <Compile Remove="**/*.net80-90.cs" />
+    <None Include="**/*.net80-90.cs" />
   </ItemGroup>
 </Project>

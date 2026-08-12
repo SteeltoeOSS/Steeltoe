@@ -14,7 +14,7 @@
     <PackageReference Include="MongoDB.Driver" Version="$(MongoDbDriverVersion)" />
     <PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />
     <PackageReference Include="MySql.Data" Version="$(MySqlDataVersion)" />
-    <PackageReference Include="Npgsql" Version="$(EntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="Npgsql" Version="$(MatchTargetFrameworkVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientTestVersion)" />
   </ItemGroup>
 

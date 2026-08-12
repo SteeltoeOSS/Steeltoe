@@ -12,15 +12,11 @@ using Steeltoe.Connectors.MySql;
 using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 using SteeltoeExtensions = Steeltoe.Connectors.EntityFrameworkCore.MySql.MySqlDbContextOptionsBuilderExtensions;
 
-namespace Steeltoe.Connectors.EntityFrameworkCore.Test.MySql.Pomelo;
+namespace Steeltoe.Connectors.EntityFrameworkCore.Test.MySql.Microting;
 
 public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 {
-#if NET10_0_OR_GREATER
-    [Fact(Skip = "Temporary workaround: Unstable EF Core 10 package for Pomelo.EntityFrameworkCore.MySql is not available yet.")]
-#else
     [Fact]
-#endif
     public async Task Registers_connection_string_for_default_service_binding()
     {
         var appSettings = new Dictionary<string, string?>
@@ -34,7 +30,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         builder.Services.Configure<MySqlOptions>(options => options.ConnectionString += ";Use Compression=false");
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
-            MySqlEntityFrameworkCorePackageResolver.PomeloOnly, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+            MySqlEntityFrameworkCorePackageResolver.MicrotingOnly, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
 
         await using WebApplication app = builder.Build();
 
@@ -46,11 +42,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
             "Server=localhost;User ID=steeltoe;Password=steeltoe;Database=myDb;Allow User Variables=True;Connection Timeout=15;Use Affected Rows=False;Use Compression=False");
     }
 
-#if NET10_0_OR_GREATER
-    [Fact(Skip = "Temporary workaround: Unstable EF Core 10 package for Pomelo.EntityFrameworkCore.MySql is not available yet.")]
-#else
     [Fact]
-#endif
     public async Task Registers_connection_string_for_named_service_binding()
     {
         var appSettings = new Dictionary<string, string?>
@@ -64,7 +56,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         builder.Services.Configure<MySqlOptions>("myMySqlService", options => options.ConnectionString += ";Use Compression=false");
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
-            MySqlEntityFrameworkCorePackageResolver.PomeloOnly, "myMySqlService", MySqlServerVersion.LatestSupportedServerVersion));
+            MySqlEntityFrameworkCorePackageResolver.MicrotingOnly, "myMySqlService", MySqlServerVersion.LatestSupportedServerVersion));
 
         await using WebApplication app = builder.Build();
 
@@ -83,7 +75,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null, null);
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
-            MySqlEntityFrameworkCorePackageResolver.PomeloOnly));
+            MySqlEntityFrameworkCorePackageResolver.MicrotingOnly));
 
         await using WebApplication app = builder.Build();
         await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
