@@ -15,7 +15,7 @@
     <MockHttpVersion>7.0.*</MockHttpVersion>
     <MongoDbDriverVersion>3.8.*</MongoDbDriverVersion>
     <MoqVersion>4.20.69</MoqVersion>
-    <MySqlConnectorVersion>2.5.*</MySqlConnectorVersion>
+    <MySqlConnectorVersion>2.6.*</MySqlConnectorVersion>
     <MySqlDataVersion>9.7.*</MySqlDataVersion>
     <NewtonsoftJsonVersion>13.0.*</NewtonsoftJsonVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
@@ -34,20 +34,14 @@
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <EntityFrameworkCoreTestVersion>8.0.*</EntityFrameworkCoreTestVersion>
-    <PomeloEntityFrameworkCoreTestVersion>$(EntityFrameworkCoreTestVersion)</PomeloEntityFrameworkCoreTestVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
     <EntityFrameworkCoreTestVersion>9.0.*</EntityFrameworkCoreTestVersion>
-    <PomeloEntityFrameworkCoreTestVersion>$(EntityFrameworkCoreTestVersion)</PomeloEntityFrameworkCoreTestVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <EntityFrameworkCoreTestVersion>10.0.*</EntityFrameworkCoreTestVersion>
-    <PomeloEntityFrameworkCoreTestVersion>
-      <!-- Temporary workaround: Unstable EF Core 10 package for Pomelo.EntityFrameworkCore.MySql is not available yet. -->
-      9.0.*
-    </PomeloEntityFrameworkCoreTestVersion>
   </PropertyGroup>
 
   <PropertyGroup>

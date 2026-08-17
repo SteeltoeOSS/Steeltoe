@@ -61,8 +61,8 @@ public static class MySqlDbContextOptionsBuilderExtensions
     /// The service binding name, or <c>null</c> to use the default service binding.
     /// </param>
     /// <param name="serverVersion">
-    /// The version of the database server. This only has an effect if the Pomelo.EntityFrameworkCore.MySql package is being used. Set to <c>null</c> to
-    /// auto-detect (at the cost of opening an extra connection).
+    /// The version of the database server. This only has an effect if the Microting.EntityFrameworkCore.MySql or Pomelo.EntityFrameworkCore.MySql package is
+    /// being used. Set to <c>null</c> to auto-detect (at the cost of opening an extra connection).
     /// </param>
     /// <param name="mySqlOptionsAction">
     /// An action to allow additional MySQL specific configuration.
