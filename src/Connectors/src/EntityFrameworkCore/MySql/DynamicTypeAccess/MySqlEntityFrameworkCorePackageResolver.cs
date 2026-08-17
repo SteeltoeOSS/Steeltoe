@@ -11,7 +11,7 @@ namespace Steeltoe.Connectors.EntityFrameworkCore.MySql.DynamicTypeAccess;
 /// </summary>
 internal sealed class MySqlEntityFrameworkCorePackageResolver : PackageResolver
 {
-    private const string MicrotingPackageName = "Microting.EntityFrameworkCore.MySql ";
+    private const string MicrotingPackageName = "Microting.EntityFrameworkCore.MySql";
     private const string PomeloPackageName = "Pomelo.EntityFrameworkCore.MySql";
     private const string OraclePackageName = "MySql.EntityFrameworkCore";
 
