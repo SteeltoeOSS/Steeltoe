@@ -32,6 +32,18 @@
     <XunitVisualStudioVersion>3.1.*</XunitVisualStudioVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <EntityFrameworkCoreTestVersion>8.0.*</EntityFrameworkCoreTestVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <EntityFrameworkCoreTestVersion>9.0.*</EntityFrameworkCoreTestVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <EntityFrameworkCoreTestVersion>10.0.*</EntityFrameworkCoreTestVersion>
+  </PropertyGroup>
+
   <PropertyGroup>
     <!--
       Exposed dependencies, observable by Steeltoe library consumers.
@@ -43,6 +55,7 @@
     <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
     <ConsulVersion>1.7.14.*</ConsulVersion>
     <DotnetGCDumpVersion>9.0.652701</DotnetGCDumpVersion>
+    <EntityFrameworkCoreVersion>8.0.*</EntityFrameworkCoreVersion>
     <FoundationalVersion>
       <!--
         Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.

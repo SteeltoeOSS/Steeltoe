@@ -11,7 +11,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MatchTargetFrameworkVersion)" />
     <PackageReference Include="MongoDB.Driver" Version="$(MongoDbDriverVersion)" />
     <PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />
-    <PackageReference Include="Npgsql" Version="$(MatchTargetFrameworkVersion)" />
+    <PackageReference Include="Npgsql" Version="$(EntityFrameworkCoreTestVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientTestVersion)" />
   </ItemGroup>
 
