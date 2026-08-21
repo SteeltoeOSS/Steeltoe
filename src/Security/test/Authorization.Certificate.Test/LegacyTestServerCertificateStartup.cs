@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Security.Authorization.Certificate.Test;
 
-public sealed class TestServerCertificateStartup
+public sealed class LegacyTestServerCertificateStartup(string? certificateHeaderName)
 {
     public void ConfigureServices(IServiceCollection services)
     {
@@ -18,7 +18,9 @@ public sealed class TestServerCertificateStartup
             options.ValidateValidityPeriod = false;
         });
 
-        services.AddAuthorizationBuilder().AddOrgAndSpacePoliciesForMutualTls();
+#pragma warning disable CS0618 // Type or member is obsolete
+        services.AddAuthorizationBuilder().AddOrgAndSpacePolicies(certificateHeaderName);
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public void Configure(IApplicationBuilder app, IAuthorizationService authorizationService)

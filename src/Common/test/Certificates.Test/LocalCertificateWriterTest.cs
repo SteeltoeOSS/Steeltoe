@@ -5,10 +5,6 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
-#if NET9_0_OR_GREATER
-#pragma warning disable SYSLIB0057 // Type or member is obsolete
-#endif
-
 namespace Steeltoe.Common.Certificates.Test;
 
 public sealed class LocalCertificateWriterTest
@@ -22,20 +18,21 @@ public sealed class LocalCertificateWriterTest
         using var rsa = RSA.Create();
 
         certificateWriter.Write(orgId, spaceId);
-        var rootCertificate = new X509Certificate2(LocalCertificateWriter.RootCaPfxPath);
-        var intermediateCertificate = new X509Certificate2(LocalCertificateWriter.IntermediatePfxPath);
+
+        var rootCertificate = X509Certificate2.CreateFromPem(File.ReadAllText(LocalCertificateWriter.RootCaCrtPath));
+        var intermediateCertificate = X509Certificate2.CreateFromPem(File.ReadAllText(LocalCertificateWriter.IntermediateCrtPath));
 
         rsa.ImportFromPem(File.ReadAllText(Path.Combine(LocalCertificateWriter.AppBasePath, LocalCertificateWriter.CertificateDirectoryName,
             "SteeltoeAppInstanceKey.pem")));
 
-        X509Certificate2 certificate =
-            new X509Certificate2(File.ReadAllBytes(Path.Combine(LocalCertificateWriter.AppBasePath, LocalCertificateWriter.CertificateDirectoryName,
-                "SteeltoeAppInstanceCert.pem"))).CopyWithPrivateKey(rsa);
+        string instanceCertificatePath = Path.Combine(LocalCertificateWriter.AppBasePath, LocalCertificateWriter.CertificateDirectoryName,
+            "SteeltoeAppInstanceCert.pem");
 
-        rootCertificate.Should().NotBeNull();
-        intermediateCertificate.Should().NotBeNull();
-        certificate.Should().NotBeNull();
+        X509Certificate2 certificate = X509Certificate2.CreateFromPem(File.ReadAllText(instanceCertificatePath)).CopyWithPrivateKey(rsa);
         certificate.Subject.Should().Contain($"OU=space:{spaceId}");
         certificate.Subject.Should().Contain($"OU=organization:{orgId}");
+
+        rootCertificate.Subject.Should().Contain("SteeltoeGeneratedCA");
+        intermediateCertificate.Subject.Should().Contain("SteeltoeGeneratedIntermediate");
     }
 }
