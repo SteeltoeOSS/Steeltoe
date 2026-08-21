@@ -18,9 +18,8 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact]
     public async Task PostgreSQL_Not_Connected_Returns_Down_Status()
     {
-        DbConnection connection = new NpgsqlConnection("Server=localhost;Port=9999;Timeout=1");
-
-        using var healthContributor = new RelationalDatabaseHealthContributor(connection, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+        var healthContributor = new RelationalDatabaseHealthContributor(() => new NpgsqlConnection("Server=localhost;Port=9999;Timeout=1"), "PostgreSQL",
+            "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {
             ServiceName = "Example"
         };
@@ -38,9 +37,8 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact(Skip = "Integration test - Requires local PostgreSQL server")]
     public async Task PostgreSQL_Integration_Is_Connected_Returns_Up_Status()
     {
-        DbConnection connection = new NpgsqlConnection("Server=localhost;User ID=steeltoe;Password=steeltoe");
-
-        using var healthContributor = new RelationalDatabaseHealthContributor(connection, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+        var healthContributor = new RelationalDatabaseHealthContributor(() => new NpgsqlConnection("Server=localhost;User ID=steeltoe;Password=steeltoe"),
+            "PostgreSQL", "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {
             ServiceName = "Example"
         };
@@ -57,9 +55,8 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact]
     public async Task MySQL_Not_Connected_Returns_Down_Status()
     {
-        DbConnection connection = new MySqlConnection("Server=localhost;Port=9999;Connect Timeout=1");
-
-        using var healthContributor = new RelationalDatabaseHealthContributor(connection, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+        var healthContributor = new RelationalDatabaseHealthContributor(() => new MySqlConnection("Server=localhost;Port=9999;Connect Timeout=1"), "MySQL",
+            "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {
             ServiceName = "Example"
         };
@@ -77,9 +74,8 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact(Skip = "Integration test - Requires local MySQL server")]
     public async Task MySQL_Integration_Is_Connected_Returns_Up_Status()
     {
-        DbConnection connection = new MySqlConnection("Server=localhost;User ID=steeltoe;Password=steeltoe");
-
-        using var healthContributor = new RelationalDatabaseHealthContributor(connection, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+        var healthContributor = new RelationalDatabaseHealthContributor(() => new MySqlConnection("Server=localhost;User ID=steeltoe;Password=steeltoe"),
+            "MySQL", "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {
             ServiceName = "Example"
         };
@@ -97,9 +93,9 @@ public sealed class RelationalDatabaseHealthContributorTest
     public async Task SQLServer_Not_Connected_Returns_Down_Status()
     {
         // Using a known host/port, so running this test doesn't take 15 seconds (the Connect Timeout only kicks in *after* establishing the socket connection).
-        DbConnection connection = new SqlConnection("Server=tcp:www.microsoft.com,80;Connect Timeout=1;Connect Retry Count=0");
-
-        using var healthContributor = new RelationalDatabaseHealthContributor(connection, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+        var healthContributor = new RelationalDatabaseHealthContributor(
+            () => new SqlConnection("Server=tcp:www.microsoft.com,80;Connect Timeout=1;Connect Retry Count=0"), "SQL Server", "localhost",
+            NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {
             ServiceName = "Example"
         };
@@ -120,9 +116,8 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact(Skip = "Integration test - Requires local SQL Server instance")]
     public async Task SQLServer_Integration_Is_Connected_Returns_Up_Status()
     {
-        DbConnection connection = new SqlConnection(@"Server=(localdb)\mssqllocaldb");
-
-        using var healthContributor = new RelationalDatabaseHealthContributor(connection, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+        var healthContributor = new RelationalDatabaseHealthContributor(() => new SqlConnection(@"Server=(localdb)\mssqllocaldb"), "SQL Server", "localhost",
+            NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {
             ServiceName = "Example"
         };
@@ -146,11 +141,11 @@ public sealed class RelationalDatabaseHealthContributorTest
         connectionMock.Setup(connection => connection.Open());
         connectionMock.Protected().Setup<DbCommand>("CreateDbCommand").Returns(() => commandMock.Object);
 
-        using var healthContributor =
-            new RelationalDatabaseHealthContributor(connectionMock.Object, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
-            {
-                ServiceName = "Example"
-            };
+        var healthContributor = new RelationalDatabaseHealthContributor(() => connectionMock.Object, "SQL Server", "localhost",
+            NullLogger<RelationalDatabaseHealthContributor>.Instance)
+        {
+            ServiceName = "Example"
+        };
 
         HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
@@ -159,6 +154,68 @@ public sealed class RelationalDatabaseHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");
+    }
+
+    [Fact]
+    public async Task Concurrent_Health_Checks_Use_Independent_Connections()
+    {
+        var secondCheckCompleted = new TaskCompletionSource();
+        var createdConnections = new List<Mock<DbConnection>>();
+        int connectionCounter = 0;
+
+        var healthContributor = new RelationalDatabaseHealthContributor(CreateConnectionThatWaitsForSecondCheck, "SQL Server", "localhost",
+            NullLogger<RelationalDatabaseHealthContributor>.Instance)
+        {
+            ServiceName = "Example"
+        };
+
+        Task<HealthCheckResult?> firstCheckTask = healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
+
+        HealthCheckResult? secondResult = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
+        secondCheckCompleted.SetResult();
+
+        HealthCheckResult? firstResult = await firstCheckTask;
+
+        createdConnections.Should().HaveCount(2);
+        createdConnections[0].Object.Should().NotBeSameAs(createdConnections[1].Object);
+
+        firstResult.Should().NotBeNull();
+        firstResult.Status.Should().Be(HealthStatus.Up);
+        firstResult.Details.Should().NotContainKey("error");
+
+        secondResult.Should().NotBeNull();
+        secondResult.Status.Should().Be(HealthStatus.Up);
+        secondResult.Details.Should().NotContainKey("error");
+        return;
+
+        DbConnection CreateConnectionThatWaitsForSecondCheck()
+        {
+            // Index 0 is the first health check's connection; index 1 is the second health check's connection.
+            int index = Interlocked.Increment(ref connectionCounter) - 1;
+
+            var commandMock = new Mock<DbCommand>();
+            var connectionMock = new Mock<DbConnection>();
+
+            commandMock.Setup(command => command.ExecuteScalarAsync(It.IsAny<CancellationToken>())).Returns(async () =>
+            {
+                if (index == 0)
+                {
+                    // Hold the first check's connection open until the second check has fully completed, including
+                    // disposing its own connection. If both checks shared a single connection instance, closing it
+                    // from the second check would fail the first check's still-in-flight command with
+                    // "Invalid operation. The connection is closed."
+                    await secondCheckCompleted.Task;
+                }
+
+                return 1;
+            });
+
+            connectionMock.Setup(connection => connection.OpenAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            connectionMock.Protected().Setup<DbCommand>("CreateDbCommand").Returns(() => commandMock.Object);
+            createdConnections.Add(connectionMock);
+
+            return connectionMock.Object;
+        }
     }
 
     [Fact]
@@ -172,8 +229,8 @@ public sealed class RelationalDatabaseHealthContributorTest
             return null!;
         });
 
-        using var healthContributor =
-            new RelationalDatabaseHealthContributor(connectionMock.Object, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance);
+        var healthContributor = new RelationalDatabaseHealthContributor(() => connectionMock.Object, "SQL Server", "localhost",
+            NullLogger<RelationalDatabaseHealthContributor>.Instance);
 
         using var source = new CancellationTokenSource();
         await source.CancelAsync();

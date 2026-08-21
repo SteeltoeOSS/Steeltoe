@@ -10,24 +10,26 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Connectors;
 
-internal sealed partial class RelationalDatabaseHealthContributor : IHealthContributor, IDisposable
+internal sealed partial class RelationalDatabaseHealthContributor : IHealthContributor
 {
-    private readonly DbConnection _connection;
+    private readonly Func<DbConnection> _getConnection;
     private readonly ILogger<RelationalDatabaseHealthContributor> _logger;
 
     public string Id { get; }
     public string Host { get; }
     public string? ServiceName { get; set; }
 
-    public RelationalDatabaseHealthContributor(DbConnection connection, string? host, ILogger<RelationalDatabaseHealthContributor> logger)
+    public RelationalDatabaseHealthContributor(Func<DbConnection> getConnection, string databaseType, string? host,
+        ILogger<RelationalDatabaseHealthContributor> logger)
     {
-        ArgumentNullException.ThrowIfNull(connection);
+        ArgumentNullException.ThrowIfNull(getConnection);
+        ArgumentNullException.ThrowIfNull(databaseType);
         ArgumentNullException.ThrowIfNull(logger);
 
-        _connection = connection;
+        _getConnection = getConnection;
+        Id = databaseType;
         Host = host ?? string.Empty;
         _logger = logger;
-        Id = GetDatabaseType(connection);
     }
 
     public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
@@ -49,8 +51,9 @@ internal sealed partial class RelationalDatabaseHealthContributor : IHealthContr
 
         try
         {
-            await _connection.OpenAsync(cancellationToken);
-            DbCommand command = _connection.CreateCommand();
+            await using DbConnection connection = _getConnection();
+            await connection.OpenAsync(cancellationToken);
+            DbCommand command = connection.CreateCommand();
             command.CommandText = "SELECT 1;";
             await command.ExecuteScalarAsync(cancellationToken);
 
@@ -73,28 +76,8 @@ internal sealed partial class RelationalDatabaseHealthContributor : IHealthContr
             result.Description = $"{Id} health check failed";
             result.Details.Add("error", $"{exception.GetType().Name}: {exception.Message}");
         }
-        finally
-        {
-            await _connection.CloseAsync();
-        }
 
         return result;
-    }
-
-    private static string GetDatabaseType(DbConnection connection)
-    {
-        return connection.GetType().Name switch
-        {
-            "NpgsqlConnection" => "PostgreSQL",
-            "SqlConnection" => "SQL Server",
-            "MySqlConnection" => "MySQL",
-            _ => "unknown"
-        };
-    }
-
-    public void Dispose()
-    {
-        _connection.Dispose();
     }
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Checking {DbConnection} health at {Host}.")]
