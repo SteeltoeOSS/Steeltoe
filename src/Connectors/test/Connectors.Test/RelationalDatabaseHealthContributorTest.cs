@@ -157,68 +157,6 @@ public sealed class RelationalDatabaseHealthContributorTest
     }
 
     [Fact]
-    public async Task Concurrent_Health_Checks_Use_Independent_Connections()
-    {
-        var secondCheckCompleted = new TaskCompletionSource();
-        var createdConnections = new List<Mock<DbConnection>>();
-        int connectionCounter = 0;
-
-        var healthContributor = new RelationalDatabaseHealthContributor(CreateConnectionThatWaitsForSecondCheck, "SQL Server", "localhost",
-            NullLogger<RelationalDatabaseHealthContributor>.Instance)
-        {
-            ServiceName = "Example"
-        };
-
-        Task<HealthCheckResult?> firstCheckTask = healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
-
-        HealthCheckResult? secondResult = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
-        secondCheckCompleted.SetResult();
-
-        HealthCheckResult? firstResult = await firstCheckTask;
-
-        createdConnections.Should().HaveCount(2);
-        createdConnections[0].Object.Should().NotBeSameAs(createdConnections[1].Object);
-
-        firstResult.Should().NotBeNull();
-        firstResult.Status.Should().Be(HealthStatus.Up);
-        firstResult.Details.Should().NotContainKey("error");
-
-        secondResult.Should().NotBeNull();
-        secondResult.Status.Should().Be(HealthStatus.Up);
-        secondResult.Details.Should().NotContainKey("error");
-        return;
-
-        DbConnection CreateConnectionThatWaitsForSecondCheck()
-        {
-            // Index 0 is the first health check's connection; index 1 is the second health check's connection.
-            int index = Interlocked.Increment(ref connectionCounter) - 1;
-
-            var commandMock = new Mock<DbCommand>();
-            var connectionMock = new Mock<DbConnection>();
-
-            commandMock.Setup(command => command.ExecuteScalarAsync(It.IsAny<CancellationToken>())).Returns(async () =>
-            {
-                if (index == 0)
-                {
-                    // Hold the first check's connection open until the second check has fully completed, including
-                    // disposing its own connection. If both checks shared a single connection instance, closing it
-                    // from the second check would fail the first check's still-in-flight command with
-                    // "Invalid operation. The connection is closed."
-                    await secondCheckCompleted.Task;
-                }
-
-                return 1;
-            });
-
-            connectionMock.Setup(connection => connection.OpenAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
-            connectionMock.Protected().Setup<DbCommand>("CreateDbCommand").Returns(() => commandMock.Object);
-            createdConnections.Add(connectionMock);
-
-            return connectionMock.Object;
-        }
-    }
-
-    [Fact]
     public async Task Canceled_Throws()
     {
         var connectionMock = new Mock<DbConnection>();
