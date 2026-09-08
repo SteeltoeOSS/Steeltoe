@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "jetbrains.resharper.globaltools": {
-      "version": "2026.2.0.2",
+      "version": "2026.2.1",
       "commands": [
         "jb"
       ],
@@ -17,7 +17,7 @@
       "rollForward": false
     },
     "dotnet-coverage": {
-      "version": "18.9.0",
+      "version": "18.11.0",
       "commands": [
         "dotnet-coverage"
       ],

@@ -8,28 +8,29 @@
     <AspNetCoreHealthChecksVersion>9.0.*</AspNetCoreHealthChecksVersion>
     <CoverletVersion>10.0.*</CoverletVersion>
     <FluentAssertionsVersion>7.2.*</FluentAssertionsVersion>
-    <MicrosoftAzureCosmosVersion>3.58.*</MicrosoftAzureCosmosVersion>
-    <MicrosoftBuildUtilitiesCoreVersion>18.7.*</MicrosoftBuildUtilitiesCoreVersion>
-    <MicrosoftCodeAnalysisVersion>5.0.*</MicrosoftCodeAnalysisVersion>
+    <MicrosoftAzureCosmosVersion>3.62.*</MicrosoftAzureCosmosVersion>
+    <MicrosoftBuildUtilitiesCoreVersion>18.9.*</MicrosoftBuildUtilitiesCoreVersion>
+    <MicrosoftCodeAnalysisVersion>5.9.*</MicrosoftCodeAnalysisVersion>
     <MicrosoftSqlClientVersion>7.0.*</MicrosoftSqlClientVersion>
-    <MockHttpVersion>7.0.*</MockHttpVersion>
-    <MongoDbDriverVersion>3.8.*</MongoDbDriverVersion>
+    <MockHttpVersion>7.1.*</MockHttpVersion>
+    <MongoDbDriverVersion>3.11.*</MongoDbDriverVersion>
     <MySqlConnectorVersion>2.6.*</MySqlConnectorVersion>
-    <MySqlDataVersion>9.7.*</MySqlDataVersion>
+    <MySqlDataVersion>26.7.*</MySqlDataVersion>
     <NewtonsoftJsonVersion>13.0.*</NewtonsoftJsonVersion>
     <NSubstituteVersion>6.2.*</NSubstituteVersion>
-    <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
+    <PublicApiAnalyzersVersion>5.6.*</PublicApiAnalyzersVersion>
     <RabbitClientTestVersion>7.2.*</RabbitClientTestVersion>
     <SerilogEnrichersThreadVersion>4.0.*</SerilogEnrichersThreadVersion>
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
     <SonarAnalyzerVersion>10.25.0.139117</SonarAnalyzerVersion>
     <StyleCopVersion>1.2.0-beta.556</StyleCopVersion>
     <SystemCommandLineVersion>2.0.*</SystemCommandLineVersion>
-    <SystemIdentityModelVersion>8.15.*</SystemIdentityModelVersion>
+    <SystemIdentityModelVersion>8.22.*</SystemIdentityModelVersion>
     <SystemSqlClientVersion>4.9.*</SystemSqlClientVersion>
-    <TestSdkVersion>18.5.*</TestSdkVersion>
+    <TestSdkVersion>18.9.*</TestSdkVersion>
+    <TimeProviderTestingVersion>10.9.*</TimeProviderTestingVersion>
     <XunitVersion>3.2.*</XunitVersion>
-    <XunitVisualStudioVersion>3.1.*</XunitVisualStudioVersion>
+    <XunitVisualStudioVersion>4.0.*</XunitVisualStudioVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
@@ -53,7 +54,7 @@
     -->
 
     <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
-    <ConsulVersion>1.7.14.*</ConsulVersion>
+    <ConsulVersion>1.8.*</ConsulVersion>
     <DotnetGCDumpVersion>9.0.652701</DotnetGCDumpVersion>
     <EntityFrameworkCoreVersion>8.0.*</EntityFrameworkCoreVersion>
     <FoundationalVersion>
@@ -67,8 +68,10 @@
     <MicrosoftDiagnosticsTracingTraceEventVersion>3.1.23</MicrosoftDiagnosticsTracingTraceEventVersion>
     <OpenTelemetryExporterPrometheusVersion>1.15.*-*</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryVersion>1.15.*</OpenTelemetryVersion>
-    <SerilogVersion>9.0.*</SerilogVersion>
+    <SerilogExtensionsLoggingVersion>10.0.*</SerilogExtensionsLoggingVersion>
+    <SerilogSettingsConfigurationVersion>10.0.*</SerilogSettingsConfigurationVersion>
     <SerilogSinksConsoleVersion>6.1.*</SerilogSinksConsoleVersion>
+    <SerilogVersion>9.0.*</SerilogVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">

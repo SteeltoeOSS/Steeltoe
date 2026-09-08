@@ -15,7 +15,7 @@
     <PackageReference Include="coverlet.collector" Version="$(CoverletVersion)" PrivateAssets="All" />
     <PackageReference Include="FluentAssertions" Version="$(FluentAssertionsVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(MatchTargetFrameworkVersion)" />
-    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="$(TimeProviderTestingVersion)" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
     <PackageReference Include="NSubstitute" Version="$(NSubstituteVersion)" />
     <PackageReference Include="xunit.v3" Version="$(XunitVersion)" />
