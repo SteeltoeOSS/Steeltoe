@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Moq;
+using NSubstitute;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.TestResources;
@@ -53,16 +53,16 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
     [Fact]
     public async Task DoesNotUseNetworkInterfacesByDefault()
     {
-        var domainNameResolverMock = new Mock<IDomainNameResolver>();
-        var inetUtilsMock = new Mock<InetUtils>(domainNameResolverMock.Object, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
-        inetUtilsMock.Setup(inetUtils => inetUtils.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254")).Verifiable();
+        var domainNameResolver = Substitute.For<IDomainNameResolver>();
+        var inetUtils = Substitute.For<InetUtils>(domainNameResolver, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
+        inetUtils.FindFirstNonLoopbackHostInfo().Returns(new HostInfo("FromMock", "254.254.254.254"));
 
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
-        services.AddSingleton(domainNameResolverMock.Object);
-        services.AddSingleton(inetUtilsMock.Object);
+        services.AddSingleton(domainNameResolver);
+        services.AddSingleton(inetUtils);
         services.AddApplicationInstanceInfo();
         services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
@@ -72,15 +72,15 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
 
         _ = optionsMonitor.CurrentValue;
 
-        inetUtilsMock.Verify(n => n.FindFirstNonLoopbackHostInfo(), Times.Never);
+        inetUtils.DidNotReceive().FindFirstNonLoopbackHostInfo();
     }
 
     [Fact]
     public async Task CanUseNetworkInterfaces()
     {
-        var domainNameResolverMock = new Mock<IDomainNameResolver>();
-        var inetUtilsMock = new Mock<InetUtils>(domainNameResolverMock.Object, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
-        inetUtilsMock.Setup(inetUtils => inetUtils.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254")).Verifiable();
+        var domainNameResolver = Substitute.For<IDomainNameResolver>();
+        var inetUtils = Substitute.For<InetUtils>(domainNameResolver, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
+        inetUtils.FindFirstNonLoopbackHostInfo().Returns(new HostInfo("FromMock", "254.254.254.254"));
 
         var appSettings = new Dictionary<string, string?>
         {
@@ -91,8 +91,8 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
-        services.AddSingleton(domainNameResolverMock.Object);
-        services.AddSingleton(inetUtilsMock.Object);
+        services.AddSingleton(domainNameResolver);
+        services.AddSingleton(inetUtils);
         services.AddApplicationInstanceInfo();
         services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
@@ -105,7 +105,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         options.HostName.Should().Be("FromMock");
         options.IPAddress.Should().Be("254.254.254.254");
 
-        inetUtilsMock.Verify(n => n.FindFirstNonLoopbackHostInfo(), Times.Once);
+        inetUtils.Received(1).FindFirstNonLoopbackHostInfo();
     }
 
     [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
@@ -137,7 +137,9 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         noSlowReverseDnsQuery.Stop();
 
         options.HostName.Should().NotBeNull();
-        noSlowReverseDnsQuery.ElapsedMilliseconds.Should().BeInRange(0, 2000); // testing with an actual reverse dns query results in around 5000 ms
+
+        // Testing with an actual reverse dns query results in around 5000 ms.
+        noSlowReverseDnsQuery.ElapsedMilliseconds.Should().BeInRange(0, 2000);
     }
 
     [Fact]

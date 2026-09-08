@@ -5,7 +5,7 @@
 using Consul;
 using FluentAssertions.Extensions;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
+using NSubstitute;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
 
@@ -16,9 +16,9 @@ public sealed class TtlSchedulerTest
     [Fact]
     public async Task Add_Throws_Invalid_InstanceId()
     {
-        var clientMoq = new Mock<IConsulClient>();
+        var client = Substitute.For<IConsulClient>();
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, client, NullLoggerFactory.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
         Action action = () => scheduler.Add(string.Empty);
@@ -29,14 +29,14 @@ public sealed class TtlSchedulerTest
     [Fact]
     public async Task Add_DoesNothing_NoHeartbeatOptionsConfigured()
     {
-        var clientMoq = new Mock<IConsulClient>();
+        var client = Substitute.For<IConsulClient>();
 
         var optionsMonitor = TestOptionsMonitor.Create(new ConsulDiscoveryOptions
         {
             Heartbeat = null
         });
 
-        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, client, NullLoggerFactory.Instance);
         scheduler.Add("foobar");
 
         scheduler.ServiceHeartbeats.Should().BeEmpty();
@@ -45,13 +45,13 @@ public sealed class TtlSchedulerTest
     [Fact]
     public async Task Add_AddsTimer()
     {
-        var agentMoq = new Mock<IAgentEndpoint>();
-        var clientMoq = new Mock<IConsulClient>();
-        clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
+        var agent = Substitute.For<IAgentEndpoint>();
+        var client = Substitute.For<IConsulClient>();
+        client.Agent.Returns(agent);
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
 
-        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, client, NullLoggerFactory.Instance);
         scheduler.Add("foobar");
 
         scheduler.ServiceHeartbeats.Should().NotBeEmpty();
@@ -62,9 +62,9 @@ public sealed class TtlSchedulerTest
     [Fact]
     public async Task Can_Change_Timer_Interval()
     {
-        var agentMoq = new Mock<IAgentEndpoint>();
-        var clientMoq = new Mock<IConsulClient>();
-        clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
+        var agent = Substitute.For<IAgentEndpoint>();
+        var client = Substitute.For<IConsulClient>();
+        client.Agent.Returns(agent);
 
         var options = new ConsulDiscoveryOptions
         {
@@ -77,7 +77,7 @@ public sealed class TtlSchedulerTest
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
 
-        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, client, NullLoggerFactory.Instance);
         scheduler.Add(options.InstanceId);
 
         PeriodicHeartbeat heartbeat = scheduler.ServiceHeartbeats.Should().ContainKey(options.InstanceId).WhoseValue;
@@ -93,9 +93,9 @@ public sealed class TtlSchedulerTest
     [Fact]
     public async Task Remove_Throws_Invalid_InstanceId()
     {
-        var clientMoq = new Mock<IConsulClient>();
+        var client = Substitute.For<IConsulClient>();
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, client, NullLoggerFactory.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await scheduler.RemoveAsync(string.Empty);
@@ -106,12 +106,12 @@ public sealed class TtlSchedulerTest
     [Fact]
     public async Task Remove_RemovesTimer()
     {
-        var agentMoq = new Mock<IAgentEndpoint>();
-        var clientMoq = new Mock<IConsulClient>();
-        clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
+        var agent = Substitute.For<IAgentEndpoint>();
+        var client = Substitute.For<IConsulClient>();
+        client.Agent.Returns(agent);
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, client, NullLoggerFactory.Instance);
         scheduler.Add("foobar");
 
         scheduler.ServiceHeartbeats.Should().NotBeEmpty();
@@ -125,9 +125,9 @@ public sealed class TtlSchedulerTest
     [Fact]
     public async Task Timer_CallsPassTTL()
     {
-        var agentMoq = new Mock<IAgentEndpoint>();
-        var clientMoq = new Mock<IConsulClient>();
-        clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
+        var agent = Substitute.For<IAgentEndpoint>();
+        var client = Substitute.For<IConsulClient>();
+        client.Agent.Returns(agent);
 
         var optionsMonitor = TestOptionsMonitor.Create(new ConsulDiscoveryOptions
         {
@@ -137,12 +137,12 @@ public sealed class TtlSchedulerTest
             }
         });
 
-        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, client, NullLoggerFactory.Instance);
         scheduler.Add("foobar");
 
         await Task.Delay(2500.Milliseconds(), TestContext.Current.CancellationToken);
 
-        agentMoq.Verify(a => a.PassTTL("service:foobar", "ttl", It.IsAny<CancellationToken>()), Times.AtLeastOnce);
+        await agent.Received().PassTTL("service:foobar", "ttl", Arg.Any<CancellationToken>());
         await scheduler.RemoveAsync("foobar");
     }
 }

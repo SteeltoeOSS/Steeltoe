@@ -2,13 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Data;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using Moq.Protected;
 using MySqlConnector;
 using Npgsql;
+using NSubstitute;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Connectors.Test;
@@ -134,18 +135,17 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact]
     public async Task Is_Connected_Returns_Up_Status()
     {
-        var commandMock = new Mock<DbCommand>();
-        commandMock.Setup(command => command.ExecuteScalarAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult<object?>(1));
+        var command = Substitute.For<DbCommand>();
+        command.ExecuteScalarAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<object?>(1));
 
-        var connectionMock = new Mock<DbConnection>();
-        connectionMock.Setup(connection => connection.Open());
-        connectionMock.Protected().Setup<DbCommand>("CreateDbCommand").Returns(() => commandMock.Object);
+        await using var connection = new FakeDbConnection(command);
 
-        var healthContributor = new RelationalDatabaseHealthContributor(() => connectionMock.Object, "SQL Server", "localhost",
-            NullLogger<RelationalDatabaseHealthContributor>.Instance)
-        {
-            ServiceName = "Example"
-        };
+        var healthContributor =
+            // ReSharper disable once AccessToDisposedClosure
+            new RelationalDatabaseHealthContributor(() => connection, "SQL Server", "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+            {
+                ServiceName = "Example"
+            };
 
         HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
@@ -159,16 +159,16 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact]
     public async Task Canceled_Throws()
     {
-        var connectionMock = new Mock<DbConnection>();
+        var connection = Substitute.For<DbConnection>();
 
-        connectionMock.Setup(connection => connection.OpenAsync(It.IsAny<CancellationToken>())).Returns((CancellationToken cancellationToken) =>
+        connection.OpenAsync(Arg.Any<CancellationToken>()).Returns(info =>
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            return null!;
+            info.Arg<CancellationToken>().ThrowIfCancellationRequested();
+            return Task.CompletedTask;
         });
 
-        var healthContributor = new RelationalDatabaseHealthContributor(() => connectionMock.Object, "SQL Server", "localhost",
-            NullLogger<RelationalDatabaseHealthContributor>.Instance);
+        var healthContributor =
+            new RelationalDatabaseHealthContributor(() => connection, "SQL Server", "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance);
 
         using var source = new CancellationTokenSource();
         await source.CancelAsync();
@@ -178,5 +178,43 @@ public sealed class RelationalDatabaseHealthContributorTest
         // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<OperationCanceledException>();
+    }
+
+    private sealed class FakeDbConnection(DbCommand command) : DbConnection
+    {
+        [AllowNull]
+        public override string ConnectionString
+        {
+            get;
+            set => field = value ?? string.Empty;
+        } = string.Empty;
+
+        public override string ServerVersion => string.Empty;
+        public override string DataSource => string.Empty;
+        public override string Database => string.Empty;
+        public override ConnectionState State => ConnectionState.Open;
+
+        public override void ChangeDatabase(string databaseName)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void Open()
+        {
+        }
+
+        protected override DbTransaction BeginDbTransaction(IsolationLevel isolationLevel)
+        {
+            throw new NotSupportedException();
+        }
+
+        protected override DbCommand CreateDbCommand()
+        {
+            return command;
+        }
+
+        public override void Close()
+        {
+        }
     }
 }

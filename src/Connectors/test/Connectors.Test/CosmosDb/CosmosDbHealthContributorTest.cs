@@ -6,9 +6,10 @@ using FluentAssertions.Extensions;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using Moq.Protected;
+using NSubstitute;
+using RichardSzalay.MockHttp;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Connectors.CosmosDb;
 using Steeltoe.Connectors.CosmosDb.DynamicTypeAccess;
 
@@ -22,14 +23,12 @@ public sealed class CosmosDbHealthContributorTest
         const string serviceName = "Example";
         const string connectionString = "AccountEndpoint=https://localhost:8081;AccountKey=IA==";
 
-        var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-
-        httpMessageHandlerMock.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-            .Throws(new HttpRequestException("No connection could be made because ..."));
+        DelegateToMockHttpClientHandler httpMessageHandler = new DelegateToMockHttpClientHandler().Setup(mockHttp =>
+            mockHttp.When("*").Throw(new HttpRequestException("No connection could be made because ...")));
 
         var cosmosClient = new CosmosClient(connectionString, new CosmosClientOptions
         {
-            HttpClientFactory = () => new HttpClient(httpMessageHandlerMock.Object)
+            HttpClientFactory = () => new HttpClient(httpMessageHandler)
         });
 
         await using ServiceProvider serviceProvider = CreateServiceProvider(serviceName, connectionString, cosmosClient);
@@ -78,9 +77,9 @@ public sealed class CosmosDbHealthContributorTest
         const string serviceName = "Example";
         const string connectionString = "AccountEndpoint=https://localhost:8081;AccountKey=IA==";
 
-        var cosmosClientMock = new Mock<CosmosClient>();
+        var cosmosClient = Substitute.For<CosmosClient>();
 
-        await using ServiceProvider serviceProvider = CreateServiceProvider(serviceName, connectionString, cosmosClientMock.Object);
+        await using ServiceProvider serviceProvider = CreateServiceProvider(serviceName, connectionString, cosmosClient);
 
         using var healthContributor = new CosmosDbHealthContributor(serviceName, serviceProvider, CosmosDbPackageResolver.Default,
             NullLogger<CosmosDbHealthContributor>.Instance);
@@ -100,15 +99,15 @@ public sealed class CosmosDbHealthContributorTest
         const string serviceName = "Example";
         const string connectionString = "AccountEndpoint=https://localhost:8081;AccountKey=IA==";
 
-        var cosmosClientMock = new Mock<CosmosClient>();
+        var cosmosClient = Substitute.For<CosmosClient>();
 
-        cosmosClientMock.Setup(client => client.ReadAccountAsync()).Returns(async () =>
+        cosmosClient.ReadAccountAsync().Returns(async _ =>
         {
             await Task.Delay(3.Seconds(), TestContext.Current.CancellationToken);
             return null;
         });
 
-        await using ServiceProvider serviceProvider = CreateServiceProvider(serviceName, connectionString, cosmosClientMock.Object);
+        await using ServiceProvider serviceProvider = CreateServiceProvider(serviceName, connectionString, cosmosClient);
 
         using var healthContributor = new CosmosDbHealthContributor(serviceName, serviceProvider, CosmosDbPackageResolver.Default,
             NullLogger<CosmosDbHealthContributor>.Instance);

@@ -4,7 +4,8 @@
 
 using FluentAssertions.Extensions;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
+using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using StackExchange.Redis;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.Redis;
@@ -16,9 +17,9 @@ public sealed class RedisHealthContributorTest
     [Fact]
     public async Task Not_Connected_Returns_Down_Status()
     {
-        var connectionMultiplexerMock = new Mock<IConnectionMultiplexer>();
+        var connectionMultiplexer = Substitute.For<IConnectionMultiplexer>();
 
-        connectionMultiplexerMock.Setup(connectionMultiplexer => connectionMultiplexer.GetDatabase(It.IsAny<int>(), It.IsAny<object?>()))
+        connectionMultiplexer.GetDatabase(Arg.Any<int>(), Arg.Any<object?>())
             .Throws(new RedisConnectionException(ConnectionFailureType.UnableToConnect, "It was not possible to connect ..."));
 
         using var healthContributor = new RedisHealthContributor("localhost", NullLogger<RedisHealthContributor>.Instance)
@@ -26,7 +27,7 @@ public sealed class RedisHealthContributorTest
             ServiceName = "Example"
         };
 
-        healthContributor.SetConnectionMultiplexer(connectionMultiplexerMock.Object);
+        healthContributor.SetConnectionMultiplexer(connectionMultiplexer);
 
         HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
@@ -41,20 +42,18 @@ public sealed class RedisHealthContributorTest
     [Fact]
     public async Task Is_Connected_Returns_Up_Status()
     {
-        var databaseMock = new Mock<IDatabase>();
-        databaseMock.Setup(database => database.PingAsync(It.IsAny<CommandFlags>())).Returns(Task.FromResult(50.Milliseconds()));
+        var database = Substitute.For<IDatabase>();
+        database.PingAsync(Arg.Any<CommandFlags>()).Returns(Task.FromResult(50.Milliseconds()));
 
-        var connectionMultiplexerMock = new Mock<IConnectionMultiplexer>();
-
-        connectionMultiplexerMock.Setup(connectionMultiplexer => connectionMultiplexer.GetDatabase(It.IsAny<int>(), It.IsAny<object?>()))
-            .Returns(databaseMock.Object);
+        var connectionMultiplexer = Substitute.For<IConnectionMultiplexer>();
+        connectionMultiplexer.GetDatabase(Arg.Any<int>(), Arg.Any<object?>()).Returns(database);
 
         using var healthContributor = new RedisHealthContributor("localhost", NullLogger<RedisHealthContributor>.Instance)
         {
             ServiceName = "Example"
         };
 
-        healthContributor.SetConnectionMultiplexer(connectionMultiplexerMock.Object);
+        healthContributor.SetConnectionMultiplexer(connectionMultiplexer);
 
         HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 

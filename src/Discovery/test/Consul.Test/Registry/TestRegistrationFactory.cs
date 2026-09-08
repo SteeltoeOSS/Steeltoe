@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
+using NSubstitute;
 using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Net;
@@ -31,9 +31,9 @@ internal static class TestRegistrationFactory
         var options = new ConsulDiscoveryOptions();
         configuration.GetSection("consul:discovery").Bind(options);
 
-        var domainNameResolverMock = new Mock<IDomainNameResolver>();
-        var inetUtilsMock = new Mock<InetUtils>(domainNameResolverMock.Object, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
-        var configurer = new PostConfigureConsulDiscoveryOptions(configuration, domainNameResolverMock.Object, inetUtilsMock.Object, appInfo);
+        var domainNameResolver = Substitute.For<IDomainNameResolver>();
+        var inetUtils = Substitute.For<InetUtils>(domainNameResolver, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
+        var configurer = new PostConfigureConsulDiscoveryOptions(configuration, domainNameResolver, inetUtils, appInfo);
         configurer.PostConfigure(null, options);
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
