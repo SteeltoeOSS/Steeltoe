@@ -17,7 +17,7 @@
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(MatchTargetFrameworkVersion)" />
     <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="$(FoundationalVersion)" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
-    <PackageReference Include="Moq" Version="$(MoqVersion)" />
+    <PackageReference Include="NSubstitute" Version="$(NSubstituteVersion)" />
     <PackageReference Include="xunit.v3" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVisualStudioVersion)" />
   </ItemGroup>

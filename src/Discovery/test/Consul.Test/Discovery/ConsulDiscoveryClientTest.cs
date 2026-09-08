@@ -4,7 +4,7 @@
 
 using Consul;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
+using NSubstitute;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
@@ -60,17 +60,16 @@ public sealed class ConsulDiscoveryClientTest
             ]
         };
 
-        var healthMoq = new Mock<IHealthEndpoint>();
+        var health = Substitute.For<IHealthEndpoint>();
 
-        healthMoq.Setup(endpoint =>
-                endpoint.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, It.IsAny<CancellationToken>()))
+        health.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(queryResult));
 
-        var clientMoq = new Mock<IConsulClient>();
-        clientMoq.Setup(client => client.Health).Returns(healthMoq.Object);
+        var client = Substitute.For<IConsulClient>();
+        client.Health.Returns(health);
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, NullLoggerFactory.Instance);
 
         List<IServiceInstance> serviceInstances = [];
 
@@ -131,14 +130,14 @@ public sealed class ConsulDiscoveryClientTest
             }
         };
 
-        var catalogMoq = new Mock<ICatalogEndpoint>();
-        catalogMoq.Setup(endpoint => endpoint.Services(null, null, QueryOptions.Default, It.IsAny<CancellationToken>())).Returns(Task.FromResult(queryResult));
+        var catalog = Substitute.For<ICatalogEndpoint>();
+        catalog.Services(null, null, QueryOptions.Default, Arg.Any<CancellationToken>()).Returns(Task.FromResult(queryResult));
 
-        var clientMoq = new Mock<IConsulClient>();
-        clientMoq.Setup(client => client.Catalog).Returns(catalogMoq.Object);
+        var client = Substitute.For<IConsulClient>();
+        client.Catalog.Returns(catalog);
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, NullLoggerFactory.Instance);
         ISet<string> serviceIds = await discoveryClient.GetServiceIdsAsync(TestContext.Current.CancellationToken);
 
         serviceIds.Should().HaveCount(2);
@@ -205,20 +204,20 @@ public sealed class ConsulDiscoveryClientTest
             ]
         };
 
-        var catalogMoq = new Mock<ICatalogEndpoint>();
-        catalogMoq.Setup(endpoint => endpoint.Services(null, null, QueryOptions.Default, It.IsAny<CancellationToken>())).Returns(Task.FromResult(queryResult1));
+        var catalog = Substitute.For<ICatalogEndpoint>();
+        catalog.Services(null, null, QueryOptions.Default, Arg.Any<CancellationToken>()).Returns(Task.FromResult(queryResult1));
 
-        var clientMoq = new Mock<IConsulClient>();
-        clientMoq.Setup(client => client.Catalog).Returns(catalogMoq.Object);
+        var client = Substitute.For<IConsulClient>();
+        client.Catalog.Returns(catalog);
 
-        var healthMoq = new Mock<IHealthEndpoint>();
-        clientMoq.Setup(client => client.Health).Returns(healthMoq.Object);
+        var health = Substitute.For<IHealthEndpoint>();
+        client.Health.Returns(health);
 
-        healthMoq.Setup(h => h.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, It.IsAny<CancellationToken>()))
+        health.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(queryResult2));
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, NullLoggerFactory.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, NullLoggerFactory.Instance);
         IList<IServiceInstance> serviceInstances = await discoveryClient.GetAllInstancesAsync(QueryOptions.Default, TestContext.Current.CancellationToken);
 
         serviceInstances.Should().HaveCount(2);

@@ -14,10 +14,10 @@
     <MicrosoftSqlClientVersion>7.0.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>7.0.*</MockHttpVersion>
     <MongoDbDriverVersion>3.8.*</MongoDbDriverVersion>
-    <MoqVersion>4.20.69</MoqVersion>
     <MySqlConnectorVersion>2.6.*</MySqlConnectorVersion>
     <MySqlDataVersion>9.7.*</MySqlDataVersion>
     <NewtonsoftJsonVersion>13.0.*</NewtonsoftJsonVersion>
+    <NSubstituteVersion>6.2.*</NSubstituteVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
     <RabbitClientTestVersion>7.2.*</RabbitClientTestVersion>
     <SerilogEnrichersThreadVersion>4.0.*</SerilogEnrichersThreadVersion>
