@@ -21,7 +21,7 @@ internal static class MySqlDbContextOptionsExtensionsShim
         }
         else
         {
-            UsePomeloMySql(packageResolver, optionsBuilder, connectionString, serverVersion, mySqlOptionsAction);
+            UseMicrotingOrPomeloMySql(packageResolver, optionsBuilder, connectionString, serverVersion, mySqlOptionsAction);
         }
     }
 
@@ -48,7 +48,7 @@ internal static class MySqlDbContextOptionsExtensionsShim
         }
     }
 
-    private static void UsePomeloMySql(MySqlEntityFrameworkCorePackageResolver packageResolver, DbContextOptionsBuilder optionsBuilder,
+    private static void UseMicrotingOrPomeloMySql(MySqlEntityFrameworkCorePackageResolver packageResolver, DbContextOptionsBuilder optionsBuilder,
         string? connectionString, object? serverVersion, object? mySqlOptionsAction)
     {
         if (serverVersion == null)
@@ -58,7 +58,7 @@ internal static class MySqlDbContextOptionsExtensionsShim
                 throw new InvalidOperationException("Server version must be specified when no connection string is provided.");
             }
 
-            // Pomelo requires to specify server version. If not provided, autodetect it (this is the part that creates an extra connection).
+            // Microting and Pomelo require to specify server version. If not provided, autodetect it (this is the part that creates an extra connection).
             ServerVersionShim serverVersionShim = ServerVersionShim.AutoDetect(packageResolver, connectionString);
             serverVersion = serverVersionShim.Instance;
         }

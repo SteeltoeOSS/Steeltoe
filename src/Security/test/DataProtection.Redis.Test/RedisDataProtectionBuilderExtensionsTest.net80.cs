@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Moq;
+using NSubstitute;
 using StackExchange.Redis;
 
 namespace Steeltoe.Security.DataProtection.Redis.Test;
@@ -12,31 +12,29 @@ partial class RedisDataProtectionBuilderExtensionsTest
     private static object GetMockedConnectionMultiplexer(string? connectionString)
     {
         Dictionary<string, byte[]> innerStore = [];
-        var databaseMock = new Mock<IDatabase>();
 
-        databaseMock.Setup(database => database.HashGet(It.IsAny<RedisKey>(), It.IsAny<RedisValue[]>(), It.IsAny<CommandFlags>()))
-            .Returns((RedisKey key, RedisValue[] _, CommandFlags _) => GetRedisValues(key));
+        var database = Substitute.For<IDatabase>();
+        database.HashGet(Arg.Any<RedisKey>(), Arg.Any<RedisValue[]>(), Arg.Any<CommandFlags>()).Returns(info => GetRedisValues(info.Arg<RedisKey>()));
 
-        databaseMock.Setup(database => database.HashGetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue[]>(), It.IsAny<CommandFlags>()))
-            .Returns((RedisKey key, RedisValue[] _, CommandFlags _) => Task.FromResult(GetRedisValues(key)));
+        database.HashGetAsync(Arg.Any<RedisKey>(), Arg.Any<RedisValue[]>(), Arg.Any<CommandFlags>())
+            .Returns(info => Task.FromResult(GetRedisValues(info.Arg<RedisKey>())));
 
-        databaseMock.Setup(database =>
-                database.ScriptEvaluateAsync(It.IsAny<string>(), It.IsAny<RedisKey[]?>(), It.IsAny<RedisValue[]?>(), It.IsAny<CommandFlags>()))
-            .Returns((string _, RedisKey[]? keys, RedisValue[]? values, CommandFlags _) =>
-            {
-                innerStore[keys![0]!] = values![3]!;
-                return Task.FromResult(RedisResult.Create(keys[0]));
-            });
+        database.ScriptEvaluateAsync(Arg.Any<string>(), Arg.Any<RedisKey[]?>(), Arg.Any<RedisValue[]?>(), Arg.Any<CommandFlags>()).Returns(info =>
+        {
+            RedisKey[]? keys = info.Arg<RedisKey[]?>();
+            RedisValue[]? values = info.Arg<RedisValue[]?>();
 
-        var connectionMultiplexerMock = new Mock<IConnectionMultiplexer>();
-        connectionMultiplexerMock.Setup(connectionMultiplexer => connectionMultiplexer.Configuration).Returns(connectionString!);
+            innerStore[keys![0]!] = values![3]!;
+            return Task.FromResult(RedisResult.Create(keys[0]));
+        });
 
-        connectionMultiplexerMock.Setup(connectionMultiplexer => connectionMultiplexer.GetDatabase(It.IsAny<int>(), It.IsAny<object?>()))
-            .Returns(databaseMock.Object);
+        var connectionMultiplexer = Substitute.For<IConnectionMultiplexer>();
+        connectionMultiplexer.Configuration.Returns(connectionString);
+        connectionMultiplexer.GetDatabase(Arg.Any<int>(), Arg.Any<object?>()).Returns(database);
 
-        databaseMock.Setup(database => database.Multiplexer).Returns(connectionMultiplexerMock.Object);
+        database.Multiplexer.Returns(connectionMultiplexer);
 
-        return connectionMultiplexerMock.Object;
+        return connectionMultiplexer;
 
         RedisValue[] GetRedisValues(RedisKey key)
         {

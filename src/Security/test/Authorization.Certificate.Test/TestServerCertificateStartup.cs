@@ -18,7 +18,7 @@ public sealed class TestServerCertificateStartup
             options.ValidateValidityPeriod = false;
         });
 
-        services.AddAuthorizationBuilder().AddOrgAndSpacePolicies();
+        services.AddAuthorizationBuilder().AddOrgAndSpacePoliciesForMutualTls();
     }
 
     public void Configure(IApplicationBuilder app, IAuthorizationService authorizationService)

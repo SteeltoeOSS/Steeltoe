@@ -26,7 +26,7 @@ internal sealed class HealthActuatorMetadataProvider(string defaultContentType)
 
         List<object> healthMetadata =
         [
-            ..baseMetadata,
+            .. baseMetadata,
             parameterDescription
         ];
 

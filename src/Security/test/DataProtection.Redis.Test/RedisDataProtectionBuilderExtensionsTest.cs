@@ -57,7 +57,7 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
 
         app.MapGet("/set-session", httpContext =>
         {
-            httpContext.Session.Set("example-key", "example-value"u8.ToArray());
+            httpContext.Session.Set("example-key", [.. "example-value"u8]);
             httpContext.Response.StatusCode = 200;
             return Task.CompletedTask;
         });

@@ -2,13 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Data;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using Moq.Protected;
 using MySqlConnector;
 using Npgsql;
+using NSubstitute;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Connectors.Test;
@@ -18,9 +19,8 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact]
     public async Task PostgreSQL_Not_Connected_Returns_Down_Status()
     {
-        DbConnection connection = new NpgsqlConnection("Server=localhost;Port=9999;Timeout=1");
-
-        using var healthContributor = new RelationalDatabaseHealthContributor(connection, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+        var healthContributor = new RelationalDatabaseHealthContributor(() => new NpgsqlConnection("Server=localhost;Port=9999;Timeout=1"), "PostgreSQL",
+            "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {
             ServiceName = "Example"
         };
@@ -32,15 +32,19 @@ public sealed class RelationalDatabaseHealthContributorTest
         result.Description.Should().Be("PostgreSQL health check failed");
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
-        result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("NpgsqlException: ");
+
+        string errorMessage = result.Details.Should().ContainKey("error").WhoseValue.As<string>();
+
+        errorMessage.Should().Match(error =>
+            error.StartsWith("NpgsqlException: Failed to connect", StringComparison.Ordinal) ||
+            error.StartsWith("TimeoutException: ", StringComparison.Ordinal));
     }
 
     [Fact(Skip = "Integration test - Requires local PostgreSQL server")]
     public async Task PostgreSQL_Integration_Is_Connected_Returns_Up_Status()
     {
-        DbConnection connection = new NpgsqlConnection("Server=localhost;User ID=steeltoe;Password=steeltoe");
-
-        using var healthContributor = new RelationalDatabaseHealthContributor(connection, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+        var healthContributor = new RelationalDatabaseHealthContributor(() => new NpgsqlConnection("Server=localhost;User ID=steeltoe;Password=steeltoe"),
+            "PostgreSQL", "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {
             ServiceName = "Example"
         };
@@ -57,9 +61,8 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact]
     public async Task MySQL_Not_Connected_Returns_Down_Status()
     {
-        DbConnection connection = new MySqlConnection("Server=localhost;Port=9999;Connect Timeout=1");
-
-        using var healthContributor = new RelationalDatabaseHealthContributor(connection, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+        var healthContributor = new RelationalDatabaseHealthContributor(() => new MySqlConnection("Server=localhost;Port=9999;Connect Timeout=1"), "MySQL",
+            "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {
             ServiceName = "Example"
         };
@@ -77,9 +80,8 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact(Skip = "Integration test - Requires local MySQL server")]
     public async Task MySQL_Integration_Is_Connected_Returns_Up_Status()
     {
-        DbConnection connection = new MySqlConnection("Server=localhost;User ID=steeltoe;Password=steeltoe");
-
-        using var healthContributor = new RelationalDatabaseHealthContributor(connection, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+        var healthContributor = new RelationalDatabaseHealthContributor(() => new MySqlConnection("Server=localhost;User ID=steeltoe;Password=steeltoe"),
+            "MySQL", "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {
             ServiceName = "Example"
         };
@@ -97,9 +99,9 @@ public sealed class RelationalDatabaseHealthContributorTest
     public async Task SQLServer_Not_Connected_Returns_Down_Status()
     {
         // Using a known host/port, so running this test doesn't take 15 seconds (the Connect Timeout only kicks in *after* establishing the socket connection).
-        DbConnection connection = new SqlConnection("Server=tcp:www.microsoft.com,80;Connect Timeout=1;Connect Retry Count=0");
-
-        using var healthContributor = new RelationalDatabaseHealthContributor(connection, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+        var healthContributor = new RelationalDatabaseHealthContributor(
+            () => new SqlConnection("Server=tcp:www.microsoft.com,80;Connect Timeout=1;Connect Retry Count=0"), "SQL Server", "localhost",
+            NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {
             ServiceName = "Example"
         };
@@ -120,9 +122,8 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact(Skip = "Integration test - Requires local SQL Server instance")]
     public async Task SQLServer_Integration_Is_Connected_Returns_Up_Status()
     {
-        DbConnection connection = new SqlConnection(@"Server=(localdb)\mssqllocaldb");
-
-        using var healthContributor = new RelationalDatabaseHealthContributor(connection, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+        var healthContributor = new RelationalDatabaseHealthContributor(() => new SqlConnection(@"Server=(localdb)\mssqllocaldb"), "SQL Server", "localhost",
+            NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {
             ServiceName = "Example"
         };
@@ -139,15 +140,14 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact]
     public async Task Is_Connected_Returns_Up_Status()
     {
-        var commandMock = new Mock<DbCommand>();
-        commandMock.Setup(command => command.ExecuteScalarAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult<object?>(1));
+        var command = Substitute.For<DbCommand>();
+        command.ExecuteScalarAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<object?>(1));
 
-        var connectionMock = new Mock<DbConnection>();
-        connectionMock.Setup(connection => connection.Open());
-        connectionMock.Protected().Setup<DbCommand>("CreateDbCommand").Returns(() => commandMock.Object);
+        await using var connection = new FakeDbConnection(command);
 
-        using var healthContributor =
-            new RelationalDatabaseHealthContributor(connectionMock.Object, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+        var healthContributor =
+            // ReSharper disable once AccessToDisposedClosure
+            new RelationalDatabaseHealthContributor(() => connection, "SQL Server", "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
             {
                 ServiceName = "Example"
             };
@@ -164,16 +164,16 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact]
     public async Task Canceled_Throws()
     {
-        var connectionMock = new Mock<DbConnection>();
+        var connection = Substitute.For<DbConnection>();
 
-        connectionMock.Setup(connection => connection.OpenAsync(It.IsAny<CancellationToken>())).Returns((CancellationToken cancellationToken) =>
+        connection.OpenAsync(Arg.Any<CancellationToken>()).Returns(info =>
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            return null!;
+            info.Arg<CancellationToken>().ThrowIfCancellationRequested();
+            return Task.CompletedTask;
         });
 
-        using var healthContributor =
-            new RelationalDatabaseHealthContributor(connectionMock.Object, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance);
+        var healthContributor =
+            new RelationalDatabaseHealthContributor(() => connection, "SQL Server", "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance);
 
         using var source = new CancellationTokenSource();
         await source.CancelAsync();
@@ -183,5 +183,43 @@ public sealed class RelationalDatabaseHealthContributorTest
         // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<OperationCanceledException>();
+    }
+
+    private sealed class FakeDbConnection(DbCommand command) : DbConnection
+    {
+        [AllowNull]
+        public override string ConnectionString
+        {
+            get;
+            set => field = value ?? string.Empty;
+        } = string.Empty;
+
+        public override string ServerVersion => string.Empty;
+        public override string DataSource => string.Empty;
+        public override string Database => string.Empty;
+        public override ConnectionState State => ConnectionState.Open;
+
+        public override void ChangeDatabase(string databaseName)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void Open()
+        {
+        }
+
+        protected override DbTransaction BeginDbTransaction(IsolationLevel isolationLevel)
+        {
+            throw new NotSupportedException();
+        }
+
+        protected override DbCommand CreateDbCommand()
+        {
+            return command;
+        }
+
+        public override void Close()
+        {
+        }
     }
 }

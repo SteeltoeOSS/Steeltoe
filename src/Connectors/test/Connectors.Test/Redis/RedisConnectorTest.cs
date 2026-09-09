@@ -9,7 +9,7 @@ using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Moq;
+using NSubstitute;
 using StackExchange.Redis;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
@@ -372,17 +372,15 @@ public sealed class RedisConnectorTest
 
     private static object GetMockedConnectionMultiplexer(string? connectionString)
     {
-        var databaseMock = new Mock<IDatabase>();
+        var database = Substitute.For<IDatabase>();
 
-        var connectionMultiplexerMock = new Mock<IConnectionMultiplexer>();
-        connectionMultiplexerMock.Setup(connectionMultiplexer => connectionMultiplexer.Configuration).Returns(connectionString!);
+        var connectionMultiplexer = Substitute.For<IConnectionMultiplexer>();
+        connectionMultiplexer.Configuration.Returns(connectionString);
+        connectionMultiplexer.GetDatabase(Arg.Any<int>(), Arg.Any<object>()).Returns(database);
 
-        connectionMultiplexerMock.Setup(connectionMultiplexer => connectionMultiplexer.GetDatabase(It.IsAny<int>(), It.IsAny<object>()))
-            .Returns(databaseMock.Object);
+        database.Multiplexer.Returns(connectionMultiplexer);
 
-        databaseMock.Setup(database => database.Multiplexer).Returns(connectionMultiplexerMock.Object);
-
-        return connectionMultiplexerMock.Object;
+        return connectionMultiplexer;
     }
 
     private static async Task<IConnectionMultiplexer> ExtractUnderlyingMultiplexerFromRedisCacheAsync(RedisCache redisCache,

@@ -126,7 +126,7 @@ public static partial class PrometheusExtensions
         ArgumentNullException.ThrowIfNull(builder);
 
         var loggerFactory = builder.ApplicationServices.GetRequiredService<ILoggerFactory>();
-        ILogger logger = loggerFactory.CreateLogger(nameof(PrometheusExtensions));
+        ILogger logger = loggerFactory.CreateLogger(typeof(PrometheusExtensions).FullName!);
         ManagementOptions managementOptions = builder.ApplicationServices.GetRequiredService<IOptionsMonitor<ManagementOptions>>().CurrentValue;
         var conventionOptionsMonitor = builder.ApplicationServices.GetRequiredService<IOptionsMonitor<ActuatorConventionOptions>>();
         PrometheusEndpointOptions prometheusOptions = builder.ApplicationServices.GetRequiredService<IOptionsMonitor<PrometheusEndpointOptions>>().CurrentValue;

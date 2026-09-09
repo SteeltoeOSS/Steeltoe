@@ -183,7 +183,7 @@ public sealed class HttpExchangesActuatorTest
                   },
                   "request": {
                     "method": "GET",
-                    "uri": "http://****:****@api.test.com:8080/path/to/data?filter=A",
+                    "uri": "http://****:****@api.test.com:8080/path/to/data?filter=A&token=****",
                     "headers": {
                       "Accept": [
                         "application/json"
@@ -543,13 +543,15 @@ public sealed class HttpExchangesActuatorTest
             ["X-Redacted-Request-Header"] = "Redact-Me"
         };
 
+        var requestUri = new Uri("http://johndoe:secret@api.test.com:8080/path/to/data?filter=A&token=secret");
+        var request = new HttpExchangeRequest("GET", requestUri, requestHeaders, "192.168.0.1");
+
         var responseHeaders = new Dictionary<string, StringValues>
         {
             ["Content-Length"] = "8192",
             ["X-Redacted-Response-Header"] = "Redact-Me"
         };
 
-        var request = new HttpExchangeRequest("GET", new Uri("http://johndoe:secret@api.test.com:8080/path/to/data?filter=A"), requestHeaders, "192.168.0.1");
         var response = new HttpExchangeResponse((int)HttpStatusCode.OK, responseHeaders);
 
         return new HttpExchange(request, response, 1.January(2025).At(21, 18, 43).AsUtc(), new HttpExchangePrincipal("test-user"),

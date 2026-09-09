@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Moq;
+using NSubstitute;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.TestResources;
@@ -174,14 +174,14 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     [Fact]
     public async Task Does_not_use_network_interfaces_by_default()
     {
-        var domainNameResolverMock = new Mock<IDomainNameResolver>();
-        var inetUtilsMock = new Mock<InetUtils>(domainNameResolverMock.Object, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
-        inetUtilsMock.Setup(inetUtils => inetUtils.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254"));
+        var domainNameResolver = Substitute.For<IDomainNameResolver>();
+        var inetUtils = Substitute.For<InetUtils>(domainNameResolver, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
+        inetUtils.FindFirstNonLoopbackHostInfo().Returns(new HostInfo("FromMock", "254.254.254.254"));
 
         await using ServiceProvider serviceProvider = BuildTestServiceProvider(null, services =>
         {
-            services.AddSingleton(domainNameResolverMock.Object);
-            services.AddSingleton(inetUtilsMock.Object);
+            services.AddSingleton(domainNameResolver);
+            services.AddSingleton(inetUtils);
         });
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
@@ -195,9 +195,9 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     [Fact]
     public async Task Can_use_network_interfaces()
     {
-        var domainNameResolverMock = new Mock<IDomainNameResolver>();
-        var inetUtilsMock = new Mock<InetUtils>(domainNameResolverMock.Object, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
-        inetUtilsMock.Setup(inetUtils => inetUtils.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254"));
+        var domainNameResolver = Substitute.For<IDomainNameResolver>();
+        var inetUtils = Substitute.For<InetUtils>(domainNameResolver, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
+        inetUtils.FindFirstNonLoopbackHostInfo().Returns(new HostInfo("FromMock", "254.254.254.254"));
 
         var appSettings = new Dictionary<string, string?>
         {
@@ -206,8 +206,8 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
 
         await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings, services =>
         {
-            services.AddSingleton(domainNameResolverMock.Object);
-            services.AddSingleton(inetUtilsMock.Object);
+            services.AddSingleton(domainNameResolver);
+            services.AddSingleton(inetUtils);
         });
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
@@ -237,7 +237,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
 
         instanceOptions.HostName.Should().NotBeNull();
 
-        // testing with an actual reverse dns query results in around 5000 ms
+        // Testing with an actual reverse dns query results in around 5000 ms.
         noSlowReverseDnsQuery.ElapsedMilliseconds.Should().BeInRange(0, 1500);
     }
 

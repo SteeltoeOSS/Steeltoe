@@ -28,9 +28,13 @@ public static class CertificateAuthorizationBuilderExtensions
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
+    [Obsolete("Trusting a certificate header without verifying that a reverse proxy set it after a successful mTLS handshake may enable identity spoofing. " +
+        $"This overload will be removed in a future release. Use {nameof(AddOrgAndSpacePoliciesForMutualTls)} instead.")]
     public static AuthorizationBuilder AddOrgAndSpacePolicies(this AuthorizationBuilder builder)
     {
-        return AddOrgAndSpacePolicies(builder, null);
+        ArgumentNullException.ThrowIfNull(builder);
+
+        return Configure(builder, null);
     }
 
     /// <summary>
@@ -52,10 +56,59 @@ public static class CertificateAuthorizationBuilderExtensions
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
+    [Obsolete("Configuring a custom header name is no longer recommended because it may enable identity spoofing. " +
+        $"This overload will be removed in a future release. Use {nameof(AddOrgAndSpacePoliciesForMutualTls)} instead.")]
     public static AuthorizationBuilder AddOrgAndSpacePolicies(this AuthorizationBuilder builder, string? certificateHeaderName)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
+        return Configure(builder, certificateHeaderName);
+    }
+
+    /// <summary>
+    /// Defines policies that verify the space/org in the incoming client certificate matches the space/org of the local application instance identity
+    /// certificate in configuration.
+    /// <para>
+    /// Secure your endpoints with the included authorization policies by referencing <see cref="CertificateAuthorizationPolicies" />.
+    /// </para>
+    /// <para>
+    /// This method also configures certificate forwarding, trusting only the
+    /// <c>
+    /// X-Forwarded-Client-Cert
+    /// </c>
+    /// header.
+    /// </para>
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="AuthorizationBuilder" /> to configure.
+    /// </param>
+    /// <remarks>
+    /// <para>
+    /// This requires the Cloud Foundry Gorouter to be configured as the point of TLS termination.
+    /// </para>
+    /// <para>
+    /// When configured correctly, Gorouter terminates the mutual TLS handshake and forwards the verified client certificate in the
+    /// <c>
+    /// X-Forwarded-Client-Cert
+    /// </c>
+    /// header. Gorouter also strips any incoming instances of this header from external clients, protecting applications from spoofing.
+    /// </para>
+    /// <para>
+    /// If TLS termination is not enabled at the router, this header is never set and the configured policies will reject every request.
+    /// </para>
+    /// </remarks>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static AuthorizationBuilder AddOrgAndSpacePoliciesForMutualTls(this AuthorizationBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        return Configure(builder, "X-Forwarded-Client-Cert");
+    }
+
+    private static AuthorizationBuilder Configure(AuthorizationBuilder builder, string? certificateHeaderName)
+    {
         builder.Services.ConfigureCertificateOptions(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
 
         builder.Services.AddCertificateForwarding(options =>

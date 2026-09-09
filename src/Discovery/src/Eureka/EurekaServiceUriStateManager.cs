@@ -82,7 +82,7 @@ public sealed partial class EurekaServiceUriStateManager
                 return
                 [
                     _lastWorkingServiceUri,
-                    ..availableServiceUris
+                    .. availableServiceUris
                 ];
             }
         }

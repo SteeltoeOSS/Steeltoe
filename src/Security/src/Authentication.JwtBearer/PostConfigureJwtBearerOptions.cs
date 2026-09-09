@@ -35,7 +35,7 @@ internal sealed class PostConfigureJwtBearerOptions : IPostConfigureOptions<JwtB
         {
             string[] audiences =
             [
-                ..options.TokenValidationParameters.ValidAudiences ?? [],
+                .. options.TokenValidationParameters.ValidAudiences ?? [],
                 clientId
             ];
 

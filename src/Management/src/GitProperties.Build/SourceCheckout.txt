@@ -1,0 +1,8 @@
+This file exists so the accompanying .targets file can detect, at MSBuild evaluation time, whether it is being
+loaded straight from this source checkout (a consumer's own ProjectReference dev loop) or from an installed
+NuGet package. This distinction matters because it determines whether tasks load in-process or out-of-process.
+
+This file is deliberately excluded from the packed .nupkg, so its absence at the equivalent location inside an
+installed package is exactly what identifies "packaged" consumption.
+
+Do not delete, rename, or pack this file.

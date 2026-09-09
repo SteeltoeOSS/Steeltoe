@@ -62,7 +62,7 @@ public static class ConsulServiceCollectionExtensions
     private static void ConfigureConsulOptions(IServiceCollection services)
     {
         services.AddOptions<ConsulOptions>().BindConfiguration(ConsulOptions.ConfigurationPrefix);
-        services.AddSingleton<IValidateOptions<ConsulOptions>, ValidateConsulOptions>();
+        services.AddSingleton<IPostConfigureOptions<ConsulOptions>, PostConfigureConsulOptions>();
     }
 
     private static void ConfigureConsulDiscoveryOptions(IServiceCollection services)

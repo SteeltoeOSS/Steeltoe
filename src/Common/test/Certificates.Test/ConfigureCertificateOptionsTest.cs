@@ -95,7 +95,7 @@ public sealed class ConfigureCertificateOptionsTest
     [Theory]
     [InlineData("")]
     [InlineData(CertificateName)]
-    public void ConfigureCertificateOptions_ReadsP12File_CreatesCertificate(string certificateName)
+    public void ConfigureCertificateOptions_ReadsP12File_CreatesCertificateWithChain(string certificateName)
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -110,12 +110,14 @@ public sealed class ConfigureCertificateOptionsTest
 
         options.Certificate.Should().NotBeNull();
         options.Certificate.HasPrivateKey.Should().BeTrue();
+        options.IssuerChain.Should().HaveCount(1);
+        options.IssuerChain[0].Subject.Should().Be("CN=Diego Instance Identity Intermediate CA");
     }
 
     [Theory]
     [InlineData("")]
     [InlineData(CertificateName)]
-    public void ConfigureCertificateOptions_ReadsPemFiles_CreatesCertificate(string certificateName)
+    public void ConfigureCertificateOptions_ReadsPemFiles_CreatesCertificateWithChain(string certificateName)
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -131,6 +133,8 @@ public sealed class ConfigureCertificateOptionsTest
 
         options.Certificate.Should().NotBeNull();
         options.Certificate.HasPrivateKey.Should().BeTrue();
+        options.IssuerChain.Should().HaveCount(1);
+        options.IssuerChain[0].Subject.Should().Be("CN=Diego Instance Identity Intermediate CA");
     }
 
     [Theory]

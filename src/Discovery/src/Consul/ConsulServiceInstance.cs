@@ -58,7 +58,7 @@ internal sealed class ConsulServiceInstance : IServiceInstance
         Host = ConsulServerUtils.FindHost(serviceEntry);
         Tags = serviceEntry.Service.Tags ?? EmptyStringList;
         Metadata = serviceEntry.Service.Meta?.AsReadOnly() ?? EmptyStringDictionary;
-        IsSecure = Metadata.TryGetValue("secure", out string? secureString) && secureString != null && bool.Parse(secureString);
+        IsSecure = Metadata.TryGetValue("secure", out string? secureString) && bool.TryParse(secureString, out bool isSecure) && isSecure;
         ServiceId = serviceEntry.Service.Service;
         InstanceId = serviceEntry.Service.ID;
         Port = serviceEntry.Service.Port;

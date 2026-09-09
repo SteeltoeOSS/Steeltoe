@@ -130,6 +130,128 @@ public sealed class EurekaClientTest
         }
         """;
 
+    private const string GetApplicationsJsonResponseWithSingleBrokenEnum = """
+        {
+          "applications": {
+            "versions__delta": "1",
+            "apps__hashcode": "UP_1_",
+            "application": [
+              {
+                "name": "FOO",
+                "instance": [
+                  {
+                    "instanceId": "localhost:foo",
+                    "hostName": "localhost",
+                    "app": "FOO",
+                    "ipAddr": "192.168.56.1",
+                    "status": "UP",
+                    "dataCenterInfo": {
+                      "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+                      "name": "MyOwn"
+                    },
+                    "actionType": "SOMETHING_ELSE"
+                  },
+                  {
+                    "instanceId": "localhost:bar",
+                    "hostName": "localhost",
+                    "app": "FOO",
+                    "ipAddr": "192.168.56.2",
+                    "status": "UP",
+                    "dataCenterInfo": {
+                      "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+                      "name": "MyOwn"
+                    },
+                    "actionType": "ADDED"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+        """;
+
+    private const string GetApplicationsJsonResponseWithSingleBrokenBoolean = """
+        {
+          "applications": {
+            "versions__delta": "1",
+            "apps__hashcode": "UP_1_",
+            "application": [
+              {
+                "name": "FOO",
+                "instance": [
+                  {
+                    "instanceId": "localhost:foo",
+                    "hostName": "localhost",
+                    "app": "FOO",
+                    "ipAddr": "192.168.56.1",
+                    "status": "UP",
+                    "dataCenterInfo": {
+                      "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+                      "name": "MyOwn"
+                    },
+                    "isCoordinatingDiscoveryServer": "maybe",
+                    "actionType": "ADDED"
+                  },
+                  {
+                    "instanceId": "localhost:bar",
+                    "hostName": "localhost",
+                    "app": "FOO",
+                    "ipAddr": "192.168.56.2",
+                    "status": "UP",
+                    "dataCenterInfo": {
+                      "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+                      "name": "MyOwn"
+                    },
+                    "actionType": "ADDED"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+        """;
+
+    private const string GetApplicationsJsonResponseWithSingleBrokenLong = """
+        {
+          "applications": {
+            "versions__delta": "1",
+            "apps__hashcode": "UP_1_",
+            "application": [
+              {
+                "name": "FOO",
+                "instance": [
+                  {
+                    "instanceId": "localhost:foo",
+                    "hostName": "localhost",
+                    "app": "FOO",
+                    "ipAddr": "192.168.56.1",
+                    "status": "UP",
+                    "dataCenterInfo": {
+                      "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+                      "name": "MyOwn"
+                    },
+                    "lastDirtyTimestamp": "not-a-number",
+                    "actionType": "ADDED"
+                  },
+                  {
+                    "instanceId": "localhost:bar",
+                    "hostName": "localhost",
+                    "app": "FOO",
+                    "ipAddr": "192.168.56.2",
+                    "status": "UP",
+                    "dataCenterInfo": {
+                      "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+                      "name": "MyOwn"
+                    },
+                    "actionType": "ADDED"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+        """;
+
     private static readonly string ExpectedJsonRequestBody = """
         {
           "instance": {
@@ -694,6 +816,43 @@ public sealed class EurekaClientTest
             $"DBUG {typeof(EurekaClient)}: HTTP GET request to 'http://localhost:8761/eureka/apps' returned status 200 in attempt 1.",
             $"DBUG {typeof(EurekaClient)}: Failed to deserialize HTTP response from GET 'http://localhost:8761/eureka/apps'."
         ], options => options.WithStrictOrdering());
+    }
+
+    [Theory]
+    [InlineData(GetApplicationsJsonResponseWithSingleBrokenEnum)]
+    [InlineData(GetApplicationsJsonResponseWithSingleBrokenBoolean)]
+    [InlineData(GetApplicationsJsonResponseWithSingleBrokenLong)]
+    public async Task GetApplicationsAsync_IgnoresInstanceWithInvalidJsonValues(string responseContent)
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddOptions();
+        services.AddSingleton<EurekaServiceUriStateManager>();
+        services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
+
+        var httpClientHandler = new DelegateToMockHttpClientHandler();
+
+        httpClientHandler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", responseContent);
+
+        services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(_ => httpClientHandler);
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var client = serviceProvider.GetRequiredService<EurekaClient>();
+
+        ApplicationInfoCollection apps = await client.GetApplicationsAsync(TestContext.Current.CancellationToken);
+
+        httpClientHandler.Mock.VerifyNoOutstandingExpectation();
+
+        apps.ApplicationMap.Should().ContainSingle();
+
+        ApplicationInfo? app = apps.GetRegisteredApplication("foo");
+
+        app.Should().NotBeNull();
+        app.Name.Should().Be("FOO");
+
+        InstanceInfo app1 = app.Instances.Should().ContainSingle().Subject;
+        app1.InstanceId.Should().Be("localhost:bar");
     }
 
     [Fact]

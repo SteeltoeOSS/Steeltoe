@@ -23,9 +23,10 @@ env:
   DOTNET_NOLOGO: true
   SOLUTION_FILE: 'src/Steeltoe.All.slnx'
   NUGET_VULNERABLE_PACKAGE_WARNINGS: '"NU1901;NU1902;NU1903;NU1904"'
-  SONAR_TEST_ARGS: >-
-    --no-build --configuration Release --collect "XPlat Code Coverage" --logger trx --results-directory ${{ github.workspace }}/TestOutput
-    --settings coverlet.runsettings -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.UseSourceLink=false
+  COMMON_TEST_ARGS: >-
+    --no-build --configuration Release --logger trx --results-directory ${{ github.workspace }}/TestOutput
+  COVERAGE_COLLECT_ARGS: >-
+    --collect "XPlat Code Coverage" --settings coverlet.runsettings -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.UseSourceLink=false
 
 jobs:
   analyze:
@@ -82,6 +83,9 @@ jobs:
         docker cp src/Configuration/test/Encryption.Test/Cryptography/server.jks steeltoe-config:/workspace/server.jks
         docker restart steeltoe-config
 
+    - name: Restore tools
+      run: dotnet tool restore --verbosity minimal
+
     - name: Begin Sonar .NET scanner
       id: sonar_begin
       env:
@@ -89,6 +93,7 @@ jobs:
       run: >-
         dotnet sonarscanner begin /k:"SteeltoeOSS_steeltoe" /o:"steeltoeoss" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
         /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=**/coverage.opencover.xml
+        /d:sonar.cs.cobertura.reportsPaths=**/*.cobertura.xml
 
     - name: Restore packages
       run: dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal /p:Configuration=Release /p:NuGetAuditLevel=low /p:WarningsNotAsErrors='${{ env.NUGET_VULNERABLE_PACKAGE_WARNINGS }}'
@@ -97,10 +102,23 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal /p:NuGetAuditLevel=low /p:WarningsNotAsErrors='${{ env.NUGET_VULNERABLE_PACKAGE_WARNINGS }}'
 
     - name: Test
-      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps" ${{ env.SONAR_TEST_ARGS }}
+      run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps&Category!=GitProperties" ${{ env.COMMON_TEST_ARGS }} ${{ env.COVERAGE_COLLECT_ARGS }}
 
     - name: Test (memory dumps)
-      run: dotnet test src/Management/test/Endpoint.Test --filter "Category=MemoryDumps" ${{ env.SONAR_TEST_ARGS }}
+      run: dotnet test src/Management/test/Endpoint.Test --filter "Category=MemoryDumps" ${{ env.COMMON_TEST_ARGS }} ${{ env.COVERAGE_COLLECT_ARGS }}
+
+    - name: Test (git.properties)
+      run: >-
+        dotnet dotnet-coverage collect -f cobertura -o ${{ github.workspace }}/TestOutput/GitProperties.Build.Test.cobertura.xml --
+        dotnet test src/Management/test/GitProperties.Build.Test ${{ env.COMMON_TEST_ARGS }}
+
+    - name: Merge subprocess coverage
+      shell: pwsh
+      run: >-
+        ./merge-subprocess-coverage.ps1
+        -CoverageFile ${{ github.workspace }}/TestOutput/GitProperties.Build.Test.cobertura.xml
+        -RepoRoot ${{ github.workspace }}
+        -ProjectRelativePath src/Management/src/GitProperties.Build
 
     - name: End Sonar .NET scanner
       if: ${{ !cancelled() && steps.sonar_begin.outcome == 'success' }}

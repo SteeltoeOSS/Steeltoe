@@ -56,7 +56,12 @@ public enum CloudFoundryServiceBrokerTypes
     SqlServer = 0x80,
 
     /// <summary>
+    /// Use the built-in brokers for CredHub Secrets Management.
+    /// </summary>
+    CredHub = 0x100,
+
+    /// <summary>
     /// Use all built-in brokers.
     /// </summary>
-    All = Eureka | Identity | MongoDb | MySql | PostgreSql | RabbitMQ | Redis | SqlServer
+    All = Eureka | Identity | MongoDb | MySql | PostgreSql | RabbitMQ | Redis | SqlServer | CredHub
 }
