@@ -9,7 +9,11 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 
 internal sealed class FakeHeapDumper : IHeapDumper, IDisposable
 {
-    public static readonly byte[] FakeFileContent = "FAKEDUMP_"u8.ToArray().Concat(Enumerable.Repeat((byte)0xFF, 1024)).ToArray();
+    public static readonly byte[] FakeFileContent =
+    [
+        .. "FAKEDUMP_"u8,
+        .. Enumerable.Repeat((byte)0xFF, 1024)
+    ];
 
     private readonly List<TempFile> _filesCreated = [];
 

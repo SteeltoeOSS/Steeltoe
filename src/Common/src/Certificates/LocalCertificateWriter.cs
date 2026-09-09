@@ -14,8 +14,16 @@ internal sealed class LocalCertificateWriter
     internal static readonly string AppBasePath = GetAppBasePath();
     private static readonly string ParentPath = Directory.GetParent(AppBasePath)?.ToString() ?? string.Empty;
 
-    internal static readonly string RootCaPfxPath = Path.Combine(ParentPath, CertificateDirectoryName, "SteeltoeCA.pfx");
-    internal static readonly string IntermediatePfxPath = Path.Combine(ParentPath, CertificateDirectoryName, "SteeltoeIntermediate.pfx");
+    // PKCS#12 files contain the private keys used to sign new instance certificates.
+    private static readonly string SigningAuthoritiesPath = Path.Combine(ParentPath, CertificateDirectoryName, "signing");
+    private static readonly string RootCaSigningPfxPath = Path.Combine(SigningAuthoritiesPath, "SteeltoeCA.pfx");
+    private static readonly string IntermediateSigningPfxPath = Path.Combine(SigningAuthoritiesPath, "SteeltoeIntermediate.pfx");
+
+    // CF_SYSTEM_CERT_PATH contains one PEM-encoded CA certificate per .crt file.
+    // This directory mirrors that layout so the local simulation matches real CF behavior.
+    internal static readonly string SystemCertPath = Path.Combine(ParentPath, CertificateDirectoryName, "trust");
+    internal static readonly string RootCaCrtPath = Path.Combine(SystemCertPath, "SteeltoeCA.crt");
+    internal static readonly string IntermediateCrtPath = Path.Combine(SystemCertPath, "SteeltoeIntermediate.crt");
 
     private readonly TimeProvider _timeProvider;
 
@@ -49,49 +57,52 @@ internal sealed class LocalCertificateWriter
 
         X509Certificate2 caCertificate;
 
-        // Create a directory a level above the running project to contain the root and intermediate certificates
-        if (!Directory.Exists(Path.Combine(ParentPath, CertificateDirectoryName)))
-        {
-            Directory.CreateDirectory(Path.Combine(ParentPath, CertificateDirectoryName));
-        }
+        // CA materials go one level up so they can be shared by multiple applications in the same solution.
+        Directory.CreateDirectory(SigningAuthoritiesPath);
+        Directory.CreateDirectory(SystemCertPath);
 
         // Create the root certificate if it doesn't already exist (can be shared by multiple applications)
-        if (!File.Exists(RootCaPfxPath))
+        if (!File.Exists(RootCaSigningPfxPath))
         {
             caCertificate = CreateRootCertificate("CN=SteeltoeGeneratedCA");
-            File.WriteAllBytes(RootCaPfxPath, caCertificate.Export(X509ContentType.Pfx));
+            File.WriteAllBytes(RootCaSigningPfxPath, caCertificate.Export(X509ContentType.Pfx));
         }
         else
         {
-#pragma warning disable SYSLIB0057 // Type or member is obsolete
-            caCertificate = new X509Certificate2(RootCaPfxPath);
-#pragma warning restore SYSLIB0057 // Type or member is obsolete
+#if NET9_0_OR_GREATER
+            caCertificate = X509CertificateLoader.LoadPkcs12FromFile(RootCaSigningPfxPath, null);
+#else
+            caCertificate = new X509Certificate2(RootCaSigningPfxPath);
+#endif
         }
+
+        File.WriteAllText(RootCaCrtPath, caCertificate.ExportCertificatePem());
 
         // Create the intermediate certificate if it doesn't already exist (can be shared by multiple applications)
         X509Certificate2 intermediateCertificate;
 
-        if (!File.Exists(IntermediatePfxPath))
+        if (!File.Exists(IntermediateSigningPfxPath))
         {
             intermediateCertificate = CreateIntermediateCertificate("CN=SteeltoeGeneratedIntermediate", caCertificate);
-            File.WriteAllBytes(IntermediatePfxPath, intermediateCertificate.Export(X509ContentType.Pfx));
+            File.WriteAllBytes(IntermediateSigningPfxPath, intermediateCertificate.Export(X509ContentType.Pfx));
         }
         else
         {
-#pragma warning disable SYSLIB0057 // Type or member is obsolete
-            intermediateCertificate = new X509Certificate2(IntermediatePfxPath);
-#pragma warning restore SYSLIB0057 // Type or member is obsolete
+#if NET9_0_OR_GREATER
+            intermediateCertificate = X509CertificateLoader.LoadPkcs12FromFile(IntermediateSigningPfxPath, null);
+#else
+            intermediateCertificate = new X509Certificate2(IntermediateSigningPfxPath);
+#endif
         }
+
+        File.WriteAllText(IntermediateCrtPath, intermediateCertificate.ExportCertificatePem());
 
         var subjectAlternativeNameBuilder = new SubjectAlternativeNameBuilder();
 
         X509Certificate2 clientCertificate = CreateClientCertificate(subject, intermediateCertificate, subjectAlternativeNameBuilder);
 
-        // Create a folder inside the project to store generated certificate files
-        if (!Directory.Exists(Path.Combine(AppBasePath, CertificateDirectoryName)))
-        {
-            Directory.CreateDirectory(Path.Combine(AppBasePath, CertificateDirectoryName));
-        }
+        // Instance certificates are per-application and are written under the application directory.
+        Directory.CreateDirectory(Path.Combine(AppBasePath, CertificateDirectoryName));
 
         string chainedCertificateContents = clientCertificate.ExportCertificatePem() + Environment.NewLine + intermediateCertificate.ExportCertificatePem();
         string keyContents = clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKeyPem();

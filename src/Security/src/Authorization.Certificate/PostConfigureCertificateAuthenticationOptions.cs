@@ -30,6 +30,11 @@ internal sealed partial class PostConfigureCertificateAuthenticationOptions : IP
     {
         ArgumentNullException.ThrowIfNull(options);
 
+        if (name != CertificateAuthenticationDefaults.AuthenticationScheme)
+        {
+            return;
+        }
+
         CertificateOptions appInstanceIdentityOptions = _certificateOptionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
         options.ChainTrustValidationMode = X509ChainTrustMode.CustomRootTrust;
         options.ClaimsIssuer = appInstanceIdentityOptions.Certificate?.Issuer;
@@ -39,10 +44,18 @@ internal sealed partial class PostConfigureCertificateAuthenticationOptions : IP
 
         if (!string.IsNullOrEmpty(systemCertPath))
         {
-#pragma warning disable SYSLIB0057 // Type or member is obsolete
-            X509Certificate2[] systemCertificates =
-                Directory.GetFiles(systemCertPath).Select(certificateFilename => new X509Certificate2(certificateFilename)).ToArray();
-#pragma warning restore SYSLIB0057 // Type or member is obsolete
+            X509Certificate2[] systemCertificates = Directory.GetFiles(systemCertPath, "*.crt").Select(path =>
+            {
+                try
+                {
+                    return X509Certificate2.CreateFromPem(File.ReadAllText(path));
+                }
+                catch (Exception ex)
+                {
+                    LogSystemCertificateLoadFailed(_logger, path, ex);
+                    return null;
+                }
+            }).OfType<X509Certificate2>().ToArray();
 
             options.CustomTrustStore.AddRange(systemCertificates);
         }
@@ -88,6 +101,9 @@ internal sealed partial class PostConfigureCertificateAuthenticationOptions : IP
             }
         };
     }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to load system certificate from '{FilePath}'. The file will be skipped.")]
+    private static partial void LogSystemCertificateLoadFailed(ILogger logger, string filePath, Exception exception);
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Identity certificate did not match an expected pattern. Subject was '{CertificateSubject}'.")]
     private partial void LogIdentityCertificateMismatch(string certificateSubject);

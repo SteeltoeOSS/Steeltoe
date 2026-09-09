@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <VersionPrefix>4.2.0</VersionPrefix>
+    <VersionPrefix>4.3.0</VersionPrefix>
     <VersionSuffix>pre</VersionSuffix>
     <Authors>Broadcom</Authors>
     <PackageIcon>PackageIcon.png</PackageIcon>
@@ -45,13 +45,16 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)\PackageIcon.png" Pack="true" PackagePath="\" Visible="false" />
     <!-- Add a PackageReadme.md file in the project directory to override the default one. -->
-    <None Condition="Exists('$(MSBuildProjectDirectory)\PackageReadme.md')" Include="$(MSBuildProjectDirectory)\PackageReadme.md" Visible="false" Pack="True"
-      PackagePath="" />
+    <None Condition="Exists('$(MSBuildProjectDirectory)\PackageReadme.md')" Include="$(MSBuildProjectDirectory)\PackageReadme.md" Pack="True" PackagePath="" />
     <None Condition="!Exists('$(MSBuildProjectDirectory)\PackageReadme.md')" Include="$(MSBuildThisFileDirectory)\PackageReadme.md" Visible="false" Pack="True"
       PackagePath="" />
   </ItemGroup>
 
-  <ItemGroup>
+  <PropertyGroup>
+    <PublicApiAnalyzersEnabled Condition="'$(PublicApiAnalyzersEnabled)' == ''">true</PublicApiAnalyzersEnabled>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(PublicApiAnalyzersEnabled)' == 'true'">
     <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="$(PublicApiAnalyzersVersion)" PrivateAssets="All" />
   </ItemGroup>
 

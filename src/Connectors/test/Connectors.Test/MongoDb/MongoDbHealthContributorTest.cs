@@ -6,7 +6,7 @@ using FluentAssertions.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using MongoDB.Driver;
-using Moq;
+using NSubstitute;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.MongoDb;
 using Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
@@ -48,9 +48,9 @@ public sealed class MongoDbHealthContributorTest
         const string serviceName = "Example";
         const string connectionString = "mongodb://localhost:27017";
 
-        var mongoClientMock = new Mock<IMongoClient>();
+        var mongoClient = Substitute.For<IMongoClient>();
 
-        await using ServiceProvider serviceProvider = CreateServiceProvider(serviceName, connectionString, mongoClientMock.Object);
+        await using ServiceProvider serviceProvider = CreateServiceProvider(serviceName, connectionString, mongoClient);
 
         var healthContributor = new MongoDbHealthContributor(serviceName, serviceProvider, MongoDbPackageResolver.Default,
             NullLogger<MongoDbHealthContributor>.Instance);
@@ -70,15 +70,15 @@ public sealed class MongoDbHealthContributorTest
         const string serviceName = "Example";
         const string connectionString = "mongodb://localhost:27017";
 
-        var mongoClientMock = new Mock<IMongoClient>();
+        var mongoClient = Substitute.For<IMongoClient>();
 
-        mongoClientMock.Setup(client => client.ListDatabaseNamesAsync(It.IsAny<CancellationToken>())).Returns((CancellationToken cancellationToken) =>
+        mongoClient.ListDatabaseNamesAsync(Arg.Any<CancellationToken>()).Returns(Task<IAsyncCursor<string>> (info) =>
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            info.Arg<CancellationToken>().ThrowIfCancellationRequested();
             return null!;
         });
 
-        await using ServiceProvider serviceProvider = CreateServiceProvider(serviceName, connectionString, mongoClientMock.Object);
+        await using ServiceProvider serviceProvider = CreateServiceProvider(serviceName, connectionString, mongoClient);
 
         var healthContributor = new MongoDbHealthContributor(serviceName, serviceProvider, MongoDbPackageResolver.Default,
             NullLogger<MongoDbHealthContributor>.Instance);

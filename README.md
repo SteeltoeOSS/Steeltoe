@@ -29,12 +29,12 @@ In addition to the [feature documentation](https://steeltoe.io/api), we have bui
 
 ### Prerequisites
 
-| Steeltoe Version | .NET Version |
-| --- | --- |
-| 4.x | .NET 8 - 9 |
-| 3.x | .NET Core 3.1 - .NET 8 |
-| 3.x (Integration, Messaging and Stream) | .NET Core 3.1 - .NET 6 |
-| 2.x | .NET Framework 4.6.1+ |
+| Steeltoe Branch | .NET Version | Status |
+| --- | --- | --- |
+| main | .NET 8 - 10 | Unstable |
+| 4.x | .NET 8 - 10 | Stable |
+| 3.x | .NET 8 | Stable |
+| 2.x | .NET Framework 4.6.1+ | Out of Support |
 
 For more details, see [Supported Versions on the Wiki](https://github.com/SteeltoeOSS/Steeltoe/wiki/Steeltoe-Support-Versions).
 

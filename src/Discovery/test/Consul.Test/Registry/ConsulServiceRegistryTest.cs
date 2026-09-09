@@ -4,7 +4,7 @@
 
 using Consul;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
+using NSubstitute;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Registry;
@@ -16,13 +16,13 @@ public sealed class ConsulServiceRegistryTest
     [Fact]
     public async Task RegisterAsync_CallsServiceRegister_AddsHeartbeatToScheduler()
     {
-        var agentMoq = new Mock<IAgentEndpoint>();
-        var clientMoq = new Mock<IConsulClient>();
-        clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
+        var agent = Substitute.For<IAgentEndpoint>();
+        var client = Substitute.For<IConsulClient>();
+        client.Agent.Returns(agent);
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
-        await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, client, NullLoggerFactory.Instance);
+        await using var registry = new ConsulServiceRegistry(client, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
         var appSettings = new Dictionary<string, string?>
         {
@@ -32,7 +32,7 @@ public sealed class ConsulServiceRegistryTest
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
         await registry.RegisterAsync(registration, TestContext.Current.CancellationToken);
 
-        agentMoq.Verify(endpoint => endpoint.ServiceRegister(registration.InnerRegistration, It.IsAny<CancellationToken>()), Times.Once);
+        await agent.Received(1).ServiceRegister(registration.InnerRegistration, Arg.Any<CancellationToken>());
 
         scheduler.ServiceHeartbeats.Should().ContainSingle();
         scheduler.ServiceHeartbeats.Should().ContainKey(registration.InstanceId);
@@ -41,13 +41,13 @@ public sealed class ConsulServiceRegistryTest
     [Fact]
     public async Task DeregisterAsync_CallsServiceDeregister_RemovesHeartbeatFromScheduler()
     {
-        var agentMoq = new Mock<IAgentEndpoint>();
-        var clientMoq = new Mock<IConsulClient>();
-        clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
+        var agent = Substitute.For<IAgentEndpoint>();
+        var client = Substitute.For<IConsulClient>();
+        client.Agent.Returns(agent);
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
-        await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, client, NullLoggerFactory.Instance);
+        await using var registry = new ConsulServiceRegistry(client, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
         var appSettings = new Dictionary<string, string?>
         {
@@ -57,26 +57,26 @@ public sealed class ConsulServiceRegistryTest
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
         await registry.RegisterAsync(registration, TestContext.Current.CancellationToken);
 
-        agentMoq.Verify(endpoint => endpoint.ServiceRegister(registration.InnerRegistration, It.IsAny<CancellationToken>()), Times.Once);
+        await agent.Received(1).ServiceRegister(registration.InnerRegistration, Arg.Any<CancellationToken>());
 
         scheduler.ServiceHeartbeats.Should().ContainSingle();
         scheduler.ServiceHeartbeats.Should().ContainKey(registration.InstanceId);
 
         await registry.DeregisterAsync(registration, TestContext.Current.CancellationToken);
 
-        agentMoq.Verify(endpoint => endpoint.ServiceDeregister(registration.InnerRegistration.ID, It.IsAny<CancellationToken>()), Times.Once);
+        await agent.Received(1).ServiceDeregister(registration.InnerRegistration.ID, Arg.Any<CancellationToken>());
         scheduler.ServiceHeartbeats.Should().BeEmpty();
     }
 
     [Fact]
     public async Task SetStatusAsync_ThrowsInvalidStatus()
     {
-        var agentMoq = new Mock<IAgentEndpoint>();
-        var clientMoq = new Mock<IConsulClient>();
-        clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
+        var agent = Substitute.For<IAgentEndpoint>();
+        var client = Substitute.For<IConsulClient>();
+        client.Agent.Returns(agent);
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, client, NullLoggerFactory.Instance);
 
         var appSettings = new Dictionary<string, string?>
         {
@@ -85,7 +85,7 @@ public sealed class ConsulServiceRegistryTest
 
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
 
-        await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
+        await using var registry = new ConsulServiceRegistry(client, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await registry.SetStatusAsync(registration, string.Empty, TestContext.Current.CancellationToken);
@@ -96,12 +96,12 @@ public sealed class ConsulServiceRegistryTest
     [Fact]
     public async Task SetStatusAsync_CallsConsulClient()
     {
-        var agentMoq = new Mock<IAgentEndpoint>();
-        var clientMoq = new Mock<IConsulClient>();
-        clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
+        var agent = Substitute.For<IAgentEndpoint>();
+        var client = Substitute.For<IConsulClient>();
+        client.Agent.Returns(agent);
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, client, NullLoggerFactory.Instance);
 
         var appSettings = new Dictionary<string, string?>
         {
@@ -110,12 +110,12 @@ public sealed class ConsulServiceRegistryTest
 
         ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
 
-        await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
+        await using var registry = new ConsulServiceRegistry(client, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
         await registry.SetStatusAsync(registration, "Up", TestContext.Current.CancellationToken);
-        agentMoq.Verify(endpoint => endpoint.DisableServiceMaintenance(registration.InstanceId, It.IsAny<CancellationToken>()), Times.Once);
+        await agent.Received(1).DisableServiceMaintenance(registration.InstanceId, Arg.Any<CancellationToken>());
 
         await registry.SetStatusAsync(registration, "Out_of_Service", TestContext.Current.CancellationToken);
-        agentMoq.Verify(endpoint => endpoint.EnableServiceMaintenance(registration.InstanceId, "OUT_OF_SERVICE", It.IsAny<CancellationToken>()), Times.Once);
+        await agent.Received(1).EnableServiceMaintenance(registration.InstanceId, "OUT_OF_SERVICE", Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -149,14 +149,14 @@ public sealed class ConsulServiceRegistryTest
 
         Task<QueryResult<HealthCheck[]>> result = Task.FromResult(queryResult);
 
-        var clientMoq = new Mock<IConsulClient>();
-        var healthMoq = new Mock<IHealthEndpoint>();
+        var client = Substitute.For<IConsulClient>();
+        var health = Substitute.For<IHealthEndpoint>();
 
-        clientMoq.Setup(client => client.Health).Returns(healthMoq.Object);
-        healthMoq.Setup(endpoint => endpoint.Checks(registration.ServiceId, QueryOptions.Default, It.IsAny<CancellationToken>())).Returns(result);
+        client.Health.Returns(health);
+        health.Checks(registration.ServiceId, QueryOptions.Default, Arg.Any<CancellationToken>()).Returns(result);
 
-        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
-        await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, client, NullLoggerFactory.Instance);
+        await using var registry = new ConsulServiceRegistry(client, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
         string status = await registry.GetStatusAsync(registration, TestContext.Current.CancellationToken);
         status.Should().Be("OUT_OF_SERVICE");

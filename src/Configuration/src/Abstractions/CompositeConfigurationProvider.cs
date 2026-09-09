@@ -55,7 +55,7 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
     {
         ArgumentNullException.ThrowIfNull(earlierKeys);
 
-        string[] earlierKeysArray = earlierKeys as string[] ?? earlierKeys.ToArray();
+        string[] earlierKeysArray = earlierKeys as string[] ?? [.. earlierKeys];
         ExpensiveLogGetChildKeys(earlierKeysArray, parentPath);
 
         IConfiguration? section = parentPath == null ? ConfigurationRoot : ConfigurationRoot?.GetSection(parentPath);
@@ -65,9 +65,12 @@ internal abstract partial class CompositeConfigurationProvider : IConfigurationP
             return earlierKeysArray;
         }
 
-        List<string> keys = [];
-        keys.AddRange(section.GetChildren().Select(child => child.Key));
-        keys.AddRange(earlierKeysArray);
+        List<string> keys =
+        [
+            .. section.GetChildren().Select(child => child.Key),
+            .. earlierKeysArray
+        ];
+
         keys.Sort(ConfigurationKeyComparer.Instance);
         return keys;
     }

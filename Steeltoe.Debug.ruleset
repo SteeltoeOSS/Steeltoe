@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Steeltoe Debug" Description="Code quality rules for Steeltoe debug builds" ToolsVersion="17.0">
+<RuleSet Name="Steeltoe Debug" Description="Code quality rules for Steeltoe debug builds" ToolsVersion="18.0">
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.NetAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.CSharp.NetAnalyzers">
     <Rule Id="CA1865" Action="Warning" />
     <Rule Id="CA1866" Action="Warning" />
@@ -128,6 +128,7 @@
     <Rule Id="S6798" Action="None" />
     <Rule Id="S6800" Action="None" />
     <Rule Id="S881" Action="Warning" />
+    <Rule Id="S8969" Action="None" />
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1000" Action="None" />

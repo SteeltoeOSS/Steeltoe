@@ -124,4 +124,43 @@ public sealed class ConfigurationBuilderExtensionsTest
         configurationRoot.GetValue<string>("vcap:services:elephantsql:0:name").Should().Be("elephantsql-c6c60");
         configurationRoot.GetValue<string>("vcap:services:sendgrid:0:name").Should().BeNull();
     }
+
+    [Fact]
+    public void AddCloudFoundryServiceBindings_CredHub_LiftsCredentialsToConfigurationRoot()
+    {
+        const string credHubJson = """
+            {
+              "credhub": [
+                {
+                  "name": "my-credhub-service",
+                  "label": "credhub",
+                  "tags": [
+                    "credhub"
+                  ],
+                  "plan": "default",
+                  "credentials": {
+                    "Encrypt__Key": "secret-value",
+                    "some.setting": "setting-value",
+                    "endpoints": [
+                      "https://api1.example.com",
+                      "https://api2.example.com"
+                    ]
+                  }
+                }
+              ]
+            }
+            """;
+
+        var reader = new StringServiceBindingsReader(credHubJson);
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundryServiceBindings(reader);
+        IConfigurationRoot configurationRoot = builder.Build();
+
+        const string keyPrefix = "steeltoe:service-bindings:credhub:my-credhub-service:";
+        configurationRoot.GetValue<string>($"{keyPrefix}Encrypt__Key").Should().BeNull();
+        configurationRoot.GetValue<string>("Encrypt__Key").Should().Be("secret-value");
+        configurationRoot.GetValue<string>("some:setting").Should().Be("setting-value");
+        configurationRoot.GetValue<string>("endpoints:0").Should().Be("https://api1.example.com");
+        configurationRoot.GetValue<string>("endpoints:1").Should().Be("https://api2.example.com");
+    }
 }

@@ -70,10 +70,12 @@
     <File Path="Management/README.md" />
     <Project Path="Management/src/Abstractions/Steeltoe.Management.Abstractions.csproj" />
     <Project Path="Management/src/Endpoint/Steeltoe.Management.Endpoint.csproj" />
+    <Project Path="Management/src/GitProperties.Build/Steeltoe.Management.GitProperties.Build.csproj" />
     <Project Path="Management/src/Prometheus/Steeltoe.Management.Prometheus.csproj" />
     <Project Path="Management/src/Tasks/Steeltoe.Management.Tasks.csproj" />
     <Project Path="Management/src/Tracing/Steeltoe.Management.Tracing.csproj" />
     <Project Path="Management/test/Endpoint.Test/Steeltoe.Management.Endpoint.Test.csproj" />
+    <Project Path="Management/test/GitProperties.Build.Test/Steeltoe.Management.GitProperties.Build.Test.csproj" />
     <Project Path="Management/test/Prometheus.Test/Steeltoe.Management.Prometheus.Test.csproj" />
     <Project Path="Management/test/RazorPagesTestWebApp/Steeltoe.Management.Endpoint.RazorPagesTestWebApp.csproj" />
     <Project Path="Management/test/Tasks.Test/Steeltoe.Management.Tasks.Test.csproj" />

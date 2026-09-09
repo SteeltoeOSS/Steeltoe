@@ -91,11 +91,10 @@ public static class MySqlServiceCollectionExtensions
 
         ConnectorShim<MySqlOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
 
-        var connection = (DbConnection)connectorShim.GetConnection();
         string? hostName = GetHostNameFromConnectionString(packageResolver, connectorShim.Options.ConnectionString);
         var logger = serviceProvider.GetRequiredService<ILogger<RelationalDatabaseHealthContributor>>();
 
-        return new RelationalDatabaseHealthContributor(connection, hostName, logger)
+        return new RelationalDatabaseHealthContributor(() => (DbConnection)connectorShim.GetConnection(), "MySQL", hostName, logger)
         {
             ServiceName = serviceBindingName
         };

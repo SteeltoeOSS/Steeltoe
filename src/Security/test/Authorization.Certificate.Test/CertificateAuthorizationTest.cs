@@ -5,18 +5,21 @@
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Certificates;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Security.Authorization.Certificate.Test;
 
-public sealed class CertificateAuthorizationTest
+public sealed partial class CertificateAuthorizationTest
 {
     [Fact]
     public async Task CertificateAuth_ForbiddenWithoutCert()
@@ -86,7 +89,7 @@ public sealed class CertificateAuthorizationTest
     public async Task CertificateAuth_AcceptsSameSpace_DiegoCert()
     {
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
-        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", "not empty");
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
         using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
         using var caScope = new EnvironmentVariableScope("CF_SYSTEM_CERT_PATH", Path.Join(LocalCertificateWriter.AppBasePath, "root_certificates"));
@@ -102,7 +105,7 @@ public sealed class CertificateAuthorizationTest
     public async Task CertificateAuth_AcceptsSameOrg_DiegoCert()
     {
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrg}");
-        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", "not empty");
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
         using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
         using var caScope = new EnvironmentVariableScope("CF_SYSTEM_CERT_PATH", Path.Join(LocalCertificateWriter.AppBasePath, "root_certificates"));
@@ -122,7 +125,7 @@ public sealed class CertificateAuthorizationTest
         builder.Configuration.AddAppInstanceIdentityCertificate(Certificates.ServerOrgId, Certificates.ServerSpaceId);
         builder.Services.AddAuthentication().AddCertificate();
 
-        builder.Services.AddAuthorizationBuilder().AddOrgAndSpacePolicies().AddDefaultPolicy("sameOrgAndSpace",
+        builder.Services.AddAuthorizationBuilder().AddOrgAndSpacePoliciesForMutualTls().AddDefaultPolicy("sameOrgAndSpace",
             policyBuilder => policyBuilder.AddRequirements(new SameOrgRequirement(), new SameSpaceRequirement()));
 
         await using WebApplication application = builder.Build();
@@ -146,7 +149,7 @@ public sealed class CertificateAuthorizationTest
         builder.Configuration.AddAppInstanceIdentityCertificate(Certificates.ServerOrgId, Certificates.ServerSpaceId);
         builder.Services.AddAuthentication().AddCertificate();
 
-        builder.Services.AddAuthorizationBuilder().AddOrgAndSpacePolicies()
+        builder.Services.AddAuthorizationBuilder().AddOrgAndSpacePoliciesForMutualTls()
             .AddDefaultPolicy("sameOrgAndSpace", policyBuilder => policyBuilder.RequireSameOrg().RequireSameSpace());
 
         await using WebApplication application = builder.Build();
@@ -163,38 +166,50 @@ public sealed class CertificateAuthorizationTest
     }
 
     [Fact]
-    public async Task CertificateAuth_AllowsCustomHeader()
+    public async Task PostConfigure_InvalidCertificateInSystemCertPath_LogsWarning()
     {
-        var requestUri = new Uri("https://localhost/request");
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
-        builder.Configuration.AddAppInstanceIdentityCertificate(Certificates.ServerOrgId, Certificates.ServerSpaceId);
-        builder.Services.AddAuthentication().AddCertificate();
+        using var sandbox = new Sandbox();
+        string badCertPath = sandbox.CreateFile("bad-cert.crt", "this is not a valid PEM certificate");
 
-        builder.Services.AddAuthorizationBuilder().AddOrgAndSpacePolicies("a-custom-header")
-            .AddDefaultPolicy("sameOrgAndSpace", policyBuilder => policyBuilder.RequireSameOrg().RequireSameSpace());
+        using var loggerProvider = new CapturingLoggerProvider((category, level) =>
+            category == typeof(PostConfigureCertificateAuthenticationOptions).FullName && level == LogLevel.Warning);
 
-        await using WebApplication application = builder.Build();
-        application.UseCertificateAuthorization();
-        application.MapGet("/request", () => "response").RequireAuthorization();
-        await application.StartAsync(TestContext.Current.CancellationToken);
-        var optionsMonitor = application.Services.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
-        X509Certificate2 certificate = optionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName).Certificate!;
-        using HttpClient httpClient = ClientWithCertificate(application.GetTestClient(), certificate, "a-custom-header");
+        // ReSharper disable once AccessToDisposedClosure
+        HostBuilder hostBuilder = GetHostBuilder(builder => builder.ConfigureLogging(logging => logging.AddProvider(loggerProvider)));
 
-        using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
+        using IHost host = hostBuilder.Build();
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        // AddAppInstanceIdentityCertificate sets CF_SYSTEM_CERT_PATH during Build(). Override it here so that
+        // PostConfigure reads the sandbox path when IOptionsMonitor.Get() is called (lazy evaluation).
+        using var certPathScope = new EnvironmentVariableScope("CF_SYSTEM_CERT_PATH", sandbox.FullPath);
+
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<CertificateAuthenticationOptions>>();
+
+        // PostConfigure should not fire for unrelated scheme names.
+        optionsMonitor.Get("some-other-scheme");
+        loggerProvider.GetAll().Should().BeEmpty("PostConfigure should only run for the Certificate scheme");
+
+        // PostConfigure should fire for the certificate auth scheme.
+        optionsMonitor.Get(CertificateAuthenticationDefaults.AuthenticationScheme);
+
+        IList<string> logMessages = loggerProvider.GetAll();
+
+        logMessages.Should().ContainSingle().Which.Should().Be(
+            $"WARN {typeof(PostConfigureCertificateAuthenticationOptions)}: Failed to load system certificate from '{badCertPath}'. The file will be skipped.");
     }
 
-    private HostBuilder GetHostBuilder()
+    private static HostBuilder GetHostBuilder(Action<HostBuilder>? configureHost = null)
     {
         HostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate(Certificates.ServerOrgId, Certificates.ServerSpaceId));
         hostBuilder.ConfigureWebHost(builder => builder.UseStartup<TestServerCertificateStartup>());
+        configureHost?.Invoke(hostBuilder);
         return hostBuilder;
     }
 
-    private static HttpClient ClientWithCertificate(HttpClient httpClient, X509Certificate certificate, string certificateHeaderName = "X-Client-Cert")
+    private static HttpClient ClientWithCertificate(HttpClient httpClient, X509Certificate certificate,
+        string certificateHeaderName = "X-Forwarded-Client-Cert")
     {
         byte[] bytes = certificate.GetRawCertData();
         string b64 = Convert.ToBase64String(bytes);

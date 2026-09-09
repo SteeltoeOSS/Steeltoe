@@ -19,7 +19,7 @@ internal sealed partial class GitInfoContributor : ConfigurationContributor, IIn
     private readonly ILogger _logger;
 
     public GitInfoContributor(ILogger<GitInfoContributor> logger)
-        : this($"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}{GitPropertiesFileName}", logger)
+        : this(ResolveDefaultPropertiesPath(), logger)
     {
     }
 
@@ -31,6 +31,23 @@ internal sealed partial class GitInfoContributor : ConfigurationContributor, IIn
 
         _propertiesPath = propertiesPath;
         _logger = logger;
+    }
+
+    private static string ResolveDefaultPropertiesPath()
+    {
+        return ResolveDefaultPropertiesPath(AppContext.BaseDirectory, Directory.GetCurrentDirectory());
+    }
+
+    internal static string ResolveDefaultPropertiesPath(string baseDirectory, string currentDirectory)
+    {
+        string baseDirectoryPath = Path.Combine(baseDirectory, GitPropertiesFileName);
+
+        if (File.Exists(baseDirectoryPath))
+        {
+            return baseDirectoryPath;
+        }
+
+        return Path.Combine(currentDirectory, GitPropertiesFileName);
     }
 
     public async Task ContributeAsync(InfoBuilder builder, CancellationToken cancellationToken)

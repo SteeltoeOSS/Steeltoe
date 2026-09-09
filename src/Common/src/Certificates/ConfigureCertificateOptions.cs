@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -25,7 +24,7 @@ internal sealed partial class ConfigureCertificateOptions : IConfigureNamedOptio
 
     [GeneratedRegex("-+BEGIN CERTIFICATE-+.+?-+END CERTIFICATE-+", RegexOptions.Singleline | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture,
         RegexMatchTimeoutInMilliseconds)]
-    private static partial Regex CertificateRegex();
+    private static partial Regex PemCertificateRegex();
 
     public void Configure(CertificateOptions options)
     {
@@ -44,20 +43,102 @@ internal sealed partial class ConfigureCertificateOptions : IConfigureNamedOptio
         }
 
         string? privateKeyFilePath = _configuration.GetValue<string>(GetConfigurationKey(name, "PrivateKeyFilePath"));
+        bool isPkcs12 = false;
 
-#pragma warning disable SYSLIB0057 // Type or member is obsolete
-        options.Certificate = privateKeyFilePath != null && File.Exists(privateKeyFilePath)
-            ? X509Certificate2.CreateFromPemFile(certificateFilePath, privateKeyFilePath)
-            : new X509Certificate2(certificateFilePath);
-
-        X509Certificate2[] certificateChain = CertificateRegex().Matches(File.ReadAllText(certificateFilePath))
-            .Select(x => new X509Certificate2(Encoding.ASCII.GetBytes(x.Value))).ToArray();
-#pragma warning restore SYSLIB0057 // Type or member is obsolete
-
-        foreach (X509Certificate2 issuer in certificateChain.Skip(1))
+        if (!string.IsNullOrEmpty(privateKeyFilePath) && File.Exists(privateKeyFilePath))
         {
-            options.IssuerChain.Add(issuer);
+            options.Certificate = LoadCertificateWithKey(certificateFilePath, privateKeyFilePath);
         }
+        else
+        {
+            // isPkcs12 only applies when there is no separate private key file.
+            isPkcs12 = certificateFilePath.EndsWith(".p12", StringComparison.OrdinalIgnoreCase) ||
+                certificateFilePath.EndsWith(".pfx", StringComparison.OrdinalIgnoreCase);
+
+            options.Certificate = LoadCertificate(certificateFilePath, isPkcs12);
+        }
+
+        X509Certificate2Collection issuerChain = isPkcs12
+            ? LoadIssuerChainFromPkcs12(certificateFilePath, options.Certificate.Thumbprint)
+            : LoadIssuerChainFromPem(certificateFilePath);
+
+        foreach (X509Certificate2 certificate in issuerChain)
+        {
+            options.IssuerChain.Add(certificate);
+        }
+    }
+
+    private static X509Certificate2 LoadCertificate(string certificateFilePath, bool isPkcs12)
+    {
+#if NET9_0_OR_GREATER
+        // LoadCertificateFromFile handles PEM and DER but not PKCS#12; .pfx/.p12 need a separate loader.
+        return isPkcs12
+            ? X509CertificateLoader.LoadPkcs12FromFile(certificateFilePath, null)
+            : X509CertificateLoader.LoadCertificateFromFile(certificateFilePath);
+#else
+        // This code path does not need to know if the certificate is PKCS12.
+        _ = isPkcs12;
+        return new X509Certificate2(certificateFilePath);
+#endif
+    }
+
+    private static X509Certificate2 LoadCertificateWithKey(string certificateFilePath, string privateKeyFilePath)
+    {
+        if (Platform.IsWindows)
+        {
+            // CreateFromPemFile loads the private key with EphemeralKeySet. Windows Schannel rejects
+            // ephemeral keys for TLS handshakes, so the certificate must be re-imported with UserKeySet.
+            // See https://learn.microsoft.com/dotnet/core/extensions/sslstream-troubleshooting
+            using var certificate = X509Certificate2.CreateFromPemFile(certificateFilePath, privateKeyFilePath);
+            byte[] pkcs12Bytes = certificate.Export(X509ContentType.Pkcs12);
+#if NET9_0_OR_GREATER
+            return X509CertificateLoader.LoadPkcs12(pkcs12Bytes, null, X509KeyStorageFlags.UserKeySet);
+#else
+            return new X509Certificate2(pkcs12Bytes, (string?)null, X509KeyStorageFlags.UserKeySet);
+#endif
+        }
+
+        return X509Certificate2.CreateFromPemFile(certificateFilePath, privateKeyFilePath);
+    }
+
+    private static X509Certificate2Collection LoadIssuerChainFromPkcs12(string certificateFilePath, string skipThumbprint)
+    {
+        // PKCS#12 does not guarantee certificate ordering, so the leaf cannot be identified by position.
+        // The leaf thumbprint is used to exclude it; all other certificates are chain members.
+        var issuerChain = new X509Certificate2Collection();
+#if NET9_0_OR_GREATER
+        X509Certificate2Collection fullCertificateChain = X509CertificateLoader.LoadPkcs12CollectionFromFile(certificateFilePath, null);
+#else
+        var fullCertificateChain = new X509Certificate2Collection();
+        fullCertificateChain.Import(certificateFilePath);
+#endif
+        foreach (X509Certificate2 certificate in fullCertificateChain)
+        {
+            if (certificate.Thumbprint != skipThumbprint)
+            {
+                issuerChain.Add(certificate);
+            }
+            else
+            {
+                certificate.Dispose();
+            }
+        }
+
+        return issuerChain;
+    }
+
+    private static X509Certificate2Collection LoadIssuerChainFromPem(string certificateFilePath)
+    {
+        // PEM files encode certificates in document order with the leaf first by convention.
+        // Skip(1) relies on that ordering; the remaining matches are chain certificates.
+        var issuerChain = new X509Certificate2Collection();
+
+        foreach (Match match in PemCertificateRegex().Matches(File.ReadAllText(certificateFilePath)).Skip(1))
+        {
+            issuerChain.Add(X509Certificate2.CreateFromPem(match.Value));
+        }
+
+        return issuerChain;
     }
 
     private static string GetConfigurationKey(string? optionName, string propertyName)

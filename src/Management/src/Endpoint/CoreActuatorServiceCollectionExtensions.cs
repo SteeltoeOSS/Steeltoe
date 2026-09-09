@@ -76,10 +76,7 @@ public static class CoreActuatorServiceCollectionExtensions
 
     private static void AddCommonActuatorServices(IServiceCollection services, bool configureMiddleware)
     {
-#pragma warning disable S4792 // Configuring loggers is security-sensitive
         services.AddLogging();
-#pragma warning restore S4792 // Configuring loggers is security-sensitive
-
         services.AddRouting();
         services.TryAddSingleton<ActuatorRouteMapper>();
         services.TryAddSingleton<ActuatorEndpointMapper>();

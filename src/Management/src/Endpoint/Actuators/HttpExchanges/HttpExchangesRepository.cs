@@ -6,7 +6,6 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 
@@ -107,5 +106,5 @@ internal sealed partial class HttpExchangesRepository
     }
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Incoming exchange for {Url}.")]
-    private partial void LogIncomingExchange(MaskedUri url);
+    private partial void LogIncomingExchange(Uri url);
 }
