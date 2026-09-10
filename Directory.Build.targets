@@ -16,6 +16,7 @@
   -->
   <PropertyGroup>
     <ConfigurationSchemaGeneratorEnabled Condition="'$(ConfigurationSchemaGeneratorEnabled)' == ''">true</ConfigurationSchemaGeneratorEnabled>
+    <ConfigurationSchemaGeneratorTargetFramework Condition="'$(ConfigurationSchemaGeneratorTargetFramework)' == ''">net11.0</ConfigurationSchemaGeneratorTargetFramework>
     <ConfigurationSchemaPath>$(MSBuildProjectDirectory)\ConfigurationSchema.json</ConfigurationSchemaPath>
     <ConfigurationSchemaExists Condition="Exists('$(ConfigurationSchemaPath)')">true</ConfigurationSchemaExists>
   </PropertyGroup>
@@ -41,7 +42,7 @@
   Logic for generating and comparing the ConfigurationSchema.json file
   -->
   <PropertyGroup Condition="'$(IsPackable)' == 'true' AND '$(ConfigurationSchemaGeneratorEnabled)' == 'true'">
-    <TargetsTriggeredByCompilation Condition="'$(DesignTimeBuild)' != 'true'">$(TargetsTriggeredByCompilation);GenerateConfigurationSchema</TargetsTriggeredByCompilation>
+    <TargetsTriggeredByCompilation Condition="'$(DesignTimeBuild)' != 'true' AND '$(TargetFramework)' == '$(ConfigurationSchemaGeneratorTargetFramework)'">$(TargetsTriggeredByCompilation);GenerateConfigurationSchema</TargetsTriggeredByCompilation>
 
     <ConfigurationSchemaGeneratorProjectPath>$(MSBuildThisFileDirectory)src\Tools\src\ConfigurationSchemaGenerator\ConfigurationSchemaGenerator.csproj</ConfigurationSchemaGeneratorProjectPath>
     <ConfigurationSchemaGeneratorRspPath>$(IntermediateOutputPath)$(AssemblyName).configschema.rsp</ConfigurationSchemaGeneratorRspPath>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net11.0;net10.0;net9.0;net8.0</TargetFrameworks>
   </PropertyGroup>
@@ -9,8 +9,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EntityFrameworkCoreTestVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EntityFrameworkCoreTestVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EntityFrameworkCoreTestVersion)" />
-    <PackageReference Include="Microting.EntityFrameworkCore.MySql" Condition="'$(TargetFramework)' != 'net9.0' And '$(TargetFramework)' != 'net8.0'" Version="$(EntityFrameworkCoreTestVersion)" />
-    <PackageReference Include="MySql.EntityFrameworkCore" Version="$(EntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="Microting.EntityFrameworkCore.MySql" Condition="'$(TargetFramework)' != 'net9.0' And '$(TargetFramework)' != 'net8.0'" Version="$(EntityFrameworkCorePossiblyDowngradedTestVersion)" />
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="$(EntityFrameworkCorePossiblyDowngradedTestVersion)" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(EntityFrameworkCoreTestVersion)" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Condition="'$(TargetFramework)' == 'net9.0' Or '$(TargetFramework)' == 'net8.0'" Version="$(EntityFrameworkCoreTestVersion)" />
     <PackageReference Include="System.Text.Json" Version="$(FoundationalVersion)" />

@@ -1,0 +1,14 @@
+<!-- .NET 11 Preview -->
+
+<Project>
+  <PropertyGroup>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+
+    <!-- NU1608: Detected package version outside of dependency constraint (not all EF Core providers already offer compatible preview packages) -->
+    <NoWarn>$(NoWarn);NU1608</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net11.0' And '$(MSBuildProjectName)' != 'Steeltoe.Management.GitProperties.Build'">
+    <Using Include="System.Net.Http.Json" />
+  </ItemGroup>
+</Project>
