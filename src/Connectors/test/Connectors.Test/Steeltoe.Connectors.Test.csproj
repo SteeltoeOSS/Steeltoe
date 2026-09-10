@@ -13,7 +13,7 @@
     <PackageReference Include="MySql.Data" Version="$(MySqlDataVersion)" />
     <PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
-    <PackageReference Include="Npgsql" Version="$(EntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="Npgsql" Version="$(EntityFrameworkCorePossiblyDowngradedTestVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientTestVersion)" />
     <PackageReference Include="System.Data.SqlClient" Version="$(SystemSqlClientVersion)" />
     <PackageReference Include="System.Text.Json" Version="$(FoundationalVersion)" />
