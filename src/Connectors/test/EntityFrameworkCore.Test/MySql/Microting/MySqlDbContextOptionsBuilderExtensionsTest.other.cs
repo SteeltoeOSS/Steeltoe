@@ -16,7 +16,11 @@ namespace Steeltoe.Connectors.EntityFrameworkCore.Test.MySql.Microting;
 
 public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 {
+#if NET11_0_OR_GREATER
+    [Fact(Skip = "No version of Microting.EntityFrameworkCore.MySql exists yet that works with EF Core 11.")]
+#else
     [Fact]
+#endif
     public async Task Registers_connection_string_for_default_service_binding()
     {
         var appSettings = new Dictionary<string, string?>
@@ -42,7 +46,11 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
             "Server=localhost;User ID=steeltoe;Password=steeltoe;Database=myDb;Allow User Variables=True;Connection Timeout=15;Use Affected Rows=False;Use Compression=False");
     }
 
+#if NET11_0_OR_GREATER
+    [Fact(Skip = "No version of Microting.EntityFrameworkCore.MySql exists yet that works with EF Core 11.")]
+#else
     [Fact]
+#endif
     public async Task Registers_connection_string_for_named_service_binding()
     {
         var appSettings = new Dictionary<string, string?>
