@@ -39,6 +39,12 @@ jobs:
           9.0.*
           10.0.*
 
+    - name: Setup .NET 11 Preview
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 11.0.*
+        dotnet-quality: preview
+
     - name: Git checkout
       uses: actions/checkout@v6
       with:
@@ -151,6 +157,12 @@ jobs:
       with:
         dotnet-version: 10.0.*
 
+    - name: Setup .NET 11 Preview
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 11.0.*
+        dotnet-quality: preview
+
     - name: Install code signing tool
       run: dotnet tool install --global sign --prerelease
 
@@ -214,6 +226,15 @@ jobs:
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Setup .NET 11 Preview
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 11.0.*
+        dotnet-quality: preview
+        source-url: ${{ vars.AZURE_ARTIFACTS_FEED_URL }}
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Install credential provider for Azure Artifacts
       run: sh -c "$(curl -fsSL https://aka.ms/install-artifacts-credprovider.sh)"
 
@@ -243,6 +264,12 @@ jobs:
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 10.0.*
+
+    - name: Setup .NET 11 Preview
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 11.0.*
+        dotnet-quality: preview
 
     - name: Download signed packages
       uses: actions/download-artifact@v8

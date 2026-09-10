@@ -74,6 +74,12 @@ jobs:
           9.0.*
           10.0.*
 
+    - name: Setup .NET 11 Preview
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 11.0.*
+        dotnet-quality: preview
+
     - name: Turn off dev certificate (macOS only)
       if: ${{ matrix.os == 'macos-latest' }}
       # Setting DOTNET_GENERATE_ASPNET_CERTIFICATE to "false" makes it easier to determine which test failed on macOS when it tried to start a web server with https enabled.
