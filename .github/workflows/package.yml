@@ -149,7 +149,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8.0.*
+        dotnet-version: 10.0.*
 
     - name: Install code signing tool
       run: dotnet tool install --global sign --prerelease
@@ -209,7 +209,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8.0.*
+        dotnet-version: 10.0.*
         source-url: ${{ vars.AZURE_ARTIFACTS_FEED_URL }}
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -242,7 +242,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8.0.*
+        dotnet-version: 10.0.*
 
     - name: Download signed packages
       uses: actions/download-artifact@v8
@@ -312,4 +312,4 @@ jobs:
         git push --set-upstream origin $prBranchName
 
         Write-Output "Opening pull request to merge $prBranchName."
-        gh pr create --head $prBranchName --title 'Bump Steeltoe version' --body $commitMessage
+        gh pr create --head $prBranchName --title 'Bump Steeltoe version from $oldVersionPrefix to $newVersionPrefix' --body $commitMessage
