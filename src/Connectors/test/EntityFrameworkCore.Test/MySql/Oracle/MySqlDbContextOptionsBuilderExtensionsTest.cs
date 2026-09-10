@@ -16,7 +16,11 @@ namespace Steeltoe.Connectors.EntityFrameworkCore.Test.MySql.Oracle;
 
 public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 {
+#if NET11_0_OR_GREATER
+    [Fact(Skip = "No version of MySql.EntityFrameworkCore exists yet that works with EF Core 11.")]
+#else
     [Fact]
+#endif
     public async Task Registers_connection_string_for_default_service_binding()
     {
         var appSettings = new Dictionary<string, string?>
@@ -41,7 +45,11 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         connectionString.Should().Be("server=localhost;database=myDb;user id=steeltoe;password=steeltoe;connectiontimeout=15;Use Compression=false");
     }
 
+#if NET11_0_OR_GREATER
+    [Fact(Skip = "No version of MySql.EntityFrameworkCore exists yet that works with EF Core 11.")]
+#else
     [Fact]
+#endif
     public async Task Registers_connection_string_for_named_service_binding()
     {
         var appSettings = new Dictionary<string, string?>
@@ -65,4 +73,12 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 
         connectionString.Should().Be("server=localhost;database=myDb;user id=steeltoe;password=steeltoe;connectiontimeout=15;Use Compression=false");
     }
+
+#if NET11_0_OR_GREATER
+    [Fact]
+    public void Dummy_test_to_suppress_warning_that_all_tests_were_ignored()
+    {
+        true.Should().BeTrue();
+    }
+#endif
 }
