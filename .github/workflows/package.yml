@@ -312,4 +312,4 @@ jobs:
         git push --set-upstream origin $prBranchName
 
         Write-Output "Opening pull request to merge $prBranchName."
-        gh pr create --head $prBranchName --title 'Bump Steeltoe version' --body $commitMessage
+        gh pr create --head $prBranchName --title 'Bump Steeltoe version from $oldVersionPrefix to $newVersionPrefix' --body $commitMessage
