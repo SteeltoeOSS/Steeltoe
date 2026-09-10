@@ -4,7 +4,7 @@
       No test's outcome depends on which TFM this assembly itself is compiled as, so multi-targeting would just
       triple the suite's runtime for zero extra coverage.
     -->
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
