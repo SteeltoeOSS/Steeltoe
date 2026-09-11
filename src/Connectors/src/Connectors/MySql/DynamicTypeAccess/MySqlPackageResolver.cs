@@ -11,8 +11,8 @@ namespace Steeltoe.Connectors.MySql.DynamicTypeAccess;
 /// </summary>
 internal sealed class MySqlPackageResolver : PackageResolver
 {
-    private static readonly (string AssemblyName, string PackageName) MySqlConnector = new("MySqlConnector", "MySqlConnector");
-    private static readonly (string AssemblyName, string PackageName) Oracle = new("MySql.Data", "MySql.Data");
+    private static readonly (string AssemblyName, string PackageName) MySqlConnector = ("MySqlConnector", "MySqlConnector");
+    private static readonly (string AssemblyName, string PackageName) Oracle = ("MySql.Data", "MySql.Data");
 
     internal static readonly MySqlPackageResolver MySqlConnectorOnly = new(MySqlConnector.AssemblyName, MySqlConnector.PackageName);
     internal static readonly MySqlPackageResolver OracleOnly = new(Oracle.AssemblyName, Oracle.PackageName);
