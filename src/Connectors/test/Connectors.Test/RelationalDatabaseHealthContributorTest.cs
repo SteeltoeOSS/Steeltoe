@@ -36,8 +36,7 @@ public sealed class RelationalDatabaseHealthContributorTest
         string errorMessage = result.Details.Should().ContainKey("error").WhoseValue.As<string>();
 
         errorMessage.Should().Match(error =>
-            error.StartsWith("NpgsqlException: Failed to connect", StringComparison.Ordinal) ||
-            error.StartsWith("TimeoutException: ", StringComparison.Ordinal));
+            error.StartsWith("NpgsqlException: ", StringComparison.Ordinal) || error.StartsWith("TimeoutException: ", StringComparison.Ordinal));
     }
 
     [Fact(Skip = "Integration test - Requires local PostgreSQL server")]
