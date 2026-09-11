@@ -11,8 +11,8 @@ namespace Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 /// </summary>
 internal sealed class SqlServerPackageResolver : PackageResolver
 {
-    private static readonly (string AssemblyName, string PackageName) MicrosoftData = new("Microsoft.Data.SqlClient", "Microsoft.Data.SqlClient");
-    private static readonly (string AssemblyName, string PackageName) SystemData = new("System.Data.SqlClient", "System.Data.SqlClient");
+    private static readonly (string AssemblyName, string PackageName) MicrosoftData = ("Microsoft.Data.SqlClient", "Microsoft.Data.SqlClient");
+    private static readonly (string AssemblyName, string PackageName) SystemData = ("System.Data.SqlClient", "System.Data.SqlClient");
 
     internal static readonly SqlServerPackageResolver MicrosoftDataOnly = new(MicrosoftData.AssemblyName, MicrosoftData.PackageName);
     internal static readonly SqlServerPackageResolver SystemDataOnly = new(SystemData.AssemblyName, SystemData.PackageName);

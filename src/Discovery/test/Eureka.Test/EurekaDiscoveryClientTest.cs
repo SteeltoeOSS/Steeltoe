@@ -491,7 +491,8 @@ public sealed class EurekaDiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        discoveryClient.Applications = new ApplicationInfoCollection([
+        discoveryClient.Applications =
+        [
             new ApplicationInfo("app1", [
                 new InstanceInfo("id11", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
@@ -520,7 +521,7 @@ public sealed class EurekaDiscoveryClientTest
                     Status = InstanceStatus.OutOfService
                 }
             ])
-        ]);
+        ];
 
         IList<IServiceInstance> result = await discoveryClient.GetInstancesAsync("vapp1", TestContext.Current.CancellationToken);
 
@@ -555,7 +556,8 @@ public sealed class EurekaDiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        discoveryClient.Applications = new ApplicationInfoCollection([
+        discoveryClient.Applications =
+        [
             new ApplicationInfo("app1", [
                 new InstanceInfo("id1", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
@@ -584,7 +586,7 @@ public sealed class EurekaDiscoveryClientTest
                     Status = InstanceStatus.OutOfService
                 }
             ])
-        ]);
+        ];
 
         ApplicationInfo? result = discoveryClient.GetApplication("app1");
 
