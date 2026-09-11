@@ -110,7 +110,7 @@ internal sealed partial class AspNetEndpointProvider
             }
             else if (source.GetType().FullName == "Microsoft.AspNetCore.StaticAssets.StaticAssetsEndpointDataSource")
             {
-                // Excluded because it explodes the list of endpoints. Produced from "app.MapStaticAssets()", which is new in .NET 9.
+                // Excluded because it explodes the list of endpoints. Produced from "app.MapStaticAssets()", which was added in .NET 9.
             }
             else
             {

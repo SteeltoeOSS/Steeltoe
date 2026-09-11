@@ -1,6 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net11.0;net10.0</TargetFrameworks>
     <Description>Steeltoe management endpoints, also known as actuators. Includes support for Cloud Foundry integration.</Description>
     <PackageTags>actuator;actuators;management;monitoring;Spring;Boot;dbmigrations;health;heap-dump;loggers;route-mappings;thread-dump;tanzu</PackageTags>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -22,6 +22,7 @@
     <PackageReference Include="Microsoft.Diagnostics.NETCore.Client" Version="$(MicrosoftDiagnosticsNETCoreClientVersion)" />
     <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="$(MicrosoftDiagnosticsTracingTraceEventVersion)" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(SystemIdentityModelVersion)" />
+    <PackageReference Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,10 +46,10 @@
   <!-- Embed dotnet-gcdump.dll in our multi-targeted NuGet package. -->
   <Target Name="IncludeDotNetGCDumpAssemblyInPack" BeforeTargets="_GetPackageFiles">
     <ItemGroup>
+      <_DotNetGCDumpNet11 Include="$(MSBuildProjectDirectory)\bin\$(Configuration)\net11.0\dotnet-gcdump.dll" Pack="True" PackagePath="lib\net11.0" />
       <_DotNetGCDumpNet10 Include="$(MSBuildProjectDirectory)\bin\$(Configuration)\net10.0\dotnet-gcdump.dll" Pack="True" PackagePath="lib\net10.0" />
-      <_DotNetGCDumpNet8 Include="$(MSBuildProjectDirectory)\bin\$(Configuration)\net8.0\dotnet-gcdump.dll" Pack="True" PackagePath="lib\net8.0" />
+      <None Include="@(_DotNetGCDumpNet11)" />
       <None Include="@(_DotNetGCDumpNet10)" />
-      <None Include="@(_DotNetGCDumpNet8)" />
     </ItemGroup>
   </Target>
 </Project>

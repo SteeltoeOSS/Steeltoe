@@ -31,7 +31,7 @@ In addition to the [feature documentation](https://steeltoe.io/api), we have bui
 
 | Steeltoe Branch | .NET Version | Status |
 | --- | --- | --- |
-| main | .NET 8 - 10 | Unstable |
+| main | .NET 10 - 11 | Unstable |
 | 4.x | .NET 8 - 10 | Stable |
 | 3.x | .NET 8 | Stable |
 | 2.x | .NET Framework 4.6.1+ | Out of Support |

@@ -2,11 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Buffers;
 using System.Collections.Specialized;
 using System.Web;
-#if NET9_0_OR_GREATER
-using System.Buffers;
-#endif
 
 namespace Steeltoe.Common.Extensions;
 
@@ -33,11 +31,9 @@ internal readonly record struct MaskedUri
         "cert"
     ];
 
-#if NET9_0_OR_GREATER
     private static readonly SearchValues<string> SensitiveQueryStringParameterNameSearchValues =
         // Vectorized, case-insensitive multi-substring search: much faster than looping over SensitiveQueryStringParameterNameParts per parameter name.
         SearchValues.Create(SensitiveQueryStringParameterNameParts, StringComparison.OrdinalIgnoreCase);
-#endif
 
     private readonly Uri? _value;
 
@@ -116,19 +112,7 @@ internal readonly record struct MaskedUri
 
     private static bool IsSensitiveParameterName(string parameterName)
     {
-#if NET9_0_OR_GREATER
         return parameterName.AsSpan().ContainsAny(SensitiveQueryStringParameterNameSearchValues);
-#else
-        foreach (string namePart in SensitiveQueryStringParameterNameParts)
-        {
-            if (parameterName.Contains(namePart, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-        }
-
-        return false;
-#endif
     }
 
     public static implicit operator MaskedUri(Uri? uri)
