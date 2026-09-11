@@ -69,10 +69,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: |
-          8.0.*
-          9.0.*
-          10.0.*
+        dotnet-version: 10.0.*
 
     - name: Setup .NET 11 Preview
       uses: actions/setup-dotnet@v5

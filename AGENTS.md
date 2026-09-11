@@ -21,9 +21,8 @@ This document provides essential guidelines for working with the Steeltoe codeba
 
 ## Prerequisites
 
-- **.NET SDK 10.0** (latest patch version)
-- **.NET Runtime 8.0** (latest patch version)
-- **.NET Runtime 9.0** (latest patch version)
+- **.NET SDK 11.0** (latest patch version)
+- **ASP.NET Core Runtime 10.0** (latest patch version)
 
 Verify your installation:
 ```bash
@@ -50,7 +49,7 @@ dotnet test src/Steeltoe.All.slnx --configuration Release
 For detailed test procedures including environment-specific filters, test categories, and coverage collection, see [`.github/workflows/Steeltoe.All.yml`](.github/workflows/Steeltoe.All.yml).
 
 **Important context for agents:**
-- Tests run on multiple frameworks: net8.0, net9.0, and net10.0
+- Tests run on multiple frameworks: net11.0 and net10.0
 - Tests use xUnit trait categories: `Integration` (requires Docker services), `MemoryDumps` (generates memory dumps)
 - Platform-specific test skipping uses attributes like `[FactSkippedOnPlatform]` and `[TheorySkippedOnPlatform]` instead of trait categories
 - Integration tests require Docker containers to be running (e.g., Config Server, Eureka Server) and are primarily designed for Linux CI environments

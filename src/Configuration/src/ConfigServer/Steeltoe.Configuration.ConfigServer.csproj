@@ -1,12 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net11.0;net10.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net11.0;net10.0</TargetFrameworks>
     <Description>Configuration provider for Spring Cloud Config Server.</Description>
     <PackageTags>configuration;ConfigurationProvider;spring-cloud;Spring;Cloud;Config;Server;Spring-Cloud-Config-Server;tanzu</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Http\Steeltoe.Common.Http.csproj" />
