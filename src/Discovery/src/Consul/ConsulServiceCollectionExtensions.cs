@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
@@ -44,7 +43,7 @@ public static class ConsulServiceCollectionExtensions
 
     private static bool IsRegistered(IServiceCollection services)
     {
-        return services.Any(descriptor => descriptor.SafeGetImplementationType() == typeof(PostConfigureConsulDiscoveryOptions));
+        return services.Any(descriptor => descriptor.ImplementationType == typeof(PostConfigureConsulDiscoveryOptions));
     }
 
     private static void ConfigureConsulServices(IServiceCollection services)

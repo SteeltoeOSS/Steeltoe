@@ -160,11 +160,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
 
     private static X509Certificate2 CreateCertificateFromRawData(byte[] rawData)
     {
-#if NET9_0_OR_GREATER
         return X509CertificateLoader.LoadCertificate(rawData);
-#else
-        return new X509Certificate2(rawData);
-#endif
     }
 
     private static HostBuilder GetHostBuilderWithCustomHeader(string certificateHeaderName)

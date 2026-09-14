@@ -130,43 +130,6 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
     }
 
     [Fact]
-    public async Task AddClientCertificate_IncompatiblePrimaryHandler_OnDotNet8_LogsReplacementAtDebugLevel()
-    {
-        if (Environment.Version.Major >= 9)
-        {
-            Assert.Skip("On .NET 9+, an explicitly configured incompatible primary handler throws instead of being replaced.");
-        }
-
-        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
-        using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
-        using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
-
-        using var loggerProvider = new CapturingLoggerProvider((category, level) =>
-            category == typeof(CertificateHttpClientBuilderExtensions).FullName && level == LogLevel.Debug);
-
-        // ReSharper disable once AccessToDisposedClosure
-        HostBuilder hostBuilder = GetHostBuilder(builder =>
-        {
-            builder.ConfigureLogging(logging => logging.SetMinimumLevel(LogLevel.Debug).AddProvider(loggerProvider));
-
-            builder.ConfigureServices(services =>
-                services.AddHttpClient("test").AddClientCertificateForMutualTls(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName));
-        });
-
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
-
-        var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
-        using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
-        SocketsHttpHandler socketsHandler = GetInnerHandler(handler).Should().BeOfType<SocketsHttpHandler>().Which;
-        socketsHandler.SslOptions.ClientCertificateContext.Should().NotBeNull();
-
-        IList<string> logMessages = loggerProvider.GetAll();
-
-        logMessages.Should().ContainSingle().Which.Should().Be(
-            $"DBUG {typeof(CertificateHttpClientBuilderExtensions)}: Replacing the PrimaryHandler on HttpClient 'test' with a new SocketsHttpHandler.");
-    }
-
-    [Fact]
     public async Task AddClientCertificateForMutualTls_CertificateNotConfigured_LogsErrorAndSkipsClientCertificate()
     {
         using var loggerProvider = new CapturingLoggerProvider((category, level) =>
@@ -194,13 +157,8 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
     }
 
     [Fact]
-    public async Task AddClientCertificate_IncompatiblePrimaryHandler_OnDotNet9Plus_ThrowsInvalidOperationException()
+    public async Task AddClientCertificate_IncompatiblePrimaryHandler_ThrowsInvalidOperationException()
     {
-        if (Environment.Version.Major < 9)
-        {
-            Assert.Skip("On .NET 8, an incompatible primary handler is replaced with a Debug log rather than throwing.");
-        }
-
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
         using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
@@ -268,11 +226,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
         using X509Certificate2 ephemeral = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddSeconds(-1), DateTimeOffset.UtcNow.AddHours(1));
         byte[] pkcs12Bytes = ephemeral.Export(X509ContentType.Pkcs12);
 
-#if NET9_0_OR_GREATER
         return X509CertificateLoader.LoadPkcs12(pkcs12Bytes, null, X509KeyStorageFlags.UserKeySet);
-#else
-        return new X509Certificate2(pkcs12Bytes, (string?)null, X509KeyStorageFlags.UserKeySet);
-#endif
     }
 
     private static HttpMessageHandler GetInnerHandler(HttpMessageHandler handler)

@@ -671,6 +671,9 @@
                   "type": "integer",
                   "description": "Defines the indentation size being used when 'System.Text.Json.JsonSerializerOptions.WriteIndented' is enabled. Defaults to two."
                 },
+                "InferClosedTypePolymorphism": {
+                  "type": "boolean"
+                },
                 "MaxDepth": {
                   "type": "integer",
                   "description": "Gets or sets the maximum depth allowed when serializing or deserializing JSON, with the default value of 0 indicating a maximum depth of 64."

@@ -6,7 +6,6 @@ using System.Collections.Immutable;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Actuators.Services;
 
@@ -44,12 +43,21 @@ public sealed class ServiceRegistration
 
     private static Type GetEffectiveImplementationType(ServiceDescriptor descriptor)
     {
-        return descriptor.SafeGetImplementationInstance()?.GetType() ?? descriptor.SafeGetImplementationType() ?? descriptor.ServiceType;
+        object? implementationInstance = descriptor.IsKeyedService ? descriptor.KeyedImplementationInstance : descriptor.ImplementationInstance;
+        Type? type = implementationInstance?.GetType();
+
+        if (type != null)
+        {
+            return type;
+        }
+
+        Type? implementationType = GetKeyedOrDefaultImplementationType(descriptor);
+        return implementationType ?? descriptor.ServiceType;
     }
 
     private static ISet<string> GetDependencies(ServiceDescriptor descriptor)
     {
-        Type? implementationType = descriptor.SafeGetImplementationType();
+        Type? implementationType = GetKeyedOrDefaultImplementationType(descriptor);
 
         if (implementationType == null)
         {
@@ -75,6 +83,11 @@ public sealed class ServiceRegistration
         }
 
         return dependencies;
+    }
+
+    private static Type? GetKeyedOrDefaultImplementationType(ServiceDescriptor descriptor)
+    {
+        return descriptor.IsKeyedService ? descriptor.KeyedImplementationType : descriptor.ImplementationType;
     }
 
     private static void IncludeParametersFrom(ConstructorInfo constructor, HashSet<string> dependencies)

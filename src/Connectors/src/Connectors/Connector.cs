@@ -4,13 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using LockPrimitive =
-#if NET10_0_OR_GREATER
-    System.Threading.Lock
-#else
-    object
-#endif
-    ;
 
 namespace Steeltoe.Connectors;
 
@@ -32,7 +25,7 @@ public sealed class Connector<TOptions, TConnection> : IDisposable
     private readonly bool _useSingletonConnection;
     private readonly IOptionsMonitor<TOptions> _optionsMonitor;
 
-    private readonly LockPrimitive _singletonLock = new();
+    private readonly Lock _singletonLock = new();
     private ConnectionWithOptionsSnapshot? _singletonSnapshot;
     private bool _singletonIsDisposed;
 

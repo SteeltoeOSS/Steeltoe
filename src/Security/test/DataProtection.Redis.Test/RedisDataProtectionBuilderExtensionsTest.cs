@@ -12,12 +12,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using NSubstitute;
+using StackExchange.Redis;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Connectors.Redis;
 
 namespace Steeltoe.Security.DataProtection.Redis.Test;
 
-public sealed partial class RedisDataProtectionBuilderExtensionsTest
+public sealed class RedisDataProtectionBuilderExtensionsTest
 {
     [Fact]
     public async Task Stores_session_state_in_Redis()
@@ -95,5 +97,51 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         string responseContent = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseContent.Should().Be("example-value");
+    }
+
+    private static object GetMockedConnectionMultiplexer(string? connectionString)
+    {
+        Dictionary<string, byte[]> innerStore = [];
+
+        var database = Substitute.For<IDatabase>();
+        database.HashGet(Arg.Any<RedisKey>(), Arg.Any<RedisValue[]>(), Arg.Any<CommandFlags>()).Returns(info => GetRedisValues(info.Arg<RedisKey>()));
+
+        database.HashGetAsync(Arg.Any<RedisKey>(), Arg.Any<RedisValue[]>(), Arg.Any<CommandFlags>())
+            .Returns(info => Task.FromResult(GetRedisValues(info.Arg<RedisKey>())));
+
+        database.HashSetAsync(Arg.Any<RedisKey>(), Arg.Any<HashEntry[]>(), Arg.Any<CommandFlags>()).Returns(info =>
+        {
+            var key = info.Arg<RedisKey>();
+            HashEntry[] hashFields = info.Arg<HashEntry[]>();
+
+            byte[] data = hashFields[2].Value!;
+            innerStore[key!] = data;
+            return Task.CompletedTask;
+        });
+
+        var connectionMultiplexer = Substitute.For<IConnectionMultiplexer>();
+        connectionMultiplexer.Configuration.Returns(connectionString);
+        connectionMultiplexer.GetDatabase(Arg.Any<int>(), Arg.Any<object?>()).Returns(database);
+
+        database.Multiplexer.Returns(connectionMultiplexer);
+
+        return connectionMultiplexer;
+
+        RedisValue[] GetRedisValues(RedisKey key)
+        {
+            return innerStore.TryGetValue(key!, out byte[]? data)
+                ?
+                [
+                    default,
+                    default,
+                    data
+                ]
+                :
+                [
+                    default,
+                    default,
+                    default
+                ];
+        }
     }
 }
