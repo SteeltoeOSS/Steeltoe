@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
 using System.Runtime.InteropServices;
@@ -21,7 +22,10 @@ namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 public sealed class HostBuilderTest
 {
     // Prevents HttpClient from timing out while stepping through code.
-    private const string VeryHighConnectionTimeoutForDebuggingTests = "900000"; // 15 minutes
+    private static readonly string VeryHighConnectionTimeoutForDebuggingTests = 15.Minutes().TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
+
+    // Note: These tests intentionally contain sleeps (Task.Delay), because signaling can't be used to indicate something did NOT happen.
+    // Under high load, this may result in tests succeeding when they should have failed, which is still better than randomly failing tests.
 
     [Fact]
     public async Task CanUseDynamicHttpPort()
@@ -115,9 +119,11 @@ public sealed class HostBuilderTest
 
         await using WebApplication app = builder.Build();
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-        await app.StartAsync(TestContext.Current.CancellationToken);
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
 
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(2);
 
         handler.Mock.GetMatchCount(registerMock).Should().BeGreaterThan(1);
     }
@@ -142,7 +148,11 @@ public sealed class HostBuilderTest
 
         await using WebApplication app = builder.Build();
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
+
         await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
         await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
 
@@ -180,7 +190,11 @@ public sealed class HostBuilderTest
 
         await using WebApplication app = builder.Build();
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
+
         await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
         await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
 
@@ -203,7 +217,8 @@ public sealed class HostBuilderTest
             """);
 
         fileProvider.NotifyChanged();
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+
+        await cycleWaiter.WaitForCyclesAsync(2);
 
         handler.Mock.GetMatchCount(registerMock).Should().BeGreaterThan(2);
     }
@@ -240,9 +255,11 @@ public sealed class HostBuilderTest
 
         await using WebApplication app = builder.Build();
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-        await app.StartAsync(TestContext.Current.CancellationToken);
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
 
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(2);
 
         handler.Mock.GetMatchCount(registerMock).Should().BeGreaterThan(1);
 
@@ -290,9 +307,11 @@ public sealed class HostBuilderTest
         await using (WebApplication app = builder.Build())
         {
             app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-            await app.StartAsync(TestContext.Current.CancellationToken);
+            var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+            using var cycleWaiter = new RefreshCycleWaiter(runner);
 
-            await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+            await app.StartAsync(TestContext.Current.CancellationToken);
+            await cycleWaiter.WaitForCyclesAsync(1);
 
             await app.StopAsync(TestContext.Current.CancellationToken);
         }
@@ -322,9 +341,11 @@ public sealed class HostBuilderTest
         await using (WebApplication app = builder.Build())
         {
             app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-            await app.StartAsync(TestContext.Current.CancellationToken);
+            var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+            using var cycleWaiter = new RefreshCycleWaiter(runner);
 
-            await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+            await app.StartAsync(TestContext.Current.CancellationToken);
+            await cycleWaiter.WaitForCyclesAsync(1);
 
             await app.StopAsync(TestContext.Current.CancellationToken);
         }
@@ -354,9 +375,11 @@ public sealed class HostBuilderTest
         await using (WebApplication app = builder.Build())
         {
             app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-            await app.StartAsync(TestContext.Current.CancellationToken);
+            var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+            using var cycleWaiter = new RefreshCycleWaiter(runner);
 
-            await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+            await app.StartAsync(TestContext.Current.CancellationToken);
+            await cycleWaiter.WaitForCyclesAsync(1);
 
             await app.StopAsync(TestContext.Current.CancellationToken);
         }
@@ -399,9 +422,11 @@ public sealed class HostBuilderTest
 
         await using WebApplication app = builder.Build();
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-        await app.StartAsync(TestContext.Current.CancellationToken);
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
 
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(2);
 
         handler.Mock.GetMatchCount(registerMock1).Should().BeGreaterThan(1);
 
@@ -422,7 +447,7 @@ public sealed class HostBuilderTest
             """);
 
         fileProvider.NotifyChanged();
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitUntilAsync(() => handler.Mock.GetMatchCount(registerMock2) > 1);
 
         handler.Mock.GetMatchCount(unregisterMock1).Should().Be(1);
         handler.Mock.GetMatchCount(registerMock2).Should().BeGreaterThan(1);
@@ -464,9 +489,11 @@ public sealed class HostBuilderTest
         await using (WebApplication app = builder.Build())
         {
             app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-            await app.StartAsync(TestContext.Current.CancellationToken);
+            var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+            using var cycleWaiter = new RefreshCycleWaiter(runner);
 
-            await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+            await app.StartAsync(TestContext.Current.CancellationToken);
+            await cycleWaiter.WaitForCyclesAsync(2);
 
             handler.Mock.GetMatchCount(registerMock1).Should().BeGreaterThan(1);
 
@@ -525,22 +552,92 @@ public sealed class HostBuilderTest
 
         await using WebApplication app = builder.Build();
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-        await app.StartAsync(TestContext.Current.CancellationToken);
         var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
 
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(2);
 
         handler.Mock.GetMatchCount(registerMock).Should().BeGreaterThan(1);
         runner.LastRegistrationId.Should().BeNull();
 
         isServerOnline = true;
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitUntilAsync(() => runner.LastRegistrationId != null);
 
         runner.LastRegistrationId.Should().NotBeNull();
 
         isServerOnline = false;
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+        cycleWaiter.Reset();
+        await cycleWaiter.WaitForCyclesAsync(1);
 
         runner.LastRegistrationId.Should().NotBeNull();
+    }
+
+    private sealed class RefreshCycleWaiter : IDisposable
+    {
+        private readonly SpringBootAdminRefreshRunner _runner;
+        private readonly SemaphoreSlim _signal = new(0);
+
+        public RefreshCycleWaiter(SpringBootAdminRefreshRunner runner)
+        {
+            _runner = runner;
+            _runner.CycleCompleted += OnCycleCompleted;
+        }
+
+        public Task WaitForCyclesAsync(int count)
+        {
+            return RunWithTimeoutAsync(async cancellationToken =>
+                {
+                    for (int index = 0; index < count; index++)
+                    {
+                        await _signal.WaitAsync(cancellationToken);
+                    }
+                }, $"Timed out waiting for {count} refresh cycle(s) to complete.");
+        }
+
+        public void Reset()
+        {
+            while (_signal.Wait(0))
+            {
+                // Intentionally left empty.
+            }
+        }
+
+        public Task WaitUntilAsync(Func<bool> condition)
+        {
+            return RunWithTimeoutAsync(async cancellationToken =>
+            {
+                while (!condition())
+                {
+                    await _signal.WaitAsync(cancellationToken);
+                }
+            }, "Timed out waiting for the expected condition to become true.");
+        }
+
+        private static async Task RunWithTimeoutAsync(Func<CancellationToken, Task> asyncAction, string timeoutMessage)
+        {
+            using var timeoutSource = new CancellationTokenSource(30.Seconds());
+            using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken, timeoutSource.Token);
+
+            try
+            {
+                await asyncAction(linkedSource.Token);
+            }
+            catch (OperationCanceledException) when (timeoutSource.IsCancellationRequested && !TestContext.Current.CancellationToken.IsCancellationRequested)
+            {
+                throw new TimeoutException(timeoutMessage);
+            }
+        }
+
+        public void Dispose()
+        {
+            _runner.CycleCompleted -= OnCycleCompleted;
+            _signal.Dispose();
+        }
+
+        private void OnCycleCompleted(object? sender, EventArgs args)
+        {
+            _signal.Release();
+        }
     }
 }
