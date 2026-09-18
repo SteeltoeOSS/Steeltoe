@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
@@ -96,6 +97,7 @@ public sealed class EventPipeThreadDumperTest
 
     private static class NestedType
     {
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void BackgroundThreadCallback(object? argument)
         {
             (CancellationToken cancellationToken, ManualResetEventSlim threadStarted) = ((CancellationToken, ManualResetEventSlim))argument!;
