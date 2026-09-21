@@ -385,8 +385,8 @@ public sealed class DumpPackagingTest(DumpPackagingTest.PackSteeltoeLibrariesOnc
             string appSource)
         {
             string projectFilePath = Path.Combine(appDirectory, $"{testAppName}.csproj");
-            string projectPath = GetAppProjectFile(testLibraryName, targetFramework);
-            await File.WriteAllTextAsync(projectFilePath, projectPath);
+            string projectFileContents = GetAppProjectFile(testLibraryName, targetFramework);
+            await File.WriteAllTextAsync(projectFilePath, projectFileContents);
 
             string sourcePath = Path.Combine(appDirectory, "Program.cs");
             await File.WriteAllTextAsync(sourcePath, appSource);
