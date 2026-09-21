@@ -150,7 +150,8 @@ public sealed class EurekaHealthCheckHandlerTest
 
         app.Services.GetServices<IDiscoveryClient>().Should().ContainSingle();
 
-        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+        var discoveryClient = app.Services.GetRequiredService<EurekaDiscoveryClient>();
+        await WaitForHeartbeatCycleAsync(discoveryClient);
 
         contributor.IsAwaited.Should().BeTrue();
 
@@ -158,6 +159,35 @@ public sealed class EurekaHealthCheckHandlerTest
         infoManager.Instance.Status.Should().Be(InstanceStatus.Up);
 
         handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    private static async Task WaitForHeartbeatCycleAsync(EurekaDiscoveryClient discoveryClient)
+    {
+        using var timeoutSource = new CancellationTokenSource(30.Seconds());
+        using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken, timeoutSource.Token);
+
+        using var signal = new SemaphoreSlim(0);
+
+        discoveryClient.HeartbeatCycleCompleted += OnHeartbeatCycleCompleted;
+
+        try
+        {
+            await signal.WaitAsync(linkedSource.Token);
+        }
+        catch (OperationCanceledException) when (timeoutSource.IsCancellationRequested && !TestContext.Current.CancellationToken.IsCancellationRequested)
+        {
+            throw new TimeoutException("Timed out waiting for a heartbeat cycle to complete.");
+        }
+        finally
+        {
+            discoveryClient.HeartbeatCycleCompleted -= OnHeartbeatCycleCompleted;
+        }
+
+        void OnHeartbeatCycleCompleted(object? sender, EventArgs args)
+        {
+            // ReSharper disable once AccessToDisposedClosure
+            signal.Release();
+        }
     }
 
     private sealed class TestHealthContributor : IHealthContributor
