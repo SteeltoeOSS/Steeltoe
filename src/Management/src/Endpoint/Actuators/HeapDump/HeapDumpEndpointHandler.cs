@@ -31,7 +31,7 @@ internal sealed partial class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
     {
         LogInvokingHeapDumper();
 
-        using IDisposable dumpLock = await ProcessDumpLock.EnterAsync(cancellationToken);
+        using IDisposable dumpLock = await ProcessDumpLock.EnterAsync(_logger, cancellationToken);
         return _heapDumper.DumpHeapToFile(cancellationToken);
     }
 

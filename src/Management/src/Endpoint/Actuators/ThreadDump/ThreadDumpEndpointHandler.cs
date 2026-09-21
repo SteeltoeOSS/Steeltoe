@@ -31,7 +31,7 @@ internal sealed partial class ThreadDumpEndpointHandler : IThreadDumpEndpointHan
     {
         LogInvokingThreadDumper();
 
-        using IDisposable dumpLock = await ProcessDumpLock.EnterAsync(cancellationToken);
+        using IDisposable dumpLock = await ProcessDumpLock.EnterAsync(_logger, cancellationToken);
         return await _threadDumper.DumpThreadsAsync(cancellationToken);
     }
 
