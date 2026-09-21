@@ -27,11 +27,12 @@ internal sealed partial class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
         _logger = loggerFactory.CreateLogger<HeapDumpEndpointHandler>();
     }
 
-    public Task<string> InvokeAsync(object? argument, CancellationToken cancellationToken)
+    public async Task<string> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
         LogInvokingHeapDumper();
-        string filePath = _heapDumper.DumpHeapToFile(cancellationToken);
-        return Task.FromResult(filePath);
+
+        using IDisposable dumpLock = await ProcessDumpLock.EnterAsync(cancellationToken);
+        return _heapDumper.DumpHeapToFile(cancellationToken);
     }
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Invoking the heap dumper.")]

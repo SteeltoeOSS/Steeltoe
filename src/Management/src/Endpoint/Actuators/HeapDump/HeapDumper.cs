@@ -2,12 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using Graphs;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.GCDump;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using LockPrimitive =
+#if NET10_0_OR_GREATER
+    System.Threading.Lock
+#else
+    object
+#endif
+    ;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
@@ -100,8 +109,19 @@ internal sealed partial class HeapDumper : IHeapDumper
             var heapInfo = new DotNetHeapInfo();
             var memoryGraph = new MemoryGraph(50_000);
 
+            ResetEventPipeDotNetHeapDumperStaticState();
+
             if (EventPipeDotNetHeapDumper.DumpFromEventPipe(cancellationToken, processId, null, memoryGraph, logWriter, timeoutInSeconds, heapInfo))
             {
+                // Workaround for https://github.com/dotnet/diagnostics/issues/6048: DumpFromEventPipe can return true
+                // without the memory graph having a root, when an exception was thrown (and swallowed) after the GC
+                // stop event was observed but before the graph was fully built. Calling AllowReading() in that case
+                // throws "RootIndex not set.", so treat it as a failed dump instead.
+                if (memoryGraph.RootIndex == NodeIndex.Invalid)
+                {
+                    return false;
+                }
+
                 memoryGraph.AllowReading();
                 GCHeapDump.WriteMemoryGraph(memoryGraph, outputPath, "dotnet-gcdump");
                 return true;
@@ -109,6 +129,28 @@ internal sealed partial class HeapDumper : IHeapDumper
 
             return false;
         }, dumpDescription, cancellationToken);
+    }
+
+    private static void ResetEventPipeDotNetHeapDumperStaticState()
+    {
+        // Workaround for https://github.com/dotnet/diagnostics/issues/6048: EventPipeDotNetHeapDumper tracks
+        // completion using "internal static volatile" fields (eventPipeDataPresent, dumpComplete) that are never
+        // reset between calls. A dump that follows a successful one can then observe stale completion state left
+        // behind by the previous call and return a false "success". We don't control that assembly, so reset the
+        // fields via reflection before every call. This is temporary: remove once diagnostics ships a fix that uses
+        // invocation-local state instead. Safe to skip silently if the fields are renamed or removed upstream,
+        // since that only means the original (pre-workaround) risk of this specific issue remains.
+        Type dumperType = typeof(EventPipeDotNetHeapDumper);
+
+        foreach (string fieldName in new[]
+        {
+            "eventPipeDataPresent",
+            "dumpComplete"
+        })
+        {
+            FieldInfo? field = dumperType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static);
+            field?.SetValue(null, false);
+        }
     }
 
     private static void CreateHeapDump(HeapDumpType? heapDumpType, int processId, string outputPath)
@@ -133,25 +175,24 @@ internal sealed partial class HeapDumper : IHeapDumper
 
     internal void CaptureLogOutput(Func<TextWriter, bool> action, string dumpDescription, CancellationToken cancellationToken)
     {
-        using var logStream = new MemoryStream();
+        // EventPipeDotNetHeapDumper writes to the supplied writer from multiple threads (the EventPipe reader task
+        // and the session stop task) that can be active at the same time during session shutdown. A plain
+        // StreamWriter is not thread-safe for that, which caused the intermittent crash described in
+        // https://github.com/dotnet/diagnostics/issues/6048.
+        var logWriter = new ConcurrentTextWriter();
         Exception? error = null;
         bool succeeded = false;
 
-        using (TextWriter logWriter = new StreamWriter(logStream, leaveOpen: true))
+        try
         {
-            try
-            {
-                succeeded = action(logWriter);
-            }
-            catch (Exception exception)
-            {
-                error = exception;
-            }
+            succeeded = action(logWriter);
+        }
+        catch (Exception exception)
+        {
+            error = exception;
         }
 
-        logStream.Seek(0, SeekOrigin.Begin);
-        using var logReader = new StreamReader(logStream);
-        string logOutput = logReader.ReadToEnd();
+        string logOutput = logWriter.ToString();
 
         if (error != null || !succeeded)
         {
@@ -188,4 +229,58 @@ internal sealed partial class HeapDumper : IHeapDumper
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Captured log from {DumpType}:{LineBreak}{DumpLog}")]
     private partial void LogDumpLogCaptured(string dumpType, string lineBreak, string dumpLog);
+
+    /// <summary>
+    /// A <see cref="TextWriter" /> that can safely receive concurrent writes from multiple threads.
+    /// </summary>
+    private sealed class ConcurrentTextWriter : TextWriter
+    {
+        private readonly LockPrimitive _gate = new();
+        private readonly StringBuilder _buffer = new();
+
+        public override Encoding Encoding => Encoding.Unicode;
+
+        public override void Write(char value)
+        {
+            lock (_gate)
+            {
+                _buffer.Append(value);
+            }
+        }
+
+        public override void Write(string? value)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                lock (_gate)
+                {
+                    _buffer.Append(value);
+                }
+            }
+        }
+
+        public override void WriteLine(string? value)
+        {
+            lock (_gate)
+            {
+                _buffer.Append(value).Append(CoreNewLine);
+            }
+        }
+
+        public override void WriteLine()
+        {
+            lock (_gate)
+            {
+                _buffer.Append(CoreNewLine);
+            }
+        }
+
+        public override string ToString()
+        {
+            lock (_gate)
+            {
+                return _buffer.ToString();
+            }
+        }
+    }
 }
