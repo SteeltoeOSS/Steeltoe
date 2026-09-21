@@ -32,7 +32,7 @@ public sealed class DumpPackagingTest(DumpPackagingTest.PackSteeltoeLibrariesOnc
     [MemberData(nameof(TestTargetFrameworks))]
     public async Task Can_take_gcdump_from_packaged_Steeltoe_library(string targetFramework)
     {
-        Assert.SkipWhen(!IsHighestTestHostFramework(), "Running this test only on the latest .NET SDK is sufficient.");
+        SkipTestIfNotRunningOnHighestHostFramework();
 
         var app = await DumpVerificationApp.CreateForGCDumpAsync(fixture, targetFramework);
 
@@ -46,7 +46,7 @@ public sealed class DumpPackagingTest(DumpPackagingTest.PackSteeltoeLibrariesOnc
     [MemberData(nameof(TestTargetFrameworks))]
     public async Task Can_take_minidump_from_packaged_Steeltoe_library(string targetFramework)
     {
-        Assert.SkipWhen(!IsHighestTestHostFramework(), "Running this test only on the latest .NET SDK is sufficient.");
+        SkipTestIfNotRunningOnHighestHostFramework();
 
         var app = await DumpVerificationApp.CreateForMinidumpAsync(fixture, targetFramework);
 
@@ -60,7 +60,7 @@ public sealed class DumpPackagingTest(DumpPackagingTest.PackSteeltoeLibrariesOnc
     [MemberData(nameof(TestTargetFrameworks))]
     public async Task Can_take_thread_dump_from_packaged_Steeltoe_library(string targetFramework)
     {
-        Assert.SkipWhen(!IsHighestTestHostFramework(), "Running this test only on the latest .NET SDK is sufficient.");
+        SkipTestIfNotRunningOnHighestHostFramework();
 
         var app = await DumpVerificationApp.CreateForThreadDumpAsync(fixture, targetFramework);
 
@@ -102,14 +102,32 @@ public sealed class DumpPackagingTest(DumpPackagingTest.PackSteeltoeLibrariesOnc
         return targetFrameworks;
     }
 
-    private static bool IsHighestTestHostFramework()
+    private static void SkipTestIfNotRunningOnHighestHostFramework()
     {
-        // The InlineData entries already cover every supported TFM, so running tests on all target frameworks would just repeat identical work.
+        string? expectedTargetFramework = GetExpectedTestHostFramework();
 
+        if (expectedTargetFramework != null)
+        {
+            // The InlineData entries already cover every supported TFM, so running tests on all target frameworks would just repeat identical work.
+            Assert.SkipWhen(true, $"Run this test on the '{expectedTargetFramework}' target framework instead.");
+        }
+    }
+
+    private static string? GetExpectedTestHostFramework()
+    {
         Version hostVersion = typeof(object).Assembly.GetName().Version!;
-        int highestMajorVersion = ResolveTestTargetFrameworks().Max(targetFramework => Version.Parse(targetFramework["net".Length..]).Major);
+        Version highestTargetFrameworkVersion = GetHighestTestTargetFrameworkVersion();
 
-        return hostVersion.Major == highestMajorVersion;
+        return hostVersion.Major == highestTargetFrameworkVersion.Major && hostVersion.Minor == highestTargetFrameworkVersion.Minor
+            ? null
+            // The InlineData entries already cover every supported TFM, so running tests on all target frameworks would just repeat identical work.
+            : $"net{hostVersion.Major}.{hostVersion.Minor}";
+    }
+
+    private static Version GetHighestTestTargetFrameworkVersion()
+    {
+        string[] targetFrameworks = ResolveTestTargetFrameworks();
+        return targetFrameworks.Max(targetFramework => Version.Parse(targetFramework["net".Length..]))!;
     }
 
     /// <summary>
@@ -126,7 +144,7 @@ public sealed class DumpPackagingTest(DumpPackagingTest.PackSteeltoeLibrariesOnc
 
         public async ValueTask InitializeAsync()
         {
-            if (!IsHighestTestHostFramework())
+            if (GetExpectedTestHostFramework() != null)
             {
                 return;
             }
