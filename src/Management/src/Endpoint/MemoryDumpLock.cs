@@ -6,26 +6,32 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint;
 
-internal static partial class ProcessDumpLock
+/// <summary>
+/// Ensures that heap, GC and thread dumps don't run concurrently, because that may lock up the entire process.
+/// </summary>
+internal static partial class MemoryDumpLock
 {
     private static readonly SemaphoreSlim Semaphore = new(1, 1);
 
-    public static async Task<IDisposable> EnterAsync(ILogger logger, CancellationToken cancellationToken)
+    public static IDisposable? TryEnter(ILogger logger)
     {
-        LogLockEntering(logger);
-        await Semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
-        LogLockEntered(logger);
+        if (Semaphore.Wait(TimeSpan.Zero))
+        {
+            LogLockEntered(logger);
+            return new ReleaseOnDispose(logger);
+        }
 
-        return new ReleaseOnDispose(logger);
+        LogLockBusy(logger);
+        return null;
     }
 
-    [LoggerMessage(LogLevel.Trace, "Obtaining exclusive lock")]
-    private static partial void LogLockEntering(ILogger logger);
-
-    [LoggerMessage(LogLevel.Trace, "Exclusive lock obtained")]
+    [LoggerMessage(LogLevel.Trace, "Exclusive lock obtained.")]
     private static partial void LogLockEntered(ILogger logger);
 
-    [LoggerMessage(LogLevel.Trace, "Exclusive lock released")]
+    [LoggerMessage(LogLevel.Trace, "Exclusive lock rejected.")]
+    private static partial void LogLockBusy(ILogger logger);
+
+    [LoggerMessage(LogLevel.Trace, "Exclusive lock released.")]
     private static partial void LogLockReleased(ILogger logger);
 
     private sealed class ReleaseOnDispose(ILogger logger) : IDisposable

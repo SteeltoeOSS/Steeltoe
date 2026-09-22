@@ -4,19 +4,11 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using Graphs;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.GCDump;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using LockPrimitive =
-#if NET10_0_OR_GREATER
-    System.Threading.Lock
-#else
-    object
-#endif
-    ;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
@@ -128,7 +120,7 @@ internal sealed partial class HeapDumper : IHeapDumper
             }
 
             return false;
-        }, dumpDescription, cancellationToken);
+        }, dumpDescription);
     }
 
     private static void ResetEventPipeDotNetHeapDumperStaticState()
@@ -173,11 +165,11 @@ internal sealed partial class HeapDumper : IHeapDumper
         client.WriteDump(dumpType, outputPath, flags);
     }
 
-    internal void CaptureLogOutput(Func<TextWriter, bool> action, string dumpDescription, CancellationToken cancellationToken)
+    internal void CaptureLogOutput(Func<TextWriter, bool> action, string dumpDescription)
     {
         // EventPipeDotNetHeapDumper writes to the supplied writer from multiple threads (the EventPipe reader task
         // and the session stop task) that can be active at the same time during session shutdown. A plain
-        // StreamWriter is not thread-safe for that, which caused the intermittent crash described in
+        // TextWriter is not thread-safe for that, which caused the intermittent crash described in
         // https://github.com/dotnet/diagnostics/issues/6048.
         var logWriter = new ConcurrentTextWriter();
         Exception? error = null;
@@ -196,7 +188,6 @@ internal sealed partial class HeapDumper : IHeapDumper
 
         if (error != null || !succeeded)
         {
-            cancellationToken.ThrowIfCancellationRequested();
             throw new InvalidOperationException($"Failed to create a {dumpDescription}. Captured log:{System.Environment.NewLine}{logOutput}", error);
         }
 
@@ -229,58 +220,4 @@ internal sealed partial class HeapDumper : IHeapDumper
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Captured log from {DumpType}:{LineBreak}{DumpLog}")]
     private partial void LogDumpLogCaptured(string dumpType, string lineBreak, string dumpLog);
-
-    /// <summary>
-    /// A <see cref="TextWriter" /> that can safely receive concurrent writes from multiple threads.
-    /// </summary>
-    private sealed class ConcurrentTextWriter : TextWriter
-    {
-        private readonly LockPrimitive _gate = new();
-        private readonly StringBuilder _buffer = new();
-
-        public override Encoding Encoding => Encoding.Unicode;
-
-        public override void Write(char value)
-        {
-            lock (_gate)
-            {
-                _buffer.Append(value);
-            }
-        }
-
-        public override void Write(string? value)
-        {
-            if (!string.IsNullOrEmpty(value))
-            {
-                lock (_gate)
-                {
-                    _buffer.Append(value);
-                }
-            }
-        }
-
-        public override void WriteLine(string? value)
-        {
-            lock (_gate)
-            {
-                _buffer.Append(value).Append(CoreNewLine);
-            }
-        }
-
-        public override void WriteLine()
-        {
-            lock (_gate)
-            {
-                _buffer.Append(CoreNewLine);
-            }
-        }
-
-        public override string ToString()
-        {
-            lock (_gate)
-            {
-                return _buffer.ToString();
-            }
-        }
-    }
 }

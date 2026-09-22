@@ -83,55 +83,34 @@ internal sealed partial class EventPipeThreadDumper : IThreadDumper
 
                 LogTotalMemory(memoryInBytes);
             }
-        }, cancellationToken);
+        });
     }
 
-    internal async Task<TResult> CaptureLogOutputAsync<TResult>(Func<TextWriter, Task<TResult>> action, CancellationToken cancellationToken)
+    internal async Task<TResult> CaptureLogOutputAsync<TResult>(Func<TextWriter, Task<TResult>> action)
     {
         bool isTraceLogEnabled = _logger.IsEnabled(LogLevel.Trace);
-        using var logStream = new MemoryStream();
-        Exception? error = null;
-        TResult? result = default;
+        TextWriter logWriter = isTraceLogEnabled ? new ConcurrentTextWriter() : TextWriter.Null;
+        TResult? result;
 
-        await using (TextWriter logWriter = isTraceLogEnabled ? new StreamWriter(logStream, leaveOpen: true) : TextWriter.Null)
+        try
         {
-            try
-            {
-                result = await action(logWriter);
-                await logWriter.FlushAsync(cancellationToken);
-            }
-            catch (Exception exception)
-            {
-                error = exception;
-            }
+            result = await action(logWriter);
         }
-
-        string? logOutput = null;
-
-        if (isTraceLogEnabled)
+        catch (Exception exception)
         {
-            logStream.Seek(0, SeekOrigin.Begin);
-            using var logReader = new StreamReader(logStream);
-            logOutput = await logReader.ReadToEndAsync(cancellationToken);
-        }
-
-        if (error != null)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
             string message = isTraceLogEnabled
-                ? $"Failed to create a thread dump. Captured log:{System.Environment.NewLine}{logOutput}"
+                ? $"Failed to create a thread dump. Captured log:{System.Environment.NewLine}{logWriter}"
                 : "Failed to create a thread dump.";
 
-            throw new InvalidOperationException(message, error);
+            throw new InvalidOperationException(message, exception);
         }
 
         if (isTraceLogEnabled)
         {
-            LogDumpLogCaptured(System.Environment.NewLine, logOutput);
+            LogDumpLogCaptured(System.Environment.NewLine, logWriter);
         }
 
-        return result!;
+        return result;
     }
 
     private async Task<List<ThreadInfo>> GetThreadsFromEventPipeSessionAsync(EventPipeSession session, TextWriter logWriter,
@@ -374,8 +353,8 @@ internal sealed partial class EventPipeThreadDumper : IThreadDumper
     [LoggerMessage(Level = LogLevel.Debug, Message = "Total memory is {MemoryInBytes} bytes.")]
     private partial void LogTotalMemory(long memoryInBytes);
 
-    [LoggerMessage(Level = LogLevel.Trace, Message = "Captured log from thread dump:{LineBreak}{DumpLog}")]
-    private partial void LogDumpLogCaptured(string lineBreak, string? dumpLog);
+    [LoggerMessage(Level = LogLevel.Trace, SkipEnabledCheck = true, Message = "Captured log from thread dump:{LineBreak}{DumpLog}")]
+    private partial void LogDumpLogCaptured(string lineBreak, TextWriter dumpLog);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Finished thread walk, found {Count} results.")]
     private partial void LogThreadWalkFinished(int count);

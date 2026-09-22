@@ -88,7 +88,7 @@ public sealed class EventPipeThreadDumperTest
         {
             writer.WriteLine("Failed to perform this operation.");
             throw new ArgumentException("Simulated failure.");
-        }, TestContext.Current.CancellationToken);
+        });
 
         await action.Should().ThrowExactlyAsync<InvalidOperationException>()
             .WithMessage($"Failed to create a thread dump. Captured log:{System.Environment.NewLine}Failed to perform this operation.")

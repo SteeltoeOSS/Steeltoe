@@ -27,12 +27,18 @@ internal sealed partial class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
         _logger = loggerFactory.CreateLogger<HeapDumpEndpointHandler>();
     }
 
-    public async Task<string> InvokeAsync(object? argument, CancellationToken cancellationToken)
+    public Task<string> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
         LogInvokingHeapDumper();
+        using IDisposable? dumpLock = MemoryDumpLock.TryEnter(_logger);
 
-        using IDisposable dumpLock = await ProcessDumpLock.EnterAsync(_logger, cancellationToken);
-        return _heapDumper.DumpHeapToFile(cancellationToken);
+        if (dumpLock == null)
+        {
+            throw new TooManyActuatorRequestsException("Another memory dump is currently in progress, please try again later.");
+        }
+
+        string filePath = _heapDumper.DumpHeapToFile(cancellationToken);
+        return Task.FromResult(filePath);
     }
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Invoking the heap dumper.")]
