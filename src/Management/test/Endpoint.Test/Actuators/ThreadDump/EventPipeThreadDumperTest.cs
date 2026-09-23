@@ -31,35 +31,35 @@ public sealed class EventPipeThreadDumperTest
         using var loggerFactory = new LoggerFactory([loggerProvider]);
         ILogger<EventPipeThreadDumper> logger = loggerFactory.CreateLogger<EventPipeThreadDumper>();
 
-#if NET8_0
-        // Use a longer collection window on .NET 8 to compensate for the Sleep(0) yield.
-        var optionsMonitor = TestOptionsMonitor.Create(new ThreadDumpEndpointOptions
-        {
-            Duration = 100
-        });
-#else
         var optionsMonitor = new TestOptionsMonitor<ThreadDumpEndpointOptions>();
-#endif
-
         var dumper = new EventPipeThreadDumper(optionsMonitor, logger);
 
-        IList<ThreadInfo> threads = await dumper.DumpThreadsAsync(TestContext.Current.CancellationToken);
+        StackTraceElement? callbackFrame = null;
 
-        StackTraceElement? backgroundThreadFrame = threads.SelectMany(thread => thread.StackTrace)
-            .FirstOrDefault(frame => frame.MethodName == "BackgroundThreadCallback(class System.Object)");
-
-        if (backgroundThreadFrame == null)
+        // A sampled instruction pointer occasionally lands inside a tiny CLR-injected sliver of the method (such as its GC-poll/safe-point check)
+        // that has no direct IL-to-line mapping. The resolved source location then reports the correct file but line/column 0, instead of null,
+        // because the lookup found the enclosing method but no matching line. Each dump takes an entirely new first sample, so a few retries make
+        // this reliable without weakening what is actually being verified.
+        for (int attempt = 0; attempt < 5 && callbackFrame?.LineNumber is null or 0; attempt++)
         {
-            string logs = loggerProvider.GetAsText();
-            throw new InvalidOperationException($"Failed to find expected stack frame. Captured log:{System.Environment.NewLine}{logs}");
+            IList<ThreadInfo> results = await dumper.DumpThreadsAsync(TestContext.Current.CancellationToken);
+
+            callbackFrame = results.SelectMany(thread => thread.StackTrace)
+                .FirstOrDefault(frame => frame.MethodName == "BackgroundThreadCallback(class System.Object)");
         }
 
-        backgroundThreadFrame.IsNativeMethod.Should().BeFalse();
-        backgroundThreadFrame.ModuleName.Should().Be(GetType().Assembly.GetName().Name);
-        backgroundThreadFrame.ClassName.Should().Be(typeof(NestedType).FullName);
-        backgroundThreadFrame.FileName.Should().EndWith($"{nameof(EventPipeThreadDumperTest)}.cs");
-        backgroundThreadFrame.LineNumber.Should().BePositive();
-        backgroundThreadFrame.ColumnNumber.Should().BePositive();
+        if (callbackFrame == null)
+        {
+            string log = loggerProvider.GetAsText();
+            throw new InvalidOperationException($"Failed to find expected stack frame. Captured log:{System.Environment.NewLine}{log}");
+        }
+
+        callbackFrame.IsNativeMethod.Should().BeFalse();
+        callbackFrame.ModuleName.Should().Be(GetType().Assembly.GetName().Name);
+        callbackFrame.ClassName.Should().Be(typeof(NestedType).FullName);
+        callbackFrame.FileName.Should().EndWith($"{nameof(EventPipeThreadDumperTest)}.cs");
+        callbackFrame.LineNumber.Should().BePositive();
+        callbackFrame.ColumnNumber.Should().BePositive();
 
         await backgroundCancellationSource.CancelAsync();
         backgroundThread.Join();
@@ -103,16 +103,24 @@ public sealed class EventPipeThreadDumperTest
             (CancellationToken cancellationToken, ManualResetEventSlim threadStarted) = ((CancellationToken, ManualResetEventSlim))argument!;
 
             threadStarted.Set();
+            long counter = 0;
 
+            // Only actively-running threads can be shown in the thread dump, so we need to ensure the CPU is in use. This must stay in pure managed code.
             while (!cancellationToken.IsCancellationRequested)
             {
-                // Only actively-running threads are shown in the thread dump, so we need to make sure the CPU is in use.
-                Thread.SpinWait(250);
+                counter++;
 #if NET8_0
-                // Yield to allow the EventPipe rundown thread to make progress on .NET 8.
-                Thread.Sleep(0);
+                if (counter % 100_000 == 0)
+                {
+                    // Periodically yield to allow the EventPipe rundown thread to make progress on .NET 8, otherwise this thread can starve it of CPU time
+                    // on constrained/busy machines (such as CI runners), making the dump take tens of seconds instead of a few hundred milliseconds.
+                    // This is in native code, but yielding only occasionally (instead of every iteration) keeps the odds of a sample landing inside it low.
+                    Thread.Sleep(0);
+                }
 #endif
             }
+
+            _ = counter;
         }
     }
 }

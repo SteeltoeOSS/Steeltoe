@@ -290,9 +290,12 @@ internal sealed partial class EventPipeThreadDumper : IThreadDumper
         while (!frameName.StartsWith(ThreadIdTemplate, StringComparison.Ordinal))
         {
             SourceLocation? sourceLocation = stackSource.GetSourceLine(frameIndex, symbolReader);
-            StackTraceElement stackElement = GetStackTraceElement(frameName, sourceLocation);
+            StackTraceElement? stackElement = GetStackTraceElement(frameName, sourceLocation);
 
-            yield return stackElement;
+            if (stackElement != null)
+            {
+                yield return stackElement;
+            }
 
             stackIndex = stackSource.GetCallerIndex(stackIndex);
             frameIndex = stackSource.GetFrameIndex(stackIndex);
@@ -300,14 +303,24 @@ internal sealed partial class EventPipeThreadDumper : IThreadDumper
         }
     }
 
-    private static StackTraceElement GetStackTraceElement(string frameName, SourceLocation? sourceLocation)
+    private static StackTraceElement? GetStackTraceElement(string frameName, SourceLocation? sourceLocation)
     {
         if (string.IsNullOrEmpty(frameName))
         {
             return UnknownStackTraceElement;
         }
 
-        if (frameName.Contains("UNMANAGED_CODE_TIME", StringComparison.OrdinalIgnoreCase) || frameName.Contains("CPU_TIME", StringComparison.OrdinalIgnoreCase))
+        // The leaf frame of every sample taken by the SampleProfiler is always a synthetic bookkeeping frame:
+        // either CPU_TIME (the thread was actually executing managed/JIT-compiled code) or UNMANAGED_CODE_TIME
+        // (the thread was executing unmanaged code, such as being blocked in a native wait). Only the latter
+        // reflects a genuinely native thread, so CPU_TIME must not be turned into a fake "native" frame: it is
+        // dropped here, leaving the real managed frame that follows it as the top of the stack.
+        if (frameName.Contains("CPU_TIME", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        if (frameName.Contains("UNMANAGED_CODE_TIME", StringComparison.OrdinalIgnoreCase))
         {
             return NativeStackTraceElement;
         }
