@@ -88,8 +88,7 @@ internal sealed partial class EventPipeThreadDumper : IThreadDumper
 
     internal async Task<TResult> CaptureLogOutputAsync<TResult>(Func<TextWriter, Task<TResult>> action)
     {
-        bool isTraceLogEnabled = _logger.IsEnabled(LogLevel.Trace);
-        TextWriter logWriter = isTraceLogEnabled ? new ConcurrentTextWriter() : TextWriter.Null;
+        var logWriter = new ConcurrentTextWriter();
         TResult? result;
 
         try
@@ -98,17 +97,11 @@ internal sealed partial class EventPipeThreadDumper : IThreadDumper
         }
         catch (Exception exception)
         {
-            string message = isTraceLogEnabled
-                ? $"Failed to create a thread dump. Captured log:{System.Environment.NewLine}{logWriter}"
-                : "Failed to create a thread dump.";
-
+            string message = $"Failed to create a thread dump. Captured log:{System.Environment.NewLine}{logWriter}";
             throw new InvalidOperationException(message, exception);
         }
 
-        if (isTraceLogEnabled)
-        {
-            LogDumpLogCaptured(System.Environment.NewLine, logWriter);
-        }
+        LogDumpLogCaptured(System.Environment.NewLine, logWriter);
 
         return result;
     }
@@ -366,8 +359,8 @@ internal sealed partial class EventPipeThreadDumper : IThreadDumper
     [LoggerMessage(Level = LogLevel.Debug, Message = "Total memory is {MemoryInBytes} bytes.")]
     private partial void LogTotalMemory(long memoryInBytes);
 
-    [LoggerMessage(Level = LogLevel.Trace, SkipEnabledCheck = true, Message = "Captured log from thread dump:{LineBreak}{DumpLog}")]
-    private partial void LogDumpLogCaptured(string lineBreak, TextWriter dumpLog);
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Captured log from thread dump:{LineBreak}{DumpLog}")]
+    private partial void LogDumpLogCaptured(string lineBreak, ConcurrentTextWriter dumpLog);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Finished thread walk, found {Count} results.")]
     private partial void LogThreadWalkFinished(int count);

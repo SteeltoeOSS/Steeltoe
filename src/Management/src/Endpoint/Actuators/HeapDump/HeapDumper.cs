@@ -167,10 +167,6 @@ internal sealed partial class HeapDumper : IHeapDumper
 
     internal void CaptureLogOutput(Func<TextWriter, bool> action, string dumpDescription)
     {
-        // EventPipeDotNetHeapDumper writes to the supplied writer from multiple threads (the EventPipe reader task
-        // and the session stop task) that can be active at the same time during session shutdown. A plain
-        // TextWriter is not thread-safe for that, which caused the intermittent crash described in
-        // https://github.com/dotnet/diagnostics/issues/6048.
         var logWriter = new ConcurrentTextWriter();
         Exception? error = null;
         bool succeeded = false;
@@ -184,14 +180,13 @@ internal sealed partial class HeapDumper : IHeapDumper
             error = exception;
         }
 
-        string logOutput = logWriter.ToString();
-
         if (error != null || !succeeded)
         {
-            throw new InvalidOperationException($"Failed to create a {dumpDescription}. Captured log:{System.Environment.NewLine}{logOutput}", error);
+            string message = $"Failed to create a {dumpDescription}. Captured log:{System.Environment.NewLine}{logWriter}";
+            throw new InvalidOperationException(message, error);
         }
 
-        LogDumpLogCaptured(dumpDescription, System.Environment.NewLine, logOutput);
+        LogDumpLogCaptured(dumpDescription, System.Environment.NewLine, logWriter);
     }
 
     private static void SafeDelete(string? outputPath)
@@ -219,5 +214,5 @@ internal sealed partial class HeapDumper : IHeapDumper
     private partial void LogSucceeded(string dumpType);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Captured log from {DumpType}:{LineBreak}{DumpLog}")]
-    private partial void LogDumpLogCaptured(string dumpType, string lineBreak, string dumpLog);
+    private partial void LogDumpLogCaptured(string dumpType, string lineBreak, ConcurrentTextWriter dumpLog);
 }

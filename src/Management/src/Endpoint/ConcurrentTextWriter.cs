@@ -14,7 +14,8 @@ using LockPrimitive =
 namespace Steeltoe.Management.Endpoint;
 
 /// <summary>
-/// A <see cref="TextWriter" /> that can safely receive concurrent writes from multiple threads.
+/// A <see cref="TextWriter" /> that can safely receive concurrent writes from multiple threads. Memory dumps require this, see
+/// https://github.com/dotnet/diagnostics/issues/6048.
 /// </summary>
 /// <remarks>
 /// More efficient than <see cref="TextWriter.Synchronized" /> because this implementation only locks on low-level write operations. Also overrides the
