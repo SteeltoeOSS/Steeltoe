@@ -172,6 +172,6 @@ public abstract partial class EndpointMiddleware<TRequest, TResponse> : IEndpoin
     [LoggerMessage(Level = LogLevel.Trace, Message = "CanInvoke returned false for {Method} request at path {Path}.")]
     private partial void LogInvokeDenied(string method, string? path);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Endpoint at path {Path} is busy handling another request.")]
+    [LoggerMessage(Level = LogLevel.Information, Message = "Endpoint at path {Path} is busy handling another request.")]
     private partial void LogTooManyActuatorRequests(Exception exception, string? path);
 }
