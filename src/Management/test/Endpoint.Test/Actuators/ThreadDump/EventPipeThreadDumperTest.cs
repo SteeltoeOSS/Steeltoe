@@ -4,6 +4,7 @@
 
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
@@ -77,12 +78,7 @@ public sealed class EventPipeThreadDumperTest
     public async Task Includes_captured_log_for_thrown_exception()
     {
         var optionsMonitor = new TestOptionsMonitor<ThreadDumpEndpointOptions>();
-
-        using var loggerProvider = new CapturingLoggerProvider();
-        using var loggerFactory = new LoggerFactory([loggerProvider]);
-        ILogger<EventPipeThreadDumper> logger = loggerFactory.CreateLogger<EventPipeThreadDumper>();
-
-        var dumper = new EventPipeThreadDumper(optionsMonitor, logger);
+        var dumper = new EventPipeThreadDumper(optionsMonitor, NullLogger<EventPipeThreadDumper>.Instance);
 
         Func<Task> action = async () => await dumper.CaptureLogOutputAsync<IList<ThreadInfo>>(writer =>
         {

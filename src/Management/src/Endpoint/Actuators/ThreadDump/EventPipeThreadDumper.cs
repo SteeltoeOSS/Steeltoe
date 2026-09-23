@@ -12,6 +12,7 @@ using Microsoft.Diagnostics.Tracing.Etlx;
 using Microsoft.Diagnostics.Tracing.Stacks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
@@ -61,6 +62,8 @@ internal sealed partial class EventPipeThreadDumper : IThreadDumper
     {
         return await CaptureLogOutputAsync(async logWriter =>
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             try
             {
                 LogStart();
@@ -95,7 +98,7 @@ internal sealed partial class EventPipeThreadDumper : IThreadDumper
         {
             result = await action(logWriter);
         }
-        catch (Exception exception)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             string message = $"Failed to create a thread dump. Captured log:{System.Environment.NewLine}{logWriter}";
             throw new InvalidOperationException(message, exception);

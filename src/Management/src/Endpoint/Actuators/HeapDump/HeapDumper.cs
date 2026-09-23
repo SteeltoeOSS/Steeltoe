@@ -9,6 +9,7 @@ using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.GCDump;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
@@ -98,6 +99,8 @@ internal sealed partial class HeapDumper : IHeapDumper
     {
         CaptureLogOutput(logWriter =>
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var heapInfo = new DotNetHeapInfo();
             var memoryGraph = new MemoryGraph(50_000);
 
@@ -175,7 +178,7 @@ internal sealed partial class HeapDumper : IHeapDumper
         {
             succeeded = action(logWriter);
         }
-        catch (Exception exception)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             error = exception;
         }
