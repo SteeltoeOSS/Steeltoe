@@ -520,13 +520,13 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
     // ReSharper disable once AsyncVoidMethod
     private async void HeartbeatAsyncTask()
     {
-        if (!IsAlive)
-        {
-            return;
-        }
-
         try
         {
+            if (!IsAlive)
+            {
+                return;
+            }
+
             await RenewAsync(CancellationToken.None);
         }
         catch (Exception exception)
