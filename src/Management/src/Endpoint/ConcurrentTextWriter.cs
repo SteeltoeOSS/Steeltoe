@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using LockPrimitive =
 #if NET10_0_OR_GREATER
@@ -22,6 +23,7 @@ namespace Steeltoe.Management.Endpoint;
 /// async members, because the base class implements those by dispatching to the thread pool via <see cref="TaskFactory.StartNew(Action)" />, which is
 /// wasteful for an in-memory buffer that never actually does anything asynchronous.
 /// </remarks>
+[ExcludeFromCodeCoverage(Justification = "This is only basic plumbing to satisfy downstream APIs.")]
 internal sealed class ConcurrentTextWriter : TextWriter
 {
     private readonly LockPrimitive _gate = new();
@@ -169,7 +171,7 @@ internal sealed class ConcurrentTextWriter : TextWriter
 
     public override Task FlushAsync(CancellationToken cancellationToken)
     {
-        return cancellationToken.IsCancellationRequested ? Task.FromCanceled(cancellationToken) : Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
     public override string ToString()
