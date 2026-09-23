@@ -2,12 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Graphs;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.GCDump;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
@@ -97,18 +99,53 @@ internal sealed partial class HeapDumper : IHeapDumper
     {
         CaptureLogOutput(logWriter =>
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var heapInfo = new DotNetHeapInfo();
             var memoryGraph = new MemoryGraph(50_000);
 
+            ResetEventPipeDotNetHeapDumperStaticState();
+
             if (EventPipeDotNetHeapDumper.DumpFromEventPipe(cancellationToken, processId, null, memoryGraph, logWriter, timeoutInSeconds, heapInfo))
             {
+                // Workaround for https://github.com/dotnet/diagnostics/issues/6048: DumpFromEventPipe can return true
+                // without the memory graph having a root, when an exception was thrown (and swallowed) after the GC
+                // stop event was observed but before the graph was fully built. Calling AllowReading() in that case
+                // throws "RootIndex not set.", so treat it as a failed dump instead.
+                if (memoryGraph.RootIndex == NodeIndex.Invalid)
+                {
+                    return false;
+                }
+
                 memoryGraph.AllowReading();
                 GCHeapDump.WriteMemoryGraph(memoryGraph, outputPath, "dotnet-gcdump");
                 return true;
             }
 
             return false;
-        }, dumpDescription, cancellationToken);
+        }, dumpDescription);
+    }
+
+    private static void ResetEventPipeDotNetHeapDumperStaticState()
+    {
+        // Workaround for https://github.com/dotnet/diagnostics/issues/6048: EventPipeDotNetHeapDumper tracks
+        // completion using "internal static volatile" fields (eventPipeDataPresent, dumpComplete) that are never
+        // reset between calls. A dump that follows a successful one can then observe stale completion state left
+        // behind by the previous call and return a false "success". We don't control that assembly, so reset the
+        // fields via reflection before every call. This is temporary: remove once diagnostics ships a fix that uses
+        // invocation-local state instead. Safe to skip silently if the fields are renamed or removed upstream,
+        // since that only means the original (pre-workaround) risk of this specific issue remains.
+        Type dumperType = typeof(EventPipeDotNetHeapDumper);
+
+        foreach (string fieldName in new[]
+        {
+            "eventPipeDataPresent",
+            "dumpComplete"
+        })
+        {
+            FieldInfo? field = dumperType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static);
+            field?.SetValue(null, false);
+        }
     }
 
     private static void CreateHeapDump(HeapDumpType? heapDumpType, int processId, string outputPath)
@@ -131,35 +168,28 @@ internal sealed partial class HeapDumper : IHeapDumper
         client.WriteDump(dumpType, outputPath, flags);
     }
 
-    internal void CaptureLogOutput(Func<TextWriter, bool> action, string dumpDescription, CancellationToken cancellationToken)
+    internal void CaptureLogOutput(Func<TextWriter, bool> action, string dumpDescription)
     {
-        using var logStream = new MemoryStream();
+        var logWriter = new ConcurrentTextWriter();
         Exception? error = null;
         bool succeeded = false;
 
-        using (TextWriter logWriter = new StreamWriter(logStream, leaveOpen: true))
+        try
         {
-            try
-            {
-                succeeded = action(logWriter);
-            }
-            catch (Exception exception)
-            {
-                error = exception;
-            }
+            succeeded = action(logWriter);
         }
-
-        logStream.Seek(0, SeekOrigin.Begin);
-        using var logReader = new StreamReader(logStream);
-        string logOutput = logReader.ReadToEnd();
+        catch (Exception exception) when (!exception.IsCancellation())
+        {
+            error = exception;
+        }
 
         if (error != null || !succeeded)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            throw new InvalidOperationException($"Failed to create a {dumpDescription}. Captured log:{System.Environment.NewLine}{logOutput}", error);
+            string message = $"Failed to create a {dumpDescription}. Captured log:{System.Environment.NewLine}{logWriter}";
+            throw new InvalidOperationException(message, error);
         }
 
-        LogDumpLogCaptured(dumpDescription, System.Environment.NewLine, logOutput);
+        LogDumpLogCaptured(dumpDescription, System.Environment.NewLine, logWriter);
     }
 
     private static void SafeDelete(string? outputPath)
@@ -187,5 +217,5 @@ internal sealed partial class HeapDumper : IHeapDumper
     private partial void LogSucceeded(string dumpType);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Captured log from {DumpType}:{LineBreak}{DumpLog}")]
-    private partial void LogDumpLogCaptured(string dumpType, string lineBreak, string dumpLog);
+    private partial void LogDumpLogCaptured(string dumpType, string lineBreak, ConcurrentTextWriter dumpLog);
 }

@@ -784,7 +784,7 @@
                 },
                 "Duration": {
                   "type": "integer",
-                  "description": "Gets or sets the time (in milliseconds) to trace for, before automatically stopping the trace. Default value: 10."
+                  "description": "Gets or sets the time (in milliseconds) to trace for, before automatically stopping the trace. Default value: 100."
                 },
                 "Enabled": {
                   "type": "boolean",

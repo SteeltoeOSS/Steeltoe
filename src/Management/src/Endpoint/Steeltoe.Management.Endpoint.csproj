@@ -37,6 +37,7 @@
       <!--
         Caution: The embedded version of Microsoft.Diagnostics.FastSerialization must be binary compatible with the one
         embedded in Microsoft.Diagnostics.Tracing.TraceEvent, otherwise a TypeLoadException will occur at runtime.
+        After changing versions, unskip and run the tests in DumpPackagingTest manually to verify compatibility.
       -->
       <HintPath>$(Pkgdotnet-gcdump)\tools\net8.0\any\dotnet-gcdump.dll</HintPath>
     </Reference>

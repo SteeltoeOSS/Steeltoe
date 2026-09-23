@@ -1,1 +1,4 @@
 #nullable enable
+Steeltoe.Management.Endpoint.TooManyActuatorRequestsException
+Steeltoe.Management.Endpoint.TooManyActuatorRequestsException.TooManyActuatorRequestsException(string? message) -> void
+Steeltoe.Management.Endpoint.TooManyActuatorRequestsException.TooManyActuatorRequestsException(string? message, System.Exception? innerException) -> void

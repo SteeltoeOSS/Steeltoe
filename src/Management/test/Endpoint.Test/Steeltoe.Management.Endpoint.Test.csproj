@@ -6,6 +6,11 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
+    <!-- Exposes $(TargetFrameworks) to runtime code, so the TFMs can be changed without adapting existing tests. -->
+    <AssemblyMetadata Include="TestTargetFrameworks" Value="$(TargetFrameworks)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="*git.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

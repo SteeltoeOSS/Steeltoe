@@ -30,6 +30,13 @@ internal sealed partial class ThreadDumpEndpointHandler : IThreadDumpEndpointHan
     public async Task<IList<ThreadInfo>> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
         LogInvokingThreadDumper();
+        using IDisposable? dumpLock = MemoryDumpLock.TryEnter(_logger);
+
+        if (dumpLock == null)
+        {
+            throw new TooManyActuatorRequestsException("Another memory dump is currently in progress, please try again later.");
+        }
+
         return await _threadDumper.DumpThreadsAsync(cancellationToken);
     }
 

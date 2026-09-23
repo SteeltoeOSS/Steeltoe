@@ -75,11 +75,20 @@ public abstract partial class EndpointMiddleware<TRequest, TResponse> : IEndpoin
                 }
                 else
                 {
-                    LogReadingRequest(context.Request.Method, context.Request.Path.Value, GetType());
+                    try
+                    {
+                        LogReadingRequest(context.Request.Method, context.Request.Path.Value, GetType());
 
-                    TRequest? request = await ParseRequestAsync(context, context.RequestAborted);
-                    TResponse response = await InvokeEndpointHandlerAsync(request, context.RequestAborted);
-                    await WriteResponseAsync(response, context, context.RequestAborted);
+                        TRequest? request = await ParseRequestAsync(context, context.RequestAborted);
+                        TResponse response = await InvokeEndpointHandlerAsync(request, context.RequestAborted);
+                        await WriteResponseAsync(response, context, context.RequestAborted);
+                    }
+                    catch (TooManyActuatorRequestsException exception)
+                    {
+                        LogTooManyActuatorRequests(exception, context.Request.Path.Value);
+                        context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
+                        await context.Response.WriteAsync(exception.Message, context.RequestAborted);
+                    }
                 }
 
                 return;
@@ -162,4 +171,7 @@ public abstract partial class EndpointMiddleware<TRequest, TResponse> : IEndpoin
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "CanInvoke returned false for {Method} request at path {Path}.")]
     private partial void LogInvokeDenied(string method, string? path);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Endpoint at path {Path} is busy handling another request.")]
+    private partial void LogTooManyActuatorRequests(Exception exception, string? path);
 }

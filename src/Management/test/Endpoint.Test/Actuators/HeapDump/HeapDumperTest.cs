@@ -77,7 +77,7 @@ public sealed class HeapDumperTest
         {
             writer.WriteLine("Failed to perform this operation.");
             throw new ArgumentException("Simulated failure.");
-        }, "gcdump", TestContext.Current.CancellationToken);
+        }, "gcdump");
 
         action.Should().ThrowExactly<InvalidOperationException>()
             .WithMessage($"Failed to create a gcdump. Captured log:{System.Environment.NewLine}Failed to perform this operation.")
@@ -98,7 +98,7 @@ public sealed class HeapDumperTest
         {
             writer.WriteLine("Failed to perform this operation.");
             return false;
-        }, "gcdump", TestContext.Current.CancellationToken);
+        }, "gcdump");
 
         action.Should().ThrowExactly<InvalidOperationException>()
             .WithMessage($"Failed to create a gcdump. Captured log:{System.Environment.NewLine}Failed to perform this operation.").And.InnerException.Should()
