@@ -30,8 +30,8 @@ internal static class FakeSteeltoeManagementEndpointPackager
         string projectFilePath = Path.Combine(sourceDirectory, $"{PackageId}.csproj");
         await File.WriteAllTextAsync(projectFilePath, projectContent, TestContext.Current.CancellationToken);
 
-        await ProcessRunner.RunDotNetAsync(sourceDirectory, 0, null, "build", "-c", "Release", $"-p:Version={PackageVersion}",
-            $"-p:PackageOutputPath={nuGetFeedDirectory}");
+        await ProcessRunner.RunDotNetBuildWithFailureDiagnosticsAsync(sourceDirectory, "fake-endpoint-build", "build", "-c", "Release",
+            $"-p:Version={PackageVersion}", $"-p:PackageOutputPath={nuGetFeedDirectory}");
 
         return new PackageReference(PackageId, PackageVersion, null);
     }

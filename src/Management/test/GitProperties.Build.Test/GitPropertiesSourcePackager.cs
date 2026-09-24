@@ -20,8 +20,8 @@ internal static class GitPropertiesSourcePackager
         string sourceDirectory = Path.Combine(repositoryRoot, "src", "Management", "src", "GitProperties.Build");
         string packageVersion = $"{PackageVersionPrefix}.{$"{Guid.NewGuid():N}"[..8]}";
 
-        await ProcessRunner.RunDotNetAsync(sourceDirectory, 0, null, "build", "-c", "Release", $"-p:Version={packageVersion}",
-            $"-p:PackageOutputPath={nuGetFeedDirectory}");
+        await ProcessRunner.RunDotNetBuildWithFailureDiagnosticsAsync(sourceDirectory, "git-properties-build", "build", "-c", "Release",
+            $"-p:Version={packageVersion}", $"-p:PackageOutputPath={nuGetFeedDirectory}");
 
         return new PackageReference(PackageId, packageVersion, null);
     }

@@ -130,7 +130,7 @@ jobs:
         -RepoRoot ${{ github.workspace }}
         -ProjectRelativePath src/Management/src/GitProperties.Build
 
-    - name: Upload crash/hang dumps (on failure)
+    - name: Upload crash dumps and build diagnostics (on failure)
       if: ${{ !cancelled() && (steps.test.outcome == 'failure' || steps.test-memory-dumps.outcome == 'failure' || steps.test-gitproperties.outcome == 'failure') }}
       uses: actions/upload-artifact@v7
       with:
@@ -138,6 +138,7 @@ jobs:
         path: |
           ${{ github.workspace }}/TestOutput/**/*.dmp
           ${{ github.workspace }}/TestOutput/**/Sequence_*.xml
+          ${{ github.workspace }}/TestOutput/**/*.binlog
         if-no-files-found: ignore
 
     - name: Report test results

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Steeltoe.Management.GitProperties.Build.Test;
@@ -24,6 +25,7 @@ internal static class ProcessRunner
     private static readonly TimeSpan ProcessExitTimeout = TimeSpan.FromMinutes(2);
 
     private static readonly Task<string> RealGitExecutableTask = ResolveGitExecutableAsync();
+    private static readonly Task<string> DiagnosticsDirectoryTask = ResolveDiagnosticsDirectoryAsync();
 
     private static async Task<string> ResolveGitExecutableAsync()
     {
@@ -48,6 +50,46 @@ internal static class ProcessRunner
         string gitExecutable = await RealGitExecutableTask;
         string output = await RunAsync(gitExecutable, workingDirectory, 0, null, cancellationToken, arguments);
         return output.Trim();
+    }
+
+    /// <summary>
+    /// Runs a "dotnet build" that is known to occasionally fail restore without logging a reason (MSBuild task returns false but does not log an error, for
+    /// example when a shared NuGet resource is briefly contended). Captures a binlog and keeps it only when the build fails, so a next occurrence can be
+    /// diagnosed from the CI-uploaded artifact instead of just the generic "did not log an error" message.
+    /// </summary>
+    public static async Task<string> RunDotNetBuildWithFailureDiagnosticsAsync(string workingDirectory, string diagnosticsFileNamePrefix,
+        params string[] arguments)
+    {
+        string diagnosticsDirectory = await DiagnosticsDirectoryTask;
+        string binlogPath = Path.Combine(diagnosticsDirectory, $"{diagnosticsFileNamePrefix}-{$"{Guid.NewGuid():N}"[..8]}.binlog");
+
+        string[] argumentsWithBinlog =
+        [
+            .. arguments,
+            $"-bl:{binlogPath}"
+        ];
+
+        string output = await RunDotNetAsync(workingDirectory, 0, null, argumentsWithBinlog);
+
+        try
+        {
+            File.Delete(binlogPath);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            // Best-effort cleanup only: a transiently locked file (e.g. an antivirus scan) must not fail the test run.
+        }
+
+        return output;
+    }
+
+    private static async Task<string> ResolveDiagnosticsDirectoryAsync([CallerFilePath] string sourceFilePath = "")
+    {
+        string sourceDirectory = Path.GetDirectoryName(sourceFilePath) ?? throw new InvalidOperationException("Could not determine the test source directory.");
+        string repositoryRoot = await RunGitAsync(sourceDirectory, CancellationToken.None, "rev-parse", "--show-toplevel");
+        string diagnosticsDirectory = Path.Combine(repositoryRoot.Replace('/', Path.DirectorySeparatorChar), "TestOutput");
+        Directory.CreateDirectory(diagnosticsDirectory);
+        return diagnosticsDirectory;
     }
 
     public static Task<string> RunDotNetAsync(string workingDirectory, int exitCodeExpected, Dictionary<string, string>? environmentVariables,

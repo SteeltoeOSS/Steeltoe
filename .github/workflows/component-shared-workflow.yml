@@ -104,7 +104,7 @@ jobs:
       if: ${{ inputs.component == 'Management' }}
       run: dotnet test src/Management/test/Endpoint.Test --filter "Category=MemoryDumps" ${{ env.COMMON_TEST_ARGS }}
 
-    - name: Upload crash/hang dumps (on failure)
+    - name: Upload crash dumps and build diagnostics (on failure)
       if: ${{ !cancelled() && (steps.test.outcome == 'failure' || steps.test-memory-dumps.outcome == 'failure') }}
       uses: actions/upload-artifact@v7
       with:
@@ -112,6 +112,7 @@ jobs:
         path: |
           ${{ github.workspace }}/TestOutput/**/*.dmp
           ${{ github.workspace }}/TestOutput/**/Sequence_*.xml
+          ${{ github.workspace }}/TestOutput/**/*.binlog
         if-no-files-found: ignore
 
     - name: Report test results
