@@ -22,6 +22,7 @@ internal static class FakeSteeltoeManagementEndpointPackager
                 <TargetFrameworks>{string.Join(';', TestAppTargetFramework.Multiple)}</TargetFrameworks>
                 <PackageId>{PackageId}</PackageId>
                 <IsPackable>true</IsPackable>
+                <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
               </PropertyGroup>
             </Project>
             """;
@@ -29,7 +30,9 @@ internal static class FakeSteeltoeManagementEndpointPackager
         string projectFilePath = Path.Combine(sourceDirectory, $"{PackageId}.csproj");
         await File.WriteAllTextAsync(projectFilePath, projectContent, TestContext.Current.CancellationToken);
 
-        await ProcessRunner.RunDotNetAsync(sourceDirectory, 0, null, "pack", $"-p:Version={PackageVersion}", "-o", nuGetFeedDirectory);
+        await ProcessRunner.RunDotNetAsync(sourceDirectory, 0, null, "build", "-c", "Release", $"-p:Version={PackageVersion}",
+            $"-p:PackageOutputPath={nuGetFeedDirectory}");
+
         return new PackageReference(PackageId, PackageVersion, null);
     }
 }

@@ -18,13 +18,10 @@ internal static class GitPropertiesSourcePackager
     {
         string repositoryRoot = await ResolveRepositoryRootAsync();
         string sourceDirectory = Path.Combine(repositoryRoot, "src", "Management", "src", "GitProperties.Build");
-
         string packageVersion = $"{PackageVersionPrefix}.{$"{Guid.NewGuid():N}"[..8]}";
-        await ProcessRunner.RunDotNetAsync(sourceDirectory, 0, null, "build", "-c", "Release", $"-p:Version={packageVersion}");
 
-        string packageSourcePath = Path.Combine(sourceDirectory, "bin", "tasks", "netstandard2.0", $"{PackageId}.{packageVersion}.nupkg");
-        string packageDestinationPath = Path.Combine(nuGetFeedDirectory, Path.GetFileName(packageSourcePath));
-        File.Move(packageSourcePath, packageDestinationPath);
+        await ProcessRunner.RunDotNetAsync(sourceDirectory, 0, null, "build", "-c", "Release", $"-p:Version={packageVersion}",
+            $"-p:PackageOutputPath={nuGetFeedDirectory}");
 
         return new PackageReference(PackageId, packageVersion, null);
     }

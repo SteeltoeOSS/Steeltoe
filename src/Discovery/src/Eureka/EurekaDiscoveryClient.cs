@@ -66,6 +66,8 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
 
     public string Description => "A discovery client for Spring Cloud Eureka.";
 
+    internal event EventHandler? HeartbeatCycleCompleted;
+
     /// <summary>
     /// Occurs after applications have been fetched from Eureka.
     /// </summary>
@@ -518,13 +520,13 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
     // ReSharper disable once AsyncVoidMethod
     private async void HeartbeatAsyncTask()
     {
-        if (!IsAlive)
-        {
-            return;
-        }
-
         try
         {
+            if (!IsAlive)
+            {
+                return;
+            }
+
             await RenewAsync(CancellationToken.None);
         }
         catch (Exception exception)
@@ -533,6 +535,10 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
             {
                 LogPeriodicRenewFailed(exception);
             }
+        }
+        finally
+        {
+            HeartbeatCycleCompleted?.Invoke(this, EventArgs.Empty);
         }
     }
 

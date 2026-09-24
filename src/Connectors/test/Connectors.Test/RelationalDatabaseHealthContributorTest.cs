@@ -99,7 +99,7 @@ public sealed class RelationalDatabaseHealthContributorTest
     {
         // Using a known host/port, so running this test doesn't take 15 seconds (the Connect Timeout only kicks in *after* establishing the socket connection).
         var healthContributor = new RelationalDatabaseHealthContributor(
-            () => new SqlConnection("Server=tcp:www.microsoft.com,80;Connect Timeout=1;Connect Retry Count=0"), "SQL Server", "localhost",
+            () => new SqlConnection("Server=tcp:steeltoe.io,80;Connect Timeout=1;Connect Retry Count=0"), "SQL Server", "localhost",
             NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {
             ServiceName = "Example"
@@ -115,6 +115,7 @@ public sealed class RelationalDatabaseHealthContributorTest
 
         result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().Match(exception =>
             exception.StartsWith("SqlException: Connection Timeout Expired.", StringComparison.Ordinal) ||
+            exception.StartsWith("SqlException: A connection was successfully established with the server, but then an error", StringComparison.Ordinal) ||
             exception.StartsWith("SqlException: A network-related or instance-specific error", StringComparison.Ordinal));
     }
 

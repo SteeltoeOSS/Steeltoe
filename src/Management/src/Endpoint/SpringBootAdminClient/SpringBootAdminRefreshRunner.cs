@@ -29,6 +29,7 @@ internal sealed partial class SpringBootAdminRefreshRunner
 
     internal string? LastRegistrationId => _lastRegistrationId;
     internal SpringBootAdminClientOptions? LastGoodOptions => _lastGoodOptions;
+    internal event EventHandler? CycleCompleted;
 
     public SpringBootAdminRefreshRunner(AppUrlCalculator appUrlCalculator, SpringBootAdminApiClient springBootAdminApiClient,
         IOptionsMonitor<SpringBootAdminClientOptions> clientOptionsMonitor, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
@@ -56,17 +57,24 @@ internal sealed partial class SpringBootAdminRefreshRunner
 
     public async Task RunAsync(bool isFirstTime, CancellationToken cancellationToken)
     {
-        LogValidatingOptions();
-        SpringBootAdminClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
-        ValidateAndSetOptions(clientOptions);
-
-        if (_lastGoodOptions?.Url != null && !string.Equals(_lastGoodOptions.Url, clientOptions.Url, StringComparison.OrdinalIgnoreCase))
+        try
         {
-            LogUrlChanged(_lastGoodOptions.Url, clientOptions.Url);
-            await SafeUnregisterAsync(_lastGoodOptions, cancellationToken);
-        }
+            LogValidatingOptions();
+            SpringBootAdminClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
+            ValidateAndSetOptions(clientOptions);
 
-        await RegisterAsync(clientOptions, isFirstTime, cancellationToken);
+            if (_lastGoodOptions?.Url != null && !string.Equals(_lastGoodOptions.Url, clientOptions.Url, StringComparison.OrdinalIgnoreCase))
+            {
+                LogUrlChanged(_lastGoodOptions.Url, clientOptions.Url);
+                await SafeUnregisterAsync(_lastGoodOptions, cancellationToken);
+            }
+
+            await RegisterAsync(clientOptions, isFirstTime, cancellationToken);
+        }
+        finally
+        {
+            CycleCompleted?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private void ValidateAndSetOptions(SpringBootAdminClientOptions options)
