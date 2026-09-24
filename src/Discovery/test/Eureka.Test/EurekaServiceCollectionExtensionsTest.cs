@@ -2,8 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
-using System.Runtime.InteropServices;
+using FluentAssertions.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -56,7 +55,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
         options.Value.StatusPageUrlPath.Should().Be("/actuator/info");
     }
 
-    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
+    [Fact]
     public async Task AddEurekaDiscoveryClient_UsesServerTimeout()
     {
         var appSettings = new Dictionary<string, string?>
@@ -70,16 +69,15 @@ public sealed class EurekaServiceCollectionExtensionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddEurekaDiscoveryClient();
-
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var timer = new Stopwatch();
-        timer.Start();
+        var eurekaClient = serviceProvider.GetRequiredService<EurekaClient>();
+        TimeSpan? capturedTimeout = null;
+        eurekaClient.HttpClientTimeoutConfigured += (_, args) => capturedTimeout = args.Value;
 
         serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<EurekaDiscoveryClient>();
 
-        timer.Stop();
-        timer.ElapsedMilliseconds.Should().BeInRange(0, 3500);
+        capturedTimeout.Should().Be(1.Seconds());
     }
 
     [Fact]

@@ -42,6 +42,8 @@ public sealed partial class EurekaClient
     private readonly TimeProvider _timeProvider;
     private readonly ILogger<EurekaClient> _logger;
 
+    internal event EventHandler<EventArgs<TimeSpan>>? HttpClientTimeoutConfigured;
+
     public EurekaClient(IHttpClientFactory httpClientFactory, IOptionsMonitor<EurekaClientOptions> optionsMonitor,
         EurekaServiceUriStateManager eurekaServiceUriStateManager, TimeProvider timeProvider, ILogger<EurekaClient> logger)
     {
@@ -305,6 +307,7 @@ public sealed partial class EurekaClient
     {
         HttpClient httpClient = _httpClientFactory.CreateClient(name);
         httpClient.ConfigureForSteeltoe(connectTimeout);
+        HttpClientTimeoutConfigured?.Invoke(this, new EventArgs<TimeSpan>(httpClient.Timeout));
         return httpClient;
     }
 
