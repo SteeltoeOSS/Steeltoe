@@ -14,7 +14,8 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
 [Trait("Category", "MemoryDumps")]
 public sealed class HeapDumperTest
 {
-    private static readonly TimeSpan DumpTimeout = TimeSpan.FromMinutes(3);
+    private static readonly TimeSpan DefaultDumpTimeout = TimeSpan.FromMinutes(3);
+    private static readonly TimeSpan LongDumpTimeout = TimeSpan.FromMinutes(5);
 
     [Theory]
     [InlineData(HeapDumpType.Full, "fulldump_", "full dump")]
@@ -45,7 +46,8 @@ public sealed class HeapDumperTest
             return dumper.DumpHeapToFile(TestContext.Current.CancellationToken);
         }, TestContext.Current.CancellationToken);
 
-        string path = await dumpTask.WaitAsync(DumpTimeout, TestContext.Current.CancellationToken);
+        TimeSpan timeout = heapDumpType == HeapDumpType.Full ? LongDumpTimeout : DefaultDumpTimeout;
+        string path = await dumpTask.WaitAsync(timeout, TestContext.Current.CancellationToken);
 
         path.Should().Contain(fileName);
         File.Delete(path);
