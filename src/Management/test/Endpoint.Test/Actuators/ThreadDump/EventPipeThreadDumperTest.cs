@@ -32,7 +32,12 @@ public sealed class EventPipeThreadDumperTest
         using var loggerFactory = new LoggerFactory([loggerProvider]);
         ILogger<EventPipeThreadDumper> logger = loggerFactory.CreateLogger<EventPipeThreadDumper>();
 
-        var optionsMonitor = new TestOptionsMonitor<ThreadDumpEndpointOptions>();
+        var optionsMonitor = TestOptionsMonitor.Create(new ThreadDumpEndpointOptions
+        {
+            // For testing, sampling accuracy is more important than app pauses.
+            Duration = 100
+        });
+
         var dumper = new EventPipeThreadDumper(optionsMonitor, logger);
 
         StackTraceElement? callbackFrame = null;

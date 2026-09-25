@@ -14,13 +14,8 @@ public sealed class ThreadDumpEndpointOptions : EndpointOptions
     public override EndpointPermissions RequiredPermissions { get; set; } = EndpointPermissions.Full;
 
     /// <summary>
-    /// Gets or sets the time (in milliseconds) to trace for, before automatically stopping the trace. Default value: 100.
+    /// Gets or sets how long to sample (in milliseconds). Higher values increase accuracy, at the cost of pausing the app for longer intervals. Default
+    /// value: 10.
     /// </summary>
-    /// <remarks>
-    /// This is how long the EventPipe session captures samples from the "Microsoft-DotNETCore-SampleProfiler" provider, which samples on-CPU threads at a
-    /// fixed ~1 ms interval. Threads that are not scheduled on a CPU core during this window (for example, because they are idle or blocked waiting on I/O)
-    /// may get few or no samples, so a short duration risks missing threads entirely. A longer duration increases the odds of observing such threads, at the
-    /// cost of the endpoint taking longer to respond.
-    /// </remarks>
-    public int Duration { get; set; } = 100;
+    public int Duration { get; set; } = 10;
 }
