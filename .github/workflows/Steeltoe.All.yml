@@ -32,9 +32,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-26.04, windows-latest, macos-latest]
         include:
-        - os: ubuntu-latest
+        - os: ubuntu-26.04
           runDockerContainers: true
         - os: windows-latest
           skipIntegrationTests: true
@@ -166,7 +166,7 @@ jobs:
       run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
     - name: Add coverage comment to PR (linux only)
-      if: ${{ github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest' }}
+      if: ${{ github.event_name == 'pull_request' && matrix.os == 'ubuntu-26.04' }}
       run: gh pr comment $PR_NUMBER --edit-last --create-if-none --body-file coveragereport/Summary.md
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

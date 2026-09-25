@@ -31,7 +31,7 @@ jobs:
   analyze:
     name: Analyze
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     services:
       eurekaServer:

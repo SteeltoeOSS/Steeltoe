@@ -28,7 +28,7 @@ jobs:
   build:
     name: Build and Package
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     steps:
     - name: Setup .NET
@@ -186,7 +186,7 @@ jobs:
     needs: sign
     if: ${{ github.event_name != 'pull_request' }}
     environment: azdo
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions:
       id-token: write
     env:
@@ -234,7 +234,7 @@ jobs:
     needs: sign
     if: ${{ github.event_name == 'release' }}
     environment: nuget.org
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions:
       id-token: write
 
@@ -264,7 +264,7 @@ jobs:
     if: ${{ github.event_name == 'release' && !contains(github.ref_name, '-') }}
     needs: nuget-org-deploy
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions:
       contents: write
       pull-requests: write
