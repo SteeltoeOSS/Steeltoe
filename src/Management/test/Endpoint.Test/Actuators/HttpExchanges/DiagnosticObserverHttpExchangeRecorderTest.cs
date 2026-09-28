@@ -181,12 +181,11 @@ public sealed class DiagnosticObserverHttpExchangeRecorderTest
             HttpContext = context
         });
 
-        SpinWait.SpinUntil(() => false, 1.Seconds());
-
+        activity.SetEndTime(activity.StartTimeUtc + 1.Seconds());
         listener.StopActivity(activity, context);
 
         HttpExchange httpExchange = recorded.Should().ContainSingle().Subject;
-        httpExchange.TimeTaken.Should().BeGreaterThan(900.Milliseconds()).And.BeLessThan(1300.Milliseconds());
+        httpExchange.TimeTaken.Should().Be(1.Seconds());
     }
 
     [Fact]

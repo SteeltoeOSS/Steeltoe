@@ -138,6 +138,7 @@ jobs:
         path: |
           ${{ github.workspace }}/TestOutput/**/*.dmp
           ${{ github.workspace }}/TestOutput/**/Sequence_*.xml
+          ${{ github.workspace }}/TestOutput/**/*.binlog
         if-no-files-found: ignore
 
     - name: Report test results

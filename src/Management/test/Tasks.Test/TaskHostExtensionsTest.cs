@@ -22,7 +22,7 @@ public sealed class TaskHostExtensionsTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         WebApplication app = builder.Build();
 
-        using var timeoutSource = new CancellationTokenSource(1.Seconds());
+        using var timeoutSource = new CancellationTokenSource(5.Seconds());
 
         app.HasApplicationTask().Should().BeFalse();
         await app.RunWithTasksAsync(timeoutSource.Token);

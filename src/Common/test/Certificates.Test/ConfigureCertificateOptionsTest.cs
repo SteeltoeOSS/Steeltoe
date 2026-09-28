@@ -189,9 +189,12 @@ public sealed class ConfigureCertificateOptionsTest
         string firstPrivateKeyFilePath = sandbox.CreateFile(Guid.NewGuid() + ".key", firstPrivateKeyContent);
         using var secondX509 = X509Certificate2.CreateFromPemFile("secondInstance.crt", "secondInstance.key");
         string appSettings = BuildAppSettingsJson(certificateName, firstCertificateFilePath, firstPrivateKeyFilePath);
-        string appSettingsPath = sandbox.CreateFile("appsettings.json", appSettings);
+
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile(appSettings);
+
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddJsonFile(appSettingsPath, false, true);
+        configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         IConfiguration configuration = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
@@ -204,10 +207,12 @@ public sealed class ConfigureCertificateOptionsTest
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         optionsMonitor.Get(certificateName).Certificate.Should().BeEquivalentTo(firstX509);
 
-        await WaitUntilCertificateChangedToAsync(certificateName, secondX509, optionsMonitor, async () =>
+        await WaitUntilCertificateChangedToAsync(certificateName, secondX509, optionsMonitor, () =>
         {
             appSettings = BuildAppSettingsJson(certificateName, "secondInstance.crt", "secondInstance.key");
-            await File.WriteAllTextAsync(appSettingsPath, appSettings, TestContext.Current.CancellationToken);
+            fileProvider.ReplaceAppSettingsJsonFile(appSettings);
+            fileProvider.NotifyChanged();
+            return Task.CompletedTask;
         });
 
         optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);

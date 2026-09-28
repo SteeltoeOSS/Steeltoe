@@ -43,7 +43,7 @@ public sealed class ThreadDumpActuatorTest
 
         ThreadDumpEndpointOptions options = serviceProvider.GetRequiredService<IOptions<ThreadDumpEndpointOptions>>().Value;
 
-        options.Duration.Should().Be(100);
+        options.Duration.Should().Be(10);
         options.Enabled.Should().BeNull();
         options.Id.Should().Be("threaddump");
         options.Path.Should().Be("threaddump");

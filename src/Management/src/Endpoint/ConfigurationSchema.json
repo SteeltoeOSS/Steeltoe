@@ -784,7 +784,7 @@
                 },
                 "Duration": {
                   "type": "integer",
-                  "description": "Gets or sets the time (in milliseconds) to trace for, before automatically stopping the trace. Default value: 100."
+                  "description": "Gets or sets how long to sample (in milliseconds). Higher values increase accuracy, at the cost of pausing the app for longer intervals. Default value: 10."
                 },
                 "Enabled": {
                   "type": "boolean",

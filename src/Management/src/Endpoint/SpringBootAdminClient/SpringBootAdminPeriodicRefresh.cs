@@ -44,20 +44,15 @@ internal sealed partial class SpringBootAdminPeriodicRefresh : IAsyncDisposable
 
             do
             {
-                // A tick queued just before periodic refresh was disabled would still be delivered here.
-                // Checking the period prevents executing a stale tick when refresh has been turned off.
-                if (isFirstTime || _periodicTimer.Period != Timeout.InfiniteTimeSpan)
-                {
-                    LogStartingRefreshCycle();
+                LogStartingRefreshCycle();
 
-                    try
-                    {
-                        await _runner.RunAsync(isFirstTime, _timerTokenSource.Token);
-                    }
-                    catch (Exception exception) when (!exception.IsCancellation())
-                    {
-                        LogRefreshCycleFailed(exception);
-                    }
+                try
+                {
+                    await _runner.RunAsync(isFirstTime, _timerTokenSource.Token);
+                }
+                catch (Exception exception) when (!exception.IsCancellation())
+                {
+                    LogRefreshCycleFailed(exception);
                 }
 
                 isFirstTime = false;
