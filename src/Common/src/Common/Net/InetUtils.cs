@@ -35,16 +35,15 @@ internal partial class InetUtils
 
     public virtual HostInfo FindFirstNonLoopbackHostInfo()
     {
-        InetOptions inetOptions = _optionsMonitor.CurrentValue;
-
-        IPAddress? address = FindFirstNonLoopbackAddress(inetOptions);
+        InetOptions options = _optionsMonitor.CurrentValue;
+        IPAddress? address = FindFirstNonLoopbackAddress(options);
 
         if (address != null)
         {
-            return ConvertAddress(address, inetOptions);
+            return ConvertAddress(address, options);
         }
 
-        return new HostInfo(inetOptions.DefaultHostname!, inetOptions.DefaultIPAddress!);
+        return new HostInfo(options.DefaultHostname!, options.DefaultIPAddress!);
     }
 
     public IPAddress? FindFirstNonLoopbackAddress()
@@ -52,16 +51,15 @@ internal partial class InetUtils
         return FindFirstNonLoopbackAddress(_optionsMonitor.CurrentValue);
     }
 
-    private IPAddress? FindFirstNonLoopbackAddress(InetOptions inetOptions)
+    private IPAddress? FindFirstNonLoopbackAddress(InetOptions options)
     {
         IPAddress? result = null;
 
         try
         {
             int lowest = int.MaxValue;
-            NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
 
-            foreach (NetworkInterface networkInterface in networkInterfaces)
+            foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces())
             {
                 if (networkInterface is { OperationalStatus: OperationalStatus.Up, IsReceiveOnly: false })
                 {
@@ -73,24 +71,7 @@ internal partial class InetUtils
                     if (iPv4Properties.Index < lowest || result == null)
                     {
                         lowest = iPv4Properties.Index;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-
-                    if (!IgnoreInterface(networkInterface.Name, inetOptions))
-                    {
-                        foreach (UnicastIPAddressInformation addressInfo in properties.UnicastAddresses)
-                        {
-                            IPAddress address = addressInfo.Address;
-
-                            if (IsInet4Address(address) && !IsLoopbackAddress(address) && IsPreferredAddress(address, inetOptions))
-                            {
-                                LogNonLoopbackInterfaceFound(networkInterface.Name);
-                                result = address;
-                            }
-                        }
+                        result = GetLastNonLoopbackInterfaceAddress(networkInterface, properties, options) ?? result;
                     }
                 }
             }
@@ -100,12 +81,28 @@ internal partial class InetUtils
             LogCannotGetNonLoopbackAddress(exception);
         }
 
-        if (result != null)
+        return result ?? GetHostAddress();
+    }
+
+    private IPAddress? GetLastNonLoopbackInterfaceAddress(NetworkInterface networkInterface, IPInterfaceProperties properties, InetOptions options)
+    {
+        IPAddress? result = null;
+
+        if (!IgnoreInterface(networkInterface.Name, options))
         {
-            return result;
+            foreach (UnicastIPAddressInformation addressInfo in properties.UnicastAddresses)
+            {
+                IPAddress address = addressInfo.Address;
+
+                if (IsInet4Address(address) && !IsLoopbackAddress(address) && IsPreferredAddress(address, options))
+                {
+                    LogNonLoopbackInterfaceFound(networkInterface.Name);
+                    result = address;
+                }
+            }
         }
 
-        return GetHostAddress();
+        return result;
     }
 
     private static bool IsInet4Address(IPAddress address)
@@ -118,9 +115,9 @@ internal partial class InetUtils
         return IPAddress.IsLoopback(address);
     }
 
-    internal bool IsPreferredAddress(IPAddress address, InetOptions inetOptions)
+    internal bool IsPreferredAddress(IPAddress address, InetOptions options)
     {
-        if (inetOptions.UseOnlySiteLocalInterfaces)
+        if (options.UseOnlySiteLocalInterfaces)
         {
             bool siteLocalAddress = IsSiteLocalAddress(address);
 
@@ -132,7 +129,7 @@ internal partial class InetUtils
             return siteLocalAddress;
         }
 
-        string[] preferredNetworks = inetOptions.GetPreferredNetworks().ToArray();
+        string[] preferredNetworks = options.GetPreferredNetworks().ToArray();
 
         if (preferredNetworks.Length == 0)
         {
@@ -154,32 +151,30 @@ internal partial class InetUtils
         return false;
     }
 
-    internal bool IgnoreInterface(string interfaceName, InetOptions inetOptions)
+    internal bool IgnoreInterface(string interfaceName, InetOptions options)
     {
-        if (string.IsNullOrEmpty(interfaceName))
+        if (!string.IsNullOrEmpty(interfaceName))
         {
-            return false;
-        }
-
-        foreach (string regex in inetOptions.GetIgnoredInterfaces())
-        {
-            var matcher = new Regex(regex, InetRegexOptions, RegexMatchTimeout);
-
-            if (matcher.IsMatch(interfaceName))
+            foreach (string regex in options.GetIgnoredInterfaces())
             {
-                LogIgnoringInterface(interfaceName);
-                return true;
+                var matcher = new Regex(regex, InetRegexOptions, RegexMatchTimeout);
+
+                if (matcher.IsMatch(interfaceName))
+                {
+                    LogIgnoringInterface(interfaceName);
+                    return true;
+                }
             }
         }
 
         return false;
     }
 
-    internal HostInfo ConvertAddress(IPAddress address, InetOptions inetOptions)
+    internal HostInfo ConvertAddress(IPAddress address, InetOptions options)
     {
         string hostname;
 
-        if (!inetOptions.SkipReverseDnsLookup)
+        if (!options.SkipReverseDnsLookup)
         {
             try
             {
@@ -195,7 +190,7 @@ internal partial class InetUtils
         }
         else
         {
-            hostname = inetOptions.DefaultHostname!;
+            hostname = options.DefaultHostname!;
         }
 
         return new HostInfo(hostname, address.ToString());
@@ -203,21 +198,13 @@ internal partial class InetUtils
 
     private IPAddress? ResolveHostAddress(string hostName)
     {
-        IPAddress? result = null;
-
         try
         {
-            IPAddress[] results = Dns.GetHostAddresses(hostName);
-
-            if (results.Length > 0)
+            foreach (IPAddress address in Dns.GetHostAddresses(hostName))
             {
-                foreach (IPAddress address in results)
+                if (address.AddressFamily == AddressFamily.InterNetwork)
                 {
-                    if (address.AddressFamily == AddressFamily.InterNetwork)
-                    {
-                        result = address;
-                        break;
-                    }
+                    return address;
                 }
             }
         }
@@ -226,7 +213,7 @@ internal partial class InetUtils
             LogUnableToResolveHostAddress(exception);
         }
 
-        return result;
+        return null;
     }
 
     private string? ResolveHostName()

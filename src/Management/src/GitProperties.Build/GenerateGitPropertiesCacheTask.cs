@@ -246,6 +246,11 @@ public sealed class GenerateGitPropertiesCacheTask : Task
             Log.LogMessage(MessageImportance.High, "git.properties: generating shared cache at '{0}'.", CacheFile);
         }
 
+        return TryGenerateCacheFile(commitId);
+    }
+
+    private bool TryGenerateCacheFile(string commitId)
+    {
         if (RunGit("rev-parse --is-shallow-repository", "determine shallow-clone status", out string stdout))
         {
             bool isShallow = stdout == "true";

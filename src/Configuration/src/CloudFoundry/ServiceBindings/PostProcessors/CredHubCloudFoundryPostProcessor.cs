@@ -31,21 +31,19 @@ internal sealed partial class CredHubCloudFoundryPostProcessor : CloudFoundryPos
 
             foreach ((string fullKey, string? value) in configurationData.ToArray())
             {
-                if (!fullKey.StartsWith(credentialsPrefix, StringComparison.OrdinalIgnoreCase))
+                if (fullKey.StartsWith(credentialsPrefix, StringComparison.OrdinalIgnoreCase))
                 {
-                    continue;
+                    // Dots in a credential key are converted to colons so secrets can be shared between Spring and .NET apps.
+                    string keyWithoutPrefix = fullKey[credentialsPrefix.Length..];
+                    string normalizedKey = keyWithoutPrefix.Replace(".", ConfigurationPath.KeyDelimiter, StringComparison.Ordinal);
+
+                    if (configurationData.TryGetValue(normalizedKey, out string? existingValue) && existingValue != value)
+                    {
+                        LogOverwritingConfigurationKey(normalizedKey, bindingName);
+                    }
+
+                    configurationData[normalizedKey] = value;
                 }
-
-                // Dots in a credential key are converted to colons so secrets can be shared between Spring and .NET apps.
-                string keyWithoutPrefix = fullKey[credentialsPrefix.Length..];
-                string normalizedKey = keyWithoutPrefix.Replace(".", ConfigurationPath.KeyDelimiter, StringComparison.Ordinal);
-
-                if (configurationData.TryGetValue(normalizedKey, out string? existingValue) && existingValue != value)
-                {
-                    LogOverwritingConfigurationKey(normalizedKey, bindingName);
-                }
-
-                configurationData[normalizedKey] = value;
             }
         }
     }

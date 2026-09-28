@@ -259,8 +259,13 @@ public sealed partial class EurekaInstanceOptions
             }
         }
 
+        UpdateNonSecurePort(listenHttpPort, source, logger);
+        UpdateSecurePort(listenHttpsPort, source, logger);
+    }
+
+    private void UpdateNonSecurePort(int? listenHttpPort, string source, ILogger<EurekaInstanceOptions> logger)
+    {
         int? nonSecurePort = IsNonSecurePortEnabled ? NonSecurePort : null;
-        int? securePort = IsSecurePortEnabled ? SecurePort : null;
 
         if (nonSecurePort != listenHttpPort)
         {
@@ -284,6 +289,11 @@ public sealed partial class EurekaInstanceOptions
                 IsNonSecurePortEnabled = false;
             }
         }
+    }
+
+    private void UpdateSecurePort(int? listenHttpsPort, string source, ILogger<EurekaInstanceOptions> logger)
+    {
+        int? securePort = IsSecurePortEnabled ? SecurePort : null;
 
         if (securePort != listenHttpsPort)
         {

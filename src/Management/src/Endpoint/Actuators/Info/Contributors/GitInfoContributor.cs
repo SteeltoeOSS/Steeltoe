@@ -66,27 +66,7 @@ internal sealed partial class GitInfoContributor : ConfigurationContributor, IIn
 
             if (lines.Length > 0)
             {
-                var dictionary = new Dictionary<string, string?>();
-
-                foreach (string line in lines)
-                {
-                    if (line.StartsWith('#') || !line.StartsWith("git.", StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
-
-                    string[] keyValuePair = line.Split('=', 2);
-
-                    if (keyValuePair.Length != 2)
-                    {
-                        continue;
-                    }
-
-                    string key = keyValuePair[0].Trim().Replace('.', ':');
-                    string value = keyValuePair[1].Replace("\\:", ":", StringComparison.Ordinal);
-
-                    dictionary[key] = value;
-                }
+                Dictionary<string, string?> dictionary = ParseKeyValuePairLines(lines);
 
                 var builder = new ConfigurationBuilder();
                 builder.AddInMemoryCollection(dictionary);
@@ -99,6 +79,29 @@ internal sealed partial class GitInfoContributor : ConfigurationContributor, IIn
         }
 
         return null;
+    }
+
+    private static Dictionary<string, string?> ParseKeyValuePairLines(string[] lines)
+    {
+        var dictionary = new Dictionary<string, string?>();
+
+        foreach (string line in lines)
+        {
+            if (!line.StartsWith('#') && line.StartsWith("git.", StringComparison.OrdinalIgnoreCase))
+            {
+                string[] keyValuePair = line.Split('=', 2);
+
+                if (keyValuePair.Length == 2)
+                {
+                    string key = keyValuePair[0].Trim().Replace('.', ':');
+                    string value = keyValuePair[1].Replace("\\:", ":", StringComparison.Ordinal);
+
+                    dictionary[key] = value;
+                }
+            }
+        }
+
+        return dictionary;
     }
 
     protected override void AddKeyValue(IDictionary<string, object?> dictionary, string key, object? value)

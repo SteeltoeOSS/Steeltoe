@@ -44,34 +44,49 @@ internal sealed class ManagementPortStartupFilter : IStartupFilter
             // Known limitation: this doesn't take bindings into account resulting from custom code that directly configures Kestrel.
             next(applicationBuilder);
 
-            int managementPort = _configuration.GetValue<int?>(ManagementPortConfigurationKey) ?? 0;
-            bool useHttps = _configuration.GetValue<bool?>(ManagementPortSslConfigurationKey) ?? false;
+            SetBindingAddresses(applicationBuilder.ApplicationServices);
+        };
+    }
 
-            if (managementPort is > 0 and < 65536)
+    private void SetBindingAddresses(IServiceProvider serviceProvider)
+    {
+        int managementPort = _configuration.GetValue<int?>(ManagementPortConfigurationKey) ?? 0;
+        bool useHttps = _configuration.GetValue<bool?>(ManagementPortSslConfigurationKey) ?? false;
+
+        if (managementPort is > 0 and < 65536)
+        {
+            var server = serviceProvider.GetRequiredService<IServer>();
+            ICollection<string> addresses = server.Features.GetRequiredFeature<IServerAddressesFeature>().Addresses;
+
+            if (HasBindingFor(useHttps, managementPort, addresses))
             {
-                var server = applicationBuilder.ApplicationServices.GetRequiredService<IServer>();
-                ICollection<string> addresses = server.Features.GetRequiredFeature<IServerAddressesFeature>().Addresses;
+                // Scheme/port combination already exists. Duplicates are not allowed.
+                return;
+            }
 
-                foreach (BindingAddress address in addresses.Select(BindingAddress.Parse))
-                {
-                    if (address.Port == managementPort && IsSameScheme(address.Scheme, useHttps))
-                    {
-                        // Scheme/port combination already exists. Duplicates are not allowed.
-                        return;
-                    }
-                }
-
-                if (addresses.Count == 0 && (managementPort != AspNetDefaultListenPort || useHttps))
-                {
-                    // Add the ultimate default binding explicitly, so our addition doesn't exclude it.
-                    addresses.Add($"http://localhost:{AspNetDefaultListenPort}");
-                }
+            if (addresses.Count == 0 && (managementPort != AspNetDefaultListenPort || useHttps))
+            {
+                // Add the ultimate default binding explicitly, so our addition doesn't exclude it.
+                addresses.Add($"http://localhost:{AspNetDefaultListenPort}");
+            }
 
 #pragma warning disable S5332 // Using clear-text protocols is security-sensitive
-                addresses.Add(useHttps ? $"https://*:{managementPort}" : $"http://*:{managementPort}");
+            addresses.Add(useHttps ? $"https://*:{managementPort}" : $"http://*:{managementPort}");
 #pragma warning restore S5332 // Using clear-text protocols is security-sensitive
+        }
+    }
+
+    private static bool HasBindingFor(bool useHttps, int managementPort, ICollection<string> addresses)
+    {
+        foreach (BindingAddress address in addresses.Select(BindingAddress.Parse))
+        {
+            if (address.Port == managementPort && IsSameScheme(address.Scheme, useHttps))
+            {
+                return true;
             }
-        };
+        }
+
+        return false;
     }
 
     private static bool IsSameScheme(string addressScheme, bool useHttps)

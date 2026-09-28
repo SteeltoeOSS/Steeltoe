@@ -145,20 +145,7 @@ internal sealed partial class ConfigServerDiscoveryService
 
             if (optionsSnapshot.Discovery.ServiceId != null)
             {
-                foreach (IDiscoveryClient discoveryClient in _discoveryClients ?? [])
-                {
-                    try
-                    {
-                        IList<IServiceInstance> serviceInstances =
-                            await discoveryClient.GetInstancesAsync(optionsSnapshot.Discovery.ServiceId, cancellationToken);
-
-                        instances.AddRange(serviceInstances);
-                    }
-                    catch (Exception exception) when (!exception.IsCancellation())
-                    {
-                        LogFailedToGetInstances(exception, discoveryClient.GetType());
-                    }
-                }
+                await AddServiceInstancesFromDiscoveryClientsAsync(optionsSnapshot.Discovery.ServiceId, instances, cancellationToken);
             }
 
             if (!optionsSnapshot.Retry.Enabled || instances.Count > 0)
@@ -182,6 +169,22 @@ internal sealed partial class ConfigServerDiscoveryService
         while (true);
 
         return instances;
+    }
+
+    private async Task AddServiceInstancesFromDiscoveryClientsAsync(string serviceId, List<IServiceInstance> instances, CancellationToken cancellationToken)
+    {
+        foreach (IDiscoveryClient discoveryClient in _discoveryClients ?? [])
+        {
+            try
+            {
+                IList<IServiceInstance> serviceInstances = await discoveryClient.GetInstancesAsync(serviceId, cancellationToken);
+                instances.AddRange(serviceInstances);
+            }
+            catch (Exception exception) when (!exception.IsCancellation())
+            {
+                LogFailedToGetInstances(exception, discoveryClient.GetType());
+            }
+        }
     }
 
     internal async Task ProvideRuntimeReplacementsAsync(ICollection<IDiscoveryClient> discoveryClientsFromServiceProvider, CancellationToken cancellationToken)
