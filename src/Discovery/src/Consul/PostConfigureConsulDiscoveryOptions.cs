@@ -53,7 +53,7 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
             }
             else if (!string.IsNullOrEmpty(options.HostName))
             {
-                options.IPAddress = _domainNameResolver.ResolveHostAddress(options.HostName);
+                options.IPAddress = _domainNameResolver.ResolveHostAddress(options.HostName)?.ToString();
             }
         }
 

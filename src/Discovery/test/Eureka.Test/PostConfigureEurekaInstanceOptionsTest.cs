@@ -4,12 +4,12 @@
 
 using System.Diagnostics;
 using System.Globalization;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Steeltoe.Common.Extensions;
@@ -26,20 +26,18 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     [Fact]
     public async Task Applies_defaults_when_not_configured()
     {
-        string? hostName = DomainNameResolver.Instance.ResolveHostName();
-        string? ipAddress = DomainNameResolver.Instance.ResolveHostAddress(hostName!);
         string appName = Assembly.GetEntryAssembly()!.GetName().Name!;
 
         await using ServiceProvider serviceProvider = BuildTestServiceProvider(null);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
 
-        instanceOptions.InstanceId.Should().Be($"{hostName}:{appName}:{5000}");
+        instanceOptions.InstanceId.Should().Be($"{FakeDomainNameResolver.TestHostName}:{appName}:{5000}");
         instanceOptions.AppName.Should().Be(appName);
         instanceOptions.AppGroupName.Should().BeNull();
         instanceOptions.MetadataMap.Should().BeEmpty();
-        instanceOptions.HostName.Should().Be(hostName);
-        instanceOptions.IPAddress.Should().Be(ipAddress);
+        instanceOptions.HostName.Should().Be(FakeDomainNameResolver.TestHostName);
+        instanceOptions.IPAddress.Should().Be(FakeDomainNameResolver.TestIPAddress);
         instanceOptions.PreferIPAddress.Should().BeFalse();
         instanceOptions.VipAddress.Should().Be(appName);
         instanceOptions.SecureVipAddress.Should().Be(appName);
@@ -174,48 +172,30 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
     [Fact]
     public async Task Does_not_use_network_interfaces_by_default()
     {
-        var domainNameResolver = Substitute.For<IDomainNameResolver>();
-        var inetUtils = Substitute.For<InetUtils>(domainNameResolver, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
-        inetUtils.FindFirstNonLoopbackHostInfo().Returns(new HostInfo("FromMock", "254.254.254.254"));
-
-        await using ServiceProvider serviceProvider = BuildTestServiceProvider(null, services =>
-        {
-            services.AddSingleton(domainNameResolver);
-            services.AddSingleton(inetUtils);
-        });
-
+        var networkInterfaceProvider = Substitute.For<INetworkInterfaceProvider>();
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(null, services => services.AddSingleton(networkInterfaceProvider));
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
 
-        EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
+        _ = optionsMonitor.CurrentValue;
 
-        instanceOptions.HostName.Should().NotBe("FromMock");
-        instanceOptions.IPAddress.Should().NotBe("254.254.254.254");
+        networkInterfaceProvider.DidNotReceive().GetAllNetworkInterfaces();
     }
 
     [Fact]
     public async Task Can_use_network_interfaces()
     {
-        var domainNameResolver = Substitute.For<IDomainNameResolver>();
-        var inetUtils = Substitute.For<InetUtils>(domainNameResolver, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
-        inetUtils.FindFirstNonLoopbackHostInfo().Returns(new HostInfo("FromMock", "254.254.254.254"));
-
         var appSettings = new Dictionary<string, string?>
         {
             ["eureka:instance:UseNetworkInterfaces"] = "true"
         };
 
-        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings, services =>
-        {
-            services.AddSingleton(domainNameResolver);
-            services.AddSingleton(inetUtils);
-        });
-
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
 
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
 
-        instanceOptions.HostName.Should().Be("FromMock");
-        instanceOptions.IPAddress.Should().Be("254.254.254.254");
+        instanceOptions.HostName.Should().Be(FakeNetworkInterfaceProvider.TestHostName);
+        instanceOptions.IPAddress.Should().Be(FakeNetworkInterfaceProvider.TestIPAddress);
     }
 
     [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
@@ -362,7 +342,8 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         configureServices?.Invoke(services);
         services.AddSingleton(configuration);
         services.AddLogging();
-        services.TryAddSingleton<IDomainNameResolver>(DomainNameResolver.Instance);
+        services.TryAddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
+        services.TryAddSingleton<INetworkInterfaceProvider, FakeNetworkInterfaceProvider>();
         services.TryAddSingleton<InetUtils>();
 
         services.AddApplicationInstanceInfo();
@@ -370,5 +351,39 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         services.AddSingleton<IPostConfigureOptions<EurekaInstanceOptions>, PostConfigureEurekaInstanceOptions>();
 
         return services.BuildServiceProvider(true);
+    }
+
+    private sealed class FakeDomainNameResolver : IDomainNameResolver
+    {
+        public const string TestIPAddress = "10.20.30.40";
+        public const string TestHostName = "test.domain-name.com";
+
+        public IPAddress ResolveHostAddress(string hostName, bool throwOnError = false)
+        {
+            return IPAddress.Parse(TestIPAddress);
+        }
+
+        public string ResolveHostName(bool throwOnError = false)
+        {
+            return TestHostName;
+        }
+    }
+
+    private sealed class FakeNetworkInterfaceProvider : INetworkInterfaceProvider
+    {
+        public const string TestIPAddress = "11.22.33.44";
+        public const string TestHostName = "test.interface-name.com";
+
+        private static readonly NetworkInterfaceSnapshot Snapshot = new("eth0", "eth0-id", true, false, 1, [IPAddress.Parse(TestIPAddress)]);
+
+        public IReadOnlyList<NetworkInterfaceSnapshot> GetAllNetworkInterfaces()
+        {
+            return [Snapshot];
+        }
+
+        public string ResolveHostName(IPAddress address)
+        {
+            return TestHostName;
+        }
     }
 }

@@ -32,7 +32,9 @@ internal static class TestRegistrationFactory
         configuration.GetSection("consul:discovery").Bind(options);
 
         var domainNameResolver = Substitute.For<IDomainNameResolver>();
-        var inetUtils = Substitute.For<InetUtils>(domainNameResolver, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
+        var networkInterfaceProvider = Substitute.For<INetworkInterfaceProvider>();
+        var inetUtils = new InetUtils(domainNameResolver, networkInterfaceProvider, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
+
         var configurer = new PostConfigureConsulDiscoveryOptions(configuration, domainNameResolver, inetUtils, appInfo);
         configurer.PostConfigure(null, options);
 

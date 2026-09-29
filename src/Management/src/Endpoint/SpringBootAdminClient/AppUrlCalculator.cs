@@ -77,7 +77,7 @@ internal sealed class AppUrlCalculator
 
             if (hostName != null)
             {
-                return _domainNameResolver.ResolveHostAddress(hostName);
+                return _domainNameResolver.ResolveHostAddress(hostName)?.ToString();
             }
 
             return null;

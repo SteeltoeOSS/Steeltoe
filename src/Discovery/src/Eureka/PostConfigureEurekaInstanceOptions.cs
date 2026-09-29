@@ -115,7 +115,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
             }
             else if (!string.IsNullOrWhiteSpace(options.HostName))
             {
-                options.IPAddress = _domainNameResolver.ResolveHostAddress(options.HostName);
+                options.IPAddress = _domainNameResolver.ResolveHostAddress(options.HostName)?.ToString();
             }
         }
 

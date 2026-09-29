@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Net;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Steeltoe.Common.Extensions;
@@ -54,15 +54,14 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
     public async Task DoesNotUseNetworkInterfacesByDefault()
     {
         var domainNameResolver = Substitute.For<IDomainNameResolver>();
-        var inetUtils = Substitute.For<InetUtils>(domainNameResolver, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
-        inetUtils.FindFirstNonLoopbackHostInfo().Returns(new HostInfo("FromMock", "254.254.254.254"));
-
-        IConfiguration configuration = new ConfigurationBuilder().Build();
+        var networkInterfaceProvider = Substitute.For<INetworkInterfaceProvider>();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddSingleton(domainNameResolver);
-        services.AddSingleton(inetUtils);
+        services.AddSingleton(networkInterfaceProvider);
+        services.AddSingleton<InetUtils>();
+        services.AddLogging();
         services.AddApplicationInstanceInfo();
         services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
@@ -72,15 +71,20 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
 
         _ = optionsMonitor.CurrentValue;
 
-        inetUtils.DidNotReceive().FindFirstNonLoopbackHostInfo();
+        networkInterfaceProvider.DidNotReceive().GetAllNetworkInterfaces();
     }
 
     [Fact]
     public async Task CanUseNetworkInterfaces()
     {
         var domainNameResolver = Substitute.For<IDomainNameResolver>();
-        var inetUtils = Substitute.For<InetUtils>(domainNameResolver, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
-        inetUtils.FindFirstNonLoopbackHostInfo().Returns(new HostInfo("FromMock", "254.254.254.254"));
+        var networkInterfaceProvider = Substitute.For<INetworkInterfaceProvider>();
+
+        networkInterfaceProvider.GetAllNetworkInterfaces().Returns([
+            new NetworkInterfaceSnapshot("eth0", "eth0-id", true, false, 1, [IPAddress.Parse("254.254.254.254")])
+        ]);
+
+        networkInterfaceProvider.ResolveHostName(Arg.Any<IPAddress>()).Returns("test.interface-name.com");
 
         var appSettings = new Dictionary<string, string?>
         {
@@ -92,7 +96,9 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddSingleton(domainNameResolver);
-        services.AddSingleton(inetUtils);
+        services.AddSingleton(networkInterfaceProvider);
+        services.AddSingleton<InetUtils>();
+        services.AddLogging();
         services.AddApplicationInstanceInfo();
         services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
@@ -102,10 +108,10 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
 
         ConsulDiscoveryOptions options = optionsMonitor.CurrentValue;
 
-        options.HostName.Should().Be("FromMock");
+        options.HostName.Should().Be("test.interface-name.com");
         options.IPAddress.Should().Be("254.254.254.254");
 
-        inetUtils.Received(1).FindFirstNonLoopbackHostInfo();
+        networkInterfaceProvider.Received(1).GetAllNetworkInterfaces();
     }
 
     [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
@@ -123,6 +129,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         services.AddSingleton(configuration);
         services.AddLogging();
         services.AddSingleton<IDomainNameResolver>(DomainNameResolver.Instance);
+        services.AddSingleton<INetworkInterfaceProvider>(NetworkInterfaceProvider.Instance);
         services.AddSingleton<InetUtils>();
         services.AddApplicationInstanceInfo();
         services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
