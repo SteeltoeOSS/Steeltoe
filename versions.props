@@ -6,7 +6,7 @@
     -->
 
     <AspNetCoreHealthChecksVersion>9.0.*</AspNetCoreHealthChecksVersion>
-    <CoverletVersion>10.0.*</CoverletVersion>
+    <CoverletVersion>10.1.*</CoverletVersion>
     <FluentAssertionsVersion>7.2.*</FluentAssertionsVersion>
     <MicrosoftAzureCosmosVersion>3.62.*</MicrosoftAzureCosmosVersion>
     <MicrosoftBuildUtilitiesCoreVersion>18.9.*</MicrosoftBuildUtilitiesCoreVersion>
