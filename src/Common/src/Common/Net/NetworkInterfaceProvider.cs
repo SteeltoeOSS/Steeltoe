@@ -30,7 +30,12 @@ internal sealed class NetworkInterfaceProvider : INetworkInterfaceProvider
             if (isUp && !isReceiveOnly)
             {
                 IPInterfaceProperties properties = networkInterface.GetIPProperties();
-                ipv4Index = properties.GetIPv4Properties().Index;
+
+                if (networkInterface.Supports(NetworkInterfaceComponent.IPv4))
+                {
+                    ipv4Index = properties.GetIPv4Properties().Index;
+                }
+
                 unicastAddresses = properties.UnicastAddresses.Select(addressInfo => addressInfo.Address).ToArray();
             }
 

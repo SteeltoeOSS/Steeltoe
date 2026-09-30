@@ -66,10 +66,15 @@ internal sealed partial class InetUtils
                 {
                     LogTestingInterface(networkInterface.Name, networkInterface.Id);
 
-                    if (networkInterface.IndexIPv4 < lowest || result == null)
+                    if (networkInterface.IndexIPv4 >= 0 && (networkInterface.IndexIPv4 < lowest || result == null))
                     {
-                        lowest = networkInterface.IndexIPv4;
-                        result = GetLastNonLoopbackInterfaceAddress(networkInterface, options) ?? result;
+                        IPAddress? address = GetLastNonLoopbackInterfaceAddress(networkInterface, options);
+
+                        if (address != null)
+                        {
+                            lowest = networkInterface.IndexIPv4;
+                            result = address;
+                        }
                     }
                 }
             }

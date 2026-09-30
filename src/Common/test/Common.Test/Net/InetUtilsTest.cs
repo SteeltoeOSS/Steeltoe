@@ -209,6 +209,36 @@ public sealed class InetUtilsTest
     }
 
     [Fact]
+    public void FindFirstNonLoopbackAddress_SelectsLowerIndexInterface_DespiteNonQualifyingInterfaceWithIntermediateIndex()
+    {
+        var options = new InetOptions
+        {
+            IgnoredInterfaces = "docker0"
+        };
+
+        var networkInterfaceProvider = new FakeNetworkInterfaceProvider();
+        networkInterfaceProvider.Add("eth2", true, false, 10, PreferredAddress2);
+        networkInterfaceProvider.Add("docker0", true, false, 3, PreferredAddress2);
+        networkInterfaceProvider.Add("eth0", true, false, 5, PreferredAddress1);
+
+        InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider, options: options);
+
+        inetUtils.FindFirstNonLoopbackAddress().Should().Be(PreferredAddress1);
+    }
+
+    [Fact]
+    public void FindFirstNonLoopbackAddress_IgnoresInterfaceWithNegativeIndex_AndDoesNotBlockOtherInterfaces()
+    {
+        var networkInterfaceProvider = new FakeNetworkInterfaceProvider();
+        networkInterfaceProvider.Add("weird0", true, false, -1, PreferredAddress2);
+        networkInterfaceProvider.Add("eth0", true, false, 1, PreferredAddress1);
+
+        InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider);
+
+        inetUtils.FindFirstNonLoopbackAddress().Should().Be(PreferredAddress1);
+    }
+
+    [Fact]
     public void FindFirstNonLoopbackAddress_SkipsNonSiteLocalAddress_WhenUseOnlySiteLocalInterfacesIsSet()
     {
         var options = new InetOptions
