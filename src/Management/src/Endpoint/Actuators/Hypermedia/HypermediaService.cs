@@ -87,16 +87,16 @@ internal sealed partial class HypermediaService
         var links = new Links();
         Link? selfLink = null;
 
-        foreach (EndpointOptions options in _endpointOptionsMonitorProviders.Select(provider => provider.Get())
+        foreach (EndpointOptions endpointOptions in _endpointOptionsMonitorProviders.Select(provider => provider.Get())
             .Where(options => options.Id != null && options.IsEnabled(managementOptions)).OrderBy(options => options.Id))
         {
-            if (skipExposureCheck || options.IsExposed(managementOptions))
+            if (skipExposureCheck || endpointOptions.IsExposed(managementOptions))
             {
-                string endpointId = options.Id!;
+                string endpointId = endpointOptions.Id!;
 
                 if (endpointId == _endpointOptions.Id)
                 {
-                    selfLink = CreateLink(baseUrl, basePath, options);
+                    selfLink = CreateLink(baseUrl, basePath, endpointOptions);
                 }
                 else
                 {
@@ -106,7 +106,7 @@ internal sealed partial class HypermediaService
                     }
                     else
                     {
-                        Link link = CreateLink(baseUrl, basePath, options);
+                        Link link = CreateLink(baseUrl, basePath, endpointOptions);
                         links.Entries.Add(endpointId, link);
                     }
                 }
