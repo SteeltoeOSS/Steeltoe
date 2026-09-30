@@ -2,16 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
 using System.Net;
-using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Net;
-using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;
@@ -114,39 +111,45 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         networkInterfaceProvider.Received(1).GetAllNetworkInterfaces();
     }
 
-    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
+    [Fact]
     public async Task CanUseNetworkInterfacesWithoutReverseDnsOnIP()
     {
+        var domainNameResolver = Substitute.For<IDomainNameResolver>();
+        var networkInterfaceProvider = Substitute.For<INetworkInterfaceProvider>();
+
+        networkInterfaceProvider.GetAllNetworkInterfaces().Returns([
+            new NetworkInterfaceSnapshot("eth0", "eth0-id", true, false, 1, [IPAddress.Parse("254.254.254.254")])
+        ]);
+
         var appSettings = new Dictionary<string, string?>
         {
             ["consul:discovery:UseNetworkInterfaces"] = "true",
-            ["spring:cloud:inet:SkipReverseDnsLookup"] = "true"
+            ["spring:cloud:inet:SkipReverseDnsLookup"] = "true",
+            ["spring:cloud:inet:DefaultHostname"] = "configured-default-host"
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
-        services.AddLogging();
-        services.AddSingleton<IDomainNameResolver>(DomainNameResolver.Instance);
-        services.AddSingleton<INetworkInterfaceProvider>(NetworkInterfaceProvider.Instance);
+        services.AddSingleton(domainNameResolver);
+        services.AddSingleton(networkInterfaceProvider);
         services.AddSingleton<InetUtils>();
+        services.AddLogging();
         services.AddApplicationInstanceInfo();
+        services.AddOptions<InetOptions>().BindConfiguration(InetOptions.ConfigurationPrefix);
         services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConsulDiscoveryOptions>>();
 
-        var noSlowReverseDnsQuery = new Stopwatch();
-        noSlowReverseDnsQuery.Start();
         ConsulDiscoveryOptions options = optionsMonitor.CurrentValue;
-        noSlowReverseDnsQuery.Stop();
 
-        options.HostName.Should().NotBeNull();
+        options.HostName.Should().Be("configured-default-host");
+        options.IPAddress.Should().Be("254.254.254.254");
 
-        // Testing with an actual reverse dns query results in around 5000 ms.
-        noSlowReverseDnsQuery.ElapsedMilliseconds.Should().BeInRange(0, 2000);
+        networkInterfaceProvider.DidNotReceive().ResolveHostName(Arg.Any<IPAddress>());
     }
 
     [Fact]

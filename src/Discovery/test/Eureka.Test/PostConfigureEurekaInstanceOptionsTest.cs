@@ -2,11 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -14,7 +12,6 @@ using Microsoft.Extensions.Options;
 using NSubstitute;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Net;
-using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.All;
@@ -198,27 +195,30 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         instanceOptions.IPAddress.Should().Be(FakeNetworkInterfaceProvider.TestIPAddress);
     }
 
-    [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
+    [Fact]
     public async Task Can_use_network_interfaces_without_reverse_DNS_on_IP()
     {
+        var networkInterfaceProvider = Substitute.For<INetworkInterfaceProvider>();
+
+        networkInterfaceProvider.GetAllNetworkInterfaces().Returns([
+            new NetworkInterfaceSnapshot("eth0", "eth0-id", true, false, 1, [IPAddress.Parse("254.254.254.254")])
+        ]);
+
         var appSettings = new Dictionary<string, string?>
         {
             ["eureka:instance:UseNetworkInterfaces"] = "true",
-            ["spring:cloud:inet:SkipReverseDnsLookup"] = "true"
+            ["spring:cloud:inet:SkipReverseDnsLookup"] = "true",
+            ["spring:cloud:inet:DefaultHostname"] = "configured-default-host"
         };
 
-        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
+        await using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings, services => services.AddSingleton(networkInterfaceProvider));
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
-
-        var noSlowReverseDnsQuery = new Stopwatch();
-        noSlowReverseDnsQuery.Start();
         EurekaInstanceOptions instanceOptions = optionsMonitor.CurrentValue;
-        noSlowReverseDnsQuery.Stop();
 
-        instanceOptions.HostName.Should().NotBeNull();
+        instanceOptions.HostName.Should().Be("configured-default-host");
+        instanceOptions.IPAddress.Should().Be("254.254.254.254");
 
-        // Testing with an actual reverse dns query results in around 5000 ms.
-        noSlowReverseDnsQuery.ElapsedMilliseconds.Should().BeInRange(0, 1500);
+        networkInterfaceProvider.DidNotReceive().ResolveHostName(Arg.Any<IPAddress>());
     }
 
     [Fact]
@@ -347,6 +347,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         services.TryAddSingleton<InetUtils>();
 
         services.AddApplicationInstanceInfo();
+        services.AddOptions<InetOptions>().BindConfiguration(InetOptions.ConfigurationPrefix);
         services.AddOptions<EurekaInstanceOptions>().BindConfiguration(EurekaInstanceOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<EurekaInstanceOptions>, PostConfigureEurekaInstanceOptions>();
 
