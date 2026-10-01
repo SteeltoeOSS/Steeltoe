@@ -34,10 +34,14 @@ internal sealed partial class InetUtils
         _logger = logger;
     }
 
-    public HostInfo FindFirstNonLoopbackHostInfo()
+    /// <summary>
+    /// Gets the hostname and IP address of a non-loopback network interface, or the configured defaults when none qualifies. See
+    /// <see cref="GetNonLoopbackAddress()" /> for how the address is selected.
+    /// </summary>
+    public HostInfo GetNonLoopbackHostInfo()
     {
         InetOptions options = _optionsMonitor.CurrentValue;
-        IPAddress? address = FindFirstNonLoopbackAddress(options);
+        IPAddress? address = GetNonLoopbackAddress(options);
 
         if (address != null)
         {
@@ -47,12 +51,20 @@ internal sealed partial class InetUtils
         return new HostInfo(options.DefaultHostname!, options.DefaultIPAddress!);
     }
 
-    public IPAddress? FindFirstNonLoopbackAddress()
+    /// <summary>
+    /// Gets the IP address of a non-loopback network interface, or <see langword="null" /> when none qualifies.
+    /// </summary>
+    /// <remarks>
+    /// Among the network interfaces that are up and not receive-only, the one with the lowest IPv4 interface index wins. When that interface has multiple
+    /// addresses matching the configured preferences, the last one (in enumeration order) is used. When no interface qualifies, this falls back to resolving
+    /// the local machine's own hostname/address via DNS.
+    /// </remarks>
+    public IPAddress? GetNonLoopbackAddress()
     {
-        return FindFirstNonLoopbackAddress(_optionsMonitor.CurrentValue);
+        return GetNonLoopbackAddress(_optionsMonitor.CurrentValue);
     }
 
-    private IPAddress? FindFirstNonLoopbackAddress(InetOptions options)
+    private IPAddress? GetNonLoopbackAddress(InetOptions options)
     {
         IPAddress? result = null;
 

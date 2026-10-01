@@ -18,15 +18,15 @@ public sealed class InetUtilsTest
     private static readonly IPAddress AddressIPv6 = IPAddress.Parse("fe80::1");
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_ReturnsNull_WhenNoInterfacesAndHostResolutionFails()
+    public void GetNonLoopbackAddress_ReturnsNull_WhenNoInterfacesAndHostResolutionFails()
     {
         InetUtils inetUtils = CreateInetUtils();
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().BeNull();
+        inetUtils.GetNonLoopbackAddress().Should().BeNull();
     }
 
     [Fact]
-    public void FindFirstNonLoopbackHostInfo_ReturnsDefaults_WhenNoInterfacesAndHostResolutionFails()
+    public void GetNonLoopbackHostInfo_ReturnsDefaults_WhenNoInterfacesAndHostResolutionFails()
     {
         var options = new InetOptions
         {
@@ -36,14 +36,14 @@ public sealed class InetUtilsTest
 
         InetUtils inetUtils = CreateInetUtils(options: options);
 
-        HostInfo hostInfo = inetUtils.FindFirstNonLoopbackHostInfo();
+        HostInfo hostInfo = inetUtils.GetNonLoopbackHostInfo();
 
         hostInfo.Hostname.Should().Be("default-host");
         hostInfo.IPAddress.Should().Be("1.2.3.4");
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_FallsBackToResolvedHostAddress_WhenNoInterfaceQualifies()
+    public void GetNonLoopbackAddress_FallsBackToResolvedHostAddress_WhenNoInterfaceQualifies()
     {
         var domainNameResolver = new FakeDomainNameResolver
         {
@@ -53,11 +53,11 @@ public sealed class InetUtilsTest
 
         InetUtils inetUtils = CreateInetUtils(domainNameResolver);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().Be(IPAddress.Parse("5.6.7.8"));
+        inetUtils.GetNonLoopbackAddress().Should().Be(IPAddress.Parse("5.6.7.8"));
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_ReturnsNull_WhenHostResolvesButAddressDoesNot()
+    public void GetNonLoopbackAddress_ReturnsNull_WhenHostResolvesButAddressDoesNot()
     {
         var domainNameResolver = new FakeDomainNameResolver
         {
@@ -67,11 +67,11 @@ public sealed class InetUtilsTest
 
         InetUtils inetUtils = CreateInetUtils(domainNameResolver);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().BeNull();
+        inetUtils.GetNonLoopbackAddress().Should().BeNull();
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_ReturnsNull_WhenResolvingHostNameThrows()
+    public void GetNonLoopbackAddress_ReturnsNull_WhenResolvingHostNameThrows()
     {
         var domainNameResolver = new FakeDomainNameResolver
         {
@@ -80,11 +80,11 @@ public sealed class InetUtilsTest
 
         InetUtils inetUtils = CreateInetUtils(domainNameResolver);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().BeNull();
+        inetUtils.GetNonLoopbackAddress().Should().BeNull();
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_ReturnsNull_WhenResolvingHostAddressThrows()
+    public void GetNonLoopbackAddress_ReturnsNull_WhenResolvingHostAddressThrows()
     {
         var domainNameResolver = new FakeDomainNameResolver
         {
@@ -94,66 +94,66 @@ public sealed class InetUtilsTest
 
         InetUtils inetUtils = CreateInetUtils(domainNameResolver);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().BeNull();
+        inetUtils.GetNonLoopbackAddress().Should().BeNull();
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_SelectsAddressFromSingleQualifyingInterface()
+    public void GetNonLoopbackAddress_SelectsAddressFromSingleQualifyingInterface()
     {
         var networkInterfaceProvider = new FakeNetworkInterfaceProvider();
         networkInterfaceProvider.Add("eth0", true, false, 1, PreferredAddress1);
 
         InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().Be(PreferredAddress1);
+        inetUtils.GetNonLoopbackAddress().Should().Be(PreferredAddress1);
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_IgnoresInterfaceThatIsDown()
+    public void GetNonLoopbackAddress_IgnoresInterfaceThatIsDown()
     {
         var networkInterfaceProvider = new FakeNetworkInterfaceProvider();
         networkInterfaceProvider.Add("eth0", false, false, 1, PreferredAddress1);
 
         InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().BeNull();
+        inetUtils.GetNonLoopbackAddress().Should().BeNull();
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_IgnoresInterfaceThatIsReceiveOnly()
+    public void GetNonLoopbackAddress_IgnoresInterfaceThatIsReceiveOnly()
     {
         var networkInterfaceProvider = new FakeNetworkInterfaceProvider();
         networkInterfaceProvider.Add("eth0", true, true, 1, PreferredAddress1);
 
         InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().BeNull();
+        inetUtils.GetNonLoopbackAddress().Should().BeNull();
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_IgnoresLoopbackAddress()
+    public void GetNonLoopbackAddress_IgnoresLoopbackAddress()
     {
         var networkInterfaceProvider = new FakeNetworkInterfaceProvider();
         networkInterfaceProvider.Add("lo", true, false, 1, LoopbackAddress);
 
         InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().BeNull();
+        inetUtils.GetNonLoopbackAddress().Should().BeNull();
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_IgnoresIPv6Address_AndPicksIPv4FromSameInterface()
+    public void GetNonLoopbackAddress_IgnoresIPv6Address_AndPicksIPv4FromSameInterface()
     {
         var networkInterfaceProvider = new FakeNetworkInterfaceProvider();
         networkInterfaceProvider.Add("eth0", true, false, 1, AddressIPv6, PreferredAddress1);
 
         InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().Be(PreferredAddress1);
+        inetUtils.GetNonLoopbackAddress().Should().Be(PreferredAddress1);
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_IgnoresInterfaceMatchingIgnoredInterfaces()
+    public void GetNonLoopbackAddress_IgnoresInterfaceMatchingIgnoredInterfaces()
     {
         var options = new InetOptions
         {
@@ -165,22 +165,22 @@ public sealed class InetUtilsTest
 
         InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider, options: options);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().BeNull();
+        inetUtils.GetNonLoopbackAddress().Should().BeNull();
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_UsesLastMatchingAddress_WhenInterfaceHasMultiplePreferredAddresses()
+    public void GetNonLoopbackAddress_UsesLastMatchingAddress_WhenInterfaceHasMultiplePreferredAddresses()
     {
         var networkInterfaceProvider = new FakeNetworkInterfaceProvider();
         networkInterfaceProvider.Add("eth0", true, false, 1, PreferredAddress1, PreferredAddress2);
 
         InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().Be(PreferredAddress2);
+        inetUtils.GetNonLoopbackAddress().Should().Be(PreferredAddress2);
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_PrefersInterfaceWithLowestIndex()
+    public void GetNonLoopbackAddress_PrefersInterfaceWithLowestIndex()
     {
         var networkInterfaceProvider = new FakeNetworkInterfaceProvider();
         networkInterfaceProvider.Add("eth1", true, false, 5, PreferredAddress2);
@@ -188,11 +188,11 @@ public sealed class InetUtilsTest
 
         InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().Be(PreferredAddress1);
+        inetUtils.GetNonLoopbackAddress().Should().Be(PreferredAddress1);
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_KeepsPreviousMatch_WhenLowerIndexInterfaceHasNoQualifyingAddress()
+    public void GetNonLoopbackAddress_KeepsPreviousMatch_WhenLowerIndexInterfaceHasNoQualifyingAddress()
     {
         var options = new InetOptions
         {
@@ -205,11 +205,11 @@ public sealed class InetUtilsTest
 
         InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider, options: options);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().Be(PreferredAddress1);
+        inetUtils.GetNonLoopbackAddress().Should().Be(PreferredAddress1);
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_SelectsLowerIndexInterface_DespiteNonQualifyingInterfaceWithIntermediateIndex()
+    public void GetNonLoopbackAddress_SelectsLowerIndexInterface_DespiteNonQualifyingInterfaceWithIntermediateIndex()
     {
         var options = new InetOptions
         {
@@ -223,11 +223,11 @@ public sealed class InetUtilsTest
 
         InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider, options: options);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().Be(PreferredAddress1);
+        inetUtils.GetNonLoopbackAddress().Should().Be(PreferredAddress1);
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_IgnoresInterfaceWithNegativeIndex_AndDoesNotBlockOtherInterfaces()
+    public void GetNonLoopbackAddress_IgnoresInterfaceWithNegativeIndex_AndDoesNotBlockOtherInterfaces()
     {
         var networkInterfaceProvider = new FakeNetworkInterfaceProvider();
         networkInterfaceProvider.Add("weird0", true, false, -1, PreferredAddress2);
@@ -235,11 +235,11 @@ public sealed class InetUtilsTest
 
         InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().Be(PreferredAddress1);
+        inetUtils.GetNonLoopbackAddress().Should().Be(PreferredAddress1);
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_SkipsNonSiteLocalAddress_WhenUseOnlySiteLocalInterfacesIsSet()
+    public void GetNonLoopbackAddress_SkipsNonSiteLocalAddress_WhenUseOnlySiteLocalInterfacesIsSet()
     {
         var options = new InetOptions
         {
@@ -251,11 +251,11 @@ public sealed class InetUtilsTest
 
         InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider, options: options);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().BeNull();
+        inetUtils.GetNonLoopbackAddress().Should().BeNull();
     }
 
     [Fact]
-    public void FindFirstNonLoopbackAddress_ReturnsNull_WhenEnumeratingInterfacesThrows()
+    public void GetNonLoopbackAddress_ReturnsNull_WhenEnumeratingInterfacesThrows()
     {
         var networkInterfaceProvider = new FakeNetworkInterfaceProvider
         {
@@ -264,7 +264,7 @@ public sealed class InetUtilsTest
 
         InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider);
 
-        inetUtils.FindFirstNonLoopbackAddress().Should().BeNull();
+        inetUtils.GetNonLoopbackAddress().Should().BeNull();
     }
 
     [Fact]
@@ -320,7 +320,7 @@ public sealed class InetUtilsTest
     }
 
     [Fact]
-    public void FindFirstNonLoopbackHostInfo_AppliesConvertAddress_ToAddressFoundOnInterface()
+    public void GetNonLoopbackHostInfo_AppliesConvertAddress_ToAddressFoundOnInterface()
     {
         var networkInterfaceProvider = new FakeNetworkInterfaceProvider();
         networkInterfaceProvider.Add("eth0", true, false, 1, PreferredAddress1);
@@ -328,7 +328,7 @@ public sealed class InetUtilsTest
 
         InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider);
 
-        HostInfo hostInfo = inetUtils.FindFirstNonLoopbackHostInfo();
+        HostInfo hostInfo = inetUtils.GetNonLoopbackHostInfo();
 
         hostInfo.Hostname.Should().Be("eth0-host-name");
         hostInfo.IPAddress.Should().Be(PreferredAddress1.ToString());
@@ -422,8 +422,8 @@ public sealed class InetUtilsTest
         var optionsMonitor = new TestOptionsMonitor<InetOptions>();
         var inetUtils = new InetUtils(DomainNameResolver.Instance, NetworkInterfaceProvider.Instance, optionsMonitor, NullLogger<InetUtils>.Instance);
 
-        inetUtils.FindFirstNonLoopbackHostInfo().Should().NotBeNull();
-        inetUtils.FindFirstNonLoopbackAddress().Should().NotBeNull();
+        inetUtils.GetNonLoopbackHostInfo().Should().NotBeNull();
+        inetUtils.GetNonLoopbackAddress().Should().NotBeNull();
     }
 
     private static InetUtils CreateInetUtils(FakeDomainNameResolver? domainNameResolver = null, FakeNetworkInterfaceProvider? networkInterfaceProvider = null,

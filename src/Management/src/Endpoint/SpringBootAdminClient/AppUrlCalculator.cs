@@ -65,7 +65,7 @@ internal sealed class AppUrlCalculator
 
     private string? ResolveHostNameOrIPAddress(SpringBootAdminClientOptions clientOptions)
     {
-        HostInfo? hostInfo = clientOptions.UseNetworkInterfaces ? _inetUtils.FindFirstNonLoopbackHostInfo() : null;
+        HostInfo? hostInfo = clientOptions.UseNetworkInterfaces ? _inetUtils.GetNonLoopbackHostInfo() : null;
         string? hostName = hostInfo != null ? hostInfo.Hostname : _domainNameResolver.ResolveHostName();
 
         if (clientOptions.PreferIPAddress)

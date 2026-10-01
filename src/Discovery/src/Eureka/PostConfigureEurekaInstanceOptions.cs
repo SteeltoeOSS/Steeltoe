@@ -99,7 +99,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
             }
         }
 
-        HostInfo? hostInfo = options.UseNetworkInterfaces ? _inetUtils.FindFirstNonLoopbackHostInfo() : null;
+        HostInfo? hostInfo = options.UseNetworkInterfaces ? _inetUtils.GetNonLoopbackHostInfo() : null;
         options.HostName ??= hostInfo != null ? hostInfo.Hostname : _domainNameResolver.ResolveHostName();
 
         if (!string.IsNullOrWhiteSpace(_appInfo.InternalIP))

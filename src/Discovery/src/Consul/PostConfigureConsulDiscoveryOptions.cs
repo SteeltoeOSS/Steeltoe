@@ -42,7 +42,7 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
 
         options.ServiceName = GetServiceName(options);
 
-        HostInfo? hostInfo = options.UseNetworkInterfaces ? _inetUtils.FindFirstNonLoopbackHostInfo() : null;
+        HostInfo? hostInfo = options.UseNetworkInterfaces ? _inetUtils.GetNonLoopbackHostInfo() : null;
         options.HostName ??= hostInfo != null ? hostInfo.Hostname : _domainNameResolver.ResolveHostName();
 
         if (string.IsNullOrWhiteSpace(options.IPAddress))
