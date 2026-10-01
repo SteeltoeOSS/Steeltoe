@@ -16,26 +16,23 @@ internal sealed class DomainNameResolver : IDomainNameResolver
     }
 
     /// <summary>
-    /// Get the first listed <see cref="AddressFamily.InterNetwork" /> for the hostname.
+    /// Get the first listed IPv4 address for the specified hostname.
     /// </summary>
-    /// <param name="hostName">
-    /// The hostname or address to use.
-    /// </param>
-    /// <returns>
-    /// A string representation of the IP Address, or <see langword="null" />.
-    /// </returns>
-    public string? ResolveHostAddress(string hostName)
+    public IPAddress? ResolveHostAddress(string hostName, bool throwOnError = false)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(hostName);
+        ArgumentNullException.ThrowIfNull(hostName);
 
         try
         {
-            IPAddress[] hostAddresses = Dns.GetHostAddresses(hostName);
-            return Array.Find(hostAddresses, ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString();
+            return Dns.GetHostAddresses(hostName, AddressFamily.InterNetwork).FirstOrDefault();
         }
         catch (Exception)
         {
-            // Ignore
+            if (throwOnError)
+            {
+                throw;
+            }
+
             return null;
         }
     }
@@ -44,6 +41,9 @@ internal sealed class DomainNameResolver : IDomainNameResolver
     {
         try
         {
+            // On macOS build servers, the call to Dns.GetHostName() takes roughly 5 seconds.
+            // This slows down test runs and makes timing-based tests unreliable. Tests should use a fake/mock instead.
+
             string hostName = Dns.GetHostName();
 
             if (string.IsNullOrEmpty(hostName))

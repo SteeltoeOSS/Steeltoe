@@ -14,6 +14,7 @@ using RichardSzalay.MockHttp;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http.HttpClientPooling;
+using Steeltoe.Common.Net;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
@@ -90,6 +91,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton(configuration);
+        services.AddSingleton<INetworkInterfaceProvider, FakeNetworkInterfaceProvider>();
         services.AddLogging();
         services.AddOptions();
         services.AddEurekaDiscoveryClient();
@@ -696,6 +698,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton(configuration);
+        services.AddSingleton<INetworkInterfaceProvider, FakeNetworkInterfaceProvider>();
         services.AddLogging();
         services.AddOptions();
         services.AddConsulDiscoveryClient();
@@ -886,5 +889,23 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddEurekaDiscoveryClient();
 
         services.Count.Should().Be(beforeServiceCount);
+    }
+
+    private sealed class FakeNetworkInterfaceProvider : INetworkInterfaceProvider
+    {
+        private const string TestIPAddress = "11.22.33.44";
+        private const string TestHostName = "test.interface-name.com";
+
+        private static readonly NetworkInterfaceSnapshot Snapshot = new("eth0", "eth0-id", true, false, 1, [IPAddress.Parse(TestIPAddress)]);
+
+        public IReadOnlyList<NetworkInterfaceSnapshot> GetAllNetworkInterfaces()
+        {
+            return [Snapshot];
+        }
+
+        public string ResolveHostName(IPAddress address)
+        {
+            return TestHostName;
+        }
     }
 }

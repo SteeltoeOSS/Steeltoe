@@ -23,8 +23,6 @@ public sealed class ConsulServiceCollectionExtensionsTest
         {
             ["spring:application:name"] = "myName",
             ["spring:cloud:inet:defaultHostName"] = "from-test",
-            ["spring:cloud:inet:skipReverseDnsLookup"] = "true",
-            ["consul:discovery:UseNetworkInterfaces"] = "true",
             ["consul:discovery:register"] = "false",
             ["consul:discovery:deregister"] = "false",
             ["consul:host"] = "http://testhost:8500"
