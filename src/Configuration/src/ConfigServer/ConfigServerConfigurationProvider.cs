@@ -407,36 +407,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
                     if (updateDictionary)
                     {
-                        var data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
-                        CopyLastDiscoveryLookupResultToData(data, optionsSnapshot.Discovery.Enabled);
-
-                        if (!string.IsNullOrEmpty(env.State))
-                        {
-                            data["spring:cloud:config:client:state"] = env.State;
-                        }
-
-                        if (!string.IsNullOrEmpty(env.Version))
-                        {
-                            data["spring:cloud:config:client:version"] = env.Version;
-                        }
-
-                        IList<PropertySource> sources = env.PropertySources;
-
-                        for (int index = sources.Count - 1; index >= 0; index--)
-                        {
-                            AddPropertySource(sources[index], data);
-                        }
-
-                        if (!AreDictionariesEqual(Data, data))
-                        {
-                            LogDataChanged();
-                            Data = data;
-                            OnReload();
-                        }
-                        else
-                        {
-                            LogDataNotChanged();
-                        }
+                        UpdateData(env, optionsSnapshot.Discovery.Enabled);
                     }
 
                     return env;
@@ -457,6 +428,40 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         {
             string profiles = string.Join(", ", environment.Profiles.Select(profile => $"'{profile}'"));
             LogEnvironmentLocated(environment.Name, profiles, environment.Label, environment.Version, environment.State);
+        }
+    }
+
+    private void UpdateData(ConfigEnvironment env, bool isDiscoveryEnabled)
+    {
+        var data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+        CopyLastDiscoveryLookupResultToData(data, isDiscoveryEnabled);
+
+        if (!string.IsNullOrEmpty(env.State))
+        {
+            data["spring:cloud:config:client:state"] = env.State;
+        }
+
+        if (!string.IsNullOrEmpty(env.Version))
+        {
+            data["spring:cloud:config:client:version"] = env.Version;
+        }
+
+        IList<PropertySource> sources = env.PropertySources;
+
+        for (int index = sources.Count - 1; index >= 0; index--)
+        {
+            AddPropertySource(sources[index], data);
+        }
+
+        if (!AreDictionariesEqual(Data, data))
+        {
+            LogDataChanged();
+            Data = data;
+            OnReload();
+        }
+        else
+        {
+            LogDataNotChanged();
         }
     }
 
@@ -677,37 +682,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
                     throw;
                 }
 
-                // Invoke Config Server
-                LogSendingHttpRequest();
-                using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
-
-                LogConfigServerReturnedStatus(uri, response.StatusCode);
-
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    if (response.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        return null;
-                    }
-
-                    // Throw if status >= 400
-                    if (response.StatusCode >= HttpStatusCode.BadRequest)
-                    {
-                        MaskedUri masked = uri;
-                        throw new HttpRequestException($"Config Server returned status: {response.StatusCode} invoking path: {masked}");
-                    }
-
-                    if ((int)response.StatusCode >= 300)
-                    {
-                        MaskedUri masked = response.Headers.Location;
-                        LogConfigServerRedirected((int)response.StatusCode, masked);
-                    }
-
-                    return null;
-                }
-
-                LogParsingJsonResponse();
-                return await response.Content.ReadFromJsonAsync<ConfigEnvironment>(SerializerOptions, cancellationToken);
+                return await SendAsync(httpClient, request, uri, cancellationToken);
             }
             catch (Exception exception) when (!exception.IsCancellation())
             {
@@ -729,6 +704,39 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
 
         return null;
+    }
+
+    private async Task<ConfigEnvironment?> SendAsync(HttpClient httpClient, HttpRequestMessage request, Uri uri, CancellationToken cancellationToken)
+    {
+        LogSendingHttpRequest();
+        using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
+
+        LogConfigServerReturnedStatus(uri, response.StatusCode);
+
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+
+            if ((int)response.StatusCode >= 400)
+            {
+                MaskedUri masked = uri;
+                throw new HttpRequestException($"Config Server returned status: {response.StatusCode} invoking path: {masked}");
+            }
+
+            if ((int)response.StatusCode >= 300)
+            {
+                MaskedUri masked = response.Headers.Location;
+                LogConfigServerRedirected((int)response.StatusCode, masked);
+            }
+
+            return null;
+        }
+
+        LogParsingJsonResponse();
+        return await response.Content.ReadFromJsonAsync<ConfigEnvironment>(SerializerOptions, cancellationToken);
     }
 
     /// <summary>

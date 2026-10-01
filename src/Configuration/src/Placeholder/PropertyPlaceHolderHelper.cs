@@ -91,18 +91,7 @@ internal sealed partial class PropertyPlaceholderHelper
                 string innerPlaceholder = ParseStringValue(outerPlaceholder, configuration, visitedPlaceholders);
                 PlaceholderExpression expression = PlaceholderExpression.Parse(innerPlaceholder);
 
-                // Now obtain the value for the fully resolved key...
-                string? propertyValue = configuration[expression.Key];
-
-                // Attempt to resolve as a Spring-compatible placeholder.
-                if (propertyValue == null)
-                {
-                    // Replace Spring delimiters ('.') with dotnet-friendly delimiters (':') so Spring placeholders can also be resolved.
-                    string springKey = expression.Key.Replace('.', ':');
-                    propertyValue = configuration[springKey];
-                }
-
-                propertyValue ??= expression.DefaultValue;
+                string? propertyValue = ResolveSimpleValue(configuration, expression);
 
                 if (propertyValue != null)
                 {
@@ -128,6 +117,23 @@ internal sealed partial class PropertyPlaceholderHelper
         }
 
         return result.ToString();
+    }
+
+    private static string? ResolveSimpleValue(IConfiguration configuration, PlaceholderExpression expression)
+    {
+        // Now obtain the value for the fully resolved key...
+        string? propertyValue = configuration[expression.Key];
+
+        // Attempt to resolve as a Spring-compatible placeholder.
+        if (propertyValue == null)
+        {
+            // Replace Spring delimiters ('.') with dotnet-friendly delimiters (':') so Spring placeholders can also be resolved.
+            string springKey = expression.Key.Replace('.', ':');
+            propertyValue = configuration[springKey];
+        }
+
+        propertyValue ??= expression.DefaultValue;
+        return propertyValue;
     }
 
     private static int FindEndIndex(StringBuilder builder, int startIndex)

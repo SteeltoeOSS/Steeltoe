@@ -33,7 +33,7 @@ public sealed partial class EurekaClient
 
     private const string MediaType = "application/json";
     private const string DiscoveryAllowRedirectHeaderName = "X-Discovery-AllowRedirect";
-    private static readonly Task<object?> TaskOfNull = Task.FromResult<object?>(null);
+    private static readonly Task<string> TaskOfEmptyString = Task.FromResult(string.Empty);
     private static readonly TimeSpan GetAccessTokenTimeout = TimeSpan.FromSeconds(10);
 
     private readonly IHttpClientFactory _httpClientFactory;
@@ -218,11 +218,12 @@ public sealed partial class EurekaClient
     private async Task ExecuteRequestAsync(HttpMethod method, string path, IDictionary<string, string>? queryString, string? requestBody,
         CancellationToken cancellationToken)
     {
-        _ = await ExecuteRequestAsync(method, path, queryString, requestBody, _ => TaskOfNull, cancellationToken);
+        _ = await ExecuteRequestAsync(method, path, queryString, requestBody, _ => TaskOfEmptyString, cancellationToken);
     }
 
     private async Task<TResult> ExecuteRequestAsync<TResult>(HttpMethod method, string path, IDictionary<string, string>? queryString, string? requestBody,
         Func<HttpResponseMessage, Task<TResult>> getResultAsync, CancellationToken cancellationToken)
+        where TResult : class
     {
         EurekaClientOptions clientOptions = _optionsMonitor.CurrentValue;
         TimeSpan connectTimeout = TimeSpan.FromSeconds(clientOptions.EurekaServer.ConnectTimeoutSeconds);
@@ -237,26 +238,49 @@ public sealed partial class EurekaClient
             Uri serviceUri = serviceUris.GetNextServiceUri();
             Uri requestUri = GetRequestUri(serviceUri, path, queryString);
 
-            HttpContent? requestContent = requestBody != null ? new StringContent(requestBody, Encoding.UTF8, MediaType) : null;
-            HttpRequestMessage request;
+            HttpRequestMessage? request = await TryCreateRequestAsync(method, requestUri, requestBody, attempt, clientOptions, cancellationToken);
 
-            try
+            if (request != null)
             {
-                request = await GetRequestMessageAsync(clientOptions, method, requestUri, requestContent, cancellationToken);
-            }
-            catch (Exception exception) when (!exception.IsCancellation())
-            {
-                if (!string.IsNullOrEmpty(clientOptions.AccessTokenUri))
+                TResult? result = await TrySendAsync(httpClient, request, requestUri, attempt, getResultAsync, serviceUri, cancellationToken);
+
+                if (result != null)
                 {
-                    var accessTokenUri = new Uri(clientOptions.AccessTokenUri);
-                    LogFailedToFetchAccessToken(exception, accessTokenUri, attempt);
-
-                    continue;
+                    return result;
                 }
 
+                _eurekaServiceUriStateManager.MarkFailingServiceUri(serviceUri);
+            }
+        }
+
+        throw new EurekaTransportException("Retry limit reached; giving up on completing the HTTP request.");
+    }
+
+    private async Task<HttpRequestMessage?> TryCreateRequestAsync(HttpMethod method, Uri requestUri, string? requestBody, int attempt,
+        EurekaClientOptions clientOptions, CancellationToken cancellationToken)
+    {
+        HttpRequestMessage? request = null;
+
+        try
+        {
+            HttpContent? requestContent = requestBody != null ? new StringContent(requestBody, Encoding.UTF8, MediaType) : null;
+            request = await GetRequestMessageAsync(clientOptions, method, requestUri, requestContent, cancellationToken);
+        }
+        catch (Exception exception) when (!exception.IsCancellation())
+        {
+            if (!string.IsNullOrEmpty(clientOptions.AccessTokenUri))
+            {
+                var accessTokenUri = new Uri(clientOptions.AccessTokenUri);
+                LogFailedToFetchAccessToken(exception, accessTokenUri, attempt);
+            }
+            else
+            {
                 throw;
             }
+        }
 
+        if (request != null)
+        {
             if (!string.IsNullOrEmpty(requestBody))
             {
                 LogSendingRequestWithBody(request.Method, requestUri, requestBody);
@@ -265,42 +289,47 @@ public sealed partial class EurekaClient
             {
                 LogSendingRequestWithoutBody(request.Method, requestUri);
             }
-
-            try
-            {
-                using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
-
-                LogRequestReturnedStatus(request.Method, requestUri, (int)response.StatusCode, attempt);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    _eurekaServiceUriStateManager.MarkWorkingServiceUri(serviceUri);
-
-                    try
-                    {
-                        return await getResultAsync(response);
-                    }
-                    catch (JsonException exception) when (!exception.IsCancellation())
-                    {
-                        LogFailedToDeserializeResponse(exception, request.Method, requestUri);
-                    }
-                }
-                else
-                {
-                    string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
-
-                    LogRequestFailed(request.Method, requestUri, (int)response.StatusCode, responseBody);
-                }
-            }
-            catch (Exception exception) when (!exception.IsCancellation())
-            {
-                LogAttemptFailed(exception, request.Method, requestUri, attempt);
-            }
-
-            _eurekaServiceUriStateManager.MarkFailingServiceUri(serviceUri);
         }
 
-        throw new EurekaTransportException("Retry limit reached; giving up on completing the HTTP request.");
+        return request;
+    }
+
+    private async Task<TResult?> TrySendAsync<TResult>(HttpClient httpClient, HttpRequestMessage request, Uri requestUri, int attempt,
+        Func<HttpResponseMessage, Task<TResult>> getResultAsync, Uri serviceUri, CancellationToken cancellationToken)
+        where TResult : class
+    {
+        try
+        {
+            using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
+
+            LogRequestReturnedStatus(request.Method, requestUri, (int)response.StatusCode, attempt);
+
+            if (response.IsSuccessStatusCode)
+            {
+                _eurekaServiceUriStateManager.MarkWorkingServiceUri(serviceUri);
+
+                try
+                {
+                    return await getResultAsync(response);
+                }
+                catch (JsonException exception) when (!exception.IsCancellation())
+                {
+                    LogFailedToDeserializeResponse(exception, request.Method, requestUri);
+                }
+            }
+            else
+            {
+                string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                LogRequestFailed(request.Method, requestUri, (int)response.StatusCode, responseBody);
+            }
+        }
+        catch (Exception exception) when (!exception.IsCancellation())
+        {
+            LogAttemptFailed(exception, request.Method, requestUri, attempt);
+        }
+
+        return null;
     }
 
     private HttpClient CreateHttpClient(string name, TimeSpan connectTimeout)

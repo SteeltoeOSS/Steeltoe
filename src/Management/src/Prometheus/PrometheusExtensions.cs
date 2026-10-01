@@ -162,36 +162,40 @@ public static partial class PrometheusExtensions
             LogPrometheusEndpointNotSecure(logger);
         }
 
-        builder.UseOpenTelemetryPrometheusScrapingEndpoint(null, null, endpointPath, ConfigureBranchedPipeline, null);
+        Action<IApplicationBuilder> configureBranchedPipeline = branchedApplicationBuilder => ConfigureBranchedPipeline(isEndpointRoutingEnabled,
+            applyActuatorConventions, branchedApplicationBuilder, configurePrometheusPipeline, conventionOptionsMonitor);
+
+        builder.UseOpenTelemetryPrometheusScrapingEndpoint(null, null, endpointPath, configureBranchedPipeline, null);
 
         if (cloudFoundryPath != null)
         {
-            builder.UseOpenTelemetryPrometheusScrapingEndpoint(null, null, cloudFoundryPath, ConfigureBranchedPipeline, null);
+            builder.UseOpenTelemetryPrometheusScrapingEndpoint(null, null, cloudFoundryPath, configureBranchedPipeline, null);
         }
 
         return builder;
+    }
 
-        void ConfigureBranchedPipeline(IApplicationBuilder branchedApplicationBuilder)
+    private static void ConfigureBranchedPipeline(bool isEndpointRoutingEnabled, bool applyActuatorConventions, IApplicationBuilder branchedApplicationBuilder,
+        Action<IApplicationBuilder>? configurePrometheusPipeline, IOptionsMonitor<ActuatorConventionOptions> conventionOptionsMonitor)
+    {
+        if (isEndpointRoutingEnabled && applyActuatorConventions)
         {
-            if (isEndpointRoutingEnabled && applyActuatorConventions)
-            {
-                branchedApplicationBuilder.UseRouting();
-            }
+            branchedApplicationBuilder.UseRouting();
+        }
 
-            configurePrometheusPipeline?.Invoke(branchedApplicationBuilder);
+        configurePrometheusPipeline?.Invoke(branchedApplicationBuilder);
 
-            if (isEndpointRoutingEnabled && applyActuatorConventions)
+        if (isEndpointRoutingEnabled && applyActuatorConventions)
+        {
+            branchedApplicationBuilder.UseEndpoints(endpoints =>
             {
-                branchedApplicationBuilder.UseEndpoints(endpoints =>
+                IEndpointConventionBuilder endpointBuilder = endpoints.MapPrometheusScrapingEndpoint("/");
+
+                foreach (Action<IEndpointConventionBuilder> endpointAction in conventionOptionsMonitor.CurrentValue.ConfigureActions)
                 {
-                    IEndpointConventionBuilder endpointBuilder = endpoints.MapPrometheusScrapingEndpoint("/");
-
-                    foreach (Action<IEndpointConventionBuilder> endpointAction in conventionOptionsMonitor.CurrentValue.ConfigureActions)
-                    {
-                        endpointAction(endpointBuilder);
-                    }
-                });
-            }
+                    endpointAction(endpointBuilder);
+                }
+            });
         }
     }
 
