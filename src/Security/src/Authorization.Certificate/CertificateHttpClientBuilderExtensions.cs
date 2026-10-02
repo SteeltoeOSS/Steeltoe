@@ -125,10 +125,9 @@ public static partial class CertificateHttpClientBuilderExtensions
     /// <remarks>
     /// mTLS requires <see cref="SocketsHttpHandler" /> as the primary handler. If a <see cref="SocketsHttpHandler" /> has already been configured (for
     /// example, via <see cref="HttpClientBuilderExtensions.ConfigurePrimaryHttpMessageHandler{THandler}" />), it is reused and the client certificate is
-    /// applied to it. If no handler was explicitly configured, a new <see cref="SocketsHttpHandler" /> is created. On .NET 9 and later, configuring any
-    /// other primary handler type causes an <see cref="InvalidOperationException" /> when the first request is made; on .NET 8, it is silently replaced.
-    /// This configuration always runs after any calls to <see cref="HttpClientBuilderExtensions.ConfigurePrimaryHttpMessageHandler{THandler}" />, regardless
-    /// of registration order.
+    /// applied to it. If no handler was explicitly configured, a new <see cref="SocketsHttpHandler" /> is created. Configuring any other primary handler
+    /// type causes an <see cref="InvalidOperationException" /> when the first request is made. This configuration always runs after any calls to
+    /// <see cref="HttpClientBuilderExtensions.ConfigurePrimaryHttpMessageHandler{THandler}" />, regardless of registration order.
     /// </remarks>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
@@ -150,10 +149,9 @@ public static partial class CertificateHttpClientBuilderExtensions
     /// <remarks>
     /// mTLS requires <see cref="SocketsHttpHandler" /> as the primary handler. If a <see cref="SocketsHttpHandler" /> has already been configured (for
     /// example, via <see cref="HttpClientBuilderExtensions.ConfigurePrimaryHttpMessageHandler{THandler}" />), it is reused and the client certificate is
-    /// applied to it. If no handler was explicitly configured, a new <see cref="SocketsHttpHandler" /> is created. On .NET 9 and later, configuring any
-    /// other primary handler type causes an <see cref="InvalidOperationException" /> when the first request is made; on .NET 8, it is silently replaced.
-    /// This configuration always runs after any calls to <see cref="HttpClientBuilderExtensions.ConfigurePrimaryHttpMessageHandler{THandler}" />, regardless
-    /// of registration order.
+    /// applied to it. If no handler was explicitly configured, a new <see cref="SocketsHttpHandler" /> is created. Configuring any other primary handler
+    /// type causes an <see cref="InvalidOperationException" /> when the first request is made. This configuration always runs after any calls to
+    /// <see cref="HttpClientBuilderExtensions.ConfigurePrimaryHttpMessageHandler{THandler}" />, regardless of registration order.
     /// </remarks>
     /// <returns>
     /// The incoming <paramref name="builder" /> so that additional calls can be chained.
@@ -191,20 +189,11 @@ public static partial class CertificateHttpClientBuilderExtensions
                 }
                 else
                 {
-                    // On .NET 9+, PrimaryHandler defaults to SocketsHttpHandler; reaching this branch means the
+                    // PrimaryHandler defaults to SocketsHttpHandler; reaching this branch means the
                     // user explicitly configured an incompatible handler type, which is an error.
-                    // On .NET 8, PrimaryHandler defaults to HttpClientHandler, so replacement is expected
-                    // and logged at Debug rather than treated as an error.
-                    if (Environment.Version.Major >= 9)
-                    {
-                        throw new InvalidOperationException($"HttpClient '{builder.Name}' has an incompatible primary handler " +
-                            $"'{handlerBuilder.PrimaryHandler.GetType().Name}'. mTLS requires SocketsHttpHandler. " +
-                            $"Call ConfigurePrimaryHttpMessageHandler<SocketsHttpHandler>() or remove the ConfigurePrimaryHttpMessageHandler call.");
-                    }
-
-                    LogReplacingPrimaryHttpMessageHandler(logger, builder.Name);
-
-                    socketsHandler = new SocketsHttpHandler();
+                    throw new InvalidOperationException($"HttpClient '{builder.Name}' has an incompatible primary handler " +
+                        $"'{handlerBuilder.PrimaryHandler.GetType().Name}'. mTLS requires SocketsHttpHandler. " +
+                        $"Call ConfigurePrimaryHttpMessageHandler<SocketsHttpHandler>() or remove the ConfigurePrimaryHttpMessageHandler call.");
                 }
 
                 if (certificateContext == null)

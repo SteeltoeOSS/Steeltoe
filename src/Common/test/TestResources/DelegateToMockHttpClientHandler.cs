@@ -15,7 +15,12 @@ public sealed class DelegateToMockHttpClientHandler : HttpClientHandler
 {
     // We want to forward to another HttpClient, but that fails because the outer client has already marked the message as sent.
     // To avoid the error "The request message was already sent...", we need to revert that mark.
+#if NET11_0_OR_GREATER
+    private static readonly FieldInfo FlagsField = typeof(HttpRequestMessage).GetField("_flags", BindingFlags.NonPublic | BindingFlags.Instance)!;
+    private const int AlreadySentBit = 0x01;
+#else
     private static readonly FieldInfo SendStatusField = typeof(HttpRequestMessage).GetField("_sendStatus", BindingFlags.NonPublic | BindingFlags.Instance)!;
+#endif
 
     public MockHttpMessageHandler Mock { get; } = new();
 
@@ -49,6 +54,12 @@ public sealed class DelegateToMockHttpClientHandler : HttpClientHandler
 
     private static void MarkMessageAsNotYetSent(HttpRequestMessage request)
     {
+#if NET11_0_OR_GREATER
+        int flags = (int)FlagsField.GetValue(request)!;
+        flags &= ~AlreadySentBit;
+        FlagsField.SetValue(request, flags);
+#else
         SendStatusField.SetValue(request, 0);
+#endif
     }
 }

@@ -1,33 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net11.0;net10.0</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EntityFrameworkCoreTestVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EntityFrameworkCoreTestVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EntityFrameworkCoreTestVersion)" />
-    <PackageReference Include="Microting.EntityFrameworkCore.MySql" Condition="'$(TargetFramework)' != 'net9.0' And '$(TargetFramework)' != 'net8.0'" Version="$(EntityFrameworkCoreTestVersion)" />
-    <PackageReference Include="MySql.EntityFrameworkCore" Version="$(EntityFrameworkCoreTestVersion)" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(EntityFrameworkCoreTestVersion)" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Condition="'$(TargetFramework)' == 'net9.0' Or '$(TargetFramework)' == 'net8.0'" Version="$(EntityFrameworkCoreTestVersion)" />
-    <PackageReference Include="System.Text.Json" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EntityFrameworkCoreVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EntityFrameworkCoreVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EntityFrameworkCoreVersion)" />
+    <PackageReference Include="Microting.EntityFrameworkCore.MySql" Version="$(EntityFrameworkCorePossiblyDowngradedTestVersion)" />
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="$(EntityFrameworkCorePossiblyDowngradedTestVersion)" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(EntityFrameworkCoreVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Management\src\Tasks\Steeltoe.Management.Tasks.csproj" />
     <ProjectReference Include="..\..\src\EntityFrameworkCore\Steeltoe.Connectors.EntityFrameworkCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' Or '$(TargetFramework)' == 'net8.0' ">
-    <Compile Remove="**/*.other.cs" />
-    <None Include="**/*.other.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net9.0' And '$(TargetFramework)' != 'net8.0' ">
-    <Compile Remove="**/*.net80-90.cs" />
-    <None Include="**/*.net80-90.cs" />
   </ItemGroup>
 </Project>

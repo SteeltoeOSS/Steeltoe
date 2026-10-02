@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.Configuration;
@@ -63,6 +62,6 @@ public static class ConfigurationServiceCollectionExtensions
 
     private static bool IsRegistered(IServiceCollection services)
     {
-        return services.Any(descriptor => descriptor.SafeGetImplementationType() == typeof(ConfigurationDiscoveryClient));
+        return services.Any(descriptor => descriptor.ImplementationType == typeof(ConfigurationDiscoveryClient));
     }
 }

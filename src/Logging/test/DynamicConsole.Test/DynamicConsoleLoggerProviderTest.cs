@@ -457,7 +457,7 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
         {
             ["Logging:Console:FormatterName"] = "json",
             ["Logging:Console:FormatterOptions:IncludeScopes"] = "true",
-            ["Logging:Console:FormatterOptions:TimestampFormat"] = string.Empty,
+            // Breaking change: https://github.com/dotnet/runtime/pull/131480
             ["Logging:Console:FormatterOptions:JsonWriterOptions:Indented"] = "true"
         };
 

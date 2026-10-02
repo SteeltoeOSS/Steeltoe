@@ -12,6 +12,7 @@ public static class TestContextExtensions
     {
         ArgumentNullException.ThrowIfNull(testContext);
 
+        _ = testContext;
         return Environment.GetEnvironmentVariable("CI") == "true";
     }
 }

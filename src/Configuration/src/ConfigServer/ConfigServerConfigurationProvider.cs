@@ -5,7 +5,6 @@
 using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Net.Sockets;
 using System.Runtime.ExceptionServices;
 using System.Text;
@@ -21,13 +20,6 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Http.HttpClientPooling;
-using LockPrimitive =
-#if NET10_0_OR_GREATER
-    System.Threading.Lock
-#else
-    object
-#endif
-    ;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -47,9 +39,9 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     private readonly bool _disposeHttpClientHandler;
     private readonly ConfigureConfigServerClientOptions _configurer;
     private readonly ConfigServerClientOptions _defaultOptions;
-    private readonly LockPrimitive _lifecycleLock = new();
-    private readonly LockPrimitive _configurationReloadTickLock = new();
-    private readonly LockPrimitive _vaultRenewTickLock = new();
+    private readonly Lock _lifecycleLock = new();
+    private readonly Lock _configurationReloadTickLock = new();
+    private readonly Lock _vaultRenewTickLock = new();
     private readonly ConfigServerDiscoveryService _configServerDiscoveryService;
     private readonly IDisposable _changeTokenRegistration;
     private readonly CancellationTokenSource _shutdownTokenSource = new();
@@ -197,11 +189,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     {
         LogEnteringConfigurationReloadCycle();
 
-#if NET10_0_OR_GREATER
         bool lockTaken = _configurationReloadTickLock.TryEnter();
-#else
-        bool lockTaken = Monitor.TryEnter(_configurationReloadTickLock);
-#endif
 
         try
         {
@@ -233,11 +221,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         {
             if (lockTaken)
             {
-#if NET10_0_OR_GREATER
                 _configurationReloadTickLock.Exit();
-#else
-                Monitor.Exit(_configurationReloadTickLock);
-#endif
             }
         }
     }
@@ -249,11 +233,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     {
         LogEnteringVaultRenewCycle();
 
-#if NET10_0_OR_GREATER
         bool lockTaken = _vaultRenewTickLock.TryEnter();
-#else
-        bool lockTaken = Monitor.TryEnter(_vaultRenewTickLock);
-#endif
 
         try
         {
@@ -283,11 +263,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         {
             if (lockTaken)
             {
-#if NET10_0_OR_GREATER
                 _vaultRenewTickLock.Exit();
-#else
-                Monitor.Exit(_vaultRenewTickLock);
-#endif
             }
         }
     }

@@ -62,6 +62,8 @@ public static class CloudFoundryConfigurationBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
+        _ = loggerFactory;
+
         if (!builder.EnumerateSources<CloudFoundryConfigurationSource>().Any())
         {
             var source = new CloudFoundryConfigurationSource(settingsReader);

@@ -38,7 +38,7 @@ internal sealed class LocalCertificateWriter
     {
         if (AppContext.BaseDirectory.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
         {
-            // Traverse up to the project directory, if running from IDE. Strips off a sub-path like: \bin\Debug\net8.0\win-x64\
+            // Traverse up to the project directory, if running from IDE. Strips off a sub-path like: \bin\Debug\net10.0\win-x64\
             return AppContext.BaseDirectory[..AppContext.BaseDirectory.LastIndexOf($"{Path.DirectorySeparatorChar}bin", StringComparison.Ordinal)];
         }
 
@@ -69,11 +69,7 @@ internal sealed class LocalCertificateWriter
         }
         else
         {
-#if NET9_0_OR_GREATER
             caCertificate = X509CertificateLoader.LoadPkcs12FromFile(RootCaSigningPfxPath, null);
-#else
-            caCertificate = new X509Certificate2(RootCaSigningPfxPath);
-#endif
         }
 
         File.WriteAllText(RootCaCrtPath, caCertificate.ExportCertificatePem());
@@ -88,11 +84,7 @@ internal sealed class LocalCertificateWriter
         }
         else
         {
-#if NET9_0_OR_GREATER
             intermediateCertificate = X509CertificateLoader.LoadPkcs12FromFile(IntermediateSigningPfxPath, null);
-#else
-            intermediateCertificate = new X509Certificate2(IntermediateSigningPfxPath);
-#endif
         }
 
         File.WriteAllText(IntermediateCrtPath, intermediateCertificate.ExportCertificatePem());
