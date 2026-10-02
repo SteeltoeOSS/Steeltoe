@@ -2,14 +2,31 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Steeltoe.Management.GitProperties.Build.Test;
 
 internal static class ProcessRunner
 {
+    /// <summary>
+    /// The runtime provider (keyword 0x8000, informational) records every exception thrown, including handled ones. The NuGet providers emit start/stop
+    /// events for each phase of a restore (no-op calculation, restore graph, assets file, commit), which shows how far it got. The HTTP and DNS providers
+    /// show feed requests and their outcome.
+    /// </summary>
+    private static readonly string EventPipeProviders = string.Concat((string[])
+    [
+        "Microsoft-Windows-DotNETRuntime:0x8000:4,",
+        "Microsoft-NuGet-Commands:0xFFFFFFFFFFFFFFFF:5,",
+        "Microsoft-NuGet-Common:0xFFFFFFFFFFFFFFFF:5,",
+        "Microsoft-NuGet-Configuration:0xFFFFFFFFFFFFFFFF:5,",
+        "Microsoft-System-Net-Http:0xFFFFFFFFFFFFFFFF:4,",
+        "System.Net.NameResolution:0xFFFFFFFFFFFFFFFF:4"
+    ]);
+
     private static readonly string LocatorCommand = OperatingSystem.IsWindows() ? "where" : "which";
 
     private static readonly char[] LineSeparators =
@@ -23,6 +40,27 @@ internal static class ProcessRunner
     /// into an informative test failure instead of blocking the whole suite indefinitely.
     /// </summary>
     private static readonly TimeSpan ProcessExitTimeout = TimeSpan.FromMinutes(2);
+
+    private static readonly string[] EnvironmentVariablePrefixes =
+    [
+        "DOTNET_",
+        "CORECLR_",
+        "COR_",
+        "NUGET_",
+        "MSBUILD",
+        "TMP",
+        "TEMP",
+        "HOME"
+    ];
+
+    private static readonly string[] ProcessNamesToCapture =
+    [
+        "dotnet",
+        "msbuild",
+        "vbcscompiler",
+        "testhost",
+        "git"
+    ];
 
     private static readonly Task<string> RealGitExecutableTask = ResolveGitExecutableAsync();
     private static readonly Task<string> DiagnosticsDirectoryTask = ResolveDiagnosticsDirectoryAsync();
@@ -56,7 +94,18 @@ internal static class ProcessRunner
         params string[] arguments)
     {
         string diagnosticsDirectory = await DiagnosticsDirectoryTask;
-        string binlogPath = Path.Combine(diagnosticsDirectory, $"{diagnosticsFileNamePrefix}-{$"{Guid.NewGuid():N}"[..8]}.binlog");
+        string diagnosticsFilePrefix = Path.Combine(diagnosticsDirectory, $"{diagnosticsFileNamePrefix}-{$"{Guid.NewGuid():N}"[..8]}");
+        string binlogPath = $"{diagnosticsFilePrefix}.binlog";
+
+        // Records every exception thrown (including handled ones) in each spawned .NET process, which reveals failures that tasks swallow without logging
+        // (such as RestoreTask returning false without an error). The runtime replaces {pid} with the process ID, so each process writes its own file.
+        var traceEnvironmentVariables = new Dictionary<string, string>
+        {
+            ["DOTNET_EnableEventPipe"] = "1",
+            ["DOTNET_EventPipeConfig"] = EventPipeProviders,
+            ["DOTNET_EventPipeOutputPath"] = $"{diagnosticsFilePrefix}.{{pid}}.nettrace",
+            ["DOTNET_EventPipeOutputStreaming"] = "1"
+        };
 
         string[] argumentsWithBinlog =
         [
@@ -67,15 +116,119 @@ internal static class ProcessRunner
             $"-bl:{binlogPath}"
         ];
 
-        await RunDotNetAsync(workingDirectory, 0, null, argumentsWithBinlog);
+        try
+        {
+            await RunDotNetAsync(workingDirectory, 0, traceEnvironmentVariables, argumentsWithBinlog);
+        }
+        catch (Exception)
+        {
+            await CaptureFailureContextAsync(workingDirectory, diagnosticsFilePrefix, traceEnvironmentVariables, arguments);
+            throw;
+        }
+
+        DeleteDiagnosticsFiles(diagnosticsDirectory, Path.GetFileName(diagnosticsFilePrefix));
+    }
+
+    /// <summary>
+    /// Best-effort capture of information that helps to determine whether a failed build is deterministic or transient and what the machine looked like.
+    /// Never throws, so the original failure remains the one that is reported.
+    /// </summary>
+    private static async Task CaptureFailureContextAsync(string workingDirectory, string diagnosticsFilePrefix,
+        Dictionary<string, string> traceEnvironmentVariables, string[] arguments)
+    {
+        var builder = new StringBuilder();
 
         try
         {
-            File.Delete(binlogPath);
+            builder.AppendLine($"Captured at: {DateTimeOffset.UtcNow:O}");
+            builder.AppendLine($"OS: {RuntimeInformation.OSDescription}");
+            builder.AppendLine($"Processor count: {Environment.ProcessorCount}");
+
+            GCMemoryInfo memoryInfo = GC.GetGCMemoryInfo();
+            builder.AppendLine($"Memory (available/load, bytes): {memoryInfo.TotalAvailableMemoryBytes}/{memoryInfo.MemoryLoadBytes}");
+
+            foreach (string path in new[]
+            {
+                Path.GetTempPath(),
+                workingDirectory,
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+            }.Distinct())
+            {
+                var drive = new DriveInfo(path);
+                builder.AppendLine($"Free disk space on '{drive.Name}' (for '{path}'): {drive.AvailableFreeSpace} bytes");
+            }
+
+            builder.AppendLine("Environment variables:");
+
+            foreach (DictionaryEntry entry in Environment.GetEnvironmentVariables().Cast<DictionaryEntry>().OrderBy(entry => entry.Key.ToString()))
+            {
+                string name = entry.Key.ToString()!;
+
+                if (Array.Exists(EnvironmentVariablePrefixes, prefix => name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
+                {
+                    builder.AppendLine($"  {name}={entry.Value}");
+                }
+            }
+
+            builder.AppendLine("Related processes still running:");
+
+            foreach (Process process in Process.GetProcesses().OrderBy(process => process.Id))
+            {
+                using (process)
+                {
+                    if (Array.Exists(ProcessNamesToCapture, name => process.ProcessName.Contains(name, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        builder.AppendLine($"  {process.Id} {process.ProcessName}");
+                    }
+                }
+            }
+
+            // Determines whether the failure reproduces right away. A restore that now succeeds points to a transient (timing/concurrency) cause. A restore
+            // that fails again leaves a second binlog and trace, captured against the very same state on disk.
+            string[] restoreArguments =
+            [
+                "restore",
+                .. arguments,
+                $"-bl:{diagnosticsFilePrefix}.retry-restore.binlog"
+            ];
+
+            try
+            {
+                Dictionary<string, string> retryEnvironmentVariables = new(traceEnvironmentVariables)
+                {
+                    ["DOTNET_EventPipeOutputPath"] = $"{diagnosticsFilePrefix}.retry-restore.{{pid}}.nettrace"
+                };
+
+                string output = await RunDotNetAsync(workingDirectory, 0, retryEnvironmentVariables, restoreArguments);
+                builder.AppendLine("Retrying restore succeeded. Output:");
+                builder.AppendLine(output);
+            }
+            catch (Exception exception)
+            {
+                builder.AppendLine("Retrying restore failed:");
+                builder.AppendLine(exception.ToString());
+            }
         }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        catch (Exception exception)
         {
-            // Best-effort cleanup only: a transiently locked file (e.g. an antivirus scan) must not fail the test run.
+            builder.AppendLine($"Failed to capture all context: {exception}");
+        }
+
+        await File.WriteAllTextAsync($"{diagnosticsFilePrefix}.context.txt", builder.ToString(), CancellationToken.None);
+    }
+
+    private static void DeleteDiagnosticsFiles(string diagnosticsDirectory, string fileNamePrefix)
+    {
+        foreach (string path in Directory.EnumerateFiles(diagnosticsDirectory, $"{fileNamePrefix}.*"))
+        {
+            try
+            {
+                File.Delete(path);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                // Best-effort cleanup only: a transiently locked file (e.g. an antivirus scan, or a lingering build server) must not fail the test run.
+            }
         }
     }
 
@@ -105,6 +258,9 @@ internal static class ProcessRunner
         // build. That node inherits our redirected stdout/stderr pipe handles and keeps them open after the process we launched exits, so the read end
         // never sees EOF and awaiting exit below would block forever even though the build already completed successfully.
         dotNetEnvironmentVariables["MSBUILDDISABLENODEREUSE"] = "1";
+
+        // Include stack traces when NuGet reports an exception, so that otherwise opaque restore failures (such as MSB4181) become diagnosable.
+        dotNetEnvironmentVariables["NUGET_SHOW_STACK"] = "true";
 
         foreach ((string name, string value) in environmentVariables ?? [])
         {
