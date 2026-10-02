@@ -7,10 +7,11 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.GitProperties.Build.Test;
 
-internal static class ProcessRunner
+internal static partial class ProcessRunner
 {
     /// <summary>
     /// The runtime provider (keyword 0x8000, informational) records every exception thrown, including handled ones. The NuGet providers emit start/stop
@@ -166,7 +167,8 @@ internal static class ProcessRunner
 
                 if (Array.Exists(EnvironmentVariablePrefixes, prefix => name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
                 {
-                    builder.AppendLine($"  {name}={entry.Value}");
+                    string sanitizedValue = SanitizeEnvironmentVariable(name, entry.Value);
+                    builder.AppendLine($"  {name}={sanitizedValue}");
                 }
             }
 
@@ -215,6 +217,11 @@ internal static class ProcessRunner
         }
 
         await File.WriteAllTextAsync($"{diagnosticsFilePrefix}.context.txt", builder.ToString(), CancellationToken.None);
+    }
+
+    private static string SanitizeEnvironmentVariable(string name, object? value)
+    {
+        return SensitiveVariableRegex().IsMatch(name) ? "******" : value?.ToString() ?? string.Empty;
     }
 
     private static void DeleteDiagnosticsFiles(string diagnosticsDirectory, string fileNamePrefix)
@@ -383,4 +390,7 @@ internal static class ProcessRunner
             }
         });
     }
+
+    [GeneratedRegex("password|secret|key|token|credential", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    private static partial Regex SensitiveVariableRegex();
 }
