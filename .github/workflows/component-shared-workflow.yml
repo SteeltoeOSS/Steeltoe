@@ -113,6 +113,8 @@ jobs:
           ${{ github.workspace }}/TestOutput/**/*.dmp
           ${{ github.workspace }}/TestOutput/**/Sequence_*.xml
           ${{ github.workspace }}/TestOutput/**/*.binlog
+          ${{ github.workspace }}/TestOutput/**/*.nettrace
+          ${{ github.workspace }}/TestOutput/**/*.context.txt
         if-no-files-found: ignore
 
     - name: Report test results
