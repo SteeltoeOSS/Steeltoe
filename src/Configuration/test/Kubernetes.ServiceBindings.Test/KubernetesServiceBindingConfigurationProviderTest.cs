@@ -14,21 +14,22 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
     {
         using var scope = new EnvironmentVariableScope(EnvironmentServiceBindingsReader.EnvironmentVariableName, null);
 
-        // Optional defaults true, no throw
-        var source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader());
-        var provider = new KubernetesServiceBindingConfigurationProvider(source);
+        // Optional defaults to true, expect no throw
+        var source1 = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader());
 
-        provider.Load();
+        using (var provider1 = new KubernetesServiceBindingConfigurationProvider(source1))
+        {
+            provider1.Load();
+        }
 
-        // Optional, no throw
-        source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader())
+        // Not optional, should throw
+        var source2 = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader())
         {
             Optional = false
         };
 
-        // Not optional, should throw
-        provider = new KubernetesServiceBindingConfigurationProvider(source);
-        Action action = () => provider.Load();
+        using var provider2 = new KubernetesServiceBindingConfigurationProvider(source2);
+        Action action = provider2.Load;
         action.Should().ThrowExactly<DirectoryNotFoundException>();
     }
 
@@ -38,19 +39,22 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
         string rootDirectory = GetK8SResourcesDirectory("invalid");
         using var scope = new EnvironmentVariableScope(EnvironmentServiceBindingsReader.EnvironmentVariableName, rootDirectory);
 
-        // Not optional, should throw
-        var source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader());
-        var provider = new KubernetesServiceBindingConfigurationProvider(source);
-        provider.Load();
+        // Optional defaults to true, expect no throw
+        var source1 = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader());
 
-        // Optional, no throw
-        source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader())
+        using (var provider1 = new KubernetesServiceBindingConfigurationProvider(source1))
+        {
+            provider1.Load();
+        }
+
+        // Not optional, should throw
+        var source2 = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader())
         {
             Optional = false
         };
 
-        provider = new KubernetesServiceBindingConfigurationProvider(source);
-        Action action = () => provider.Load();
+        using var provider2 = new KubernetesServiceBindingConfigurationProvider(source2);
+        Action action = provider2.Load;
         action.Should().ThrowExactly<DirectoryNotFoundException>();
     }
 
@@ -61,7 +65,7 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
         using var scope = new EnvironmentVariableScope(EnvironmentServiceBindingsReader.EnvironmentVariableName, rootDirectory);
 
         var source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader());
-        var provider = new KubernetesServiceBindingConfigurationProvider(source);
+        using var provider = new KubernetesServiceBindingConfigurationProvider(source);
         provider.Load();
 
         provider.TryGet("k8s:bindings:test-name-1:type", out string? value).Should().BeTrue();
@@ -105,7 +109,7 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
         var postProcessor = new TestPostProcessor();
         source.RegisterPostProcessor(postProcessor);
 
-        var provider = new KubernetesServiceBindingConfigurationProvider(source);
+        using var provider = new KubernetesServiceBindingConfigurationProvider(source);
         provider.Load();
 
         postProcessor.PostProcessorCalled.Should().BeTrue();

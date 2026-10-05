@@ -100,7 +100,7 @@ public sealed class EndpointOptionsTest
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
-        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
         fileProvider.ReplaceAppSettingsJsonFile("""
@@ -112,7 +112,7 @@ public sealed class EndpointOptionsTest
 
         fileProvider.NotifyChanged();
 
-        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response2.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
@@ -136,7 +136,7 @@ public sealed class EndpointOptionsTest
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
-        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         fileProvider.ReplaceAppSettingsJsonFile("""
@@ -147,7 +147,7 @@ public sealed class EndpointOptionsTest
 
         fileProvider.NotifyChanged();
 
-        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -171,7 +171,7 @@ public sealed class EndpointOptionsTest
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
-        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
         fileProvider.ReplaceAppSettingsJsonFile("""
@@ -183,7 +183,7 @@ public sealed class EndpointOptionsTest
 
         fileProvider.NotifyChanged();
 
-        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response2.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
@@ -207,7 +207,7 @@ public sealed class EndpointOptionsTest
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
-        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         fileProvider.ReplaceAppSettingsJsonFile("""
@@ -219,7 +219,7 @@ public sealed class EndpointOptionsTest
 
         fileProvider.NotifyChanged();
 
-        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/env", UriKind.Relative), TestContext.Current.CancellationToken);
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 

@@ -22,9 +22,11 @@ public sealed class PostConfigureJwtBearerOptionsTest
             ["Authentication:Schemes:Bearer:ClientId"] = "testClient"
         };
 
+        using var httpClient = new HttpClient();
+
         var jwtBearerOptions = new JwtBearerOptions
         {
-            Backchannel = new HttpClient()
+            Backchannel = httpClient
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();

@@ -292,11 +292,11 @@ public sealed class CloudFoundryConfigurationProviderTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         string address = host.Urls.First(url => url.StartsWith("http://", StringComparison.OrdinalIgnoreCase));
 
-        var client = new HttpClient();
+        using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("X-Forwarded-Proto", "https");
         client.DefaultRequestHeaders.Add("X-Forwarded-For", "1.2.3.4");
 
-        HttpResponseMessage response = await client.GetAsync(new Uri(address), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await client.GetAsync(new Uri(address), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         forwardedHeadersWereEvaluated.Should()
@@ -325,11 +325,11 @@ public sealed class CloudFoundryConfigurationProviderTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         string address = host.Urls.First(url => url.StartsWith("http://", StringComparison.OrdinalIgnoreCase));
 
-        var client = new HttpClient();
+        using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("X-Forwarded-Proto", "https");
         client.DefaultRequestHeaders.Add("X-Forwarded-For", "1.2.3.4");
 
-        HttpResponseMessage response = await client.GetAsync(new Uri(address), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await client.GetAsync(new Uri(address), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         forwardedHeadersWereEvaluated.Should().BeFalse("X-Forwarded-Proto should not be evaluated for unknown proxies");

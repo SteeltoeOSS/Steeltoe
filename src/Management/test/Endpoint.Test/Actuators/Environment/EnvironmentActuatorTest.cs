@@ -172,7 +172,7 @@ public sealed class EnvironmentActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -240,7 +240,7 @@ public sealed class EnvironmentActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -297,7 +297,7 @@ public sealed class EnvironmentActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -369,7 +369,7 @@ public sealed class EnvironmentActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
 
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -429,7 +429,7 @@ public sealed class EnvironmentActuatorTest
 
         fileProvider.NotifyChanged();
 
-        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
 
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
 

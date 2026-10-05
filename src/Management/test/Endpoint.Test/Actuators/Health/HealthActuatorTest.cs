@@ -180,7 +180,7 @@ public sealed class HealthActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -232,7 +232,7 @@ public sealed class HealthActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -275,7 +275,7 @@ public sealed class HealthActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -301,14 +301,11 @@ public sealed class HealthActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        var requestMessage = new HttpRequestMessage
-        {
-            RequestUri = new Uri("http://localhost/actuator/health")
-        };
-
+        using var requestMessage = new HttpRequestMessage();
+        requestMessage.RequestUri = new Uri("http://localhost/actuator/health");
         requestMessage.Headers.Add("X-Use-Status-Code-From-Response", "false");
 
-        HttpResponseMessage response = await httpClient.SendAsync(requestMessage, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.SendAsync(requestMessage, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -332,7 +329,7 @@ public sealed class HealthActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response =
+        using HttpResponseMessage response =
             await httpClient.GetAsync(new Uri("http://localhost/actuator/health/unknown-group"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -360,7 +357,8 @@ public sealed class HealthActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/LIVENESS"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await httpClient.GetAsync(new Uri("http://localhost/actuator/health/LIVENESS"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -396,7 +394,8 @@ public sealed class HealthActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/READINESS"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await httpClient.GetAsync(new Uri("http://localhost/actuator/health/READINESS"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -433,7 +432,8 @@ public sealed class HealthActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/ASPNET"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await httpClient.GetAsync(new Uri("http://localhost/actuator/health/ASPNET"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -542,7 +542,8 @@ public sealed class HealthActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/test-group"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await httpClient.GetAsync(new Uri("http://localhost/actuator/health/test-group"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -604,7 +605,7 @@ public sealed class HealthActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response1 =
+        using HttpResponseMessage response1 =
             await httpClient.GetAsync(new Uri("http://localhost/actuator/health/ping-group"), TestContext.Current.CancellationToken);
 
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -640,7 +641,7 @@ public sealed class HealthActuatorTest
 
         fileProvider.NotifyChanged();
 
-        HttpResponseMessage response2 =
+        using HttpResponseMessage response2 =
             await httpClient.GetAsync(new Uri("http://localhost/actuator/health/ping-group"), TestContext.Current.CancellationToken);
 
         response2.StatusCode.Should().Be(HttpStatusCode.OK);

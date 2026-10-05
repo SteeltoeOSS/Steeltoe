@@ -81,19 +81,19 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/set-session"), TestContext.Current.CancellationToken);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        using HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("http://localhost/set-session"), TestContext.Current.CancellationToken);
+        response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string setCookieHeaderText = response.Headers.Single(header => header.Key == "Set-Cookie").Value.Single();
+        string setCookieHeaderText = response1.Headers.Single(header => header.Key == "Set-Cookie").Value.Single();
         SetCookieHeaderValue setCookieHeaderValue = SetCookieHeaderValue.Parse(setCookieHeaderText);
         var cookie = new Cookie(setCookieHeaderValue.Name.Value!, setCookieHeaderValue.Value.Value);
 
-        var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/get-session"));
-        request.Headers.Add("Cookie", cookie.ToString());
-        response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
+        using var request2 = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/get-session"));
+        request2.Headers.Add("Cookie", cookie.ToString());
+        using HttpResponseMessage response2 = await httpClient.SendAsync(request2, TestContext.Current.CancellationToken);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        string responseContent = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        response2.StatusCode.Should().Be(HttpStatusCode.OK);
+        string responseContent = await response2.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseContent.Should().Be("example-value");
     }
 }

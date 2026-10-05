@@ -238,7 +238,7 @@ public sealed partial class EurekaClient
             Uri serviceUri = serviceUris.GetNextServiceUri();
             Uri requestUri = GetRequestUri(serviceUri, path, queryString);
 
-            HttpRequestMessage? request = await TryCreateRequestAsync(method, requestUri, requestBody, attempt, clientOptions, cancellationToken);
+            using HttpRequestMessage? request = await TryCreateRequestAsync(method, requestUri, requestBody, attempt, clientOptions, cancellationToken);
 
             if (request != null)
             {

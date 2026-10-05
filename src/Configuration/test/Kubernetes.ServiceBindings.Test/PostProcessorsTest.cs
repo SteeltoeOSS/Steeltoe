@@ -24,7 +24,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, MySqlKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -51,7 +51,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, PostgreSqlKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -78,7 +78,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, MongoDbKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -106,7 +106,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, RabbitMQKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -134,7 +134,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, RedisKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -165,7 +165,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestBindingName, ApplicationConfigurationServicePostProcessor.BindingType, secrets);
 
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 

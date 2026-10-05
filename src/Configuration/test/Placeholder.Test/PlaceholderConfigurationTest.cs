@@ -364,8 +364,7 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         services.AddSingleton(configuration);
         services.Configure<TestOptions>(configuration.GetSection("TestRoot"));
         services.AddSingleton<IConfigureOptions<TestOptions>, ConfigureTestOptions>();
-
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var configurer = (ConfigureTestOptions)serviceProvider.GetRequiredService<IConfigureOptions<TestOptions>>();
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<TestOptions>>();

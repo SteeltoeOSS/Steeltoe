@@ -163,7 +163,10 @@ public sealed class EndpointAuthorizationTest
             response = await httpClient.PostAsync(new Uri(path, UriKind.RelativeOrAbsolute), null, TestContext.Current.CancellationToken);
         }
 
-        response.StatusCode.Should().Be(expectSuccess ? HttpStatusCode.OK : HttpStatusCode.Forbidden);
+        using (response)
+        {
+            response.StatusCode.Should().Be(expectSuccess ? HttpStatusCode.OK : HttpStatusCode.Forbidden);
+        }
     }
 
     public enum RegistrationMode
