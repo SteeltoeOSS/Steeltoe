@@ -26,7 +26,7 @@ public sealed class DbMigrationsActuatorTest
     public async Task Registers_dependent_services()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddDbMigrationsActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -40,7 +40,7 @@ public sealed class DbMigrationsActuatorTest
     public async Task Configures_default_settings()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddDbMigrationsActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -69,7 +69,7 @@ public sealed class DbMigrationsActuatorTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddDbMigrationsActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -138,7 +138,7 @@ public sealed class DbMigrationsActuatorTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddSingleton<IDatabaseMigrationScanner, FakeDatabaseMigrationScanner>();
         builder.Services.AddDbMigrationsActuator();
-        WebApplication host = builder.Build();
+        await using WebApplication host = builder.Build();
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -169,7 +169,7 @@ public sealed class DbMigrationsActuatorTest
         builder.Services.AddDbContext<TestDbContext>();
         builder.Services.AddSingleton<IDatabaseMigrationScanner>(throwingScanner);
         builder.Services.AddDbMigrationsActuator();
-        WebApplication host = builder.Build();
+        await using WebApplication host = builder.Build();
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();

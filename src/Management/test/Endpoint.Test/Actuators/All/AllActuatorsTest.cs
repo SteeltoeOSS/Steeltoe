@@ -39,7 +39,7 @@ public sealed class AllActuatorsTest
         using IDisposable? scope = platformIsCloudFoundry ? new EnvironmentVariableScope("VCAP_APPLICATION", "{}") : null;
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddSingleton<IWebHostEnvironment, FakeWebHostEnvironment>();
         services.AddAllActuators();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);

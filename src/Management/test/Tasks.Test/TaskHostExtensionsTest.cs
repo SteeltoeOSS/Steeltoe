@@ -20,7 +20,7 @@ public sealed class TaskHostExtensionsTest
     public async Task WebApplication_RunsApp()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
 
         using var timeoutSource = new CancellationTokenSource(5.Seconds());
 
@@ -41,7 +41,7 @@ public sealed class TaskHostExtensionsTest
         builder.Services.AddSingleton<TaskApplicationState>();
         builder.Services.AddTask<TestApplicationTask>(taskName, ServiceLifetime.Singleton);
 
-        WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         app.HasApplicationTask().Should().BeTrue();
@@ -61,7 +61,7 @@ public sealed class TaskHostExtensionsTest
         builder.Services.AddSingleton<TaskApplicationState>();
         builder.Services.AddTask<TestApplicationTask>(taskName);
 
-        WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         app.HasApplicationTask().Should().BeTrue();
@@ -81,7 +81,7 @@ public sealed class TaskHostExtensionsTest
         builder.Services.AddSingleton<TaskApplicationState>();
         builder.Services.AddTask<TestApplicationTask>(taskName, ServiceLifetime.Transient);
 
-        WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         app.HasApplicationTask().Should().BeTrue();
@@ -103,7 +103,7 @@ public sealed class TaskHostExtensionsTest
 
         builder.Services.AddTask(taskName, applicationTask);
 
-        WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
 
         app.HasApplicationTask().Should().BeTrue();
         await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
@@ -132,7 +132,7 @@ public sealed class TaskHostExtensionsTest
             hasExecuted = true;
         });
 
-        WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
 
         app.HasApplicationTask().Should().BeTrue();
         await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
@@ -161,7 +161,7 @@ public sealed class TaskHostExtensionsTest
             return new TestApplicationTask(innerSharedState);
         });
 
-        WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         app.HasApplicationTask().Should().BeTrue();
@@ -182,7 +182,7 @@ public sealed class TaskHostExtensionsTest
         builder.Services.AddTask<TestApplicationTask>(taskName);
         builder.Services.AddTask<ThrowingApplicationTask>("other");
 
-        WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         app.HasApplicationTask().Should().BeTrue();
@@ -202,7 +202,7 @@ public sealed class TaskHostExtensionsTest
         // ReSharper disable once AccessToDisposedClosure
         builder.Services.AddLogging(options => options.AddProvider(capturingLoggerProvider));
 
-        WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
 
         app.HasApplicationTask().Should().BeTrue();
         await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
@@ -224,9 +224,11 @@ public sealed class TaskHostExtensionsTest
         builder.Services.AddSingleton<TaskApplicationState>();
         builder.Services.AddTask<ThrowingApplicationTask>(taskName);
 
-        WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
 
         app.HasApplicationTask().Should().BeTrue();
+
+        // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<InvalidOperationException>();
@@ -245,11 +247,12 @@ public sealed class TaskHostExtensionsTest
             await Task.Yield();
         });
 
-        WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
 
         app.HasApplicationTask().Should().BeTrue();
         await app.RunWithTasksAsync(TestContext.Current.CancellationToken);
 
+        // ReSharper disable once AccessToDisposedClosure
         Action action = () => _ = app.Services.GetRequiredService<ILoggerFactory>();
 
         action.Should().ThrowExactly<ObjectDisposedException>();
@@ -265,7 +268,7 @@ public sealed class TaskHostExtensionsTest
         builder.Services.AddSingleton<TaskApplicationState>();
         builder.Services.AddTask<TestApplicationTask>(taskName);
 
-        IHost app = builder.Build();
+        using IHost app = builder.Build();
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         app.HasApplicationTask().Should().BeTrue();
@@ -289,7 +292,7 @@ public sealed class TaskHostExtensionsTest
             services.AddTask<TestApplicationTask>(taskName);
         });
 
-        IWebHost app = builder.Build();
+        using IWebHost app = builder.Build();
 
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
@@ -314,7 +317,7 @@ public sealed class TaskHostExtensionsTest
             services.AddTask<TestApplicationTask>(taskName);
         });
 
-        IHost app = builder.Build();
+        using IHost app = builder.Build();
         var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         app.HasApplicationTask().Should().BeTrue();

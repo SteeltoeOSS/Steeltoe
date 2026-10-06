@@ -292,7 +292,7 @@ public sealed class LoggersActuatorSerilogTest
         builder.Services.AddSingleton<ILoggerFactory, OnlyTrackFakeCategoryLoggerFactory>();
         builder.Logging.AddDynamicSerilog();
         builder.Services.AddLoggersActuator();
-        WebApplication host = builder.Build();
+        await using WebApplication host = builder.Build();
 
         using var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         _ = loggerFactory.CreateLogger("Fake.Some");

@@ -76,8 +76,8 @@ internal sealed partial class ConfigServerDiscoveryService
             ["Consul:Discovery:Register"] = "false"
         };
 
-        IConfiguration tempConfiguration = new ConfigurationBuilder().AddConfiguration(_configuration).AddInMemoryCollection(appSettings).Build();
-        tempServices.AddSingleton(tempConfiguration);
+        IConfigurationRoot tempConfigurationRoot = new ConfigurationBuilder().AddConfiguration(_configuration).AddInMemoryCollection(appSettings).Build();
+        tempServices.AddSingleton<IConfiguration>(_ => tempConfigurationRoot);
 
         if (AssemblyLoader.IsAssemblyLoaded("Steeltoe.Discovery.Configuration"))
         {

@@ -96,7 +96,11 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
         var builder = new ConfigurationBuilder();
         builder.Add(new KubernetesServiceBindingConfigurationSource(new DirectoryServiceBindingsReader(GetEmptyK8SResourcesDirectory())));
 
-        Action action = () => builder.Build();
+        Action action = () =>
+        {
+            using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
+        };
+
         action.Should().NotThrow();
     }
 

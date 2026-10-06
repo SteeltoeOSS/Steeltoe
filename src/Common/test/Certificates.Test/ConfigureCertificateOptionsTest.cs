@@ -22,8 +22,8 @@ public sealed class ConfigureCertificateOptionsTest
     [InlineData(CertificateName)]
     public void ConfigureCertificateOptions_NoPath_NoCertificate(string certificateName)
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-        var configureOptions = new ConfigureCertificateOptions(configuration);
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().BuildAsRoot();
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot);
         var options = new CertificateOptions();
 
         configureOptions.Configure(certificateName, options);
@@ -41,8 +41,8 @@ public sealed class ConfigureCertificateOptionsTest
             [$"{GetConfigurationKey(certificateName, "CertificateFilePath")}"] = "does-not-exist.crt"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var configureOptions = new ConfigureCertificateOptions(configuration);
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).BuildAsRoot();
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot);
         var options = new CertificateOptions();
 
         configureOptions.Configure(certificateName, options);
@@ -60,9 +60,9 @@ public sealed class ConfigureCertificateOptionsTest
             [$"{GetConfigurationKey(certificateName, "CertificateFilePath")}"] = "empty.crt"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).BuildAsRoot();
 
-        var configureOptions = new ConfigureCertificateOptions(configuration);
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot);
         var options = new CertificateOptions();
 
         Action configureAction = () => configureOptions.Configure(certificateName, options);
@@ -82,8 +82,8 @@ public sealed class ConfigureCertificateOptionsTest
             [$"{GetConfigurationKey(certificateName, "PrivateKeyFilePath")}"] = "invalid.key"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var configureOptions = new ConfigureCertificateOptions(configuration);
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).BuildAsRoot();
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot);
         var options = new CertificateOptions();
 
         Action configureAction = () => configureOptions.Configure(certificateName, options);
@@ -102,8 +102,8 @@ public sealed class ConfigureCertificateOptionsTest
             [$"{GetConfigurationKey(certificateName, "CertificateFilePath")}"] = "instance.p12"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var configureOptions = new ConfigureCertificateOptions(configuration);
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).BuildAsRoot();
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot);
         var options = new CertificateOptions();
 
         configureOptions.Configure(certificateName, options);
@@ -125,8 +125,8 @@ public sealed class ConfigureCertificateOptionsTest
             [$"{GetConfigurationKey(certificateName, "PrivateKeyFilePath")}"] = "instance.key"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var configureOptions = new ConfigureCertificateOptions(configuration);
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).BuildAsRoot();
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot);
         var options = new CertificateOptions();
 
         configureOptions.Configure(certificateName, options);
@@ -153,13 +153,14 @@ public sealed class ConfigureCertificateOptionsTest
         using var secondX509 = X509Certificate2.CreateFromPemFile("secondInstance.crt", "secondInstance.key");
         string appSettings = BuildAppSettingsJson(certificateName, certificateFilePath, privateKeyFilePath);
         string appSettingsPath = sandbox.CreateFile("appsettings.json", appSettings);
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddJsonFile(appSettingsPath, false, true);
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddLogging();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureCertificateOptions(certificateName);
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -195,11 +196,11 @@ public sealed class ConfigureCertificateOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddLogging();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureCertificateOptions(certificateName);
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);

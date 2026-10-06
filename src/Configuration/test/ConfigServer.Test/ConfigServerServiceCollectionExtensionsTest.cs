@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Encryption;
 using Steeltoe.Configuration.Placeholder;
 
@@ -24,7 +25,7 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
 
         builder.EnumerateSources<ConfigServerConfigurationSource>().Should().ContainSingle();
 
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Should().ContainSingle();
     }

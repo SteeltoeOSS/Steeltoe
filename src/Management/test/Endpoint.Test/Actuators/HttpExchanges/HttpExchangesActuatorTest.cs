@@ -29,7 +29,7 @@ public sealed class HttpExchangesActuatorTest
     public async Task Registers_dependent_services()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddHttpExchangesActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -43,7 +43,7 @@ public sealed class HttpExchangesActuatorTest
     public async Task Configures_default_settings()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddHttpExchangesActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -103,7 +103,7 @@ public sealed class HttpExchangesActuatorTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddHttpExchangesActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 

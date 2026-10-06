@@ -29,7 +29,7 @@ public sealed class LoggersActuatorTest
     public async Task Registers_dependent_services()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddLoggersActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -43,7 +43,7 @@ public sealed class LoggersActuatorTest
     public async Task Configures_default_settings()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddLoggersActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -72,7 +72,7 @@ public sealed class LoggersActuatorTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddLoggersActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -606,7 +606,7 @@ public sealed class LoggersActuatorTest
         EnsureLoggingConfigurationIsBound(builder.Logging, builder.Configuration);
         builder.Services.AddSingleton<ILoggerFactory, OnlyTrackFakeCategoryLoggerFactory>();
         builder.Services.AddLoggersActuator();
-        WebApplication host = builder.Build();
+        await using WebApplication host = builder.Build();
 
         using var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         _ = loggerFactory.CreateLogger("Fake.Some");

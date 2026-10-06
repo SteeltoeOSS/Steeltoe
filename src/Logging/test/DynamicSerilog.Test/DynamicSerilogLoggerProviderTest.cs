@@ -370,10 +370,10 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             ["Serilog:WriteTo:0:Args:OutputTemplate"] = "[{Level:u3}] {Properties}{NewLine}  {Message:lj}{NewLine}"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddLogging(loggingBuilder => loggingBuilder.AddDynamicSerilog());
         services.AddSingleton<IDynamicMessageProcessor>(new TestMessageProcessor("One"));
         services.AddSingleton<IDynamicMessageProcessor>(new TestMessageProcessor("Two"));
@@ -396,10 +396,10 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
     {
         var configurationBuilder = new ConfigurationBuilder();
         configure?.Invoke(configurationBuilder);
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
 
         services.AddLogging(loggingBuilder =>
         {

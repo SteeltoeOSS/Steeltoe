@@ -103,9 +103,9 @@ public sealed class EurekaClientOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        IConfiguration configuration = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
-        IConfigurationSection clientSection = configuration.GetSection(EurekaClientOptions.ConfigurationPrefix);
+        IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.ConfigurationPrefix);
         var clientOptions = new EurekaClientOptions();
         clientSection.Bind(clientOptions);
 
@@ -139,7 +139,7 @@ public sealed class EurekaClientOptionsTest
             ["eureka:client:serviceUrl"] = "http://testhost/eureka"
         };
 
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
@@ -159,7 +159,7 @@ public sealed class EurekaClientOptionsTest
             ["eureka:client:serviceUrl"] = "http://testhost/eureka"
         };
 
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
@@ -176,7 +176,7 @@ public sealed class EurekaClientOptionsTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -196,7 +196,7 @@ public sealed class EurekaClientOptionsTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -218,7 +218,7 @@ public sealed class EurekaClientOptionsTest
         var services = new ServiceCollection();
         // ReSharper disable once AccessToDisposedClosure
         services.AddLogging(builder => builder.AddProvider(capturingLoggerProvider));
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -247,7 +247,7 @@ public sealed class EurekaClientOptionsTest
         var services = new ServiceCollection();
         // ReSharper disable once AccessToDisposedClosure
         services.AddLogging(builder => builder.AddProvider(capturingLoggerProvider));
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -272,7 +272,7 @@ public sealed class EurekaClientOptionsTest
             ["eureka:client:serviceUrl"] = "http://testhost/eureka"
         };
 
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();

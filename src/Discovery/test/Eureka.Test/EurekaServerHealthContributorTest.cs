@@ -153,10 +153,10 @@ public sealed class EurekaServerHealthContributorTest
             configurationBuilder.AddInMemoryCollection(appSettings);
         }
 
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
 
         services.AddOptions<EurekaClientOptions>().Configure(options =>
         {

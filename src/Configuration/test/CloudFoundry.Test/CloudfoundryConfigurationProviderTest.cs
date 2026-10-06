@@ -207,8 +207,7 @@ public sealed class CloudFoundryConfigurationProviderTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddCloudFoundry();
-
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         CloudFoundryApplicationOptions? options = null;
 
@@ -219,6 +218,7 @@ public sealed class CloudFoundryConfigurationProviderTest
             // ReSharper disable once AccessToDisposedClosure
             while (!tokenSource.IsCancellationRequested)
             {
+                // ReSharper disable once AccessToDisposedClosure
                 configurationRoot.Reload();
             }
         }, tokenSource.Token);
@@ -372,12 +372,12 @@ public sealed class CloudFoundryConfigurationProviderTest
 
         var builder = new ConfigurationBuilder();
         builder.Add(source);
-        IConfigurationRoot root = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        root["application_id"].Should().Be("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3");
-        root["limits:disk"].Should().Be("1024");
-        root["uris:0"].Should().Be("my-app.10.244.0.34.xip.io");
-        root["uris:1"].Should().Be("my-app2.10.244.0.34.xip.io");
+        configurationRoot["application_id"].Should().Be("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3");
+        configurationRoot["limits:disk"].Should().Be("1024");
+        configurationRoot["uris:0"].Should().Be("my-app.10.244.0.34.xip.io");
+        configurationRoot["uris:1"].Should().Be("my-app2.10.244.0.34.xip.io");
     }
 
     [Fact]

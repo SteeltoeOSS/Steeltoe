@@ -198,7 +198,6 @@ public sealed class ConfigurationExtensionsTest
     public async Task Does_not_detect_addresses_from_WebApplication_Urls()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
         await using WebApplication app = builder.Build();
         var configuration = app.Services.GetRequiredService<IConfiguration>();

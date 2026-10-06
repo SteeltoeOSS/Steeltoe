@@ -13,9 +13,9 @@ public sealed class ConfigServerDiscoveryServiceTest
     [Fact]
     public async Task ConfigServerDiscoveryService_FindsNoDiscoveryClients()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer).Build();
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer).BuildAsRoot();
 
-        var service = new ConfigServerDiscoveryService(configuration, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
         await service.GetConfigServerInstancesAsync(new ConfigServerClientOptions(), TestContext.Current.CancellationToken);
 
         service.DiscoveryClients.Should().BeEmpty();

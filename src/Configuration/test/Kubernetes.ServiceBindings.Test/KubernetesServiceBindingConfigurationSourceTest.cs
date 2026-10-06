@@ -47,12 +47,12 @@ public sealed class KubernetesServiceBindingConfigurationSourceTest
         var builder = new ConfigurationBuilder();
         builder.Add(source);
         builder.AddInMemoryCollection(appSettings);
-        builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        IConfigurationRoot parentConfiguration = source.GetParentConfiguration();
+        using var parentConfigurationRoot = (ConfigurationRoot)source.GetParentConfiguration();
 
-        parentConfiguration.Should().NotBeNull();
-        parentConfiguration.GetValue<bool>("some:value:in:configuration:path").Should().BeTrue();
+        parentConfigurationRoot.Should().NotBeNull();
+        parentConfigurationRoot.GetValue<bool>("some:value:in:configuration:path").Should().BeTrue();
     }
 
     private static string GetK8SResourcesDirectory(string name)

@@ -531,13 +531,14 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
     {
         var configurationBuilder = new ConfigurationBuilder();
         configure?.Invoke(configurationBuilder);
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
 
         services.AddLogging(loggingBuilder =>
         {
-            loggingBuilder.AddConfiguration(configuration.GetSection("Logging"));
+            loggingBuilder.AddConfiguration(configurationRoot.GetSection("Logging"));
             loggingBuilder.AddDynamicConsole();
         });
 

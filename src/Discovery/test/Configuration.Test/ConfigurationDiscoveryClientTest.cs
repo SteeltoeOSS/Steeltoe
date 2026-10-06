@@ -125,10 +125,10 @@ public sealed class ConfigurationDiscoveryClientTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddConfigurationDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -150,10 +150,8 @@ public sealed class ConfigurationDiscoveryClientTest
     [Fact]
     public async Task DoesNotRegisterConfigurationDiscoveryClientMultipleTimes()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
 
         services.AddConfigurationDiscoveryClient();
         services.AddConfigurationDiscoveryClient();
@@ -167,10 +165,8 @@ public sealed class ConfigurationDiscoveryClientTest
     [Fact]
     public async Task RegistersHostedService()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
 
         services.AddConfigurationDiscoveryClient();
 

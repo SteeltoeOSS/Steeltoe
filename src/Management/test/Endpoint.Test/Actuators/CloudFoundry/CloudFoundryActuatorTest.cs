@@ -39,7 +39,7 @@ public sealed class CloudFoundryActuatorTest
     public async Task Registers_dependent_services()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -56,7 +56,7 @@ public sealed class CloudFoundryActuatorTest
     public async Task Configures_default_settings()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -91,7 +91,7 @@ public sealed class CloudFoundryActuatorTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -121,7 +121,7 @@ public sealed class CloudFoundryActuatorTest
             """);
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddCloudFoundry().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddCloudFoundry().Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -221,7 +221,7 @@ public sealed class CloudFoundryActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundry();
         builder.Services.AddCloudFoundryActuator();
-        WebApplication host = builder.Build();
+        await using WebApplication host = builder.Build();
 
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await host.StartAsync(TestContext.Current.CancellationToken);
@@ -240,8 +240,9 @@ public sealed class CloudFoundryActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundry();
         builder.Services.AddInfoActuator();
-        WebApplication host = builder.Build();
+        await using WebApplication host = builder.Build();
 
+        // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await host.StartAsync(TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<InvalidOperationException>()
@@ -259,7 +260,7 @@ public sealed class CloudFoundryActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Logging.AddProvider(loggerProvider);
         builder.Services.AddAllActuators(false);
-        WebApplication host = builder.Build();
+        await using WebApplication host = builder.Build();
 
         host.UseRouting();
         host.UseActuatorEndpoints();

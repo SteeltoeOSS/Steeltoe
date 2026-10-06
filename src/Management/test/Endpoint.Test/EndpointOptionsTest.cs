@@ -23,10 +23,8 @@ public sealed class EndpointOptionsTest
     [Fact]
     public async Task Does_not_register_options_configurer_multiple_times()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
 
         services.AddInfoActuator();
         services.AddEnvironmentActuator();
@@ -40,10 +38,8 @@ public sealed class EndpointOptionsTest
     [Fact]
     public async Task Can_register_additional_options_configurer_upfront()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
 
         services.AddTransient<IConfigureOptions<ManagementOptions>, CustomManagementOptionsConfigurer>();
         services.AddInfoActuator();
@@ -62,10 +58,8 @@ public sealed class EndpointOptionsTest
     [Fact]
     public async Task Can_register_additional_options_configurer_afterwards()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
 
         services.AddInfoActuator();
         services.AddTransient<IConfigureOptions<ManagementOptions>, CustomManagementOptionsConfigurer>();
@@ -311,7 +305,7 @@ public sealed class EndpointOptionsTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddLoggersActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
