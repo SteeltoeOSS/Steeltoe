@@ -179,7 +179,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void SpringCloudConfigServer_DiscoveryFirst_ReturnsExpectedDefaultData()
+    public async Task SpringCloudConfigServer_DiscoveryFirst_ReturnsExpectedDefaultData()
     {
         const string appSettings = """
             {
@@ -220,6 +220,9 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         configurationRoot["info:description"].Should().Be("Spring Cloud Samples");
         configurationRoot["info:url"].Should().Be("https://github.com/spring-cloud-samples");
         configurationRoot["eureka:client:serviceUrl:defaultZone"].Should().Be("http://localhost:8761/eureka/");
+
+        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        await provider.ShutdownAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
