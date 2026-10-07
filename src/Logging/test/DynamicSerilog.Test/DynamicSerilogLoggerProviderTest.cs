@@ -29,7 +29,8 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             ["Serilog:MinimumLevel:Override:Fully.Qualified"] = DynamicLoggingTestContext.ToSerilogLevel(LogLevel.Warning)
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider provider = GetDynamicLoggerProvider(serviceProvider);
         ILogger logger = provider.CreateLogger("Fully.Qualified.Name.For.Type");
 
         logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
@@ -49,7 +50,8 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             ["Serilog:MinimumLevel:Override:A"] = DynamicLoggingTestContext.ToSerilogLevel(LogLevel.Trace)
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider provider = GetDynamicLoggerProvider(serviceProvider);
         _ = provider.CreateLogger("A.B.C.D.Example");
 
         string[] loggerStates = [.. provider.GetLogLevels().Select(state => state.ToString())];
@@ -93,7 +95,8 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
         LogLevel expectBeforeLevelAtSelf = configurationCategory != ConfigurationCategory.Child ? configurationLevel : LogLevel.Information;
         LogLevel expectBeforeLevelAtChild = configurationLevel;
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider provider = GetDynamicLoggerProvider(serviceProvider);
         DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
 
         testContext.Parent.AssertMinLevel(expectBeforeLevelAtParent);
@@ -123,7 +126,8 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             ["Serilog:WriteTo:0:Name"] = "Console"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider provider = GetDynamicLoggerProvider(serviceProvider);
         DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
 
         testContext.Default.AssertMinLevel(LogLevel.Information);
@@ -150,7 +154,8 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             ["Serilog:MinimumLevel:Override:Some"] = DynamicLoggingTestContext.ToSerilogLevel(LogLevel.Trace)
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider provider = GetDynamicLoggerProvider(serviceProvider);
 
         ILogger beforeLogger = provider.CreateLogger("Some");
         beforeLogger.ProbeMinLevel().Should().Be(LogLevel.Trace);
@@ -174,7 +179,8 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             ["Serilog:WriteTo:0:Name"] = "Console"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider provider = GetDynamicLoggerProvider(serviceProvider);
         LoggerWithDynamicState pascalCaseState = new(provider, _consoleOutput, pascalCaseCategoryName);
         LoggerWithDynamicState upperCaseState = new(provider, _consoleOutput, upperCaseCategoryName);
 
@@ -213,7 +219,8 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             }
             """);
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider));
+        using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryAppSettingsJsonFile(fileProvider));
+        IDynamicLoggerProvider provider = GetDynamicLoggerProvider(serviceProvider);
         DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
 
         testContext.Parent.AssertMinLevel(LogLevel.Warning);
@@ -265,7 +272,8 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             ["Serilog:WriteTo:0:Args:OutputTemplate"] = "[{Level:u3}] {SourceContext}: {Properties}{NewLine}  {Message:lj}{NewLine}"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider provider = GetDynamicLoggerProvider(serviceProvider);
 
         using var factory = new LoggerFactory();
         factory.AddProvider(provider);
@@ -298,7 +306,8 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             ["Serilog:Enrich:0"] = "FromLogContext"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider provider = GetDynamicLoggerProvider(serviceProvider);
 
         using var factory = new LoggerFactory();
         factory.AddProvider(provider);
@@ -341,7 +350,8 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             ["Serilog:WriteTo:0:Args:OutputTemplate"] = "[{Level:u3}] {SourceContext}: {Message:lj}{NewLine}"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider provider = GetDynamicLoggerProvider(serviceProvider);
 
         using var factory = new LoggerFactory();
         factory.AddProvider(provider);
@@ -392,7 +402,7 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             """, IgnoreLineEndingsComparer.Instance);
     }
 
-    private static IDynamicLoggerProvider CreateLoggerProvider(Action<ConfigurationBuilder>? configure = null)
+    private static ServiceProvider BuildServiceProvider(Action<ConfigurationBuilder>? configure = null)
     {
         var configurationBuilder = new ConfigurationBuilder();
         configure?.Invoke(configurationBuilder);
@@ -406,8 +416,11 @@ public sealed class DynamicSerilogLoggerProviderTest : IDisposable
             loggingBuilder.AddDynamicSerilog();
         });
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        return services.BuildServiceProvider(true);
+    }
 
+    private static IDynamicLoggerProvider GetDynamicLoggerProvider(ServiceProvider serviceProvider)
+    {
         return serviceProvider.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().Single();
     }
 
