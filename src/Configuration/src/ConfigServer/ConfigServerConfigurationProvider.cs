@@ -52,6 +52,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     private readonly LockPrimitive _vaultRenewTickLock = new();
     private readonly ConfigServerDiscoveryService _configServerDiscoveryService;
     private readonly IDisposable _changeTokenRegistration;
+    private readonly IDisposable? _sourceConfiguration;
     private readonly CancellationTokenSource _shutdownTokenSource = new();
     private readonly CancellationToken _shutdownToken;
 
@@ -88,6 +89,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source, ILoggerFactory loggerFactory)
         : this(source.DefaultOptions, source.Configuration, source.Configure, source.CreateHttpClientHandler, loggerFactory)
     {
+        // Each call to ConfigServerConfigurationSource.Build() creates a new configuration, which this provider owns.
+        _sourceConfiguration = source.Configuration as IDisposable;
     }
 
     internal ConfigServerConfigurationProvider(ConfigServerClientOptions clientOptions, IConfiguration? configuration,
@@ -974,6 +977,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             _changeTokenRegistration.Dispose();
             ShutdownTimers();
             _shutdownTokenSource.Dispose();
+            _sourceConfiguration?.Dispose();
         }
     }
 
