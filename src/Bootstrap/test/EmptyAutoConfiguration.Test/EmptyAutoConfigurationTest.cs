@@ -44,6 +44,8 @@ public sealed class EmptyAutoConfigurationTest
         Action action = () => builder.AddSteeltoe();
 
         action.Should().NotThrow();
+
+        using WebApplication host = builder.Build();
     }
 
     [Fact]
@@ -54,6 +56,8 @@ public sealed class EmptyAutoConfigurationTest
         Action action = () => builder.AddSteeltoe();
 
         action.Should().NotThrow();
+
+        using IHost host = builder.Build();
     }
 
     [Fact]
@@ -64,15 +68,19 @@ public sealed class EmptyAutoConfigurationTest
         Action action = () => builder.AddSteeltoe();
 
         action.Should().NotThrow();
+
+        using IWebHost host = builder.Build();
     }
 
     [Fact]
     public void Loads_without_any_Steeltoe_references_using_HostBuilder()
     {
-        IHostBuilder builder = TestHostBuilderFactory.Create();
+        HostBuilder builder = TestHostBuilderFactory.Create();
 
         Action action = () => builder.AddSteeltoe();
 
         action.Should().NotThrow();
+
+        using IHost host = builder.Build();
     }
 }

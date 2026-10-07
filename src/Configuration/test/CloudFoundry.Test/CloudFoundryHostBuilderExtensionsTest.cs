@@ -76,5 +76,7 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
 
         hostBuilder.Configuration.EnumerateSources().Count().Should().Be(beforeSourceCount);
         hostBuilder.Services.Count.Should().Be(beforeServiceCount);
+
+        using WebApplication host = hostBuilder.Build();
     }
 }

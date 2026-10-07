@@ -733,6 +733,8 @@ public sealed class PostgreSqlConnectorTest
 
         Action action = () => builder.AddPostgreSql();
         action.Should().NotThrow();
+
+        using WebApplication host = builder.Build();
     }
 
     private static List<string> ExtractConnectionStringParameters(string? connectionString)
