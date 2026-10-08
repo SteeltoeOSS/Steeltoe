@@ -38,6 +38,12 @@ internal sealed partial class ConfigServerDiscoveryService
         private set => _discoveryClients = value;
     }
 
+    /// <summary>
+    /// Gets a value indicating whether the discovery clients used to locate Config Server are still active. They are active until they get replaced (when
+    /// the application starts) or shut down.
+    /// </summary>
+    internal bool HasTemporaryDiscoveryClients => _temporaryServiceProviderForDiscoveryClients != null;
+
     public ConfigServerDiscoveryService(IConfiguration configuration, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(configuration);
