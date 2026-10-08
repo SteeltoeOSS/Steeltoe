@@ -115,9 +115,11 @@ public static class ConfigServerServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.ConfigureConfigServerClientOptions(configure);
-        services.TryAddSingleton(serviceProvider => (IConfigurationRoot)serviceProvider.GetRequiredService<IConfiguration>());
         services.AddHostedService<ConfigServerHostedService>();
         services.AddConfigServerHealthContributor();
+
+        // IConfigurationRoot is still registered for backward compatibility; Steeltoe itself does not need it anymore.
+        services.TryAddSingleton(serviceProvider => (IConfigurationRoot)serviceProvider.GetRequiredService<IConfiguration>());
 
         return services;
     }
