@@ -71,6 +71,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
     internal IDictionary<string, string?> InnerData => Data;
 
+    internal bool HasTemporaryDiscoveryClients => _configServerDiscoveryService.HasTemporaryDiscoveryClients;
+
     /// <summary>
     /// Gets the settings used to access Config Server, excluding information found during service discovery (so that a provider (re)load properly observes
     /// changes and triggers its change token). Returns a cloned snapshot to prevent tearing during reads/writes.
@@ -977,6 +979,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             _changeTokenRegistration.Dispose();
             ShutdownTimers();
             _shutdownTokenSource.Dispose();
+            ShutdownDiscoveryClients();
             _sourceConfiguration?.Dispose();
         }
     }
@@ -1005,6 +1008,22 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
         _configurationReloadTimer = null;
         _vaultRenewTimer = null;
+    }
+
+    private void ShutdownDiscoveryClients()
+    {
+        // Stop the discovery clients that were used to locate Config Server, unless the hosted service already replaced them at startup.
+        try
+        {
+#pragma warning disable S4462 // Calls to "async" methods should not be blocking
+            // Justification: Configuration sources and providers don't support async.
+            _configServerDiscoveryService.ShutdownAsync(CancellationToken.None).GetAwaiter().GetResult();
+#pragma warning restore S4462 // Calls to "async" methods should not be blocking
+        }
+        catch
+        {
+            // Intentionally left empty.
+        }
     }
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Rebinding options after outer configuration change.")]
