@@ -32,6 +32,88 @@ public sealed class ParentConfigurationTest
     }
 
     [Fact]
+    public void Disposes_previous_temporary_copy_of_parent_configuration_when_configuration_changes()
+    {
+        var countingSource = new DisposeCountingConfigurationSource();
+
+        var builder = new ConfigurationBuilder();
+        builder.Add(countingSource);
+
+        builder.ConfigurePostgreSql(options =>
+        {
+            options.SkipDefaultServiceBindings = true;
+            options.DetectConfigurationChanges = true;
+        });
+
+        using (builder.BuildAsRoot())
+        {
+            // Only the actual provider and the copy of the parent configuration whose changes are being observed remain alive.
+            countingSource.Providers.Count(provider => provider.DisposeCount == 0).Should().Be(2);
+
+            for (int index = 0; index < 5; index++)
+            {
+                DisposeCountingConfigurationProvider lastProvider = countingSource.Providers.Last(provider => provider.DisposeCount == 0);
+
+                lastProvider.TriggerReload();
+
+                lastProvider.DisposeCount.Should().Be(1);
+                countingSource.Providers.Count(provider => provider.DisposeCount == 0).Should().Be(2);
+            }
+        }
+
+        countingSource.Providers.Should().OnlyContain(provider => provider.DisposeCount == 1);
+    }
+
+    [Fact]
+    public void Does_not_accumulate_temporary_copies_of_parent_configuration_when_file_changes()
+    {
+        var fileProvider = new MemoryFileProvider();
+
+        fileProvider.IncludeAppSettingsJsonFile("""
+            {
+              "Example": {
+                "Value": "initial"
+              }
+            }
+            """);
+
+        var countingSource = new DisposeCountingConfigurationSource();
+
+        using (var manager = new ConfigurationManager())
+        {
+            manager.AddInMemoryAppSettingsJsonFile(fileProvider);
+            manager.Sources.Add(countingSource);
+
+            manager.ConfigurePostgreSql(options =>
+            {
+                options.SkipDefaultServiceBindings = true;
+                options.DetectConfigurationChanges = true;
+            });
+
+            for (int index = 0; index < 25; index++)
+            {
+                fileProvider.ReplaceAppSettingsJsonFile($$"""
+                    {
+                      "Example": {
+                        "Value": "changed-{{index}}"
+                      }
+                    }
+                    """);
+
+                fileProvider.NotifyChanged();
+
+                // The actual provider, and the copy of the parent configuration that is being observed for changes.
+                countingSource.Providers.Count(provider => provider.DisposeCount == 0).Should().Be(2);
+            }
+
+            // Proves the changes were detected: each reload creates new copies of the parent configuration.
+            countingSource.Providers.Should().HaveCountGreaterThan(25);
+        }
+
+        countingSource.Providers.Should().OnlyContain(provider => provider.DisposeCount == 1);
+    }
+
+    [Fact]
     public void Connector_source_does_not_dispose_shared_post_processors_when_copied_to_parent_configuration()
     {
         var processor = new DisposeCountingPostProcessor();
@@ -74,6 +156,11 @@ public sealed class ParentConfigurationTest
         private long _disposeCount;
 
         public long DisposeCount => Interlocked.Read(ref _disposeCount);
+
+        public void TriggerReload()
+        {
+            OnReload();
+        }
 
         public void Dispose()
         {
