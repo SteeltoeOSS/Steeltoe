@@ -8,6 +8,8 @@ namespace Steeltoe.Configuration;
 
 internal abstract class PostProcessorConfigurationSource
 {
+    private const string ParentConfigurationBuilderKey = "Steeltoe:PostProcessor:IsParentConfiguration";
+
     private readonly List<IConfigurationPostProcessor> _postProcessors = [];
     private IConfigurationBuilder? _capturedConfigurationBuilder;
 
@@ -23,10 +25,29 @@ internal abstract class PostProcessorConfigurationSource
 
     protected void CaptureConfigurationBuilder(IConfigurationBuilder configurationBuilder)
     {
-        _capturedConfigurationBuilder = configurationBuilder;
+        // Don't retain the temporary builder used to build the parent configuration.
+        if (!IsBuildingParentConfiguration(configurationBuilder))
+        {
+            _capturedConfigurationBuilder = configurationBuilder;
+        }
     }
 
-    public IConfigurationRoot GetParentConfiguration()
+    /// <summary>
+    /// Determines whether the specified builder is used to build a temporary copy of the parent configuration, in which case the providers created from it
+    /// must not dispose the post-processors, which are shared with the providers of the actual configuration.
+    /// </summary>
+    protected static bool IsBuildingParentConfiguration(IConfigurationBuilder configurationBuilder)
+    {
+        ArgumentNullException.ThrowIfNull(configurationBuilder);
+
+        return configurationBuilder.Properties.ContainsKey(ParentConfigurationBuilderKey);
+    }
+
+    /// <summary>
+    /// Builds a temporary copy of the configuration that was captured when this source was built, excluding sources of the same type as this source. The
+    /// caller is responsible for disposing the returned configuration.
+    /// </summary>
+    public ConfigurationRoot GetParentConfiguration()
     {
         var configurationBuilder = new ConfigurationBuilder();
 
@@ -46,6 +67,8 @@ internal abstract class PostProcessorConfigurationSource
             }
         }
 
-        return configurationBuilder.Build();
+        configurationBuilder.Properties[ParentConfigurationBuilderKey] = true;
+
+        return (ConfigurationRoot)configurationBuilder.Build();
     }
 }

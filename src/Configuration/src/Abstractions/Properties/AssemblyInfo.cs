@@ -19,4 +19,5 @@ using Aspire;
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.RandomValue")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.SpringBoot")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors")]
+[assembly: InternalsVisibleTo("Steeltoe.Connectors.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]

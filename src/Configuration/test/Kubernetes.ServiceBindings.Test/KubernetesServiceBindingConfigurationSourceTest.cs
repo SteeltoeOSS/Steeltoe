@@ -49,7 +49,7 @@ public sealed class KubernetesServiceBindingConfigurationSourceTest
         builder.AddInMemoryCollection(appSettings);
         using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        using var parentConfigurationRoot = (ConfigurationRoot)source.GetParentConfiguration();
+        using ConfigurationRoot parentConfigurationRoot = source.GetParentConfiguration();
 
         parentConfigurationRoot.Should().NotBeNull();
         parentConfigurationRoot.GetValue<bool>("some:value:in:configuration:path").Should().BeTrue();
