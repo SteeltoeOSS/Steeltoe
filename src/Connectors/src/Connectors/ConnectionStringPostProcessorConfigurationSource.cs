@@ -16,6 +16,10 @@ internal sealed class ConnectionStringPostProcessorConfigurationSource(bool dete
         ArgumentNullException.ThrowIfNull(builder);
 
         CaptureConfigurationBuilder(builder);
-        return new ConnectionStringPostProcessorConfigurationProvider(this, _detectConfigurationChanges);
+
+        return new ConnectionStringPostProcessorConfigurationProvider(this, _detectConfigurationChanges)
+        {
+            DisposesPostProcessors = !IsBuildingParentConfiguration(builder)
+        };
     }
 }

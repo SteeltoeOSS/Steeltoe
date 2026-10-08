@@ -12,6 +12,13 @@ internal abstract class PostProcessorConfigurationProvider : ConfigurationProvid
 {
     public PostProcessorConfigurationSource Source { get; }
 
+    /// <summary>
+    /// Gets a value indicating whether this provider is responsible for disposing the post-processors of its source. This is <c>false</c> for providers
+    /// created while building a temporary copy of the parent configuration, because post-processors are shared with the providers of the actual
+    /// configuration (for example, to delete temporary files).
+    /// </summary>
+    public bool DisposesPostProcessors { get; init; } = true;
+
     protected PostProcessorConfigurationProvider(PostProcessorConfigurationSource source)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -29,6 +36,11 @@ internal abstract class PostProcessorConfigurationProvider : ConfigurationProvid
 
     public virtual void Dispose()
     {
+        if (!DisposesPostProcessors)
+        {
+            return;
+        }
+
         foreach (IConfigurationPostProcessor processor in Source.PostProcessors)
         {
             if (processor is IDisposable disposable)
