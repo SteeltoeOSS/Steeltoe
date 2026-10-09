@@ -18,7 +18,7 @@ internal sealed partial class MongoDbHealthContributor : IHealthContributor
 
     public string Id => "MongoDB";
     public string Host { get; }
-    public string? ServiceName { get; }
+    public string ServiceName { get; }
 
     public MongoDbHealthContributor(string serviceName, Func<MongoClientInterfaceShim> getClient, bool disposeClient, string? host,
         ILogger<MongoDbHealthContributor> logger)
