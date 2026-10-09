@@ -20,10 +20,10 @@ public sealed class EurekaServiceCollectionExtensionsTest
     [Fact]
     public async Task AddEurekaDiscoveryClient_NoExceptionWithoutManagementOptions()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider provider = services.BuildServiceProvider(true);
@@ -41,10 +41,10 @@ public sealed class EurekaServiceCollectionExtensionsTest
             ["management:endpoints:health:path"] = "/non-default"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddAllActuators();
         services.AddEurekaDiscoveryClient();
 
@@ -64,10 +64,10 @@ public sealed class EurekaServiceCollectionExtensionsTest
             ["Eureka:Client:EurekaServer:RetryCount"] = "0"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddEurekaDiscoveryClient();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -140,10 +140,10 @@ public sealed class EurekaServiceCollectionExtensionsTest
             ["management:endpoints:health:path"] = "/non-default"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddAllActuators();
         services.AddEurekaDiscoveryClient();
 
@@ -163,10 +163,10 @@ public sealed class EurekaServiceCollectionExtensionsTest
             ["eureka:instance:statusPageUrlPath"] = "/customStatus"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddAllActuators();
         services.AddEurekaDiscoveryClient();
 
@@ -185,10 +185,10 @@ public sealed class EurekaServiceCollectionExtensionsTest
             ["Eureka:Client:Enabled"] = "false"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
 
         services.AddEurekaDiscoveryClient();
         services.AddEurekaDiscoveryClient();
@@ -208,10 +208,10 @@ public sealed class EurekaServiceCollectionExtensionsTest
             ["Eureka:Client:Enabled"] = "false"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);

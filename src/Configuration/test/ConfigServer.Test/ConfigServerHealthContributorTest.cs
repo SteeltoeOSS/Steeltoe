@@ -27,7 +27,7 @@ public sealed class ConfigServerHealthContributorTest
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
         builder.AddPlaceholderResolver();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         contributor.Provider.Should().NotBeNull();
@@ -47,7 +47,7 @@ public sealed class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         contributor.Provider.Should().NotBeNull();
@@ -69,7 +69,7 @@ public sealed class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         ConfigServerClientOptions optionsSnapshot = contributor.Provider!.ClientOptions;
@@ -98,7 +98,7 @@ public sealed class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance)
         {
@@ -130,7 +130,7 @@ public sealed class ConfigServerHealthContributorTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         contributor.Provider.Should().BeNull();
@@ -156,7 +156,7 @@ public sealed class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         contributor.Provider.Should().NotBeNull();
@@ -181,7 +181,7 @@ public sealed class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         contributor.Provider.Should().NotBeNull();
@@ -207,7 +207,7 @@ public sealed class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         var health = new HealthCheckResult();

@@ -22,7 +22,8 @@ public sealed class EurekaServerHealthContributorTest
             ["eureka:client:enabled"] = "false"
         };
 
-        (EurekaServerHealthContributor contributor, _) = CreateHealthContributor(appSettings);
+        await using ServiceProvider serviceProvider = BuildServiceProvider(appSettings);
+        EurekaServerHealthContributor contributor = GetContributor(serviceProvider);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
@@ -37,7 +38,8 @@ public sealed class EurekaServerHealthContributorTest
             ["eureka:client:health:enabled"] = "false"
         };
 
-        (EurekaServerHealthContributor contributor, _) = CreateHealthContributor(appSettings);
+        await using ServiceProvider serviceProvider = BuildServiceProvider(appSettings);
+        EurekaServerHealthContributor contributor = GetContributor(serviceProvider);
 
         HealthCheckResult? result = await contributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
@@ -47,7 +49,8 @@ public sealed class EurekaServerHealthContributorTest
     [Fact]
     public void MakeHealthStatus_ReturnsExpected()
     {
-        (EurekaServerHealthContributor contributor, _) = CreateHealthContributor();
+        using ServiceProvider serviceProvider = BuildServiceProvider();
+        EurekaServerHealthContributor contributor = GetContributor(serviceProvider);
 
         contributor.MakeHealthStatus(InstanceStatus.Down).Should().Be(HealthStatus.Down);
         contributor.MakeHealthStatus(InstanceStatus.Up).Should().Be(HealthStatus.Up);
@@ -59,7 +62,8 @@ public sealed class EurekaServerHealthContributorTest
     [Fact]
     public void AddApplications_AddsExpected()
     {
-        (EurekaServerHealthContributor contributor, _) = CreateHealthContributor();
+        using ServiceProvider serviceProvider = BuildServiceProvider();
+        EurekaServerHealthContributor contributor = GetContributor(serviceProvider);
 
         var apps = new ApplicationInfoCollection([
             new ApplicationInfo("app1", [
@@ -86,7 +90,9 @@ public sealed class EurekaServerHealthContributorTest
     [Fact]
     public void AddFetchStatus_AddsExpected()
     {
-        (EurekaServerHealthContributor contributor, EurekaClientOptions clientOptions) = CreateHealthContributor();
+        using ServiceProvider serviceProvider = BuildServiceProvider();
+        EurekaServerHealthContributor contributor = GetContributor(serviceProvider);
+        EurekaClientOptions clientOptions = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>().CurrentValue;
 
         var results = new HealthCheckResult();
         contributor.AddFetchStatus(results, null);
@@ -115,7 +121,10 @@ public sealed class EurekaServerHealthContributorTest
     [Fact]
     public void AddHeartbeatStatus_AddsExpected()
     {
-        (EurekaServerHealthContributor contributor, EurekaClientOptions clientOptions) = CreateHealthContributor();
+        using ServiceProvider serviceProvider = BuildServiceProvider();
+        EurekaServerHealthContributor contributor = GetContributor(serviceProvider);
+        EurekaClientOptions clientOptions = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>().CurrentValue;
+
         var results = new HealthCheckResult();
         contributor.AddHeartbeatStatus(results, null);
 
@@ -143,8 +152,7 @@ public sealed class EurekaServerHealthContributorTest
         results.Details.Should().ContainKey("heartbeatStatus").WhoseValue.Should().Be("DOWN");
     }
 
-    private static (EurekaServerHealthContributor Contributor, EurekaClientOptions ClientOptions) CreateHealthContributor(
-        IDictionary<string, string?>? appSettings = null)
+    private static ServiceProvider BuildServiceProvider(IDictionary<string, string?>? appSettings = null)
     {
         var configurationBuilder = new ConfigurationBuilder();
 
@@ -153,10 +161,10 @@ public sealed class EurekaServerHealthContributorTest
             configurationBuilder.AddInMemoryCollection(appSettings);
         }
 
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
 
         services.AddOptions<EurekaClientOptions>().Configure(options =>
         {
@@ -166,10 +174,11 @@ public sealed class EurekaServerHealthContributorTest
 
         services.AddEurekaDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        EurekaServerHealthContributor contributor = serviceProvider.GetServices<IHealthContributor>().OfType<EurekaServerHealthContributor>().Single();
-        var clientOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
+        return services.BuildServiceProvider(true);
+    }
 
-        return (contributor, clientOptionsMonitor.CurrentValue);
+    private static EurekaServerHealthContributor GetContributor(ServiceProvider serviceProvider)
+    {
+        return serviceProvider.GetServices<IHealthContributor>().OfType<EurekaServerHealthContributor>().Single();
     }
 }

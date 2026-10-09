@@ -30,7 +30,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
     public async Task Configures_default_settings()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddSpringBootAdminClient();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 

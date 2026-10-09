@@ -9,16 +9,17 @@ namespace Steeltoe.Common.Certificates.Test;
 
 public sealed class CertificateConfigurationExtensionsTest
 {
+    private const string ConfigurationKeyPrefix = $"Certificates:{CertificateConfigurationExtensions.AppInstanceIdentityCertificateName}:";
+
     [Fact]
     public void AddAppInstanceIdentityCertificate_SetsPaths_RunningLocal()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddAppInstanceIdentityCertificate().Build();
+        var builder = new ConfigurationBuilder();
+        builder.AddAppInstanceIdentityCertificate();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        configuration[$"Certificates:{CertificateConfigurationExtensions.AppInstanceIdentityCertificateName}:certificateFilePath"].Should()
-            .EndWith($"{LocalCertificateWriter.CertificateFilenamePrefix}Cert.pem");
-
-        configuration[$"Certificates:{CertificateConfigurationExtensions.AppInstanceIdentityCertificateName}:privateKeyFilePath"].Should()
-            .EndWith($"{LocalCertificateWriter.CertificateFilenamePrefix}Key.pem");
+        configurationRoot[ConfigurationKeyPrefix + "certificateFilePath"].Should().EndWith($"{LocalCertificateWriter.CertificateFilenamePrefix}Cert.pem");
+        configurationRoot[ConfigurationKeyPrefix + "privateKeyFilePath"].Should().EndWith($"{LocalCertificateWriter.CertificateFilenamePrefix}Key.pem");
     }
 
     [Fact]
@@ -27,8 +28,12 @@ public sealed class CertificateConfigurationExtensionsTest
         using var vcapScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
         using var certificateScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
         using var privateKeyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
-        IConfiguration configuration = new ConfigurationBuilder().AddAppInstanceIdentityCertificate().Build();
-        configuration[$"Certificates:{CertificateConfigurationExtensions.AppInstanceIdentityCertificateName}:certificateFilePath"].Should().Be("instance.crt");
-        configuration[$"Certificates:{CertificateConfigurationExtensions.AppInstanceIdentityCertificateName}:privateKeyFilePath"].Should().Be("instance.key");
+
+        var builder = new ConfigurationBuilder();
+        builder.AddAppInstanceIdentityCertificate();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
+
+        configurationRoot[ConfigurationKeyPrefix + "certificateFilePath"].Should().Be("instance.crt");
+        configurationRoot[ConfigurationKeyPrefix + "privateKeyFilePath"].Should().Be("instance.key");
     }
 }

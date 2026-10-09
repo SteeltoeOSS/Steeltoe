@@ -23,9 +23,9 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
             ["Authentication:Schemes:OpenIdConnect:ClientId"] = "testClient"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddAuthentication().AddOpenIdConnect();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -69,9 +69,9 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
             """;
 
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
-        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Identity).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Identity).Build();
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddLogging();
         services.AddAuthentication().AddOpenIdConnect().ConfigureOpenIdConnectForCloudFoundry();
 

@@ -6,6 +6,7 @@ using System.Reflection;
 using FluentAssertions.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
@@ -45,9 +46,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         builder.AddConfigServer();
-        IConfigurationRoot configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        ConfigServerConfigurationProvider provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
+        ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
         using HttpClient httpClient = provider.CreateHttpClient(provider.ClientOptions);
 
         httpClient.Should().NotBeNull();

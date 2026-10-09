@@ -431,10 +431,7 @@ FodyWeavers.xsd
 ### Additions specific to this repository ###
 #############################################
 
-# Pivotal Software
-Pivotal.GemFire.dll
-pivnet*
-pivotal*.zip
+# Created by LocalCertificateWriter to run against local certificates
 GeneratedCertificates/
 
 # Mac DS_Store files
@@ -442,6 +439,9 @@ GeneratedCertificates/
 
 # SonarQube
 .sonarqube/
+
+# Diagnostics written by GitProperties.Build.Test to analyze future failures in CI testruns.
+*.nettrace
 
 # JetBrains IDEs Rider/IntelliJ (based on https://intellij-support.jetbrains.com/hc/en-us/articles/206544839)
 **/.idea/**/*.xml

@@ -130,7 +130,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
         configurationBuilder.AddConfigServer(options);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
         provider.ClientOptions.ClientCertificate.Certificate.Should().NotBeNull();
@@ -153,7 +153,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
         configurationBuilder.AddConfigServer(options);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
         provider.ClientOptions.ClientCertificate.Certificate.Should().NotBeNull();
@@ -192,7 +192,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().FirstOrDefault();
 
@@ -248,7 +248,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer(options, configureOptions, null, NullLoggerFactory.Instance);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().FirstOrDefault();
 

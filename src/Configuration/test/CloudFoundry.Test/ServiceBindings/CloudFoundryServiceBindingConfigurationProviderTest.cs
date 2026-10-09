@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
 namespace Steeltoe.Configuration.CloudFoundry.Test.ServiceBindings;
@@ -123,7 +124,7 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
 
         var builder = new ConfigurationBuilder();
         builder.Add(source);
-        builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         postProcessor.PostProcessorCalled.Should().BeTrue();
     }
@@ -142,11 +143,11 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
         var builder = new ConfigurationBuilder();
         builder.Add(source);
         builder.AddInMemoryCollection(appSettings);
-        builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        IConfigurationRoot parentConfiguration = source.GetParentConfiguration();
+        using var parentConfigurationRoot = (ConfigurationRoot)source.GetParentConfiguration();
 
-        parentConfiguration.GetValue<bool>("some:value:in:configuration:path").Should().BeTrue();
+        parentConfigurationRoot.GetValue<bool>("some:value:in:configuration:path").Should().BeTrue();
     }
 
     [Fact]
@@ -158,7 +159,7 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
         var builder = new ConfigurationBuilder();
         builder.Add(source);
 
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
         IConfigurationSection section = configurationRoot.GetRequiredSection("vcap:services");
 
         section.GetValue<string>("p-config-server:0:name").Should().Be("myConfigServer");

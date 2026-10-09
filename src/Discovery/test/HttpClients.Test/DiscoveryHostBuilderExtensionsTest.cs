@@ -51,7 +51,10 @@ public sealed class DiscoveryHostBuilderExtensionsTest
 
         hostBuilder.ConfigureServices(services => services.AddEurekaDiscoveryClient());
 
-        Func<Task> action = async () => await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        Func<Task> action = async () =>
+        {
+            using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        };
 
         await action.Should().NotThrowAsync();
     }

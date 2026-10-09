@@ -55,7 +55,7 @@ public sealed class TtlSchedulerTest
         scheduler.Add("foobar");
 
         scheduler.ServiceHeartbeats.Should().NotBeEmpty();
-        scheduler.ServiceHeartbeats.TryRemove("foobar", out PeriodicHeartbeat? heartbeat).Should().BeTrue();
+        scheduler.ServiceHeartbeats.TryGetValue("foobar", out PeriodicHeartbeat? heartbeat).Should().BeTrue();
         heartbeat.Should().NotBeNull();
     }
 
@@ -125,7 +125,15 @@ public sealed class TtlSchedulerTest
     [Fact]
     public async Task Timer_CallsPassTTL()
     {
+        var heartbeatSent = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var agent = Substitute.For<IAgentEndpoint>();
+
+        agent.PassTTL("service:foobar", "ttl", Arg.Any<CancellationToken>()).Returns(_ =>
+        {
+            heartbeatSent.TrySetResult();
+            return Task.FromResult(new WriteResult());
+        });
+
         var client = Substitute.For<IConsulClient>();
         client.Agent.Returns(agent);
 
@@ -140,9 +148,9 @@ public sealed class TtlSchedulerTest
         await using var scheduler = new TtlScheduler(optionsMonitor, client, NullLoggerFactory.Instance);
         scheduler.Add("foobar");
 
-        await Task.Delay(2500.Milliseconds(), TestContext.Current.CancellationToken);
+        await heartbeatSent.Task.WaitAsync(5.Seconds(), TestContext.Current.CancellationToken);
+        await scheduler.RemoveAsync("foobar");
 
         await agent.Received().PassTTL("service:foobar", "ttl", Arg.Any<CancellationToken>());
-        await scheduler.RemoveAsync("foobar");
     }
 }

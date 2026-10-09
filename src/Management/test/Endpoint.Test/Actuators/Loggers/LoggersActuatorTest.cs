@@ -29,7 +29,7 @@ public sealed class LoggersActuatorTest
     public async Task Registers_dependent_services()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddLoggersActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -43,7 +43,7 @@ public sealed class LoggersActuatorTest
     public async Task Configures_default_settings()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddLoggersActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -72,7 +72,7 @@ public sealed class LoggersActuatorTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddLoggersActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -116,7 +116,7 @@ public sealed class LoggersActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
 
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -149,7 +149,7 @@ public sealed class LoggersActuatorTest
         _ = loggerFactory.CreateLogger("Fake.Some");
         _ = loggerFactory.CreateLogger("Fake.Category.AtDebugLevel.Some");
 
-        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
 
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -215,7 +215,7 @@ public sealed class LoggersActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage setResponse1 = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), new StringContent("""
+        using HttpResponseMessage setResponse1 = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), new StringContent("""
             {
                 "configuredLevel": "OFF"
             }
@@ -224,7 +224,7 @@ public sealed class LoggersActuatorTest
         setResponse1.StatusCode.Should().Be(HttpStatusCode.NoContent);
         (await setResponse1.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Should().BeEmpty();
 
-        HttpResponseMessage setResponse2 = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake.Some.Test"), new StringContent("""
+        using HttpResponseMessage setResponse2 = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake.Some.Test"), new StringContent("""
             {
                 "configuredLevel": "INFO"
             }
@@ -233,7 +233,7 @@ public sealed class LoggersActuatorTest
         setResponse2.StatusCode.Should().Be(HttpStatusCode.NoContent);
         (await setResponse2.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Should().BeEmpty();
 
-        HttpResponseMessage setResponse3 = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake.Category"), new StringContent("""
+        using HttpResponseMessage setResponse3 = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake.Category"), new StringContent("""
             {
                 "configuredLevel": "TRACE"
             }
@@ -242,7 +242,7 @@ public sealed class LoggersActuatorTest
         setResponse3.StatusCode.Should().Be(HttpStatusCode.NoContent);
         (await setResponse3.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Should().BeEmpty();
 
-        HttpResponseMessage getResponse1 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage getResponse1 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
 
         getResponse1.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -289,13 +289,13 @@ public sealed class LoggersActuatorTest
             }
             """);
 
-        HttpResponseMessage resetResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake.Category"),
+        using HttpResponseMessage resetResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake.Category"),
             new StringContent("{}", RequestContentType), TestContext.Current.CancellationToken);
 
         resetResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         (await resetResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Should().BeEmpty();
 
-        HttpResponseMessage getResponse2 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage getResponse2 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
 
         getResponse2.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -364,7 +364,7 @@ public sealed class LoggersActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage setResponse1 = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake"), new StringContent("""
+        using HttpResponseMessage setResponse1 = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake"), new StringContent("""
             {
                 "configuredLevel": "TRACE"
             }
@@ -373,7 +373,7 @@ public sealed class LoggersActuatorTest
         setResponse1.StatusCode.Should().Be(HttpStatusCode.NoContent);
         (await setResponse1.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Should().BeEmpty();
 
-        HttpResponseMessage getResponse1 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage getResponse1 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
 
         getResponse1.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -406,7 +406,7 @@ public sealed class LoggersActuatorTest
             }
             """);
 
-        HttpResponseMessage resetResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake"), new StringContent("""
+        using HttpResponseMessage resetResponse = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Fake"), new StringContent("""
             {
               "configuredLevel": null
             }
@@ -415,7 +415,7 @@ public sealed class LoggersActuatorTest
         resetResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         (await resetResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Should().BeEmpty();
 
-        HttpResponseMessage getResponse2 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage getResponse2 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
 
         getResponse2.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -459,7 +459,7 @@ public sealed class LoggersActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), new StringContent("""
+        using HttpResponseMessage response = await httpClient.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), new StringContent("""
             {
                 "configuredLevel": "BAD-LEVEL"
             }
@@ -495,7 +495,7 @@ public sealed class LoggersActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage getResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage getResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
 
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -546,7 +546,7 @@ public sealed class LoggersActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage setResponse = await httpClient.PostAsync(new Uri("http://localhost/loggers/Default"), new StringContent("""
+        using HttpResponseMessage setResponse = await httpClient.PostAsync(new Uri("http://localhost/loggers/Default"), new StringContent("""
             {
                 "configuredLevel": "ERROR"
             }
@@ -555,7 +555,7 @@ public sealed class LoggersActuatorTest
         setResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         (await setResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Should().BeEmpty();
 
-        HttpResponseMessage getResponse = await httpClient.GetAsync(new Uri("http://localhost/loggers"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage getResponse = await httpClient.GetAsync(new Uri("http://localhost/loggers"), TestContext.Current.CancellationToken);
 
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -606,7 +606,7 @@ public sealed class LoggersActuatorTest
         EnsureLoggingConfigurationIsBound(builder.Logging, builder.Configuration);
         builder.Services.AddSingleton<ILoggerFactory, OnlyTrackFakeCategoryLoggerFactory>();
         builder.Services.AddLoggersActuator();
-        WebApplication host = builder.Build();
+        await using WebApplication host = builder.Build();
 
         using var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         _ = loggerFactory.CreateLogger("Fake.Some");
@@ -615,7 +615,7 @@ public sealed class LoggersActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
 
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -670,7 +670,7 @@ public sealed class LoggersActuatorTest
 
         fileProvider.NotifyChanged();
 
-        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
 
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
 

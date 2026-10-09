@@ -289,7 +289,7 @@ public sealed class EurekaClientTest
         var services = new ServiceCollection();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
         services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = "http://host-that-does-not-exist.net:9999/");
-        services.AddSingleton<IHttpClientFactory>(new TestHttpClientFactory());
+        services.AddSingleton<IHttpClientFactory, TestHttpClientFactory>();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
         services.AddSingleton(TimeProvider.System);
@@ -326,7 +326,7 @@ public sealed class EurekaClientTest
         var services = new ServiceCollection();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
         services.AddOptions<EurekaClientOptions>().Configure(options => options.AccessTokenUri = "http://host-that-does-not-exist.net:9999/");
-        services.AddSingleton<IHttpClientFactory>(new TestHttpClientFactory());
+        services.AddSingleton<IHttpClientFactory, TestHttpClientFactory>();
         services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaClient>();
         services.AddSingleton(TimeProvider.System);
@@ -956,14 +956,9 @@ public sealed class EurekaClientTest
         logMessages.Should().Contain("Content-Type: *");
     }
 
-    private sealed class TestHttpClientFactory(HttpClient? httpClient) : IHttpClientFactory, IDisposable
+    private sealed class TestHttpClientFactory : IHttpClientFactory, IDisposable
     {
-        private readonly HttpClient _httpClient = httpClient ?? new HttpClient();
-
-        public TestHttpClientFactory()
-            : this(null)
-        {
-        }
+        private readonly HttpClient _httpClient = new();
 
         public HttpClient CreateClient(string name)
         {

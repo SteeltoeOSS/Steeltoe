@@ -60,7 +60,8 @@ public sealed class DiagnosticObserverHttpExchangeRecorderTest
 
         helloResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        _ = await httpClient.GetAsync(new Uri("http://127.0.0.1:5000/does/not/exist"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage errorResponse =
+            await httpClient.GetAsync(new Uri("http://127.0.0.1:5000/does/not/exist"), TestContext.Current.CancellationToken);
 
         await Task.Delay(250.Milliseconds(), TestContext.Current.CancellationToken);
 

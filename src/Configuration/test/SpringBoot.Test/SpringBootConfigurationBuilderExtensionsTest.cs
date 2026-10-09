@@ -15,7 +15,7 @@ public sealed class SpringBootConfigurationBuilderExtensionsTest
         using var scope = new EnvironmentVariableScope("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddSpringBootFromEnvironmentVariable();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         configurationRoot["foo:bar"].Should().Be("value");
     }
@@ -31,10 +31,10 @@ public sealed class SpringBootConfigurationBuilderExtensionsTest
         ];
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddSpringBootFromCommandLine(args);
-        IConfigurationRoot configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        configuration["spring:foo:bar"].Should().Be("value1");
-        configuration["spring:bar:0:foo"].Should().Be("value2");
-        configuration["bar:foo"].Should().BeNull();
+        configurationRoot["spring:foo:bar"].Should().Be("value1");
+        configurationRoot["spring:bar:0:foo"].Should().Be("value2");
+        configurationRoot["bar:foo"].Should().BeNull();
     }
 }

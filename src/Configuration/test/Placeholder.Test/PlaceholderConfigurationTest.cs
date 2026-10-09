@@ -56,7 +56,7 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         testSourceA.LastProvider.Should().BeNull();
         testSourceB.LastProvider.Should().BeNull();
 
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         testSourceA.LastProvider.Should().NotBeNull();
         testSourceB.LastProvider.Should().NotBeNull();
@@ -95,7 +95,7 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         builder.Add(testSourceB);
         builder.AddPlaceholderResolver(_loggerFactory);
 
-        var configurationRoot = (ConfigurationRoot)builder.Build();
+        ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         testSourceA.LastProvider.Should().NotBeNull();
         testSourceB.LastProvider.Should().NotBeNull();
@@ -132,13 +132,13 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         TestConfigurationProvider? previousProviderA;
         TestConfigurationProvider? previousProviderB;
 
-        using ((ConfigurationRoot)builder.Build())
+        using (builder.BuildAsRoot())
         {
             previousProviderA = testSourceA.LastProvider;
             previousProviderB = testSourceA.LastProvider;
         }
 
-        _ = builder.Build();
+        using ConfigurationRoot nextConfigurationRoot = builder.BuildAsRoot();
 
         TestConfigurationProvider? nextProviderA = testSourceA.LastProvider;
         TestConfigurationProvider? nextProviderB = testSourceA.LastProvider;
@@ -178,7 +178,7 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         builder.Add(testSourceA);
         builder.Add(testSourceB);
         builder.AddPlaceholderResolver(_loggerFactory);
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         testSourceA.LastProvider.Should().NotBeNull();
         testSourceB.LastProvider.Should().NotBeNull();
@@ -212,21 +212,21 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         builder.AddPlaceholderResolver(_loggerFactory);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        configuration["no-key"].Should().BeNull();
-        configuration["key1"].Should().Be("value1");
-        configuration["key2"].Should().Be("value1");
-        configuration["key3"].Should().Be("not-found");
-        configuration["key4"].Should().Be("${no-key}");
-        configuration["key5"].Should().BeEmpty();
-        configuration["key6"].Should().BeNull();
-        configuration["key7"].Should().BeNull();
+        configurationRoot["no-key"].Should().BeNull();
+        configurationRoot["key1"].Should().Be("value1");
+        configurationRoot["key2"].Should().Be("value1");
+        configurationRoot["key3"].Should().Be("not-found");
+        configurationRoot["key4"].Should().Be("${no-key}");
+        configurationRoot["key5"].Should().BeEmpty();
+        configurationRoot["key6"].Should().BeNull();
+        configurationRoot["key7"].Should().BeNull();
 
-        configuration["no-key"] = "new-key-value";
+        configurationRoot["no-key"] = "new-key-value";
 
-        configuration["key3"].Should().Be("new-key-value");
-        configuration["key4"].Should().Be("new-key-value");
+        configurationRoot["key3"].Should().Be("new-key-value");
+        configurationRoot["key4"].Should().Be("new-key-value");
     }
 
     [Fact]
@@ -244,9 +244,9 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         builder.AddPlaceholderResolver(_loggerFactory);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        IConfigurationSection oneSection = configuration.GetSection("one");
+        IConfigurationSection oneSection = configurationRoot.GetSection("one");
         oneSection.Path.Should().Be("one");
         oneSection.Key.Should().Be("one");
         oneSection.Value.Should().Be("value1-test");
@@ -284,9 +284,9 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         builder.AddPlaceholderResolver(_loggerFactory);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        configuration["TestRoot:Key5"].Should().Be("5:4:3:2:1:FinalValue");
+        configurationRoot["TestRoot:Key5"].Should().Be("5:4:3:2:1:FinalValue");
     }
 
     [Fact]
@@ -300,9 +300,10 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         builder.AddPlaceholderResolver(_loggerFactory);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        Action action = () => _ = configuration["TestRoot:Key1"];
+        // ReSharper disable once AccessToDisposedClosure
+        Action action = () => _ = configurationRoot["TestRoot:Key1"];
 
         action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Found circular placeholder reference 'TestRoot:Key1' in configuration.");
     }
@@ -322,9 +323,10 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         builder.AddPlaceholderResolver(_loggerFactory);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        Action action = () => _ = configuration["TestRoot:Key4"];
+        // ReSharper disable once AccessToDisposedClosure
+        Action action = () => _ = configurationRoot["TestRoot:Key4"];
 
         action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Found circular placeholder reference 'TestRoot:Key3' in configuration.");
     }
@@ -356,16 +358,15 @@ public sealed class PlaceholderConfigurationTest : IDisposable
 
         AssertTypesInSourceTree(builder.Sources, placeholderCount);
 
-        IConfiguration configuration = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
         var services = new ServiceCollection();
         services.AddSingleton<ILoggerFactory>(_loggerFactory);
         services.AddLogging();
-        services.AddSingleton(configuration);
-        services.Configure<TestOptions>(configuration.GetSection("TestRoot"));
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
+        services.Configure<TestOptions>(configurationRoot.GetSection("TestRoot"));
         services.AddSingleton<IConfigureOptions<TestOptions>, ConfigureTestOptions>();
-
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var configurer = (ConfigureTestOptions)serviceProvider.GetRequiredService<IConfigureOptions<TestOptions>>();
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<TestOptions>>();
@@ -422,9 +423,9 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         builder.AddPlaceholderResolver();
-        IConfigurationRoot configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        IConfigurationSection section = configuration.GetSection("Root:TestOptions");
+        IConfigurationSection section = configurationRoot.GetSection("Root:TestOptions");
         var options = section.Get<TestOptions>();
 
         options.Should().NotBeNull();
@@ -442,9 +443,9 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         builder.AddPlaceholderResolver();
-        IConfigurationRoot configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        IConfigurationSection section = configuration.GetSection("Root:TestOptions");
+        IConfigurationSection section = configurationRoot.GetSection("Root:TestOptions");
         var options = section.Get<TestOptions>();
 
         options.Should().NotBeNull();

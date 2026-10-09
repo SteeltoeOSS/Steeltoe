@@ -14,10 +14,8 @@ public sealed class CloudFoundryServicesOptionsTest
     [Fact]
     public async Task NoVcapServicesConfiguration()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddCloudFoundryOptions();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -51,10 +49,10 @@ public sealed class CloudFoundryServicesOptionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfiguration configuration = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddCloudFoundryOptions();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -148,10 +146,10 @@ public sealed class CloudFoundryServicesOptionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfiguration configuration = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddCloudFoundryOptions();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -226,10 +224,10 @@ public sealed class CloudFoundryServicesOptionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfiguration configuration = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddCloudFoundryOptions();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -314,10 +312,10 @@ public sealed class CloudFoundryServicesOptionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfiguration configuration = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddCloudFoundryOptions();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
