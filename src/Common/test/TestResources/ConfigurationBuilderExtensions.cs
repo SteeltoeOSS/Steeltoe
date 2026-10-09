@@ -24,8 +24,8 @@ public static class ConfigurationBuilderExtensions
     /// </example>
     /// </para>
     /// <para>
-    /// 2. Tests where the service provider disposes the configuration by passing a lambda:
     /// <example>
+    /// 2. Tests where the service provider disposes the configuration by passing a lambda:
     /// <![CDATA[
     /// var root = new ConfigurationBuilder().Add(...).Build();
     /// 
@@ -37,6 +37,8 @@ public static class ConfigurationBuilderExtensions
     /// </remarks>
     public static ConfigurationRoot BuildAsRoot(this IConfigurationBuilder builder)
     {
+        ArgumentNullException.ThrowIfNull(builder);
+
         return (ConfigurationRoot)builder.Build();
     }
 }
