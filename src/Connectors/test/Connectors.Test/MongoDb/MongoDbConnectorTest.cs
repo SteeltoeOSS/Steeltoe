@@ -259,21 +259,14 @@ public sealed class MongoDbConnectorTest
             options.CreateConnection = (_, _) => mongoClient;
         });
 
-        WebApplication app = builder.Build();
-
-        try
+        await using (WebApplication app = builder.Build())
         {
             IHealthContributor healthContributor = app.Services.GetServices<IHealthContributor>().Should().ContainSingle().Which;
-
             HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
 
             result.Should().NotBeNull();
             result.Status.Should().Be(HealthStatus.Up);
             mongoClient.Received(cacheConnection ? 0 : 1).Dispose();
-        }
-        finally
-        {
-            await app.DisposeAsync();
         }
 
         // The connector owns the cached client and disposes it on shutdown.
