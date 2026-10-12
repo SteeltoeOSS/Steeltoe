@@ -44,6 +44,18 @@ internal abstract class PostProcessorConfigurationSource
     }
 
     /// <summary>
+    /// Determines whether the specified builder is used to build a temporary copy of the parent configuration for this type of source. Such a copy must not
+    /// contain this source, which could otherwise (when wrapped in a <see cref="ICompositeConfigurationSource" />) build its own parent configuration again,
+    /// endlessly.
+    /// </summary>
+    protected bool IsBuildingOwnParentConfiguration(IConfigurationBuilder configurationBuilder)
+    {
+        ArgumentNullException.ThrowIfNull(configurationBuilder);
+
+        return configurationBuilder.Properties.TryGetValue(ParentConfigurationBuilderKey, out object? owner) && ReferenceEquals(owner, GetType());
+    }
+
+    /// <summary>
     /// Builds a temporary copy of the configuration that was captured when this source was built, excluding sources of the same type as this source. The
     /// caller is responsible for disposing the returned configuration.
     /// </summary>
@@ -67,7 +79,7 @@ internal abstract class PostProcessorConfigurationSource
             }
         }
 
-        configurationBuilder.Properties[ParentConfigurationBuilderKey] = true;
+        configurationBuilder.Properties[ParentConfigurationBuilderKey] = GetType();
 
         return (ConfigurationRoot)configurationBuilder.Build();
     }

@@ -139,6 +139,38 @@ public sealed class ParentConfigurationTest
         processor.DisposeCount.Should().Be(1);
     }
 
+    [Fact]
+    public void Builds_parent_configuration_when_connector_source_is_wrapped_in_composite_source()
+    {
+        var countingSource = new DisposeCountingConfigurationSource();
+
+        var builder = new ConfigurationBuilder();
+        builder.Add(countingSource);
+        builder.ConfigurePostgreSql(options => options.SkipDefaultServiceBindings = true);
+
+        // Does what AddPlaceholderResolver() and AddDecryption() do: move all existing sources into a composite source that builds them.
+        var compositeSource = new TestCompositeConfigurationSource();
+
+        foreach (IConfigurationSource source in builder.Sources)
+        {
+            compositeSource.Sources.Add(source);
+        }
+
+        builder.Sources.Clear();
+        builder.Sources.Add(compositeSource);
+
+        using (builder.BuildAsRoot())
+        {
+            // One build for the actual configuration, and one for the temporary copy of the parent configuration used to post-process connection strings.
+            compositeSource.BuildCount.Should().Be(2);
+
+            // The temporary copy still contains the sources that surround the connector source.
+            countingSource.Providers.Should().HaveCount(2);
+        }
+
+        countingSource.Providers.Should().OnlyContain(provider => provider.DisposeCount == 1);
+    }
+
     private sealed class DisposeCountingConfigurationSource : IConfigurationSource
     {
         public List<DisposeCountingConfigurationProvider> Providers { get; } = [];
@@ -195,4 +227,45 @@ public sealed class ParentConfigurationTest
 
     private sealed class OwnerProvider(PostProcessorConfigurationSource source)
         : PostProcessorConfigurationProvider(source);
+
+    private sealed class TestCompositeConfigurationSource : ICompositeConfigurationSource
+    {
+        private const int MaxBuildCount = 10;
+
+        public IList<IConfigurationSource> Sources { get; } = [];
+        public int BuildCount { get; private set; }
+
+        public IConfigurationProvider Build(IConfigurationBuilder builder)
+        {
+            BuildCount++;
+
+            // Fail instead of overflowing the stack when the connector source keeps building its own parent configuration.
+            if (BuildCount > MaxBuildCount)
+            {
+                throw new InvalidOperationException("Infinite recursion detected.");
+            }
+
+            List<IConfigurationProvider> providers = [.. Sources.Select(source => source.Build(builder))];
+            return new TestCompositeConfigurationProvider(providers);
+        }
+    }
+
+    private sealed class TestCompositeConfigurationProvider(List<IConfigurationProvider> providers) : ConfigurationProvider, IDisposable
+    {
+        public override void Load()
+        {
+            foreach (IConfigurationProvider provider in providers)
+            {
+                provider.Load();
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (IDisposable disposable in providers.OfType<IDisposable>())
+            {
+                disposable.Dispose();
+            }
+        }
+    }
 }
