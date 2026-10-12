@@ -20,14 +20,6 @@ internal sealed class KeyProvider : IKeyProvider
         _store = CreateStore(fileStream, pfxPassword);
     }
 
-    public KeyProvider(Stream fileStream, string pfxPassword)
-    {
-        ArgumentNullException.ThrowIfNull(fileStream);
-        ArgumentNullException.ThrowIfNull(pfxPassword);
-
-        _store = CreateStore(fileStream, pfxPassword);
-    }
-
     private static Pkcs12Store CreateStore(Stream fileStream, string pfxPassword)
     {
         var builder = new Pkcs12StoreBuilder();
