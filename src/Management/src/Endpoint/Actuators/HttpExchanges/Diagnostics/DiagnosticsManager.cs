@@ -12,13 +12,12 @@ internal sealed partial class DiagnosticsManager : IObserver<DiagnosticListener>
     private readonly ILogger<DiagnosticsManager> _logger;
     private readonly List<DiagnosticObserver> _observers;
 
-    private bool _isDisposed;
-#pragma warning disable S1450 // Private fields only used as local variables in methods should become local variables
-    // disabled because an object reference is needed to not dispose when method scope is completed.
-    private IDisposable? _listenersSubscription;
-#pragma warning restore S1450 // Private fields only used as local variables in methods should become local variables
+    private volatile IDisposable? _listenersSubscription;
+    private long _isStarted;
+    private long _isDisposed;
 
-    private int _started;
+    private bool IsStarted => Interlocked.Read(ref _isStarted) == 1;
+    private bool IsDisposed => Interlocked.Read(ref _isDisposed) == 1;
 
     public DiagnosticsManager(IEnumerable<DiagnosticObserver> observers, ILogger<DiagnosticsManager> logger)
     {
@@ -41,31 +40,33 @@ internal sealed partial class DiagnosticsManager : IObserver<DiagnosticListener>
 
     public void OnNext(DiagnosticListener value)
     {
-        foreach (DiagnosticObserver observer in _observers)
+        if (IsStarted)
         {
-            observer.Subscribe(value);
+            foreach (DiagnosticObserver observer in _observers)
+            {
+                observer.Subscribe(value);
+            }
         }
     }
 
     public void Start()
     {
-        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        if (Interlocked.CompareExchange(ref _started, 1, 0) == 0)
+        if (Interlocked.CompareExchange(ref _isStarted, 1, 0) == 0)
         {
             _listenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
-
-            if (_listenersSubscription != null)
-            {
-                LogSubscribed();
-            }
+            LogSubscribed();
         }
     }
 
     public void Stop()
     {
-        if (Interlocked.CompareExchange(ref _started, 0, 1) == 1)
+        if (Interlocked.CompareExchange(ref _isStarted, 0, 1) == 1)
         {
+            _listenersSubscription?.Dispose();
+            _listenersSubscription = null;
+
             foreach (DiagnosticObserver observer in _observers)
             {
                 observer.Dispose();
@@ -75,11 +76,10 @@ internal sealed partial class DiagnosticsManager : IObserver<DiagnosticListener>
 
     public void Dispose()
     {
-        if (!_isDisposed)
+        if (Interlocked.Exchange(ref _isDisposed, 1) == 0)
         {
             Stop();
             _observers.Clear();
-            _isDisposed = true;
         }
     }
 
