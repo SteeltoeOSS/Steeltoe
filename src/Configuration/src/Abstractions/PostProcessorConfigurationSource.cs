@@ -69,7 +69,21 @@ internal abstract class PostProcessorConfigurationSource
             {
                 if (source.GetType() != GetType())
                 {
-                    configurationBuilder.Add(source);
+                    if (source is ChainedConfigurationSource { ShouldDisposeConfiguration: true, Configuration: { } chainedConfiguration })
+                    {
+                        // The temporary copy must not take over ownership of a chained configuration (such as the host configuration of HostBuilder),
+                        // because disposing the copy would then dispose providers that the actual configuration still uses.
+
+                        configurationBuilder.Add(new ChainedConfigurationSource
+                        {
+                            Configuration = chainedConfiguration,
+                            ShouldDisposeConfiguration = false
+                        });
+                    }
+                    else
+                    {
+                        configurationBuilder.Add(source);
+                    }
                 }
             }
 

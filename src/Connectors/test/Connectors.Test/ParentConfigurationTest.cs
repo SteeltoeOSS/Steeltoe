@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration;
 using Steeltoe.Connectors.PostgreSql;
@@ -137,6 +138,25 @@ public sealed class ParentConfigurationTest
         }
 
         processor.DisposeCount.Should().Be(1);
+    }
+
+    [Fact]
+    public void Does_not_dispose_chained_host_configuration_when_disposing_temporary_copy_of_parent_configuration()
+    {
+        var countingSource = new DisposeCountingConfigurationSource();
+
+        // HostBuilder chains the host configuration into the app configuration, taking ownership of it.
+        // Other host builder types are unaffected.
+        HostBuilder builder = TestHostBuilderFactory.Create();
+        builder.ConfigureHostConfiguration(configurationBuilder => configurationBuilder.Add(countingSource));
+
+        builder.ConfigureAppConfiguration(configurationBuilder =>
+            configurationBuilder.ConfigurePostgreSql(options => options.SkipDefaultServiceBindings = true));
+
+        using IHost host = builder.Build();
+
+        countingSource.Providers.Should().ContainSingle();
+        countingSource.Providers[0].DisposeCount.Should().Be(0);
     }
 
     [Fact]
