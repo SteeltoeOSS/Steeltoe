@@ -18,6 +18,8 @@ public sealed class ConsulDiscoveryClientTest
     {
         var options = new ConsulDiscoveryOptions
         {
+            ServiceName = "this-service",
+            InstanceId = "this-instance",
             Register = false,
             HostName = "this.host.com",
             Port = 8888
@@ -108,6 +110,8 @@ public sealed class ConsulDiscoveryClientTest
     {
         var options = new ConsulDiscoveryOptions
         {
+            ServiceName = "this-service",
+            InstanceId = "this-instance",
             Register = false,
             HostName = "this.host.com",
             Port = 8888
@@ -150,6 +154,8 @@ public sealed class ConsulDiscoveryClientTest
     {
         var options = new ConsulDiscoveryOptions
         {
+            ServiceName = "this-service",
+            InstanceId = "this-instance",
             Register = false,
             HostName = "this.host.com",
             Port = 8888

@@ -1,1 +1,3 @@
 #nullable enable
+*REMOVED*Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetLocalServiceInstance() -> Steeltoe.Common.Discovery.IServiceInstance?
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetLocalServiceInstance() -> Steeltoe.Common.Discovery.IServiceInstance!

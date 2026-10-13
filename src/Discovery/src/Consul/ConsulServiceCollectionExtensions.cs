@@ -100,7 +100,7 @@ public static class ConsulServiceCollectionExtensions
         services.AddSingleton(serviceProvider =>
         {
             var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConsulDiscoveryOptions>>();
-            return ConsulRegistration.Create(optionsMonitor);
+            return ConsulServiceInstance.FromOptions(optionsMonitor.CurrentValue);
         });
 
         services.AddSingleton<ConsulServiceRegistrar>();

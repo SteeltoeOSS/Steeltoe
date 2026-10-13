@@ -56,75 +56,79 @@ internal sealed partial class ConsulServiceRegistry : IAsyncDisposable
     }
 
     /// <summary>
-    /// Registers the provided registration in Consul.
+    /// Registers the provided service instance in Consul.
     /// </summary>
     /// <param name="registration">
-    /// The registration to register.
+    /// The Consul payload to submit for the service instance.
+    /// </param>
+    /// <param name="instance">
+    /// The service instance to register.
     /// </param>
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.
     /// </param>
-    public async Task RegisterAsync(ConsulRegistration registration, CancellationToken cancellationToken)
+    public async Task RegisterAsync(AgentServiceRegistration registration, ConsulServiceInstance instance, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(instance);
         ArgumentNullException.ThrowIfNull(registration);
 
-        LogRegistering(registration.ServiceId);
+        LogRegistering(instance.ServiceId);
 
         try
         {
-            await _client.Agent.ServiceRegister(registration.InnerRegistration, cancellationToken);
+            await _client.Agent.ServiceRegister(registration, cancellationToken);
 
             if (Options.IsHeartbeatEnabled && _scheduler != null)
             {
-                _scheduler.Add(registration.InstanceId);
+                _scheduler.Add(instance.InstanceId);
             }
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
             if (Options.FailFast)
             {
-                LogRegisterFailed(exception, registration.ServiceId);
+                LogRegisterFailed(exception, instance.ServiceId);
                 throw;
             }
 
-            LogWarnForRegisterFailed(exception, registration.ServiceId);
+            LogWarnForRegisterFailed(exception, instance.ServiceId);
         }
     }
 
     /// <summary>
-    /// Deregisters the provided registration in Consul.
+    /// Deregisters the provided service instance in Consul.
     /// </summary>
-    /// <param name="registration">
-    /// The registration to deregister.
+    /// <param name="instance">
+    /// The service instance to deregister.
     /// </param>
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.
     /// </param>
-    public async Task DeregisterAsync(ConsulRegistration registration, CancellationToken cancellationToken)
+    public async Task DeregisterAsync(ConsulServiceInstance instance, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(registration);
+        ArgumentNullException.ThrowIfNull(instance);
 
         try
         {
             if (Options.IsHeartbeatEnabled && _scheduler != null)
             {
-                await _scheduler.RemoveAsync(registration.InstanceId);
+                await _scheduler.RemoveAsync(instance.InstanceId);
             }
 
-            LogDeregistering(registration.InstanceId);
-            await _client.Agent.ServiceDeregister(registration.InstanceId, cancellationToken);
+            LogDeregistering(instance.InstanceId);
+            await _client.Agent.ServiceDeregister(instance.InstanceId, cancellationToken);
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            LogDeregisterFailed(exception, registration.ServiceId);
+            LogDeregisterFailed(exception, instance.ServiceId);
         }
     }
 
     /// <summary>
-    /// Sets the status of the provided registration in Consul.
+    /// Sets the status of the provided service instance in Consul.
     /// </summary>
-    /// <param name="registration">
-    /// The registration whose status to set.
+    /// <param name="instance">
+    /// The service instance whose status to set.
     /// </param>
     /// <param name="status">
     /// The status value to set.
@@ -132,18 +136,18 @@ internal sealed partial class ConsulServiceRegistry : IAsyncDisposable
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.
     /// </param>
-    public async Task SetStatusAsync(ConsulRegistration registration, string status, CancellationToken cancellationToken)
+    public async Task SetStatusAsync(ConsulServiceInstance instance, string status, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(registration);
+        ArgumentNullException.ThrowIfNull(instance);
         ArgumentException.ThrowIfNullOrWhiteSpace(status);
 
         if (string.Equals(status, OutOfService, StringComparison.OrdinalIgnoreCase))
         {
-            await _client.Agent.EnableServiceMaintenance(registration.InstanceId, OutOfService, cancellationToken);
+            await _client.Agent.EnableServiceMaintenance(instance.InstanceId, OutOfService, cancellationToken);
         }
         else if (string.Equals(status, Up, StringComparison.OrdinalIgnoreCase))
         {
-            await _client.Agent.DisableServiceMaintenance(registration.InstanceId, cancellationToken);
+            await _client.Agent.DisableServiceMaintenance(instance.InstanceId, cancellationToken);
         }
         else
         {
@@ -152,23 +156,23 @@ internal sealed partial class ConsulServiceRegistry : IAsyncDisposable
     }
 
     /// <summary>
-    /// Gets the status of the provided registration in Consul.
+    /// Gets the status of the provided service instance in Consul.
     /// </summary>
-    /// <param name="registration">
-    /// The registration whose status to obtain.
+    /// <param name="instance">
+    /// The service instance whose status to obtain.
     /// </param>
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.
     /// </param>
-    public async Task<string> GetStatusAsync(ConsulRegistration registration, CancellationToken cancellationToken)
+    public async Task<string> GetStatusAsync(ConsulServiceInstance instance, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(registration);
+        ArgumentNullException.ThrowIfNull(instance);
 
-        QueryResult<HealthCheck[]> queryResult = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default, cancellationToken);
+        QueryResult<HealthCheck[]> queryResult = await _client.Health.Checks(instance.ServiceId, QueryOptions.Default, cancellationToken);
 
         foreach (HealthCheck check in queryResult.Response)
         {
-            if (check.ServiceID == registration.InstanceId && string.Equals(check.Name, "Service Maintenance Mode", StringComparison.OrdinalIgnoreCase))
+            if (check.ServiceID == instance.InstanceId && string.Equals(check.Name, "Service Maintenance Mode", StringComparison.OrdinalIgnoreCase))
             {
                 return OutOfService;
             }

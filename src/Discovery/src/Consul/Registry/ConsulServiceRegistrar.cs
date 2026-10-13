@@ -2,11 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Consul;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Consul.Configuration;
+using Steeltoe.Discovery.Consul.Util;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Steeltoe.Discovery.Consul.Registry;
 
@@ -21,6 +24,7 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
     private readonly ConsulServiceRegistry _registry;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
     private readonly ILogger<ConsulServiceRegistrar> _logger;
+    private readonly AgentServiceRegistration _agentRegistration;
 
     private bool _isDisposed;
     private int _isRunning;
@@ -30,9 +34,9 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
     internal bool IsRunning => _isRunning == Running;
 
     /// <summary>
-    /// Gets the registration that the registrar is to register with Consul.
+    /// Gets the service instance that the registrar is to register with Consul.
     /// </summary>
-    public ConsulRegistration Registration { get; }
+    public ConsulServiceInstance ServiceInstance { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceRegistrar" /> class.
@@ -43,23 +47,24 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
     /// <param name="optionsMonitor">
     /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
-    /// <param name="registration">
-    /// The registration to register with Consul.
+    /// <param name="serviceInstance">
+    /// The service instance to register with Consul.
     /// </param>
     /// <param name="logger">
     /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
     /// </param>
-    public ConsulServiceRegistrar(ConsulServiceRegistry registry, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ConsulRegistration registration,
+    public ConsulServiceRegistrar(ConsulServiceRegistry registry, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ConsulServiceInstance serviceInstance,
         ILogger<ConsulServiceRegistrar> logger)
     {
         ArgumentNullException.ThrowIfNull(registry);
         ArgumentNullException.ThrowIfNull(optionsMonitor);
-        ArgumentNullException.ThrowIfNull(registration);
+        ArgumentNullException.ThrowIfNull(serviceInstance);
         ArgumentNullException.ThrowIfNull(logger);
 
         _registry = registry;
         _optionsMonitor = optionsMonitor;
-        Registration = registration;
+        ServiceInstance = serviceInstance;
+        _agentRegistration = CreateAgentRegistration(serviceInstance, optionsMonitor.CurrentValue);
         _logger = logger;
     }
 
@@ -98,7 +103,7 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
             return;
         }
 
-        await _registry.RegisterAsync(Registration, cancellationToken);
+        await _registry.RegisterAsync(_agentRegistration, ServiceInstance, cancellationToken);
     }
 
     private async Task DeregisterAsync(CancellationToken cancellationToken)
@@ -109,7 +114,7 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
             return;
         }
 
-        await _registry.DeregisterAsync(Registration, cancellationToken);
+        await _registry.DeregisterAsync(ServiceInstance, cancellationToken);
     }
 
     private async Task DoWithRetryAsync(Func<CancellationToken, Task> retryable, ConsulRetryOptions options, CancellationToken cancellationToken)
@@ -148,6 +153,78 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
             }
         }
         while (true);
+    }
+
+    internal static AgentServiceRegistration CreateAgentRegistration(ConsulServiceInstance serviceInstance, ConsulDiscoveryOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(serviceInstance);
+        ArgumentNullException.ThrowIfNull(options);
+
+        var agentRegistration = new AgentServiceRegistration
+        {
+            ID = serviceInstance.InstanceId,
+            Address = serviceInstance.Host,
+            Name = serviceInstance.ServiceId,
+            Tags = serviceInstance.Tags.ToArray(),
+            Meta = serviceInstance.Metadata.ToDictionary(pair => pair.Key, pair => pair.Value)
+        };
+
+        if (serviceInstance.Port > 0)
+        {
+            agentRegistration.Port = serviceInstance.Port;
+
+            if (options.RegisterHealthCheck)
+            {
+                agentRegistration.Check = CreateCheck(serviceInstance.Port, options);
+            }
+        }
+
+        return agentRegistration;
+    }
+
+    internal static AgentServiceCheck CreateCheck(int port, ConsulDiscoveryOptions options)
+    {
+        var check = new AgentServiceCheck();
+
+        if (!string.IsNullOrEmpty(options.HealthCheckCriticalTimeout))
+        {
+            check.DeregisterCriticalServiceAfter = DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout);
+        }
+
+        if (options is { IsHeartbeatEnabled: true, Heartbeat: not null })
+        {
+            check.TTL = DateTimeConversions.ToTimeSpan(options.Heartbeat.TimeToLive);
+            return check;
+        }
+
+        if (!string.IsNullOrEmpty(options.HealthCheckUrl))
+        {
+            check.HTTP = options.HealthCheckUrl;
+        }
+        else
+        {
+            var uri = new Uri($"{options.EffectiveScheme}://{options.HostName}:{port}{options.HealthCheckPath}");
+            check.HTTP = uri.ToString();
+        }
+
+        check.Header = new Dictionary<string, List<string>>
+        {
+            // Override Management:Endpoints:UseStatusCodeFromResponse, Consul only looks at HTTP status code.
+            ["X-Use-Status-Code-From-Response"] = ["true"]
+        };
+
+        if (!string.IsNullOrEmpty(options.HealthCheckInterval))
+        {
+            check.Interval = DateTimeConversions.ToTimeSpan(options.HealthCheckInterval);
+        }
+
+        if (!string.IsNullOrEmpty(options.HealthCheckTimeout))
+        {
+            check.Timeout = DateTimeConversions.ToTimeSpan(options.HealthCheckTimeout);
+        }
+
+        check.TLSSkipVerify = options.HealthCheckTlsSkipVerify;
+        return check;
     }
 
     /// <inheritdoc />

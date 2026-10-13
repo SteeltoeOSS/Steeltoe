@@ -675,7 +675,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         _ = serviceProvider.GetRequiredService<IConsulClient>();
         _ = serviceProvider.GetRequiredService<TtlScheduler>();
         _ = serviceProvider.GetRequiredService<ConsulServiceRegistry>();
-        _ = serviceProvider.GetRequiredService<ConsulRegistration>();
+        _ = serviceProvider.GetRequiredService<ConsulServiceInstance>();
         _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
     }
@@ -710,7 +710,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         _ = serviceProvider.GetRequiredService<TtlScheduler>();
         _ = serviceProvider.GetRequiredService<ConsulServiceRegistry>();
 
-        var registration = serviceProvider.GetRequiredService<ConsulRegistration>();
+        var registration = serviceProvider.GetRequiredService<ConsulServiceInstance>();
         registration.Host.Should().Be("from-test");
 
         _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
@@ -744,7 +744,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         _ = serviceProvider.GetRequiredService<TtlScheduler>();
         _ = serviceProvider.GetRequiredService<ConsulServiceRegistry>();
 
-        var registration = serviceProvider.GetRequiredService<ConsulRegistration>();
+        var registration = serviceProvider.GetRequiredService<ConsulServiceInstance>();
         registration.Port.Should().Be(1234);
 
         _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
@@ -772,7 +772,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var registration = serviceProvider.GetRequiredService<ConsulRegistration>();
+        var registration = serviceProvider.GetRequiredService<ConsulServiceInstance>();
 
         registration.Host.Should().NotBe("myapp");
         registration.Port.Should().Be(0);
@@ -802,7 +802,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var registration = serviceProvider.GetRequiredService<ConsulRegistration>();
+        var registration = serviceProvider.GetRequiredService<ConsulServiceInstance>();
 
         registration.Host.Should().NotBe("myapp");
         registration.Port.Should().Be(8080);

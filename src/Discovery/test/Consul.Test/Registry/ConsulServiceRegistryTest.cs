@@ -29,13 +29,15 @@ public sealed class ConsulServiceRegistryTest
             ["spring:application:name"] = "foobar"
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
-        await registry.RegisterAsync(registration, TestContext.Current.CancellationToken);
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions(appSettings);
+        ConsulServiceInstance instance = ConsulServiceInstance.FromOptions(options);
+        AgentServiceRegistration registration = ConsulServiceRegistrar.CreateAgentRegistration(instance, options);
+        await registry.RegisterAsync(registration, instance, TestContext.Current.CancellationToken);
 
-        await agent.Received(1).ServiceRegister(registration.InnerRegistration, Arg.Any<CancellationToken>());
+        await agent.Received(1).ServiceRegister(registration, Arg.Any<CancellationToken>());
 
         scheduler.ServiceHeartbeats.Should().ContainSingle();
-        scheduler.ServiceHeartbeats.Should().ContainKey(registration.InstanceId);
+        scheduler.ServiceHeartbeats.Should().ContainKey(instance.InstanceId);
     }
 
     [Fact]
@@ -54,17 +56,19 @@ public sealed class ConsulServiceRegistryTest
             ["spring:application:name"] = "foobar"
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
-        await registry.RegisterAsync(registration, TestContext.Current.CancellationToken);
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions(appSettings);
+        ConsulServiceInstance instance = ConsulServiceInstance.FromOptions(options);
+        AgentServiceRegistration registration = ConsulServiceRegistrar.CreateAgentRegistration(instance, options);
+        await registry.RegisterAsync(registration, instance, TestContext.Current.CancellationToken);
 
-        await agent.Received(1).ServiceRegister(registration.InnerRegistration, Arg.Any<CancellationToken>());
+        await agent.Received(1).ServiceRegister(registration, Arg.Any<CancellationToken>());
 
         scheduler.ServiceHeartbeats.Should().ContainSingle();
-        scheduler.ServiceHeartbeats.Should().ContainKey(registration.InstanceId);
+        scheduler.ServiceHeartbeats.Should().ContainKey(instance.InstanceId);
 
-        await registry.DeregisterAsync(registration, TestContext.Current.CancellationToken);
+        await registry.DeregisterAsync(instance, TestContext.Current.CancellationToken);
 
-        await agent.Received(1).ServiceDeregister(registration.InnerRegistration.ID, Arg.Any<CancellationToken>());
+        await agent.Received(1).ServiceDeregister(registration.ID, Arg.Any<CancellationToken>());
         scheduler.ServiceHeartbeats.Should().BeEmpty();
     }
 
@@ -83,12 +87,12 @@ public sealed class ConsulServiceRegistryTest
             ["spring:application:name"] = "foobar"
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
+        ConsulServiceInstance instance = TestRegistrationFactory.CreateServiceInstance(appSettings);
 
         await using var registry = new ConsulServiceRegistry(client, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
         // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await registry.SetStatusAsync(registration, string.Empty, TestContext.Current.CancellationToken);
+        Func<Task> action = async () => await registry.SetStatusAsync(instance, string.Empty, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<ArgumentException>();
     }
@@ -108,14 +112,14 @@ public sealed class ConsulServiceRegistryTest
             ["spring:application:name"] = "foobar"
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
+        ConsulServiceInstance instance = TestRegistrationFactory.CreateServiceInstance(appSettings);
 
         await using var registry = new ConsulServiceRegistry(client, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
-        await registry.SetStatusAsync(registration, "Up", TestContext.Current.CancellationToken);
-        await agent.Received(1).DisableServiceMaintenance(registration.InstanceId, Arg.Any<CancellationToken>());
+        await registry.SetStatusAsync(instance, "Up", TestContext.Current.CancellationToken);
+        await agent.Received(1).DisableServiceMaintenance(instance.InstanceId, Arg.Any<CancellationToken>());
 
-        await registry.SetStatusAsync(registration, "Out_of_Service", TestContext.Current.CancellationToken);
-        await agent.Received(1).EnableServiceMaintenance(registration.InstanceId, "OUT_OF_SERVICE", Arg.Any<CancellationToken>());
+        await registry.SetStatusAsync(instance, "Out_of_Service", TestContext.Current.CancellationToken);
+        await agent.Received(1).EnableServiceMaintenance(instance.InstanceId, "OUT_OF_SERVICE", Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -128,7 +132,7 @@ public sealed class ConsulServiceRegistryTest
             ["spring:application:name"] = "foobar"
         };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(appSettings);
+        ConsulServiceInstance instance = TestRegistrationFactory.CreateServiceInstance(appSettings);
 
         var queryResult = new QueryResult<HealthCheck[]>
         {
@@ -136,7 +140,7 @@ public sealed class ConsulServiceRegistryTest
             [
                 new HealthCheck
                 {
-                    ServiceID = registration.InstanceId,
+                    ServiceID = instance.InstanceId,
                     Name = "Service Maintenance Mode"
                 },
                 new HealthCheck
@@ -153,12 +157,12 @@ public sealed class ConsulServiceRegistryTest
         var health = Substitute.For<IHealthEndpoint>();
 
         client.Health.Returns(health);
-        health.Checks(registration.ServiceId, QueryOptions.Default, Arg.Any<CancellationToken>()).Returns(result);
+        health.Checks(instance.ServiceId, QueryOptions.Default, Arg.Any<CancellationToken>()).Returns(result);
 
         await using var scheduler = new TtlScheduler(optionsMonitor, client, NullLoggerFactory.Instance);
         await using var registry = new ConsulServiceRegistry(client, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
-        string status = await registry.GetStatusAsync(registration, TestContext.Current.CancellationToken);
+        string status = await registry.GetStatusAsync(instance, TestContext.Current.CancellationToken);
         status.Should().Be("OUT_OF_SERVICE");
     }
 }

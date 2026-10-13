@@ -24,8 +24,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
 {
     private readonly IConsulClient _client;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
-    private readonly ConsulServiceRegistrar? _registrar;
-    private readonly ThisServiceInstance? _thisServiceInstance;
+    private readonly ConsulServiceRegistrar _registrar;
 
     /// <inheritdoc />
     public string Description => "A discovery client for HashiCorp Consul.";
@@ -59,7 +58,6 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
 
         _client = client;
         _optionsMonitor = optionsMonitor;
-        _thisServiceInstance = new ThisServiceInstance(registrar.Registration);
         _registrar = registrar;
 
 #pragma warning disable S4462 // Calls to "async" methods should not be blocking
@@ -71,13 +69,13 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     private static ConsulServiceRegistrar CreateRegistrar(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor,
         ILoggerFactory loggerFactory)
     {
-        var registration = ConsulRegistration.Create(optionsMonitor);
+        ConsulServiceInstance serviceInstance = ConsulServiceInstance.FromOptions(optionsMonitor.CurrentValue);
 
         ILogger<ConsulServiceRegistry> registryLogger = loggerFactory.CreateLogger<ConsulServiceRegistry>();
         var registry = new ConsulServiceRegistry(client, optionsMonitor, new TtlScheduler(optionsMonitor, client, loggerFactory), registryLogger);
 
         ILogger<ConsulServiceRegistrar> registrarLogger = loggerFactory.CreateLogger<ConsulServiceRegistrar>();
-        return new ConsulServiceRegistrar(registry, optionsMonitor, registration, registrarLogger);
+        return new ConsulServiceRegistrar(registry, optionsMonitor, serviceInstance, registrarLogger);
     }
 
     /// <inheritdoc />
@@ -189,22 +187,19 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     }
 
     /// <inheritdoc />
-    public IServiceInstance? GetLocalServiceInstance()
+    public IServiceInstance GetLocalServiceInstance()
     {
-        return _thisServiceInstance;
+        return _registrar.ServiceInstance;
     }
 
     /// <inheritdoc />
     public async Task ShutdownAsync(CancellationToken cancellationToken)
     {
-        if (_registrar != null)
-        {
-            ConsulDiscoveryOptions options = _optionsMonitor.CurrentValue;
+        ConsulDiscoveryOptions options = _optionsMonitor.CurrentValue;
 
-            if (options.Enabled)
-            {
-                await _registrar.DisposeAsync();
-            }
+        if (options.Enabled)
+        {
+            await _registrar.DisposeAsync();
         }
     }
 
@@ -214,7 +209,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
         QueryResult<ServiceEntry[]> result =
             await _client.Health.Service(serviceId, options.DefaultQueryTag, options.QueryPassing, queryOptions, cancellationToken);
 
-        foreach (ConsulServiceInstance instance in result.Response.Select(entry => new ConsulServiceInstance(entry)))
+        foreach (ConsulServiceInstance instance in result.Response.Select(ConsulServiceInstance.FromServiceEntry))
         {
             instances.Add(instance);
         }
