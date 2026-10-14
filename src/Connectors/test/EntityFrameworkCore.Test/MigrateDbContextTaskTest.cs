@@ -61,11 +61,9 @@ public sealed class MigrateDbContextTaskTest
             throw new NotImplementedException();
         }
 
-#if NET9_0_OR_GREATER
         public bool HasPendingModelChanges()
         {
             throw new NotImplementedException();
         }
-#endif
     }
 }

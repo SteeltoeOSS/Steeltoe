@@ -176,12 +176,15 @@ public sealed class PostgreSqlConnectorTest
         }
         """;
 
+#pragma warning disable IDE0028 // Simplify collection initialization
+    // Justification: ReSharper doesn't yet support the new 'with' syntax in collection initializers.
     private static readonly HashSet<string> TempFileKeys = new(StringComparer.OrdinalIgnoreCase)
     {
         "SSL Certificate",
         "SSL Key",
         "Root Certificate"
     };
+#pragma warning restore IDE0028 // Simplify collection initialization
 
     [Fact]
     public async Task Binds_options_without_service_bindings()

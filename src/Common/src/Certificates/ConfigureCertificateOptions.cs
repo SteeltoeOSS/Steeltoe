@@ -70,16 +70,10 @@ internal sealed partial class ConfigureCertificateOptions : IConfigureNamedOptio
 
     private static X509Certificate2 LoadCertificate(string certificateFilePath, bool isPkcs12)
     {
-#if NET9_0_OR_GREATER
         // LoadCertificateFromFile handles PEM and DER but not PKCS#12; .pfx/.p12 need a separate loader.
         return isPkcs12
             ? X509CertificateLoader.LoadPkcs12FromFile(certificateFilePath, null)
             : X509CertificateLoader.LoadCertificateFromFile(certificateFilePath);
-#else
-        // This code path does not need to know if the certificate is PKCS12.
-        _ = isPkcs12;
-        return new X509Certificate2(certificateFilePath);
-#endif
     }
 
     private static X509Certificate2 LoadCertificateWithKey(string certificateFilePath, string privateKeyFilePath)
@@ -91,11 +85,7 @@ internal sealed partial class ConfigureCertificateOptions : IConfigureNamedOptio
             // See https://learn.microsoft.com/dotnet/core/extensions/sslstream-troubleshooting
             using var certificate = X509Certificate2.CreateFromPemFile(certificateFilePath, privateKeyFilePath);
             byte[] pkcs12Bytes = certificate.Export(X509ContentType.Pkcs12);
-#if NET9_0_OR_GREATER
             return X509CertificateLoader.LoadPkcs12(pkcs12Bytes, null, X509KeyStorageFlags.UserKeySet);
-#else
-            return new X509Certificate2(pkcs12Bytes, (string?)null, X509KeyStorageFlags.UserKeySet);
-#endif
         }
 
         return X509Certificate2.CreateFromPemFile(certificateFilePath, privateKeyFilePath);
@@ -106,12 +96,8 @@ internal sealed partial class ConfigureCertificateOptions : IConfigureNamedOptio
         // PKCS#12 does not guarantee certificate ordering, so the leaf cannot be identified by position.
         // The leaf thumbprint is used to exclude it; all other certificates are chain members.
         var issuerChain = new X509Certificate2Collection();
-#if NET9_0_OR_GREATER
         X509Certificate2Collection fullCertificateChain = X509CertificateLoader.LoadPkcs12CollectionFromFile(certificateFilePath, null);
-#else
-        var fullCertificateChain = new X509Certificate2Collection();
-        fullCertificateChain.Import(certificateFilePath);
-#endif
+
         foreach (X509Certificate2 certificate in fullCertificateChain)
         {
             if (certificate.Thumbprint != skipThumbprint)

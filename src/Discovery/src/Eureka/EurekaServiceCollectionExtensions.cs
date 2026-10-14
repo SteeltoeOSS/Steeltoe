@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Certificates;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
@@ -46,7 +45,7 @@ public static class EurekaServiceCollectionExtensions
 
     private static bool IsRegistered(IServiceCollection services)
     {
-        return services.Any(descriptor => descriptor.SafeGetImplementationType() == typeof(EurekaDiscoveryClient));
+        return services.Any(descriptor => descriptor.ImplementationType == typeof(EurekaDiscoveryClient));
     }
 
     private static void ConfigureEurekaServices(IServiceCollection services)

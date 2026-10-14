@@ -12,13 +12,6 @@ using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
-using LockPrimitive =
-#if NET10_0_OR_GREATER
-    System.Threading.Lock
-#else
-    object
-#endif
-    ;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -28,7 +21,7 @@ internal sealed partial class ConfigServerDiscoveryService
     private readonly IConfiguration _configuration;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger _logger;
-    private readonly LockPrimitive _initLock = new();
+    private readonly Lock _initLock = new();
     private ServiceProvider? _temporaryServiceProviderForDiscoveryClients;
     private volatile ICollection<IDiscoveryClient>? _discoveryClients;
 

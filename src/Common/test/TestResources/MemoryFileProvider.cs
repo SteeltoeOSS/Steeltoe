@@ -172,7 +172,10 @@ public sealed class MemoryFileProvider : IFileProvider
         public long Length => _fileContents?.Length ?? -1;
         public DateTimeOffset LastModified => default;
 
+#pragma warning disable IDE0028 // Simplify collection initialization
+        // Justification: ReSharper doesn't yet support the new 'with' syntax in collection initializers.
         public Dictionary<string, MemoryFileSystemEntry> Children { get; } = new(StringComparer.OrdinalIgnoreCase);
+#pragma warning restore IDE0028 // Simplify collection initialization
 
         private MemoryFileSystemEntry(string name, byte[]? fileContents)
         {

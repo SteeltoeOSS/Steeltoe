@@ -110,15 +110,6 @@ public sealed class EventPipeThreadDumperTest
             while (!cancellationToken.IsCancellationRequested)
             {
                 counter++;
-#if NET8_0
-                if (counter % 100_000 == 0)
-                {
-                    // Periodically yield to allow the EventPipe rundown thread to make progress on .NET 8, otherwise this thread can starve it of CPU time
-                    // on constrained/busy machines (such as CI runners), making the dump take tens of seconds instead of a few hundred milliseconds.
-                    // This is in native code, but yielding only occasionally (instead of every iteration) keeps the odds of a sample landing inside it low.
-                    Thread.Sleep(0);
-                }
-#endif
             }
 
             _ = counter;

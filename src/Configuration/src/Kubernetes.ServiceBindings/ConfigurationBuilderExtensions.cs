@@ -87,6 +87,8 @@ public static class ConfigurationBuilderExtensions
         ArgumentNullException.ThrowIfNull(serviceBindingsReader);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
+        _ = loggerFactory;
+
         if (!builder.EnumerateSources<KubernetesServiceBindingConfigurationSource>().Any())
         {
             var source = new KubernetesServiceBindingConfigurationSource(serviceBindingsReader)
