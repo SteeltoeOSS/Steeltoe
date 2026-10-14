@@ -29,10 +29,10 @@ public sealed class ConfigServerClientOptionsTest
     {
         var builder = new ConfigurationBuilder();
         builder.AddConfigServer();
-        IConfiguration configuration = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureConfigServerClientOptions();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -77,8 +77,8 @@ public sealed class ConfigServerClientOptionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        IConfiguration configuration = builder.Build();
-        services.AddSingleton(configuration);
+        IConfigurationRoot configurationRoot = builder.Build();
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
 
         services.ConfigureConfigServerClientOptions(options => options.Environment = "staging");
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -267,14 +267,14 @@ public sealed class ConfigServerClientOptionsTest
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
-        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureConfigServerClientOptions();
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -370,15 +370,15 @@ public sealed class ConfigServerClientOptionsTest
         configurationBuilder.AddPlaceholderResolver();
         // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(defaultOptions, configureOptions, () => handler, NullLoggerFactory.Instance);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         handler.Mock.VerifyNoOutstandingExpectation();
         handler.Mock.Clear();
 
-        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureConfigServerClientOptions(configureOptions);
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -398,7 +398,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Label.Should().BeNull();
         optionsMonitor.CurrentValue.FailFast.Should().BeTrue();
 
-        configuration["example-server-key"].Should().Be("example-server-value");
+        configurationRoot["example-server-key"].Should().Be("example-server-value");
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -447,7 +447,7 @@ public sealed class ConfigServerClientOptionsTest
             optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
             optionsMonitor.CurrentValue.FailFast.Should().BeTrue();
 
-            configuration["example-server-key"].Should().Be("example-server-value");
+            configurationRoot["example-server-key"].Should().Be("example-server-value");
         }
     }
 }

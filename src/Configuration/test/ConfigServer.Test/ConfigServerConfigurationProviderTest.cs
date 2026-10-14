@@ -388,9 +388,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
         configurationBuilder.AddConfigServer(options);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
-        using (ConfigServerConfigurationProvider provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().Single())
+        using (ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single())
         {
             provider.ClientOptions.Discovery.Enabled.Should().BeTrue();
         }
@@ -414,9 +414,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
         configurationBuilder.AddConfigServer(options);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
-        using ConfigServerConfigurationProvider provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
+        using ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
 
         ConfigServerClientOptions optionsSnapshot = provider.ClientOptions;
         provider.SetLastDiscoveryLookupResult(new List<IServiceInstance>());
@@ -472,7 +472,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         configurationBuilder.AddConfigServer(options);
 
-        Action action = () => _ = configurationBuilder.Build();
+        Action action = () =>
+        {
+            using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
+        };
 
         action.Should().ThrowExactly<ConfigServerException>().WithMessage("Could not locate Config Server via discovery*");
     }

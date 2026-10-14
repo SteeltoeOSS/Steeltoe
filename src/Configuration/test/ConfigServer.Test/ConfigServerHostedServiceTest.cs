@@ -22,7 +22,7 @@ public sealed class ConfigServerHostedServiceTest
 
         provider.Load();
 
-        var configurationRoot = new ConfigurationRoot([provider]);
+        using var configurationRoot = new ConfigurationRoot([provider]);
         var service = new ConfigServerHostedService(configurationRoot, []);
 
         Func<Task> startStopAction = async () =>
@@ -37,7 +37,7 @@ public sealed class ConfigServerHostedServiceTest
     [Fact]
     public async Task ServiceConstructsAndOperatesWithConfigurationManager()
     {
-        var configurationManager = new ConfigurationManager();
+        using var configurationManager = new ConfigurationManager();
         configurationManager.Add(FastTestConfigurations.ConfigServer);
         configurationManager.AddConfigServer();
         var service = new ConfigServerHostedService(configurationManager, []);
@@ -54,9 +54,9 @@ public sealed class ConfigServerHostedServiceTest
     [Fact]
     public void ThrowsWhenConfigServerProviderNotFound()
     {
-        var builder = new ConfigurationBuilder();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().BuildAsRoot();
 
+        // ReSharper disable once AccessToDisposedClosure
         Action action = () => _ = new ConfigServerHostedService(configurationRoot, []);
 
         action.Should().ThrowExactly<InvalidOperationException>().WithMessage("ConfigServerConfigurationProvider was not found in configuration.");
@@ -69,8 +69,9 @@ public sealed class ConfigServerHostedServiceTest
         builder.AddConfigServer();
         builder.AddPlaceholderResolver();
         builder.AddDecryption();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
+        // ReSharper disable once AccessToDisposedClosure
         Action action = () => _ = new ConfigServerHostedService(configurationRoot, []);
 
         action.Should().NotThrow();

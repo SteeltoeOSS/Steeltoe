@@ -112,6 +112,8 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
         configurationBuilder.Properties.Remove(string.Empty);
 
         builder.Configuration["placeholder"].Should().Be("A");
+
+        using WebApplication app = builder.Build();
     }
 
     [Fact]

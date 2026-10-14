@@ -50,18 +50,18 @@ public sealed class DecryptionConfigurationTest : IDisposable
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         builder.AddDecryption(decryptor, _loggerFactory);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        configuration["no-key"].Should().BeNull();
-        configuration["key1"].Should().Be("value1");
-        configuration["key2"].Should().Be("EXAMPLE-CIPHER-WITHOUT-ALIAS");
-        configuration["key3"].Should().Be("EXAMPLE-CIPHER-WITH-ALIAS|KEY-ALIAS");
+        configurationRoot["no-key"].Should().BeNull();
+        configurationRoot["key1"].Should().Be("value1");
+        configurationRoot["key2"].Should().Be("EXAMPLE-CIPHER-WITHOUT-ALIAS");
+        configurationRoot["key3"].Should().Be("EXAMPLE-CIPHER-WITH-ALIAS|KEY-ALIAS");
 
-        configuration["key2"] = "{cipher}{key:other-alias}other-cipher-with-alias";
-        configuration["key2"].Should().Be("OTHER-CIPHER-WITH-ALIAS|OTHER-ALIAS");
+        configurationRoot["key2"] = "{cipher}{key:other-alias}other-cipher-with-alias";
+        configurationRoot["key2"].Should().Be("OTHER-CIPHER-WITH-ALIAS|OTHER-ALIAS");
 
-        configuration["key2"] = "no-cipher";
-        configuration["key2"].Should().Be("no-cipher");
+        configurationRoot["key2"] = "no-cipher";
+        configurationRoot["key2"].Should().Be("no-cipher");
     }
 
     [Fact]
@@ -80,9 +80,9 @@ public sealed class DecryptionConfigurationTest : IDisposable
         builder.AddInMemoryCollection(appSettings);
         builder.AddDecryption(decryptor, _loggerFactory);
         builder.AddPlaceholderResolver(_loggerFactory);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        configuration["result"].Should().Be("start-SECRET-end");
+        configurationRoot["result"].Should().Be("start-SECRET-end");
     }
 
     [Fact]
@@ -102,9 +102,9 @@ public sealed class DecryptionConfigurationTest : IDisposable
         builder.AddInMemoryCollection(appSettings);
         builder.AddDecryption(decryptor, loggerFactory);
         builder.AddPlaceholderResolver(loggerFactory);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        _ = configuration["greeting"];
+        _ = configurationRoot["greeting"];
 
         IList<string> logLines = capturingProvider.GetAll();
         string[] sensitiveLines = [.. logLines.Where(message => message.Contains("CLASSIFIED", StringComparison.Ordinal))];

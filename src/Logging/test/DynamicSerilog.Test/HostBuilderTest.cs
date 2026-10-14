@@ -63,6 +63,8 @@ public sealed class HostBuilderTest : IDisposable
 
         action.Should().ThrowExactly<InvalidOperationException>().WithMessage(
             "A different IDynamicLoggerProvider has already been registered. Call 'AddDynamicSerilog' earlier during startup (before adding actuators).");
+
+        using WebApplication host = builder.Build();
     }
 
     [Fact]

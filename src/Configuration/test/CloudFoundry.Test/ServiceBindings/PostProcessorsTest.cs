@@ -34,7 +34,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Dictionary<string, string?> configurationData =
                 GetConfigurationData(TestProviderName, TestBindingName, [MySqlCloudFoundryPostProcessor.BindingType], null, secrets);
 
-            PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+            using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
             postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -89,7 +89,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Dictionary<string, string?> configurationData =
                 GetConfigurationData(TestProviderName, TestBindingName, [PostgreSqlCloudFoundryPostProcessor.BindingType], null, secrets);
 
-            PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+            using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
             postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -140,7 +140,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [PostgreSqlCloudFoundryPostProcessor.TanzuBindingType], null, secrets);
 
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -171,7 +171,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [RabbitMQCloudFoundryPostProcessor.BindingType], null, secrets);
 
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -199,7 +199,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [RedisCloudFoundryPostProcessor.BindingType], null, secrets);
 
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -224,7 +224,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [RedisCloudFoundryPostProcessor.BindingType], null, secrets);
 
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -252,7 +252,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [SqlServerCloudFoundryPostProcessor.BindingType], null, secrets);
 
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -273,7 +273,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         Dictionary<string, string?> configurationData =
             GetConfigurationData("csb-azure-mongodb", TestBindingName, [MongoDbCloudFoundryPostProcessor.BindingType], null, secrets);
 
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -298,7 +298,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [EurekaCloudFoundryPostProcessor.BindingType], null, secrets);
 
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -325,7 +325,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestProviderName, TestBindingName, [], IdentityCloudFoundryPostProcessor.BindingType, secrets);
 
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -353,7 +353,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         Dictionary<string, string?> configurationData = GetConfigurationData(CredHubCloudFoundryPostProcessor.BindingType, TestBindingName,
             [CredHubCloudFoundryPostProcessor.BindingType], null, secrets);
 
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -381,7 +381,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             ["vcap:services:credhub:1:credentials:simple"] = "second-value"
         };
 
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 

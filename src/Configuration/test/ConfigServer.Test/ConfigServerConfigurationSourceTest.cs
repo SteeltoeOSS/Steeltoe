@@ -42,5 +42,7 @@ public sealed class ConfigServerConfigurationSourceTest
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
 
         provider.Should().BeOfType<ConfigServerConfigurationProvider>();
+
+        ((IDisposable)provider).Dispose();
     }
 }

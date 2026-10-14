@@ -10,14 +10,14 @@
       "rollForward": false
     },
     "regitlint": {
-      "version": "6.3.13",
+      "version": "6.3.14",
       "commands": [
         "regitlint"
       ],
       "rollForward": false
     },
     "dotnet-coverage": {
-      "version": "18.11.0",
+      "version": "18.12.0",
       "commands": [
         "dotnet-coverage"
       ],

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Kubernetes.ServiceBindings.PostProcessors;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBindings.Test;
@@ -24,7 +25,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, MySqlKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -51,7 +52,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, PostgreSqlKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -78,7 +79,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, MongoDbKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -106,7 +107,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, RabbitMQKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -134,7 +135,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         ];
 
         Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, RedisKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -165,7 +166,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestBindingName, ApplicationConfigurationServicePostProcessor.BindingType, secrets);
 
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+        using PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -186,13 +187,13 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         var postProcessor = new ApplicationConfigurationServicePostProcessor();
         source.RegisterPostProcessor(postProcessor);
 
-        IConfiguration configuration = new ConfigurationBuilder().Add(source).Build();
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().Add(source).BuildAsRoot();
 
-        configuration["test-secret-key"].Should().Be("test-secret-value");
-        configuration["key:with:periods"].Should().Be("test-secret-value.");
-        configuration["key:with:double:underscores"].Should().Be("test-secret-value0");
-        configuration["key:with:double:underscores_"].Should().Be("test-secret-value1");
-        configuration["key:with:double:underscores:"].Should().Be("test-secret-value2");
+        configurationRoot["test-secret-key"].Should().Be("test-secret-value");
+        configurationRoot["key:with:periods"].Should().Be("test-secret-value.");
+        configurationRoot["key:with:double:underscores"].Should().Be("test-secret-value0");
+        configurationRoot["key:with:double:underscores_"].Should().Be("test-secret-value1");
+        configurationRoot["key:with:double:underscores:"].Should().Be("test-secret-value2");
     }
 
     private static string GetK8SResourcesDirectory()

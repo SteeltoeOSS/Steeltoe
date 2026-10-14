@@ -15,7 +15,7 @@ public sealed class TracingServiceCollectionExtensionsTest
     public async Task AddTracingLogProcessor_RegistersTracingLogProcessor()
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddTracingLogProcessor();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 

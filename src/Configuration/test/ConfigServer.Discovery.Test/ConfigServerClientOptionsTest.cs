@@ -92,14 +92,14 @@ public sealed class ConfigServerClientOptionsTest
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), configureOptions, () => handler, NullLoggerFactory.Instance);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
-        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureConfigServerClientOptions(configureOptions);
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -123,7 +123,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
         optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
-        configuration["example-server-key"].Should().Be("example-server-value");
+        configurationRoot["example-server-key"].Should().Be("example-server-value");
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -190,7 +190,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
         optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
-        configuration["example-server-key"].Should().Be("example-server-value");
+        configurationRoot["example-server-key"].Should().Be("example-server-value");
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -227,7 +227,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
         optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
-        configuration["example-server-key"].Should().Be("example-server-value");
+        configurationRoot["example-server-key"].Should().Be("example-server-value");
     }
 
     [Fact]
@@ -308,15 +308,15 @@ public sealed class ConfigServerClientOptionsTest
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), configureOptions, () => handler, NullLoggerFactory.Instance);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         handler.Mock.VerifyNoOutstandingExpectation();
         handler.Mock.Clear();
 
-        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureConfigServerClientOptions(configureOptions);
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -338,7 +338,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
         optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
-        configuration["example-server-key"].Should().Be("example-server-value");
+        configurationRoot["example-server-key"].Should().Be("example-server-value");
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -401,7 +401,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
         optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
-        configuration["example-server-key"].Should().Be("example-server-value");
+        configurationRoot["example-server-key"].Should().Be("example-server-value");
 
         handler.Mock.Expect(HttpMethod.Get, "https://alternate-discovered-server.com:7777/internal/alternate-name/alternate-profile/alternate-label")
             .Respond("application/json", configServerResponseJson);
@@ -425,6 +425,6 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
         optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
-        configuration["example-server-key"].Should().Be("example-server-value");
+        configurationRoot["example-server-key"].Should().Be("example-server-value");
     }
 }

@@ -62,10 +62,9 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        IConfiguration configuration = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationBuilder.Build());
         services.AddOptions();
         services.AddEurekaDiscoveryClient();
 
@@ -87,10 +86,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             ["eureka:instance:UseNetworkInterfaces"] = "true"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddSingleton<INetworkInterfaceProvider, FakeNetworkInterfaceProvider>();
         services.AddLogging();
         services.AddOptions();
@@ -234,10 +233,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         builder.AddInMemoryCollection(appSettings);
         builder.AddCloudFoundry();
         builder.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
-        IConfiguration configuration = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -331,10 +330,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         builder.AddInMemoryCollection(appSettings);
         builder.AddCloudFoundry();
         builder.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
-        IConfiguration configuration = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -430,7 +429,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         configurationBuilder.AddCloudFoundryServiceBindings(_ => false, new EnvironmentServiceBindingsReader(), CloudFoundryServiceBrokerTypes.Eureka,
             loggerFactory);
 
-        _ = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         IList<string> logMessages = capturingLoggerProvider.GetAll();
 
@@ -662,10 +661,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddLogging();
         services.AddOptions();
         services.AddConsulDiscoveryClient();
@@ -694,10 +693,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             ["consul:discovery:deregister"] = "false"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddSingleton<INetworkInterfaceProvider, FakeNetworkInterfaceProvider>();
         services.AddLogging();
         services.AddOptions();
@@ -729,10 +728,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             ["consul:discovery:deregister"] = "false"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddLogging();
         services.AddOptions();
         services.AddConsulDiscoveryClient();
@@ -764,10 +763,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             ["Consul:Discovery:UseAspNetCoreUrls"] = "false"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddLogging();
         services.AddOptions();
         services.AddConsulDiscoveryClient();
@@ -794,10 +793,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             ["Consul:Discovery:Port"] = "8080"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddLogging();
         services.AddOptions();
         services.AddConsulDiscoveryClient();
@@ -833,11 +832,11 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddOptions();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddConfigurationDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -859,10 +858,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     [Fact]
     public async Task WithMultipleClients_AddsDiscoveryClients()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(FastDiscovery).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(FastDiscovery).Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddConfigurationDiscoveryClient();
         services.AddConsulDiscoveryClient();
         services.AddEurekaDiscoveryClient();

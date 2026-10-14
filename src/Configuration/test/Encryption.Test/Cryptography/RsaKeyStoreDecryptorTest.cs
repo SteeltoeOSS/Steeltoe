@@ -70,7 +70,7 @@ public sealed class RsaKeyStoreDecryptorTest
         // ReSharper disable once ShortLivedHttpClient
         using var httpClient = new HttpClient();
 
-        HttpResponseMessage response = await httpClient.PostAsync(new Uri("http://localhost:8888/encrypt"),
+        using HttpResponseMessage response = await httpClient.PostAsync(new Uri("http://localhost:8888/encrypt"),
             new StringContent("encrypt the world", Encoding.UTF8, "text/plain"), TestContext.Current.CancellationToken);
 
         response.EnsureSuccessStatusCode();

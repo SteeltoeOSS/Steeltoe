@@ -53,7 +53,7 @@ internal sealed partial class RelationalDatabaseHealthContributor : IHealthContr
         {
             await using DbConnection connection = _getConnection();
             await connection.OpenAsync(cancellationToken);
-            DbCommand command = connection.CreateCommand();
+            await using DbCommand command = connection.CreateCommand();
             command.CommandText = "SELECT 1;";
             await command.ExecuteScalarAsync(cancellationToken);
 

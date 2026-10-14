@@ -44,7 +44,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
 
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
         response.Content.Headers.ContentType.Should().NotBeNull();
@@ -76,7 +77,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
 
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
         response.Content.Headers.ContentType.Should().NotBeNull();
@@ -109,7 +111,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
 
-        HttpResponseMessage response =
+        using HttpResponseMessage response =
             await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/does-not-exist"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -137,7 +139,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
 
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         response.Content.Headers.ContentType.Should().NotBeNull();
@@ -169,7 +172,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
 
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Content.Headers.ContentType.Should().NotBeNull();
@@ -203,7 +207,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
 
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         response.Content.Headers.ContentType.Should().NotBeNull();
@@ -235,7 +240,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
 
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -259,7 +265,9 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
 
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"), TestContext.Current.CancellationToken);
+
         response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
     }
 
@@ -267,7 +275,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
     public async Task GetAccessTokenReturnsExpected()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -292,7 +300,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
     public async Task GetPermissionsReturnsExpected()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -346,10 +354,10 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
 
-        var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
         requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken);
 
-        _ = await httpClient.SendAsync(requestMessage, TestContext.Current.CancellationToken);
+        using HttpResponseMessage responseMessage = await httpClient.SendAsync(requestMessage, TestContext.Current.CancellationToken);
 
         string logMessages = string.Join(System.Environment.NewLine, capturingLoggerProvider.GetAll());
         logMessages.Should().Contain("Authorization: *");
@@ -382,12 +390,12 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         // ReSharper disable once ShortLivedHttpClient
         using var client = new HttpClient();
 
-        var authenticationRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost:5000/cloudfoundryapplication"));
+        using var authenticationRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost:5000/cloudfoundryapplication"));
         authenticationRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken);
-        var authorizationRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost:5000/cloudfoundryapplication/info"));
+        using var authorizationRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost:5000/cloudfoundryapplication/info"));
         authorizationRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken);
 
-        HttpResponseMessage authenticationResponse = await client.SendAsync(authenticationRequest, TestContext.Current.CancellationToken);
+        using HttpResponseMessage authenticationResponse = await client.SendAsync(authenticationRequest, TestContext.Current.CancellationToken);
         authenticationResponse.StatusCode.Should().Be(steeltoeStatusCode);
 
         if (errorMessage != null)
@@ -418,7 +426,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
                 """);
         }
 
-        HttpResponseMessage authorizationResponse = await client.SendAsync(authorizationRequest, TestContext.Current.CancellationToken);
+        using HttpResponseMessage authorizationResponse = await client.SendAsync(authorizationRequest, TestContext.Current.CancellationToken);
         authorizationResponse.StatusCode.Should().Be(scenario == "restricted-permissions" ? HttpStatusCode.Forbidden : steeltoeStatusCode);
 
         string logLines = loggerProvider.GetAsText();

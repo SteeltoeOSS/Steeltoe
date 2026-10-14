@@ -129,21 +129,24 @@ internal sealed partial class TokenKeyResolver : IDisposable
             return null;
         }
 
-        if (!response.IsSuccessStatusCode)
+        using (response)
         {
-            LogFetchTokenKeysStatusFailed(tokenKeysUri, (int)response.StatusCode);
-            return null;
-        }
+            if (!response.IsSuccessStatusCode)
+            {
+                LogFetchTokenKeysStatusFailed(tokenKeysUri, (int)response.StatusCode);
+                return null;
+            }
 
-        try
-        {
-            string result = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonWebKeySet.Create(result);
-        }
-        catch (ArgumentException exception)
-        {
-            LogFetchTokenKeysParseFailed(exception, tokenKeysUri);
-            return null;
+            try
+            {
+                string result = await response.Content.ReadAsStringAsync(cancellationToken);
+                return JsonWebKeySet.Create(result);
+            }
+            catch (ArgumentException exception)
+            {
+                LogFetchTokenKeysParseFailed(exception, tokenKeysUri);
+                return null;
+            }
         }
     }
 

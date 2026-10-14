@@ -43,13 +43,13 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot root = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
-        root["bar"].Should().Be("spam");
-        root["foo"].Should().Be("from foo development");
-        root["info:description"].Should().Be("Spring Cloud Samples");
-        root["info:url"].Should().Be("https://github.com/spring-cloud-samples");
-        root["eureka:client:serviceUrl:defaultZone"].Should().Be("http://localhost:8761/eureka/");
+        configurationRoot["bar"].Should().Be("spam");
+        configurationRoot["foo"].Should().Be("from foo development");
+        configurationRoot["info:description"].Should().Be("Spring Cloud Samples");
+        configurationRoot["info:url"].Should().Be("https://github.com/spring-cloud-samples");
+        configurationRoot["eureka:client:serviceUrl:defaultZone"].Should().Be("http://localhost:8761/eureka/");
     }
 
     [Fact]
@@ -214,13 +214,13 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         configurationBuilder.Add(FastTestConfigurations.Discovery);
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot root = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
-        root["bar"].Should().Be("spam");
-        root["foo"].Should().Be("from foo development");
-        root["info:description"].Should().Be("Spring Cloud Samples");
-        root["info:url"].Should().Be("https://github.com/spring-cloud-samples");
-        root["eureka:client:serviceUrl:defaultZone"].Should().Be("http://localhost:8761/eureka/");
+        configurationRoot["bar"].Should().Be("spam");
+        configurationRoot["foo"].Should().Be("from foo development");
+        configurationRoot["info:description"].Should().Be("Spring Cloud Samples");
+        configurationRoot["info:url"].Should().Be("https://github.com/spring-cloud-samples");
+        configurationRoot["eureka:client:serviceUrl:defaultZone"].Should().Be("http://localhost:8761/eureka/");
     }
 
     [Fact]

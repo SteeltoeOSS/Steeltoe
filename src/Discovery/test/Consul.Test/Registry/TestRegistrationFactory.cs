@@ -19,23 +19,23 @@ internal static class TestRegistrationFactory
 {
     public static ConsulRegistration Create(IDictionary<string, string?> appSettings)
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddApplicationInstanceInfo();
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var appInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
 
         var options = new ConsulDiscoveryOptions();
-        configuration.GetSection("consul:discovery").Bind(options);
+        configurationRoot.GetSection("consul:discovery").Bind(options);
 
         var domainNameResolver = Substitute.For<IDomainNameResolver>();
         var networkInterfaceProvider = Substitute.For<INetworkInterfaceProvider>();
         var inetUtils = new InetUtils(domainNameResolver, networkInterfaceProvider, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
 
-        var configurer = new PostConfigureConsulDiscoveryOptions(configuration, domainNameResolver, inetUtils, appInfo);
+        var configurer = new PostConfigureConsulDiscoveryOptions(configurationRoot, domainNameResolver, inetUtils, appInfo);
         configurer.PostConfigure(null, options);
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);

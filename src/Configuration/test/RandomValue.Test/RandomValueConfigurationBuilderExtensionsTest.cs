@@ -4,6 +4,7 @@
 
 using System.Globalization;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Configuration.RandomValue.Test;
 
@@ -18,7 +19,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
         };
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(appSettings);
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
         string? value = configurationRoot["foo:bar"];
 
         value.Should().Be("value");
@@ -28,7 +29,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     public void AddRandomValueSource_String()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
         string? value = configurationRoot["random:string"];
 
         value.Should().NotBeNull();
@@ -38,7 +39,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     public void AddRandomValueSource_Uuid()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
         string? value = configurationRoot["random:uuid"];
 
         value.Should().NotBeNull();
@@ -48,7 +49,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     public void AddRandomValueSource_RandomInt()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
         string? value = configurationRoot["random:int"];
 
         value.Should().NotBeNull();
@@ -58,7 +59,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     public void AddRandomValueSource_RandomIntRange()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
         string? value = configurationRoot["random:int[4,10]"];
 
         value.Should().NotBeNull();
@@ -71,7 +72,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     public void AddRandomValueSource_RandomIntMax()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
         string? value = configurationRoot["random:int(10)"];
 
         value.Should().NotBeNull();
@@ -85,7 +86,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     public void AddRandomValueSource_RandomLong()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
         string? value = configurationRoot["random:long"];
 
         value.Should().NotBeNull();
@@ -95,7 +96,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     public void AddRandomValueSource_RandomLongRange()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
         string? value = configurationRoot["random:long[4,10]"];
 
         value.Should().NotBeNull();
@@ -109,7 +110,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
     public void AddRandomValueSource_RandomLongMax()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
         string? value = configurationRoot["random:long(10)"];
 
         value.Should().NotBeNull();

@@ -37,7 +37,7 @@ public sealed class MinimalApiTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -99,7 +99,7 @@ public sealed class MinimalApiTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -177,7 +177,7 @@ public sealed class MinimalApiTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -290,7 +290,7 @@ public sealed class MinimalApiTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -380,7 +380,7 @@ public sealed class MinimalApiTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -449,7 +449,7 @@ public sealed class MinimalApiTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -541,7 +541,7 @@ public sealed class MinimalApiTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -639,7 +639,7 @@ public sealed class MinimalApiTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -735,7 +735,7 @@ public sealed class MinimalApiTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -799,7 +799,7 @@ public sealed class MinimalApiTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using NSubstitute;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
@@ -225,16 +226,51 @@ public sealed class MongoDbConnectorTest
         connectorFactory.ServiceBindingNames.Should().Contain("myMongoDbServiceOne");
         connectorFactory.ServiceBindingNames.Should().Contain("myMongoDbServiceTwo");
 
-        IMongoClient connectionOne = connectorFactory.Get("myMongoDbServiceOne").GetConnection();
+        using IMongoClient connectionOne = connectorFactory.Get("myMongoDbServiceOne").GetConnection();
         connectionOne.Settings.Credential.Should().BeNull();
         connectionOne.Settings.Server.Host.Should().Be("localhost");
         connectionOne.Settings.Server.Port.Should().Be(27017);
 
-        IMongoClient connectionTwo = connectorFactory.Get("myMongoDbServiceTwo").GetConnection();
+        using IMongoClient connectionTwo = connectorFactory.Get("myMongoDbServiceTwo").GetConnection();
         connectionTwo.Settings.Credential.Username.Should().Be("user");
         connectionTwo.Settings.Credential.Evidence.Should().Be(new PasswordEvidence("pass"));
         connectionTwo.Settings.Server.Host.Should().Be("localhost");
         connectionTwo.Settings.Server.Port.Should().Be(27018);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Health_check_disposes_client_only_when_connection_is_not_cached(bool cacheConnection)
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Steeltoe:Client:MongoDb:Default:ConnectionString"] = "mongodb://localhost:27017"
+        };
+
+        var mongoClient = Substitute.For<IMongoClient>();
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+
+        builder.AddMongoDb(null, options =>
+        {
+            options.CacheConnection = cacheConnection;
+            options.CreateConnection = (_, _) => mongoClient;
+        });
+
+        await using (WebApplication app = builder.Build())
+        {
+            IHealthContributor healthContributor = app.Services.GetServices<IHealthContributor>().Should().ContainSingle().Which;
+            HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
+
+            result.Should().NotBeNull();
+            result.Status.Should().Be(HealthStatus.Up);
+            mongoClient.Received(cacheConnection ? 0 : 1).Dispose();
+        }
+
+        // The connector owns the cached client and disposes it on shutdown.
+        mongoClient.Received(1).Dispose();
     }
 
     [Fact]

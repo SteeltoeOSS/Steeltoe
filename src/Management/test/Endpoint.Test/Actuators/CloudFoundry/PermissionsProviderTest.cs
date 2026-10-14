@@ -25,7 +25,9 @@ public sealed class PermissionsProviderTest
     [Fact]
     public async Task EmptyTokenIsUnauthorized()
     {
-        PermissionsProvider permissionsProvider = GetPermissionsProvider();
+        await using ServiceProvider serviceProvider = BuildServiceProvider();
+        PermissionsProvider permissionsProvider = CreatePermissionsProvider(serviceProvider);
+
         SecurityResult unauthorized = await permissionsProvider.GetPermissionsAsync(string.Empty, TestContext.Current.CancellationToken);
         unauthorized.Code.Should().Be(HttpStatusCode.Unauthorized);
         unauthorized.Message.Should().Be(PermissionsProvider.Messages.AuthorizationHeaderInvalid);
@@ -38,7 +40,8 @@ public sealed class PermissionsProviderTest
     [InlineData(true, true, EndpointPermissions.Full)]
     public async Task ParsePermissionsResponseAsyncReturnsExpected(bool readSensitive, bool readBasic, EndpointPermissions expectedPermissions)
     {
-        PermissionsProvider permissionsProvider = GetPermissionsProvider();
+        await using ServiceProvider serviceProvider = BuildServiceProvider();
+        PermissionsProvider permissionsProvider = CreatePermissionsProvider(serviceProvider);
 
         var cloudControllerResponse = new HttpResponseMessage(HttpStatusCode.OK)
         {
@@ -74,7 +77,7 @@ public sealed class PermissionsProviderTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -102,13 +105,16 @@ public sealed class PermissionsProviderTest
         }
     }
 
-    private static PermissionsProvider GetPermissionsProvider()
+    private static ServiceProvider BuildServiceProvider()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        return services.BuildServiceProvider(true);
+    }
 
+    private static PermissionsProvider CreatePermissionsProvider(ServiceProvider serviceProvider)
+    {
         var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
 

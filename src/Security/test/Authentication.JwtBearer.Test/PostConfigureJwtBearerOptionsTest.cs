@@ -22,14 +22,16 @@ public sealed class PostConfigureJwtBearerOptionsTest
             ["Authentication:Schemes:Bearer:ClientId"] = "testClient"
         };
 
+        using var httpClient = new HttpClient();
+
         var jwtBearerOptions = new JwtBearerOptions
         {
-            Backchannel = new HttpClient()
+            Backchannel = httpClient
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).BuildAsRoot();
         using var resolver = new TokenKeyResolver(TimeProvider.System, NullLoggerFactory.Instance);
-        var postConfigurer = new PostConfigureJwtBearerOptions(configuration, resolver);
+        var postConfigurer = new PostConfigureJwtBearerOptions(configurationRoot, resolver);
 
         postConfigurer.PostConfigure(null, jwtBearerOptions);
 
@@ -65,9 +67,9 @@ public sealed class PostConfigureJwtBearerOptionsTest
             """;
 
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
-        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Identity).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Identity).Build();
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddLogging();
         services.AddAuthentication().AddJwtBearer().ConfigureJwtBearerForCloudFoundry();
 
@@ -114,9 +116,9 @@ public sealed class PostConfigureJwtBearerOptionsTest
 
         using var applicationScope = new EnvironmentVariableScope("VCAP_APPLICATION", "{}");
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
-        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Identity).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Identity).Build();
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddLogging();
         services.AddAuthentication().AddJwtBearer().ConfigureJwtBearerForCloudFoundry();
 

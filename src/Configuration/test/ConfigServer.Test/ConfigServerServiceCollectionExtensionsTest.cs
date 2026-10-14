@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Encryption;
 using Steeltoe.Configuration.Placeholder;
 
@@ -24,8 +26,25 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
 
         builder.EnumerateSources<ConfigServerConfigurationSource>().Should().ContainSingle();
 
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task AddConfigServerServices_registers_IConfigurationRoot_for_backward_compatibility_only()
+    {
+        var builder = new ConfigurationBuilder();
+        builder.Add(FastTestConfigurations.ConfigServer);
+        builder.AddConfigServer();
+        ConfigurationRoot configurationRoot = builder.BuildAsRoot();
+
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
+        services.AddConfigServerServices();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        serviceProvider.GetService<IConfigurationRoot>().Should().NotBeNull();
     }
 }

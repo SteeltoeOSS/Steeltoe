@@ -40,9 +40,9 @@ public sealed class CloudFoundryApplicationOptionsTest
     [Fact]
     public void NoVcapApplicationConfiguration()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-        var defaultConfigurer = new ConfigureApplicationInstanceInfo(configuration);
-        var cloudFoundryConfigurer = new ConfigureCloudFoundryApplicationOptions(configuration, defaultConfigurer);
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().BuildAsRoot();
+        var defaultConfigurer = new ConfigureApplicationInstanceInfo(configurationRoot);
+        var cloudFoundryConfigurer = new ConfigureCloudFoundryApplicationOptions(configurationRoot, defaultConfigurer);
 
         var options = new CloudFoundryApplicationOptions();
         cloudFoundryConfigurer.Configure(options);
@@ -107,10 +107,10 @@ public sealed class CloudFoundryApplicationOptionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        var defaultConfigurer = new ConfigureApplicationInstanceInfo(configuration);
-        var cloudFoundryConfigurer = new ConfigureCloudFoundryApplicationOptions(configuration, defaultConfigurer);
+        var defaultConfigurer = new ConfigureApplicationInstanceInfo(configurationRoot);
+        var cloudFoundryConfigurer = new ConfigureCloudFoundryApplicationOptions(configurationRoot, defaultConfigurer);
 
         var options = new CloudFoundryApplicationOptions();
         cloudFoundryConfigurer.Configure(options);

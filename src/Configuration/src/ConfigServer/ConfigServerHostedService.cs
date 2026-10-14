@@ -17,12 +17,12 @@ internal sealed class ConfigServerHostedService : IHostedService
     private readonly ConfigServerConfigurationProvider _configurationProvider;
     private readonly IDiscoveryClient[] _discoveryClients;
 
-    public ConfigServerHostedService(IConfigurationRoot configuration)
+    public ConfigServerHostedService(IConfiguration configuration)
         : this(configuration, [])
     {
     }
 
-    public ConfigServerHostedService(IConfigurationRoot configuration, IEnumerable<IDiscoveryClient> discoveryClients)
+    public ConfigServerHostedService(IConfiguration configuration, IEnumerable<IDiscoveryClient> discoveryClients)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(discoveryClients);

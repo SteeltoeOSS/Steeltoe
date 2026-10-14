@@ -31,7 +31,7 @@ public sealed class LivenessStateHealthContributorTest
     public async Task Configures_default_settings()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddHealthActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -49,7 +49,7 @@ public sealed class LivenessStateHealthContributorTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddHealthActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -76,7 +76,7 @@ public sealed class LivenessStateHealthContributorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -118,7 +118,7 @@ public sealed class LivenessStateHealthContributorTest
         var availability = host.Services.GetRequiredService<ApplicationAvailability>();
         availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Broken, null);
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 
@@ -161,7 +161,7 @@ public sealed class LivenessStateHealthContributorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 

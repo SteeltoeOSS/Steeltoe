@@ -14,10 +14,8 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
     [Fact]
     public async Task AddServiceDiscovery_WithRandomLoadBalancer_AddsRandomLoadBalancerToServices()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddConfigurationDiscoveryClient();
         services.AddHttpClient("test").AddServiceDiscovery<RandomLoadBalancer>();
 
@@ -32,10 +30,8 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
     [Fact]
     public async Task AddServiceDiscovery_WithAddRoundRobinLoadBalancer_AddsRoundRobinLoadBalancerToServices()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddConfigurationDiscoveryClient();
         services.AddHttpClient("test").AddServiceDiscovery<RoundRobinLoadBalancer>();
 
@@ -50,10 +46,8 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
     [Fact]
     public async Task AddServiceDiscovery_WithoutLoadBalancer_AddsRandomLoadBalancerToServices()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddConfigurationDiscoveryClient();
         services.AddHttpClient("test").AddServiceDiscovery();
 
@@ -93,10 +87,8 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
     [Fact]
     public async Task CanAddMultipleLoadBalancers()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddConfigurationDiscoveryClient();
         services.AddSingleton<FakeLoadBalancer>();
 

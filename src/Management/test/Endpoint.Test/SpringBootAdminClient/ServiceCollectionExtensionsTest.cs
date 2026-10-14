@@ -17,7 +17,7 @@ public sealed class ServiceCollectionExtensionsTest
     public async Task Registers_dependent_services()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddSingleton<IServer, TestServer>();
         services.AddSpringBootAdminClient();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);

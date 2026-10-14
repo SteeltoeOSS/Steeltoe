@@ -26,8 +26,9 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             ["Logging:Console:LogLevel:A.B.C"] = "Debug"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+        await using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider loggerProvider = GetDynamicLoggerProvider(serviceProvider);
+        DynamicLoggingTestContext testContext = new(loggerProvider, _consoleOutput);
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Trace);
         await testContext.Self.AssertMinLevelAsync(LogLevel.Warning);
@@ -42,7 +43,10 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             ["Logging:LogLevel:Some*Other"] = "Information"
         };
 
-        Action action = () => CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+
+        // ReSharper disable once AccessToDisposedClosure
+        Action action = () => _ = GetDynamicLoggerProvider(serviceProvider);
 
         action.Should().ThrowExactly<NotSupportedException>().WithMessage("Logger categories with wildcards are not supported.");
     }
@@ -55,8 +59,9 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             ["Logging:LogLevel:Fully.Qualified"] = "Warning"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        ILogger logger = provider.CreateLogger("Fully.Qualified.Name.For.Type");
+        using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider loggerProvider = GetDynamicLoggerProvider(serviceProvider);
+        ILogger logger = loggerProvider.CreateLogger("Fully.Qualified.Name.For.Type");
 
         logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
         logger.IsEnabled(LogLevel.Error).Should().BeTrue();
@@ -70,10 +75,11 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
     [Fact]
     public void CreateLoggerMultipleTimesReturnsSameLoggerInstance()
     {
-        using IDynamicLoggerProvider provider = CreateLoggerProvider();
+        using ServiceProvider serviceProvider = BuildServiceProvider();
+        IDynamicLoggerProvider loggerProvider = GetDynamicLoggerProvider(serviceProvider);
 
-        ILogger firstLogger = provider.CreateLogger("Some");
-        ILogger nextLogger = provider.CreateLogger("Some");
+        ILogger firstLogger = loggerProvider.CreateLogger("Some");
+        ILogger nextLogger = loggerProvider.CreateLogger("Some");
 
         firstLogger.Should().BeSameAs(nextLogger);
     }
@@ -86,10 +92,11 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             ["Logging:LogLevel:A"] = "Trace"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        _ = provider.CreateLogger("A.B.C.D.Example");
+        using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider loggerProvider = GetDynamicLoggerProvider(serviceProvider);
+        _ = loggerProvider.CreateLogger("A.B.C.D.Example");
 
-        string[] loggerStates = [.. provider.GetLogLevels().Select(state => state.ToString())];
+        string[] loggerStates = [.. loggerProvider.GetLogLevels().Select(state => state.ToString())];
 
         loggerStates.Should().HaveCount(6);
         loggerStates.Should().Contain("Default: Information");
@@ -129,21 +136,22 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
         LogLevel expectBeforeLevelAtSelf = configurationCategory != ConfigurationCategory.Child ? configurationLevel : LogLevel.Information;
         LogLevel expectBeforeLevelAtChild = configurationLevel;
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+        await using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider loggerProvider = GetDynamicLoggerProvider(serviceProvider);
+        DynamicLoggingTestContext testContext = new(loggerProvider, _consoleOutput);
 
         await testContext.Parent.AssertMinLevelAsync(expectBeforeLevelAtParent);
         await testContext.Self.AssertMinLevelAsync(expectBeforeLevelAtSelf);
         await testContext.Child.AssertMinLevelAsync(expectBeforeLevelAtChild);
 
-        provider.SetLogLevel(testContext.Self.CategoryName, overrideLevel);
+        loggerProvider.SetLogLevel(testContext.Self.CategoryName, overrideLevel);
         testContext.Refresh();
 
         await testContext.Parent.AssertMinLevelAsync(expectBeforeLevelAtParent);
         await testContext.Self.AssertMinLevelAsync(overrideLevel, expectBeforeLevelAtSelf);
         await testContext.Child.AssertMinLevelAsync(overrideLevel);
 
-        provider.SetLogLevel(testContext.Self.CategoryName, null);
+        loggerProvider.SetLogLevel(testContext.Self.CategoryName, null);
         testContext.Refresh();
 
         await testContext.Parent.AssertMinLevelAsync(expectBeforeLevelAtParent);
@@ -154,19 +162,20 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
     [Fact]
     public async Task CanSetAndResetImplicitDefaultMinLevel()
     {
-        using IDynamicLoggerProvider provider = CreateLoggerProvider();
-        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+        await using ServiceProvider serviceProvider = BuildServiceProvider();
+        IDynamicLoggerProvider loggerProvider = GetDynamicLoggerProvider(serviceProvider);
+        DynamicLoggingTestContext testContext = new(loggerProvider, _consoleOutput);
 
         await testContext.Default.AssertMinLevelAsync(LogLevel.Information);
         await testContext.Self.AssertMinLevelAsync(LogLevel.Information);
 
-        provider.SetLogLevel(string.Empty, LogLevel.Error);
+        loggerProvider.SetLogLevel(string.Empty, LogLevel.Error);
         testContext.Refresh();
 
         await testContext.Default.AssertMinLevelAsync(LogLevel.Error, LogLevel.Information);
         await testContext.Self.AssertMinLevelAsync(LogLevel.Error);
 
-        provider.SetLogLevel(string.Empty, null);
+        loggerProvider.SetLogLevel(string.Empty, null);
         testContext.Refresh();
 
         await testContext.Default.AssertMinLevelAsync(LogLevel.Information);
@@ -181,24 +190,25 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             ["Logging:LogLevel:A.B.C"] = "Error"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+        await using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider loggerProvider = GetDynamicLoggerProvider(serviceProvider);
+        DynamicLoggingTestContext testContext = new(loggerProvider, _consoleOutput);
 
-        provider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Trace);
+        loggerProvider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Trace);
         testContext.Refresh();
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Information);
         await testContext.Self.AssertMinLevelAsync(LogLevel.Trace, LogLevel.Information);
         await testContext.Child.AssertMinLevelAsync(LogLevel.Trace);
 
-        provider.SetLogLevel(testContext.Parent.CategoryName, LogLevel.Debug);
+        loggerProvider.SetLogLevel(testContext.Parent.CategoryName, LogLevel.Debug);
         testContext.Refresh();
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Debug, LogLevel.Information);
         await testContext.Self.AssertMinLevelAsync(LogLevel.Debug);
         await testContext.Child.AssertMinLevelAsync(LogLevel.Debug);
 
-        provider.SetLogLevel(testContext.Parent.CategoryName, null);
+        loggerProvider.SetLogLevel(testContext.Parent.CategoryName, null);
         testContext.Refresh();
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Information);
@@ -215,19 +225,20 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             ["Logging:LogLevel:A.B.C"] = "Error"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+        await using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider loggerProvider = GetDynamicLoggerProvider(serviceProvider);
+        DynamicLoggingTestContext testContext = new(loggerProvider, _consoleOutput);
 
-        provider.SetLogLevel(testContext.Parent.CategoryName, LogLevel.Trace);
-        provider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Debug);
-        provider.SetLogLevel(testContext.Child.CategoryName, LogLevel.Warning);
+        loggerProvider.SetLogLevel(testContext.Parent.CategoryName, LogLevel.Trace);
+        loggerProvider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Debug);
+        loggerProvider.SetLogLevel(testContext.Child.CategoryName, LogLevel.Warning);
         testContext.Refresh();
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Trace, LogLevel.Information);
         await testContext.Self.AssertMinLevelAsync(LogLevel.Debug, LogLevel.Critical);
         await testContext.Child.AssertMinLevelAsync(LogLevel.Warning, LogLevel.Error);
 
-        provider.SetLogLevel(testContext.Child.CategoryName, null);
+        loggerProvider.SetLogLevel(testContext.Child.CategoryName, null);
         testContext.Refresh();
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Trace, LogLevel.Information);
@@ -243,17 +254,18 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             ["Logging:LogLevel:A.B.C"] = "Error"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+        await using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider loggerProvider = GetDynamicLoggerProvider(serviceProvider);
+        DynamicLoggingTestContext testContext = new(loggerProvider, _consoleOutput);
 
-        provider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Trace);
+        loggerProvider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Trace);
         testContext.Refresh();
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Information);
         await testContext.Self.AssertMinLevelAsync(LogLevel.Trace, LogLevel.Information);
         await testContext.Child.AssertMinLevelAsync(LogLevel.Trace);
 
-        provider.SetLogLevel(testContext.Parent.CategoryName, null);
+        loggerProvider.SetLogLevel(testContext.Parent.CategoryName, null);
         testContext.Refresh();
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Information);
@@ -269,35 +281,36 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             ["Logging:LogLevel:A"] = "Error"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+        await using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider loggerProvider = GetDynamicLoggerProvider(serviceProvider);
+        DynamicLoggingTestContext testContext = new(loggerProvider, _consoleOutput);
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Error);
         await testContext.Self.AssertMinLevelAsync(LogLevel.Error);
         await testContext.Child.AssertMinLevelAsync(LogLevel.Error);
 
-        provider.SetLogLevel(testContext.Self.CategoryName, LogLevel.None);
+        loggerProvider.SetLogLevel(testContext.Self.CategoryName, LogLevel.None);
         testContext.Refresh();
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Error);
         await testContext.Self.AssertMinLevelAsync(LogLevel.None, LogLevel.Error);
         await testContext.Child.AssertMinLevelAsync(LogLevel.None);
 
-        provider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Debug);
+        loggerProvider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Debug);
         testContext.Refresh();
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Error);
         await testContext.Self.AssertMinLevelAsync(LogLevel.Debug, LogLevel.Error);
         await testContext.Child.AssertMinLevelAsync(LogLevel.Debug);
 
-        provider.SetLogLevel(testContext.Parent.CategoryName, null);
+        loggerProvider.SetLogLevel(testContext.Parent.CategoryName, null);
         testContext.Refresh();
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Error);
         await testContext.Self.AssertMinLevelAsync(LogLevel.Error);
         await testContext.Child.AssertMinLevelAsync(LogLevel.Error);
 
-        provider.SetLogLevel(testContext.Parent.CategoryName, null);
+        loggerProvider.SetLogLevel(testContext.Parent.CategoryName, null);
         testContext.Refresh();
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Error);
@@ -313,13 +326,14 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             ["Logging:LogLevel:Some"] = "Trace"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider loggerProvider = GetDynamicLoggerProvider(serviceProvider);
 
-        ILogger beforeLogger = provider.CreateLogger("Some");
+        ILogger beforeLogger = loggerProvider.CreateLogger("Some");
         beforeLogger.ProbeMinLevel().Should().Be(LogLevel.Trace);
 
-        provider.SetLogLevel("Some", LogLevel.Error);
-        ILogger afterLogger = provider.CreateLogger("Some.Other");
+        loggerProvider.SetLogLevel("Some", LogLevel.Error);
+        ILogger afterLogger = loggerProvider.CreateLogger("Some.Other");
 
         beforeLogger.ProbeMinLevel().Should().Be(LogLevel.Error);
         afterLogger.ProbeMinLevel().Should().Be(LogLevel.Error);
@@ -337,20 +351,21 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             [$"Logging:LogLevel:{someCategoryName}"] = "Critical"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        LoggerWithDynamicState someState = new(provider, _consoleOutput, someCategoryName);
-        LoggerWithDynamicState someWithSuffixState = new(provider, _consoleOutput, someWithSuffixCategoryName);
+        await using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider loggerProvider = GetDynamicLoggerProvider(serviceProvider);
+        LoggerWithDynamicState someState = new(loggerProvider, _consoleOutput, someCategoryName);
+        LoggerWithDynamicState someWithSuffixState = new(loggerProvider, _consoleOutput, someWithSuffixCategoryName);
 
         await someState.AssertMinLevelAsync(LogLevel.Critical);
         await someWithSuffixState.AssertMinLevelAsync(LogLevel.Warning);
 
-        provider.SetLogLevel(someCategoryName, LogLevel.Debug);
+        loggerProvider.SetLogLevel(someCategoryName, LogLevel.Debug);
         Refresh();
 
         await someState.AssertMinLevelAsync(LogLevel.Debug, LogLevel.Critical);
         await someWithSuffixState.AssertMinLevelAsync(LogLevel.Warning);
 
-        provider.SetLogLevel(someCategoryName, null);
+        loggerProvider.SetLogLevel(someCategoryName, null);
         Refresh();
 
         await someState.AssertMinLevelAsync(LogLevel.Critical);
@@ -358,7 +373,7 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
 
         void Refresh()
         {
-            ICollection<DynamicLoggerState> logLevels = provider.GetLogLevels();
+            ICollection<DynamicLoggerState> logLevels = loggerProvider.GetLogLevels();
 
             someState.Refresh(logLevels);
             someWithSuffixState.Refresh(logLevels);
@@ -376,11 +391,12 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             [$"Logging:LogLevel:{pascalCaseCategoryName}"] = "Critical"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
-        LoggerWithDynamicState pascalCaseState = new(provider, _consoleOutput, pascalCaseCategoryName);
-        LoggerWithDynamicState upperCaseState = new(provider, _consoleOutput, upperCaseCategoryName);
+        await using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider loggerProvider = GetDynamicLoggerProvider(serviceProvider);
+        LoggerWithDynamicState pascalCaseState = new(loggerProvider, _consoleOutput, pascalCaseCategoryName);
+        LoggerWithDynamicState upperCaseState = new(loggerProvider, _consoleOutput, upperCaseCategoryName);
 
-        provider.SetLogLevel(pascalCaseCategoryName, LogLevel.Trace);
+        loggerProvider.SetLogLevel(pascalCaseCategoryName, LogLevel.Trace);
         Refresh();
 
         await pascalCaseState.AssertMinLevelAsync(LogLevel.Trace, LogLevel.Critical);
@@ -388,7 +404,7 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
 
         void Refresh()
         {
-            ICollection<DynamicLoggerState> logLevels = provider.GetLogLevels();
+            ICollection<DynamicLoggerState> logLevels = loggerProvider.GetLogLevels();
 
             pascalCaseState.Refresh(logLevels);
             upperCaseState.Refresh(logLevels);
@@ -410,14 +426,15 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             }
             """);
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider));
-        DynamicLoggingTestContext testContext = new(provider, _consoleOutput);
+        await using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryAppSettingsJsonFile(fileProvider));
+        IDynamicLoggerProvider loggerProvider = GetDynamicLoggerProvider(serviceProvider);
+        DynamicLoggingTestContext testContext = new(loggerProvider, _consoleOutput);
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Warning);
         await testContext.Self.AssertMinLevelAsync(LogLevel.Warning);
         await testContext.Child.AssertMinLevelAsync(LogLevel.Warning);
 
-        provider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Error);
+        loggerProvider.SetLogLevel(testContext.Self.CategoryName, LogLevel.Error);
         testContext.Refresh();
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Warning);
@@ -442,7 +459,7 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
         await testContext.Self.AssertMinLevelAsync(LogLevel.Error, LogLevel.Trace);
         await testContext.Child.AssertMinLevelAsync(LogLevel.Error);
 
-        provider.SetLogLevel(testContext.Self.CategoryName, null);
+        loggerProvider.SetLogLevel(testContext.Self.CategoryName, null);
         testContext.Refresh();
 
         await testContext.Parent.AssertMinLevelAsync(LogLevel.Trace);
@@ -461,10 +478,11 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             ["Logging:Console:FormatterOptions:JsonWriterOptions:Indented"] = "true"
         };
 
-        using IDynamicLoggerProvider provider = CreateLoggerProvider(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+        await using ServiceProvider serviceProvider = BuildServiceProvider(builder => builder.AddInMemoryCollection(appSettings));
+        IDynamicLoggerProvider loggerProvider = GetDynamicLoggerProvider(serviceProvider);
 
         using var factory = new LoggerFactory();
-        factory.AddProvider(provider);
+        factory.AddProvider(loggerProvider);
         ILogger logger = factory.CreateLogger("Fully.Qualified.Type");
 
         using (logger.BeginScope("OuterScope"))
@@ -514,8 +532,8 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
         services.AddSingleton<IDynamicMessageProcessor>(new TestMessageProcessor("Two"));
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IDynamicLoggerProvider provider = serviceProvider.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().Single();
-        ILogger logger = provider.CreateLogger("Test");
+        IDynamicLoggerProvider loggerProvider = serviceProvider.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().Single();
+        ILogger logger = loggerProvider.CreateLogger("Test");
 
         logger.LogInformation("Three");
 
@@ -527,22 +545,26 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
         logOutput.Should().Contain("Three");
     }
 
-    private static IDynamicLoggerProvider CreateLoggerProvider(Action<ConfigurationBuilder>? configure = null)
+    private static ServiceProvider BuildServiceProvider(Action<ConfigurationBuilder>? configure = null)
     {
         var configurationBuilder = new ConfigurationBuilder();
         configure?.Invoke(configurationBuilder);
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
 
         services.AddLogging(loggingBuilder =>
         {
-            loggingBuilder.AddConfiguration(configuration.GetSection("Logging"));
+            loggingBuilder.AddConfiguration(configurationRoot.GetSection("Logging"));
             loggingBuilder.AddDynamicConsole();
         });
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        return services.BuildServiceProvider(true);
+    }
 
+    private static IDynamicLoggerProvider GetDynamicLoggerProvider(ServiceProvider serviceProvider)
+    {
         return serviceProvider.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().Single();
     }
 

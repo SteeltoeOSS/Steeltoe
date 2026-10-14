@@ -6,31 +6,31 @@ using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MongoDb;
 
 internal sealed partial class MongoDbHealthContributor : IHealthContributor
 {
-    private readonly MongoClientInterfaceShimFactory _clientFactory;
+    private readonly Func<MongoClientInterfaceShim> _getClient;
+    private readonly bool _disposeClient;
     private readonly ILogger<MongoDbHealthContributor> _logger;
-    private MongoClientInterfaceShim? _mongoClientShim;
 
     public string Id => "MongoDB";
-    public string Host => _clientFactory.HostName;
+    public string Host { get; }
     public string ServiceName { get; }
 
-    public MongoDbHealthContributor(string serviceName, IServiceProvider serviceProvider, MongoDbPackageResolver packageResolver,
+    public MongoDbHealthContributor(string serviceName, Func<MongoClientInterfaceShim> getClient, bool disposeClient, string? host,
         ILogger<MongoDbHealthContributor> logger)
     {
         ArgumentNullException.ThrowIfNull(serviceName);
-        ArgumentNullException.ThrowIfNull(serviceProvider);
-        ArgumentNullException.ThrowIfNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(getClient);
         ArgumentNullException.ThrowIfNull(logger);
 
         ServiceName = serviceName;
-        _clientFactory = new MongoClientInterfaceShimFactory(serviceName, serviceProvider, packageResolver);
+        _getClient = getClient;
+        _disposeClient = disposeClient;
+        Host = host ?? string.Empty;
         _logger = logger;
     }
 
@@ -53,9 +53,12 @@ internal sealed partial class MongoDbHealthContributor : IHealthContributor
 
         try
         {
-            _mongoClientShim ??= _clientFactory.Create();
+            MongoClientInterfaceShim mongoClientShim = _getClient();
 
-            using IDisposable cursor = await _mongoClientShim.ListDatabaseNamesAsync(cancellationToken);
+            // When the connector caches the client, it owns the client and disposes it on shutdown.
+            using MongoClientInterfaceShim? clientToDispose = _disposeClient ? mongoClientShim : null;
+
+            using IDisposable cursor = await mongoClientShim.ListDatabaseNamesAsync(cancellationToken);
 
             result.Status = HealthStatus.Up;
 
@@ -88,46 +91,4 @@ internal sealed partial class MongoDbHealthContributor : IHealthContributor
 
     [LoggerMessage(Level = LogLevel.Error, Message = "{DbConnection} at {Host} is down.")]
     private partial void LogHealthDown(Exception exception, string dbConnection, string host);
-
-    private sealed class MongoClientInterfaceShimFactory
-    {
-        private readonly ConnectorShim<MongoDbOptions> _connectorShim;
-
-        public string HostName { get; }
-
-        public MongoClientInterfaceShimFactory(string serviceName, IServiceProvider serviceProvider, MongoDbPackageResolver packageResolver)
-        {
-            ArgumentNullException.ThrowIfNull(serviceName);
-            ArgumentNullException.ThrowIfNull(serviceProvider);
-            ArgumentNullException.ThrowIfNull(packageResolver);
-
-            ConnectorFactoryShim<MongoDbOptions> connectorFactoryShim =
-                ConnectorFactoryShim<MongoDbOptions>.FromServiceProvider(serviceProvider, packageResolver.MongoClientInterface.Type);
-
-            _connectorShim = connectorFactoryShim.Get(serviceName);
-            HostName = GetHostNameFromConnectionString(_connectorShim.Options.ConnectionString);
-        }
-
-        public MongoClientInterfaceShim Create()
-        {
-            object mongoClient = _connectorShim.GetConnection();
-            return new MongoClientInterfaceShim(MongoDbPackageResolver.Default, mongoClient);
-        }
-
-        private static string GetHostNameFromConnectionString(string? connectionString)
-        {
-            if (connectionString == null)
-            {
-                return string.Empty;
-            }
-
-            var builder = new MongoDbConnectionStringBuilder
-            {
-                ConnectionString = connectionString
-            };
-
-            string? hostName = (string?)builder["server"];
-            return hostName ?? string.Empty;
-        }
-    }
 }

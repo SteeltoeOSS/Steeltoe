@@ -358,23 +358,23 @@ public sealed class HostBuilderExtensionsTest
         {
             using HttpClient httpClient = hostWrapper.GetTestClient();
 
-            HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative), cancellationToken);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            using HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative), cancellationToken);
+            response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            response = await httpClient.GetAsync(new Uri("/actuator/info", UriKind.Relative), cancellationToken);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            using HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/info", UriKind.Relative), cancellationToken);
+            response2.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            response = await httpClient.GetAsync(new Uri("/actuator/health", UriKind.Relative), cancellationToken);
-            response.StatusCode.Should().Be(expectHealthy ? HttpStatusCode.OK : HttpStatusCode.ServiceUnavailable);
+            using HttpResponseMessage response3 = await httpClient.GetAsync(new Uri("/actuator/health", UriKind.Relative), cancellationToken);
+            response3.StatusCode.Should().Be(expectHealthy ? HttpStatusCode.OK : HttpStatusCode.ServiceUnavailable);
 
-            response = await httpClient.GetAsync(new Uri("/actuator/health/liveness", UriKind.Relative), cancellationToken);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            string responseContent = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            using HttpResponseMessage response4 = await httpClient.GetAsync(new Uri("/actuator/health/liveness", UriKind.Relative), cancellationToken);
+            response4.StatusCode.Should().Be(HttpStatusCode.OK);
+            string responseContent = await response4.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
             responseContent.Should().Contain("""LivenessState":"CORRECT""");
 
-            response = await httpClient.GetAsync(new Uri("/actuator/health/readiness", UriKind.Relative), cancellationToken);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            responseContent = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            using HttpResponseMessage response5 = await httpClient.GetAsync(new Uri("/actuator/health/readiness", UriKind.Relative), cancellationToken);
+            response5.StatusCode.Should().Be(HttpStatusCode.OK);
+            responseContent = await response5.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
             responseContent.Should().Contain("""ReadinessState":"ACCEPTING_TRAFFIC""");
         }
     }

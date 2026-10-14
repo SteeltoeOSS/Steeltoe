@@ -54,7 +54,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         var networkInterfaceProvider = Substitute.For<INetworkInterfaceProvider>();
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddSingleton(domainNameResolver);
         services.AddSingleton(networkInterfaceProvider);
         services.AddSingleton<InetUtils>();
@@ -88,10 +88,10 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
             ["consul:discovery:UseNetworkInterfaces"] = "true"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddSingleton(domainNameResolver);
         services.AddSingleton(networkInterfaceProvider);
         services.AddSingleton<InetUtils>();
@@ -128,10 +128,10 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
             ["spring:cloud:inet:DefaultHostname"] = "configured-default-host"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddSingleton(domainNameResolver);
         services.AddSingleton(networkInterfaceProvider);
         services.AddSingleton<InetUtils>();

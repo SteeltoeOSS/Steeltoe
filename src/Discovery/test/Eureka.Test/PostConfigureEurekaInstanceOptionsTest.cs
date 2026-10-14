@@ -336,11 +336,11 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
             configurationBuilder.AddInMemoryCollection(appSettings);
         }
 
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var services = new ServiceCollection();
         configureServices?.Invoke(services);
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddLogging();
         services.TryAddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         services.TryAddSingleton<INetworkInterfaceProvider, FakeNetworkInterfaceProvider>();

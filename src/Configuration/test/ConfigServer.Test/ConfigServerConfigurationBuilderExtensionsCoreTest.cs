@@ -22,7 +22,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(_quickTests);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
@@ -38,7 +38,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(_quickTests);
         configurationBuilder.AddConfigServer(loggerFactory);
-        _ = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         IList<string> logMessages = loggerProvider.GetAll();
 
@@ -87,7 +87,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -138,7 +138,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -169,7 +169,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -205,7 +205,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsXmlFile(fileProvider);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -244,7 +244,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsIniFile(fileProvider);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -284,7 +284,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddCommandLine(appSettings);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -339,7 +339,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddPlaceholderResolver();
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -433,7 +433,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapapp.json");
         configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapservices.json");
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -535,7 +535,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapapp.json");
         configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapservices.json");
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();

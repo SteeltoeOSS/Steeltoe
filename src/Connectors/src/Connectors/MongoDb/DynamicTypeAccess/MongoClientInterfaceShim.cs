@@ -7,7 +7,7 @@ using Steeltoe.Common.DynamicTypeAccess;
 namespace Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
 
 internal sealed class MongoClientInterfaceShim(MongoDbPackageResolver packageResolver, object instance)
-    : Shim(new InstanceAccessor(packageResolver.MongoClientInterface, instance))
+    : Shim(new InstanceAccessor(packageResolver.MongoClientInterface, instance)), IDisposable
 {
     public async Task<IDisposable> ListDatabaseNamesAsync(CancellationToken cancellationToken)
     {
@@ -17,5 +17,14 @@ internal sealed class MongoClientInterfaceShim(MongoDbPackageResolver packageRes
 
         using var taskShim = new TaskShim<IDisposable>(task);
         return taskShim.GetResult();
+    }
+
+    public void Dispose()
+    {
+        // IMongoClient was changed in MongoDB.Driver v3.0 to implement IDisposable, so type-check for backward compatibility.
+        if (Instance is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
     }
 }

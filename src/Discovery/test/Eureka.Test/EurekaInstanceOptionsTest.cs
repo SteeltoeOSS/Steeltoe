@@ -108,9 +108,9 @@ public sealed class EurekaInstanceOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        IConfiguration configuration = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
-        IConfigurationSection instanceSection = configuration.GetSection(EurekaInstanceOptions.ConfigurationPrefix);
+        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.ConfigurationPrefix);
         var instanceOptions = new EurekaInstanceOptions();
         instanceSection.Bind(instanceOptions);
 

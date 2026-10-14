@@ -93,7 +93,7 @@ public sealed class ConfigurationBuilderExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundryServiceBindings();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         configurationRoot.GetValue<string>("vcap:services:elephantsql:0:name").Should().Be("elephantsql-c6c60");
         configurationRoot.GetValue<string>("vcap:services:sendgrid:0:name").Should().Be("mysendgrid");
@@ -107,7 +107,11 @@ public sealed class ConfigurationBuilderExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundryServiceBindings();
 
-        Action action = () => builder.Build();
+        Action action = () =>
+        {
+            using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
+        };
+
         action.Should().NotThrow();
     }
 
@@ -119,7 +123,7 @@ public sealed class ConfigurationBuilderExtensionsTest
         var reader = new StringServiceBindingsReader(VcapServicesJson);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundryServiceBindings(ignoreKeyPredicate, reader, NullLoggerFactory.Instance);
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         configurationRoot.GetValue<string>("vcap:services:elephantsql:0:name").Should().Be("elephantsql-c6c60");
         configurationRoot.GetValue<string>("vcap:services:sendgrid:0:name").Should().BeNull();
@@ -154,7 +158,7 @@ public sealed class ConfigurationBuilderExtensionsTest
         var reader = new StringServiceBindingsReader(credHubJson);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundryServiceBindings(reader);
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         const string keyPrefix = "steeltoe:service-bindings:credhub:my-credhub-service:";
         configurationRoot.GetValue<string>($"{keyPrefix}Encrypt__Key").Should().BeNull();

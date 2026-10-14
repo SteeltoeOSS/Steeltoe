@@ -252,9 +252,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
-        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
 
         FieldInfo reloadTimerField =
             typeof(ConfigServerConfigurationProvider).GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
@@ -317,9 +317,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
-        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
 
         FieldInfo reloadTimerField =
             typeof(ConfigServerConfigurationProvider).GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
@@ -381,9 +381,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
-        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
         FieldInfo vaultTimerField = typeof(ConfigServerConfigurationProvider).GetField("_vaultRenewTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
 
         vaultTimerField.GetValue(provider).Should().NotBeNull();
@@ -1032,7 +1032,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddConfigServer(clientOptions, null, () => handler, NullLoggerFactory.Instance);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         using ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
 

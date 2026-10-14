@@ -39,7 +39,7 @@ public sealed class CloudFoundryActuatorTest
     public async Task Registers_dependent_services()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -56,7 +56,7 @@ public sealed class CloudFoundryActuatorTest
     public async Task Configures_default_settings()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -91,7 +91,7 @@ public sealed class CloudFoundryActuatorTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -121,7 +121,7 @@ public sealed class CloudFoundryActuatorTest
             """);
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddCloudFoundry().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddCloudFoundry().Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -149,7 +149,7 @@ public sealed class CloudFoundryActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
+        using HttpResponseMessage response = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -221,13 +221,13 @@ public sealed class CloudFoundryActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundry();
         builder.Services.AddCloudFoundryActuator();
-        WebApplication host = builder.Build();
+        await using WebApplication host = builder.Build();
 
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
+        using HttpResponseMessage response = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
@@ -240,8 +240,9 @@ public sealed class CloudFoundryActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundry();
         builder.Services.AddInfoActuator();
-        WebApplication host = builder.Build();
+        await using WebApplication host = builder.Build();
 
+        // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await host.StartAsync(TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<InvalidOperationException>()
@@ -259,14 +260,15 @@ public sealed class CloudFoundryActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Logging.AddProvider(loggerProvider);
         builder.Services.AddAllActuators(false);
-        WebApplication host = builder.Build();
+        await using WebApplication host = builder.Build();
 
         host.UseRouting();
         host.UseActuatorEndpoints();
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/cloudfoundryapplication"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await httpClient.GetAsync(new Uri("http://localhost/cloudfoundryapplication"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
@@ -294,7 +296,7 @@ public sealed class CloudFoundryActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
+        using HttpResponseMessage response = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -334,11 +336,11 @@ public sealed class CloudFoundryActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage rootResponse = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
+        using HttpResponseMessage rootResponse = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
 
         rootResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage infoResponse = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication/info"));
+        using HttpResponseMessage infoResponse = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication/info"));
 
         infoResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -364,11 +366,11 @@ public sealed class CloudFoundryActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage rootResponse = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
+        using HttpResponseMessage rootResponse = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
 
         rootResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage infoResponse = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication/info"));
+        using HttpResponseMessage infoResponse = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication/info"));
 
         infoResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
@@ -398,7 +400,7 @@ public sealed class CloudFoundryActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
+        using HttpResponseMessage response = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -449,7 +451,7 @@ public sealed class CloudFoundryActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/some/prefix/cloudfoundryapplication"));
+        using HttpResponseMessage response = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/some/prefix/cloudfoundryapplication"));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -492,7 +494,7 @@ public sealed class CloudFoundryActuatorTest
         using HttpClient httpClient = host.GetTestClient();
         httpClient.DefaultRequestHeaders.Add("X-Forwarded-Proto", headerValue);
 
-        HttpResponseMessage response = await AuthenticatedGetAsync(httpClient, new Uri($"{requestUri}/cloudfoundryapplication"));
+        using HttpResponseMessage response = await AuthenticatedGetAsync(httpClient, new Uri($"{requestUri}/cloudfoundryapplication"));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -546,7 +548,7 @@ public sealed class CloudFoundryActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response1 = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
+        using HttpResponseMessage response1 = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
 
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -582,7 +584,7 @@ public sealed class CloudFoundryActuatorTest
 
         fileProvider.NotifyChanged();
 
-        HttpResponseMessage response2 = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
+        using HttpResponseMessage response2 = await AuthenticatedGetAsync(httpClient, new Uri("http://localhost/cloudfoundryapplication"));
 
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -607,7 +609,7 @@ public sealed class CloudFoundryActuatorTest
 
     private static async Task<HttpResponseMessage> AuthenticatedGetAsync(HttpClient httpClient, Uri uri)
     {
-        var rootRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
+        using var rootRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
         rootRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", MockAccessToken);
         return await httpClient.SendAsync(rootRequestMessage, TestContext.Current.CancellationToken);
     }

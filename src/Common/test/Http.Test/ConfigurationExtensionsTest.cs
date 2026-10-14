@@ -22,6 +22,8 @@ public sealed class ConfigurationExtensionsTest
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
         addresses.Should().BeEquivalentTo("http://localhost:8888", "https://localhost:9999");
+
+        using WebApplication host = builder.Build();
     }
 
     [Fact]
@@ -38,6 +40,8 @@ public sealed class ConfigurationExtensionsTest
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
         addresses.Should().BeEquivalentTo("http://localhost:8888", "https://127.0.0.1:9999");
+
+        using WebApplication host = builder.Build();
     }
 
     [Fact]
@@ -55,6 +59,8 @@ public sealed class ConfigurationExtensionsTest
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
         addresses.Should().BeEquivalentTo("http://*:5555", "https://*:6666");
+
+        using WebApplication host = builder.Build();
     }
 
     [Fact]
@@ -73,6 +79,8 @@ public sealed class ConfigurationExtensionsTest
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
         addresses.Should().BeEquivalentTo("http://[::1]:8888", "https://192.168.1.1:9999");
+
+        using WebApplication host = builder.Build();
     }
 
     [Fact]
@@ -103,6 +111,8 @@ public sealed class ConfigurationExtensionsTest
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
         addresses.Should().BeEquivalentTo("http://localhost:5555", "https://+:6666", "https://api.domain.org:7777");
+
+        using WebApplication host = builder.Build();
     }
 
     [Fact]
@@ -128,6 +138,8 @@ public sealed class ConfigurationExtensionsTest
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
         addresses.Should().BeEquivalentTo("http://localhost:5555");
+
+        using WebApplication host = builder.Build();
     }
 
     [Fact]
@@ -139,6 +151,8 @@ public sealed class ConfigurationExtensionsTest
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
         addresses.Should().BeEquivalentTo("http://+:8888", "https://some.domain.org:9999");
+
+        using WebApplication host = builder.Build();
     }
 
     [Fact]
@@ -151,6 +165,8 @@ public sealed class ConfigurationExtensionsTest
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
         addresses.Should().BeEquivalentTo("http://*:6666", "https://*:7777");
+
+        using WebApplication host = builder.Build();
     }
 
     [Fact]
@@ -166,6 +182,8 @@ public sealed class ConfigurationExtensionsTest
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
         addresses.Should().BeEquivalentTo("http://*:7777", "http://localhost:8888", "https://*:9999");
+
+        using WebApplication host = builder.Build();
     }
 
     [Fact]
@@ -183,6 +201,8 @@ public sealed class ConfigurationExtensionsTest
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
         addresses.Should().BeEquivalentTo("http://*:6666", "https://*:7777");
+
+        using WebApplication host = builder.Build();
     }
 
     [Fact]
@@ -192,13 +212,14 @@ public sealed class ConfigurationExtensionsTest
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
         addresses.Should().BeEquivalentTo("http://localhost:5000");
+
+        using WebApplication host = builder.Build();
     }
 
     [Fact]
     public async Task Does_not_detect_addresses_from_WebApplication_Urls()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
         await using WebApplication app = builder.Build();
         var configuration = app.Services.GetRequiredService<IConfiguration>();
@@ -222,5 +243,7 @@ public sealed class ConfigurationExtensionsTest
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
         addresses.Should().BeEquivalentTo("http://localhost:5000");
+
+        using WebApplication host = builder.Build();
     }
 }

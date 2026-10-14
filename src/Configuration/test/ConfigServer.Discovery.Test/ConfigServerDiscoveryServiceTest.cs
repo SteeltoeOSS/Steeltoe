@@ -17,15 +17,18 @@ public sealed class ConfigServerDiscoveryServiceTest
     [Fact]
     public async Task ConfigServerDiscoveryService_FindsDiscoveryClients()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery).Build();
+        using ConfigurationRoot configurationRoot =
+            new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery).BuildAsRoot();
 
-        var service = new ConfigServerDiscoveryService(configuration, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
         await service.GetConfigServerInstancesAsync(new ConfigServerClientOptions(), TestContext.Current.CancellationToken);
 
         service.DiscoveryClients.Should().HaveCount(3);
         service.DiscoveryClients.OfType<ConfigurationDiscoveryClient>().Should().ContainSingle();
         service.DiscoveryClients.OfType<ConsulDiscoveryClient>().Should().ContainSingle();
         service.DiscoveryClients.OfType<EurekaDiscoveryClient>().Should().ContainSingle();
+
+        await service.ShutdownAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -38,12 +41,14 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
         var options = new ConfigServerClientOptions();
 
         var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
         IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(options, TestContext.Current.CancellationToken);
         result.Should().BeEmpty();
+
+        await service.ShutdownAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -54,7 +59,7 @@ public sealed class ConfigServerDiscoveryServiceTest
             ["eureka:client:eurekaServer:retryCount"] = "1"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).BuildAsRoot();
 
         var options = new ConfigServerClientOptions
         {
@@ -69,6 +74,8 @@ public sealed class ConfigServerDiscoveryServiceTest
         var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
         IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(options, TestContext.Current.CancellationToken);
         result.Should().BeEmpty();
+
+        await service.ShutdownAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -81,7 +88,7 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var options = new ConfigServerClientOptions
         {
@@ -95,12 +102,15 @@ public sealed class ConfigServerDiscoveryServiceTest
         var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
         IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(options, TestContext.Current.CancellationToken);
         result.Should().BeEmpty();
+
+        await service.ShutdownAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
     public async Task RuntimeReplacementsCanBeProvided()
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery).Build();
+        using ConfigurationRoot configurationRoot =
+            new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery).BuildAsRoot();
 
         var testDiscoveryClient = new TestDiscoveryClient();
         var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
