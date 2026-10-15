@@ -3,7 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Consul;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
@@ -17,100 +19,320 @@ public sealed class ConsulServiceRegistrarTest
     private static readonly WriteResult DefaultWriteResult = new();
 
     [Fact]
-    public async Task Start_CallsRegistry()
+    public async Task Start_RegistersAndStartsHeartbeat()
     {
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        ConsulServiceInstance instance = TestRegistrationFactory.CreateServiceInstance(new Dictionary<string, string?>());
-
-        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClientAgentSubstitute(instance);
-        await using var registry = new ConsulServiceRegistry(client, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
-        await using var registrar = new ConsulServiceRegistrar(registry, optionsMonitor, instance, NullLogger<ConsulServiceRegistrar>.Instance);
+        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClient();
+        await using ConsulServiceRegistrar registrar = CreateRegistrar(client);
 
         await registrar.StartAsync(TestContext.Current.CancellationToken);
 
         registrar.IsRunning.Should().BeTrue();
-        await agent.Received(1).ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>());
+        registrar.Heartbeat.Should().NotBeNull();
+
+        string instanceId = registrar.ServiceInstance.InstanceId;
+
+        await agent.Received(1).ServiceRegister(Arg.Is<AgentServiceRegistration>(registration => registration.ID == instanceId), Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Start_DoesNotCallRegistry()
+    public async Task Start_DoesNotRegister_WhenRegisterIsFalse()
     {
-        var optionsMonitor = TestOptionsMonitor.Create(new ConsulDiscoveryOptions
-        {
-            Register = false
-        });
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions();
+        options.Register = false;
 
-        ConsulServiceInstance instance = TestRegistrationFactory.CreateServiceInstance(new Dictionary<string, string?>());
-
-        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClientAgentSubstitute(instance);
-        await using var registry = new ConsulServiceRegistry(client, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
-        await using var registrar = new ConsulServiceRegistrar(registry, optionsMonitor, instance, NullLogger<ConsulServiceRegistrar>.Instance);
+        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClient();
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
+        await using ConsulServiceRegistrar registrar = CreateRegistrar(client, optionsMonitor);
 
         await registrar.StartAsync(TestContext.Current.CancellationToken);
 
         registrar.IsRunning.Should().BeTrue();
+        registrar.Heartbeat.Should().BeNull();
+
+        optionsMonitor.ListenerCount.Should().Be(0);
         await agent.DidNotReceive().ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Start_DoesNotStart()
+    public async Task Start_DoesNotStart_WhenDisabled()
     {
-        var optionsMonitor = TestOptionsMonitor.Create(new ConsulDiscoveryOptions
-        {
-            Enabled = false
-        });
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions();
+        options.Enabled = false;
 
-        ConsulServiceInstance instance = TestRegistrationFactory.CreateServiceInstance(new Dictionary<string, string?>());
-
-        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClientAgentSubstitute(instance);
-        await using var registry = new ConsulServiceRegistry(client, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
-        await using var registrar = new ConsulServiceRegistrar(registry, optionsMonitor, instance, NullLogger<ConsulServiceRegistrar>.Instance);
+        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClient();
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
+        await using ConsulServiceRegistrar registrar = CreateRegistrar(client, optionsMonitor);
 
         await registrar.StartAsync(TestContext.Current.CancellationToken);
 
         registrar.IsRunning.Should().BeFalse();
+        registrar.Heartbeat.Should().BeNull();
+
+        optionsMonitor.ListenerCount.Should().Be(0);
         await agent.DidNotReceive().ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Dispose_CallsRegistry()
+    public async Task Start_DoesNotStartHeartbeat_WhenHeartbeatIsDisabled()
     {
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        ConsulServiceInstance instance = TestRegistrationFactory.CreateServiceInstance(new Dictionary<string, string?>());
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions();
+        options.Heartbeat!.Enabled = false;
 
-        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClientAgentSubstitute(instance);
-        await using var registry = new ConsulServiceRegistry(client, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
-        var registrar = new ConsulServiceRegistrar(registry, optionsMonitor, instance, NullLogger<ConsulServiceRegistrar>.Instance);
+        (IConsulClient client, _) = CreateConsulClient();
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
+        await using ConsulServiceRegistrar registrar = CreateRegistrar(client, optionsMonitor);
 
-        await using (registrar)
-        {
-            await registrar.StartAsync(TestContext.Current.CancellationToken);
-        }
+        await registrar.StartAsync(TestContext.Current.CancellationToken);
 
-        registrar.IsRunning.Should().BeFalse();
-        await agent.Received(1).ServiceDeregister(instance.InstanceId, Arg.Any<CancellationToken>());
+        registrar.Heartbeat.Should().BeNull();
+        optionsMonitor.ListenerCount.Should().Be(0);
     }
 
     [Fact]
-    public async Task Dispose_DoesNotCallRegistry()
+    public async Task OptionsChange_WithAutoChangingInstanceId_UpdatesIntervalOfRunningHeartbeat()
     {
-        var optionsMonitor = TestOptionsMonitor.Create(new ConsulDiscoveryOptions
+        ConsulDiscoveryOptions initialOptions = TestRegistrationFactory.CreateDiscoveryOptions();
+        initialOptions.Heartbeat!.TtlValue = 5;
+
+        (IConsulClient client, _) = CreateConsulClient();
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(initialOptions);
+        await using ConsulServiceRegistrar registrar = CreateRegistrar(client, optionsMonitor);
+
+        await registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        PeriodicHeartbeat heartbeat = registrar.Heartbeat!;
+        TimeSpan beforeInterval = heartbeat.Interval;
+
+        // PostConfigure generates a new instance ID for every options build when none is configured.
+        ConsulDiscoveryOptions changedOptions = TestRegistrationFactory.CreateDiscoveryOptions();
+        changedOptions.Heartbeat!.TtlValue = 10;
+        changedOptions.InstanceId.Should().NotBe(initialOptions.InstanceId);
+
+        optionsMonitor.Change(changedOptions);
+
+        registrar.Heartbeat.Should().BeSameAs(heartbeat);
+        heartbeat.Interval.Should().NotBe(beforeInterval);
+        optionsMonitor.ListenerCount.Should().Be(1);
+    }
+
+    [Theory]
+    [InlineData(false, true, true, false)]
+    [InlineData(true, false, true, false)]
+    [InlineData(true, true, false, false)]
+    [InlineData(true, true, true, true)]
+    public async Task OptionsChange_WhenNoHeartbeatWasStarted_CreatesNothing(bool enabled, bool register, bool heartbeatEnabled, bool registrationFails)
+    {
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions();
+        options.Enabled = enabled;
+        options.Register = register;
+        options.Heartbeat!.Enabled = heartbeatEnabled;
+        options.FailFast = false;
+
+        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClient();
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
+        await using ConsulServiceRegistrar registrar = CreateRegistrar(client, optionsMonitor);
+
+        if (registrationFails)
         {
-            Deregister = false
-        });
-
-        ConsulServiceInstance instance = TestRegistrationFactory.CreateServiceInstance(new Dictionary<string, string?>());
-
-        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClientAgentSubstitute(instance);
-        await using var registry = new ConsulServiceRegistry(client, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
-        var registrar = new ConsulServiceRegistrar(registry, optionsMonitor, instance, NullLogger<ConsulServiceRegistrar>.Instance);
-
-        await using (registrar)
-        {
-            await registrar.StartAsync(TestContext.Current.CancellationToken);
+            agent.ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>())
+                .Returns<Task<WriteResult>>(_ => throw new HttpRequestException());
         }
 
-        await agent.DidNotReceive().ServiceDeregister(instance.InstanceId, Arg.Any<CancellationToken>());
+        await registrar.StartAsync(TestContext.Current.CancellationToken);
+        optionsMonitor.Change(TestRegistrationFactory.CreateDiscoveryOptions());
+
+        registrar.Heartbeat.Should().BeNull();
+        optionsMonitor.ListenerCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Shutdown_ReleasesHeartbeatAndSubscription_AndDeregisters()
+    {
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions();
+        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClient();
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
+        await using ConsulServiceRegistrar registrar = CreateRegistrar(client, optionsMonitor);
+
+        await registrar.StartAsync(TestContext.Current.CancellationToken);
+        optionsMonitor.ListenerCount.Should().Be(1);
+
+        await registrar.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        registrar.IsRunning.Should().BeFalse();
+        registrar.Heartbeat.Should().BeNull();
+
+        optionsMonitor.ListenerCount.Should().Be(0);
+        await agent.Received(1).ServiceDeregister(registrar.ServiceInstance.InstanceId, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Shutdown_DoesNotDeregister_WhenDeregisterIsFalse()
+    {
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions();
+        options.Deregister = false;
+
+        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClient();
+        await using ConsulServiceRegistrar registrar = CreateRegistrar(client, TestOptionsMonitor.Create(options));
+
+        await registrar.StartAsync(TestContext.Current.CancellationToken);
+        await registrar.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        registrar.Heartbeat.Should().BeNull();
+        await agent.DidNotReceive().ServiceDeregister(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Shutdown_Deregisters_EvenWhenOptionsChangedToNoLongerRegister()
+    {
+        ConsulDiscoveryOptions initialOptions = TestRegistrationFactory.CreateDiscoveryOptions();
+        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClient();
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(initialOptions);
+        await using ConsulServiceRegistrar registrar = CreateRegistrar(client, optionsMonitor);
+
+        await registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        ConsulDiscoveryOptions changedOptions = TestRegistrationFactory.CreateDiscoveryOptions();
+        changedOptions.Register = false;
+        optionsMonitor.Change(changedOptions);
+
+        await registrar.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        await agent.Received(1).ServiceDeregister(registrar.ServiceInstance.InstanceId, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Shutdown_DoesNotDeregisterButStillReleasesResources_WhenOptionsChangedToNotDeregister()
+    {
+        ConsulDiscoveryOptions initialOptions = TestRegistrationFactory.CreateDiscoveryOptions();
+        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClient();
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(initialOptions);
+        await using ConsulServiceRegistrar registrar = CreateRegistrar(client, optionsMonitor);
+
+        await registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        registrar.Heartbeat.Should().NotBeNull();
+        optionsMonitor.ListenerCount.Should().Be(1);
+
+        ConsulDiscoveryOptions changedOptions = TestRegistrationFactory.CreateDiscoveryOptions();
+        changedOptions.Deregister = false;
+        optionsMonitor.Change(changedOptions);
+
+        await registrar.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        registrar.IsRunning.Should().BeFalse();
+        registrar.Heartbeat.Should().BeNull();
+        optionsMonitor.ListenerCount.Should().Be(0);
+        await agent.DidNotReceive().ServiceDeregister(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Shutdown_CalledTwice_DeregistersOnce()
+    {
+        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClient();
+        await using ConsulServiceRegistrar registrar = CreateRegistrar(client);
+
+        await registrar.StartAsync(TestContext.Current.CancellationToken);
+        await registrar.ShutdownAsync(TestContext.Current.CancellationToken);
+        await registrar.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        await agent.Received(1).ServiceDeregister(registrar.ServiceInstance.InstanceId, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Start_WhenRegistrationFailsWithFailFast_ThrowsAndLeavesNothingSubscribed()
+    {
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions();
+        options.FailFast = true;
+
+        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClient();
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
+        await using ConsulServiceRegistrar registrar = CreateRegistrar(client, optionsMonitor);
+
+        agent.ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>())
+            .Returns<Task<WriteResult>>(_ => throw new HttpRequestException());
+
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        await action.Should().ThrowExactlyAsync<HttpRequestException>();
+
+        registrar.Heartbeat.Should().BeNull();
+        optionsMonitor.ListenerCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Start_WhenRegistrationFailsWithoutFailFast_LeavesNothingBehindAndDoesNotDeregister()
+    {
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions();
+        options.FailFast = false;
+
+        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClient();
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
+        await using ConsulServiceRegistrar registrar = CreateRegistrar(client, optionsMonitor);
+
+        agent.ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>())
+            .Returns<Task<WriteResult>>(_ => throw new HttpRequestException());
+
+        await registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        registrar.Heartbeat.Should().BeNull();
+        optionsMonitor.ListenerCount.Should().Be(0);
+
+        await registrar.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        await agent.DidNotReceive().ServiceDeregister(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Start_WithRetry_SucceedsOnLaterAttempt()
+    {
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions();
+        options.FailFast = true;
+        options.Retry.Enabled = true;
+        options.Retry.InitialInterval = 1;
+        options.Retry.MaxInterval = 1;
+        options.Retry.MaxAttempts = 3;
+
+        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClient();
+        await using ConsulServiceRegistrar registrar = CreateRegistrar(client, TestOptionsMonitor.Create(options));
+
+        int attempts = 0;
+
+        agent.ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>()).Returns(_ =>
+        {
+            attempts++;
+            return attempts < 3 ? throw new HttpRequestException() : Task.FromResult(DefaultWriteResult);
+        });
+
+        await registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        attempts.Should().Be(3);
+        registrar.Heartbeat.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Start_WithRetry_ThrowsAfterMaxAttempts()
+    {
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions();
+        options.FailFast = true;
+        options.Retry.Enabled = true;
+        options.Retry.InitialInterval = 1;
+        options.Retry.MaxInterval = 1;
+        options.Retry.MaxAttempts = 3;
+
+        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClient();
+        await using ConsulServiceRegistrar registrar = CreateRegistrar(client, TestOptionsMonitor.Create(options));
+
+        agent.ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>())
+            .Returns<Task<WriteResult>>(_ => throw new HttpRequestException());
+
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        await action.Should().ThrowExactlyAsync<HttpRequestException>();
+
+        await agent.Received(3).ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>());
+        registrar.Heartbeat.Should().BeNull();
     }
 
     [Fact]
@@ -141,7 +363,7 @@ public sealed class ConsulServiceRegistrarTest
     [Fact]
     public void CreateAgentRegistration_WithoutPort_HasNoPortAndNoCheck()
     {
-        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions(new Dictionary<string, string?>());
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions();
         options.Port = 0;
 
         ConsulServiceInstance instance = ConsulServiceInstance.FromOptions(options);
@@ -155,27 +377,25 @@ public sealed class ConsulServiceRegistrarTest
     [Fact]
     public void CreateCheck_ReturnsExpected()
     {
-        var options = new ConsulDiscoveryOptions
-        {
-            HostName = "some-host"
-        };
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions();
+        options.HostName = "some-host";
 
-        AgentServiceCheck result = ConsulServiceRegistrar.CreateCheck(1234, options);
+        AgentServiceCheck check = ConsulServiceRegistrar.CreateCheck(1234, options);
 
-        result.Should().NotBeNull();
-        result.TTL.Should().Be(DateTimeConversions.ToTimeSpan(options.Heartbeat!.TimeToLive));
-        result.DeregisterCriticalServiceAfter.Should().Be(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout!));
+        check.Should().NotBeNull();
+        check.TTL.Should().Be(DateTimeConversions.ToTimeSpan(options.Heartbeat!.TimeToLive));
+        check.DeregisterCriticalServiceAfter.Should().Be(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout!));
 
         options.Heartbeat = null;
         const int port = 1234;
-        result = ConsulServiceRegistrar.CreateCheck(port, options);
+        check = ConsulServiceRegistrar.CreateCheck(port, options);
         var uri = new Uri($"{options.EffectiveScheme}://{options.HostName}:{port}{options.HealthCheckPath}");
 
-        result.HTTP.Should().Be(uri.ToString());
-        result.Interval.Should().Be(DateTimeConversions.ToTimeSpan(options.HealthCheckInterval!));
-        result.Timeout.Should().Be(DateTimeConversions.ToTimeSpan(options.HealthCheckTimeout!));
-        result.DeregisterCriticalServiceAfter.Should().Be(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout!));
-        result.TLSSkipVerify.Should().Be(options.HealthCheckTlsSkipVerify);
+        check.HTTP.Should().Be(uri.ToString());
+        check.Interval.Should().Be(DateTimeConversions.ToTimeSpan(options.HealthCheckInterval!));
+        check.Timeout.Should().Be(DateTimeConversions.ToTimeSpan(options.HealthCheckTimeout!));
+        check.DeregisterCriticalServiceAfter.Should().Be(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout!));
+        check.TLSSkipVerify.Should().Be(options.HealthCheckTlsSkipVerify);
     }
 
     [Fact]
@@ -183,15 +403,10 @@ public sealed class ConsulServiceRegistrarTest
     {
         const string path = "/my/custom/health";
 
-        var options = new ConsulDiscoveryOptions
-        {
-            HostName = "some-host",
-            HealthCheckPath = path,
-            Heartbeat = new ConsulHeartbeatOptions
-            {
-                Enabled = false
-            }
-        };
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions();
+        options.HostName = "some-host";
+        options.HealthCheckPath = path;
+        options.Heartbeat!.Enabled = false;
 
         AgentServiceCheck check = ConsulServiceRegistrar.CreateCheck(1234, options);
 
@@ -203,25 +418,34 @@ public sealed class ConsulServiceRegistrarTest
     {
         const string path = "/my/custom/health";
 
-        var options = new ConsulDiscoveryOptions
-        {
-            HealthCheckPath = path,
-            Heartbeat = new ConsulHeartbeatOptions
-            {
-                Enabled = true
-            }
-        };
+        ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions();
+        options.HealthCheckPath = path;
+        options.Heartbeat!.Enabled = true;
 
         AgentServiceCheck check = ConsulServiceRegistrar.CreateCheck(1234, options);
 
         check.HTTP.Should().BeNull();
     }
 
-    private static (IConsulClient Client, IAgentEndpoint Agent) CreateConsulClientAgentSubstitute(ConsulServiceInstance instance)
+    private static ConsulServiceRegistrar CreateRegistrar(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions>? optionsMonitor = null,
+        ILoggerFactory? loggerFactory = null)
+    {
+        if (optionsMonitor == null)
+        {
+            ConsulDiscoveryOptions options = TestRegistrationFactory.CreateDiscoveryOptions();
+            optionsMonitor = TestOptionsMonitor.Create(options);
+        }
+
+        loggerFactory ??= NullLoggerFactory.Instance;
+        return new ConsulServiceRegistrar(client, optionsMonitor, loggerFactory);
+    }
+
+    private static (IConsulClient Client, IAgentEndpoint Agent) CreateConsulClient()
     {
         var agent = Substitute.For<IAgentEndpoint>();
         agent.ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(DefaultWriteResult));
-        agent.ServiceDeregister(instance.InstanceId, Arg.Any<CancellationToken>()).Returns(Task.FromResult(DefaultWriteResult));
+        agent.ServiceDeregister(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(DefaultWriteResult));
+        agent.PassTTL(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(DefaultWriteResult));
 
         var client = Substitute.For<IConsulClient>();
         client.Agent.Returns(agent);

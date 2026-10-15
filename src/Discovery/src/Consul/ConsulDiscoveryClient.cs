@@ -54,7 +54,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
         ArgumentNullException.ThrowIfNull(optionsMonitor);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        ConsulServiceRegistrar registrar = CreateRegistrar(client, optionsMonitor, loggerFactory);
+        var registrar = new ConsulServiceRegistrar(client, optionsMonitor, loggerFactory);
 
         _client = client;
         _optionsMonitor = optionsMonitor;
@@ -64,18 +64,6 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
         // Justification: Async calls from a constructor are not possible. To fix this, an alternate design is needed.
         _registrar.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
 #pragma warning restore S4462 // Calls to "async" methods should not be blocking
-    }
-
-    private static ConsulServiceRegistrar CreateRegistrar(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor,
-        ILoggerFactory loggerFactory)
-    {
-        ConsulServiceInstance serviceInstance = ConsulServiceInstance.FromOptions(optionsMonitor.CurrentValue);
-
-        ILogger<ConsulServiceRegistry> registryLogger = loggerFactory.CreateLogger<ConsulServiceRegistry>();
-        var registry = new ConsulServiceRegistry(client, optionsMonitor, new TtlScheduler(optionsMonitor, client, loggerFactory), registryLogger);
-
-        ILogger<ConsulServiceRegistrar> registrarLogger = loggerFactory.CreateLogger<ConsulServiceRegistrar>();
-        return new ConsulServiceRegistrar(registry, optionsMonitor, serviceInstance, registrarLogger);
     }
 
     /// <inheritdoc />
@@ -195,12 +183,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     /// <inheritdoc />
     public async Task ShutdownAsync(CancellationToken cancellationToken)
     {
-        ConsulDiscoveryOptions options = _optionsMonitor.CurrentValue;
-
-        if (options.Enabled)
-        {
-            await _registrar.DisposeAsync();
-        }
+        await _registrar.ShutdownAsync(cancellationToken);
     }
 
     internal async Task AddInstancesToListAsync(ICollection<IServiceInstance> instances, string serviceId, QueryOptions queryOptions,

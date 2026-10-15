@@ -21,7 +21,6 @@ using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
 using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.Consul;
-using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
@@ -670,14 +669,12 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<ConsulDiscoveryClient>();
 
         _ = serviceProvider.GetRequiredService<IConsulClient>();
-        _ = serviceProvider.GetRequiredService<TtlScheduler>();
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistry>();
-        _ = serviceProvider.GetRequiredService<ConsulServiceInstance>();
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
+
+        IDiscoveryClient discoveryClient = serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which;
+        discoveryClient.Should().BeOfType<ConsulDiscoveryClient>();
     }
 
     [Fact]
@@ -704,17 +701,16 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<ConsulDiscoveryClient>();
-
         _ = serviceProvider.GetRequiredService<IConsulClient>();
-        _ = serviceProvider.GetRequiredService<TtlScheduler>();
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistry>();
-
-        var registration = serviceProvider.GetRequiredService<ConsulServiceInstance>();
-        registration.Host.Should().Be("from-test");
-
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
+
+        IDiscoveryClient discoveryClient = serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which;
+        discoveryClient.Should().BeOfType<ConsulDiscoveryClient>();
+
+        IServiceInstance? serviceInstance = discoveryClient.GetLocalServiceInstance();
+
+        serviceInstance.Should().NotBeNull();
+        serviceInstance.Host.Should().Be("from-test");
     }
 
     [Fact]
@@ -738,17 +734,16 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<ConsulDiscoveryClient>();
-
         _ = serviceProvider.GetRequiredService<IConsulClient>();
-        _ = serviceProvider.GetRequiredService<TtlScheduler>();
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistry>();
-
-        var registration = serviceProvider.GetRequiredService<ConsulServiceInstance>();
-        registration.Port.Should().Be(1234);
-
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
+
+        IDiscoveryClient discoveryClient = serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which;
+        discoveryClient.Should().BeOfType<ConsulDiscoveryClient>();
+
+        IServiceInstance? serviceInstance = discoveryClient.GetLocalServiceInstance();
+
+        serviceInstance.Should().NotBeNull();
+        serviceInstance.Port.Should().Be(1234);
     }
 
     [Fact]
@@ -772,13 +767,17 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var registration = serviceProvider.GetRequiredService<ConsulServiceInstance>();
 
-        registration.Host.Should().NotBe("myapp");
-        registration.Port.Should().Be(0);
-
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
+
+        IDiscoveryClient discoveryClient = serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which;
+        discoveryClient.Should().BeOfType<ConsulDiscoveryClient>();
+
+        IServiceInstance? serviceInstance = discoveryClient.GetLocalServiceInstance();
+
+        serviceInstance.Should().NotBeNull();
+        serviceInstance.Host.Should().NotBe("myapp");
+        serviceInstance.Port.Should().Be(0);
     }
 
     [Fact]
@@ -802,13 +801,17 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var registration = serviceProvider.GetRequiredService<ConsulServiceInstance>();
 
-        registration.Host.Should().NotBe("myapp");
-        registration.Port.Should().Be(8080);
-
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
+
+        IDiscoveryClient discoveryClient = serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which;
+        discoveryClient.Should().BeOfType<ConsulDiscoveryClient>();
+
+        IServiceInstance? serviceInstance = discoveryClient.GetLocalServiceInstance();
+
+        serviceInstance.Should().NotBeNull();
+        serviceInstance.Host.Should().NotBe("myapp");
+        serviceInstance.Port.Should().Be(8080);
     }
 
     [Fact]

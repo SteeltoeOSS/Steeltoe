@@ -4,43 +4,148 @@
 
 using Consul;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.Extensions;
+using Steeltoe.Discovery.Consul.Configuration;
+using LockPrimitive =
+#if NET10_0_OR_GREATER
+    System.Threading.Lock
+#else
+    object
+#endif
+    ;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Steeltoe.Discovery.Consul;
 
+/// <summary>
+/// Periodically sends TTL (time-to-live) heartbeats for a registered service, and follows changes to the heartbeat interval in the options.
+/// </summary>
+/// <remarks>
+/// Options change notifications arrive on an arbitrary thread, and can still arrive after the subscription has been disposed. All state that they touch
+/// is therefore guarded by a single lock, which is never held across an await.
+/// </remarks>
 internal sealed partial class PeriodicHeartbeat : IAsyncDisposable
 {
+    private readonly LockPrimitive _lock = new();
     private readonly string _serviceId;
-    private readonly PeriodicTimer _periodicTimer;
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private readonly IConsulClient _client;
     private readonly ILogger<PeriodicHeartbeat> _logger;
-    private readonly Task _task;
+    private readonly IDisposable? _optionsChangeSubscription;
 
-    internal TimeSpan Interval { get; private set; }
+    private TimeSpan _interval;
+    private PeriodicTimer? _periodicTimer;
+    private Task? _task;
+    private bool _isDisposed;
 
-    public PeriodicHeartbeat(string serviceId, TimeSpan interval, IConsulClient client, ILogger<PeriodicHeartbeat> logger)
+    /// <summary>
+    /// Gets the interval that is in effect: the period of the running timer, or the interval it will start with.
+    /// </summary>
+    internal TimeSpan Interval
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _periodicTimer?.Period ?? _interval;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PeriodicHeartbeat" /> class. No heartbeats are sent until <see cref="Start" /> is called.
+    /// </summary>
+    /// <param name="serviceId">
+    /// The ID of the Consul check to send heartbeats for.
+    /// </param>
+    /// <param name="interval">
+    /// The initial interval between heartbeats.
+    /// </param>
+    /// <param name="optionsMonitor">
+    /// Provides access to <see cref="ConsulDiscoveryOptions" />, to follow changes to the heartbeat interval.
+    /// </param>
+    /// <param name="client">
+    /// The Consul client.
+    /// </param>
+    /// <param name="logger">
+    /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
+    /// </param>
+    public PeriodicHeartbeat(string serviceId, TimeSpan interval, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulClient client,
+        ILogger<PeriodicHeartbeat> logger)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(serviceId);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(logger);
 
         _serviceId = serviceId;
-        Interval = interval;
-        _periodicTimer = new PeriodicTimer(interval);
+        _interval = interval;
         _client = client;
         _logger = logger;
-        _task = TimerLoopAsync();
+
+        // Subscribe first, so no change can be missed. Notifications that arrive before the lock below is released wait for it.
+        _optionsChangeSubscription = optionsMonitor.OnChange(HandleOptionsChanged);
+
+        lock (_lock)
+        {
+            // Not inside a notification callback, so reading the current value is safe. It covers changes since the caller took its snapshot.
+            UpdateTimerInterval(optionsMonitor.CurrentValue.Heartbeat);
+        }
     }
 
-    private async Task TimerLoopAsync()
+    private void HandleOptionsChanged(ConsulDiscoveryOptions options, string? name)
+    {
+        // Use the options passed to the callback, not the current value.
+        ConsulHeartbeatOptions? heartbeatOptions = options.Heartbeat;
+
+        lock (_lock)
+        {
+            UpdateTimerInterval(heartbeatOptions);
+        }
+    }
+
+    private void UpdateTimerInterval(ConsulHeartbeatOptions? heartbeatOptions)
+    {
+        if (!_isDisposed && heartbeatOptions != null)
+        {
+            TimeSpan newInterval = heartbeatOptions.ComputeHeartbeatInterval();
+
+            // Setting the period restarts the countdown, even when the value is unchanged. Every options reload raises this callback,
+            // so without this check unrelated reloads would keep postponing the next heartbeat.
+            if (newInterval != _interval)
+            {
+                _interval = newInterval;
+                _periodicTimer?.Period = newInterval;
+
+                LogHeartbeatIntervalChanged(_serviceId, newInterval);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Starts sending heartbeats. Does nothing when already started or disposed.
+    /// </summary>
+    public void Start()
+    {
+        lock (_lock)
+        {
+            if (!_isDisposed && _task == null)
+            {
+                _periodicTimer = new PeriodicTimer(_interval);
+                _task = TimerLoopAsync(_periodicTimer);
+            }
+        }
+    }
+
+    private async Task TimerLoopAsync(PeriodicTimer periodicTimer)
     {
         try
         {
-            LogStartSendingHeartbeats(_serviceId, Interval);
+            LogStartSendingHeartbeats(_serviceId, _interval);
 
-            while (await _periodicTimer.WaitForNextTickAsync(_cancellationTokenSource.Token))
+            while (await periodicTimer.WaitForNextTickAsync(_cancellationTokenSource.Token))
             {
                 LogSendingHeartbeat(_serviceId);
 
@@ -60,23 +165,35 @@ internal sealed partial class PeriodicHeartbeat : IAsyncDisposable
         }
     }
 
-    public void ChangeInterval(TimeSpan interval)
-    {
-        if (interval != Interval)
-        {
-            _periodicTimer.Period = interval;
-            Interval = interval;
-            LogHeartbeatIntervalChanged(_serviceId, interval);
-        }
-    }
-
+    /// <summary>
+    /// Stops sending heartbeats and stops following options changes. Safe to call multiple times.
+    /// </summary>
     public async ValueTask DisposeAsync()
     {
-        await _cancellationTokenSource.CancelAsync();
-        await _task;
-        _cancellationTokenSource.Dispose();
-        _task.Dispose();
-        _periodicTimer.Dispose();
+        bool dispose;
+
+        lock (_lock)
+        {
+            dispose = !_isDisposed;
+
+            // From here on, change notifications (including ones already in flight) no longer touch the timer, and Start() no longer
+            // creates one, so _task and _periodicTimer are final and can be used below without holding the lock (which cannot span an await).
+            _isDisposed = true;
+        }
+
+        if (dispose)
+        {
+            _optionsChangeSubscription?.Dispose();
+            await _cancellationTokenSource.CancelAsync();
+
+            if (_task != null)
+            {
+                await _task;
+            }
+
+            _periodicTimer?.Dispose();
+            _cancellationTokenSource.Dispose();
+        }
     }
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Start sending periodic Consul heartbeats for '{ServiceId}' with interval {Interval}.")]

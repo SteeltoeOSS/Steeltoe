@@ -16,6 +16,11 @@ namespace Steeltoe.Discovery.Consul.Test.Registry;
 
 internal static class TestRegistrationFactory
 {
+    public static ConsulDiscoveryOptions CreateDiscoveryOptions()
+    {
+        return CreateDiscoveryOptions(new Dictionary<string, string?>());
+    }
+
     public static ConsulDiscoveryOptions CreateDiscoveryOptions(IDictionary<string, string?> appSettings)
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
