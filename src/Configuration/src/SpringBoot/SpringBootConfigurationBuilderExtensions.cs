@@ -43,6 +43,8 @@ public static class SpringBootConfigurationBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
+        _ = loggerFactory;
+
         if (!builder.EnumerateSources<SpringBootEnvironmentVariableSource>().Any())
         {
             builder.Add(new SpringBootEnvironmentVariableSource());
@@ -98,6 +100,8 @@ public static class SpringBootConfigurationBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(loggerFactory);
+
+        _ = loggerFactory;
 
         if (!builder.EnumerateSources<SpringBootCommandLineSource>().Any())
         {
