@@ -5,9 +5,8 @@
 using System.Reflection;
 using Consul;
 using Steeltoe.Discovery.Consul.Configuration;
-using Steeltoe.Discovery.Consul.Test.Registry;
 
-namespace Steeltoe.Discovery.Consul.Test.Discovery;
+namespace Steeltoe.Discovery.Consul.Test;
 
 public sealed class ConsulServiceInstanceTest
 {

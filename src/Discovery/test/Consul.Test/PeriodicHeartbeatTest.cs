@@ -11,7 +11,7 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
-namespace Steeltoe.Discovery.Consul.Test.Discovery;
+namespace Steeltoe.Discovery.Consul.Test;
 
 public sealed class PeriodicHeartbeatTest
 {
