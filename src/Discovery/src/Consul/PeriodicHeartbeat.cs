@@ -29,7 +29,6 @@ namespace Steeltoe.Discovery.Consul;
 internal sealed partial class PeriodicHeartbeat : IAsyncDisposable
 {
     private readonly LockPrimitive _lock = new();
-    private readonly string _serviceId;
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private readonly IConsulClient _client;
     private readonly ILogger<PeriodicHeartbeat> _logger;
@@ -39,6 +38,11 @@ internal sealed partial class PeriodicHeartbeat : IAsyncDisposable
     private PeriodicTimer? _periodicTimer;
     private Task? _task;
     private bool _isDisposed;
+
+    /// <summary>
+    /// Gets the ID of the Consul check that heartbeats are sent for.
+    /// </summary>
+    internal string CheckId { get; }
 
     /// <summary>
     /// Gets the interval that is in effect: the period of the running timer, or the interval it will start with.
@@ -57,7 +61,7 @@ internal sealed partial class PeriodicHeartbeat : IAsyncDisposable
     /// <summary>
     /// Initializes a new instance of the <see cref="PeriodicHeartbeat" /> class. No heartbeats are sent until <see cref="Start" /> is called.
     /// </summary>
-    /// <param name="serviceId">
+    /// <param name="checkId">
     /// The ID of the Consul check to send heartbeats for.
     /// </param>
     /// <param name="interval">
@@ -72,15 +76,15 @@ internal sealed partial class PeriodicHeartbeat : IAsyncDisposable
     /// <param name="logger">
     /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
     /// </param>
-    public PeriodicHeartbeat(string serviceId, TimeSpan interval, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulClient client,
+    public PeriodicHeartbeat(string checkId, TimeSpan interval, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulClient client,
         ILogger<PeriodicHeartbeat> logger)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(serviceId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(checkId);
         ArgumentNullException.ThrowIfNull(optionsMonitor);
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(logger);
 
-        _serviceId = serviceId;
+        CheckId = checkId;
         _interval = interval;
         _client = client;
         _logger = logger;
@@ -119,7 +123,7 @@ internal sealed partial class PeriodicHeartbeat : IAsyncDisposable
                 _interval = newInterval;
                 _periodicTimer?.Period = newInterval;
 
-                LogHeartbeatIntervalChanged(_serviceId, newInterval);
+                LogHeartbeatIntervalChanged(CheckId, newInterval);
             }
         }
     }
@@ -143,25 +147,25 @@ internal sealed partial class PeriodicHeartbeat : IAsyncDisposable
     {
         try
         {
-            LogStartSendingHeartbeats(_serviceId, _interval);
+            LogStartSendingHeartbeats(CheckId, _interval);
 
             while (await periodicTimer.WaitForNextTickAsync(_cancellationTokenSource.Token))
             {
-                LogSendingHeartbeat(_serviceId);
+                LogSendingHeartbeat(CheckId);
 
                 try
                 {
-                    await _client.Agent.PassTTL(_serviceId, "ttl", _cancellationTokenSource.Token);
+                    await _client.Agent.PassTTL(CheckId, "ttl", _cancellationTokenSource.Token);
                 }
                 catch (Exception exception) when (!exception.IsCancellation())
                 {
-                    LogFailedToSendHeartbeat(exception, _serviceId);
+                    LogFailedToSendHeartbeat(exception, CheckId);
                 }
             }
         }
         catch (OperationCanceledException)
         {
-            LogSendingHeartbeatsStopped(_serviceId);
+            LogSendingHeartbeatsStopped(CheckId);
         }
     }
 

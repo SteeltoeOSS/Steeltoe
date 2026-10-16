@@ -11,17 +11,13 @@ using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
+using Steeltoe.Discovery.Consul.Registry;
 
 namespace Steeltoe.Discovery.Consul.Test.Registry;
 
 internal static class TestRegistrationFactory
 {
-    public static ConsulDiscoveryOptions CreateDiscoveryOptions()
-    {
-        return CreateDiscoveryOptions(new Dictionary<string, string?>());
-    }
-
-    public static ConsulDiscoveryOptions CreateDiscoveryOptions(IDictionary<string, string?> appSettings)
+    public static ConsulDiscoveryOptions CreateDiscoveryOptions(Dictionary<string, string?> appSettings)
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
@@ -47,9 +43,22 @@ internal static class TestRegistrationFactory
         return options;
     }
 
-    public static ConsulServiceInstance CreateServiceInstance(IDictionary<string, string?> appSettings)
+    public static TestOptionsMonitor<ConsulDiscoveryOptions> CreateOptionsMonitor(Dictionary<string, string?> appSettings)
+    {
+        ConsulDiscoveryOptions options = CreateDiscoveryOptions(appSettings);
+        return TestOptionsMonitor.Create(options);
+    }
+
+    public static ConsulServiceInstance CreateServiceInstance(Dictionary<string, string?> appSettings)
     {
         ConsulDiscoveryOptions options = CreateDiscoveryOptions(appSettings);
         return ConsulServiceInstance.FromOptions(options);
+    }
+
+    public static ConsulServiceRegistration CreateRegistration(Dictionary<string, string?> appSettings)
+    {
+        ConsulDiscoveryOptions options = CreateDiscoveryOptions(appSettings);
+        ConsulServiceInstance serviceInstance = ConsulServiceInstance.FromOptions(options);
+        return new ConsulServiceRegistration(serviceInstance, options);
     }
 }
