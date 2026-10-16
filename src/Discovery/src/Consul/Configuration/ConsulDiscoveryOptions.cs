@@ -72,7 +72,8 @@ public sealed class ConsulDiscoveryOptions
     /// Gets or sets the absolute URL to the health endpoint of the running app (overrides <see cref="HealthCheckPath" />).
     /// </summary>
     /// <remarks>
-    /// This setting only has effect when <see cref="RegisterHealthCheck" /> is true and <see cref="ConsulHeartbeatOptions.Enabled" /> is false.
+    /// This setting only has effect when <see cref="RegisterHealthCheck" /> is true, <see cref="ConsulHeartbeatOptions.Enabled" /> is false and
+    /// <see cref="Port" /> is greater than zero.
     /// </remarks>
     public string? HealthCheckUrl { get; set; }
 
@@ -80,7 +81,8 @@ public sealed class ConsulDiscoveryOptions
     /// Gets or sets the relative URL to the health endpoint of the running app. Default value: /actuator/health.
     /// </summary>
     /// <remarks>
-    /// This setting only has effect when <see cref="RegisterHealthCheck" /> is true and <see cref="ConsulHeartbeatOptions.Enabled" /> is false.
+    /// This setting only has effect when <see cref="RegisterHealthCheck" /> is true, <see cref="ConsulHeartbeatOptions.Enabled" /> is false and
+    /// <see cref="Port" /> is greater than zero.
     /// </remarks>
     public string? HealthCheckPath { get; set; } = "/actuator/health";
 
@@ -88,7 +90,8 @@ public sealed class ConsulDiscoveryOptions
     /// Gets or sets how often Consul should perform an HTTP health check. Default value: 10s.
     /// </summary>
     /// <remarks>
-    /// This setting only has effect when <see cref="RegisterHealthCheck" /> is true and <see cref="ConsulHeartbeatOptions.Enabled" /> is false.
+    /// This setting only has effect when <see cref="RegisterHealthCheck" /> is true, <see cref="ConsulHeartbeatOptions.Enabled" /> is false and
+    /// <see cref="Port" /> is greater than zero.
     /// </remarks>
     public string? HealthCheckInterval { get; set; } = "10s";
 
@@ -96,7 +99,8 @@ public sealed class ConsulDiscoveryOptions
     /// Gets or sets the timeout Consul should use for an HTTP health check. Default value: 10s.
     /// </summary>
     /// <remarks>
-    /// This setting only has effect when <see cref="RegisterHealthCheck" /> is true and <see cref="ConsulHeartbeatOptions.Enabled" /> is false.
+    /// This setting only has effect when <see cref="RegisterHealthCheck" /> is true, <see cref="ConsulHeartbeatOptions.Enabled" /> is false and
+    /// <see cref="Port" /> is greater than zero.
     /// </remarks>
     public string? HealthCheckTimeout { get; set; } = "10s";
 

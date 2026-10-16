@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Consul.Configuration;
-using Steeltoe.Discovery.Consul.Util;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Steeltoe.Discovery.Consul.Registry;
@@ -94,14 +93,19 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
 
     private async Task RegisterWithHeartbeatAsync(ConsulDiscoveryOptions optionsSnapshot, CancellationToken cancellationToken)
     {
-        AgentServiceRegistration registration = CreateAgentRegistration(ServiceInstance, optionsSnapshot);
+        var registration = new ConsulServiceRegistration(ServiceInstance, optionsSnapshot);
+
+        if (registration.SkipHttpCheckDueToUnknownPort)
+        {
+            LogSkippingHttpHealthCheckDueToUnknownPort();
+        }
 
         // Created (and subscribed to options changes) before registering, so an interval change during registration is not lost.
-        PeriodicHeartbeat? heartbeat = CreateHeartbeat(optionsSnapshot);
+        PeriodicHeartbeat? heartbeat = CreateHeartbeat(registration.HeartbeatOptions);
 
         try
         {
-            await RegisterWithRetryAsync(registration, optionsSnapshot, cancellationToken);
+            await RegisterWithRetryAsync(registration.Payload, optionsSnapshot, cancellationToken);
 
             if (_isRegistered && heartbeat != null)
             {
@@ -121,14 +125,14 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
         }
     }
 
-    private PeriodicHeartbeat? CreateHeartbeat(ConsulDiscoveryOptions optionsSnapshot)
+    private PeriodicHeartbeat? CreateHeartbeat(ConsulHeartbeatOptions? heartbeatOptions)
     {
         PeriodicHeartbeat? heartbeat = null;
 
-        if (optionsSnapshot is { IsHeartbeatEnabled: true, Heartbeat: not null })
+        if (heartbeatOptions != null)
         {
             string checkId = $"service:{ServiceInstance.InstanceId}";
-            TimeSpan interval = optionsSnapshot.Heartbeat.ComputeHeartbeatInterval();
+            TimeSpan interval = heartbeatOptions.ComputeHeartbeatInterval();
             ILogger<PeriodicHeartbeat> heartbeatLogger = _loggerFactory.CreateLogger<PeriodicHeartbeat>();
 
             heartbeat = new PeriodicHeartbeat(checkId, interval, _optionsMonitor, _client, heartbeatLogger);
@@ -137,26 +141,25 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
         return heartbeat;
     }
 
-    private async Task RegisterWithRetryAsync(AgentServiceRegistration registration, ConsulDiscoveryOptions optionsSnapshot,
-        CancellationToken cancellationToken)
+    private async Task RegisterWithRetryAsync(AgentServiceRegistration payload, ConsulDiscoveryOptions optionsSnapshot, CancellationToken cancellationToken)
     {
         if (optionsSnapshot is { IsRetryEnabled: true, FailFast: true })
         {
-            await DoWithRetryAsync(() => RegisterAsync(registration, optionsSnapshot, cancellationToken), optionsSnapshot.Retry, cancellationToken);
+            await DoWithRetryAsync(() => RegisterAsync(payload, optionsSnapshot, cancellationToken), optionsSnapshot.Retry, cancellationToken);
         }
         else
         {
-            await RegisterAsync(registration, optionsSnapshot, cancellationToken);
+            await RegisterAsync(payload, optionsSnapshot, cancellationToken);
         }
     }
 
-    private async Task RegisterAsync(AgentServiceRegistration registration, ConsulDiscoveryOptions optionsSnapshot, CancellationToken cancellationToken)
+    private async Task RegisterAsync(AgentServiceRegistration payload, ConsulDiscoveryOptions optionsSnapshot, CancellationToken cancellationToken)
     {
         LogRegistering(ServiceInstance.ServiceId);
 
         try
         {
-            await _client.Agent.ServiceRegister(registration, cancellationToken);
+            await _client.Agent.ServiceRegister(payload, cancellationToken);
             _isRegistered = true;
         }
         catch (Exception exception) when (!exception.IsCancellation())
@@ -263,78 +266,6 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
         while (true);
     }
 
-    internal static AgentServiceRegistration CreateAgentRegistration(ConsulServiceInstance serviceInstance, ConsulDiscoveryOptions options)
-    {
-        ArgumentNullException.ThrowIfNull(serviceInstance);
-        ArgumentNullException.ThrowIfNull(options);
-
-        var registration = new AgentServiceRegistration
-        {
-            ID = serviceInstance.InstanceId,
-            Address = serviceInstance.Host,
-            Name = serviceInstance.ServiceId,
-            Tags = [.. serviceInstance.Tags],
-            Meta = serviceInstance.Metadata.ToDictionary(pair => pair.Key, pair => pair.Value)
-        };
-
-        if (serviceInstance.Port > 0)
-        {
-            registration.Port = serviceInstance.Port;
-
-            if (options.RegisterHealthCheck)
-            {
-                registration.Check = CreateCheck(serviceInstance.Port, options);
-            }
-        }
-
-        return registration;
-    }
-
-    internal static AgentServiceCheck CreateCheck(int port, ConsulDiscoveryOptions options)
-    {
-        var check = new AgentServiceCheck();
-
-        if (!string.IsNullOrEmpty(options.HealthCheckCriticalTimeout))
-        {
-            check.DeregisterCriticalServiceAfter = DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout);
-        }
-
-        if (options is { IsHeartbeatEnabled: true, Heartbeat: not null })
-        {
-            check.TTL = DateTimeConversions.ToTimeSpan(options.Heartbeat.TimeToLive);
-            return check;
-        }
-
-        if (!string.IsNullOrEmpty(options.HealthCheckUrl))
-        {
-            check.HTTP = options.HealthCheckUrl;
-        }
-        else
-        {
-            var uri = new Uri($"{options.EffectiveScheme}://{options.HostName}:{port}{options.HealthCheckPath}");
-            check.HTTP = uri.ToString();
-        }
-
-        check.Header = new Dictionary<string, List<string>>
-        {
-            // Override Management:Endpoints:UseStatusCodeFromResponse, Consul only looks at HTTP status code.
-            ["X-Use-Status-Code-From-Response"] = ["true"]
-        };
-
-        if (!string.IsNullOrEmpty(options.HealthCheckInterval))
-        {
-            check.Interval = DateTimeConversions.ToTimeSpan(options.HealthCheckInterval);
-        }
-
-        if (!string.IsNullOrEmpty(options.HealthCheckTimeout))
-        {
-            check.Timeout = DateTimeConversions.ToTimeSpan(options.HealthCheckTimeout);
-        }
-
-        check.TLSSkipVerify = options.HealthCheckTlsSkipVerify;
-        return check;
-    }
-
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
@@ -346,6 +277,9 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Consul registration is turned off.")]
     private partial void LogRegistrationTurnedOff();
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Registering without an HTTP health check because the port of this app is unknown.")]
+    private partial void LogSkippingHttpHealthCheckDueToUnknownPort();
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Consul deregistration is turned off.")]
     private partial void LogDeregistrationTurnedOff();
