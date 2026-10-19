@@ -144,7 +144,7 @@ public sealed class LoggersActuatorTest
             }
             """);
 
-        using var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         _ = loggerFactory.CreateLogger("Fake.Some");
         _ = loggerFactory.CreateLogger("Fake.Category.AtDebugLevel.Some");
 
@@ -207,7 +207,7 @@ public sealed class LoggersActuatorTest
         builder.Services.AddLoggersActuator();
         await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
-        using var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         _ = loggerFactory.CreateLogger("Fake.Some.Test");
         _ = loggerFactory.CreateLogger("Fake.Category.AtDebugLevel.Some");
 
@@ -357,7 +357,7 @@ public sealed class LoggersActuatorTest
         builder.Services.AddLoggersActuator();
         await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
-        using var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         _ = loggerFactory.CreateLogger("Fake.Some");
 
         await host.StartAsync(TestContext.Current.CancellationToken);
@@ -488,7 +488,7 @@ public sealed class LoggersActuatorTest
         builder.Services.AddLoggersActuator();
         await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
-        using var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         _ = loggerFactory.CreateLogger("Fake.Some");
 
         await host.StartAsync(TestContext.Current.CancellationToken);
@@ -607,7 +607,7 @@ public sealed class LoggersActuatorTest
         builder.Services.AddLoggersActuator();
         await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
-        using var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         _ = loggerFactory.CreateLogger("Fake.Some");
         _ = loggerFactory.CreateLogger("Fake.Category.AtDebugLevel.Some");
 
