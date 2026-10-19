@@ -30,14 +30,15 @@ public sealed class DiscoveryHostBuilderExtensionsTest
     };
 
     [Fact]
-    public void AddEurekaDiscoveryClient_HostBuilder_AddsServiceDiscovery_Eureka()
+    public async Task AddEurekaDiscoveryClient_HostBuilder_AddsServiceDiscovery_Eureka()
     {
         HostBuilder hostBuilder = TestHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
 
         hostBuilder.ConfigureServices(services => services.AddEurekaDiscoveryClient());
 
-        using IHost host = hostBuilder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         host.Services.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<EurekaDiscoveryClient>();
         host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();

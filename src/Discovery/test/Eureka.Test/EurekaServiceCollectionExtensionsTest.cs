@@ -64,18 +64,18 @@ public sealed class EurekaServiceCollectionExtensionsTest
             ["Eureka:Client:EurekaServer:RetryCount"] = "0"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        HostApplicationBuilder builder = TestHostApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddEurekaDiscoveryClient();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
-        var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(_ => configurationRoot);
-        services.AddEurekaDiscoveryClient();
-        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-
-        var eurekaClient = serviceProvider.GetRequiredService<EurekaClient>();
+        var eurekaClient = host.Services.GetRequiredService<EurekaClient>();
         TimeSpan? capturedTimeout = null;
         eurekaClient.HttpClientTimeoutConfigured += (_, args) => capturedTimeout = args.Value;
 
-        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<EurekaDiscoveryClient>();
+        await host.StartAsync(TestContext.Current.CancellationToken);
+
+        host.Services.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<EurekaDiscoveryClient>();
 
         capturedTimeout.Should().Be(1.Seconds());
     }
