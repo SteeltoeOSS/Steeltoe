@@ -6,7 +6,6 @@ using System.Net;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
@@ -76,11 +75,12 @@ public sealed class PrometheusExtensionsTest
         WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
         hostBuilder.Services.AddPrometheusActuator(false);
 
-        await using WebApplication app = hostBuilder.Build();
+        WebApplication app = hostBuilder.Build();
         app.UsePrometheusActuator();
 
-        await app.StartAsync(TestContext.Current.CancellationToken);
-        using HttpClient httpClient = app.GetTestClient();
+        await using HostWrapper host = HostWrapper.Wrap(app);
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using HttpClient httpClient = host.GetTestClient();
 
         using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/prometheus"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);

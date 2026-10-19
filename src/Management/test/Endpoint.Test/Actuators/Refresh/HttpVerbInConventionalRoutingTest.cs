@@ -4,7 +4,6 @@
 
 using System.Net;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
@@ -27,11 +26,13 @@ public sealed class HttpVerbInConventionalRoutingTest
         builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
         builder.Services.AddRefreshActuator();
 
-        await using WebApplication app = builder.Build();
+        WebApplication app = builder.Build();
         app.UseMvcWithDefaultRoute();
-        await app.StartAsync(TestContext.Current.CancellationToken);
 
-        using HttpClient httpClient = app.GetTestClient();
+        await using HostWrapper host = HostWrapper.Wrap(app);
+        await host.StartAsync(TestContext.Current.CancellationToken);
+
+        using HttpClient httpClient = host.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         using HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -54,11 +55,13 @@ public sealed class HttpVerbInConventionalRoutingTest
         builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
         builder.Services.AddRefreshActuator();
 
-        await using WebApplication app = builder.Build();
+        WebApplication app = builder.Build();
         app.UseMvcWithDefaultRoute();
-        await app.StartAsync(TestContext.Current.CancellationToken);
 
-        using HttpClient httpClient = app.GetTestClient();
+        await using HostWrapper host = HostWrapper.Wrap(app);
+        await host.StartAsync(TestContext.Current.CancellationToken);
+
+        using HttpClient httpClient = host.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         using HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -82,11 +85,13 @@ public sealed class HttpVerbInConventionalRoutingTest
         builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
         builder.Services.AddRefreshActuator();
 
-        await using WebApplication app = builder.Build();
+        WebApplication app = builder.Build();
         app.UseMvcWithDefaultRoute();
-        await app.StartAsync(TestContext.Current.CancellationToken);
 
-        using HttpClient httpClient = app.GetTestClient();
+        await using HostWrapper host = HostWrapper.Wrap(app);
+        await host.StartAsync(TestContext.Current.CancellationToken);
+
+        using HttpClient httpClient = host.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         using HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -110,11 +115,13 @@ public sealed class HttpVerbInConventionalRoutingTest
         builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
         builder.Services.AddRefreshActuator();
 
-        await using WebApplication app = builder.Build();
+        WebApplication app = builder.Build();
         app.UseMvcWithDefaultRoute();
-        await app.StartAsync(TestContext.Current.CancellationToken);
 
-        using HttpClient httpClient = app.GetTestClient();
+        await using HostWrapper host = HostWrapper.Wrap(app);
+        await host.StartAsync(TestContext.Current.CancellationToken);
+
+        using HttpClient httpClient = host.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         using HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -138,11 +145,13 @@ public sealed class HttpVerbInConventionalRoutingTest
         builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
         builder.Services.AddRefreshActuator();
 
-        await using WebApplication app = builder.Build();
+        WebApplication app = builder.Build();
         app.UseMvcWithDefaultRoute();
-        await app.StartAsync(TestContext.Current.CancellationToken);
 
-        using HttpClient httpClient = app.GetTestClient();
+        await using HostWrapper host = HostWrapper.Wrap(app);
+        await host.StartAsync(TestContext.Current.CancellationToken);
+
+        using HttpClient httpClient = host.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         using HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -167,11 +176,13 @@ public sealed class HttpVerbInConventionalRoutingTest
         builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
         builder.Services.AddRefreshActuator();
 
-        await using WebApplication app = builder.Build();
+        WebApplication app = builder.Build();
         app.UseMvcWithDefaultRoute();
-        await app.StartAsync(TestContext.Current.CancellationToken);
 
-        using HttpClient httpClient = app.GetTestClient();
+        await using HostWrapper host = HostWrapper.Wrap(app);
+        await host.StartAsync(TestContext.Current.CancellationToken);
+
+        using HttpClient httpClient = host.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         using HttpResponseMessage getResponse = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -205,11 +216,13 @@ public sealed class HttpVerbInConventionalRoutingTest
         builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
         builder.Services.AddRefreshActuator();
 
-        await using WebApplication app = builder.Build();
+        WebApplication app = builder.Build();
         app.UseMvcWithDefaultRoute();
-        await app.StartAsync(TestContext.Current.CancellationToken);
 
-        using HttpClient httpClient = app.GetTestClient();
+        await using HostWrapper host = HostWrapper.Wrap(app);
+        await host.StartAsync(TestContext.Current.CancellationToken);
+
+        using HttpClient httpClient = host.GetTestClient();
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
 
         using HttpResponseMessage getResponse1 = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);

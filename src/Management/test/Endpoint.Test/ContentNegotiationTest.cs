@@ -5,7 +5,6 @@
 using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
@@ -29,7 +28,7 @@ public sealed class ContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddLoggersActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
@@ -50,7 +49,7 @@ public sealed class ContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddLoggersActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
@@ -71,7 +70,7 @@ public sealed class ContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddLoggersActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
@@ -94,7 +93,7 @@ public sealed class ContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddLoggersActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
@@ -110,7 +109,7 @@ public sealed class ContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddLoggersActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using var requestMessage = new HttpRequestMessage();
@@ -134,7 +133,7 @@ public sealed class ContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddLoggersActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using var requestMessage = new HttpRequestMessage();
@@ -156,7 +155,7 @@ public sealed class ContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddLoggersActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using var requestMessage = new HttpRequestMessage();
@@ -179,7 +178,7 @@ public sealed class ContentNegotiationTest
         builder.Services.AddSingleton<IHeapDumper, FakeHeapDumper>();
         builder.Services.AddHeapDumpActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
@@ -198,7 +197,7 @@ public sealed class ContentNegotiationTest
         builder.Services.AddSingleton<IHeapDumper, FakeHeapDumper>();
         builder.Services.AddHeapDumpActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();

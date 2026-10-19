@@ -28,7 +28,7 @@ public sealed class DynamicPortAssignmentTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();
@@ -61,7 +61,7 @@ public sealed class DynamicPortAssignmentTest
 
         builder.Services.AddEurekaDiscoveryClient();
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();
@@ -89,7 +89,7 @@ public sealed class DynamicPortAssignmentTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();
@@ -116,7 +116,7 @@ public sealed class DynamicPortAssignmentTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();
@@ -147,7 +147,7 @@ public sealed class DynamicPortAssignmentTest
             options.IsSecurePortEnabled = true;
         });
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();
@@ -173,7 +173,7 @@ public sealed class DynamicPortAssignmentTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();

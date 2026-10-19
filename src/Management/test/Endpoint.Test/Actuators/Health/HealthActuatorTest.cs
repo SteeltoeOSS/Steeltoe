@@ -7,7 +7,6 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -227,7 +226,7 @@ public sealed class HealthActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -270,7 +269,7 @@ public sealed class HealthActuatorTest
         builder.Services.AddHealthActuator();
         builder.Services.RemoveAll<IHealthContributor>();
         builder.Services.AddHealthContributor<DownContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -296,7 +295,7 @@ public sealed class HealthActuatorTest
         builder.Services.AddHealthActuator();
         builder.Services.RemoveAll<IHealthContributor>();
         builder.Services.AddHealthContributor<DownContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -324,7 +323,7 @@ public sealed class HealthActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -352,7 +351,7 @@ public sealed class HealthActuatorTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<UpContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -389,7 +388,7 @@ public sealed class HealthActuatorTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<UpContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -427,7 +426,7 @@ public sealed class HealthActuatorTest
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<UpContributor>();
         builder.Services.AddHealthChecks().AddPrivateMemoryHealthCheck(1 * OneGigabyte).AddWorkingSetHealthCheck(1 * OneGigabyte);
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -527,9 +526,9 @@ public sealed class HealthActuatorTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<ComplexDetailsContributor>();
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.Use(async (httpContext, next) =>
+        app.Use(async (httpContext, next) =>
         {
             if (hasClaim)
             {
@@ -539,6 +538,7 @@ public sealed class HealthActuatorTest
             await next(httpContext);
         });
 
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
@@ -600,7 +600,7 @@ public sealed class HealthActuatorTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();

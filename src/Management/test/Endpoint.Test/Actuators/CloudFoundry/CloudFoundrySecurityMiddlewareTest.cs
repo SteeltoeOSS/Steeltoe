@@ -8,7 +8,6 @@ using System.Net.Http.Headers;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -39,7 +38,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddCloudFoundryActuator();
         builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
@@ -72,7 +71,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddCloudFoundryActuator();
         builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
@@ -106,7 +105,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddCloudFoundryActuator();
         builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
@@ -134,7 +133,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddCloudFoundryActuator();
         builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
@@ -167,7 +166,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddCloudFoundryActuator();
         builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
@@ -202,7 +201,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddCloudFoundryActuator();
         builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
@@ -235,7 +234,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddCloudFoundryActuator();
         builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
@@ -260,7 +259,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddCloudFoundryActuator();
         builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient client = host.GetTestClient();
@@ -348,7 +347,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         // ReSharper disable once AccessToDisposedClosure
         builder.Services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
         builder.Services.AddCloudFoundryActuator();
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await app.StartAsync(TestContext.Current.CancellationToken);
@@ -383,7 +382,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         builder.Services.AddInfoActuator();
         builder.Configuration.AddInMemoryCollection(appSettings);
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await host.StartAsync(TestContext.Current.CancellationToken);
 

@@ -5,7 +5,6 @@
 using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
@@ -51,7 +50,7 @@ public sealed class SpringBootAdminContentNegotiationTest
         builder.Services.AddSingleton<IThreadDumper, FakeThreadDumper>();
         builder.Services.AddAllActuators();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using var requestMessage = new HttpRequestMessage();
@@ -79,7 +78,7 @@ public sealed class SpringBootAdminContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddAllActuators();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using var requestMessage = new HttpRequestMessage();

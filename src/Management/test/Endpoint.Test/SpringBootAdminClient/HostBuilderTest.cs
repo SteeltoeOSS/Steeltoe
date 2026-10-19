@@ -51,7 +51,7 @@ public sealed class HostBuilderTest
             return true;
         }).Respond("application/json", """{"Id":"1"}""");
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
         await app.StartAsync(TestContext.Current.CancellationToken);
 
@@ -87,7 +87,7 @@ public sealed class HostBuilderTest
             return true;
         }).Respond("application/json", """{"Id":"1"}""");
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
         await app.StartAsync(TestContext.Current.CancellationToken);
 
@@ -117,7 +117,7 @@ public sealed class HostBuilderTest
         using var handler = new DelegateToMockHttpClientHandler();
         MockedRequest registerMock = handler.Mock.When(HttpMethod.Post, "http://sba-server.com/instances").Respond("application/json", """{"Id":"1"}""");
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
         var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
         using var cycleWaiter = new RefreshCycleWaiter(runner);
@@ -146,7 +146,7 @@ public sealed class HostBuilderTest
         using var handler = new DelegateToMockHttpClientHandler();
         MockedRequest registerMock = handler.Mock.When(HttpMethod.Post, "http://sba-server.com/instances").Respond("application/json", """{"Id":"1"}""");
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
         var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
         using var cycleWaiter = new RefreshCycleWaiter(runner);
@@ -188,7 +188,7 @@ public sealed class HostBuilderTest
         using var handler = new DelegateToMockHttpClientHandler();
         MockedRequest registerMock = handler.Mock.When(HttpMethod.Post, "http://sba-server.com/instances").Respond("application/json", """{"Id":"1"}""");
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
         var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
         using var cycleWaiter = new RefreshCycleWaiter(runner);
@@ -253,7 +253,7 @@ public sealed class HostBuilderTest
         MockedRequest registerMock = handler.Mock.When(HttpMethod.Post, "http://sba-server.com/instances").Respond("application/json", """{"Id":"1"}""");
         MockedRequest otherRegisterMock = handler.Mock.When(HttpMethod.Post, "http://other-server.com/instances").Respond("application/json", """{"Id":"2"}""");
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
         var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
         using var cycleWaiter = new RefreshCycleWaiter(runner);
@@ -420,7 +420,7 @@ public sealed class HostBuilderTest
         MockedRequest registerMock2 = handler.Mock.When(HttpMethod.Post, "http://sba-server2.com/instances").Respond("application/json", """{"Id":"2"}""");
         MockedRequest unregisterMock2 = handler.Mock.When(HttpMethod.Delete, "http://sba-server2.com/instances/2").Respond(HttpStatusCode.NoContent);
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
         var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
         using var cycleWaiter = new RefreshCycleWaiter(runner);
@@ -550,7 +550,7 @@ public sealed class HostBuilderTest
             }
             : throw new HttpRequestException("Server is unreachable."));
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
         var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
         using var cycleWaiter = new RefreshCycleWaiter(runner);

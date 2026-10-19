@@ -6,7 +6,6 @@ using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -213,7 +212,7 @@ public sealed class InfoActuatorTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddInfoActuator();
         builder.Services.RemoveAll<IInfoContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -235,7 +234,7 @@ public sealed class InfoActuatorTest
         builder.Services.AddInfoActuator();
         builder.Services.RemoveAll<IInfoContributor>();
         builder.Services.AddInfoContributor<FakeContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -267,7 +266,7 @@ public sealed class InfoActuatorTest
         builder.Services.AddInfoActuator();
         builder.Services.RemoveAll<IInfoContributor>();
         builder.Services.AddInfoContributor<FakeContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -298,7 +297,7 @@ public sealed class InfoActuatorTest
         builder.Services.RemoveAll<IInfoContributor>();
         builder.Services.AddInfoContributor<ThrowingContributor>();
         builder.Services.AddInfoContributor<FakeContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();

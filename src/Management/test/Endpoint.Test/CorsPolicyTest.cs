@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using RichardSzalay.MockHttp;
@@ -27,7 +26,7 @@ public sealed class CorsPolicyTest
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddInfoActuator();
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
@@ -52,7 +51,7 @@ public sealed class CorsPolicyTest
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddRefreshActuator();
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
@@ -81,7 +80,7 @@ public sealed class CorsPolicyTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddInfoActuator();
         builder.Services.ConfigureActuatorsCorsPolicy(policy => policy.WithOrigins("http://example.api.com"));
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
@@ -118,7 +117,7 @@ public sealed class CorsPolicyTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddRefreshActuator();
         builder.Services.ConfigureActuatorsCorsPolicy(policy => policy.AllowAnyOrigin().SetPreflightMaxAge(TimeSpan.FromSeconds(preflightMaxAge)));
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
@@ -176,7 +175,7 @@ public sealed class CorsPolicyTest
         builder.Configuration.AddCloudFoundry();
         builder.Services.AddInfoActuator();
         builder.Services.AddCloudFoundryActuator();
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().Setup(mock =>
         {
@@ -220,7 +219,7 @@ public sealed class CorsPolicyTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddCloudFoundryActuator();
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         await app.StartAsync(TestContext.Current.CancellationToken);
 

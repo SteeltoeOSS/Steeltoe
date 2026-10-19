@@ -28,7 +28,8 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
         using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
         HostBuilder hostBuilder = GetHostBuilder();
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
@@ -65,7 +66,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
             });
         });
 
-        await using WebApplication server = serverBuilder.Build();
+        WebApplication server = serverBuilder.Build();
 
         server.MapGet("/", (HttpContext httpContext) =>
         {
@@ -73,12 +74,14 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
             return Results.Ok();
         });
 
-        await server.StartAsync(TestContext.Current.CancellationToken);
-        var addressesFeature = server.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!;
+        await using HostWrapper serverHost = HostWrapper.Wrap(server);
+        await serverHost.StartAsync(TestContext.Current.CancellationToken);
+        var addressesFeature = serverHost.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!;
         int port = new Uri(addressesFeature.Addresses.First()).Port;
 
         HostBuilder clientHostBuilder = GetHostBuilder();
-        using IHost clientHost = await clientHostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper clientHost = HostWrapper.Wrap(clientHostBuilder.Build());
+        await clientHost.StartAsync(TestContext.Current.CancellationToken);
         var handlerFactory = clientHost.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
         SocketsHttpHandler socketsHandler = GetInnerHandler(handler).Should().BeOfType<SocketsHttpHandler>().Which;
@@ -119,7 +122,8 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
             httpClientBuilder.AddClientCertificateForMutualTls(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
         }));
 
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
@@ -153,7 +157,8 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
                 services.AddHttpClient("test").AddClientCertificateForMutualTls(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName));
         });
 
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
@@ -179,7 +184,8 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
             builder.ConfigureServices(services => services.AddHttpClient("test").AddClientCertificateForMutualTls("does-not-exist"));
         });
 
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
@@ -213,7 +219,8 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
             httpClientBuilder.AddClientCertificateForMutualTls(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
         }));
 
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         Action action = () => handlerFactory.CreateHandler("test");
@@ -245,7 +252,8 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
             });
         });
 
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");

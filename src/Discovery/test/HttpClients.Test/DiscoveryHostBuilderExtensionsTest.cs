@@ -51,10 +51,10 @@ public sealed class DiscoveryHostBuilderExtensionsTest
 
         hostBuilder.ConfigureServices(services => services.AddEurekaDiscoveryClient());
 
-        Func<Task> action = async () =>
-        {
-            using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
-        };
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await host.StartAsync(TestContext.Current.CancellationToken);
 
         await action.Should().NotThrowAsync();
     }

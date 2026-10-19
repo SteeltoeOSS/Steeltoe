@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Net;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,7 +35,7 @@ public sealed class HealthAggregationTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -61,7 +60,7 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<DisabledContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -86,7 +85,7 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<UnknownContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -116,7 +115,7 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<UpContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -146,7 +145,7 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<WarningContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -176,7 +175,7 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<OutOfServiceContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -206,7 +205,7 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<DownContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -236,7 +235,7 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<ComplexDetailsContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -317,7 +316,7 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -375,7 +374,7 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -426,7 +425,7 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -471,7 +470,7 @@ public sealed class HealthAggregationTest
         checksBuilder.AddCheck<AspNetDegradedCheck>("aspnet-degraded-check");
         checksBuilder.AddCheck<AspNetHealthyCheck>("aspnet-healthy-check");
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -529,9 +528,11 @@ public sealed class HealthAggregationTest
         checksBuilder.AddCheck<AspNetUnhealthyCheck>("aspnet-unhealthy-check", tags: ["ExcludeFromHealthActuator"]);
         checksBuilder.AddCheck<AspNetHealthyCheck>("aspnet-healthy-check");
 
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.MapHealthChecks("/health");
+        app.MapHealthChecks("/health");
+
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
@@ -574,13 +575,15 @@ public sealed class HealthAggregationTest
         builder.Services.AddDbContext<TestDbContext>(options => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
         builder.Services.AddHealthChecks().AddDbContextCheck<TestDbContext>();
         builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
         // ReSharper disable once AccessToDisposedClosure
-        Action action = () => host.Services.GetRequiredService<TestDbContext>();
+        Action action = () => app.Services.GetRequiredService<TestDbContext>();
         action.Should().ThrowExactly<InvalidOperationException>();
 
-        host.MapHealthChecks("/health");
+        app.MapHealthChecks("/health");
+
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 

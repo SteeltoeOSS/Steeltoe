@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -159,7 +158,7 @@ public sealed class RefreshActuatorTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Configuration.Sources.Add(new TestConfigurationSource());
         builder.Services.AddRefreshActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -184,7 +183,7 @@ public sealed class RefreshActuatorTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Configuration.Sources.Add(new TestConfigurationSource());
         builder.Services.AddRefreshActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -223,7 +222,7 @@ public sealed class RefreshActuatorTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddRefreshActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();

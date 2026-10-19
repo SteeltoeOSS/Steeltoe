@@ -5,7 +5,6 @@
 using System.Net;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -91,7 +90,7 @@ public sealed class DiskSpaceHealthContributorTest
         builder.Services.AddHealthActuator();
         builder.Services.RemoveAll<IHealthContributor>();
         builder.Services.AddSingleton<IHealthContributor, DiskSpaceHealthContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -138,7 +137,7 @@ public sealed class DiskSpaceHealthContributorTest
         builder.Services.AddHealthActuator();
         builder.Services.RemoveAll<IHealthContributor>();
         builder.Services.AddSingleton<IHealthContributor, DiskSpaceHealthContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -184,7 +183,7 @@ public sealed class DiskSpaceHealthContributorTest
         builder.Services.AddHealthActuator();
         builder.Services.RemoveAll<IHealthContributor>();
         builder.Services.AddSingleton<IHealthContributor, DiskSpaceHealthContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -229,7 +228,7 @@ public sealed class DiskSpaceHealthContributorTest
         builder.Services.AddHealthActuator();
         builder.Services.RemoveAll<IHealthContributor>();
         builder.Services.AddSingleton<IHealthContributor, DiskSpaceHealthContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -276,7 +275,7 @@ public sealed class DiskSpaceHealthContributorTest
         builder.Services.AddHealthActuator();
         builder.Services.RemoveAll<IHealthContributor>();
         builder.Services.AddSingleton<IHealthContributor, DiskSpaceHealthContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -322,7 +321,7 @@ public sealed class DiskSpaceHealthContributorTest
         builder.Services.AddHealthActuator();
         builder.Services.RemoveAll<IHealthContributor>();
         builder.Services.AddSingleton<IHealthContributor, DiskSpaceHealthContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();

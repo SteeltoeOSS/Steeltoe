@@ -4,7 +4,6 @@
 
 using System.Net;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -64,7 +63,7 @@ public sealed class PingHealthContributorTest
         builder.Services.AddHealthActuator();
         builder.Services.RemoveAll<IHealthContributor>();
         builder.Services.AddSingleton<IHealthContributor, PingHealthContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
