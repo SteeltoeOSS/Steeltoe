@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
+using Xunit;
 
 namespace Steeltoe.Common.TestResources;
 
@@ -14,6 +15,7 @@ public sealed class HostWrapper : IAsyncDisposable
     private readonly IHost? _host;
     private readonly IWebHost? _webHost;
     private readonly WebApplication? _webApplication;
+    private bool _isStarted;
 
     public IServiceProvider Services => _host?.Services ?? _webHost?.Services ?? _webApplication?.Services ?? throw new NotSupportedException();
 
@@ -54,6 +56,8 @@ public sealed class HostWrapper : IAsyncDisposable
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
+        _isStarted = true;
+
         return _host?.StartAsync(cancellationToken) ?? _webHost?.StartAsync(cancellationToken) ??
             _webApplication?.StartAsync(cancellationToken) ?? throw new NotSupportedException();
     }
@@ -66,6 +70,11 @@ public sealed class HostWrapper : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        if (_isStarted)
+        {
+            await StopAsync(TestContext.Current.CancellationToken);
+        }
+
         await DisposeAsync(_host);
         await DisposeAsync(_webHost);
         await DisposeAsync(_webApplication);

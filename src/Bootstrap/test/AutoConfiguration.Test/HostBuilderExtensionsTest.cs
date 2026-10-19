@@ -59,6 +59,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task ConfigServerConfiguration_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationConfigServer, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertConfigServerConfigurationIsAutowired(hostWrapper);
     }
@@ -71,6 +72,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task CloudFoundryConfiguration_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationCloudFoundry, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertCloudFoundryConfigurationIsAutowired(hostWrapper);
     }
@@ -83,6 +85,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task RandomValueConfiguration_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationRandomValue, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertRandomValueConfigurationIsAutowired(hostWrapper);
     }
@@ -95,6 +98,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task SpringBootConfiguration_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationSpringBoot, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertSpringBootConfigurationIsAutowired(hostWrapper);
     }
@@ -107,6 +111,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task EncryptionConfiguration_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationEncryption, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertEncryptionConfigurationIsAutowired(hostWrapper);
     }
@@ -119,6 +124,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task PlaceholderResolver_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationPlaceholder, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertPlaceholderResolverIsAutowired(hostWrapper);
     }
@@ -131,6 +137,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task Connectors_AreAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.Connectors, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertConnectorsAreAutowired(hostWrapper);
     }
@@ -148,6 +155,7 @@ public sealed class HostBuilderExtensionsTest
         exclusions.Add("System.Data.SqlClient");
 
         await using HostWrapper hostWrapper = HostWrapperFactory.GetExcluding(exclusions, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         hostWrapper.Services.GetService<ConnectorFactory<SqlServerOptions, SqlConnection>>().Should().BeNull();
     }
@@ -160,6 +168,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task DynamicSerilog_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.LoggingDynamicSerilog, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertDynamicSerilogIsAutowired(hostWrapper);
     }
@@ -172,6 +181,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task DynamicConsoleLogger_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.LoggingDynamicConsole, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertDynamicConsoleIsAutowired(hostWrapper);
     }
@@ -193,6 +203,8 @@ public sealed class HostBuilderExtensionsTest
         await using HostWrapper hostWrapper =
             HostWrapperFactory.GetExcluding(SteeltoeAssemblyNames.All.Except(assembliesToInclude).ToHashSet(), hostBuilderType);
 
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
+
         AssertServiceDiscoveryClientsAreAutowired(hostWrapper);
     }
 
@@ -204,6 +216,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task Prometheus_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementPrometheus, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertPrometheusIsAutowired(hostWrapper);
     }
@@ -229,6 +242,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task Tracing_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementTracing, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertTracingIsAutowired(hostWrapper);
     }
@@ -241,6 +255,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task Everything_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetExcluding(new HashSet<string>(), hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertConfigServerConfigurationIsAutowired(hostWrapper);
         AssertCloudFoundryConfigurationIsAutowired(hostWrapper);
@@ -253,8 +268,6 @@ public sealed class HostBuilderExtensionsTest
         AssertServiceDiscoveryClientsAreAutowired(hostWrapper);
         AssertPrometheusIsAutowired(hostWrapper);
         AssertTracingIsAutowired(hostWrapper);
-
-        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         await AssertAllActuatorsAreAutowiredAsync(hostWrapper, false, TestContext.Current.CancellationToken);
     }
@@ -425,6 +438,7 @@ public sealed class HostBuilderExtensionsTest
         {
             WebHostBuilder builder = TestWebHostBuilderFactory.Create();
             builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.Add(FastTestConfigurations.All));
+            builder.ConfigureServices(services => services.AddRouting());
             builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
             builder.AddSteeltoe(assemblyNamesToExclude);
 
